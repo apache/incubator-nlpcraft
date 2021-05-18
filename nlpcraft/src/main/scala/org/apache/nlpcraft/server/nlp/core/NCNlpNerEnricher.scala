@@ -31,5 +31,5 @@ trait NCNlpNerEnricher extends NCService {
       * @param ebiTokens Set of enabled built-in (EBI) token IDs.
       * @param parent Optional parent span.
       */
-    def enrich(ns: NCNlpSentence, ebiTokens: Set[String], parent: Span = null)
+    def enrich(ns: NCNlpSentence, ebiTokens: Set[String], parent: Span = null): Unit
 }

@@ -27,6 +27,6 @@ import scala.collection.JavaConverters._
 trait NCEnrichersTestContext extends NCModel {
     override final def onContext(ctx: NCContext): NCResult =
         NCResult.text(
-            NCTestSentence.serialize(ctx.getVariants.asScala.map(v ⇒ NCTestSentence(v.asScala.map(NCTestToken(_)))))
+            NCTestSentence.serialize(ctx.getVariants.asScala.map(v => NCTestSentence(v.asScala.map(NCTestToken(_)))))
         )
 }

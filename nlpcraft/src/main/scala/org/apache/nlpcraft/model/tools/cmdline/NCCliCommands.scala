@@ -32,8 +32,8 @@ private [cmdline] case class Argument(
      * @return
      */
     def origString(): String =  value match {
-        case Some(s) ⇒ s"${parameter.names.head}=$s"
-        case None ⇒ parameter.names.head
+        case Some(s) => s"${parameter.names.head}=$s"
+        case None => parameter.names.head
     }
 }
 
@@ -45,7 +45,7 @@ private [cmdline] case class Command(
     desc: Option[String] = None,
     params: Seq[Parameter] = Seq.empty,
     examples: Seq[Example] = Seq.empty,
-    body: (Command, Seq[Argument], Boolean) ⇒ Unit
+    body: (Command, Seq[Argument], Boolean) => Unit
 ) {
     /**
      *

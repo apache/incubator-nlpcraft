@@ -27,17 +27,17 @@ class NCRestClearSpec extends NCRestSpec {
 
     @BeforeEach
     def setUp(): Unit = {
-        post("user/get")(("$.id", (id: Number) ⇒ usrId = id.longValue()))
+        post("user/get")(("$.id", (id: Number) => usrId = id.longValue()))
 
         assertTrue(usrId > 0)
     }
 
     @Test
     def test(): Unit = {
-        post("clear/conversation", "mdlId" → "rest.test.model")()
-        post("clear/conversation", "mdlId" → "rest.test.model", "usrId" → usrId)()
+        post("clear/conversation", "mdlId" -> "rest.test.model")()
+        post("clear/conversation", "mdlId" -> "rest.test.model", "usrId" -> usrId)()
 
-        post("clear/dialog", "mdlId" → "rest.test.model")()
-        post("clear/dialog", "mdlId" → "rest.test.model", "usrId" → usrId)()
+        post("clear/dialog", "mdlId" -> "rest.test.model")()
+        post("clear/dialog", "mdlId" -> "rest.test.model", "usrId" -> usrId)()
     }
 }

@@ -49,7 +49,7 @@ case class NCProbeMdo(
     override def hashCode(): Int = probeToken.hashCode() * 37 + probeId.hashCode
     override def equals(obj: scala.Any): Boolean =
         obj match {
-            case x: NCProbeMdo ⇒ x.probeId == probeId && x.probeToken == probeToken
-            case _ ⇒ false
+            case x: NCProbeMdo => x.probeId == probeId && x.probeToken == probeToken
+            case _ => false
         }
 }

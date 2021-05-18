@@ -59,7 +59,7 @@ object NCCompanyManager extends NCService with NCIgniteInstance {
      *
      * @param parent Optional parent span.
      */
-    override def stop(parent: Span): Unit = startScopedSpan("start", parent) { _ ⇒
+    override def stop(parent: Span): Unit = startScopedSpan("start", parent) { _ =>
         ackStopping()
         ackStopped()
     }
@@ -69,7 +69,7 @@ object NCCompanyManager extends NCService with NCIgniteInstance {
      * @param parent Optional parent span.
      * @return
      */
-    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
+    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span =>
         ackStarting()
 
         catching(wrapIE) {
@@ -99,14 +99,14 @@ object NCCompanyManager extends NCService with NCIgniteInstance {
                         adminLastName = "Minkowski",
                         adminAvatarUrl = None,
                         props = None,
-                        mkToken = () ⇒ U.DFLT_PROBE_TOKEN,
+                        mkToken = () => U.DFLT_PROBE_TOKEN,
                         parent = span
                     )
 
                     logger.info(s"Default admin user ($adminEmail/$adminPwd) created for default company: $compName")
                 }
                 catch {
-                    case e: NCE ⇒ U.prettyError(
+                    case e: NCE => U.prettyError(
                         logger,
                         s"Failed to add default admin user: ${e.getLocalizedMessage}",
                         e
@@ -125,7 +125,7 @@ object NCCompanyManager extends NCService with NCIgniteInstance {
       */
     @throws[NCE]
     def getCompany(id: Long, parent: Span = null): Option[NCCompanyMdo] =
-        startScopedSpan("getCompany", parent, "id" → id) { span ⇒
+        startScopedSpan("getCompany", parent, "id" -> id) { span =>
             NCSql.sql {
                 NCSqlManager.getCompany(id, span)
             }
@@ -139,7 +139,7 @@ object NCCompanyManager extends NCService with NCIgniteInstance {
       */
     @throws[NCE]
     def getCompanyByHashToken(hash: String, parent: Span = null): Option[NCCompanyMdo] =
-        startScopedSpan("getCompanyByHashToken", parent, "hash" → hash) { span ⇒
+        startScopedSpan("getCompanyByHashToken", parent, "hash" -> hash) { span =>
             NCSql.sql {
                 NCSqlManager.getCompanyByHashToken(hash, span)
             }
@@ -171,17 +171,17 @@ object NCCompanyManager extends NCService with NCIgniteInstance {
         props: Option[String],
         parent: Span = null
     ): Unit =
-        startScopedSpan("updateCompany", parent, "id" → id) { span ⇒
+        startScopedSpan("updateCompany", parent, "id" -> id) { span =>
             try {
                 compLock.acquire()
          
                 NCSql.sql {
                     NCSqlManager.getCompanyByName(name, span) match {
-                        case Some(c) ⇒
+                        case Some(c) =>
                             if (c.id != id)
                                 throw new NCE(s"Company with this name already exists: $name")
          
-                        case None ⇒ // No-op.
+                        case None => // No-op.
                     }
          
                     val n =
@@ -214,7 +214,7 @@ object NCCompanyManager extends NCService with NCIgniteInstance {
       * @param parent Optional parent span.
       */
     @throws[NCE]
-    def resetToken(id: Long, parent: Span): String = startScopedSpan("resetToken", parent, "id" → id) { span ⇒
+    def resetToken(id: Long, parent: Span): String = startScopedSpan("resetToken", parent, "id" -> id) { span =>
         try {
             compLock.acquire()
 
@@ -241,7 +241,7 @@ object NCCompanyManager extends NCService with NCIgniteInstance {
       */
     @throws[NCE]
     def deleteCompany(id: Long, parent: Span = null): Unit =
-        startScopedSpan("deleteCompany", parent, "id" → id) { span ⇒
+        startScopedSpan("deleteCompany", parent, "id" -> id) { span =>
             NCSql.sql {
                 if (NCSqlManager.deleteCompany(id, span) != 1)
                     throw new NCE(s"Unknown company ID: $id")
@@ -283,12 +283,12 @@ object NCCompanyManager extends NCService with NCIgniteInstance {
         adminLastName: String,
         adminAvatarUrl: Option[String],
         props: Option[String],
-        mkToken: () ⇒ String,
+        mkToken: () => String,
         parent: Span = null
     ): NCCompanyCreationData = {
         val compId = compSeq.incrementAndGet()
     
-        startScopedSpan("addCompany0", parent, "id" → compId, "name" → name) { span ⇒
+        startScopedSpan("addCompany0", parent, "id" -> compId, "name" -> name) { span =>
             NCSql.sql {
                 val tkn =
                     // Some database implementations (including Ignite database) may not support unique constraints.
@@ -373,7 +373,7 @@ object NCCompanyManager extends NCService with NCIgniteInstance {
         adminAvatarUrl: Option[String],
         props: Option[String],
         parent: Span = null
-    ): NCCompanyCreationData = startScopedSpan("addCompany", parent, "name" → name) { _ ⇒
+    ): NCCompanyCreationData = startScopedSpan("addCompany", parent, "name" -> name) { _ =>
         addCompany0(
             name,
             website,
@@ -388,7 +388,7 @@ object NCCompanyManager extends NCService with NCIgniteInstance {
             adminLastName,
             adminAvatarUrl,
             props,
-            () ⇒ mkToken()
+            () => mkToken()
         )
     }
 }

@@ -83,7 +83,7 @@ class NCAsciiTableSpec {
 
         t #= (Seq("Header 1", "Header 2", "Header 3"): _*)
 
-        for (i ← 0 to NUM)
+        for (i <- 0 to NUM)
             t += (s"${ansiGreenFg}Value 1:$i$ansiReset", s"${ansiReversed}Value 2:$i$ansiReset", s"${ansiRedFg}Value 3:$i$ansiReset")
 
         t.render()

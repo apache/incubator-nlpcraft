@@ -79,7 +79,7 @@ case class NCConversation(
      *
      * @param parent Optional parent span.
      */
-    def updateTokens(parent: Span = null): Unit = startScopedSpan("updateTokens", parent) { _ ⇒
+    def updateTokens(parent: Span = null): Unit = startScopedSpan("updateTokens", parent) { _ =>
         val now = U.nowUtcMs()
 
         stm.synchronized {
@@ -106,10 +106,10 @@ case class NCConversation(
                 val minUsageTime = now - timeoutMs
                 val toks = lastToks.flatten
 
-                for (item ← stm) {
+                for (item <- stm) {
                     val delHs =
                         // Deleted by timeout for tokens type or when token type used too many requests ago.
-                        item.holders.filter(h ⇒ h.tokenTypeUsageTime < minUsageTime || !toks.contains(h.token))
+                        item.holders.filter(h => h.tokenTypeUsageTime < minUsageTime || !toks.contains(h.token))
 
                     if (delHs.nonEmpty) {
                         item.holders --= delHs
@@ -143,14 +143,14 @@ case class NCConversation(
       * @param parent Optional parent span.
       */
     def clearTokens(p: Predicate[NCToken], parent: Span = null): Unit =
-        startScopedSpan("clearTokens", parent) { _ ⇒
+        startScopedSpan("clearTokens", parent) { _ =>
             stm.synchronized {
-                for (item ← stm)
-                    item.holders --= item.holders.filter(h ⇒ p.test(h.token))
+                for (item <- stm)
+                    item.holders --= item.holders.filter(h => p.test(h.token))
 
                 squeezeTokens()
 
-                ctx = ctx.asScala.filter(tok ⇒ !p.test(tok)).asJava
+                ctx = ctx.asScala.filter(tok => !p.test(tok)).asJava
             }
 
             logger.trace(s"Conversation is cleared [" +
@@ -164,7 +164,7 @@ case class NCConversation(
       * 
       * @param p Scala-side predicate.
       */
-    def clearTokens(p: NCToken ⇒ Boolean): Unit =
+    def clearTokens(p: NCToken => Boolean): Unit =
         clearTokens(new Predicate[NCToken] {
             override def test(t: NCToken): Boolean = p(t)
         })
@@ -177,7 +177,7 @@ case class NCConversation(
       * @param parent Optional parent span.
       */
     def addTokens(srvReqId: String, toks: Seq[NCToken], parent: Span = null): Unit =
-        startScopedSpan("addTokens", parent, "srvReqId" → srvReqId) { _ ⇒
+        startScopedSpan("addTokens", parent, "srvReqId" -> srvReqId) { _ =>
             stm.synchronized {
                 depth = 0
     
@@ -191,7 +191,7 @@ case class NCConversation(
     
                 val senToks = toks.
                         filter(_.getServerRequestId == srvReqId).
-                        filter(t ⇒ !t.isFreeWord && !t.isStopWord)
+                        filter(t => !t.isFreeWord && !t.isStopWord)
     
                 if (senToks.nonEmpty) {
                     // Adds new conversation element.
@@ -213,19 +213,19 @@ case class NCConversation(
                     val registered = mutable.HashSet.empty[Seq[String]]
     
                     for (
-                        item ← stm.reverse;
-                        (gs, hs) ← item.holders.groupBy(
-                            t ⇒ if (t.token.getGroups != null) t.token.getGroups.asScala else Seq.empty
+                        item <- stm.reverse;
+                        (gs, hs) <- item.holders.groupBy(
+                            t => if (t.token.getGroups != null) t.token.getGroups.asScala else Seq.empty
                         )
                     ) {
                         val grps = gs.sorted
     
                         // Reversed iteration.
-                        // N : (A, B) → registered.
-                        // N-1 : (C) → registered.
-                        // N-2 : (A, B) or (A, B, X) etc → deleted, because registered has less groups.
+                        // N : (A, B) -> registered.
+                        // N-1 : (C) -> registered.
+                        // N-2 : (A, B) or (A, B, X) etc -> deleted, because registered has less groups.
                         registered.find(grps.containsSlice) match {
-                            case Some(_) ⇒
+                            case Some(_) =>
                                 item.holders --= hs
     
                                 logger.trace(
@@ -237,12 +237,12 @@ case class NCConversation(
                                         s"toks=${hs.map(_.token).mkString("[", ", ", "]")}" +
                                     s"]"
                                 )
-                            case None ⇒ registered += grps
+                            case None => registered += grps
                         }
                     }
     
                     // Updates tokens usage time.
-                    stm.foreach(_.holders.filter(h ⇒ toks.contains(h.token)).foreach(_.tokenTypeUsageTime = lastUpdateTstamp))
+                    stm.foreach(_.holders.filter(h => toks.contains(h.token)).foreach(_.tokenTypeUsageTime = lastUpdateTstamp))
     
                     squeezeTokens()
                 }
@@ -263,7 +263,7 @@ case class NCConversation(
         else {
             val tbl = NCAsciiTable("Token ID", "Groups", "Text", "Value", "From request")
 
-            ctx.asScala.foreach(tok ⇒ tbl += (
+            ctx.asScala.foreach(tok => tbl += (
                 tok.getId,
                 tok.getGroups.asScala.mkString(", "),
                 tok.normText,
@@ -283,10 +283,10 @@ case class NCConversation(
       * @param parent Optional parent span.
       * @return
       */
-    def getTokens(parent: Span = null): util.List[NCToken] = startScopedSpan("getTokens", parent) { _ ⇒
+    def getTokens(parent: Span = null): util.List[NCToken] = startScopedSpan("getTokens", parent) { _ =>
         stm.synchronized {
             val srvReqIds = ctx.asScala.map(_.getServerRequestId).distinct.zipWithIndex.toMap
-            val toks = ctx.asScala.groupBy(_.getServerRequestId).toSeq.sortBy(p ⇒ srvReqIds(p._1)).reverse.flatMap(_._2)
+            val toks = ctx.asScala.groupBy(_.getServerRequestId).toSeq.sortBy(p => srvReqIds(p._1)).reverse.flatMap(_._2)
      
             new util.ArrayList[NCToken](toks.asJava)
         }

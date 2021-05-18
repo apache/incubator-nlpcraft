@@ -40,7 +40,7 @@ class NCIdlFunctionsUser extends NCIdlFunctions {
                 override def isAdmin: Boolean = true
                 override def getSignupTimestamp: Long = -100
                 override def getMetadata: util.Map[String, AnyRef] =
-                    Map("k1" → "v1").map(p ⇒ p._1 → p._2.asInstanceOf[AnyRef]).asJava
+                    Map("k1" -> "v1").map(p => p._1 -> p._2.asInstanceOf[AnyRef]).asJava
             }
         )
         test(
@@ -53,7 +53,7 @@ class NCIdlFunctionsUser extends NCIdlFunctions {
                 override def isAdmin: Boolean = false
                 override def getSignupTimestamp: Long = 100
                 override def getMetadata: util.Map[String, AnyRef] =
-                    Map("k1" → "v1").map(p ⇒ p._1 → p._2.asInstanceOf[AnyRef]).asJava
+                    Map("k1" -> "v1").map(p => p._1 -> p._2.asInstanceOf[AnyRef]).asJava
             }
         )
     }

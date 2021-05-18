@@ -47,66 +47,66 @@ class NCSqlModelSpec extends NCEnricherBaseSpec {
     @Test
     def test(): Unit = {
         runBatch(
-            _ ⇒ checkExists(
+            _ => checkExists(
                 txt = "order date",
                 usr(text = "order date", id = "col:date")
             ),
-            _ ⇒ checkExists(
+            _ => checkExists(
                 txt = "show me the order dates",
                 nlp(text = "show me the", isStop = true),
                 usr(text = "order dates", id = "col:date")
             ),
-            _ ⇒ checkExists(
+            _ => checkExists(
                 txt = "list dates of orders",
                 nlp(text = "list", isStop = true),
                 usr(text = "dates orders", id = "col:date"),
                 nlp(text = "of")
             ),
-            _ ⇒ checkExists(
+            _ => checkExists(
                 txt = "orders for last month",
                 usr(text = "orders", id = "tbl:orders"),
                 dte(text = "for last month")
             ),
-            _ ⇒ checkExists(
+            _ => checkExists(
                 txt = "shippers data",
                 usr(text = "shippers", id = "tbl:shippers"),
                 nlp(text = "data")
             ),
-            _ ⇒ checkExists(
+            _ => checkExists(
                 txt = "show me orders with freight more than 10 for last year",
                 nlp(text = "show me", isStop = true),
                 srt(text = "orders with", typ = BY_ONLY, note = "condition:num", index = 2),
                 usr(text = "freight more than 10", id = "condition:num"),
                 dte(text = "for last year")
             ),
-            _ ⇒ checkExists(
+            _ => checkExists(
                 txt = "territories data",
                 usr(text = "territories", id = "tbl:territories"),
                 nlp(text = "data")
             ),
-            _ ⇒ checkExists(
+            _ => checkExists(
                 txt = "employees territories",
                 usr(text = "employees territories", id = "tbl:employee_territories")
             ),
-            _ ⇒ checkExists(
+            _ => checkExists(
                 txt = "10 suppliers",
                 lim(text = "10", limit=10, index =1, note="tbl:suppliers"),
                 usr(text = "suppliers", id = "tbl:suppliers")
             ),
-            _ ⇒ checkExists(
+            _ => checkExists(
                 txt = "last year Exotic Liquids orders",
                 dte(text="last year"),
                 usr(text = "Exotic Liquids", id = "condition:value"),
                 usr(text = "orders", id = "tbl:orders")
             ),
-            _ ⇒ checkExists(
+            _ => checkExists(
                 txt = "give me the orders sorted by ship date",
                 nlp(text = "give me the", isStop = true),
                 usr(text = "orders", id = "tbl:orders"),
                 srt(text = "sorted by", typ = BY_ONLY, note = "col:date", index = 3),
                 usr(text = "ship date", id = "col:date"),
             ),
-            _ ⇒ checkExists(
+            _ => checkExists(
                 txt = "give me the orders sorted by ship date asc",
                 nlp(text = "give me the", isStop = true),
                 usr(text = "orders", id = "tbl:orders"),
@@ -114,14 +114,14 @@ class NCSqlModelSpec extends NCEnricherBaseSpec {
                 usr(text = "ship date", id = "col:date"),
                 nlp(text = "asc", isStop = true)
             ),
-            _ ⇒ checkExists(
+            _ => checkExists(
                 txt = "give me the orders sorted by date",
                 nlp(text = "give me the", isStop = true),
                 usr(text = "orders date", id = "col:date"),
                 nlp(text = "sorted"),
                 nlp(text = "by")
             ),
-            _ ⇒ checkExists(
+            _ => checkExists(
                 txt = "What are the top orders for the last 2 weeks sorted by order quantity?",
                 lim(text = "What are the top", limit = 10, index = 1, note = "tbl:orders", asc = false),
                 usr(text = "orders", id = "tbl:orders"),
@@ -131,7 +131,7 @@ class NCSqlModelSpec extends NCEnricherBaseSpec {
                 usr(text = "order quantity", id = "col:num"),
                 nlp(text = "?", isStop = true)
             ),
-            _ ⇒ checkExists(
+            _ => checkExists(
                 txt = "What are the top 25 orders for the last 2 weeks sorted by order quantity?",
                 lim(text = "What are the top 25", limit = 25, index = 1, note = "tbl:orders", asc = false),
                 usr(text = "orders", id = "tbl:orders"),
@@ -141,7 +141,7 @@ class NCSqlModelSpec extends NCEnricherBaseSpec {
                 usr(text = "order quantity", id = "col:num"),
                 nlp(text = "?", isStop = true)
             ),
-            _ ⇒ checkExists(
+            _ => checkExists(
                 txt = "What are the best performing products for the last quarter?",
                 nlp(text = "What are the", isStop = true),
                 usr(text = "best performing", id = "sort:best"),
@@ -149,7 +149,7 @@ class NCSqlModelSpec extends NCEnricherBaseSpec {
                 dte(text = "for last quarter"),
                 nlp(text = "the ?", isStop = true)
             ),
-            _ ⇒ checkExists(
+            _ => checkExists(
                 txt = "What are the least performing categories for the last quarter?",
                 nlp(text = "What are the", isStop = true),
                 usr(text = "least performing", id = "sort:worst"),

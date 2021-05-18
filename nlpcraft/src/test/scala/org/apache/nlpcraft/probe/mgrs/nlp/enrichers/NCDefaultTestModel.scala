@@ -49,7 +49,7 @@ class NCDefaultTestModel extends NCModelAdapter(ID, "Model enrichers test", "1.0
     private def mkValueElement(id: String, vals: String*): NCElement =
         new NCElement {
             override def getId: String = id
-            override def getValues: util.List[NCValue] = vals.map(v ⇒ new NCValue {
+            override def getValues: util.List[NCValue] = vals.map(v => new NCValue {
                 override def getName: String = v
                 override def getSynonyms: util.List[String] = Collections.singletonList(v)
             }).asJava

@@ -44,18 +44,18 @@ object NCModelManager extends NCService with DecorateAsScala {
      * @return
      */
     @throws[NCE]
-    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
+    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span =>
         ackStarting()
 
         val tbl = NCAsciiTable("Models")
 
         mux.synchronized {
-            data = NCDeployManager.getModels.map(w ⇒ {
+            data = NCDeployManager.getModels.map(w => {
                 w.model.onInit()
-                w.model.getId → w
+                w.model.getId -> w
             }).toMap
 
-            data.values.foreach(w ⇒ {
+            data.values.foreach(w => {
                 val mdl = w.model
 
                 val contCnt = w.continuousSynonyms.flatMap(_._2.map(_._2.count)).sum
@@ -86,7 +86,7 @@ object NCModelManager extends NCService with DecorateAsScala {
 
         addTags(
             span,
-            "deployedModels" → data.values.map(_.model.getId).mkString(",")
+            "deployedModels" -> data.values.map(_.model.getId).mkString(",")
         )
 
         ackStarted()
@@ -95,12 +95,12 @@ object NCModelManager extends NCService with DecorateAsScala {
     /**
      * Stops this component.
      */
-    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
 
         mux.synchronized {
             if (data != null)
-                data.values.foreach(m ⇒ discardModel(m.model))
+                data.values.foreach(m => discardModel(m.model))
         }
 
         ackStopped()
@@ -126,7 +126,7 @@ object NCModelManager extends NCService with DecorateAsScala {
       * @return
       */
     def getAllModels(parent: Span = null): List[NCProbeModel] =
-        startScopedSpan("getAllModels", parent) { _ ⇒
+        startScopedSpan("getAllModels", parent) { _ =>
             mux.synchronized { data.values.toList }
         }
 
@@ -135,7 +135,7 @@ object NCModelManager extends NCService with DecorateAsScala {
       * @param mdlId Model ID.
       */
     def getModelOpt(mdlId: String, parent: Span = null): Option[NCProbeModel] =
-        startScopedSpan("getModelOpt", parent, "mdlId" → mdlId) { _ ⇒
+        startScopedSpan("getModelOpt", parent, "mdlId" -> mdlId) { _ =>
             mux.synchronized { data.get(mdlId) }
         }
 

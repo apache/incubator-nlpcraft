@@ -71,7 +71,7 @@ case class NCNlpSentenceToken(
             {
                 val m = mutable.HashSet.empty[NCNlpSentenceNote]
 
-                notes.foreach(n ⇒ m += n.clone())
+                notes.foreach(n => m += n.clone())
 
                 m
             },
@@ -108,9 +108,9 @@ case class NCNlpSentenceToken(
         val ns = getNotes(noteType).filter(_.contains(noteName))
 
         ns.size match {
-            case 0 ⇒ None
-            case 1 ⇒ Some(ns.head)
-            case _ ⇒
+            case 0 => None
+            case 1 => Some(ns.head)
+            case _ =>
                 throw new AssertionError(
                     s"Multiple notes found [type=$noteType, name=$noteName, token=$notes]"
                 )
@@ -125,8 +125,8 @@ case class NCNlpSentenceToken(
       */
     def getNote(noteType: String, noteName: String): NCNlpSentenceNote =
         getNoteOpt(noteType, noteName) match {
-            case Some(n) ⇒ n
-            case None ⇒
+            case Some(n) => n
+            case None =>
                 throw new AssertionError(s"Note not found [type=$noteType, name=$noteName, token=$notes]")
         }
 
@@ -147,8 +147,8 @@ case class NCNlpSentenceToken(
       */
     def getNlpValueOpt[T: Manifest](noteName: String): Option[T] =
         getNlpNote.get(noteName) match {
-            case Some(v) ⇒ Some(v.asInstanceOf[T])
-            case None ⇒ None
+            case Some(v) => Some(v.asInstanceOf[T])
+            case None => None
         }
 
     /**
@@ -163,7 +163,7 @@ case class NCNlpSentenceToken(
       *
       * @param types Note type(s) to check.
       */
-    def isTypeOf(types: String*): Boolean = types.exists(t ⇒ notes.exists(_.noteType == t))
+    def isTypeOf(types: String*): Boolean = types.exists(t => notes.exists(_.noteType == t))
 
     /**
       * Adds element.
@@ -195,7 +195,7 @@ case class NCNlpSentenceToken(
     def addStopReason(reason: NCNlpSentenceNote): Unit = stopsReasons += reason
 
     override def toString: String =
-        notes.toSeq.sortBy(t ⇒ (if (t.isNlp) 0 else 1, t.noteType)).mkString("NLP token [", "|", "]")
+        notes.toSeq.sortBy(t => (if (t.isNlp) 0 else 1, t.noteType)).mkString("NLP token [", "|", "]")
 }
 
 object NCNlpSentenceToken {

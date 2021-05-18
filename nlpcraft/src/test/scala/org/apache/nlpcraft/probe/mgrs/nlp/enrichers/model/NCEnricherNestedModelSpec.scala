@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.probe.mgrs.nlp.enrichers.model
 
 import org.apache.nlpcraft.model.NCElement
-import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.{NCDefaultTestModel, NCEnricherBaseSpec, NCTestUserToken ⇒ usr, NCTestNlpToken ⇒ nlp}
+import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.{NCDefaultTestModel, NCEnricherBaseSpec, NCTestUserToken => usr, NCTestNlpToken => nlp}
 import org.apache.nlpcraft.{NCTestElement, NCTestEnvironment}
 import org.junit.jupiter.api.Test
 
@@ -50,16 +50,16 @@ class NCEnricherNestedModelSpec1 extends NCEnricherBaseSpec {
     @Test
     def test(): Unit =
         runBatch(
-            _ ⇒ checkExists(
+            _ => checkExists(
                 "tomorrow",
                 usr(text = "tomorrow", id = "x3")
             ),
-            _ ⇒ checkExists(
+            _ => checkExists(
                 "tomorrow yesterday",
                 usr(text = "tomorrow", id = "x3"),
                 usr(text = "yesterday", id = "x3")
             ),
-            _ ⇒ checkExists(
+            _ => checkExists(
                 "y y",
                 usr(text = "y y", id = "y3")
             )
@@ -79,30 +79,30 @@ class NCEnricherNestedModelSpec2 extends NCEnricherNestedModelSpec1 {
     @Test
     def test2(): Unit =
         runBatch(
-            _ ⇒ checkExists(
+            _ => checkExists(
                 "test tomorrow",
                 usr(text = "test tomorrow", id = "x3")
             ),
-            _ ⇒ checkExists(
+            _ => checkExists(
                 "tomorrow test",
                 usr(text = "tomorrow test", id = "x3")
             ),
-            _ ⇒ checkExists(
+            _ => checkExists(
                 "test xxx tomorrow",
                 usr(text = "test tomorrow", id = "x3"),
                 nlp(text = "xxx"),
             ),
-            _ ⇒ checkExists(
+            _ => checkExists(
                 "y the y",
                 usr(text = "y y", id = "y3"),
                 nlp(text = "the", isStop = true)
             ),
-            _ ⇒ checkExists(
+            _ => checkExists(
                 "y xxx y",
                 usr(text = "y y", id = "y3"),
                 nlp(text = "xxx")
             ),
-            _ ⇒ checkExists(
+            _ => checkExists(
                 "aaa y xxx y",
                 nlp(text = "aaa"),
                 usr(text = "y y", id = "y3"),

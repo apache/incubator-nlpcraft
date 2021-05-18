@@ -19,18 +19,18 @@ package org.apache.nlpcraft.probe.mgrs.nlp.enrichers.model
 
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common._
-import org.apache.nlpcraft.common.nlp.{NCNlpSentenceToken ⇒ NlpToken, NCNlpSentenceNote ⇒ NlpNote, NCNlpSentence ⇒ Sentence}
+import org.apache.nlpcraft.common.nlp.{NCNlpSentenceToken => NlpToken, NCNlpSentenceNote => NlpNote, NCNlpSentence => Sentence}
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.probe.mgrs.NCProbeSynonym.NCIdlContent
 import org.apache.nlpcraft.probe.mgrs.NCProbeSynonymChunkKind.{NCSynonymChunkKind, _}
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.impl.NCRequestImpl
 import org.apache.nlpcraft.probe.mgrs.sentence.NCSentenceManager
-import org.apache.nlpcraft.probe.mgrs.{NCProbeModel, NCProbeVariants, NCProbeSynonym ⇒ Synonym}
+import org.apache.nlpcraft.probe.mgrs.{NCProbeModel, NCProbeVariants, NCProbeSynonym => Synonym}
 
 import java.io.Serializable
 import java.util
-import java.util.{List ⇒ JList}
+import java.util.{List => JList}
 import scala.collection.JavaConverters._
 import scala.collection.convert.DecorateAsScala
 import scala.collection.mutable.ArrayBuffer
@@ -93,9 +93,9 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                 wordIndexes.subsetOf(indexes)
 
         override def equals(obj: Any): Boolean = obj match {
-            case x: Complex ⇒
+            case x: Complex =>
                 hash == x.hash && (isToken && x.isToken && token == x.token || isWord && x.isWord && word == x.word)
-            case _ ⇒ false
+            case _ => false
         }
 
         // Added for debug reasons.
@@ -133,7 +133,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
       * @param parent Optional parent span.
       * @return
       */
-    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ =>
         ackStarting()
         ackStarted()
     }
@@ -142,7 +142,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
       *
       * @param parent Optional parent span.
       */
-    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
         ackStopped()
     }
@@ -171,23 +171,23 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
         val params = mutable.ArrayBuffer.empty[(String, AnyRef)]
 
         // For system elements.
-        params += "direct" → direct.asInstanceOf[AnyRef]
+        params += "direct" -> direct.asInstanceOf[AnyRef]
 
         syn match {
-            case Some(s) ⇒
+            case Some(s) =>
                 if (s.isValueSynonym)
-                    params += "value" → s.value
-            case None ⇒ // No-op.
+                    params += "value" -> s.value
+            case None => // No-op.
         }
 
         metaOpt match {
-            case Some(meta) ⇒ params += "meta" → meta
-            case None ⇒ // No-op.
+            case Some(meta) => params += "meta" -> meta
+            case None => // No-op.
         }
 
         if (parts.nonEmpty) {
             val partsData: Seq[util.HashMap[String, Any]] =
-                parts.map { case (part, kind) ⇒
+                parts.map { case (part, kind) =>
                     val m = new util.HashMap[String, Any]()
 
                     m.put("id", if (kind == TEXT) "nlpcraft:nlp" else part.getId)
@@ -198,7 +198,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                     m
                 }
 
-            params += "parts" → partsData.asJava
+            params += "parts" -> partsData.asJava
         }
 
         val idxs = toks.map(_.index).sorted
@@ -208,7 +208,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
         toks.foreach(_.add(note))
 
         // For NLP elements.
-        toks.foreach(t ⇒ ns.fixNote(t.getNlpNote, "direct" → direct))
+        toks.foreach(t => ns.fixNote(t.getNlpNote, "direct" -> direct))
     }
 
     /**
@@ -219,14 +219,14 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
       * @param req
       */
     private def processParsers(mdl: NCProbeModel, ns: Sentence, span: Span, req: NCRequestImpl): Unit = {
-        for (parser ← mdl.model.getParsers.asScala) {
+        for (parser <- mdl.model.getParsers.asScala) {
             parser.onInit()
 
             startScopedSpan("customParser", span,
-                "srvReqId" → ns.srvReqId,
-                "mdlId" → mdl.model.getId,
-                "txt" → ns.text
-            ) { _ ⇒
+                "srvReqId" -> ns.srvReqId,
+                "mdlId" -> mdl.model.getId,
+                "txt" -> ns.text
+            ) { _ =>
                 def to(t: NlpToken): NCCustomWord =
                     new NCCustomWord {
                         override def getNormalizedText: String = t.normText
@@ -249,21 +249,21 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                     req,
                     mdl.model,
                     ns.map(to).asJava,
-                    ns.flatten.distinct.filter(!_.isNlp).map(n ⇒ {
+                    ns.flatten.distinct.filter(!_.isNlp).map(n => {
                         val noteId = n.noteType
-                        val words = ns.filter(t ⇒ n.tokenIndexes.contains(t.index)).map(to).asJava
+                        val words = ns.filter(t => n.tokenIndexes.contains(t.index)).map(to).asJava
                         val md = n.asMetadata()
 
                         new NCCustomElement() {
                             override def getElementId: String = noteId
                             override def getWords: JList[NCCustomWord] = words
-                            override def getMetadata: JavaMeta = md.map(p ⇒ p._1 → p._2.asInstanceOf[AnyRef]).asJava
+                            override def getMetadata: JavaMeta = md.map(p => p._1 -> p._2.asInstanceOf[AnyRef]).asJava
                         }
                     }).asJava
                 )
 
                 if (res != null)
-                    res.asScala.foreach(e ⇒ {
+                    res.asScala.foreach(e => {
                         val elemId = e.getElementId
                         val words = e.getWords
 
@@ -273,8 +273,8 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                         if (words == null || words.isEmpty)
                             throw new NCE(s"Custom model parser cannot return empty custom tokens [elementId=$elemId]")
 
-                        val matchedToks = words.asScala.map(w ⇒
-                            ns.find(t ⇒
+                        val matchedToks = words.asScala.map(w =>
+                            ns.find(t =>
                                 t.startCharIndex == w.getStartCharIndex && t.endCharIndex == w.getEndCharIndex
                             ).getOrElse(throw new AssertionError(s"Custom model parser returned an invalid custom token: $w"))
                         )
@@ -315,7 +315,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
       * @return
       */
     private def combos[T](toks: Seq[T]): Seq[Seq[T]] =
-        (for (n ← toks.size until 0 by -1) yield toks.sliding(n)).flatten.map(p ⇒ p)
+        (for (n <- toks.size until 0 by -1) yield toks.sliding(n)).flatten.map(p => p)
 
     /**
       *
@@ -324,7 +324,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
       */
     private def toParts(seq: Seq[NCIdlContent], s: Synonym): Seq[TokType] =
         seq.zip(s.map(_.kind)).flatMap {
-            case (complex, kind) ⇒ if (complex.isLeft) Some(complex.left.get → kind) else None
+            case (complex, kind) => if (complex.isLeft) Some(complex.left.get -> kind) else None
         }
 
     /**
@@ -336,7 +336,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
         (
             tows.filter(_.isRight).map(_.right.get) ++
                 tows.filter(_.isLeft).map(_.left.get).
-                    flatMap(w ⇒ ns.filter(t ⇒ t.wordIndexes.intersect(w.wordIndexes).nonEmpty))
+                    flatMap(w => ns.filter(t => t.wordIndexes.intersect(w.wordIndexes).nonEmpty))
         ).sortBy(_.startCharIndex)
 
     /**
@@ -351,7 +351,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
       * Gets synonyms sorted in descending order by their weight (already prepared),
       * i.e. first synonym in the sequence is the most important one.
       *
-      * @param fastMap {Element ID → {Synonym length → T}}
+      * @param fastMap {Element ID -> {Synonym length -> T}}
       * @param elmId
       * @param len
       */
@@ -370,7 +370,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
             NCProbeVariants.convert(ns.srvReqId, mdl, NCSentenceManager.collapse(mdl.model, ns.clone())).
                 map(_.asScala).
                 par.
-                flatMap(sen ⇒
+                flatMap(sen =>
                     // Tokens splitting.
                     // For example sentence "A B С D E" (5 words) processed as 3 tokens on first phase after collapsing
                     //  'A B' (2 words), 'C D' (2 words) and 'E' (1 word)
@@ -380,8 +380,8 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                     //  Word(A) + Word(B) + Token(CD) + Token(E)
                     //  Word(A) + Word(B) + Word(C) + Word(D) + Token(E)
                     combos(sen).
-                        map(senPartComb ⇒ {
-                            sen.flatMap(t ⇒
+                        map(senPartComb => {
+                            sen.flatMap(t =>
                                 // Single word token is not split as words - token.
                                 // Partly (not strict in) token - word.
                                 if (t.wordIndexes.length == 1 || senPartComb.contains(t))
@@ -405,7 +405,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
         val idxs = toks.flatMap(_.wordIndexes).toSet
 
         h.complexes.par.
-            flatMap(complexSeq ⇒ {
+            flatMap(complexSeq => {
                 val rec = complexSeq.tokensComplexes.filter(_.wordIndexes.exists(idxs.contains))
 
                 // Drops without tokens (IDL part works with tokens).
@@ -459,27 +459,27 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
         require(isStarted)
 
         startScopedSpan(
-            "enrich", parent, "srvReqId" → ns.srvReqId, "mdlId" → mdl.model.getId, "txt" → ns.text
-        ) { span ⇒
+            "enrich", parent, "srvReqId" -> ns.srvReqId, "mdlId" -> mdl.model.getId, "txt" -> ns.text
+        ) { span =>
             val req = NCRequestImpl(senMeta, ns.srvReqId)
             val combToks = combos(ns)
             lazy val ch = mkComplexes(mdl, ns)
 
             def execute(simpleEnabled: Boolean, idlEnabled: Boolean): Unit =
                 startScopedSpan(
-                    "execute", span, "srvReqId" → ns.srvReqId, "mdlId" → mdl.model.getId, "txt" → ns.text
-                ) { _ ⇒
+                    "execute", span, "srvReqId" -> ns.srvReqId, "mdlId" -> mdl.model.getId, "txt" -> ns.text
+                ) { _ =>
                     if (DEEP_DEBUG)
                         logger.trace(s"Execution started [simpleEnabled=$simpleEnabled, idlEnabled=$idlEnabled]")
 
                     val contCache = mutable.HashMap.empty ++
-                        mdl.elements.keys.map(k ⇒ k → mutable.ArrayBuffer.empty[Seq[Int]])
+                        mdl.elements.keys.map(k => k -> mutable.ArrayBuffer.empty[Seq[Int]])
                     lazy val idlCache = mutable.HashSet.empty[Seq[Complex]]
 
                     for (
-                        toks ← combToks;
+                        toks <- combToks;
                         idxs = toks.map(_.index);
-                        e ← mdl.elements.values;
+                        e <- mdl.elements.values;
                         eId = e.getId
                         if
                             !contCache(eId).exists(_.containsSlice(idxs)) &&
@@ -494,17 +494,17 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
 
                             if (mdl.hasContinuousSynonyms)
                                 fastAccess(mdl.continuousSynonyms, eId, toks.length) match {
-                                    case Some(h) ⇒
-                                        def tryMap(syns: Map[String, Synonym], notFound: () ⇒ Unit): Unit =
+                                    case Some(h) =>
+                                        def tryMap(syns: Map[String, Synonym], notFound: () => Unit): Unit =
                                             syns.get(tokStems) match {
-                                                case Some(s) ⇒
+                                                case Some(s) =>
                                                     found = true
                                                     add("simple continuous", ns, contCache, e, toks, idxs, s)
-                                                case None ⇒ notFound()
+                                                case None => notFound()
                                             }
 
                                         def tryScan(syns: Seq[Synonym]): Unit =
-                                            for (s ← syns if !found)
+                                            for (s <- syns if !found)
                                                 if (s.isMatch(toks)) {
                                                     found = true
                                                     add("simple continuous scan", ns, contCache, e, toks, idxs, s)
@@ -512,22 +512,22 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
 
                                         tryMap(
                                             h.txtDirectSynonyms,
-                                            () ⇒ {
+                                            () => {
                                                 tryScan(h.notTxtDirectSynonyms)
 
                                                 if (!found)
-                                                    tryMap(h.txtNotDirectSynonyms, () ⇒ tryScan(h.notTxtNotDirectSynonyms))
+                                                    tryMap(h.txtNotDirectSynonyms, () => tryScan(h.notTxtNotDirectSynonyms))
                                             }
                                         )
-                                    case None ⇒ // No-op.
+                                    case None => // No-op.
                                 }
 
                             // 1.2 Sparse.
                             if (!found && mdl.hasSparseSynonyms)
-                                for (s ← get(mdl.sparseSynonyms, eId))
+                                for (s <- get(mdl.sparseSynonyms, eId))
                                     s.sparseMatch(toks) match {
-                                        case Some(res) ⇒ add("simple sparse", ns, contCache, e, res, idxs, s)
-                                        case None ⇒ // No-op.
+                                        case Some(res) => add("simple sparse", ns, contCache, e, res, idxs, s)
+                                        case None => // No-op.
                                     }
                         }
 
@@ -542,8 +542,8 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                                 var found = false
 
                                 for (
-                                    s ← allSyns;
-                                    comb ← allCombs
+                                    s <- allSyns;
+                                    comb <- allCombs
                                     if !found;
                                     data = comb.map(_.data)
                                 )
@@ -558,17 +558,17 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                             else
                                 // 2.2 Sparse.
                                 for (
-                                    s ← allSyns;
-                                    comb ← allCombs
+                                    s <- allSyns;
+                                    comb <- allCombs
                                 )
                                     s.sparseMatch(comb.map(_.data), req) match {
-                                        case Some(res) ⇒
+                                        case Some(res) =>
                                             val typ = if (s.sparse) "IDL sparse" else "IDL continuous"
 
                                             add(typ, ns, contCache, e, toTokens(res, ns), idxs, s, toParts(res, s))
 
                                             idlCache += comb
-                                        case None ⇒ // No-op.
+                                        case None => // No-op.
                                     }
                         }
                     }
@@ -598,8 +598,8 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
     private def alreadyMarked(ns: Sentence, elemId: String, toks: Seq[NlpToken], sliceToksIdxsSorted: Seq[Int]): Boolean = {
         lazy val toksIdxsSorted = toks.map(_.index).sorted
 
-        sliceToksIdxsSorted.map(ns).forall(_.exists(n ⇒ n.noteType == elemId && n.sparsity == 0)) ||
-        toks.exists(_.exists(n ⇒
+        sliceToksIdxsSorted.map(ns).forall(_.exists(n => n.noteType == elemId && n.sparsity == 0)) ||
+        toks.exists(_.exists(n =>
             n.noteType == elemId &&
             (
                 (n.sparsity == 0 &&

@@ -130,7 +130,7 @@ private[date] object NCDateConstants {
     // 'MM' will be duplicated as 'M'.
     val YEAR_MONTH_DAY_COUNTRY: Map[NCDateFormatType, Seq[String]] =
         Map(
-            MDY →
+            MDY ->
                 Seq(
                     "MM.dd.yyyy",
                     "MM.dd.yy",
@@ -139,7 +139,7 @@ private[date] object NCDateConstants {
                     "MM-dd-yyyy",
                     "MM-dd-yy"
                 ),
-            DMY →
+            DMY ->
                 Seq(
                     "dd.MM.yyyy",
                     "dd.MM.yy",
@@ -148,7 +148,7 @@ private[date] object NCDateConstants {
                     "dd-MM-yyyy",
                     "dd-MM-yy"
                 ),
-            YMD →
+            YMD ->
                 Seq(
                     "yyyy.MM.dd",
                     "yy.MM.dd",
@@ -173,9 +173,9 @@ private[date] object NCDateConstants {
     // Without duplicates.
     val MONTH_DAY_COUNTRY: Map[NCDateFormatType, Seq[String]] =
         Map(
-            MDY → Seq("MM.dd", "MM/dd", "MM-dd"),
-            DMY → Seq("dd.MM", "dd/MM", "dd-MM"),
-            YMD → Seq("MM.dd", "MM/dd", "MM-dd")
+            MDY -> Seq("MM.dd", "MM/dd", "MM-dd"),
+            DMY -> Seq("dd.MM", "dd/MM", "dd-MM"),
+            YMD -> Seq("MM.dd", "MM/dd", "MM-dd")
         )
 
     val MONTH_YEAR_COMMON: Seq[String] = Seq(
@@ -189,10 +189,10 @@ private[date] object NCDateConstants {
 
     val MONTH_YEAR_COUNTRY: Map[NCDateFormatType, Seq[String]] =
         Map(
-            MDY → Seq("{'month of'|'month'} {MM.yy|MM/yy|MM-yy}"),
-            DMY → Seq("{'month of'|'month'} {MM.yy|MM/yy|MM-yy}"),
-            YMD → Seq("{'month of'|'month'} {yy.MM|yy/MM|yy-MM}")
-        ).map { case (typ, seq) ⇒ typ → seq.flatMap(parser.expand) }
+            MDY -> Seq("{'month of'|'month'} {MM.yy|MM/yy|MM-yy}"),
+            DMY -> Seq("{'month of'|'month'} {MM.yy|MM/yy|MM-yy}"),
+            YMD -> Seq("{'month of'|'month'} {yy.MM|yy/MM|yy-MM}")
+        ).map { case (typ, seq) => typ -> seq.flatMap(parser.expand) }
 
     val YEAR: Seq[String] = Seq(
         "'year' {'of'|_} {yyyy|yy}",

@@ -36,7 +36,7 @@ object NCIdlStackItem {
 /**
   *
   */
-trait NCIdlStackType extends (() ⇒ NCIdlStackItem)
+trait NCIdlStackType extends (() => NCIdlStackItem)
 
 /**
   *
@@ -45,5 +45,5 @@ class NCIdlStack extends mutable.ArrayStack[NCIdlStackType] {
     /**
       * Special marker for stack frames.
       */
-    final val PLIST_MARKER: NCIdlStackType = () ⇒ { NCIdlStackItem(null, 0) }
+    final val PLIST_MARKER: NCIdlStackType = () => { NCIdlStackItem(null, 0) }
 }

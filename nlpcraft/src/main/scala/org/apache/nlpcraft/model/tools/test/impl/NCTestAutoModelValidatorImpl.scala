@@ -42,8 +42,8 @@ private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
         val prop = NCTestAutoModelValidator.PROP_MODELS
 
         val classes = U.sysEnv(prop) match {
-            case Some(s) ⇒ U.splitTrimFilter(s, ",")
-            case None ⇒
+            case Some(s) => U.splitTrimFilter(s, ",")
+            case None =>
                 logger.info(s"You can use $C-D$prop=my.Model1,my.Model2$RST to specify model(s) to test with model validator.")
 
                 null
@@ -52,7 +52,7 @@ private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
 
         if (NCEmbeddedProbe.start(cfgFile, classes.asJava))
             try
-                process(NCModelManager.getAllModels().map(p ⇒ p.model.getId → p.samples.toMap).toMap.filter(_._2.nonEmpty))
+                process(NCModelManager.getAllModels().map(p => p.model.getId -> p.samples.toMap).toMap.filter(_._2.nonEmpty))
             finally
                 NCEmbeddedProbe.stop()
         else
@@ -74,14 +74,14 @@ private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
             time: Long
         )
 
-        val results = samples.flatMap { case (mdlId, samples) ⇒
+        val results = samples.flatMap { case (mdlId, samples) =>
             def ask(intentId: String, txts: Seq[String]): Seq[Result] = {
                 val cli = new NCTestClientBuilder().newBuilder.build
 
                 try {
                     cli.open(mdlId)
 
-                    txts.map (txt ⇒ {
+                    txts.map (txt => {
                         var t = System.currentTimeMillis()
 
                         val res = cli.ask(txt)
@@ -100,14 +100,14 @@ private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
                     cli.close()
             }
 
-            for ((intentId, seq) ← samples; txts ← seq)  yield ask(intentId, txts)
+            for ((intentId, seq) <- samples; txts <- seq)  yield ask(intentId, txts)
         }.flatten.toList
 
         val tbl = NCAsciiTable()
 
         tbl #= ("Model ID", "Intent ID", "+/-", "Text", "Error", "Execution time, ms.")
 
-        for (res ← results)
+        for (res <- results)
             tbl += (
                 res.modelId,
                 res.intentId,

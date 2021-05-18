@@ -35,7 +35,7 @@ object NCQuoteEnricher extends NCServerEnricher {
      * @param parent Optional parent span.
      * @return
      */
-    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ =>
         ackStarting()
         ackStarted()
     }
@@ -44,7 +44,7 @@ object NCQuoteEnricher extends NCServerEnricher {
      *
      * @param parent Optional parent span.
      */
-    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
         ackStopped()
     }
@@ -59,7 +59,7 @@ object NCQuoteEnricher extends NCServerEnricher {
     override def enrich(ns: NCNlpSentence, parent: Span = null): Unit = {
         require(isStarted)
 
-        startScopedSpan("enrich", parent, "srvReqId" → ns.srvReqId, "txt" → ns.text) { _ ⇒
+        startScopedSpan("enrich", parent, "srvReqId" -> ns.srvReqId, "txt" -> ns.text) { _ =>
             // Clone input sentence.
             val copy = ns.clone()
     
@@ -78,7 +78,7 @@ object NCQuoteEnricher extends NCServerEnricher {
             if (size % 2 != 0)
                 quotesToks = quotesToks.take(size - 1)
     
-            for (tok ← copy)
+            for (tok <- copy)
                 if (quotesToks.contains(tok))
                     // Assuming a closing quote.
                     if (inQuotes) {
@@ -99,20 +99,20 @@ object NCQuoteEnricher extends NCServerEnricher {
                             val nlpNote = NCNlpSentenceNote(
                                 Seq(tokIdx),
                                 "nlpcraft:nlp",
-                                "index" → tokIdx,
-                                "pos" → NCPennTreebank.SYNTH_POS,
-                                "posDesc" → NCPennTreebank.SYNTH_POS_DESC,
-                                "lemma" → mkSumString(trimBuf, (t: NCNlpSentenceToken) ⇒ t.lemma),
-                                "origText" → mkSumString(trimBuf, (t: NCNlpSentenceToken) ⇒ t.origText),
-                                "normText" → mkSumString(trimBuf, (t: NCNlpSentenceToken) ⇒ t.normText),
-                                "stem" → mkSumString(trimBuf, (t: NCNlpSentenceToken) ⇒ t.stem),
-                                "start" → startIdx,
-                                "end" → endIdx,
-                                "length" → (trimBuf.map(_.wordLength).sum + trimBuf.length - 1),
-                                "quoted" → true,
-                                "stopWord" → false,
-                                "bracketed" → false,
-                                "direct" → trimBuf.forall(_.isDirect)
+                                "index" -> tokIdx,
+                                "pos" -> NCPennTreebank.SYNTH_POS,
+                                "posDesc" -> NCPennTreebank.SYNTH_POS_DESC,
+                                "lemma" -> mkSumString(trimBuf, (t: NCNlpSentenceToken) => t.lemma),
+                                "origText" -> mkSumString(trimBuf, (t: NCNlpSentenceToken) => t.origText),
+                                "normText" -> mkSumString(trimBuf, (t: NCNlpSentenceToken) => t.normText),
+                                "stem" -> mkSumString(trimBuf, (t: NCNlpSentenceToken) => t.stem),
+                                "start" -> startIdx,
+                                "end" -> endIdx,
+                                "length" -> (trimBuf.map(_.wordLength).sum + trimBuf.length - 1),
+                                "quoted" -> true,
+                                "stopWord" -> false,
+                                "bracketed" -> false,
+                                "direct" -> trimBuf.forall(_.isDirect)
                             )
     
                             // New compound token (made out of buffer's content).
@@ -153,7 +153,7 @@ object NCQuoteEnricher extends NCServerEnricher {
     
                         // NLP is single note.
                         newTok.remove(nlpNote)
-                        newTok.add(nlpNote.clone(Seq(tokIdx), Seq(tokIdx), "index" → tokIdx, "quoted" → false))
+                        newTok.add(nlpNote.clone(Seq(tokIdx), Seq(tokIdx), "index" -> tokIdx, "quoted" -> false))
     
                         // It shouldn't care about other kind of notes because
                         // CORE and QUOTE enrichers are first in processing.

@@ -33,8 +33,8 @@ case class NCProbeModelMdo(
     
     override def equals(obj: Any): Boolean = {
         obj match {
-            case x: NCProbeModelMdo ⇒ x.id == id
-            case _ ⇒ false
+            case x: NCProbeModelMdo => x.id == id
+            case _ => false
         }
     }
 }

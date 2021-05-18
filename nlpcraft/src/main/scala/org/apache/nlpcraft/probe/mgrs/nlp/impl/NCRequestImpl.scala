@@ -42,8 +42,8 @@ case class NCRequestImpl(nlpMeta: Map[String, Any], srvReqId: String) extends NC
     override lazy val getClientAgent: Optional[String] = getOpt("USER_AGENT")
     override lazy val getRemoteAddress: Optional[String] = getOpt("REMOTE_ADDR")
     override lazy val getRequestData: java.util.Map[String, Object] = getOpt[String]("DATA").asScala match {
-        case Some(json) ⇒ U.jsonToJavaMap(json)
-        case None ⇒ Map.empty[String, Object].asJava
+        case Some(json) => U.jsonToJavaMap(json)
+        case None => Map.empty[String, Object].asJava
     }
     override lazy val getCompany: NCCompany = new NCCompanyImpl(
         nlpMeta("COMPANY_ID").asInstanceOf[Long],
@@ -69,7 +69,7 @@ case class NCRequestImpl(nlpMeta: Map[String, Any], srvReqId: String) extends NC
 
     private def getOpt[T](key: String): Optional[T] =
         nlpMeta.get(key) match {
-            case Some(v) ⇒ Optional.of(v.asInstanceOf[T])
-            case None ⇒ Optional.empty()
+            case Some(v) => Optional.of(v.asInstanceOf[T])
+            case None => Optional.empty()
         }
 }

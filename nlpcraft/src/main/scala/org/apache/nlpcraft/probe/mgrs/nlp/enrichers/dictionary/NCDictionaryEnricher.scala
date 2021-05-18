@@ -45,7 +45,7 @@ object NCDictionaryEnricher extends NCProbeEnricher {
      * @param parent Optional parent span.
      * @return
      */
-    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ =>
         ackStarting()
         swearWords = U.readTextStream(NCExternalConfigManager.getStream(BADFILTER, RESOURCE), "UTF-8", logger).
             map(NCNlpCoreManager.stem).
@@ -58,7 +58,7 @@ object NCDictionaryEnricher extends NCProbeEnricher {
      *
      * @param parent Optional parent span.
      */
-    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
         ackStopped()
     }
@@ -68,21 +68,21 @@ object NCDictionaryEnricher extends NCProbeEnricher {
         require(isStarted)
 
         startScopedSpan("enrich", parent,
-            "srvReqId" → ns.srvReqId,
-            "mdlId" → mdl.model.getId,
-            "txt" → ns.text) { _ ⇒
-            ns.foreach(t ⇒ {
+            "srvReqId" -> ns.srvReqId,
+            "mdlId" -> mdl.model.getId,
+            "txt" -> ns.text) { _ =>
+            ns.foreach(t => {
                 // Dictionary.
                 val nlpNote = t.getNlpNote
 
                 ns.fixNote(
                     nlpNote,
                     // Single letters seems suspiciously.
-                    "dict" → (NCDictionaryManager.contains(t.lemma) && t.lemma.length > 1),
+                    "dict" -> (NCDictionaryManager.contains(t.lemma) && t.lemma.length > 1),
                     // English.
-                    "english" → t.origText.matches("""[\s\w\p{Punct}]+"""),
+                    "english" -> t.origText.matches("""[\s\w\p{Punct}]+"""),
                     // Swearwords.
-                    "swear" → swearWords.contains(t.stem)
+                    "swear" -> swearWords.contains(t.stem)
                 )
             })
         }

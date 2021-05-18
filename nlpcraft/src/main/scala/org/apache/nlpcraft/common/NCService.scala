@@ -81,7 +81,7 @@ abstract class NCService extends LazyLogging with NCOpenCensusTrace {
         logger.trace(s"$name staring...")
 
         addTags(currentSpan(),
-            "state" → "starting"
+            "state" -> "starting"
         )
 
         this
@@ -99,7 +99,7 @@ abstract class NCService extends LazyLogging with NCOpenCensusTrace {
         logger.trace(s"$name stopping...")
 
         addTags(currentSpan(),
-            "state" → "stopping"
+            "state" -> "stopping"
         )
 
         this
@@ -117,8 +117,8 @@ abstract class NCService extends LazyLogging with NCOpenCensusTrace {
 
         addTags(
             currentSpan(),
-            "startDurationMs" → (currentTime - timeStampMs),
-            "state" → "started"
+            "startDurationMs" -> (currentTime - timeStampMs),
+            "state" -> "started"
         )
 
         val dur = s"$ansiGreenFg[${currentTime - timeStampMs}ms]$ansiReset"
@@ -140,8 +140,8 @@ abstract class NCService extends LazyLogging with NCOpenCensusTrace {
         started = false
 
         addTags(currentSpan(),
-            "stopDurationMs" → (currentTime - timeStampMs),
-            "state" → "stopped"
+            "stopDurationMs" -> (currentTime - timeStampMs),
+            "state" -> "stopped"
         )
 
         logger.info(s"$name stopped.")

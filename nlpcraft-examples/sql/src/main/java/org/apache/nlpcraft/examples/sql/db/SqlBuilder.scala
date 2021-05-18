@@ -44,11 +44,11 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
     private final val DFLT_LIMIT = 1000
 
     private val schemaTbls = schema.getTables.asScala.toSeq.sortBy(_.getTable)
-    private val schemaTblsByNames = schemaTbls.map(p ⇒ p.getTable → p).toMap
-    private val schemaCols = schemaTbls.flatMap(p ⇒ p.getColumns.asScala.map(col ⇒ Key(col.getTable, col.getColumn) → col)).toMap
+    private val schemaTblsByNames = schemaTbls.map(p => p.getTable -> p).toMap
+    private val schemaCols = schemaTbls.flatMap(p => p.getColumns.asScala.map(col => Key(col.getTable, col.getColumn) -> col)).toMap
     private val schemaJoins = schema.getJoins.asScala
 
-    private val g = Graph(schemaJoins.map(j ⇒ Edge(j.getFromTable, j.getToTable)).toSet)
+    private val g = Graph(schemaJoins.map(j => Edge(j.getFromTable, j.getToTable)).toSet)
 
     private case class Key(table: String, column: String)
 
@@ -57,9 +57,9 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
     private case class Graph(edges: Set[Edge]) {
         private val allNeighbors: Map[String, Set[String]] =
             edges.
-                flatMap(e ⇒ Seq(e.from → e.to, e.to → e.from)).
-                groupBy { case (from, _) ⇒ from }.
-                map { case (from, seq) ⇒ from → seq.map { case (_, to) ⇒ to } }.
+                flatMap(e => Seq(e.from -> e.to, e.to -> e.from)).
+                groupBy { case (from, _) => from }.
+                map { case (from, seq) => from -> seq.map { case (_, to) => to } }.
                 withDefaultValue(Set.empty)
 
         def bfs(from: String, to: String): Seq[String] = {
@@ -75,7 +75,7 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
                 val children = allNeighbors(parent)
 
                 if (children.contains(to)) {
-                    parents += to → parent
+                    parents += to -> parent
 
                     var n: String = to
 
@@ -88,8 +88,8 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
                     found = true
                 }
                 else
-                    for (child ← children if !visited.contains(child)) {
-                        parents += child → parent
+                    for (child <- children if !visited.contains(child)) {
+                        parents += child -> parent
                         visited += child
                         queue += child
                     }
@@ -113,13 +113,13 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
       */
     private def sql(clause: NCSqlJoinType): String =
         clause match {
-            case INNER ⇒ "INNER JOIN"
-            case LEFT ⇒ "LEFT JOIN"
-            case RIGHT ⇒ "RIGHT JOIN"
+            case INNER => "INNER JOIN"
+            case LEFT => "LEFT JOIN"
+            case RIGHT => "RIGHT JOIN"
 
-            case OUTER ⇒ throw new AssertionError(s"Unsupported join type: $clause")
+            case OUTER => throw new AssertionError(s"Unsupported join type: $clause")
 
-            case _ ⇒ throw new AssertionError(s"Unexpected join type: $clause")
+            case _ => throw new AssertionError(s"Unexpected join type: $clause")
         }
 
     /**
@@ -132,16 +132,16 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
         val names = tbls.map(_.getTable)
 
         names.size match {
-            case 0 ⇒ throw new AssertionError(s"Unexpected empty tables")
-            case 1 ⇒ names.head
-            case _ ⇒
+            case 0 => throw new AssertionError(s"Unexpected empty tables")
+            case 1 => names.head
+            case _ =>
                 val used = mutable.HashSet.empty[String]
 
                 val refs = names.
-                    flatMap(t ⇒ schemaJoins.filter(j ⇒ j.getFromTable == t && names.contains(j.getToTable))).
+                    flatMap(t => schemaJoins.filter(j => j.getFromTable == t && names.contains(j.getToTable))).
                     sortBy(_.getFromTable).
                     zipWithIndex.
-                    map { case (join, idx) ⇒
+                    map { case (join, idx) =>
                         val fromCols = join.getFromColumns.asScala
                         val toCols = join.getToColumns.asScala
 
@@ -152,7 +152,7 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
                         val toTab = join.getToTable
 
                         val onCondition = fromCols.zip(toCols).
-                            map { case (fromCol, toCol) ⇒ s"$fromTab.$fromCol = $toTab.$toCol" }.mkString(" AND ")
+                            map { case (fromCol, toCol) => s"$fromTab.$fromCol = $toTab.$toCol" }.mkString(" AND ")
 
                         if (idx == 0) {
                             used += fromTab
@@ -167,9 +167,9 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
                             if (fromAdded) {
                                 val reverseType =
                                     join.getType match {
-                                        case LEFT ⇒ RIGHT
-                                        case RIGHT ⇒ LEFT
-                                        case _ ⇒ join.getType
+                                        case LEFT => RIGHT
+                                        case RIGHT => LEFT
+                                        case _ => join.getType
                                     }
                                 s"${sql(reverseType)} $fromTab ON $onCondition"
                             }
@@ -206,7 +206,7 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
       *
       * @param clause Condition.
       */
-    private def sql(clause: SqlInCondition): String = s"${sql(clause.column)} IN (${clause.values.indices.map(_ ⇒ "?").mkString(",")})"
+    private def sql(clause: SqlInCondition): String = s"${sql(clause.column)} IN (${clause.values.indices.map(_ => "?").mkString(",")})"
 
     /**
       * Makes SQL text fragment for given condition.
@@ -222,10 +222,10 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
       */
     private def sql(clause: SqlCondition): String =
         clause match {
-            case x: SqlSimpleCondition ⇒ sql(x)
-            case x: SqlInCondition ⇒ sql(x)
+            case x: SqlSimpleCondition => sql(x)
+            case x: SqlInCondition => sql(x)
 
-            case _ ⇒ throw new AssertionError(s"Unexpected condition: $clause")
+            case _ => throw new AssertionError(s"Unexpected condition: $clause")
         }
 
     /**
@@ -260,7 +260,7 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
         if (res.size < 3)
             res = (res ++
                 schemaTbls.filter(extTabs.contains).
-                    flatMap(t ⇒ t.getDefaultSelect.asScala.map(col ⇒ schemaCols(Key(t.getTable, col))))).distinct
+                    flatMap(t => t.getDefaultSelect.asScala.map(col => schemaCols(Key(t.getTable, col))))).distinct
 
         res
     }
@@ -276,15 +276,15 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
       */
     private def extendSort(sorts: Seq[NCSqlSort], initTbls: Seq[NCSqlTable], extCols: Seq[NCSqlColumn]): Seq[NCSqlSort] =
         sorts.size match {
-            case 0 ⇒
-                limit.flatMap(l ⇒ if (extCols.contains(l.getColumn)) Some(Seq(limit2Sort(l))) else None).
+            case 0 =>
+                limit.flatMap(l => if (extCols.contains(l.getColumn)) Some(Seq(limit2Sort(l))) else None).
                     getOrElse(
                         initTbls.flatMap(_.getDefaultSort.asScala.
                             // 'Sort' can contain columns from select list only (some databases restriction)
-                            flatMap(sort ⇒ if (extCols.contains(sort.getColumn)) Some(sort) else None)
+                            flatMap(sort => if (extCols.contains(sort.getColumn)) Some(sort) else None)
                         )
                     ).distinct
-            case _ ⇒ sorts.distinct
+            case _ => sorts.distinct
         }
 
     /**
@@ -298,15 +298,15 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
             (initTbls ++ schemaTbls.filter(initTbls.contains).flatMap(_.getExtraTables.asScala.map(schemaTblsByNames))).distinct
 
         ext.size match {
-            case 0 ⇒ throw new RuntimeException("Tables cannot be empty.")
-            case 1 ⇒ ext
-            case _ ⇒
+            case 0 => throw new RuntimeException("Tables cannot be empty.")
+            case 1 => ext
+            case _ =>
                 // The simple algorithm, which takes into account only FKs between tables.
                 val extra =
-                    ext.combinations(2).flatMap(pair ⇒ g.bfs(pair.head.getTable, pair.last.getTable)).
+                    ext.combinations(2).flatMap(pair => g.bfs(pair.head.getTable, pair.last.getTable)).
                         toSeq.distinct.map(schemaTblsByNames)
 
-                if (ext.exists(t ⇒ !extra.contains(t)))
+                if (ext.exists(t => !extra.contains(t)))
                     throw new RuntimeException(
                         s"Select clause cannot be prepared with given tables set: " +
                             s"${ext.map(_.getTable).mkString(", ")}"
@@ -334,7 +334,7 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
       * @param initTbls Initially detected tables.
       */
     private def sort(extraCols: Seq[NCSqlColumn], initCols: Seq[NCSqlColumn], initTbls: Seq[NCSqlTable]): Seq[NCSqlColumn] =
-        extraCols.sortBy(col ⇒
+        extraCols.sortBy(col =>
             if (initCols.contains(col))
                 0
             else if (initTbls.contains(schemaTblsByNames(col.getTable)))
@@ -349,7 +349,7 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
       * @param initTbls Initially detected tables.
       */
     private def findDateColumn(initTbls: Seq[NCSqlTable]): Option[NCSqlColumn] =
-        schemaTbls.sortBy(t ⇒ {
+        schemaTbls.sortBy(t => {
             // The simple algorithm, which tries to find most suitable date type column for free date condition.
             // Higher priority for tables which were detected initially.
             val weight1 = if (initTbls.contains(t)) 0 else 1
@@ -359,8 +359,8 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
 
             (weight1, weight2)
         }).flatMap(_.getDefaultDate.asScala).toStream.headOption match {
-            case Some(col) ⇒ Some(col)
-            case None ⇒
+            case Some(col) => Some(col)
+            case None =>
                 logger.warn("Free date condition ignored without throwing exceptions.")
 
                 None
@@ -381,22 +381,22 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
     ): (Seq[String], Seq[Any]) = {
         val (freeDateConds, freeDateParams): (Seq[SqlCondition], Seq[Object]) =
             freeDateColOpt match {
-                case Some(col) ⇒
+                case Some(col) =>
                     val range = freeDateRangeOpt.getOrElse(throw new AssertionError("Missed date range"))
 
-                    import org.apache.nlpcraft.examples.sql.db.{SqlSimpleCondition ⇒ C}
+                    import org.apache.nlpcraft.examples.sql.db.{SqlSimpleCondition => C}
 
                     (Seq(C(col, ">=", range.getFrom), C(col, "<=", range.getTo)), Seq(range.getFrom, range.getTo))
-                case None ⇒ (Seq.empty, Seq.empty)
+                case None => (Seq.empty, Seq.empty)
             }
 
         (
             conds.map(sql) ++ freeDateConds.map(sql),
-            conds.flatMap(p ⇒
+            conds.flatMap(p =>
                 p match {
-                    case x: SqlSimpleCondition ⇒ Seq(x.value)
-                    case x: SqlInCondition ⇒ x.values
-                    case _ ⇒ throw new AssertionError(s"Unexpected condition: $p")
+                    case x: SqlSimpleCondition => Seq(x.value)
+                    case x: SqlInCondition => x.values
+                    case _ => throw new AssertionError(s"Unexpected condition: $p")
                 }
             ) ++ freeDateParams
         )
@@ -451,7 +451,7 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
     def build(): SqlQuery = {
         // Collects data.
         if (freeDateRangeOpt.isDefined &&
-            this.conds.exists(cond ⇒ isDate(schemaCols(Key(cond.column.getTable, cond.column.getColumn))))
+            this.conds.exists(cond => isDate(schemaCols(Key(cond.column.getTable, cond.column.getColumn))))
         )
             throw new RuntimeException("Too many date conditions.")
 
@@ -460,9 +460,9 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
         var condsNorm = mutable.ArrayBuffer.empty[SqlCondition] ++ this.conds
         var sortsNorm = mutable.ArrayBuffer.empty[NCSqlSort] ++ this.sorts
 
-        colsNorm.foreach(col ⇒ tblsNorm += schemaTblsByNames(col.getTable))
-        condsNorm.foreach(cond ⇒ { tblsNorm += schemaTblsByNames(cond.column.getTable); colsNorm += cond.column })
-        sortsNorm.foreach(sort ⇒ { tblsNorm += schemaTblsByNames(sort.getColumn.getTable); colsNorm += sort.getColumn })
+        colsNorm.foreach(col => tblsNorm += schemaTblsByNames(col.getTable))
+        condsNorm.foreach(cond => { tblsNorm += schemaTblsByNames(cond.column.getTable); colsNorm += cond.column })
+        sortsNorm.foreach(sort => { tblsNorm += schemaTblsByNames(sort.getColumn.getTable); colsNorm += sort.getColumn })
 
         var freeDateColOpt =
             if (freeDateRangeOpt.isDefined) tblsNorm.flatMap(_.getDefaultDate.asScala).toStream.headOption else None
@@ -472,7 +472,7 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
         if (freeDateColOpt.isEmpty && freeDateRangeOpt.isDefined) {
             freeDateColOpt = findDateColumn(tblsNorm)
 
-            freeDateColOpt.toSeq.foreach(col ⇒ { tblsNorm += schemaTblsByNames(col.getTable); colsNorm += col })
+            freeDateColOpt.toSeq.foreach(col => { tblsNorm += schemaTblsByNames(col.getTable); colsNorm += col })
 
             tblsNorm = tblsNorm.distinct
         }
@@ -487,7 +487,7 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
         val (extConds, extParams) = extendConditions(condsNorm, tblsNorm, freeDateColOpt)
 
         val extSortCols = sort(extCols, colsNorm, tblsNorm).map(sql)
-        val distinct = extCols.forall(col ⇒ isString(schemaCols(Key(col.getTable, col.getColumn))))
+        val distinct = extCols.forall(col => isString(schemaCols(Key(col.getTable, col.getColumn))))
         val extSorts = extendSort(sortsNorm, tblsNorm, extCols)
 
         SqlQuery(
@@ -499,7 +499,7 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
                    |  FROM ${sql(extTbls)}
                    |  ${if (extConds.isEmpty) "" else s"WHERE ${extConds.mkString(" AND ")}"}
                    |  ${if (extSorts.isEmpty) "" else s"ORDER BY ${extSorts.map(sql).mkString(", ")}"}
-                   |  LIMIT ${limit.flatMap(p ⇒ Some(p.getLimit)).getOrElse(DFLT_LIMIT)}
+                   |  LIMIT ${limit.flatMap(p => Some(p.getLimit)).getOrElse(DFLT_LIMIT)}
                    |""".stripMargin, " "
             ),
             parameters = extParams

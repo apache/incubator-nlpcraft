@@ -103,10 +103,10 @@ object NCSqlModelGeneratorImpl {
         var sufSpec: String = "",
         var inclSpec: String = "",
         var exclSpec: String = "",
-        var inclPred: (String, String) ⇒ Boolean = (_, _) ⇒ true,
-        var exclPred: (String, String) ⇒ Boolean = (_, _) ⇒ false,
-        var preFun: String ⇒ String = s ⇒ s,
-        var sufFun: String ⇒ String = s ⇒ s,
+        var inclPred: (String, String) => Boolean = (_, _) => true,
+        var exclPred: (String, String) => Boolean = (_, _) => false,
+        var preFun: String => String = s => s,
+        var sufFun: String => String = s => s,
         var overRide: Boolean = false // 'override' is a reserved keyword.
     ) {
         lazy val isJson: Boolean = {
@@ -126,7 +126,7 @@ object NCSqlModelGeneratorImpl {
      * @return
      */
     def substituteMacros(s: String): String =
-        s.split(" ").filter(_.nonEmpty).map(w ⇒ {
+        s.split(" ").filter(_.nonEmpty).map(w => {
             if (w == "id")
                 "<ID>"
             else
@@ -139,10 +139,10 @@ object NCSqlModelGeneratorImpl {
      * @param s
      * @return
      */
-    private def mkPrefixFun(s: String): String ⇒ String = {
+    private def mkPrefixFun(s: String): String => String = {
         val arr = U.splitTrimFilter(s, ",")
         
-        z ⇒ (for (fix ← arr if z.startsWith(fix)) yield z.substring(fix.length)).headOption.getOrElse(z)
+        z => (for (fix <- arr if z.startsWith(fix)) yield z.substring(fix.length)).headOption.getOrElse(z)
     }
     
     /**
@@ -151,10 +151,10 @@ object NCSqlModelGeneratorImpl {
      * @param s
      * @return
      */
-    private def mkSuffixFun(s: String): String ⇒ String = {
+    private def mkSuffixFun(s: String): String => String = {
         val arr = U.splitTrimFilter(s, ",")
         
-        z ⇒ (for (fix ← arr if z.endsWith(fix)) yield z.substring(0, z.length - fix.length)).headOption.getOrElse(z)
+        z => (for (fix <- arr if z.endsWith(fix)) yield z.substring(0, z.length - fix.length)).headOption.getOrElse(z)
     }
     
     /**
@@ -162,15 +162,15 @@ object NCSqlModelGeneratorImpl {
       * @param s Semicolon-separate list of include/exclude expressions.
       * @return
       */
-    private def mkPredicate(s: String): (String, String) ⇒ Boolean = {
-        def convert(expr: String): (String, String) ⇒ Boolean = {
+    private def mkPredicate(s: String): (String, String) => Boolean = {
+        def convert(expr: String): (String, String) => Boolean = {
             val s = U.splitTrimFilter(expr, "#")
 
             val (tbl: String, col: String) = s.length match {
-                case 1 if !expr.contains("#") ⇒ (s.head, "")  // 'table'
-                case 1 if expr.contains("#") ⇒ ("", s.head)   // '#column'
-                case 2 ⇒ (s.head, s(1))                       // 'table#column'
-                case _ ⇒ throw new Exception(s"Invalid table and/or column filter: $C$expr$RST")
+                case 1 if !expr.contains("#") => (s.head, "")  // 'table'
+                case 1 if expr.contains("#") => ("", s.head)   // '#column'
+                case 2 => (s.head, s(1))                       // 'table#column'
+                case _ => throw new Exception(s"Invalid table and/or column filter: $C$expr$RST")
             }
 
             val (tblRx, colRx) = try {
@@ -180,10 +180,10 @@ object NCSqlModelGeneratorImpl {
                 )
             }
             catch {
-                case e: PatternSyntaxException ⇒ throw new Exception(s"Invalid regular expression: $C${e.getMessage}$RST")
+                case e: PatternSyntaxException => throw new Exception(s"Invalid regular expression: $C${e.getMessage}$RST")
             }
 
-            (t: String, c: String) ⇒ {
+            (t: String, c: String) => {
                 require(t != null)
 
                 def check(s: String, rx: Pattern): Boolean = {
@@ -201,7 +201,7 @@ object NCSqlModelGeneratorImpl {
 
         val predicates = U.splitTrimFilter(s,";").map(convert)
 
-        (tbl: String, col: String) ⇒ predicates.exists(_(tbl, col))
+        (tbl: String, col: String) => predicates.exists(_(tbl, col))
     }
 
     /**
@@ -215,8 +215,8 @@ object NCSqlModelGeneratorImpl {
 
         if (obj != null) {
             val ok = obj match {
-                case x: String ⇒ x.nonEmpty
-                case _ ⇒ true
+                case x: String => x.nonEmpty
+                case _ => true
             }
 
             if (ok)
@@ -235,9 +235,9 @@ object NCSqlModelGeneratorImpl {
         
         words
             .zip(words.map(NCNlpPorterStemmer.stem))
-            .foldRight[List[(String, String)]](Nil)((pair, list) ⇒ list.headOption match {
-                case Some(head) if head._2 == pair._2 ⇒ list // Skip duplicate 'w' stems.
-                case _ ⇒ pair :: list
+            .foldRight[List[(String, String)]](Nil)((pair, list) => list.headOption match {
+                case Some(head) if head._2 == pair._2 => list // Skip duplicate 'w' stems.
+                case _ => pair :: list
             }).map(_._1).mkString(" ")
     }
     
@@ -249,7 +249,7 @@ object NCSqlModelGeneratorImpl {
     private def generateModel(tables: Seq[Table], params: ParametersHolder): Unit = {
         val elems = mutable.ArrayBuffer.empty[NCElementJson]
         
-        for (tbl ← tables) {
+        for (tbl <- tables) {
             val e = new NCElementJson
 
             e.setId(s"tbl:${tbl.nameLc}")
@@ -260,7 +260,7 @@ object NCSqlModelGeneratorImpl {
 
             add(meta, "sql:name", tbl.nameLc)
             add(meta, "sql:defaultselect", tbl.columns.take(3).map(_.nameLc).asJava) // First 3 columns by default.
-            add(meta, "sql:defaultsort", tbl.columns.filter(_.isPk).map(col ⇒ s"${tbl.nameLc}.${col.nameLc}#desc").asJava)
+            add(meta, "sql:defaultsort", tbl.columns.filter(_.isPk).map(col => s"${tbl.nameLc}.${col.nameLc}#desc").asJava)
             add(meta, "sql:extratables", tbl.joins.map(_.toTable.toLowerCase).toSet.asJava)
 
             e.setMetadata(meta)
@@ -271,9 +271,9 @@ object NCSqlModelGeneratorImpl {
             elems += e
         }
 
-        val tablesMap = tables.map(t ⇒ t.name → t).toMap
+        val tablesMap = tables.map(t => t.name -> t).toMap
 
-        for (tbl ← tables; col ← tbl.columns) {
+        for (tbl <- tables; col <- tbl.columns) {
             val e = new NCElementJson
 
             e.setId(s"col:${tbl.nameLc}_${col.nameLc}")
@@ -321,15 +321,15 @@ object NCSqlModelGeneratorImpl {
         mdl.setIntents(Array())
 
         mdl.setMetadata(HashMap[String, Object](
-            "sql:timestamp" → s"${Instant.now}",
-            "sql:url" → params.url,
-            "sql:driver" → params.driver,
-            "sql:user" → params.user,
-            "sql:output" → params.output,
-            "sql:schema" → params.schema,
-            "sql:cmdline" → params.cmdLine,
-            "sql:joins" →
-                tables.flatMap(t ⇒ t.joins.map(j ⇒ {
+            "sql:timestamp" -> s"${Instant.now}",
+            "sql:url" -> params.url,
+            "sql:driver" -> params.driver,
+            "sql:user" -> params.user,
+            "sql:output" -> params.output,
+            "sql:schema" -> params.schema,
+            "sql:cmdline" -> params.cmdLine,
+            "sql:joins" ->
+                tables.flatMap(t => t.joins.map(j => {
                     val fromTable = t.name.toLowerCase
                     val toTable = j.toTable.toLowerCase
                     val fromCols = j.fromColumns.map(_.toLowerCase)
@@ -338,7 +338,7 @@ object NCSqlModelGeneratorImpl {
                     def mkNullables(t: String, cols: Seq[String]): Seq[Boolean] = {
                         val tabCols = tablesMap(t).columns
 
-                        cols.map(col ⇒ tabCols.find(_.name == col).get.isNull)
+                        cols.map(col => tabCols.find(_.name == col).get.isNull)
                     }
 
                     val fromColsNulls = mkNullables(fromTable, fromCols)
@@ -403,14 +403,14 @@ object NCSqlModelGeneratorImpl {
         }
 
         try {
-            Using.resource(new FileOutputStream(file)) { stream ⇒
+            Using.resource(new FileOutputStream(file)) { stream =>
                 mapper.writerWithDefaultPrettyPrinter().writeValue(stream, mdl)
 
                 stream.flush()
             }
         }
         catch {
-            case e: IOException ⇒ errorExit(s"Failed to write output file: $C'${file.getAbsolutePath}'$RST", e)
+            case e: IOException => errorExit(s"Failed to write output file: $C'${file.getAbsolutePath}'$RST", e)
         }
 
         val tbl = NCAsciiTable()
@@ -479,12 +479,12 @@ object NCSqlModelGeneratorImpl {
 
             val pks = mutable.HashSet.empty[String]
 
-            Using.resource { getConnection } { conn ⇒
+            Using.resource { getConnection } { conn =>
                 val md = conn.getMetaData
 
                 Using.resource (
                     md.getColumns(null, params.schema, null, null)
-                )  { rs ⇒
+                )  { rs =>
                     while (rs.next()) {
                         val schNameOrigin = rs.getString("TABLE_SCHEM")
                         val tblNameOrigin = rs.getString("TABLE_NAME")
@@ -506,11 +506,11 @@ object NCSqlModelGeneratorImpl {
                             params.inclPred.apply(tbl, col) && !params.exclPred.apply(tbl, col)
 
                         val tbl: Table = tables.get(key) match {
-                            case Some(t) ⇒ t
-                            case None if isAllowed(tblName) ⇒
+                            case Some(t) => t
+                            case None if isAllowed(tblName) =>
                                 pks.clear()
 
-                                Using.resource { md.getPrimaryKeys(null, schNameOrigin, tblNameOrigin) } { rs ⇒
+                                Using.resource { md.getPrimaryKeys(null, schNameOrigin, tblNameOrigin) } { rs =>
                                     while (rs.next())
                                         pks += rs.getString("COLUMN_NAME").toLowerCase
                                 }
@@ -527,7 +527,7 @@ object NCSqlModelGeneratorImpl {
 
                                 val fks = mutable.ArrayBuffer.empty[Fk]
 
-                                Using.resource { md.getImportedKeys(null, schNameOrigin, tblNameOrigin) } { rs ⇒
+                                Using.resource { md.getImportedKeys(null, schNameOrigin, tblNameOrigin) } { rs =>
                                     while (rs.next())
                                         fks += Fk(
                                             name = rs.getString("FK_NAME"),
@@ -541,10 +541,10 @@ object NCSqlModelGeneratorImpl {
                                 }
 
                                 val joins =
-                                    fks.filter(fk ⇒
+                                    fks.filter(fk =>
                                         fk.fromTableSchema == null && fk.toTableSchema == null ||
                                         fk.fromTableSchema == schNameOrigin && fk.toTableSchema == schNameOrigin
-                                    ).groupBy(_.name).map { case (_, fksGrp) ⇒
+                                    ).groupBy(_.name).map { case (_, fksGrp) =>
                                         Join(
                                             fromColumns = fksGrp.map(_.fromColumn),
                                             toTable = fksGrp.head.toTable,
@@ -558,10 +558,10 @@ object NCSqlModelGeneratorImpl {
                                     joins.toSeq
                                 )
 
-                                tables += key → t
+                                tables += key -> t
 
                                 t
-                            case _ ⇒ null
+                            case _ => null
                         }
                         
                         if (tbl != null && isAllowed(tblName, colName))
@@ -578,8 +578,8 @@ object NCSqlModelGeneratorImpl {
             }
         }
         catch {
-            case e: ClassNotFoundException ⇒ errorExit(s"Unknown JDBC driver class: $C${params.driver}$RST", e)
-            case e: Exception ⇒ errorExit(s"Failed to generate model for: $C'${params.url}'$RST", e)
+            case e: ClassNotFoundException => errorExit(s"Unknown JDBC driver class: $C${params.driver}$RST", e)
+            case e: Exception => errorExit(s"Failed to generate model for: $C'${params.url}'$RST", e)
         }
         
         tables.values.toSeq.filter(_.columns.nonEmpty)
@@ -738,9 +738,9 @@ object NCSqlModelGeneratorImpl {
      */
     private def parseBoolean(v: String, name: String): Boolean =
         v.toLowerCase match {
-            case "true" ⇒ true
-            case "false" ⇒ false
-            case _ ⇒ throw new IllegalArgumentException(s"Invalid boolean value: $C$name=$v$RST")
+            case "true" => true
+            case "false" => false
+            case _ => throw new IllegalArgumentException(s"Invalid boolean value: $C$name=$v$RST")
         }
         
     /**
@@ -765,24 +765,24 @@ object NCSqlModelGeneratorImpl {
                 val v: String = U.trimQuotes(arg.substring(eq + 1))
 
                 k match {
-                    case "--url" | "-r" ⇒ params.url = v
-                    case "--driver" | "-d" ⇒ params.driver = v
-                    case "--user" | "-u" ⇒ params.user = v
-                    case "--password" | "-w" ⇒ params.password = v
-                    case "--schema" | "-s" ⇒ params.schema = v
-                    case "--mdlId" | "-m" ⇒ params.modelId = v
-                    case "--mdlName" | "-n" ⇒ params.modelName = v
-                    case "--mdlVer" | "-v" ⇒ params.modelVer = v
-                    case "--out" | "-o" ⇒ params.output = v
-                    case "--include" | "-i" ⇒ params.inclSpec = v; params.inclPred = mkPredicate(v)
-                    case "--exclude" | "-e" ⇒ params.exclSpec = v; params.exclPred = mkPredicate(v)
-                    case "--prefix" | "-f" ⇒ params.preSpec = v; params.preFun = mkPrefixFun(v)
-                    case "--suffix" | "-q" ⇒ params.sufSpec = v; params.sufFun = mkSuffixFun(v)
-                    case "--parent" | "-p" ⇒ params.parent = parseBoolean(v, k)
-                    case "--synonyms" | "-y" ⇒ params.synonyms = parseBoolean(v, k)
-                    case "--override" | "-z" ⇒ params.overRide = parseBoolean(v, k)
+                    case "--url" | "-r" => params.url = v
+                    case "--driver" | "-d" => params.driver = v
+                    case "--user" | "-u" => params.user = v
+                    case "--password" | "-w" => params.password = v
+                    case "--schema" | "-s" => params.schema = v
+                    case "--mdlId" | "-m" => params.modelId = v
+                    case "--mdlName" | "-n" => params.modelName = v
+                    case "--mdlVer" | "-v" => params.modelVer = v
+                    case "--out" | "-o" => params.output = v
+                    case "--include" | "-i" => params.inclSpec = v; params.inclPred = mkPredicate(v)
+                    case "--exclude" | "-e" => params.exclSpec = v; params.exclPred = mkPredicate(v)
+                    case "--prefix" | "-f" => params.preSpec = v; params.preFun = mkPrefixFun(v)
+                    case "--suffix" | "-q" => params.sufSpec = v; params.sufFun = mkSuffixFun(v)
+                    case "--parent" | "-p" => params.parent = parseBoolean(v, k)
+                    case "--synonyms" | "-y" => params.synonyms = parseBoolean(v, k)
+                    case "--override" | "-z" => params.overRide = parseBoolean(v, k)
 
-                    case _ ⇒ throw new IllegalArgumentException(s"Invalid argument: $C$arg$RST")
+                    case _ => throw new IllegalArgumentException(s"Invalid argument: $C$arg$RST")
                 }
 
                 i += 1
@@ -804,7 +804,7 @@ object NCSqlModelGeneratorImpl {
             params.cmdLine = cmdArgs.mkString(" ")
         }
         catch {
-            case e: Exception ⇒ errorExit(e.getMessage, e)
+            case e: Exception => errorExit(e.getMessage, e)
         }
         
         params

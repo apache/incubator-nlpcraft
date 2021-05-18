@@ -67,7 +67,7 @@ object NCRelationEnricher extends NCProbeEnricher {
      * @param parent Optional parent span.
      * @return
      */
-    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ =>
         ackStarting()
 
         val macros = NCMacroParser()
@@ -86,7 +86,7 @@ object NCRelationEnricher extends NCProbeEnricher {
 
                 val tailsSeq = tails.toSet.map(NCNlpCoreManager.stem)
 
-                macros.expand(head).map(NCNlpCoreManager.stem).foreach(s ⇒ seq += Holder(f, s, tailsSeq + s))
+                macros.expand(head).map(NCNlpCoreManager.stem).foreach(s => seq += Holder(f, s, tailsSeq + s))
             }
 
             val tails = Seq(
@@ -122,7 +122,7 @@ object NCRelationEnricher extends NCProbeEnricher {
      *
      * @param parent Optional parent span.
      */
-    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
         ackStopped()
     }
@@ -135,7 +135,7 @@ object NCRelationEnricher extends NCProbeEnricher {
       */
     private def validImportant(ns: NCNlpSentence, toks: Seq[NCNlpSentenceToken]): Boolean = {
         def isImportant(t: NCNlpSentenceToken): Boolean =
-            t.exists(n ⇒ n.isUser || REL_TYPES.contains(n.noteType)) || ALL_FUNC_STEMS.contains(t.stem)
+            t.exists(n => n.isUser || REL_TYPES.contains(n.noteType)) || ALL_FUNC_STEMS.contains(t.stem)
 
         val idxs = toks.map(_.index)
 
@@ -155,26 +155,26 @@ object NCRelationEnricher extends NCProbeEnricher {
                 asScala
 
         startScopedSpan("enrich", parent,
-            "srvReqId" → ns.srvReqId,
-            "mdlId" → mdl.model.getId,
-            "txt" → ns.text) { _ ⇒
+            "srvReqId" -> ns.srvReqId,
+            "mdlId" -> mdl.model.getId,
+            "txt" -> ns.text) { _ =>
             // Tries to grab tokens direct way.
-            // Example: A, B, C ⇒ ABC, AB, BC .. (AB will be processed first)
+            // Example: A, B, C => ABC, AB, BC .. (AB will be processed first)
             val notes = mutable.HashSet.empty[NCNlpSentenceNote]
 
-            for (toks ← ns.tokenMixWithStopWords() if validImportant(ns, toks))
+            for (toks <- ns.tokenMixWithStopWords() if validImportant(ns, toks))
                 tryToMatch(toks) match {
-                    case Some(m) ⇒
-                        for (refNote ← m.refNotes if !restricted.contains(refNote)) {
+                    case Some(m) =>
+                        for (refNote <- m.refNotes if !restricted.contains(refNote)) {
                             val note = NCNlpSentenceNote(
                                 Seq(m.matchedHead.index),
                                 TOK_ID,
-                                "type" → m.funcType,
-                                "indexes" → m.refIndexes,
-                                "note" → refNote
+                                "type" -> m.funcType,
+                                "indexes" -> m.refIndexes,
+                                "note" -> refNote
                             )
 
-                            if (!notes.exists(n ⇒ ns.notesEqualOrSimilar(n, note))) {
+                            if (!notes.exists(n => ns.notesEqualOrSimilar(n, note))) {
                                 notes += note
 
                                 m.matched.filter(_ != m.matchedHead).foreach(_.addStopReason(note))
@@ -182,7 +182,7 @@ object NCRelationEnricher extends NCProbeEnricher {
                                 m.matchedHead.add(note)
                             }
                         }
-                    case None ⇒ // No-op.
+                    case None => // No-op.
                 }
         }
     }
@@ -201,22 +201,22 @@ object NCRelationEnricher extends NCProbeEnricher {
             val i2 = sortedToks.last.index
 
             val notes =
-                sortedToks.flatMap(_.filter(n ⇒ n.isUser || REL_TYPES.contains(n.noteType))).
+                sortedToks.flatMap(_.filter(n => n.isUser || REL_TYPES.contains(n.noteType))).
                 // Finds notes for tokens related to only given tokens.
-                filter(n ⇒ n.tokenFrom >= i1 && n.tokenTo <= i2)
+                filter(n => n.tokenFrom >= i1 && n.tokenTo <= i2)
 
             val suitNotes =
                 notes.
-                    filter(n1 ⇒ notes.exists(
-                        n2 ⇒ n2.tokenFrom > n1.tokenTo || n2.tokenTo < n1.tokenFrom)
+                    filter(n1 => notes.exists(
+                        n2 => n2.tokenFrom > n1.tokenTo || n2.tokenTo < n1.tokenFrom)
                     ).
                     groupBy(_.noteType).
-                    flatMap { case (_, ns) ⇒ if (ns.size > 1) ns else Seq.empty }
+                    flatMap { case (_, ns) => if (ns.size > 1) ns else Seq.empty }
 
             if (suitNotes.nonEmpty)
                 Some(
                     Reference(
-                        toks.filter(t ⇒ suitNotes.exists(t.contains)),
+                        toks.filter(t => suitNotes.exists(t.contains)),
                         suitNotes.map(_.noteType).toSet
                     )
                 )
@@ -233,8 +233,8 @@ object NCRelationEnricher extends NCProbeEnricher {
         val i2 = toks.last.index
 
         var refOpts = toks.
-            filter(t ⇒
-                t.exists(n ⇒ (
+            filter(t =>
+                t.exists(n => (
                     n.isUser || REL_TYPES.contains(n.noteType)) &&
                     n.tokenIndexes.head >= i1 &&
                     n.tokenIndexes.last <= i2
@@ -244,16 +244,16 @@ object NCRelationEnricher extends NCProbeEnricher {
 
         if (refOpts.nonEmpty && matchOpts.nonEmpty)
             getReference(refOpts) match {
-                case Some(r) ⇒
+                case Some(r) =>
                     refOpts = r.tokens
 
                     def try0(stems: Set[String]): Option[Match] =
                         FUNCS.
-                            flatMap(h ⇒
+                            flatMap(h =>
                                 if (stems.subsetOf(h.allStems) && stems.contains(h.headStem)) Some(h) else None
                             ).
                             headOption match {
-                            case Some(h) ⇒
+                            case Some(h) =>
                                 Some(
                                     Match(
                                         h.funcType,
@@ -265,15 +265,15 @@ object NCRelationEnricher extends NCProbeEnricher {
                                         refOpts.map(_.index).asJava
                                     )
                                 )
-                            case None ⇒ None
+                            case None => None
                         }
 
                     try0(matchOpts.map(_.stem).toSet) match {
-                        case Some(m) ⇒ Some(m)
-                        case None ⇒ try0(matchOpts.filter(!_.isStopWord).map(_.stem).toSet)
+                        case Some(m) => Some(m)
+                        case None => try0(matchOpts.filter(!_.isStopWord).map(_.stem).toSet)
                     }
 
-                case None ⇒ None
+                case None => None
             }
         else
             None

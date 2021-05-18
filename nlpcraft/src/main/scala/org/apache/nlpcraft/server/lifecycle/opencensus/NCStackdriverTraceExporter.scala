@@ -40,7 +40,7 @@ class NCStackdriverTraceExporter extends NCBaseTraceExporter("Stackdriver") {
                 build
             )
         catch {
-            case e: IOException ⇒
+            case e: IOException =>
                 throw new NCE(
                     s"Stackdriver OpenCensus trace exporter cannot be registered for Google Project ID: ${Config.gpi}", e
                 )

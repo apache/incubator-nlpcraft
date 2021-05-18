@@ -43,89 +43,89 @@ object NCNlpPorterStemmer  {
     private def stem0(word: String): String = {
         // Deal with plurals and past participles.
         var stem = new Word(word).replace(
-            "sses" → "ss",
-            "ies" → "i",
-            "ss" → "ss",
-            "s" → ""
+            "sses" -> "ss",
+            "ies" -> "i",
+            "ss" -> "ss",
+            "s" -> ""
         )
         
         if ((stem matchedBy ((~v ~) + "ed")) || (stem matchedBy ((~v ~) + "ing")))
             stem = stem.
                 replace(~v ~)(
-                    "ed" → "",
-                    "ing" → ""
+                    "ed" -> "",
+                    "ing" -> ""
                 ).
                 replace(
-                    "at" → "ate",
-                    "bl" → "ble",
-                    "iz" → "ize",
-                    (~d and not(~L or ~S or ~Z)) → singleLetter,
-                    (m == 1 and ~o) → "e"
+                    "at" -> "ate",
+                    "bl" -> "ble",
+                    "iz" -> "ize",
+                    (~d and not(~L or ~S or ~Z)) -> singleLetter,
+                    (m == 1 and ~o) -> "e"
                 )
         else
             stem = stem.replace(
-                ((m > 0) + "eed") → "ee"
+                ((m > 0) + "eed") -> "ee"
             )
         
         stem = stem.
             replace(
-                ((~v ~) + "y") → "i"
+                ((~v ~) + "y") -> "i"
             ).
             replace(m > 0)(
-                "ational" → "ate",
-                "tional" → "tion",
-                "enci" → "ence",
-                "anci" → "ance",
-                "izer" → "ize",
-                "abli" → "able",
-                "alli" → "al",
-                "entli" → "ent",
-                "eli" → "e",
-                "ousli" → "ous",
-                "ization" → "ize",
-                "ation" → "ate",
-                "ator" → "ate",
-                "alism" → "al",
-                "iveness" → "ive",
-                "fulness" → "ful",
-                "ousness" → "ous",
-                "aliti" → "al",
-                "iviti" → "ive",
-                "biliti" → "ble"
+                "ational" -> "ate",
+                "tional" -> "tion",
+                "enci" -> "ence",
+                "anci" -> "ance",
+                "izer" -> "ize",
+                "abli" -> "able",
+                "alli" -> "al",
+                "entli" -> "ent",
+                "eli" -> "e",
+                "ousli" -> "ous",
+                "ization" -> "ize",
+                "ation" -> "ate",
+                "ator" -> "ate",
+                "alism" -> "al",
+                "iveness" -> "ive",
+                "fulness" -> "ful",
+                "ousness" -> "ous",
+                "aliti" -> "al",
+                "iviti" -> "ive",
+                "biliti" -> "ble"
             ).
             replace(m > 0)(
-                "icate" → "ic",
-                "ative" → "",
-                "alize" → "al",
-                "iciti" → "ic",
-                "ical" → "ic",
-                "ful" → "", "ness" → ""
+                "icate" -> "ic",
+                "ative" -> "",
+                "alize" -> "al",
+                "iciti" -> "ic",
+                "ical" -> "ic",
+                "ful" -> "", "ness" -> ""
             ).
             replace(m > 1)(
-                "al" → "",
-                "ance" → "",
-                "ence" → "",
-                "er" → "",
-                "ic" → "",
-                "able" → "",
-                "ible" → "",
-                "ant" → "",
-                "ement" → "",
-                "ment" → "",
-                "ent" → "",
-                ((~S or ~T) + "ion") → "",
-                "ou" → "",
-                "ism" → "",
-                "ate" → "",
-                "iti" → "",
-                "ous" → "",
-                "ive" → "",
-                "ize" → ""
+                "al" -> "",
+                "ance" -> "",
+                "ence" -> "",
+                "er" -> "",
+                "ic" -> "",
+                "able" -> "",
+                "ible" -> "",
+                "ant" -> "",
+                "ement" -> "",
+                "ment" -> "",
+                "ent" -> "",
+                ((~S or ~T) + "ion") -> "",
+                "ou" -> "",
+                "ism" -> "",
+                "ate" -> "",
+                "iti" -> "",
+                "ous" -> "",
+                "ive" -> "",
+                "ize" -> ""
             )
         
         // Tide up a little bit.
-        stem = stem replace(((m > 1) + "e") → "", ((m == 1 and not(~o)) + "e") → "")
-        stem = stem replace ((m > 1 and ~d and ~L) → singleLetter)
+        stem = stem replace(((m > 1) + "e") -> "", ((m == 1 and not(~o)) + "e") -> "")
+        stem = stem replace ((m > 1 and ~d and ~L) -> singleLetter)
         
         stem.toString
     }
@@ -134,18 +134,18 @@ object NCNlpPorterStemmer  {
     private case class Pattern(cond: Condition, sfx: String)
     
     // Condition, that is checked against the beginning of the lemma.
-    private case class Condition(f: Word ⇒ Boolean) {
-        def + = Pattern(this, _: String)
+    private case class Condition(f: Word => Boolean) {
+        def + : String => Pattern = Pattern(this, _: String)
         def unary_~ : Condition = this
         def ~ : Condition = this
-        def and(condition: Condition) = Condition(word ⇒ f(word) && condition.f(word))
-        def or(condition: Condition) = Condition(word ⇒ f(word) || condition.f(word))
+        def and(condition: Condition): Condition = Condition(word => f(word) && condition.f(word))
+        def or(condition: Condition) = Condition(word => f(word) || condition.f(word))
     }
     
-    private final val EMPTY_COND = Condition(_ ⇒ true)
+    private final val EMPTY_COND = Condition(_ => true)
     
-    private def not: Condition ⇒ Condition = {
-        case Condition(f) ⇒ Condition(!f(_))
+    private def not: Condition => Condition = {
+        case Condition(f) => Condition(!f(_))
     }
     
     private val S = Condition(_ endsWith "s")
@@ -157,11 +157,11 @@ object NCNlpPorterStemmer  {
     private val v = Condition(_.containsVowels)
     
     private object m {
-        def >(measure: Int) = Condition(_.measure > measure)
-        def ==(measure: Int) = Condition(_.measure == measure)
+        def >(measure: Int): Condition = Condition(_.measure > measure)
+        def ==(measure: Int): Condition = Condition(_.measure == measure)
     }
     
-    private case class StemBuilder(build: Word ⇒ Word)
+    private case class StemBuilder(build: Word => Word)
     
     private def suffixStemBuilder(sfx: String) = StemBuilder(_ + sfx)
     
@@ -172,20 +172,20 @@ object NCNlpPorterStemmer  {
         
         def trimSuffix(sfxLen: Int) = new Word(w substring(0, w.length - sfxLen))
         
-        def endsWith: String ⇒ Boolean = w endsWith
+        def endsWith: String => Boolean = w endsWith
         
         def +(sfx: String) = new Word(w + sfx)
         
-        def satisfies: Condition ⇒ Boolean = (_: Condition).f(this)
+        def satisfies: Condition => Boolean = (_: Condition).f(this)
         
         def hasConsonantAt(pos: Int): Boolean =
             (w.indices contains pos) && (w(pos) match {
-                case 'a' | 'e' | 'i' | 'o' | 'u' ⇒ false
-                case 'y' if hasConsonantAt(pos + 1) ⇒ false
-                case _ ⇒ true
+                case 'a' | 'e' | 'i' | 'o' | 'u' => false
+                case 'y' if hasConsonantAt(pos + 1) => false
+                case _ => true
             })
         
-        def hasVowelAt: Int ⇒ Boolean = !hasConsonantAt(_: Int)
+        def hasVowelAt: Int => Boolean = !hasConsonantAt(_: Int)
         
         def containsVowels: Boolean = w.indices exists hasVowelAt
         
@@ -202,14 +202,14 @@ object NCNlpPorterStemmer  {
                 !(Set('w', 'x', 'y') contains w(w.length - 2))
         
         
-        def measure: Int = w.indices.count(pos ⇒ hasVowelAt(pos) && hasConsonantAt(pos + 1))
+        def measure: Int = w.indices.count(pos => hasVowelAt(pos) && hasConsonantAt(pos + 1))
         
-        def matchedBy: Pattern ⇒ Boolean = {
-            case Pattern(cond, sfx) ⇒ endsWith(sfx) && (trimSuffix(sfx.length) satisfies cond)
+        def matchedBy: Pattern => Boolean = {
+            case Pattern(cond, sfx) => endsWith(sfx) && (trimSuffix(sfx.length) satisfies cond)
         }
         
         def replace(replaces: (Pattern, StemBuilder)*): Word = {
-            for ((ptrn, builder) ← replaces if matchedBy(ptrn))
+            for ((ptrn, builder) <- replaces if matchedBy(ptrn))
                 return builder build trimSuffix(ptrn.sfx.length)
             
             this
@@ -217,15 +217,15 @@ object NCNlpPorterStemmer  {
         
         def replace(cmnCond: Condition)(replaces: (Pattern, StemBuilder)*): Word =
             replace(replaces map {
-                case (Pattern(cond, sfx), builder) ⇒ (Pattern(cmnCond and cond, sfx), builder)
+                case (Pattern(cond, sfx), builder) => (Pattern(cmnCond and cond, sfx), builder)
             }: _*)
         
         override def toString: String = w
     }
     
     // Implicits.
-    private implicit def c1[P, SB](r: (P, SB))(implicit ev1: P ⇒ Pattern, ev2: SB ⇒ StemBuilder): (Pattern, StemBuilder) = (r._1, r._2)
-    private implicit def c2: String ⇒ Pattern = Pattern(EMPTY_COND, _)
-    private implicit def c3: Condition ⇒ Pattern = Pattern(_, "")
-    private implicit def c4: String ⇒ StemBuilder = suffixStemBuilder
+    private implicit def c1[P, SB](r: (P, SB))(implicit ev1: P => Pattern, ev2: SB => StemBuilder): (Pattern, StemBuilder) = (r._1, r._2)
+    private implicit def c2: String => Pattern = Pattern(EMPTY_COND, _)
+    private implicit def c3: Condition => Pattern = Pattern(_, "")
+    private implicit def c4: String => StemBuilder = suffixStemBuilder
 }

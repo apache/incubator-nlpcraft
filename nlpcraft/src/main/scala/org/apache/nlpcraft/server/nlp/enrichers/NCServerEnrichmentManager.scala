@@ -59,21 +59,21 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
 
     private val HEADERS: Map[String, (Int, Seq[String])] =
         Seq(
-            "nlpcraft:nlp" → Seq("origText", "index", "pos", "lemma", "stem", "bracketed", "quoted", "stopWord"),
-            "nlpcraft:continent" → Seq("continent"),
-            "nlpcraft:subcontinent" → Seq("continent", "subcontinent"),
-            "nlpcraft:country" → Seq("country"),
-            "nlpcraft:region" → Seq("country", "region"),
-            "nlpcraft:city" → Seq("city", "region"),
-            "nlpcraft:metro" → Seq("metro"),
-            "nlpcraft:date" → Seq("from", "to", "periods"),
-            "nlpcraft:num" → Seq("from", "to", "unit", "unitType"),
-            "nlpcraft:coordinate" → Seq("latitude", "longitude"),
-            "google:" → Seq("meta", "salience"),
-            "stanford:" → Seq("confidence", "nne"),
-            "opennlp:" → Seq("probability"),
-            "spacy:" → Seq("vector", "sentiment", "meta")
-        ).zipWithIndex.map { case ((typ, seq), idx) ⇒ typ → (idx, seq) }.toMap
+            "nlpcraft:nlp" -> Seq("origText", "index", "pos", "lemma", "stem", "bracketed", "quoted", "stopWord"),
+            "nlpcraft:continent" -> Seq("continent"),
+            "nlpcraft:subcontinent" -> Seq("continent", "subcontinent"),
+            "nlpcraft:country" -> Seq("country"),
+            "nlpcraft:region" -> Seq("country", "region"),
+            "nlpcraft:city" -> Seq("city", "region"),
+            "nlpcraft:metro" -> Seq("metro"),
+            "nlpcraft:date" -> Seq("from", "to", "periods"),
+            "nlpcraft:num" -> Seq("from", "to", "unit", "unitType"),
+            "nlpcraft:coordinate" -> Seq("latitude", "longitude"),
+            "google:" -> Seq("meta", "salience"),
+            "stanford:" -> Seq("confidence", "nne"),
+            "opennlp:" -> Seq("probability"),
+            "spacy:" -> Seq("vector", "sentiment", "meta")
+        ).zipWithIndex.map { case ((typ, seq), idx) => typ -> (idx, seq) }.toMap
 
     private val GEO = Set(
         "nlpcraft:continent",
@@ -99,7 +99,7 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
         normTxt: String,
         enabledBuiltInToks: Set[String],
         parent: Span = null): NCNlpSentence =
-        startScopedSpan("process", parent, "srvReqId" → srvReqId, "txt" → normTxt) { span ⇒
+        startScopedSpan("process", parent, "srvReqId" -> srvReqId, "txt" -> normTxt) { span =>
             val s = new NCNlpSentence(srvReqId, normTxt, enabledBuiltInToks)
 
             // Server-side enrichment pipeline.
@@ -126,7 +126,7 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
 
             prepareAsciiTable(s).info(logger, Some(s"Sentence enriched: '$normTxt'"))
 
-            cache += normTxt → Holder(s, enabledBuiltInToks)
+            cache += normTxt -> Holder(s, enabledBuiltInToks)
 
             s
         }
@@ -143,7 +143,7 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
         txt: String,
         enabledBuiltInToks: Set[String],
         parent: Span = null): NCNlpSentence = {
-        startScopedSpan("enrichPipeline", parent, "srvReqId" → srvReqId, "txt" → txt) { span ⇒
+        startScopedSpan("enrichPipeline", parent, "srvReqId" -> srvReqId, "txt" -> txt) { span =>
             val normTxt = NCPreProcessManager.normalize(txt, spellCheck = true, span)
 
             if (normTxt != txt)
@@ -153,7 +153,7 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
 
             catching(wrapIE) {
                 cache(normTxt) match {
-                    case Some(h) ⇒
+                    case Some(h) =>
                         if (h.enabledBuiltInTokens == normEnabledBuiltInToks) {
                             prepareAsciiTable(h.sentence).info(logger, Some(s"Sentence enriched (from cache): '$normTxt'"))
 
@@ -161,7 +161,7 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
                         }
                         else
                             process(srvReqId, normTxt, enabledBuiltInToks, span)
-                    case None ⇒
+                    case None =>
                         process(srvReqId, normTxt, enabledBuiltInToks, span)
                 }
             }
@@ -183,11 +183,11 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
             val prefix = typ.substring(typ.indexOf(':') + 1) // Remove 'nlpcraft:' prefix.
 
             n.keySet
-                .filter(name ⇒ HEADERS.find(h ⇒ isType(typ, h._1)) match {
-                    case Some((_, (_, names))) ⇒ names.contains(name)
-                    case None ⇒ false
+                .filter(name => HEADERS.find(h => isType(typ, h._1)) match {
+                    case Some((_, (_, names))) => names.contains(name)
+                    case None => false
                 })
-                .map(name ⇒
+                .map(name =>
                     Header(
                         if (isType(typ, "google:", "opennlp:", "stanford:", "spacy:"))
                             s"$typ:$name"
@@ -199,9 +199,9 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
                 )
         }
 
-        val headers = s.flatten.flatMap(mkNoteHeaders).distinct.sortBy(hdr ⇒ {
+        val headers = s.flatten.flatMap(mkNoteHeaders).distinct.sortBy(hdr => {
             val x = HEADERS.
-                find(p ⇒ isType(hdr.noteType, p._1)).
+                find(p => isType(hdr.noteType, p._1)).
                 getOrElse(throw new NCE(s"Header not found for: ${hdr.noteType}"))._2
 
             (x._1 * 100) + x._2.indexOf(hdr.noteName)
@@ -222,7 +222,7 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
                 .map(_(hdr.noteName).toString())
                 .toSeq
 
-        for (tok ← s)
+        for (tok <- s)
             tbl += (headers.map(mkNoteValue(tok, _)): _*)
 
         tbl
@@ -235,21 +235,21 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
       * @param enabledBuiltInToks Enabled built-in tokens.
       */
     private def ner(ns: NCNlpSentence, enabledBuiltInToks: Set[String]): Unit = {
-        enabledBuiltInToks.flatMap(t ⇒
+        enabledBuiltInToks.flatMap(t =>
             t match {
-                case x if x.startsWith("nlpcraft:") ⇒ None
+                case x if x.startsWith("nlpcraft:") => None
 
-                case x if CUSTOM_PREFIXES.exists(x.startsWith) ⇒
+                case x if CUSTOM_PREFIXES.exists(x.startsWith) =>
                     val typ = x.takeWhile(_ != ':')
 
-                    Some(t.drop(typ.length + 1) → typ)
+                    Some(t.drop(typ.length + 1) -> typ)
 
-                case _ ⇒ throw new NCE(s"Unexpected token: $t")
+                case _ => throw new NCE(s"Unexpected token: $t")
             }
         ).
-            groupBy { case (_, typ) ⇒ typ }.
-            map { case (typ, seq) ⇒ typ → seq.map { case (tok, _ ) ⇒ tok } }.
-            foreach { case (typ, toks) ⇒ ners(typ).enrich(ns, toks) }
+            groupBy { case (_, typ) => typ }.
+            map { case (typ, seq) => typ -> seq.map { case (tok, _ ) => tok } }.
+            foreach { case (typ, toks) => ners(typ).enrich(ns, toks) }
     }
 
     /**
@@ -257,7 +257,7 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
      * @param parent Optional parent span.
      * @return
      */
-    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
+    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span =>
         ackStarting()
 
         catching(wrapIE) {
@@ -271,10 +271,10 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
         if (Config.isBuiltInEnrichers) {
             // These component can be started independently.
             U.executeParallel(
-                () ⇒ NCDateEnricher.start(span),
-                () ⇒ NCNumericEnricher.start(span),
-                () ⇒ NCGeoEnricher.start(span),
-                () ⇒ NCCoordinatesEnricher.start(span)
+                () => NCDateEnricher.start(span),
+                () => NCNumericEnricher.start(span),
+                () => NCGeoEnricher.start(span),
+                () => NCCoordinatesEnricher.start(span)
             )
         }
 
@@ -288,7 +288,7 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
      *
      * @param parent Optional parent span.
      */
-    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { span ⇒
+    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { span =>
         ackStopping()
 
         if (Config.isBuiltInEnrichers) {

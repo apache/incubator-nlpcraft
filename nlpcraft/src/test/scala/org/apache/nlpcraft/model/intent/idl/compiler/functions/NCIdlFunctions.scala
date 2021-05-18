@@ -74,8 +74,8 @@ private[functions] trait NCIdlFunctions {
 
         override def toString: String =
             token match {
-                case Some(t) ⇒ s"Predicate [body='$truth', token=${t2s(t)}]"
-                case None ⇒ s"Predicate '$truth'"
+                case Some(t) => s"Predicate [body='$truth', token=${t2s(t)}]"
+                case None => s"Predicate '$truth'"
             }
     }
 
@@ -163,7 +163,7 @@ private[functions] trait NCIdlFunctions {
     }
 
     protected def test(funcs: TestDesc*): Unit =
-        for (f ← funcs) {
+        for (f <- funcs) {
             val item =
                 try {
                     // Process declarations.
@@ -173,13 +173,13 @@ private[functions] trait NCIdlFunctions {
                     f.term.pred.apply(f.token.getOrElse(tkn()), f.idlCtx)
                 }
                 catch {
-                    case e: NCE ⇒ throw e
-                    case e: Exception ⇒ throw new Exception(s"Execution error processing: $f", e)
+                    case e: NCE => throw e
+                    case e: Exception => throw new Exception(s"Execution error processing: $f", e)
                 }
 
             item.value match {
-                case b: java.lang.Boolean ⇒ require(if (f.expectedRes) b else !b, s"Unexpected '$b' result for: $f")
-                case _ ⇒
+                case b: java.lang.Boolean => require(if (f.expectedRes) b else !b, s"Unexpected '$b' result for: $f")
+                case _ =>
                     require(
                         requirement = false,
                         s"Unexpected result type [" +
@@ -191,7 +191,7 @@ private[functions] trait NCIdlFunctions {
             }
 
             f.tokensUsed match {
-                case Some(exp) ⇒
+                case Some(exp) =>
                     require(
                         exp == item.tokUse,
                         s"Unexpected tokens used [" +
@@ -201,19 +201,19 @@ private[functions] trait NCIdlFunctions {
                         s"]"
                     )
 
-                case None ⇒ // No-op.
+                case None => // No-op.
             }
         }
 
     protected def expectError(funcs: TestDesc*): Unit =
-        for (f ← funcs)
+        for (f <- funcs)
             try {
                 test(f)
 
                 require(false)
             }
             catch {
-                case e: Exception ⇒
+                case e: Exception =>
                     println(s"Expected error: ${e.getLocalizedMessage}")
 
                     var cause = e.getCause

@@ -17,7 +17,7 @@
 
 package org.apache.nlpcraft.model.impl
 
-import java.io.{Serializable ⇒ JSerializable}
+import java.io.{Serializable => JSerializable}
 import java.util.Collections
 
 import org.apache.nlpcraft.common._
@@ -78,13 +78,13 @@ private[nlpcraft] class NCTokenImpl(
     def setParts(parts: Seq[NCToken]): Unit = this.parts = parts
 
     override def equals(other: Any): Boolean = other match {
-        case t: NCTokenImpl ⇒
+        case t: NCTokenImpl =>
             getServerRequestId == t.getServerRequestId &&
             getId == t.getId &&
             getStartCharIndex == t.getStartCharIndex &&
             getEndCharIndex == t.getEndCharIndex
 
-        case _ ⇒ false
+        case _ => false
     }
 
     override def hashCode(): Int = hash
@@ -106,10 +106,10 @@ private[nlpcraft] object NCTokenImpl {
 
         val md = mutable.HashMap.empty[String, JSerializable]
 
-        tok.foreach(n ⇒ {
+        tok.foreach(n => {
             val id = n.noteType.toLowerCase
 
-            n.asMetadata().foreach { case (k, v) ⇒ md += s"$id:$k" → v}
+            n.asMetadata().foreach { case (k, v) => md += s"$id:$k" -> v}
         })
 
         val usrNotes = tok.filter(_.isUser)
@@ -117,10 +117,10 @@ private[nlpcraft] object NCTokenImpl {
         // No overlapping allowed at this point.
         require(usrNotes.size <= 1, s"Unexpected elements notes: $usrNotes")
 
-        def convertMeta(): ScalaMeta = md.toMap.map(p ⇒ p._1 → p._2.asInstanceOf[AnyRef])
+        def convertMeta(): ScalaMeta = md.toMap.map(p => p._1 -> p._2.asInstanceOf[AnyRef])
 
         usrNotes.headOption match {
-            case Some(usrNote) ⇒
+            case Some(usrNote) =>
                 require(mdl.elements.contains(usrNote.noteType), s"Element is not found: ${usrNote.noteType}")
 
                 val elm = mdl.elements(usrNote.noteType)
@@ -140,7 +140,7 @@ private[nlpcraft] object NCTokenImpl {
                 // Special synthetic meta data element.
                 md.put("nlpcraft:nlp:freeword", false)
 
-                elm.getMetadata.asScala.foreach { case (k, v) ⇒ md.put(k, v.asInstanceOf[JSerializable]) }
+                elm.getMetadata.asScala.foreach { case (k, v) => md.put(k, v.asInstanceOf[JSerializable]) }
 
                 new NCTokenImpl(
                     mdl.model,
@@ -156,10 +156,10 @@ private[nlpcraft] object NCTokenImpl {
                     isAbstractProp = mdl.model.getAbstractTokens.contains(elm.getId)
                 )
 
-            case None ⇒
+            case None =>
                 require(tok.size <= 2)
 
-                val note = tok.toSeq.minBy(n ⇒ if (n.isNlp) 1 else 0)
+                val note = tok.toSeq.minBy(n => if (n.isNlp) 1 else 0)
 
                 val isStop: Boolean = md("nlpcraft:nlp:stopword").asInstanceOf[Boolean]
 

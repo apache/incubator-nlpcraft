@@ -49,7 +49,7 @@ object NCSpellCheckManager extends NCService {
      * @param parent Optional parent span.
      * @return
      */
-    override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ ⇒
+    override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ =>
         ackStarting()
 
         dict = U.extractYamlString(
@@ -68,7 +68,7 @@ object NCSpellCheckManager extends NCService {
      *
      * @param parent Optional parent span.
      */
-    override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
+    override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
 
         dict = null
@@ -85,13 +85,13 @@ object NCSpellCheckManager extends NCService {
       * @param in Word to check.
       */
     def check(in: String): String = dict.get(in.toLowerCase) match {
-        case None ⇒ in
-        case Some(out) ⇒
+        case None => in
+        case Some(out) =>
             val inSeq = split(in)
             val outSeq = split(out)
             
             if (inSeq.lengthCompare(outSeq.size) == 0)
-                outSeq.zip(inSeq).map(p ⇒ processCase(p._1, p._2)).mkString(" ")
+                outSeq.zip(inSeq).map(p => processCase(p._1, p._2)).mkString(" ")
             else
                 processCase(out, in)
     }

@@ -38,7 +38,7 @@ object NCStanfordParser extends NCService with NCNlpParser with NCIgniteInstance
      * @param parent Optional parent span.
      * @return
      */
-    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
+    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span =>
         ackStarting()
 
         // Should be started even if another NLP engine configured.
@@ -52,7 +52,7 @@ object NCStanfordParser extends NCService with NCNlpParser with NCIgniteInstance
      *
      * @param parent Optional parent span.
      */
-    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { span ⇒
+    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { span =>
         ackStopping()
 
         if (NCStanfordCoreManager.isStarted)
@@ -62,17 +62,17 @@ object NCStanfordParser extends NCService with NCNlpParser with NCIgniteInstance
     }
 
     override def parse(normTxt: String, parent: Span = null): Seq[NCNlpWord] =
-        startScopedSpan("enrich", parent, "normTxt" → normTxt) { _ ⇒
+        startScopedSpan("enrich", parent, "normTxt" -> normTxt) { _ =>
             val a: java.util.List[CoreMap] = NCStanfordCoreManager.annotate(normTxt).annotation().get(classOf[SentencesAnnotation])
     
             if (a == null)
                 throw new NCE("Sentence annotation not found.")
     
-            a.asScala.flatMap(p ⇒ {
+            a.asScala.flatMap(p => {
                 val value: java.util.List[CoreLabel] = p.asInstanceOf[ArrayCoreMap].get(classOf[TokensAnnotation])
     
                 value.asScala
-            }).map(t ⇒ {
+            }).map(t => {
                 val normalWord = t.originalText().toLowerCase
     
                 NCNlpWord(

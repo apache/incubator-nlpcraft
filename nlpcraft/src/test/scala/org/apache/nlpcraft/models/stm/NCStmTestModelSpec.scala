@@ -29,7 +29,7 @@ class NCStmTestModelSpec extends NCTestContext {
      * Checks behaviour. It is based on intents and elements groups.
      */
     @Test
-    private[stm] def test(): Unit = for (i ← 0 until 3) {
+    private[stm] def test(): Unit = for (i <- 0 until 3) {
         checkResult("sale", "sale")
         checkResult("best", "sale_best_employee")
         checkResult("buy", "buy")

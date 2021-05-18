@@ -39,10 +39,10 @@ object NCConversationManager extends NCService {
      * @param parent Optional parent span.
      * @return
      */
-    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ =>
         ackStarting()
 
-        gc = U.mkThread("conversation-manager-gc") { t ⇒
+        gc = U.mkThread("conversation-manager-gc") { t =>
             while (!t.isInterrupted)
                 try
                     convs.synchronized {
@@ -52,8 +52,8 @@ object NCConversationManager extends NCService {
                             convs.wait(sleepTime)
                     }
                 catch {
-                    case _: InterruptedException ⇒ // No-op.
-                    case e: Throwable ⇒ U.prettyError(logger, s"Unexpected error for thread: ${t.getName}", e)
+                    case _: InterruptedException => // No-op.
+                    case e: Throwable => U.prettyError(logger, s"Unexpected error for thread: ${t.getName}", e)
                 }
         }
 
@@ -66,7 +66,7 @@ object NCConversationManager extends NCService {
      *
      * @param parent Optional parent span.
      */
-    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
 
         U.stopThread(gc)
@@ -82,17 +82,17 @@ object NCConversationManager extends NCService {
       * Gets next clearing time.
       */
     private def clearForTimeout(): Long =
-        startScopedSpan("clearForTimeout") { _ ⇒
+        startScopedSpan("clearForTimeout") { _ =>
             require(Thread.holdsLock(convs))
 
             val now = System.currentTimeMillis()
             val delKeys = mutable.HashSet.empty[Key]
 
-            for ((key, value) ← convs) {
+            for ((key, value) <- convs) {
                 val del =
                     NCModelManager.getModelOpt(key.mdlId) match {
-                        case Some(mdl) ⇒ value.tstamp < now - mdl.model.getConversationTimeout
-                        case None ⇒ true
+                        case Some(mdl) => value.tstamp < now - mdl.model.getConversationTimeout
+                        case None => true
                     }
 
                 if (del) {
@@ -105,7 +105,7 @@ object NCConversationManager extends NCService {
             convs --= delKeys
 
             if (convs.nonEmpty)
-                convs.values.map(v ⇒ v.tstamp + v.conv.timeoutMs).min
+                convs.values.map(v => v.tstamp + v.conv.timeoutMs).min
             else
                 Long.MaxValue
         }
@@ -118,7 +118,7 @@ object NCConversationManager extends NCService {
       * @return New or existing conversation.
       */
     def getConversation(usrId: Long, mdlId: String, parent: Span = null): NCConversation =
-        startScopedSpan("getConversation", parent, "usrId" → usrId, "mdlId" → mdlId) { _ ⇒
+        startScopedSpan("getConversation", parent, "usrId" -> usrId, "mdlId" -> mdlId) { _ =>
             val mdl = NCModelManager.getModel(mdlId).model
 
             convs.synchronized {

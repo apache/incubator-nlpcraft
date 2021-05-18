@@ -98,7 +98,7 @@ object NCUserManager extends NCService with NCIgniteInstance {
      *
      * @param parent Optional parent span.
      */
-    override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
+    override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
 
         if (scanner != null)
@@ -117,14 +117,14 @@ object NCUserManager extends NCService with NCIgniteInstance {
      * @param parent Optional parent span.
      * @return
      */
-    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
+    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span =>
         ackStarting()
 
         addTags(
             span,
-            "pwdPoolBlowup" → Config.pwdPoolBlowup,
-            "timeoutScannerFreqMins" → Config.timeoutScannerFreqMins,
-            "accessTokenExpireTimeoutMins" → Config.accessTokenExpireTimeoutMins
+            "pwdPoolBlowup" -> Config.pwdPoolBlowup,
+            "timeoutScannerFreqMins" -> Config.timeoutScannerFreqMins,
+            "accessTokenExpireTimeoutMins" -> Config.accessTokenExpireTimeoutMins
         )
 
         catching(wrapIE) {
@@ -152,7 +152,7 @@ object NCUserManager extends NCService with NCIgniteInstance {
                             // Check access tokens for expiration.
                             catching(wrapIE) {
                                 NCTxManager.startTx {
-                                    for (ses ← tokenSigninCache.asScala.map(_.getValue)
+                                    for (ses <- tokenSigninCache.asScala.map(_.getValue)
                                         if now - ses.lastAccessMs >= Config.expireMs
                                     ) {
                                         tokenSigninCache -= ses.acsToken
@@ -164,12 +164,12 @@ object NCUserManager extends NCService with NCIgniteInstance {
                             }
                         }
                         catch {
-                            case e: IllegalStateException ⇒
+                            case e: IllegalStateException =>
                                 // Attempt to hide possible race condition with Ignite on a shutdown.
                                 if (!e.getMessage.startsWith("Grid is in invalid state to perform this operation"))
                                     U.prettyError(logger,"Error during timeout scanner process:", e)
 
-                            case e: Throwable ⇒
+                            case e: Throwable =>
                                 U.prettyError(logger,"Error during timeout scanner process:", e)
                         }
                 }
@@ -224,12 +224,12 @@ object NCUserManager extends NCService with NCIgniteInstance {
       */
     @throws[NCE]
     def signout(acsTok: String, parent: Span = null): Unit =
-        startScopedSpan("signout", parent, "acsTok" → acsTok) { _ ⇒
+        startScopedSpan("signout", parent, "acsTok" -> acsTok) { _ =>
             catching(wrapIE) {
                 NCTxManager.startTx {
                     tokenSigninCache -== acsTok match {
-                        case Some(ses) ⇒ clearSession(ses)
-                        case None ⇒ // No-op.
+                        case Some(ses) => clearSession(ses)
+                        case None => // No-op.
                     }
                 }
             }
@@ -242,19 +242,19 @@ object NCUserManager extends NCService with NCIgniteInstance {
       */
     @throws[NCE]
     def signoutAllSessions(userId: Long, parent: Span = null): Unit =
-        startScopedSpan("signout", parent, "userId" → userId) { _ ⇒
+        startScopedSpan("signout", parent, "userId" -> userId) { _ =>
             catching(wrapIE) {
                 NCTxManager.startTx {
                     idSigninCache -== userId match {
-                        case Some(acsToks) ⇒
-                            acsToks.foreach(acsTok ⇒
+                        case Some(acsToks) =>
+                            acsToks.foreach(acsTok =>
                                 tokenSigninCache -== acsTok match {
-                                    case Some(ses) ⇒ clearSession(ses)
-                                    case None ⇒ // No-op.
+                                    case Some(ses) => clearSession(ses)
+                                    case None => // No-op.
                                 }
                             )
 
-                        case None ⇒ // No-op.
+                        case None => // No-op.
                     }
                 }
             }
@@ -269,7 +269,7 @@ object NCUserManager extends NCService with NCIgniteInstance {
       */
     @throws[NCE]
     def getUserForAccessToken(acsTok: String, parent: Span = null): Option[NCUserMdo] =
-        startScopedSpan("getUserForAccessToken", parent, "acsTok" → acsTok) { span ⇒
+        startScopedSpan("getUserForAccessToken", parent, "acsTok" -> acsTok) { span =>
             getUserIdForAccessToken(acsTok, span).flatMap(getUserById(_, span))
         }
 
@@ -282,18 +282,18 @@ object NCUserManager extends NCService with NCIgniteInstance {
       */
     @throws[NCE]
     def getUserIdForAccessToken(acsTok: String, parent: Span = null): Option[Long] =
-        startScopedSpan("getUserIdForAccessToken", parent, "acsTok" → acsTok) { _ ⇒
+        startScopedSpan("getUserIdForAccessToken", parent, "acsTok" -> acsTok) { _ =>
             catching(wrapIE) {
                 tokenSigninCache(acsTok) match {
-                    case Some(ses) ⇒
+                    case Some(ses) =>
                         val now = U.nowUtcMs()
 
                         // Update login session.
-                        tokenSigninCache += acsTok → SigninSession(acsTok, ses.userId, ses.signinMs, now)
+                        tokenSigninCache += acsTok -> SigninSession(acsTok, ses.userId, ses.signinMs, now)
 
                         Some(ses.userId) // Bingo!
 
-                    case None ⇒ None
+                    case None => None
                 }
             }
         }
@@ -306,7 +306,7 @@ object NCUserManager extends NCService with NCIgniteInstance {
       */
     @throws[NCE]
     def getUserById(id: Long, parent: Span = null): Option[NCUserMdo] =
-        startScopedSpan("getUser", parent, "usrId" → id) { span ⇒
+        startScopedSpan("getUser", parent, "usrId" -> id) { span =>
             NCSql.sql {
                 NCSqlManager.getUserById(id, span)
             }
@@ -321,13 +321,13 @@ object NCUserManager extends NCService with NCIgniteInstance {
       */
     @throws[NCE]
     def signin(email: String, passwd: String, parent: Span = null): Option[String] =
-        startScopedSpan("signin", parent, "email" → email) { span ⇒
+        startScopedSpan("signin", parent, "email" -> email) { span =>
             catching(wrapIE) {
                 NCTxManager.startTx {
                     NCSql.sql {
                         NCSqlManager.getUserByEmail(email, span)
                     } match {
-                        case Some(usr) ⇒
+                        case Some(usr) =>
                             require(usr.passwordSalt.isDefined)
 
                             NCSql.sql {
@@ -337,11 +337,11 @@ object NCUserManager extends NCService with NCIgniteInstance {
                                     val acsTkn = U.genGuid()
                                     val now = U.nowUtcMs()
 
-                                    tokenSigninCache += acsTkn → SigninSession(acsTkn, usr.id, now, now)
+                                    tokenSigninCache += acsTkn -> SigninSession(acsTkn, usr.id, now, now)
 
                                     idSigninCache(usr.id) match {
-                                        case Some(toks) ⇒ idSigninCache += usr.id → (toks ++ Set(acsTkn))
-                                        case None ⇒ idSigninCache += usr.id → Set(acsTkn)
+                                        case Some(toks) => idSigninCache += usr.id -> (toks ++ Set(acsTkn))
+                                        case None => idSigninCache += usr.id -> Set(acsTkn)
                                     }
 
                                     require(usr.email.isDefined && usr.firstName.isDefined && usr.lastName.isDefined)
@@ -355,7 +355,7 @@ object NCUserManager extends NCService with NCIgniteInstance {
                                     Some(acsTkn)
                                 }
                             }
-                        case None ⇒ None
+                        case None => None
                     }
                 }
             }
@@ -380,7 +380,7 @@ object NCUserManager extends NCService with NCIgniteInstance {
         props: Option[String],
         parent: Span = null
     ): Unit =
-        startScopedSpan("updateUser", parent, "usrId" → id) { span ⇒
+        startScopedSpan("updateUser", parent, "usrId" -> id) { span =>
             NCSql.sql {
                 if (NCSqlManager.updateUser(id, firstName, lastName, avatarUrl, props, span) != 1)
                     throw new NCE(s"Unknown user ID: $id")
@@ -396,7 +396,7 @@ object NCUserManager extends NCService with NCIgniteInstance {
       */
     @throws[NCE]
     def updateUserPermissions(id: Long, isAdmin: Boolean, parent: Span = null): Unit =
-        startScopedSpan("updateUserPermissions", parent, "usrId" → id, "isAdmin" → isAdmin) { span ⇒
+        startScopedSpan("updateUserPermissions", parent, "usrId" -> id, "isAdmin" -> isAdmin) { span =>
             NCSql.sql {
                 if (NCSqlManager.updateUserAdmin(id, isAdmin, span) != 1)
                     throw new NCE(s"Unknown user ID: $id")
@@ -411,7 +411,7 @@ object NCUserManager extends NCService with NCIgniteInstance {
       */
     @throws[NCE]
     def deleteUser(id: Long, parent: Span = null): Unit =
-        startScopedSpan("deleteUser", parent, "usrId" → id) { span ⇒
+        startScopedSpan("deleteUser", parent, "usrId" -> id) { span =>
             NCSql.sql {
                 if (NCSqlManager.deleteUser(id, span) != 1)
                     throw new NCE(s"Unknown user ID: $id")
@@ -426,7 +426,7 @@ object NCUserManager extends NCService with NCIgniteInstance {
       */
     @throws[NCE]
     def resetPassword(id: Long, newPasswd: String, parent: Span = null): Unit =
-        startScopedSpan("resetPassword", parent, "usrId" → id) { span ⇒
+        startScopedSpan("resetPassword", parent, "usrId" -> id) { span =>
             NCSql.sql {
                 val usr = NCSqlManager.getUserById(id, span).getOrElse(throw new NCE(s"Unknown user ID: $id"))
 
@@ -442,11 +442,11 @@ object NCUserManager extends NCService with NCIgniteInstance {
             catching(wrapIE) {
                 NCTxManager.startTx {
                     idSigninCache(id) match {
-                        case Some(toks) ⇒
+                        case Some(toks) =>
                             tokenSigninCache --= toks.toSeq
                             idSigninCache -= id
 
-                        case None ⇒ // No-op.
+                        case None => // No-op.
                     }
                 }
             }
@@ -481,12 +481,12 @@ object NCUserManager extends NCService with NCIgniteInstance {
         startScopedSpan(
             "addUser",
             parent,
-            "compId" → compId,
-            "email" → email,
-            "firstName" → firstName,
-            "lastName" → lastName,
-            "usrExtId" → usrExtIdOpt.orNull,
-            "isAdmin" → isAdmin) { span ⇒
+            "compId" -> compId,
+            "email" -> email,
+            "firstName" -> firstName,
+            "lastName" -> lastName,
+            "usrExtId" -> usrExtIdOpt.orNull,
+            "isAdmin" -> isAdmin) { span =>
             val normEmail = U.normalizeEmail(email)
 
             if (!EMAIL_VALIDATOR.isValid(normEmail))
@@ -505,7 +505,7 @@ object NCUserManager extends NCService with NCIgniteInstance {
                             throw new NCE(s"User with this email already exists: $normEmail")
 
                         usrExtIdOpt match {
-                            case Some(usrExtId) ⇒
+                            case Some(usrExtId) =>
                                 val id = NCSqlManager.
                                     getUserId(compId, usrExtId, span).
                                     getOrElse(throw new NCE(s"User not found [companyId=$compId, extId=$usrExtId]"))
@@ -524,7 +524,7 @@ object NCUserManager extends NCService with NCIgniteInstance {
                                 logger.info(s"User converted [usrExtId=$usrExtId, email=$email]")
 
                                 id
-                            case None ⇒
+                            case None =>
                                 val newUsrId = usersSeq.incrementAndGet()
 
                                 NCSqlManager.addUser(
@@ -553,7 +553,7 @@ object NCUserManager extends NCService with NCIgniteInstance {
                 NCSqlManager.addPasswordHash(pwdSeq.incrementAndGet(), NCBlowfishHasher.hash(pwd, salt), span)
 
                 // "Stir up" password pool with each user.
-                (0 to Math.round((Math.random() * Config.pwdPoolBlowup) + Config.pwdPoolBlowup).toInt).foreach(_ ⇒
+                (0 to Math.round((Math.random() * Config.pwdPoolBlowup) + Config.pwdPoolBlowup).toInt).foreach(_ =>
                     NCSqlManager.addPasswordHash(pwdSeq.incrementAndGet(), NCBlowfishHasher.hash(U.genGuid()), span)
                 )
 
@@ -567,18 +567,18 @@ object NCUserManager extends NCService with NCIgniteInstance {
       */
     @throws[NCE]
     private def clearSigninCache(ses: SigninSession): Unit =
-        startScopedSpan("clearSigninCache", "usrId" → ses.userId) { _ ⇒
+        startScopedSpan("clearSigninCache", "usrId" -> ses.userId) { _ =>
             catching(wrapIE) {
                 idSigninCache(ses.userId) match {
-                    case Some(toks) ⇒
+                    case Some(toks) =>
                         val fixedToks = toks -- Seq(ses.acsToken)
 
                         if (fixedToks.isEmpty)
                             idSigninCache -= ses.userId
                         else
-                            idSigninCache += ses.userId → fixedToks
+                            idSigninCache += ses.userId -> fixedToks
 
-                    case None ⇒ // No-op.
+                    case None => // No-op.
                 }
             }
         }
@@ -596,18 +596,18 @@ object NCUserManager extends NCService with NCIgniteInstance {
         startScopedSpan(
             "getOrInsertExternalUserId",
             parent,
-            "companyId" → companyId,
-            "usrExtId" → usrExtId) { span ⇒
+            "companyId" -> companyId,
+            "usrExtId" -> usrExtId) { span =>
             NCSql.sql {
                 NCSqlManager.getUserId(companyId, usrExtId, span) match {
-                    case Some(id) ⇒ id
-                    case None ⇒
+                    case Some(id) => id
+                    case None =>
                         try {
                             userLock.acquire()
 
                             NCSqlManager.getUserId(companyId, usrExtId, span) match {
-                                case Some(id) ⇒ id
-                                case None ⇒
+                                case Some(id) => id
+                                case None =>
                                     val id = usersSeq.incrementAndGet()
 
                                     NCSqlManager.addUser(
@@ -642,7 +642,7 @@ object NCUserManager extends NCService with NCIgniteInstance {
       */
     @throws[NCE]
     def getUserId(companyId: Long, extUserId: String, parent: Span = null): Option[Long] =
-        startScopedSpan("getUser", parent, "companyId" → companyId, "extUserId" → extUserId) { span ⇒
+        startScopedSpan("getUser", parent, "companyId" -> companyId, "extUserId" -> extUserId) { span =>
             NCSql.sql {
                 NCSqlManager.getUserId(companyId, extUserId, span)
             }

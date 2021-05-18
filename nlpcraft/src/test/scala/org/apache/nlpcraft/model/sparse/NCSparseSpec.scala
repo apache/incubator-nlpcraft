@@ -53,15 +53,15 @@ class NCSparseModel extends NCAbstractTokensModel {
 
         def checkExists(sparsity: Int): Unit =
             require(
-                variants.exists(v ⇒ {
+                variants.exists(v => {
                     val toks = v.asScala.filter(_.getId == "xyz")
 
                     toks.size match {
-                        case 3 ⇒
+                        case 3 =>
                             checkSparsity(sparsity, toks)
 
                             true
-                        case _ ⇒
+                        case _ =>
                             false
                     }
                 }),
@@ -69,14 +69,14 @@ class NCSparseModel extends NCAbstractTokensModel {
             )
 
         ctx.getRequest.getNormalizedText match {
-            case "x y z x y z x y z" ⇒ checkOneVariant(0)
-            case "x y z test x y z test x y z test" ⇒ checkOneVariant(0)
-            case "x test y z x test y z x y test z" ⇒ checkOneVariant(1)
-            case "x z y x z y x z y" ⇒ checkExists(0)
-            case "x z y test x z y test x z y test" ⇒ checkExists(0)
-            case "x test z y x test z y x test z y" ⇒ checkExists(1)
+            case "x y z x y z x y z" => checkOneVariant(0)
+            case "x y z test x y z test x y z test" => checkOneVariant(0)
+            case "x test y z x test y z x y test z" => checkOneVariant(1)
+            case "x z y x z y x z y" => checkExists(0)
+            case "x z y test x z y test x z y test" => checkExists(0)
+            case "x test z y x test z y x test z y" => checkExists(1)
 
-            case _ ⇒ throw new AssertionError(s"Unexpected request: ${ctx.getRequest.getNormalizedText}")
+            case _ => throw new AssertionError(s"Unexpected request: ${ctx.getRequest.getNormalizedText}")
         }
 
         NCResult.text("OK")

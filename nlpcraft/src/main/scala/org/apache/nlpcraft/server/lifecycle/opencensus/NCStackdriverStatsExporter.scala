@@ -44,7 +44,7 @@ class NCStackdriverStatsExporter extends NCServerLifecycle with LazyLogging {
                 build
             )
         catch {
-            case e: IOException ⇒
+            case e: IOException =>
                 throw new NCE(
                     s"Stackdriver OpenCensus stats exporter cannot be registered for Google Project ID: ${Config.gpi}", e
                 )

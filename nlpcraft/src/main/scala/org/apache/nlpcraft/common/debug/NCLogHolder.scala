@@ -130,8 +130,8 @@ class NCLogHolder extends Serializable {
                 id = id,
                 exactMatch = exactMatch,
                 weight = weight.asJava,
-                tokensGroups = groups.map { case (group, toks) ⇒
-                    group → toks.map(g ⇒ GroupTokenJson(convert(g.token), g.used, g.conversation)).asJava
+                tokensGroups = groups.map { case (group, toks) =>
+                    group -> toks.map(g => GroupTokenJson(convert(g.token), g.used, g.conversation)).asJava
                 }.asJava,
                 best = false
             )
@@ -190,7 +190,7 @@ class NCLogHolder extends Serializable {
         
         this.queryContext = ContextJson(
             request = reqJs,
-            variants = ctx.getVariants.asScala.map(seq ⇒ seq.asScala.map(convert).asJava).toSeq.asJava,
+            variants = ctx.getVariants.asScala.map(seq => seq.asScala.map(convert).asJava).toSeq.asJava,
             convTokens = ctx.getConversation.getTokens.asScala.map(convert).asJava
         )
     }

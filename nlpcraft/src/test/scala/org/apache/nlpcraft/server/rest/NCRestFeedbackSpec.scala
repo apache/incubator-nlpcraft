@@ -26,7 +26,7 @@ class NCRestFeedbackSpec extends NCRestSpec {
 
     @BeforeEach
     def setUp(): Unit = {
-        post("user/get")(("$.id", (id: Number) ⇒ usrId = id.longValue()))
+        post("user/get")(("$.id", (id: Number) => usrId = id.longValue()))
 
         assertTrue(usrId > 0)
     }
@@ -40,19 +40,19 @@ class NCRestFeedbackSpec extends NCRestSpec {
         val id = addFeedback()
 
         // Gets and checks.
-        post("feedback/all")(("$.feedback", (fs: ResponseList) ⇒ assertTrue(containsLong(fs, "id", id))))
+        post("feedback/all")(("$.feedback", (fs: ResponseList) => assertTrue(containsLong(fs, "id", id))))
 
         // Deletes by id.
-        post("feedback/delete", "id" → id)()
+        post("feedback/delete", "id" -> id)()
 
         // Checks deleted.
-        post("feedback/all")(("$.feedback", (fs: ResponseList) ⇒ assertFalse(containsLong(fs, "id", id))))
+        post("feedback/all")(("$.feedback", (fs: ResponseList) => assertFalse(containsLong(fs, "id", id))))
 
         // Deletes all
         post("feedback/delete")()
 
         // Checks all deleted.
-        post("feedback/all")(("$.feedback", (feedbacks: ResponseList) ⇒ assertTrue(feedbacks.isEmpty)))
+        post("feedback/all")(("$.feedback", (feedbacks: ResponseList) => assertTrue(feedbacks.isEmpty)))
 
         // Adds few.
         addFeedback(usrId = Some(usrId))
@@ -60,19 +60,19 @@ class NCRestFeedbackSpec extends NCRestSpec {
         addFeedback(usrId = Some(usrId), comment = Some("comment"))
 
         // Checks
-        post("feedback/all")(("$.feedback", (fs: ResponseList) ⇒ {
+        post("feedback/all")(("$.feedback", (fs: ResponseList) => {
             assertEquals(3, fs.size())
 
             // 3 - because default userId used if parameter `usrId` is skipped in feedback.
-            assertEquals(3, count(fs, "usrId", (o: Object) ⇒ o.asInstanceOf[Number].longValue(), usrId))
-            assertEquals(2, count(fs, "comment", (o: Object) ⇒ o.asInstanceOf[String], "comment"))
+            assertEquals(3, count(fs, "usrId", (o: Object) => o.asInstanceOf[Number].longValue(), usrId))
+            assertEquals(2, count(fs, "comment", (o: Object) => o.asInstanceOf[String], "comment"))
         }))
 
         // Deletes all.
         post("feedback/delete")()
 
         // Checks all deleted.
-        post("feedback/all")(("$.feedback", (feedbacks: ResponseList) ⇒ assertTrue(feedbacks.isEmpty)))
+        post("feedback/all")(("$.feedback", (feedbacks: ResponseList) => assertTrue(feedbacks.isEmpty)))
     }
 
     /**
@@ -84,12 +84,12 @@ class NCRestFeedbackSpec extends NCRestSpec {
         var fId: Long = 0
 
         post("feedback/add",
-            "srvReqId" → U.genGuid(),
-            "score" → 0.5,
-            "usrId" → usrId.orNull,
-            "comment" → comment.orNull
+            "srvReqId" -> U.genGuid(),
+            "score" -> 0.5,
+            "usrId" -> usrId.orNull,
+            "comment" -> comment.orNull
         )(
-            ("$.id", (id: Number) ⇒ fId = id.longValue())
+            ("$.id", (id: Number) => fId = id.longValue())
         )
 
         assertTrue(fId != 0)

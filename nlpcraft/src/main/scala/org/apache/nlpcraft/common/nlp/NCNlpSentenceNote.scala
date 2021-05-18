@@ -21,7 +21,7 @@ import org.apache.nlpcraft.common.U
 import org.apache.nlpcraft.common.ascii._
 
 import scala.language.implicitConversions
-import java.io.{Serializable ⇒ JSerializable}
+import java.io.{Serializable => JSerializable}
 import scala.collection.mutable
 import scala.compat.java8.FunctionConverters.enrichAsJavaFunction
 import scala.jdk.CollectionConverters.CollectionHasAsScala
@@ -58,8 +58,8 @@ class NCNlpSentenceNote(private val values: Map[String, JSerializable]) extends 
     def dataOpt[T](key: String): Option[T] = values.get(key).asInstanceOf[Option[T]]
 
     override def equals(obj: Any): Boolean = obj match {
-        case h: NCNlpSentenceNote ⇒ h.hashCode() == hashCode() && h.values == values
-        case _ ⇒ false
+        case h: NCNlpSentenceNote => h.hashCode() == hashCode() && h.values == values
+        case _ => false
     }
 
     override def hashCode(): Int = hash
@@ -72,7 +72,7 @@ class NCNlpSentenceNote(private val values: Map[String, JSerializable]) extends 
             indexes,
             Some(wordIndexes),
             noteType,
-            values.filter(p ⇒ !SKIP_CLONE.contains(p._1)).toSeq ++ params:_*
+            values.filter(p => !SKIP_CLONE.contains(p._1)).toSeq ++ params:_*
         )
 
     override def clone(): NCNlpSentenceNote = {
@@ -86,14 +86,14 @@ class NCNlpSentenceNote(private val values: Map[String, JSerializable]) extends 
       * @return
       */
     override def toAscii: String =
-        values.iterator.toSeq.sortBy(_._1).foldLeft(NCAsciiTable("Key", "Value"))((t, p) ⇒ t += p).toString
+        values.iterator.toSeq.sortBy(_._1).foldLeft(NCAsciiTable("Key", "Value"))((t, p) => t += p).toString
 
     /**
       *
       * @return
       */
     def skipNlp(): Map[String, JSerializable] =
-        values.filter { case (key, _) ⇒ !SKIP_CLONE.contains(key) && key != "noteType" }
+        values.filter { case (key, _) => !SKIP_CLONE.contains(key) && key != "noteType" }
 
     /**
       *
@@ -101,15 +101,15 @@ class NCNlpSentenceNote(private val values: Map[String, JSerializable]) extends 
     def asMetadata(): Map[String, JSerializable] =
         if (isUser)
             values.get("meta") match {
-                case Some(meta) ⇒ meta.asInstanceOf[Map[String, JSerializable]]
-                case None ⇒ Map.empty[String, JSerializable]
+                case Some(meta) => meta.asInstanceOf[Map[String, JSerializable]]
+                case None => Map.empty[String, JSerializable]
             }
         else {
             val md = mutable.Map.empty[String, JSerializable]
 
             val m = if (noteType != "nlpcraft:nlp") skipNlp() else values
 
-            m.foreach { case (name, value) ⇒ md += (name.toLowerCase() → value)}
+            m.foreach { case (name, value) => md += (name.toLowerCase() -> value)}
 
             md.toMap
         }
@@ -121,7 +121,7 @@ class NCNlpSentenceNote(private val values: Map[String, JSerializable]) extends 
     def clone(kvs : (String, JSerializable)*): NCNlpSentenceNote = {
         val m = mutable.HashMap.empty[String, JSerializable] ++ values
 
-        kvs.foreach(kv ⇒ m += kv._1 → kv._2)
+        kvs.foreach(kv => m += kv._1 -> kv._2)
 
         new NCNlpSentenceNote(m.toMap)
     }
@@ -140,28 +140,28 @@ class NCNlpSentenceNote(private val values: Map[String, JSerializable]) extends 
                 Seq.empty
             else
                 noteType match {
-                    case "nlpcraft:continent" ⇒ Seq("continent")
-                    case "nlpcraft:subcontinent" ⇒ Seq("continent", "subcontinent")
-                    case "nlpcraft:country" ⇒ Seq("continent", "subcontinent", "country")
-                    case "nlpcraft:region" ⇒ Seq("continent", "subcontinent", "country", "region")
-                    case "nlpcraft:city" ⇒ Seq("continent", "subcontinent", "country", "region", "city")
-                    case "nlpcraft:metro" ⇒ Seq("metro")
-                    case "nlpcraft:date" ⇒ Seq("from", "to")
-                    case "nlpcraft:relation" ⇒ Seq("type", "note") ++ addRefs("indexes")
-                    case "nlpcraft:sort" ⇒ Seq("asc", "subjnotes", "bynotes") ++ addRefs("subjindexes", "byindexes")
-                    case "nlpcraft:limit" ⇒ Seq("limit", "note") ++ addRefs("indexes", "asc") // Asc flag has sense only with references for limit.
-                    case "nlpcraft:coordinate" ⇒ Seq("latitude", "longitude")
-                    case "nlpcraft:num" ⇒ Seq("from", "to", "unit", "unitType")
-                    case x if x.startsWith("google:") ⇒ Seq("meta", "mentionsBeginOffsets", "mentionsContents", "mentionsTypes")
-                    case x if x.startsWith("stanford:") ⇒ Seq("nne")
-                    case x if x.startsWith("opennlp:") ⇒ Seq.empty
-                    case x if x.startsWith("spacy:") ⇒ Seq("vector")
+                    case "nlpcraft:continent" => Seq("continent")
+                    case "nlpcraft:subcontinent" => Seq("continent", "subcontinent")
+                    case "nlpcraft:country" => Seq("continent", "subcontinent", "country")
+                    case "nlpcraft:region" => Seq("continent", "subcontinent", "country", "region")
+                    case "nlpcraft:city" => Seq("continent", "subcontinent", "country", "region", "city")
+                    case "nlpcraft:metro" => Seq("metro")
+                    case "nlpcraft:date" => Seq("from", "to")
+                    case "nlpcraft:relation" => Seq("type", "note") ++ addRefs("indexes")
+                    case "nlpcraft:sort" => Seq("asc", "subjnotes", "bynotes") ++ addRefs("subjindexes", "byindexes")
+                    case "nlpcraft:limit" => Seq("limit", "note") ++ addRefs("indexes", "asc") // Asc flag has sense only with references for limit.
+                    case "nlpcraft:coordinate" => Seq("latitude", "longitude")
+                    case "nlpcraft:num" => Seq("from", "to", "unit", "unitType")
+                    case x if x.startsWith("google:") => Seq("meta", "mentionsBeginOffsets", "mentionsContents", "mentionsTypes")
+                    case x if x.startsWith("stanford:") => Seq("nne")
+                    case x if x.startsWith("opennlp:") => Seq.empty
+                    case x if x.startsWith("spacy:") => Seq("vector")
 
-                    case _ ⇒ throw new AssertionError(s"Unexpected note type: $noteType")
+                    case _ => throw new AssertionError(s"Unexpected note type: $noteType")
                 }
 
         val seq1 = if (withIndexes) Seq(wordIndexes, noteType) else Seq(noteType)
-        val seq2 = names.map(name ⇒ this.getOrElse(name, null))
+        val seq2 = names.map(name => this.getOrElse(name, null))
 
         seq1 ++ seq2
     }
@@ -172,19 +172,19 @@ class NCNlpSentenceNote(private val values: Map[String, JSerializable]) extends 
       * @return
       */
     override def toString: String =
-        values.toSeq.sortBy(t ⇒ { // Don't show internal ID.
+        values.toSeq.sortBy(t => { // Don't show internal ID.
             val typeSort = t._1 match {
-                case "noteType" ⇒ 0
-                case "origText" ⇒ 1
-                case "wordIndexes" ⇒ 2
-                case "direct" ⇒ 3
-                case "sparsity" ⇒ 4
-                case "parts" ⇒ 5
+                case "noteType" => 0
+                case "origText" => 1
+                case "wordIndexes" => 2
+                case "direct" => 3
+                case "sparsity" => 4
+                case "parts" => 5
 
-                case _ ⇒ 100
+                case _ => 100
             }
             (typeSort, t._1)
-        }).map(p ⇒ s"${p._1}=${p._2}").mkString("NLP note [", ", ", "]")
+        }).map(p => s"${p._1}=${p._2}").mkString("NLP note [", ", ", "]")
 }
 
 object NCNlpSentenceNote {
@@ -230,16 +230,16 @@ object NCNlpSentenceNote {
         new NCNlpSentenceNote(
             mutable.HashMap[String, JSerializable]((
             params.filter(_._2 != null) :+
-               ("noteType" → typ) :+
-               ("tokMinIndex" → indexes.min) :+
-               ("tokMaxIndex" → indexes.max) :+
-               ("tokWordIndexes" → indexes.asJava) :+
-               ("minIndex" → tokMinIndex) :+
-               ("maxIndex" → tokMaxIndex) :+
-               ("wordIndexes" → tokWordIndexes) :+
-               ("wordLength" → len) :+
-               ("sparsity" → sparsity)
-            ).map(p ⇒ p._1 → p._2.asInstanceOf[JSerializable]): _*).toMap
+               ("noteType" -> typ) :+
+               ("tokMinIndex" -> indexes.min) :+
+               ("tokMaxIndex" -> indexes.max) :+
+               ("tokWordIndexes" -> indexes.asJava) :+
+               ("minIndex" -> tokMinIndex) :+
+               ("maxIndex" -> tokMaxIndex) :+
+               ("wordIndexes" -> tokWordIndexes) :+
+               ("wordLength" -> len) :+
+               ("sparsity" -> sparsity)
+            ).map(p => p._1 -> p._2.asInstanceOf[JSerializable]): _*).toMap
         )
     }
 

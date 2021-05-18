@@ -46,7 +46,7 @@ object NCGeoMetroGenerator extends App {
         val lines = U.readPath(in).map(_.strip).filter(_.nonEmpty)
 
        // Skips header.
-        val metro = lines.tail.filter(!_.contains("(not set)")).map(line ⇒ Holder(line.takeWhile(_ != ',')))
+        val metro = lines.tail.filter(!_.contains("(not set)")).map(line => Holder(line.takeWhile(_ != ',')))
 
         val mapper = U.getYamlMapper
 
@@ -54,16 +54,16 @@ object NCGeoMetroGenerator extends App {
 
         println(s"File created: $out_vals")
 
-        val sync = metro.map(p ⇒ {
+        val sync = metro.map(p => {
             val metro = p.name
             val normMetro = deleteBrackets(metro)
 
-            def mkSeq(s: String): Seq[String] = SYNTH_PART.map(p ⇒ s"$p $s") ++ SYNTH_PART.map(p ⇒ s"$s $p")
+            def mkSeq(s: String): Seq[String] = SYNTH_PART.map(p => s"$p $s") ++ SYNTH_PART.map(p => s"$s $p")
             
             val last3Symbols = normMetro.drop(normMetro.length - 3)
 
             val addSeq =
-                if (last3Symbols.head == ' ' && last3Symbols.drop(1).forall(ch ⇒ ch.isLetter && ch.isUpper))
+                if (last3Symbols.head == ' ' && last3Symbols.drop(1).forall(ch => ch.isLetter && ch.isUpper))
                     mkSeq(normMetro.take(normMetro.length - 3))
                 else
                     Seq.empty

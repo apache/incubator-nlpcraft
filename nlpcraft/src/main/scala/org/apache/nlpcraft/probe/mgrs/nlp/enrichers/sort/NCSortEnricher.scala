@@ -49,39 +49,39 @@ object NCSortEnricher extends NCProbeEnricher {
     // x - means one or multiple words. x must be at least one for each line, maximum two.
     private final val MASKS: Map[String, Type] =
         Map(
-            "x SORT BY x" → TYPE_SUBJ_BY,
-            "x SORT BY x ORDER" → TYPE_SUBJ_BY,
+            "x SORT BY x" -> TYPE_SUBJ_BY,
+            "x SORT BY x ORDER" -> TYPE_SUBJ_BY,
 
-            "SORT x BY x" → TYPE_SUBJ_BY,
-            "SORT x BY x ORDER" → TYPE_SUBJ_BY,
+            "SORT x BY x" -> TYPE_SUBJ_BY,
+            "SORT x BY x ORDER" -> TYPE_SUBJ_BY,
 
-            "SORT x ORDER BY x" → TYPE_SUBJ_BY,
-            "x SORT ORDER BY x" → TYPE_SUBJ_BY,
+            "SORT x ORDER BY x" -> TYPE_SUBJ_BY,
+            "x SORT ORDER BY x" -> TYPE_SUBJ_BY,
 
-            "ORDER SORT x BY x" → TYPE_SUBJ_BY,
+            "ORDER SORT x BY x" -> TYPE_SUBJ_BY,
 
-            "SORT x ORDER" → TYPE_SUBJ,
-            "SORT x BY ORDER" → TYPE_SUBJ,
-            "ORDER SORT x" → TYPE_SUBJ,
-            "SORT x" → TYPE_SUBJ,
-            "x SORT" → TYPE_SUBJ,
+            "SORT x ORDER" -> TYPE_SUBJ,
+            "SORT x BY ORDER" -> TYPE_SUBJ,
+            "ORDER SORT x" -> TYPE_SUBJ,
+            "SORT x" -> TYPE_SUBJ,
+            "x SORT" -> TYPE_SUBJ,
 
-            "SORT BY x ORDER" → TYPE_BY,
-            "SORT BY x" → TYPE_BY,
-            "ORDER SORT BY x" → TYPE_BY
+            "SORT BY x ORDER" -> TYPE_BY,
+            "SORT BY x" -> TYPE_BY,
+            "ORDER SORT BY x" -> TYPE_BY
         )
 
     private final val SORT_WORDS = Seq("sort", "rank", "classify", "order", "arrange", "organize", "segment", "shuffle")
     private final val BY_WORDS = Seq("by", "on", "with")
     private final val ASC_WORDS = Seq(
-        "top down" → false,
-        "bottom up" → true,
-        "ascending" → true,
-        "asc" → true,
-        "descending" → false,
-        "desc" → false,
-        "{in|by|from} {top down|descending} {order|way|fashion|_}" → false,
-        "{in|by|from} {bottom up|ascending} {order|way|fashion|_}" → true
+        "top down" -> false,
+        "bottom up" -> true,
+        "ascending" -> true,
+        "asc" -> true,
+        "descending" -> false,
+        "desc" -> false,
+        "{in|by|from} {top down|descending} {order|way|fashion|_}" -> false,
+        "{in|by|from} {bottom up|ascending} {order|way|fashion|_}" -> true
     )
 
     case class NoteData(note: String, indexes: Seq[Int]) {
@@ -122,7 +122,7 @@ object NCSortEnricher extends NCProbeEnricher {
         override def toString: String = {
             def s1[T](seq: Seq[NCNlpSentenceToken]): String = s"[${seq.map(_.origText).mkString(", ")}]"
             def s2[T](seq: Seq[NoteData]): String =
-                s"[${seq.map(p ⇒ s"${p.note}: [${p.indexes.mkString(", ")}]").mkString(", ")}]"
+                s"[${seq.map(p => s"${p.note}: [${p.indexes.mkString(", ")}]").mkString(", ")}]"
             def s3[T](seq: Seq[Seq[NoteData]]): String = s"[${seq.map(s2).mkString(", ")}]"
 
             s"Match [main=${s1(main)}, stop=${s1(stop)}, subjSeq=${s3(subjSeq)}, bySeq=${s3(bySeq)}]"
@@ -154,15 +154,15 @@ object NCSortEnricher extends NCProbeEnricher {
         require(!by.exists(ordersSeq.contains))
 
         // Right order of keywords and references.
-        MASKS.keys.map(_.split(" ")).foreach(seq ⇒ {
-            require(seq.forall(p ⇒ p == "SORT" || p == "ORDER" || p == "BY" || p == "x"))
+        MASKS.keys.map(_.split(" ")).foreach(seq => {
+            require(seq.forall(p => p == "SORT" || p == "ORDER" || p == "BY" || p == "x"))
 
-            seq.groupBy(p ⇒ p).foreach { case (key, group) ⇒
+            seq.groupBy(p => p).foreach { case (key, group) =>
                 val n = group.length
 
                 key match {
-                    case "x" ⇒ require(n == 1 || n == 2)
-                    case _ ⇒ require(n == 1)
+                    case "x" => require(n == 1 || n == 2)
+                    case _ => require(n == 1)
                 }
             }
         })
@@ -176,14 +176,14 @@ object NCSortEnricher extends NCProbeEnricher {
 
         toks.flatten.
             filter(!_.isNlp).
-            filter(n ⇒ n.tokenIndexes.head >= min && n.tokenIndexes.last <= max).
-            map(n ⇒ NoteData(n.noteType, n.tokenIndexes)).
+            filter(n => n.tokenIndexes.head >= min && n.tokenIndexes.last <= max).
+            map(n => NoteData(n.noteType, n.tokenIndexes)).
             sortBy(_.indexes.head).distinct
     }
 
     /**
-      * [Token] → [NoteData]
-      * [Token(A, B), Token(A), Token(C, D), Token(C, D, X), Token(Z)] ⇒
+      * [Token] -> [NoteData]
+      * [Token(A, B), Token(A), Token(C, D), Token(C, D, X), Token(Z)] =>
       * [ [A (0, 1), C (2, 3), Z (4)], [A (0, 1), D (2, 3), Z (4) ] ]
       *
       * @param toksNoteData
@@ -200,15 +200,15 @@ object NCSortEnricher extends NCProbeEnricher {
                   * @param tok2Idx Second token index.
                   */
                 def contiguous(tok1Idx: Int, tok2Idx: Int): Boolean = {
-                    val between = toks.filter(t ⇒ t.index > tok1Idx && t.index < tok2Idx)
+                    val between = toks.filter(t => t.index > tok1Idx && t.index < tok2Idx)
 
-                    between.isEmpty || between.forall(p ⇒ p.isStopWord || p.stem == stemAnd)
+                    between.isEmpty || between.forall(p => p.isStopWord || p.stem == stemAnd)
                 }
 
                 val toks2 = toks.filter(othersRefs.contains)
 
-                val minIdx = toks2.dropWhile(t ⇒ !isUserNotValue(t)).head.index
-                val maxIdx = toks2.reverse.dropWhile(t ⇒ !isUserNotValue(t)).head.index
+                val minIdx = toks2.dropWhile(t => !isUserNotValue(t)).head.index
+                val maxIdx = toks2.reverse.dropWhile(t => !isUserNotValue(t)).head.index
 
                 require(minIdx <= maxIdx)
 
@@ -216,14 +216,14 @@ object NCSortEnricher extends NCProbeEnricher {
                     seq += nd
 
                     toksNoteData.
-                        filter(p ⇒ nd.indexes.last < p.indexes.head && contiguous(nd.indexes.last, p.indexes.head)).
+                        filter(p => nd.indexes.last < p.indexes.head && contiguous(nd.indexes.last, p.indexes.head)).
                         foreach(fill(_, mutable.ArrayBuffer.empty[NoteData] ++ seq.clone()))
 
                     if (seq.nonEmpty && seq.head.indexes.head == minIdx && seq.last.indexes.last == maxIdx)
                         res += seq
                 }
 
-                toksNoteData.filter(_.indexes.head == minIdx).foreach(p ⇒ fill(p))
+                toksNoteData.filter(_.indexes.head == minIdx).foreach(p => fill(p))
 
                 res
             }
@@ -233,7 +233,7 @@ object NCSortEnricher extends NCProbeEnricher {
         if (res.isEmpty && !nullable)
             throw new AssertionError(s"Invalid empty result " +
                 s"[tokensTexts=[${toks.map(_.origText).mkString("|")}]" +
-                s", notes=[${toks.flatten.map(n ⇒ s"${n.noteType}:[${n.tokenIndexes.mkString(",")}]").mkString("|")}]" +
+                s", notes=[${toks.flatten.map(n => s"${n.noteType}:[${n.tokenIndexes.mkString(",")}]").mkString("|")}]" +
                 s", tokensIndexes=[${toks.map(_.index).mkString("|")}]" +
                 s", allData=[${toksNoteData.mkString("|")}]" +
                 s"]"
@@ -248,8 +248,8 @@ object NCSortEnricher extends NCProbeEnricher {
       */
     private def isUserNotValue(t: NCNlpSentenceToken): Boolean =
         t.find(_.isUser) match {
-            case Some(n) ⇒ !n.contains("value")
-            case None ⇒ false
+            case Some(n) => !n.contains("value")
+            case None => false
         }
 
     /**
@@ -274,10 +274,10 @@ object NCSortEnricher extends NCProbeEnricher {
 
             val maxWords = keyStems.map(_.count(_ == ' ')).max + 1
 
-            (1 to maxWords).reverse.flatMap(i ⇒
-                toks.sliding(i).filter(toks ⇒ used.intersect(toks).isEmpty).
-                    map(toks ⇒ toks.map(_.stem).mkString(" ") → toks).toMap.
-                    flatMap { case (stem, stemToks) ⇒
+            (1 to maxWords).reverse.flatMap(i =>
+                toks.sliding(i).filter(toks => used.intersect(toks).isEmpty).
+                    map(toks => toks.map(_.stem).mkString(" ") -> toks).toMap.
+                    flatMap { case (stem, stemToks) =>
                         if (keyStems.contains(stem)) Some(KeyWord(stemToks, keyStems.indexOf(stem))) else None
                     }.toStream.headOption
             ).toStream.headOption
@@ -310,26 +310,26 @@ object NCSortEnricher extends NCProbeEnricher {
                 else
                     "-"
 
-            val others = toks.filter(t ⇒ !all.contains(t))
+            val others = toks.filter(t => !all.contains(t))
 
             if (others.nonEmpty) {
                 val idxs = others.map(_.index).toSet
 
-                val othersRefs = others.filter(t ⇒ t.exists(n ⇒ isUserNotValue(n) && n.tokenIndexes.toSet.subsetOf(idxs)))
+                val othersRefs = others.filter(t => t.exists(n => isUserNotValue(n) && n.tokenIndexes.toSet.subsetOf(idxs)))
 
                 if (
                     othersRefs.nonEmpty &&
-                    others.filter(p ⇒ !othersRefs.contains(p)).
-                        forall(p ⇒ (p.isStopWord || p.stem == stemAnd) && !maskWords.contains(p.stem))
+                    others.filter(p => !othersRefs.contains(p)).
+                        forall(p => (p.isStopWord || p.stem == stemAnd) && !maskWords.contains(p.stem))
                 ) {
                     // It removes duplicates (`SORT x x ORDER x x x` converts to `SORT x ORDER x`)
-                    val mask = toks.map(getKeyWordType).foldLeft("")((x, y) ⇒ if (x.endsWith(y)) x else s"$x $y").trim
+                    val mask = toks.map(getKeyWordType).foldLeft("")((x, y) => if (x.endsWith(y)) x else s"$x $y").trim
 
                     MASKS.get(mask) match {
-                        case Some(typ) ⇒
+                        case Some(typ) =>
                             val sepIdxs = all.
                                 map(_.index).
-                                filter(i ⇒ others.exists(_.index > i) && others.exists(_.index < i)).
+                                filter(i => others.exists(_.index > i) && others.exists(_.index < i)).
                                 sorted
 
                             // Divides separated by keywords.
@@ -355,10 +355,10 @@ object NCSortEnricher extends NCProbeEnricher {
                                         split(part2, othersRefs, data2, nullable = true)
                                     else
                                         Seq.empty
-                                val asc = orderOpt.flatMap(o ⇒ Some(order(o.synonymIndex)._2))
+                                val asc = orderOpt.flatMap(o => Some(order(o.synonymIndex)._2))
 
                                 typ match {
-                                    case TYPE_SUBJ ⇒
+                                    case TYPE_SUBJ =>
                                         require(seq1.nonEmpty)
                                         require(seq2.isEmpty)
                                         require(sortToks.nonEmpty)
@@ -376,7 +376,7 @@ object NCSortEnricher extends NCProbeEnricher {
                                                     )
                                                 )
 
-                                    case TYPE_SUBJ_BY ⇒
+                                    case TYPE_SUBJ_BY =>
                                         require(seq1.nonEmpty)
                                         require(seq2.nonEmpty)
                                         require(sortToks.nonEmpty)
@@ -392,7 +392,7 @@ object NCSortEnricher extends NCProbeEnricher {
                                             )
                                         )
 
-                                    case TYPE_BY ⇒
+                                    case TYPE_BY =>
                                         require(seq1.nonEmpty)
                                         require(seq2.isEmpty)
                                         require(sortToks.nonEmpty)
@@ -409,10 +409,10 @@ object NCSortEnricher extends NCProbeEnricher {
                                             )
                                         )
 
-                                    case _ ⇒ throw new AssertionError(s"Unexpected type: $typ")
+                                    case _ => throw new AssertionError(s"Unexpected type: $typ")
                                 }
                             }
-                        case None ⇒ // No-op.
+                        case None => // No-op.
                     }
                 }
             }
@@ -447,15 +447,15 @@ object NCSortEnricher extends NCProbeEnricher {
                 asScala.toSet
 
         startScopedSpan("enrich", parent,
-            "srvReqId" → ns.srvReqId,
-            "mdlId" → mdl.model.getId,
-            "txt" → ns.text) { _ ⇒
+            "srvReqId" -> ns.srvReqId,
+            "mdlId" -> mdl.model.getId,
+            "txt" -> ns.text) { _ =>
             val notes = mutable.HashSet.empty[NCNlpSentenceNote]
             val matches = mutable.ArrayBuffer.empty[Match]
 
-            for (toks ← ns.tokenMixWithStopWords() if validImportant(ns, toks)) {
+            for (toks <- ns.tokenMixWithStopWords() if validImportant(ns, toks)) {
                 tryToMatch(toks) match {
-                    case Some(m)  ⇒
+                    case Some(m)  =>
                         if (!matches.exists(_.isSubCase(m)) && !m.intersect(restricted)) {
                             def addNotes(
                                 params: ArrayBuffer[(String, Any)],
@@ -463,8 +463,8 @@ object NCSortEnricher extends NCProbeEnricher {
                                 notesName: String,
                                 idxsName: String
                             ): ArrayBuffer[(String, Any)] = {
-                                params += notesName → seq.map(_.note).asJava
-                                params += idxsName → seq.map(_.indexes.asJava).asJava
+                                params += notesName -> seq.map(_.note).asJava
+                                params += idxsName -> seq.map(_.indexes.asJava).asJava
 
                                 params
                             }
@@ -472,7 +472,7 @@ object NCSortEnricher extends NCProbeEnricher {
                             def mkNote(params: ArrayBuffer[(String, Any)]): Unit = {
                                 val note = NCNlpSentenceNote(m.main.map(_.index), TOK_ID, params: _*)
 
-                                if (!notes.exists(n ⇒ ns.notesEqualOrSimilar(n, note))) {
+                                if (!notes.exists(n => ns.notesEqualOrSimilar(n, note))) {
                                     notes += note
 
                                     m.main.foreach(_.add(note))
@@ -486,18 +486,18 @@ object NCSortEnricher extends NCProbeEnricher {
                                 val params = mutable.ArrayBuffer.empty[(String, Any)]
 
                                 if (m.asc.isDefined)
-                                    params += "asc" → m.asc.get
+                                    params += "asc" -> m.asc.get
 
                                 params
                             }
 
                             if (m.subjSeq.nonEmpty)
-                                for (subj ← m.subjSeq) {
+                                for (subj <- m.subjSeq) {
                                     def addSubj(): ArrayBuffer[(String, Any)] =
                                         addNotes(mkParams(), subj, "subjnotes", "subjindexes")
 
                                     if (m.bySeq.nonEmpty)
-                                        for (by ← m.bySeq)
+                                        for (by <- m.bySeq)
                                             mkNote(addNotes(addSubj(), by, "bynotes", "byindexes"))
                                     else
                                         mkNote(addSubj())
@@ -505,12 +505,12 @@ object NCSortEnricher extends NCProbeEnricher {
                             else {
                                 require(m.bySeq.nonEmpty)
 
-                                for (by ← m.bySeq)
+                                for (by <- m.bySeq)
                                     mkNote(addNotes(mkParams(), by, "bynotes", "byindexes"))
                             }
                         }
 
-                    case None ⇒ // No-op.
+                    case None => // No-op.
                 }
             }
         }
@@ -521,7 +521,7 @@ object NCSortEnricher extends NCProbeEnricher {
      * @param parent Optional parent span.
      * @return
      */
-    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ =>
         ackStarting()
 
         // Single words.
@@ -537,7 +537,7 @@ object NCSortEnricher extends NCProbeEnricher {
         order = {
             val p = NCMacroParser()
 
-            ASC_WORDS.flatMap { case (txt, asc) ⇒ p.expand(txt).map(p ⇒ NCNlpCoreManager.stem(p) → asc ) }
+            ASC_WORDS.flatMap { case (txt, asc) => p.expand(txt).map(p => NCNlpCoreManager.stem(p) -> asc ) }
         }
 
         stemAnd = NCNlpCoreManager.stem("and")
@@ -552,7 +552,7 @@ object NCSortEnricher extends NCProbeEnricher {
      *
      * @param parent Optional parent span.
      */
-    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
 
         sort = null

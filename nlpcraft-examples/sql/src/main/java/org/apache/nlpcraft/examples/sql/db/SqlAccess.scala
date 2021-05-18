@@ -56,7 +56,7 @@ object SqlAccess extends LazyLogging {
             try
                 conn.prepareStatement(qry.sql)
             catch {
-                case e: JdbcSQLException ⇒
+                case e: JdbcSQLException =>
                     close()
 
                     // H2 specific - connection broken: https://www.h2database.com/javadoc/org/h2/api/ErrorCode.html
@@ -71,10 +71,10 @@ object SqlAccess extends LazyLogging {
         }
 
         try {
-            Using.resource { getPs } { ps ⇒
-                qry.parameters.zipWithIndex.foreach { case (p, idx) ⇒ ps.setObject(idx + 1, p) }
+            Using.resource { getPs } { ps =>
+                qry.parameters.zipWithIndex.foreach { case (p, idx) => ps.setObject(idx + 1, p) }
 
-                Using.resource { ps.executeQuery() } { rs ⇒
+                Using.resource { ps.executeQuery() } { rs =>
                     val md = rs.getMetaData
                     val cnt = md.getColumnCount
 
@@ -82,7 +82,7 @@ object SqlAccess extends LazyLogging {
                     var rows = Seq.empty[Seq[String]]
 
                     while (rs.next)
-                        rows :+= (1 to cnt).map(i ⇒ {
+                        rows :+= (1 to cnt).map(i => {
                             val o = rs.getObject(i)
 
                             if (rs.wasNull()) "" else o.toString
@@ -102,7 +102,7 @@ object SqlAccess extends LazyLogging {
                         var data = rows.take(LOG_ROWS).map(_.toSeq)
 
                         if (rows.nonEmpty && rows.size > LOG_ROWS)
-                            data ++= Seq(cols.indices.map(_ ⇒ "..."))
+                            data ++= Seq(cols.indices.map(_ => "..."))
 
                         logger.info(s"\n${NCAsciiTable.of(
                             cols,
@@ -115,7 +115,7 @@ object SqlAccess extends LazyLogging {
             }
         }
         catch {
-            case e: SQLException ⇒
+            case e: SQLException =>
                 close()
 
                 conn = null
@@ -139,6 +139,6 @@ object SqlAccess extends LazyLogging {
             try
                 conn.close()
             catch {
-                case _: Exception ⇒ logger.warn("Error closing DB connection.")
+                case _: Exception => logger.warn("Error closing DB connection.")
             }
 }

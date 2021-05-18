@@ -73,22 +73,22 @@ object NCRestManager extends NCService {
      * @param parent Optional parent span.
      * @return
      */
-    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
+    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span =>
         ackStarting()
 
         val url = s"${Config.host}:${Config.port}"
         val api: NCRestApi = U.mkObject(Config.apiImpl)
         
         addTags(span,
-            "url" → url,
-            "api" → Config.apiImpl
+            "url" -> url,
+            "api" -> Config.apiImpl
         )
 
         bindFut = Http().newServerAt(Config.host, Config.port).bind(Route.toFunction(api.getRoute))
 
         bindFut.onComplete {
-            case Success(_) ⇒ logger.info(s"REST server is on '${c(url)}'.")
-            case Failure(_) ⇒ logger.info(s"REST server failed to start on '${c(url)}'.")
+            case Success(_) => logger.info(s"REST server is on '${c(url)}'.")
+            case Failure(_) => logger.info(s"REST server failed to start on '${c(url)}'.")
         }
 
         ackStarted()
@@ -98,11 +98,11 @@ object NCRestManager extends NCService {
      *
      * @param parent Optional parent span.
      */
-    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
 
         if (bindFut != null)
-            bindFut.flatMap(_.unbind()).onComplete(_ ⇒ SYSTEM.terminate())
+            bindFut.flatMap(_.unbind()).onComplete(_ => SYSTEM.terminate())
 
         ackStopped()
     }

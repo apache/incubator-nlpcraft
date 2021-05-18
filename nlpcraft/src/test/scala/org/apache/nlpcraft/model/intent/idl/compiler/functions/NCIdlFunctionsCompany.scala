@@ -40,7 +40,7 @@ class NCIdlFunctionsCompany extends NCIdlFunctions {
             override def getAddress: Optional[String] = Optional.of("address")
             override def getPostalCode: Optional[String] = Optional.of("code")
             override def getMetadata: util.Map[String, AnyRef] =
-                Map("k1" → "v1").map(p ⇒ p._1 → p._2.asInstanceOf[AnyRef]).asJava
+                Map("k1" -> "v1").map(p => p._1 -> p._2.asInstanceOf[AnyRef]).asJava
         })
 
         test(new NCCompany {
@@ -53,7 +53,7 @@ class NCIdlFunctionsCompany extends NCIdlFunctions {
             override def getAddress: Optional[String] = Optional.empty()
             override def getPostalCode: Optional[String] = Optional.empty()
             override def getMetadata: util.Map[String, AnyRef] =
-                Map("k1" → "v1").map(p ⇒ p._1 → p._2.asInstanceOf[AnyRef]).asJava
+                Map("k1" -> "v1").map(p => p._1 -> p._2.asInstanceOf[AnyRef]).asJava
         })
     }
 

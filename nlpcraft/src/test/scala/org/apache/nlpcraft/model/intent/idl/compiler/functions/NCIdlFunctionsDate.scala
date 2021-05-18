@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test
 
 import java.time.temporal.IsoFields
 import java.time.{LocalDate, LocalTime}
-import java.util.{Calendar ⇒ C}
+import java.util.{Calendar => C}
 
 /**
   * Tests for 'dates' functions.
@@ -53,7 +53,7 @@ class NCIdlFunctionsDate extends NCIdlFunctions {
         try
             test0()
         catch {
-            case _: AssertionError ⇒
+            case _: AssertionError =>
                 // Some field more than `second` can be changed. One more attempt.
                 test0()
         }

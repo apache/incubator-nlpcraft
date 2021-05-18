@@ -42,7 +42,7 @@ object NCIgniteHelpers extends NCIgniteInstance {
           * @param types Cache event types.
           * @return Listener ID.
           */
-        def addListener(onEvent: CacheEvent ⇒ Unit, types: Int*): UUID = {
+        def addListener(onEvent: CacheEvent => Unit, types: Int*): UUID = {
             val locNodeId = ignite.cluster().localNode().id()
             val cacheName = ic.getName
 
@@ -77,8 +77,8 @@ object NCIgniteHelpers extends NCIgniteInstance {
          */
         def apply(key: K): Option[V] =
             ic.get(key) match {
-                case null ⇒ None
-                case value ⇒ Some(value)
+                case null => None
+                case value => Some(value)
             }
 
         /**
@@ -124,8 +124,8 @@ object NCIgniteHelpers extends NCIgniteInstance {
           * @param key Key to be gotten and removed from the cache.
           */
         def -==(key: K): Option[V] = ic.getAndRemove(key) match {
-            case v if v != null ⇒ Some(v)
-            case null ⇒ None
+            case v if v != null => Some(v)
+            case null => None
         }
     }
 }

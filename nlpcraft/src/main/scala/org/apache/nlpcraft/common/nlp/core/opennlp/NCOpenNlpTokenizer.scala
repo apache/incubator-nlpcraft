@@ -39,10 +39,10 @@ object NCOpenNlpTokenizer extends NCNlpTokenizer {
      * @param parent Optional parent span.
      * @return
      */
-    override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ ⇒
+    override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ =>
         ackStarting()
 
-        tokenizer = Using.resource(NCExternalConfigManager.getStream(OPENNLP, RESOURCE)) { in ⇒
+        tokenizer = Using.resource(NCExternalConfigManager.getStream(OPENNLP, RESOURCE)) { in =>
             new TokenizerME(new TokenizerModel(in))
         }
 
@@ -53,7 +53,7 @@ object NCOpenNlpTokenizer extends NCNlpTokenizer {
      *
      * @param parent Optional parent span.
      */
-    override def stop(parent: Span): Unit = startScopedSpan("start", parent) { _ ⇒
+    override def stop(parent: Span): Unit = startScopedSpan("start", parent) { _ =>
         ackStopping()
 
         tokenizer = null
@@ -70,5 +70,5 @@ object NCOpenNlpTokenizer extends NCNlpTokenizer {
         this.synchronized {
             tokenizer.tokenizePos(sen)
         }
-        .toSeq.map(s ⇒ NCNlpCoreToken(s.getCoveredText(sen).toString, s.getStart, s.getEnd, s.length()))
+        .toSeq.map(s => NCNlpCoreToken(s.getCoveredText(sen).toString, s.getStart, s.getEnd, s.length()))
 }

@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.probe.mgrs.nlp.enrichers.relation
 
 import org.apache.nlpcraft.NCTestEnvironment
-import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.{NCDefaultTestModel, NCEnricherBaseSpec, NCTestNlpToken ⇒ nlp, NCTestRelationToken ⇒ rel, NCTestUserToken ⇒ usr}
+import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.{NCDefaultTestModel, NCEnricherBaseSpec, NCTestNlpToken => nlp, NCTestRelationToken => rel, NCTestUserToken => usr}
 import org.junit.jupiter.api.Test
 
 /**
@@ -33,7 +33,7 @@ class NCEnricherRelationSpec extends NCEnricherBaseSpec {
     @Test
     def test(): Unit =
         runBatch(
-            _ ⇒ checkExists(
+            _ => checkExists(
                 "compare V1 and V2",
                 rel(text = "compare", `type` = "compare", indexes = Seq(1, 3), note = "V"),
                 usr(text = "V1", id = "V"),

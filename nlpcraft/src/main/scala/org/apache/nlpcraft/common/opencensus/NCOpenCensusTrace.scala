@@ -54,12 +54,12 @@ trait NCOpenCensusTrace {
         attrs.put("thread", AttributeValue.stringAttributeValue(Thread.currentThread().getName))
         attrs.put("timestamp", AttributeValue.longAttributeValue(System.currentTimeMillis()))
     
-        for ((k, v) ← tags if v != null) v match {
-            case s: String ⇒ attrs.put(k, AttributeValue.stringAttributeValue(s))
-            case l: Long ⇒ attrs.put(k, AttributeValue.longAttributeValue(l))
-            case b: Boolean ⇒ attrs.put(k, AttributeValue.booleanAttributeValue(b))
-            case d: Double ⇒ attrs.put(k, AttributeValue.doubleAttributeValue(d))
-            case _ ⇒ attrs.put(k, AttributeValue.stringAttributeValue(if (v == null) "" else v.toString))
+        for ((k, v) <- tags if v != null) v match {
+            case s: String => attrs.put(k, AttributeValue.stringAttributeValue(s))
+            case l: Long => attrs.put(k, AttributeValue.longAttributeValue(l))
+            case b: Boolean => attrs.put(k, AttributeValue.booleanAttributeValue(b))
+            case d: Double => attrs.put(k, AttributeValue.doubleAttributeValue(d))
+            case _ => attrs.put(k, AttributeValue.stringAttributeValue(if (v == null) "" else v.toString))
         }
         
         span.putAttributes(attrs)
@@ -116,7 +116,7 @@ trait NCOpenCensusTrace {
       * @tparam V
       * @return
       */
-    def startScopedSpan[V](name: String, tags: (String, Any)*)(f: Span ⇒ V): V =
+    def startScopedSpan[V](name: String, tags: (String, Any)*)(f: Span => V): V =
         startScopedSpan[V](name, null, tags:_*)(f)
     
     /**
@@ -129,7 +129,7 @@ trait NCOpenCensusTrace {
       * @tparam V
       * @return
       */
-    def startScopedSpan[V](name: String, parent: Span, tags: (String, Any)*)(f: Span ⇒ V): V = {
+    def startScopedSpan[V](name: String, parent: Span, tags: (String, Any)*)(f: Span => V): V = {
         val t = tracer()
     
         /**
@@ -148,24 +148,24 @@ trait NCOpenCensusTrace {
                     span().setStatus(Status.OK)
                 }
                 catch {
-                    case NonFatal(suppressed) ⇒
+                    case NonFatal(suppressed) =>
                         span().setStatus(Status.INTERNAL.withDescription(suppressed.getMessage))
                     
                         e.addSuppressed(suppressed)
                 
-                    case fatal: Throwable if NonFatal(e) ⇒
+                    case fatal: Throwable if NonFatal(e) =>
                         span().setStatus(Status.INTERNAL.withDescription(e.getMessage))
                     
                         fatal.addSuppressed(e)
                     
                         throw fatal
                 
-                    case fatal: InterruptedException ⇒
+                    case fatal: InterruptedException =>
                         fatal.addSuppressed(e)
                     
                         throw fatal
                 
-                    case fatal: Throwable ⇒
+                    case fatal: Throwable =>
                         span().setStatus(Status.INTERNAL.withDescription(fatal.getMessage))
                     
                         e.addSuppressed(fatal)
@@ -191,7 +191,7 @@ trait NCOpenCensusTrace {
         try
             f(span)
         catch {
-            case e: Throwable ⇒
+            case e: Throwable =>
                 ex = e
             
                 throw e

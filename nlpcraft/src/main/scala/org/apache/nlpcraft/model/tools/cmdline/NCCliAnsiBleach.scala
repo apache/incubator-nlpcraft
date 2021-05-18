@@ -34,7 +34,7 @@ object NCCliAnsiBleach extends App {
                 new BufferedInputStream(System.in)
             )
         )
-    ) { in ⇒
+    ) { in =>
         var line = in.readLine()
 
         while (line != null) {

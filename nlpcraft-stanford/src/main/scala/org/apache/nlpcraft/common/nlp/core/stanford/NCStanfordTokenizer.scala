@@ -31,6 +31,6 @@ object NCStanfordTokenizer extends NCNlpTokenizer {
         PTBTokenizer.newPTBTokenizer(new StringReader(sen)).
             tokenize().
             asScala.
-            map(p ⇒ NCNlpCoreToken(p.word(), p.beginPosition(), p.endPosition(), p.endPosition() - p.beginPosition()))
+            map(p => NCNlpCoreToken(p.word(), p.beginPosition(), p.endPosition(), p.endPosition() - p.beginPosition()))
     }
 }

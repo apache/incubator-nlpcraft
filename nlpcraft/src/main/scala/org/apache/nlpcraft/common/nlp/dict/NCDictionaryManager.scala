@@ -29,11 +29,11 @@ object NCDictionaryManager extends NCService {
     // Mapping between dictionary type and its configuration file name.
     private val dictFiles: Map[NCDictionaryType, String] =
         Map(
-            WORD → "354984si.ngl",
-            WORD_PROPER_NOUN → "21986na.mes",
-            WORD_ACRONYM → "6213acro.nym",
-            WORD_TOP_1000 → "10001fr.equ",
-            WORD_COMMON → "74550com.mon"
+            WORD -> "354984si.ngl",
+            WORD_PROPER_NOUN -> "21986na.mes",
+            WORD_ACRONYM -> "6213acro.nym",
+            WORD_TOP_1000 -> "10001fr.equ",
+            WORD_COMMON -> "74550com.mon"
         )
 
     // All dictionary types should be configured.
@@ -43,14 +43,14 @@ object NCDictionaryManager extends NCService {
     @volatile private var full: Set[String] = _
     @volatile private var dicts: Map[NCDictionaryType, Set[String]] = _
     
-    override def start(parent: Span = null): NCService = startScopedSpan("start", parent, "dicts" → dictFiles.values.mkString(",")) { _ ⇒
+    override def start(parent: Span = null): NCService = startScopedSpan("start", parent, "dicts" -> dictFiles.values.mkString(",")) { _ =>
         ackStarting()
 
-        dicts = dictFiles.map(p ⇒ {
+        dicts = dictFiles.map(p => {
             val wordType = p._1
             val path = p._2
 
-            def read(p: String ⇒ Boolean = _ ⇒ true) =
+            def read(p: String => Boolean = _ => true) =
                 U.mapResource(s"moby/$path", "iso-8859-1", logger, {
                     // Read single words only.
                     _.filter(!_.contains(" ")).
@@ -62,11 +62,11 @@ object NCDictionaryManager extends NCService {
             val words =
                 wordType match {
                     // Skips proper nouns for this dictionary type.
-                    case WORD_COMMON ⇒ read(_.head.isLower)
-                    case _ ⇒ read()
+                    case WORD_COMMON => read(_.head.isLower)
+                    case _ => read()
                 }
 
-            wordType → words
+            wordType -> words
         })
         
         // Read summary dictionary.
@@ -79,7 +79,7 @@ object NCDictionaryManager extends NCService {
      *
      * @param parent Optional parent span.
      */
-    override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
+    override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
         ackStopped()
     }

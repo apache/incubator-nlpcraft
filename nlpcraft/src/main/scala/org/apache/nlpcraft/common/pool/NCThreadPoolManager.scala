@@ -67,7 +67,7 @@ object NCThreadPoolManager extends NCService {
     def getContext(name: String): ExecutionContext =
         cache.computeIfAbsent(
             name,
-            (_: String) ⇒
+            (_: String) =>
                 if (NON_SYS_POOLS.contains(name)) {
                     // Create separate executor for these pools...
                     val exec = new ThreadPoolExecutor(
@@ -84,7 +84,7 @@ object NCThreadPoolManager extends NCService {
                     throw new NCE(s"Custom execution context for unexpected thread pool: $name")
         ).context
 
-    override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ ⇒
+    override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ =>
         ackStarting()
 
         cache = new ConcurrentHashMap
@@ -92,7 +92,7 @@ object NCThreadPoolManager extends NCService {
         ackStarted()
     }
 
-    override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
+    override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
 
         cache.values().asScala.flatMap(_.pool).foreach(U.shutdownPool)

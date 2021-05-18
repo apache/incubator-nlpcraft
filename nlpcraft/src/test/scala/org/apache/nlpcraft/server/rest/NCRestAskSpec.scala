@@ -29,7 +29,7 @@ class NCRestAskSpec extends NCRestSpec {
 
     @BeforeEach
     def setUp(): Unit = {
-        post("user/get")(("$.id", (id: Number) ⇒ usrId = id.longValue()))
+        post("user/get")(("$.id", (id: Number) => usrId = id.longValue()))
 
         assertTrue(usrId > 0)
     }
@@ -38,21 +38,21 @@ class NCRestAskSpec extends NCRestSpec {
     def testSync(): Unit = {
         post(
             "ask/sync",
-            "txt" → "a",
-            "mdlId" → "rest.test.model"
+            "txt" -> "a",
+            "mdlId" -> "rest.test.model"
         )(
-            ("$.state.status", (status: String) ⇒ assertEquals("QRY_READY", status))
+            ("$.state.status", (status: String) => assertEquals("QRY_READY", status))
         )
 
         post(
             "ask/sync",
-            "txt" → "b",
-            "enableLog" → true,
-            "usrId" → usrId,
-            "data" → Map("k1" → "v1", "k1" → "v2").asJava,
-            "mdlId" → "rest.test.model"
+            "txt" -> "b",
+            "enableLog" -> true,
+            "usrId" -> usrId,
+            "data" -> Map("k1" -> "v1", "k1" -> "v2").asJava,
+            "mdlId" -> "rest.test.model"
         )(
-            ("$.state.status", (status: String) ⇒ assertEquals("QRY_READY", status))
+            ("$.state.status", (status: String) => assertEquals("QRY_READY", status))
         )
     }
 
@@ -63,13 +63,13 @@ class NCRestAskSpec extends NCRestSpec {
         askAsync()
 
         // Checks non empty states.
-        post("check")(("$.states", (states: ResponseList) ⇒ assertFalse(states.isEmpty)))
+        post("check")(("$.states", (states: ResponseList) => assertFalse(states.isEmpty)))
 
         // Cancels all.
         post("cancel")()
 
         // Checks empty states.
-        post("check")(("$.states", (states: ResponseList) ⇒ assertTrue(states.isEmpty)))
+        post("check")(("$.states", (states: ResponseList) => assertTrue(states.isEmpty)))
 
         // Asks.
         val id1 = askAsync()
@@ -78,20 +78,20 @@ class NCRestAskSpec extends NCRestSpec {
         val id4 = askAsync()
 
         // Cancels two.
-        post("cancel", "srvReqIds" → Set(id1, id2).asJava)()
+        post("cancel", "srvReqIds" -> Set(id1, id2).asJava)()
 
         // Checks states.
-        post("check")(("$.states", (states: ResponseList) ⇒ {
+        post("check")(("$.states", (states: ResponseList) => {
             assertEquals(2, states.size())
-            assertEquals(Set(id3, id4), states.asScala.map(p ⇒ p.get("srvReqId").asInstanceOf[String]).toSet)
+            assertEquals(Set(id3, id4), states.asScala.map(p => p.get("srvReqId").asInstanceOf[String]).toSet)
         }))
 
         // Cancels others.
-        post("cancel", "srvReqIds" → Set(id3).asJava)()
-        post("cancel", "srvReqIds" → Set(id4).asJava)()
+        post("cancel", "srvReqIds" -> Set(id3).asJava)()
+        post("cancel", "srvReqIds" -> Set(id4).asJava)()
 
         // Checks empty states.
-        post("check")(("$.states", (states: ResponseList) ⇒ assertTrue(states.isEmpty)))
+        post("check")(("$.states", (states: ResponseList) => assertTrue(states.isEmpty)))
     }
     /**
       *
@@ -101,10 +101,10 @@ class NCRestAskSpec extends NCRestSpec {
 
         post(
             "ask",
-            "txt" → "a",
-            "mdlId" → "rest.test.model"
+            "txt" -> "a",
+            "mdlId" -> "rest.test.model"
         )(
-            ("$.srvReqId", (srvReqId: String) ⇒ id = srvReqId)
+            ("$.srvReqId", (srvReqId: String) => id = srvReqId)
         )
 
         assertNotNull(id)
@@ -114,7 +114,7 @@ class NCRestAskSpec extends NCRestSpec {
 
     @Test
     def testParameters(): Unit = {
-        val m = Map("k1" → "v1", "k2" → 2).asJava
+        val m = Map("k1" -> "v1", "k2" -> 2).asJava
 
         testAsk(sync = true, enableLog = None, usrId = None, data = Some(m))
         testAsk(sync = true, enableLog = Some(true), usrId = None, data = Some(m))
@@ -141,13 +141,13 @@ class NCRestAskSpec extends NCRestSpec {
     ): Unit = {
         post(
             if (sync) "ask/sync" else "ask",
-            "txt" → "a",
-            "mdlId" → "rest.test.model",
-            "enableLog" → enableLog.orNull,
-            "usrId" → usrId.orNull,
-            "data" → data.orNull
+            "txt" -> "a",
+            "mdlId" -> "rest.test.model",
+            "enableLog" -> enableLog.orNull,
+            "usrId" -> usrId.orNull,
+            "data" -> data.orNull
         )(
-            ("$.status", (status: String) ⇒ assertEquals("API_OK", status))
+            ("$.status", (status: String) => assertEquals("API_OK", status))
         )
 
         post("cancel")()
@@ -157,14 +157,14 @@ class NCRestAskSpec extends NCRestSpec {
     def testSyncMeta(): Unit = {
         post(
             "ask/sync",
-            "txt" → "meta",
-            "mdlId" → "rest.test.model"
+            "txt" -> "meta",
+            "mdlId" -> "rest.test.model"
         )(
-            ("$.state.status", (status: String) ⇒ assertEquals("QRY_READY", status)),
-            ("$.state.resMeta", (meta: java.util.Map[String, Object]) ⇒ {
+            ("$.state.status", (status: String) => assertEquals("QRY_READY", status)),
+            ("$.state.resMeta", (meta: java.util.Map[String, Object]) => {
                 import RestTestModel._
 
-                assertEquals(Map(K1 → V1, K2 → V2, K3 → V3).asJava, meta)
+                assertEquals(Map(K1 -> V1, K2 -> V2, K3 -> V3).asJava, meta)
             })
         )
     }

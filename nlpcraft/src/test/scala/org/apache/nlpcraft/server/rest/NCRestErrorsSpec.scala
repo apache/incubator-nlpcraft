@@ -27,11 +27,11 @@ class NCRestErrorsSpec extends NCRestSpec {
     @Test
     def testApiSignin(): Unit = {
         // Invalid value.
-        postError("signin", 401, "NC_SIGNIN_FAILURE", "email" → "email", "passwd" → "passwd")
+        postError("signin", 401, "NC_SIGNIN_FAILURE", "email" -> "email", "passwd" -> "passwd")
 
         // Invalid values.
         postError(
-            "signin", 400, "NC_INVALID_FIELD", "email" → mkString(100), "passwd" → "passwd"
+            "signin", 400, "NC_INVALID_FIELD", "email" -> mkString(100), "passwd" -> "passwd"
         )
 
         // Missed field.
@@ -41,26 +41,26 @@ class NCRestErrorsSpec extends NCRestSpec {
     @Test
     def testApiSignout(): Unit = {
         // Authorization error.
-        postError("signout", 401, "NC_INVALID_ACCESS_TOKEN", "acsTok" → "UNEXPECTED")
+        postError("signout", 401, "NC_INVALID_ACCESS_TOKEN", "acsTok" -> "UNEXPECTED")
     }
 
     @Test
     def testApiCancel(): Unit = {
         // Authorization error.
-        postError("cancel", 401, "NC_INVALID_ACCESS_TOKEN", "acsTok" → "UNEXPECTED")
+        postError("cancel", 401, "NC_INVALID_ACCESS_TOKEN", "acsTok" -> "UNEXPECTED")
 
         // Invalid values.
-        postError("cancel", 400, "NC_INVALID_FIELD", "usrId" → -1)
+        postError("cancel", 400, "NC_INVALID_FIELD", "usrId" -> -1)
     }
 
     @Test
     def testApiCheck(): Unit = {
         // Authorization error.
-        postError("check", 401, "NC_INVALID_ACCESS_TOKEN", "acsTok" → "UNEXPECTED")
+        postError("check", 401, "NC_INVALID_ACCESS_TOKEN", "acsTok" -> "UNEXPECTED")
 
         // Invalid values.
-        postError("check", 400, "NC_INVALID_FIELD", "usrId" → -1)
-        postError("check", 400, "NC_INVALID_FIELD", "maxRows" → -1)
+        postError("check", 400, "NC_INVALID_FIELD", "usrId" -> -1)
+        postError("check", 400, "NC_INVALID_FIELD", "maxRows" -> -1)
     }
 
     @Test
@@ -70,29 +70,29 @@ class NCRestErrorsSpec extends NCRestSpec {
             "clear/conversation",
             401,
             "NC_INVALID_ACCESS_TOKEN",
-            "acsTok" → "UNEXPECTED",
-            "mdlId" → "rest.test.model"
+            "acsTok" -> "UNEXPECTED",
+            "mdlId" -> "rest.test.model"
         )
         postError("clear/dialog",
             401,
             "NC_INVALID_ACCESS_TOKEN",
-            "acsTok" → "UNEXPECTED",
-            "mdlId" → "rest.test.model"
+            "acsTok" -> "UNEXPECTED",
+            "mdlId" -> "rest.test.model"
         )
 
         // Invalid values.
         postError("clear/conversation",
-            400, "NC_INVALID_FIELD", "usrId" → -1, "mdlId" → "rest.test.model"
+            400, "NC_INVALID_FIELD", "usrId" -> -1, "mdlId" -> "rest.test.model"
         )
         postError(
             "clear/dialog",
             400, "NC_INVALID_FIELD",
-            "usrId" → -1,
-            "mdlId" → "rest.test.model"
+            "usrId" -> -1,
+            "mdlId" -> "rest.test.model"
         )
 
-        postError("clear/conversation", 400, "NC_INVALID_FIELD", "mdlId" → "UNEXPECTED")
-        postError("clear/dialog", 400, "NC_INVALID_FIELD", "mdlId" → "UNEXPECTED")
+        postError("clear/conversation", 400, "NC_INVALID_FIELD", "mdlId" -> "UNEXPECTED")
+        postError("clear/dialog", 400, "NC_INVALID_FIELD", "mdlId" -> "UNEXPECTED")
     }
 
     @Test
@@ -102,68 +102,68 @@ class NCRestErrorsSpec extends NCRestSpec {
             "company/add",
             401,
             "NC_INVALID_ACCESS_TOKEN",
-            "acsTok" → "UNEXPECTED",
-            "name" → "name",
-            "website" → "website",
-            "country" → "country",
-            "region" → "region",
-            "city" → "city",
-            "address" → "address",
-            "postalCode" → "postalCode",
-            "adminEmail" → "adminEmail",
-            "adminPasswd" → "adminPasswd",
-            "adminFirstName" → "firstName",
-            "adminLastName" → "lastName",
-            "adminAvatarUrl" → "avatarUrl"
+            "acsTok" -> "UNEXPECTED",
+            "name" -> "name",
+            "website" -> "website",
+            "country" -> "country",
+            "region" -> "region",
+            "city" -> "city",
+            "address" -> "address",
+            "postalCode" -> "postalCode",
+            "adminEmail" -> "adminEmail",
+            "adminPasswd" -> "adminPasswd",
+            "adminFirstName" -> "firstName",
+            "adminLastName" -> "lastName",
+            "adminAvatarUrl" -> "avatarUrl"
         )
         postError(
             "company/update",
             401,
             "NC_INVALID_ACCESS_TOKEN",
-            "acsTok" → "UNEXPECTED",
-            "name" → "name",
-            "website" → "website",
-            "country" → "country",
-            "region" → "region",
-            "city" → "city",
-            "address" → "address",
-            "postalCode" → "postalCode"
+            "acsTok" -> "UNEXPECTED",
+            "name" -> "name",
+            "website" -> "website",
+            "country" -> "country",
+            "region" -> "region",
+            "city" -> "city",
+            "address" -> "address",
+            "postalCode" -> "postalCode"
         )
-        postError("company/get", 401, "NC_INVALID_ACCESS_TOKEN", "acsTok" → "UNEXPECTED")
+        postError("company/get", 401, "NC_INVALID_ACCESS_TOKEN", "acsTok" -> "UNEXPECTED")
         postError(
-            "company/token/reset", 401, "NC_INVALID_ACCESS_TOKEN", "acsTok" → "UNEXPECTED"
+            "company/token/reset", 401, "NC_INVALID_ACCESS_TOKEN", "acsTok" -> "UNEXPECTED"
         )
-        postError("company/delete", 401, "NC_INVALID_ACCESS_TOKEN", "acsTok" → "UNEXPECTED")
+        postError("company/delete", 401, "NC_INVALID_ACCESS_TOKEN", "acsTok" -> "UNEXPECTED")
 
         // Invalid values.
         postError(
             "company/add",
             400,
             "NC_INVALID_FIELD",
-            "name" → mkString(100),
-            "website" → "website",
-            "country" → "country",
-            "region" → "region",
-            "city" → "city",
-            "address" → "address",
-            "postalCode" → "postalCode",
-            "adminEmail" → "adminEmail",
-            "adminPasswd" → "adminPasswd",
-            "adminFirstName" → "firstName",
-            "adminLastName" → "lastName",
-            "adminAvatarUrl" → "avatarUrl"
+            "name" -> mkString(100),
+            "website" -> "website",
+            "country" -> "country",
+            "region" -> "region",
+            "city" -> "city",
+            "address" -> "address",
+            "postalCode" -> "postalCode",
+            "adminEmail" -> "adminEmail",
+            "adminPasswd" -> "adminPasswd",
+            "adminFirstName" -> "firstName",
+            "adminLastName" -> "lastName",
+            "adminAvatarUrl" -> "avatarUrl"
         )
         postError(
             "company/update",
             400,
             "NC_INVALID_FIELD",
-            "name" → mkString(100),
-            "website" → "website",
-            "country" → "country",
-            "region" → "region",
-            "city" → "city",
-            "address" → "address",
-            "postalCode" → "postalCode"
+            "name" -> mkString(100),
+            "website" -> "website",
+            "country" -> "country",
+            "region" -> "region",
+            "city" -> "city",
+            "address" -> "address",
+            "postalCode" -> "postalCode"
         )
 
         // Missed fields.
@@ -174,61 +174,61 @@ class NCRestErrorsSpec extends NCRestSpec {
     @Test
     def testApiUser(): Unit = {
         // Authorization error.
-        postError("user/get", 401, "NC_INVALID_ACCESS_TOKEN", "acsTok" → "UNEXPECTED")
+        postError("user/get", 401, "NC_INVALID_ACCESS_TOKEN", "acsTok" -> "UNEXPECTED")
         postError("user/add",
             401,
             "NC_INVALID_ACCESS_TOKEN",
-            "acsTok" → "UNEXPECTED",
-            "email" → s"test@test.com",
-            "passwd" → "test",
-            "firstName" → "firstName",
-            "lastName" → "lastName",
-            "isAdmin" → false
+            "acsTok" -> "UNEXPECTED",
+            "email" -> s"test@test.com",
+            "passwd" -> "test",
+            "firstName" -> "firstName",
+            "lastName" -> "lastName",
+            "isAdmin" -> false
         )
         postError("user/update",
             401,
             "NC_INVALID_ACCESS_TOKEN",
-            "acsTok" → "UNEXPECTED",
-            "firstName" → "firstName",
-            "lastName" → "lastName",
-            "avatarUrl" → "avatarUrl"
+            "acsTok" -> "UNEXPECTED",
+            "firstName" -> "firstName",
+            "lastName" -> "lastName",
+            "avatarUrl" -> "avatarUrl"
         )
         postError(
-            "user/delete", 401, "NC_INVALID_ACCESS_TOKEN", "acsTok" → "UNEXPECTED"
+            "user/delete", 401, "NC_INVALID_ACCESS_TOKEN", "acsTok" -> "UNEXPECTED"
         )
         postError(
             "user/admin",
             401,
             "NC_INVALID_ACCESS_TOKEN",
-            "acsTok" → "UNEXPECTED",
-            "id" → 1,
-            "admin" → false
+            "acsTok" -> "UNEXPECTED",
+            "id" -> 1,
+            "admin" -> false
         )
         postError(
             "user/passwd/reset",
             401,
             "NC_INVALID_ACCESS_TOKEN",
-            "acsTok" → "UNEXPECTED",
-            "id" → 1,
-            "newPasswd" → "test1"
+            "acsTok" -> "UNEXPECTED",
+            "id" -> 1,
+            "newPasswd" -> "test1"
         )
 
         // Invalid values.
         postError("user/add",
             400,
             "NC_INVALID_FIELD",
-            "email" → s"test@test.com",
-            "passwd" → mkString(100),
-            "firstName" → "firstName",
-            "lastName" → "lastName",
-            "isAdmin" → false
+            "email" -> s"test@test.com",
+            "passwd" -> mkString(100),
+            "firstName" -> "firstName",
+            "lastName" -> "lastName",
+            "isAdmin" -> false
         )
         postError("user/update",
             400,
             "NC_INVALID_FIELD",
-            "firstName" → mkString(100),
-            "lastName" → "lastName",
-            "avatarUrl" → "avatarUrl"
+            "firstName" -> mkString(100),
+            "lastName" -> "lastName",
+            "avatarUrl" -> "avatarUrl"
         )
 
         // Missed fields.
@@ -242,30 +242,30 @@ class NCRestErrorsSpec extends NCRestSpec {
         postError("feedback/add",
             401,
             "NC_INVALID_ACCESS_TOKEN",
-            "acsTok" → "UNEXPECTED",
-            "srvReqId" → U.genGuid(),
-            "score" → 0.5
+            "acsTok" -> "UNEXPECTED",
+            "srvReqId" -> U.genGuid(),
+            "score" -> 0.5
         )
-        postError("feedback/all", 401, "NC_INVALID_ACCESS_TOKEN", "acsTok" → "UNEXPECTED")
-        postError("feedback/delete", 401, "NC_INVALID_ACCESS_TOKEN", "acsTok" → "UNEXPECTED")
+        postError("feedback/all", 401, "NC_INVALID_ACCESS_TOKEN", "acsTok" -> "UNEXPECTED")
+        postError("feedback/delete", 401, "NC_INVALID_ACCESS_TOKEN", "acsTok" -> "UNEXPECTED")
 
         // Invalid values.
         postError("feedback/add",
             400,
             "NC_INVALID_FIELD",
-            "srvReqId" → "",
-            "score" → 0.5
+            "srvReqId" -> "",
+            "score" -> 0.5
         )
         postError("feedback/add",
             400,
             "NC_INVALID_FIELD",
-            "srvReqId" → U.genGuid(),
-            "score" → 10000
+            "srvReqId" -> U.genGuid(),
+            "score" -> 10000
         )
         postError("feedback/all",
             400,
             "NC_INVALID_FIELD",
-            "usrExtId" → mkString(100)
+            "usrExtId" -> mkString(100)
         )
 
         // Missed fields.
@@ -278,7 +278,7 @@ class NCRestErrorsSpec extends NCRestSpec {
         postError("probe/all",
             401,
             "NC_INVALID_ACCESS_TOKEN",
-            "acsTok" → "UNEXPECTED"
+            "acsTok" -> "UNEXPECTED"
         )
     }
 
@@ -288,68 +288,68 @@ class NCRestErrorsSpec extends NCRestSpec {
         postError("ask",
             401,
             "NC_INVALID_ACCESS_TOKEN",
-            "acsTok" → "UNEXPECTED",
-            "txt" → "What's the local time?",
-            "mdlId" → "rest.test.model"
+            "acsTok" -> "UNEXPECTED",
+            "txt" -> "What's the local time?",
+            "mdlId" -> "rest.test.model"
         )
         postError("ask/sync",
             401,
             "NC_INVALID_ACCESS_TOKEN",
-            "acsTok" → "UNEXPECTED",
-            "txt" → "What's the local time?",
-            "mdlId" → "rest.test.model"
+            "acsTok" -> "UNEXPECTED",
+            "txt" -> "What's the local time?",
+            "mdlId" -> "rest.test.model"
         )
 
         // Invalid values.
         postError("ask",
             400,
             "NC_INVALID_FIELD",
-            "txt" → "What's the local time?",
-            "mdlId" → "rest.test.model",
-            "usrId" → -1
+            "txt" -> "What's the local time?",
+            "mdlId" -> "rest.test.model",
+            "usrId" -> -1
         )
         postError("ask/sync",
             400,
             "NC_INVALID_FIELD",
-            "txt" → "What's the local time?",
-            "mdlId" → "rest.test.model",
-            "usrId" → -1
+            "txt" -> "What's the local time?",
+            "mdlId" -> "rest.test.model",
+            "usrId" -> -1
         )
         postError("ask",
             400,
             "NC_INVALID_FIELD",
-            "txt" → mkString(1025),
-            "mdlId" → "rest.test.model"
+            "txt" -> mkString(1025),
+            "mdlId" -> "rest.test.model"
         )
         postError("ask/sync",
             400,
             "NC_INVALID_FIELD",
-            "txt" → mkString(1025),
-            "mdlId" → "rest.test.model"
+            "txt" -> mkString(1025),
+            "mdlId" -> "rest.test.model"
         )
         postError("ask",
             400,
             "NC_INVALID_FIELD",
-            "txt" → "What's the local time?",
-            "mdlId" → "UNEXPECTED"
+            "txt" -> "What's the local time?",
+            "mdlId" -> "UNEXPECTED"
         )
         postError("ask/sync",
             400,
             "NC_INVALID_FIELD",
-            "txt" → "What's the local time?",
-            "mdlId" → "UNEXPECTED"
+            "txt" -> "What's the local time?",
+            "mdlId" -> "UNEXPECTED"
         )
 
         // Missed fields.
         postError("ask",
             400,
             "NC_ERROR",
-            "mdlId" → "rest.test.model"
+            "mdlId" -> "rest.test.model"
         )
         postError("ask/sync",
             400,
             "NC_ERROR",
-            "mdlId" → "rest.test.model"
+            "mdlId" -> "rest.test.model"
         )
     }
 
@@ -359,28 +359,28 @@ class NCRestErrorsSpec extends NCRestSpec {
         postError("model/sugsyn",
             401,
             "NC_INVALID_ACCESS_TOKEN",
-            "acsTok" → "UNEXPECTED",
-            "mdlId" → "rest.test.model"
+            "acsTok" -> "UNEXPECTED",
+            "mdlId" -> "rest.test.model"
         )
 
         // Invalid values.
         postError("model/sugsyn",
             400,
             "NC_INVALID_FIELD",
-            "mdlId" → "UKNKNOWN"
+            "mdlId" -> "UKNKNOWN"
         )
         postError("model/sugsyn",
             400,
             "NC_INVALID_FIELD",
-            "mdlId" → "rest.test.model",
-            "minScore" → 1000
+            "mdlId" -> "rest.test.model",
+            "minScore" -> 1000
         )
     }
 
     @Test
     def testErrorAdminAccess(): Unit = {
         // Adds `feedback` under admin.
-        post("feedback/add", "srvReqId" → U.genGuid(), "score" → 0.5)()
+        post("feedback/add", "srvReqId" -> U.genGuid(), "score" -> 0.5)()
 
         var notAdminId: Long = 0
 
@@ -389,13 +389,13 @@ class NCRestErrorsSpec extends NCRestSpec {
 
         post(
             "user/add",
-            "email" → email,
-            "passwd" → pswd,
-            "firstName" → "firstName",
-            "lastName" → "lastName",
-            "isAdmin" → false,
+            "email" -> email,
+            "passwd" -> pswd,
+            "firstName" -> "firstName",
+            "lastName" -> "lastName",
+            "isAdmin" -> false,
         )(
-            ("$.id", (id: Number) ⇒ notAdminId = id.longValue())
+            ("$.id", (id: Number) => notAdminId = id.longValue())
         )
 
         assertTrue(notAdminId > 0)
@@ -404,11 +404,11 @@ class NCRestErrorsSpec extends NCRestSpec {
             val tkn = signin(email, pswd)
 
             // Tries to read all company's feedbacks, but can't because admin's feedbacks found.
-            postError("feedback/all", 403, "NC_ADMIN_REQUIRED", "acsTok" → tkn)
-            postError("feedback/delete", 403, "NC_ADMIN_REQUIRED", "acsTok" → tkn)
+            postError("feedback/all", 403, "NC_ADMIN_REQUIRED", "acsTok" -> tkn)
+            postError("feedback/delete", 403, "NC_ADMIN_REQUIRED", "acsTok" -> tkn)
         }
         finally {
-            post("user/delete", "id" → notAdminId)()
+            post("user/delete", "id" -> notAdminId)()
             post("feedback/delete")()
         }
     }
@@ -417,21 +417,21 @@ class NCRestErrorsSpec extends NCRestSpec {
     def testErrorInvalidOperations(): Unit = {
         var curId: Long = 0
 
-        post("user/get")(("$.id", (id: Number) ⇒ curId = id.longValue()))
+        post("user/get")(("$.id", (id: Number) => curId = id.longValue()))
 
         assertTrue(curId > 0)
 
         // Deletes all users except current.
-        post("user/all")(("$.users", (users: ResponseList) ⇒ {
-            users.asScala.foreach(p ⇒ {
+        post("user/all")(("$.users", (users: ResponseList) => {
+            users.asScala.foreach(p => {
                 val id = p.asScala("id").asInstanceOf[Number].longValue()
 
                 if (id != curId)
-                    post("user/delete", "id" → id)()
+                    post("user/delete", "id" -> id)()
             })
         }))
 
         // Tries to reset admin privileges of single system user.
-        postError("user/admin", 403, "NC_INVALID_OPERATION", "admin" → false)
+        postError("user/admin", 403, "NC_INVALID_OPERATION", "admin" -> false)
     }
 }
