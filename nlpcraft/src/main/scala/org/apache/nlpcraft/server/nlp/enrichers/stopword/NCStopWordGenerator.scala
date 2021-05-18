@@ -187,7 +187,7 @@ object NCStopWordGenerator extends App {
         "couple of"
     )
 
-    private def mkGzip(path: String, lines: Traversable[Any]): Unit = {
+    private def mkGzip(path: String, lines: Iterable[Any]): Unit = {
         val p = NCUtils.mkPath(s"nlpcraft/src/main/resources/stopwords/$path")
 
         NCUtils.mkTextFile(p, lines)

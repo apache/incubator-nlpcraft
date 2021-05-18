@@ -40,8 +40,8 @@ class NCNlpSentenceNote(private val values: Map[String, JSerializable]) extends 
     lazy val noteType: String = values("noteType").asInstanceOf[String]
     lazy val tokenFrom: Int = values("tokMinIndex").asInstanceOf[Int] // First index.
     lazy val tokenTo: Int = values("tokMaxIndex").asInstanceOf[Int] // Last index.
-    lazy val tokenIndexes: Seq[Int] = values("tokWordIndexes").asInstanceOf[java.util.List[Int]].asScala // Includes 1st and last indices too.
-    lazy val wordIndexes: Seq[Int] = values("wordIndexes").asInstanceOf[java.util.List[Int]].asScala // Includes 1st and last indices too.
+    lazy val tokenIndexes: Seq[Int] = values("tokWordIndexes").asInstanceOf[java.util.List[Int]].asScala.toSeq // Includes 1st and last indices too.
+    lazy val wordIndexes: Seq[Int] = values("wordIndexes").asInstanceOf[java.util.List[Int]].asScala.toSeq // Includes 1st and last indices too.
     lazy val sparsity: Int = values("sparsity").asInstanceOf[Int]
     lazy val isDirect: Boolean = values("direct").asInstanceOf[Boolean]
     lazy val isUser: Boolean = {

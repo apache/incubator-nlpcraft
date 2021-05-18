@@ -213,7 +213,7 @@ object NCDateEnricher extends NCServerEnricher {
                     }
                 }
                 
-                buf
+                buf.toSeq
             }
     
             def isDash(toks: Seq[Token]): Boolean = {
@@ -358,7 +358,7 @@ object NCDateEnricher extends NCServerEnricher {
                 process(nnToks)
         }
 
-        res.sortBy(h => ns.indexOfSlice(h.tokens))
+        res.sortBy(h => ns.indexOfSlice(h.tokens)).toSeq
     }
     
     /**
