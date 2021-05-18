@@ -20,10 +20,11 @@ package org.apache.nlpcraft.common.nlp
 import org.apache.nlpcraft.common.U
 import org.apache.nlpcraft.common.ascii._
 
-import scala.collection.JavaConverters._
-import scala.collection.{Seq, Set, mutable}
 import scala.language.implicitConversions
 import java.io.{Serializable ⇒ JSerializable}
+import scala.collection.mutable
+import scala.compat.java8.FunctionConverters.enrichAsJavaFunction
+import scala.jdk.CollectionConverters.CollectionHasAsScala
 
 /**
   * Sentence token note is a typed map of KV pairs.

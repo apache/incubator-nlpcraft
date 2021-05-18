@@ -25,6 +25,7 @@ import org.apache.nlpcraft.common.ansi.NCAnsi._
 
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.CollectionHasAsScala
+import scala.util.Using
 
 /**
  * `ASCII`-based table with minimal styling support.
@@ -670,7 +671,7 @@ class NCAsciiTable {
 
     private def renderPrintStream(f: ⇒ PrintStream, file: String): Unit =
         try
-            managed(f) acquireAndGet { ps ⇒
+            Using.resource(f) { ps ⇒
                 ps.print(mkString)
             }
         catch {
