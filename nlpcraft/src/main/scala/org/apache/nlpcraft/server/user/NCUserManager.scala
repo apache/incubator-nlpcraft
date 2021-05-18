@@ -18,7 +18,6 @@
 package org.apache.nlpcraft.server.user
 
 import java.util.{Timer, TimerTask}
-
 import io.opencensus.trace.Span
 import org.apache.commons.validator.routines.EmailValidator
 import org.apache.ignite.{IgniteAtomicSequence, IgniteCache, IgniteSemaphore, IgniteState, Ignition}
@@ -31,7 +30,7 @@ import org.apache.nlpcraft.server.mdo.NCUserMdo
 import org.apache.nlpcraft.server.sql.{NCSql, NCSqlManager}
 import org.apache.nlpcraft.server.tx.NCTxManager
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.IterableHasAsScala
 import scala.util.control.Exception._
 
 /**
@@ -142,7 +141,7 @@ object NCUserManager extends NCService with NCIgniteInstance {
 
         scanner.scheduleAtFixedRate(
             new TimerTask() {
-                def run() {
+                def run(): Unit = {
                     // This doesn't 100% guarantee that we won't run into a race condition
                     // with the shutdown hook on Ignite.
                     if (Ignition.state() == IgniteState.STARTED)

@@ -1900,7 +1900,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
 
                 // Common case.
                 case _: Rejection => complete(s"Bad request.")
-            }.result
+            }.result()
     }
 
     /**
