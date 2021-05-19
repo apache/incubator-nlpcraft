@@ -367,7 +367,7 @@ object NCStopWordEnricher extends NCServerEnricher {
      */
     @tailrec
     private def markBefore(
-        ns: NCNlpSentence, stopPoses: Seq[String], lastIdx: Int, isException: Seq[NCNlpSentenceToken] => Boolean
+        ns: NCNlpSentence, stopPoses: Seq[String], lastIdx: Int, isException: IndexedSeq[NCNlpSentenceToken] => Boolean
     ): Boolean = {
         var stop = true
 
@@ -375,7 +375,7 @@ object NCStopWordEnricher extends NCServerEnricher {
             (tok, idx) <- ns.zipWithIndex
             if idx != lastIdx &&
                 !tok.isStopWord &&
-                !isException(Seq(tok)) &&
+                !isException(IndexedSeq(tok)) &&
                 stopPoses.contains(tok.pos) &&
                 ns(idx + 1).isStopWord) {
             ns.fixNote(tok.getNlpNote, "stopWord" -> true)
@@ -548,9 +548,8 @@ object NCStopWordEnricher extends NCServerEnricher {
             val cacheSw = mutable.HashMap.empty[Seq[NCNlpSentenceToken], Boolean]
             val cacheEx = mutable.HashMap.empty[Seq[NCNlpSentenceToken], Boolean]
     
-            def isStop(toks: Seq[NCNlpSentenceToken]): Boolean = exists(toks, cacheSw, stopWords.matches)
-    
-            def isException(toks: Seq[NCNlpSentenceToken]): Boolean = exists(toks, cacheEx, exceptions.matches)
+            def isStop(toks: IndexedSeq[NCNlpSentenceToken]): Boolean = exists(toks, cacheSw, stopWords.matches)
+            def isException(toks: IndexedSeq[NCNlpSentenceToken]): Boolean = exists(toks, cacheEx, exceptions.matches)
     
             for (p <- ns.zipWithIndex) {
                 val tok = p._1
@@ -574,7 +573,7 @@ object NCStopWordEnricher extends NCServerEnricher {
                 // | POS tags and manual resolution. |
                 // +---------------------------------+
                 val stop =
-                !tok.isQuoted && !isException(Seq(tok)) &&
+                !tok.isQuoted && !isException(IndexedSeq(tok)) &&
                     (// Percents after numbers.
                         // 1. Word from 'percentage' list.
                         percents.contains(stem) &&
@@ -603,7 +602,7 @@ object NCStopWordEnricher extends NCServerEnricher {
             }
             
             // Capture the token mix at this point minus the initial stop words found up to this point.
-            val origToks: Seq[(Seq[NCNlpSentenceToken], String)] = (for (toks <- mix) yield toks).map(s => s -> toStemKey(s))
+            val origToks: Seq[(IndexedSeq[NCNlpSentenceToken], String)] = (for (toks <- mix) yield toks).map(s => s -> toStemKey(s))
     
             // +--------------------------------------------+
             // | Pass #4.                                   |

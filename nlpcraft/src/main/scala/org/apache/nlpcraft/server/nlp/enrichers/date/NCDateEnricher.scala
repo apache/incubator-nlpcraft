@@ -19,7 +19,7 @@ package org.apache.nlpcraft.server.nlp.enrichers.date
 
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.config.NCConfigurable
-import org.apache.nlpcraft.common.nlp.{NCNlpSentence ⇒ Sentence, NCNlpSentenceNote ⇒ Note, NCNlpSentenceToken ⇒ Token}
+import org.apache.nlpcraft.common.nlp.{NCNlpSentence => Sentence, NCNlpSentenceNote => Note, NCNlpSentenceToken => Token}
 import org.apache.nlpcraft.common.pool.NCThreadPoolManager
 import org.apache.nlpcraft.common.{NCService, _}
 import org.apache.nlpcraft.server.nlp.enrichers.NCServerEnricher
@@ -228,7 +228,7 @@ object NCDateEnricher extends NCServerEnricher {
                 for (pair <- dates.sliding(2) if !pair.exists(_.isProcessed)) {
                     val from = pair.head
                     val to = pair.last
-                    val between = ns.slice(from.tokens.last.index + 1, to.tokens.head.index)
+                    val between = ns.slice(from.tokens.last.index + 1, to.tokens.head.index).toSeq
                     
                     if (between.nonEmpty && isDash(between)) {
                         mark(from, to)
@@ -236,7 +236,7 @@ object NCDateEnricher extends NCServerEnricher {
                     }
                 }
                 
-                buf
+                buf.toSeq
             }
     
             def findSimples[T](ps: Seq[P], mkHolder: (F, P) => T): Seq[T] = {
@@ -251,7 +251,7 @@ object NCDateEnricher extends NCServerEnricher {
                         case None => None
                     }
                 
-                buf
+                buf.toSeq
             }
     
             def withBefore(tokens: Seq[Token], lenBefore: Int) =
@@ -270,7 +270,7 @@ object NCDateEnricher extends NCServerEnricher {
                 val body = s"${r.from.body}:${r.to.body}"
                 val toks = withBefore(r.from.tokens, r.fromLength) ++ withBefore(r.to.tokens, r.toLength)
                 
-                addNote(body, r.fromInclusive, r.toInclusive, toks, base)
+                addNote(body, r.fromInclusive, r.toInclusive, toks.toSeq, base)
             }
             
             // From, to - simple ranges.
@@ -281,7 +281,7 @@ object NCDateEnricher extends NCServerEnricher {
             for (r <- simpleRanges) {
                 val b = r.function.body
                 val body = if (r.isFromType) s"$b:" else s":$b"
-                val toks = withBefore(r.function.tokens, r.length)
+                val toks = withBefore(r.function.tokens, r.length).toSeq
                 
                 addNote(body, r.inclusive, r.inclusive, toks, base)
             }
@@ -298,7 +298,7 @@ object NCDateEnricher extends NCServerEnricher {
             
             for (d <- simpleDates) {
                 val body = d.function.body
-                val toks = withBefore(d.function.tokens, d.length)
+                val toks = withBefore(d.function.tokens, d.length).toSeq
             
                 addNote(body, fromIncl = true, toIncl = true, toks, base)
             }
@@ -350,12 +350,12 @@ object NCDateEnricher extends NCServerEnricher {
                 }
             }
 
-            process(toks)
+            process(toks.toSeq)
 
             val nnToks = toks.filter(!_.isStopWord)
 
             if (nnToks != toks)
-                process(nnToks)
+                process(nnToks.toSeq)
         }
 
         res.sortBy(h => ns.indexOfSlice(h.tokens)).toSeq
@@ -543,7 +543,7 @@ object NCDateEnricher extends NCServerEnricher {
             val from = s.head.tokenFrom
             val to = s.last.tokenTo
 
-            val note = mkNote(mkSumRange(notes), from, to, ns.filter(t => t.index >= from && t.index <= to))
+            val note = mkNote(mkSumRange(notes), from, to, ns.filter(t => t.index >= from && t.index <= to).toSeq)
 
             if (isValidRange(note)) {
                 ns.
@@ -581,7 +581,7 @@ object NCDateEnricher extends NCServerEnricher {
 
         case class Wrapper(holder: Note, var group: Int)
 
-        val wrappers = hs.map(Wrapper(_, 0))
+        val wrappers = hs.map(Wrapper(_, 0)).toSeq
 
         val grouped = wrappers.map(w => {
             val grp =
@@ -607,7 +607,7 @@ object NCDateEnricher extends NCServerEnricher {
             w
         }).map(w => w.holder -> w.group).toMap
 
-        hs.groupBy(grouped(_)).toSeq.sortBy(_._1).map(_._2).filter(_.size > 1)
+        hs.groupBy(grouped(_)).toSeq.sortBy(_._1).map(_._2.toSeq).filter(_.size > 1)
     }
 
     private def removeDuplicates(ns: Sentence): Unit = {
@@ -626,7 +626,7 @@ object NCDateEnricher extends NCServerEnricher {
 
             // Groups ordered to keep node with maximum information (max periods count in date).
             val hs: Iterable[Seq[Note]] =
-                grouped.map(_._2.sortBy(h => -h("periods").asInstanceOf[java.util.List[String]].asScala.length))
+                grouped.map(_._2.sortBy(h => -h("periods").asInstanceOf[java.util.List[String]].asScala.toSeq.length))
 
             // First holder will be kept in group, others (tail) should be deleted.
             hs.flatMap(_.tail)
@@ -661,7 +661,7 @@ object NCDateEnricher extends NCServerEnricher {
     private def mkDateRange(n1: Note, n2: Note): NCDateRange = NCDateRange(n1("from").asInstanceOf[Long], n2("to").asInstanceOf[Long])
     private def mkDateRange(n: Note): NCDateRange = mkDateRange(n, n)
     private def getField(d: Long, field: Int): Int = mkCalendar(d).get(field)
-    private def equalHolder(h: Note, ps: String*): Boolean = h("periods").asInstanceOf[java.util.List[String]].asScala.sorted == ps.sorted
+    private def equalHolder(h: Note, ps: String*): Boolean = h("periods").asInstanceOf[java.util.List[String]].asScala.toSeq.sorted == ps.sorted
     private def equalHolders(hs: Seq[Note], ps: String*): Boolean = hs.forall(equalHolder(_, ps: _*))
     private def getPrevious[T](s: T, seq: Seq[T]): T = seq(seq.indexOf(s) - 1)
     private def nearRanges(ns: Seq[Note]): Boolean =

@@ -55,10 +55,9 @@ import org.jline.utils.InfoCmp.Capability
 import org.apache.nlpcraft.model.tools.cmdline.NCCliRestSpec._
 import org.apache.nlpcraft.model.tools.cmdline.NCCliCommands._
 
-import scala.collection.JavaConverters._
 import scala.collection.mutable
-import scala.compat.Platform.currentTime
 import scala.compat.java8.OptionConverters._
+import scala.jdk.CollectionConverters._
 import scala.util.{Try, Using}
 import scala.util.control.Breaks.{break, breakable}
 import scala.util.control.Exception.ignoring
@@ -171,7 +170,6 @@ object NCCli extends NCCliBase {
      * @param args
      * @param id
      * @param dflt
-     * @throws
      * @return
      */
     @throws[InvalidParameter]
@@ -194,7 +192,6 @@ object NCCli extends NCCliBase {
      * @param args
      * @param id
      * @param dflt
-     * @throws
      * @return
      */
     @throws[InvalidParameter]
@@ -346,7 +343,7 @@ object NCCli extends NCCliBase {
      *
      */
     private def cleanUpTempFiles(): Unit = {
-        val tstamp = currentTime - 1000 * 60 * 60 * 24 * 2 // 2 days ago.
+        val tstamp = System.currentTimeMillis() - 1000 * 60 * 60 * 24 * 2 // 2 days ago.
 
         val files = new File(SystemUtils.getUserHome, ".nlpcraft").listFiles()
         
@@ -405,7 +402,7 @@ object NCCli extends NCCliBase {
             case None => ()
         }
 
-        val logTstamp = currentTime
+        val logTstamp = System.currentTimeMillis()
 
         // Server log redirect.
         val output = new File(SystemUtils.getUserHome, s".nlpcraft/server_log_$logTstamp.txt")
@@ -432,7 +429,7 @@ object NCCli extends NCCliBase {
         if (igniteCfgPath != null)
             srvArgs += s"-igniteConfig=$igniteCfgPath"
 
-        val srvPb = new ProcessBuilder(srvArgs.asJava)
+        val srvPb = new ProcessBuilder(srvArgs.toSeq.asJava)
 
         srvPb.directory(new File(USR_WORK_DIR))
         srvPb.redirectErrorStream(true)
@@ -518,9 +515,9 @@ object NCCli extends NCCliBase {
 
                 var beacon: NCCliServerBeacon = null
                 var online = false
-                val endOfWait = currentTime + timeoutMins.mins
+                val endOfWait = System.currentTimeMillis() + timeoutMins.mins
 
-                while (currentTime < endOfWait && !online && ProcessHandle.of(srvPid).isPresent) {
+                while (System.currentTimeMillis() < endOfWait && !online && ProcessHandle.of(srvPid).isPresent) {
                     if (progressBar.completed) {
                         // First, load the beacon, if any.
                         if (beacon == null)
@@ -538,7 +535,7 @@ object NCCli extends NCCliBase {
                 tailer.stop()
                 progressBar.stop()
 
-                if (!online && currentTime >= endOfWait) // Timed out - attempt to kill the timed out process...
+                if (!online && System.currentTimeMillis() >= endOfWait) // Timed out - attempt to kill the timed out process...
                     ProcessHandle.of(srvPid).asScala match {
                         case Some(ph) =>
                             if (ph.destroy())
@@ -662,7 +659,7 @@ object NCCli extends NCCliBase {
             case None => Seq("-ea", "-Xms1024m")
         }
 
-        val logTstamp = currentTime
+        val logTstamp = System.currentTimeMillis()
 
         // Server log redirect.
         val output = new File(SystemUtils.getUserHome, s".nlpcraft/probe_log_$logTstamp.txt")
@@ -777,9 +774,9 @@ object NCCli extends NCCliBase {
                 )
 
                 var beacon: NCCliProbeBeacon = null
-                val endOfWait = currentTime + timeoutMins.mins
+                val endOfWait = System.currentTimeMillis() + timeoutMins.mins
 
-                while (currentTime < endOfWait && beacon == null && ProcessHandle.of(prbPid).isPresent) {
+                while (System.currentTimeMillis() < endOfWait && beacon == null && ProcessHandle.of(prbPid).isPresent) {
                     if (progressBar.completed) {
                         // Load the beacon, if any.
                         if (beacon == null)
@@ -793,7 +790,7 @@ object NCCli extends NCCliBase {
                 tailer.stop()
                 progressBar.stop()
 
-                if (currentTime >= endOfWait)
+                if (System.currentTimeMillis() >= endOfWait)
                     ProcessHandle.of(prbPid).asScala match {
                         case Some(ph) =>
                             if (ph.destroy())
@@ -927,14 +924,14 @@ object NCCli extends NCCliBase {
 
             spinner.start()
 
-            val startMs = currentTime
+            val startMs = System.currentTimeMillis()
 
             try
                 restHealth(endpoint) match {
                     case 200 =>
                         spinner.stop()
 
-                        logln(g("OK") + " " + c(s"[${currentTime - startMs}ms]"))
+                        logln(g("OK") + " " + c(s"[${System.currentTimeMillis() - startMs}ms]"))
 
                     case code: Int =>
                         spinner.stop()
@@ -969,17 +966,15 @@ object NCCli extends NCCliBase {
      */
     private def loadServerBeacon(autoSignIn: Boolean = false): Option[NCCliServerBeacon] = {
         val beaconOpt = try {
-            val beacon = (
-                Using.resource(
-                    new ObjectInputStream(
-                        new FileInputStream(
-                            new File(SystemUtils.getUserHome, SRV_BEACON_PATH)
-                        )
+            val beacon = Using.resource(
+                new ObjectInputStream(
+                    new FileInputStream(
+                        new File(SystemUtils.getUserHome, SRV_BEACON_PATH)
                     )
-                ) {
-                    _.readObject()
-                }
-            )
+                )
+            ) {
+                _.readObject()
+            }
             .asInstanceOf[NCCliServerBeacon]
 
             ProcessHandle.of(beacon.pid).asScala match {
@@ -1073,17 +1068,15 @@ object NCCli extends NCCliBase {
      */
     private def loadProbeBeacon(): Option[NCCliProbeBeacon] = {
         val beaconOpt = try {
-            val beacon = (
-                Using.resource(
-                    new ObjectInputStream(
-                        new FileInputStream(
-                            new File(SystemUtils.getUserHome, PRB_BEACON_PATH)
-                        )
+            val beacon = Using.resource(
+                new ObjectInputStream(
+                    new FileInputStream(
+                        new File(SystemUtils.getUserHome, PRB_BEACON_PATH)
                     )
-                ) {
-                    _.readObject()
-                }
-            )
+                )
+            ) {
+                _.readObject()
+            }
             .asInstanceOf[NCCliProbeBeacon]
 
             ProcessHandle.of(beacon.pid).asScala match {
@@ -1301,7 +1294,7 @@ object NCCli extends NCCliBase {
                 }
             }
 
-            lines
+            lines.toSeq
         }
 
         def helpHelp(): Unit =
@@ -1491,7 +1484,7 @@ object NCCli extends NCCliBase {
                     s"  ${c("guid")}: ${probe.probeGuid}",
                     s"  ${c("tok")}: ${probe.probeToken}"
                 ),
-                DurationFormatUtils.formatDurationHMS(currentTime - probe.startTstamp),
+                DurationFormatUtils.formatDurationHMS(System.currentTimeMillis() - probe.startTstamp),
                 Seq(
                     s"${probe.hostName} (${probe.hostAddr})",
                     s"${probe.osName} ver. ${probe.osVersion}"
@@ -2803,7 +2796,7 @@ object NCCli extends NCCliBase {
         if (buf.nonEmpty)
             lines += buf.toString()
 
-        lines.map(_.strip)
+        lines.map(_.strip).toSeq
     }
 
     /**
