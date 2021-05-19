@@ -373,7 +373,7 @@ object NCNumericManager extends NCService {
                                 val str = afterNum.map(getter).mkString(" ")
     
                                 syns.get(str) match {
-                                    case Some(unit) => Some((unit, afterNum))
+                                    case Some(unit) => Some((unit, afterNum.toSeq))
                                     case None => None
                                 }
                             }

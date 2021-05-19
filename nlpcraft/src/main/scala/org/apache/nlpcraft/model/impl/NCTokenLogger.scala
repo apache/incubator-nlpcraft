@@ -19,7 +19,6 @@ package org.apache.nlpcraft.model.impl
 
 import java.text.SimpleDateFormat
 import java.util
-
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.ascii._
@@ -28,8 +27,8 @@ import org.apache.nlpcraft.model.NCToken
 import org.apache.nlpcraft.model.impl.NCTokenPimp._
 import org.apache.nlpcraft.common.ansi.NCAnsi._
 
-import scala.collection.JavaConverters._
-import scala.collection._
+import scala.collection.mutable.ArrayBuffer
+import scala.jdk.CollectionConverters._
 
 /**
  * Utility service that provides supporting functionality for ASCII rendering.
@@ -377,7 +376,7 @@ object NCTokenLogger extends LazyLogging {
     def prepareTable(toks: Seq[NCToken]): NCAsciiTable = {
         val allFree = toks.forall(_.isFreeWord)
 
-        val headers = mutable.ArrayBuffer.empty[String] ++
+        val headers = ArrayBuffer.empty[String] ++
             Seq(
                 "idx",
                 "origtext",
