@@ -80,9 +80,9 @@
         <!-- Versions. -->
         <ignite.ver>2.9.1</ignite.ver>
         <gridgain.agent.ver>2.8.1.2</gridgain.agent.ver>
-        <scala.plugin.ver>4.3.1</scala.plugin.ver>
+        <scala.plugin.ver>4.5.1</scala.plugin.ver>
         <log4j.ver>2.12.0</log4j.ver>
-        <scala.ver>3.36.0</scala.ver>
+        <scala.ver>3.0.0</scala.ver>
         <scala.config.ver>1.3.4</scala.config.ver>
         <commons.codec.ver>1.14</commons.codec.ver>
         <commons.io.ver>2.7</commons.io.ver>
@@ -95,7 +95,7 @@
         <scala.arm.ver>2.0</scala.arm.ver>
         <scala.xml.ver>1.1.1</scala.xml.ver>
         <c3p0.ver>0.9.5.4</c3p0.ver>
-        <scalatest.ver>3.0.8</scalatest.ver>
+        <scalatest.ver>3.2.9</scalatest.ver>
         <lift.json.ver>3.4.3</lift.json.ver>
         <scalaj.ver>2.4.1</scalaj.ver>
         <spray.ver>1.3.5</spray.ver>
@@ -171,7 +171,7 @@
         <dependencies>
             <dependency>
                 <groupId>org.scala-lang</groupId>
-                <artifactId>scala-library</artifactId>
+                <artifactId>scala3-library_3</artifactId>
                 <version>${scala.ver}</version>
             </dependency>
 
@@ -480,7 +480,7 @@
             <!-- Test dependencies. -->
             <dependency>
                 <groupId>org.scalatest</groupId>
-                <artifactId>scalatest_${scala.base}</artifactId>
+                <artifactId>scalatest_3</artifactId>
                 <version>${scalatest.ver}</version>
             </dependency>
 
@@ -516,7 +516,7 @@
                         <arg>-feature</arg>
                     </args>
                     <!-- Suppress warnings on release versions of Scala. -->
-                    <scalaCompatVersion>${scala.base}</scalaCompatVersion>
+                    <scalaCompatVersion>2.13</scalaCompatVersion>
                 </configuration>
                 <executions>
                     <execution>
