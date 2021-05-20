@@ -47,17 +47,17 @@ object NCVersion extends LazyLogging {
     // | UPDATE THIS SEQUENCE FOR EACH RELEASE MANUALLY. |
     // +=================================================+
     private final val VERSIONS = Seq(
-        Version("0.5.0", LocalDate.of(2020, 4, 16)),
+        Version("0.5.0", LocalDate.of(2020, 4, 16)), // Java 8, Scala 2.12 minimums.
         Version("0.6.0", LocalDate.of(2020, 5, 25)),
         Version("0.6.2", LocalDate.of(2020, 7, 9)),
         Version("0.7.0", LocalDate.of(2020, 9, 29)),
         Version("0.7.1", LocalDate.of(2020, 10, 29)),
         Version("0.7.2", LocalDate.of(2020, 11, 19)),
         Version("0.7.3", LocalDate.of(2020, 12, 31)),
-        Version("0.7.4", LocalDate.of(2021, 1, 31)),
+        Version("0.7.4", LocalDate.of(2021, 1, 31)), // Java 11, Scala 2.12 minimums.
         Version("0.7.5", LocalDate.of(2021, 4, 30)),
         Version("0.8.0", LocalDate.of(2021, 5, 30)),
-        Version("1.0.0", LocalDate.of(2021, 7, 30))
+        Version("1.0.0", LocalDate.of(2021, 7, 30)) // Java 11, Scala 3 minimums.
     ).sortBy(_.version)
     // +=================================================+
     // | UPDATE THIS SEQUENCE FOR EACH RELEASE MANUALLY. |
