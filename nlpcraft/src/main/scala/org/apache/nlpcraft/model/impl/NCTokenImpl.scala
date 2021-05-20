@@ -25,7 +25,7 @@ import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.probe.mgrs.NCProbeModel
 
 import scala.collection.{Seq, mutable}
-import scala.jdk.CollectionConverters.{MapHasAsJava, SeqHasAsJava}
+import scala.jdk.CollectionConverters._
 
 /**
   *

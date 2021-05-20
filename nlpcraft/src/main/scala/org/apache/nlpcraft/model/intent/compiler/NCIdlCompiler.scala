@@ -31,8 +31,10 @@ import java.io._
 import java.net._
 import java.util.Optional
 import java.util.regex.{Pattern, PatternSyntaxException}
+
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
+import scala.jdk.CollectionConverters._
 
 object NCIdlCompiler extends LazyLogging {
     // Compiler caches.

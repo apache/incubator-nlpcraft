@@ -29,7 +29,9 @@ import org.apache.nlpcraft.model.{NCContext, NCDialogFlowItem, NCIntentMatch, NC
 import org.apache.nlpcraft.probe.mgrs.dialogflow.NCDialogFlowManager
 
 import java.util.function.Function
+
 import scala.collection.mutable
+import scala.jdk.CollectionConverters._
 
 /**
  * Intent solver that finds the best matching intent given user sentence.
@@ -121,7 +123,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
          *
          * @return
          */
-        def toSeq: Seq[Int] = buf
+        def toSeq: Seq[Int] = buf.toSeq
 
         def toAnsiString: String = buf.mkString(y(bo("[")), ", ", y(bo("]")))
     }
@@ -205,8 +207,8 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
             val matches = mutable.ArrayBuffer.empty[MatchHolder]
 
             // Find all matches across all intents and sentence variants.
-            for ((vrn, vrnIdx) <- ctx.getVariants.zipWithIndex) {
-                val availToks = vrn.filter(t => !t.isStopWord)
+            for ((vrn, vrnIdx) <- ctx.getVariants.asScala.zipWithIndex) {
+                val availToks = vrn.asScala.filter(t => !t.isStopWord)
 
                 matches.appendAll(
                     intents.flatMap(pair => {
@@ -223,9 +225,9 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                                 Seq.empty[UsedToken] ++
                                     // We shouldn't mix tokens with same group from conversation
                                     // history and processed sentence.
-                                    ctx.getConversation.getTokens.
+                                    ctx.getConversation.getTokens.asScala.
                                         filter(t => {
-                                            val convTokGroups = t.getGroups.sorted
+                                            val convTokGroups = t.getGroups.asScala.sorted
 
                                             !senTokGroups.exists(convTokGroups.containsSlice)
                                         }).

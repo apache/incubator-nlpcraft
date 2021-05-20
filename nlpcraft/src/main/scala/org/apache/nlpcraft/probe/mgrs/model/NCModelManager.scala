@@ -24,13 +24,12 @@ import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.probe.mgrs.NCProbeModel
 import org.apache.nlpcraft.probe.mgrs.deploy._
 
-import scala.collection.convert.DecorateAsScala
 import scala.util.control.Exception._
 
 /**
   * Model manager.
   */
-object NCModelManager extends NCService with DecorateAsScala {
+object NCModelManager extends NCService {
     // Deployed models keyed by their IDs.
     @volatile private var data: Map[String, NCProbeModel] = _
 
@@ -73,10 +72,10 @@ object NCModelManager extends NCService with DecorateAsScala {
                     s"${B}Origin:$RST                ${mdl.getOrigin}",
                     s"${B}Elements:$RST              ${withWarn(w.elements.keySet.size)}",
                     s"${B}Synonyms:$RST",
-                    s"${B}   Simple continuous:$RST  $contCnt",
-                    s"${B}   Simple sparse:$RST      $sparseCnt",
-                    s"${B}   IDL continuous:$RST     $contIdlCnt",
-                    s"${B}   IDL sparse:$RST         $sparseIdlCnt",
+                    s"$B   Simple continuous:$RST  $contCnt",
+                    s"$B   Simple sparse:$RST      $sparseCnt",
+                    s"$B   IDL continuous:$RST     $contIdlCnt",
+                    s"$B   IDL sparse:$RST         $sparseIdlCnt",
                     s"${B}Intents:$RST               ${withWarn(w.intents.size)}"
                 )
             })

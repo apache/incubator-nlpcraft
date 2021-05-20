@@ -24,8 +24,8 @@ import org.apache.nlpcraft.common.NCException
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.model.tools.sqlgen._
 
-import scala.collection.JavaConverters._
 import scala.compat.java8.OptionConverters._
+import scala.jdk.CollectionConverters._
 
 /**
   *
@@ -167,7 +167,8 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
                     }
                     else
                         throw new NCException(s"Token not found with index: $idx")
-                })
+                }).toSeq
+
             case None => Seq.empty
         }
     }
@@ -197,7 +198,7 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
             else
                 throw new NCException(s"Token not found with index: $idx")
         )
-    }
+    }.toSeq
 
     /**
      *
@@ -260,10 +261,10 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
                 var colTabs = cols.filter(_.getTable == t.getTable)
 
                 if (colTabs.isEmpty)
-                    colTabs = t.getColumns.asScala.filter(_.isPk)
+                    colTabs = t.getColumns.asScala.filter(_.isPk).toSeq
 
                 if (colTabs.isEmpty)
-                    colTabs = t.getColumns.asScala.take(1)
+                    colTabs = t.getColumns.asScala.take(1).toSeq
 
                 require(colTabs.nonEmpty)
 

@@ -19,7 +19,8 @@ package org.apache.nlpcraft.model.intent.solver
 
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.model.NCToken
-import org.apache.nlpcraft.model.impl.NCTokenPimp._
+
+import scala.jdk.CollectionConverters._
 
 import java.util
 
