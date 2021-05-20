@@ -27,7 +27,6 @@ import org.apache.nlpcraft.model.NCToken
 import org.apache.nlpcraft.model.impl.NCTokenPimp._
 import org.apache.nlpcraft.common.ansi.NCAnsi._
 
-import scala.collection.mutable.ArrayBuffer
 import scala.jdk.CollectionConverters._
 
 /**

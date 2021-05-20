@@ -2095,7 +2095,7 @@ object NCUtils extends LazyLogging {
       * @param idx Sequence of indexes.
       * @return
       */
-    def calcSparsity(idx: Seq[Int]): Int =
+    def calcSparsity(idx: collection.Seq[Int]): Int =
         idx.zipWithIndex.tail.map { case (v, i) => Math.abs(v - idx(i - 1)) }.sum - idx.length + 1
 
     /**

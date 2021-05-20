@@ -205,7 +205,7 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
                 getOrElse(throw new NCE(s"Header not found for: ${hdr.noteType}"))._2
 
             (x._1 * 100) + x._2.indexOf(hdr.noteName)
-        })
+        }).toSeq
 
         val tbl = NCAsciiTable(headers.map(_.header): _*)
 

@@ -17,8 +17,8 @@
 
 package org.apache.nlpcraft.probe.mgrs
 
+import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote, NCNlpSentenceToken}
 import org.apache.nlpcraft.common.nlp.pos.NCPennTreebank
-import org.apache.nlpcraft.common.nlp.{NCNlpSentence => NlpSentence, NCNlpSentenceNote => NlpNote, NCNlpSentenceToken => NlpToken}
 import org.apache.nlpcraft.common.{NCE, TOK_META_ALIASES_KEY}
 import org.apache.nlpcraft.model.impl.{NCTokenImpl, NCTokenLogger, NCVariantImpl}
 import org.apache.nlpcraft.model.{NCToken, NCVariant}
@@ -26,8 +26,8 @@ import org.apache.nlpcraft.model.{NCToken, NCVariant}
 import java.io.{Serializable => JSerializable}
 import java.util
 import java.util.Collections.singletonList
-import scala.collection.JavaConverters._
 import scala.collection.{Seq, mutable}
+import scala.jdk.CollectionConverters._
 
 /**
   * Sentence to variants converter.
@@ -82,10 +82,10 @@ object NCProbeVariants {
       */
     private def findDeletedToken(
         key: Key,
-        delNotes: Map[NlpNote, Seq[NlpToken]],
+        delNotes: Map[NCNlpSentenceNote, Seq[NCNlpSentenceToken]],
         noteTypePred: String => Boolean
-    ): Option[NlpToken] =
-        delNotes.toStream.
+    ): Option[NCNlpSentenceNote] =
+        delNotes.to(LazyList).
             flatMap { case (delNote, delNoteToks) =>
                 if (noteTypePred(delNote.noteType)) {
                     val toks =
@@ -98,12 +98,12 @@ object NCProbeVariants {
                     toks.size match {
                         case 0 => None
                         case _ =>
-                            val artTok = NlpToken(IDX)
+                            val artTok = NCNlpSentenceToken(IDX)
 
                             artTok.add(mkNote(toks))
 
                             if (key.id != "nlpcraft:nlp") {
-                                val ps = mkNlpNoteParams()
+                                var ps = mkNlpNoteParams()
 
                                 delNote.noteType match {
                                     case "nlpcraft:relation" | "nlpcraft:limit" => ps += "indexes" -> IDXS
@@ -125,17 +125,17 @@ object NCProbeVariants {
       *
       * @return
       */
-    private def mkNlpNoteParams(): mutable.ArrayBuffer[(String, JSerializable)] =
-        mutable.ArrayBuffer.empty[(String, JSerializable)] ++ Seq("tokMinIndex" -> IDX, "tokMaxIndex" -> IDX)
+    private def mkNlpNoteParams(): Seq[(String, JSerializable)] =
+        Seq("tokMinIndex" -> IDX, "tokMaxIndex" -> IDX)
 
     /**
       *
       * @param srcToks
       * @return
       */
-    private def mkNote(srcToks: Seq[NlpToken]): NlpNote = {
+    private def mkNote(srcToks: Seq[NCNlpSentenceToken]): NCNlpSentenceNote = {
         // Note, it adds stop-words too.
-        def mkValue(get: NlpToken => String): String = {
+        def mkValue(get: NCNlpSentenceToken => String): String = {
             val buf = mutable.Buffer.empty[String]
 
             val n = srcToks.size - 1
@@ -150,10 +150,10 @@ object NCProbeVariants {
             buf.mkString
         }
 
-        def all(is: NlpToken => Boolean): Boolean = srcToks.forall(is)
-        def exists(is: NlpToken => Boolean): Boolean = srcToks.exists(is)
+        def all(is: NCNlpSentenceToken => Boolean): Boolean = srcToks.forall(is)
+        def exists(is: NCNlpSentenceToken => Boolean): Boolean = srcToks.exists(is)
 
-        val origText = mkValue((t: NlpToken) => t.origText)
+        val origText = mkValue((t: NCNlpSentenceToken) => t.origText)
 
         val params = Seq(
             "index" -> IDX,
@@ -175,7 +175,7 @@ object NCProbeVariants {
             "swear" -> exists(_.isSwearWord)
         )
 
-        NlpNote(Seq(IDX.intValue()), srcToks.flatMap(_.wordIndexes).distinct.sorted, "nlpcraft:nlp", params: _*)
+        NCNlpSentenceNote(Seq(IDX.intValue()), srcToks.flatMap(_.wordIndexes).distinct.sorted, "nlpcraft:nlp", params: _*)
     }
 
     /**
@@ -186,12 +186,12 @@ object NCProbeVariants {
       * @param nlpSens Sentences.
       * @param lastPhase Flag.
       */
-    def convert(srvReqId: String, mdl: NCProbeModel, nlpSens: Seq[NlpSentence], lastPhase: Boolean = false): Seq[NCVariant] = {
+    def convert(srvReqId: String, mdl: NCProbeModel, nlpSens: Seq[NCNlpSentence], lastPhase: Boolean = false): Seq[NCVariant] = {
         var vars =
             nlpSens.flatMap(nlpSen => {
                 var ok = true
 
-                def mkToken(nlpTok: NlpToken): NCTokenImpl = {
+                def mkToken(nlpTok: NCNlpSentenceToken): NCTokenImpl = {
                     val ncTok = NCTokenImpl(mdl, srvReqId, nlpTok)
 
                     nlpSen.addNlpToken(nlpTok)
@@ -202,7 +202,7 @@ object NCProbeVariants {
                 val toks = nlpSen.map(mkToken)
                 val keys2Toks = toks.map(t => Key(t) -> t).toMap
 
-                def process(tok: NCTokenImpl, tokNlp: NlpToken): Unit = {
+                def process(tok: NCTokenImpl, tokNlp: NCNlpSentenceToken): Unit = {
                     val optList: Option[util.List[util.HashMap[String, JSerializable]]] =
                         tokNlp.find(_.isUser) match {
                             case Some(u) => u.dataOpt("parts")
@@ -232,7 +232,7 @@ object NCProbeVariants {
                                             case None =>
                                                 nlpSen.getInitialNlpNote(key.from, key.to) match {
                                                     case Some(nlpNote) =>
-                                                        val artTok = NlpToken(IDX)
+                                                        val artTok = NCNlpSentenceToken(IDX)
 
                                                         artTok.add(nlpNote.clone(mkNlpNoteParams(): _*))
 

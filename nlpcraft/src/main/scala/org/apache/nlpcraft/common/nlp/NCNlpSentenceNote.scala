@@ -216,12 +216,12 @@ object NCNlpSentenceNote {
       * @param params Parameters.
       */
     def apply(
-        indexes: Seq[Int],
-        wordIndexesOpt: Option[Seq[Int]],
+        indexes: collection.Seq[Int],
+        wordIndexesOpt: Option[collection.Seq[Int]],
         typ: String,
         params: (String, Any)*
     ): NCNlpSentenceNote = {
-        def calc(seq: Seq[Int]): (Int, Int, Int, java.util.List[Int], Int) =
+        def calc(seq: collection.Seq[Int]): (Int, Int, Int, java.util.List[Int], Int) =
             (U.calcSparsity(seq), seq.min, seq.max, seq.asJava, seq.length)
 
         val (sparsity, tokMinIndex, tokMaxIndex, tokWordIndexes, len) = calc(wordIndexesOpt.getOrElse(indexes))
@@ -249,7 +249,7 @@ object NCNlpSentenceNote {
       * @param typ Type of the node.
       * @param params Parameters.
       */
-    def apply(indexes: Seq[Int], typ: String, params: (String, Any)*): NCNlpSentenceNote =
+    def apply(indexes: collection.Seq[Int], typ: String, params: (String, Any)*): NCNlpSentenceNote =
         apply(indexes, None, typ, params: _*)
 
     /**
@@ -260,6 +260,6 @@ object NCNlpSentenceNote {
       * @param typ Type of the node.
       * @param params Parameters.
       */
-    def apply(indexes: Seq[Int], wordIndexes: Seq[Int], typ: String, params: (String, Any)*): NCNlpSentenceNote =
+    def apply(indexes: collection.Seq[Int], wordIndexes: collection.Seq[Int], typ: String, params: (String, Any)*): NCNlpSentenceNote =
         apply(indexes, Some(wordIndexes), typ, params: _*)
 }

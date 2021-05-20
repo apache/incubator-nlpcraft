@@ -124,20 +124,18 @@ object NCOpenNlpNerEnricher extends NCService with NCNlpNerEnricher with NCIgnit
     
             case class Holder(start: Int, end: Int, name: String, probability: Double)
     
-            val hs =
-                this.
-                    synchronized {
-                        val res = nerFinders.
-                            filter { case (_, tokName) => ebiTokens.contains(tokName)}.
-                            flatMap {
-                                case (finder, name) =>
-                                    finder.find(words).map(p => Holder(p.getStart, p.getEnd - 1, name, p.getProb))
-                            }
-    
-                            nerFinders.keys.foreach(_.clearAdaptiveData())
-    
-                            res
-                    }.toSeq
+            val hs = this. synchronized {
+                val res = nerFinders.
+                    filter { case (_, tokName) => ebiTokens.contains(tokName)}.toSeq.
+                    flatMap {
+                        case (finder, name) =>
+                            finder.find(words).map(p => Holder(p.getStart, p.getEnd - 1, name, p.getProb))
+                    }
+
+                    nerFinders.keys.foreach(_.clearAdaptiveData())
+
+                    res
+            }
     
             hs.
                 filter(h => ebiTokens.contains(h.name)).

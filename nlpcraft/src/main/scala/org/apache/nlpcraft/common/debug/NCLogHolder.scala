@@ -23,7 +23,7 @@ import java.util
 import com.google.gson.Gson
 import org.apache.nlpcraft.model._
 
-import scala.jdk.CollectionConverters.{CollectionHasAsScala, IterableHasAsJava, MapHasAsJava, SeqHasAsJava}
+import scala.jdk.CollectionConverters._
 
 //
 // NOTE: these classes are specifically designed for JSON marshalling.
