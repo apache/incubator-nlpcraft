@@ -447,6 +447,19 @@ public interface NCToken extends NCMetadata {
     default int getSparsity() { return meta("nlpcraft:nlp:sparsity"); }
 
     /**
+     * A shortcut method to get of individual separate words in this token.
+     * <p>
+     * This method is equivalent to:
+     * <pre class="brush: java">
+     *     return meta("nlpcraft:nlp:wordlength");
+     * </pre>
+     * See more information on token metadata <a target=_ href="https://nlpcraft.apache.org/data-model.html#meta">here</a>.
+     *
+     * @return Number of individual separate words in this token.
+     */
+    default int getWordLength() { return meta("nlpcraft:nlp:wordlength"); }
+
+    /**
      * A shortcut method to get Penn Treebank POS tag for this token. Note that additionally to standard Penn
      * Treebank POS tags NLPCraft introduced '---' synthetic tag to indicate a POS tag for multiword tokens.
      * <p>

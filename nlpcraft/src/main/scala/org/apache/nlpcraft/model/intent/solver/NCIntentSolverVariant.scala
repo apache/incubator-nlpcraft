@@ -19,9 +19,9 @@ package org.apache.nlpcraft.model.intent.solver
 
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.model.NCToken
+import org.apache.nlpcraft.model.impl.NCTokenPimp._
 
 import scala.jdk.CollectionConverters._
-
 import java.util
 
 /**
@@ -44,8 +44,8 @@ case class NCIntentSolverVariant(tokens: util.List[NCToken]) extends Ordered[NCI
 
         for (tok <- tokens.asScala) {
             if (!tok.isFreeWord && !tok.isStopWord) {
-                wordCnt += tok.wordLength
-                totalSparsity += tok.sparsity
+                wordCnt += tok.getWordLength
+                totalSparsity += tok.getSparsity
 
                 if (tok.isUserDefined) {
                     userToks += 1

@@ -25,7 +25,7 @@ import scala.jdk.CollectionConverters._
   *
   */
 object NCTokenPimp {
-    implicit  def x(tok: NCToken): NCTokenPimp = new NCTokenPimp(tok)
+    implicit def x(tok: NCToken): NCTokenPimp = new NCTokenPimp(tok)
 
     private final val SYS = Set("nlpcraft", "google", "opennlp", "spacy", "stanford")
 }
