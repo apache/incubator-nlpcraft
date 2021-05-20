@@ -50,7 +50,7 @@ object NCTxManager extends NCService with NCIgniteInstance {
      *
      * @param parent Optional parent span.
      */
-    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
 
         // Close all still attached JDBC connections on stop.
@@ -65,7 +65,7 @@ object NCTxManager extends NCService with NCIgniteInstance {
      * @param parent Optional parent span.
      * @return
      */
-    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ =>
         ackStarting()
 
         cons = mutable.HashMap.empty[IgniteUuid, Connection]
@@ -100,7 +100,7 @@ object NCTxManager extends NCService with NCIgniteInstance {
         
         cons.synchronized {
             if (!cons.contains(xid))
-                cons += xid → con
+                cons += xid -> con
         }
     }
     
@@ -161,8 +161,8 @@ object NCTxManager extends NCService with NCIgniteInstance {
             cons.synchronized {
                 cons.remove(tx.xid) match {
                     // If there was a JDBC connection - explicitly close it on tx close.
-                    case Some(con) ⇒ U.close(con)
-                    case None ⇒ ()
+                    case Some(con) => U.close(con)
+                    case None => ()
                 }
             }
     }
@@ -174,7 +174,7 @@ object NCTxManager extends NCService with NCIgniteInstance {
       * @tparam R
       * @return
       */
-    private def startTx[R](tx: Transaction)(f: Transaction ⇒ R): R = {
+    private def startTx[R](tx: Transaction)(f: Transaction => R): R = {
         try {
             val res = f(tx)
             
@@ -183,7 +183,7 @@ object NCTxManager extends NCService with NCIgniteInstance {
             res
         }
         catch {
-            case e: Throwable ⇒ tx.setRollbackOnly(); throw e
+            case e: Throwable => tx.setRollbackOnly(); throw e
         }
         finally
             finalizeTx(tx)
@@ -196,7 +196,7 @@ object NCTxManager extends NCService with NCIgniteInstance {
       * @tparam R
       * @return
       */
-    private def startTx0[R](tx: Transaction)(f: ⇒ R): R = {
+    private def startTx0[R](tx: Transaction)(f: => R): R = {
         try {
             val res = f
             
@@ -205,7 +205,7 @@ object NCTxManager extends NCService with NCIgniteInstance {
             res
         }
         catch {
-            case e: Throwable ⇒ tx.setRollbackOnly(); throw e
+            case e: Throwable => tx.setRollbackOnly(); throw e
         }
         finally
             finalizeTx(tx)
@@ -228,7 +228,7 @@ object NCTxManager extends NCService with NCIgniteInstance {
       */
     @throws[NCE]
     def startTx[R](cry: TransactionConcurrency, iso: TransactionIsolation, timeout: Long, size: Int)
-        (f: Transaction ⇒ R): R =
+        (f: Transaction => R): R =
         catching(wrapIE) {
             if (inTx()) {
                 val x = tx()
@@ -257,7 +257,7 @@ object NCTxManager extends NCService with NCIgniteInstance {
       * @tparam R Result type.
       */
     @throws[NCE]
-    def startTx[R](cry: TransactionConcurrency, iso: TransactionIsolation)(f: Transaction ⇒ R): R =
+    def startTx[R](cry: TransactionConcurrency, iso: TransactionIsolation)(f: Transaction => R): R =
         catching(wrapIE) {
             if (inTx()) {
                 val x = tx()
@@ -284,7 +284,7 @@ object NCTxManager extends NCService with NCIgniteInstance {
       * @tparam R Result type.
       */
     @throws[NCE]
-    def startTx[R](f: Transaction ⇒ R): R =
+    def startTx[R](f: Transaction => R): R =
         catching(wrapIE) {
             if (inTx())
                 f(tx())
@@ -305,7 +305,7 @@ object NCTxManager extends NCService with NCIgniteInstance {
       * @tparam R Result type.
       */
     @throws[NCE]
-    def startTx[R](f: ⇒ R): R = 
+    def startTx[R](f: => R): R =
         catching(wrapIE) {
             if (inTx())
                 f

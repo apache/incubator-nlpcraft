@@ -18,7 +18,7 @@
 package org.apache.nlpcraft
 
 import java.util.concurrent.Callable
-import java.util.function.{BiPredicate, Consumer, Supplier, Function ⇒ JFunction, Predicate ⇒ JPredicate}
+import java.util.function.{BiPredicate, Consumer, Supplier, Function => JFunction, Predicate => JPredicate}
 import org.apache.nlpcraft.common.ansi.NCAnsi._
 import org.apache.nlpcraft.common.util._
 
@@ -187,7 +187,7 @@ package object common {
      * @tparam T
      * @return
      */
-    implicit def toJavaConsumer[T](f: T ⇒ Unit): Consumer[T] = (t: T) => f(t)
+    implicit def toJavaConsumer[T](f: T => Unit): Consumer[T] = (t: T) => f(t)
     
     /**
       *
@@ -195,7 +195,7 @@ package object common {
       * @tparam A
       * @return
       */
-    implicit def toJavaSupplier[A](f: () ⇒ A): Supplier[A] = () => f()
+    implicit def toJavaSupplier[A](f: () => A): Supplier[A] = () => f()
     
     /**
       *
@@ -204,7 +204,7 @@ package object common {
       * @tparam B
       * @return
       */
-    implicit def toJavaFunction[A, B](f: A ⇒ B): JFunction[A, B] = (a: A) => f(a)
+    implicit def toJavaFunction[A, B](f: A => B): JFunction[A, B] = (a: A) => f(a)
     
     /**
       *
@@ -212,7 +212,7 @@ package object common {
       * @tparam A
       * @return
       */
-    implicit def toJavaPredicate[A](f: A ⇒ Boolean): JPredicate[A] = (a: A) => f(a)
+    implicit def toJavaPredicate[A](f: A => Boolean): JPredicate[A] = (a: A) => f(a)
     
     /**
       *
@@ -221,13 +221,13 @@ package object common {
       * @tparam B
       * @return
       */
-    implicit def toJavaBiPredicate[A, B](predicate: (A, B) ⇒ Boolean): BiPredicate[A, B] = (a: A, b: B) => predicate(a, b)
+    implicit def toJavaBiPredicate[A, B](predicate: (A, B) => Boolean): BiPredicate[A, B] = (a: A, b: B) => predicate(a, b)
     
     /**
       * @param f Lambda to convert.
       * @return Runnable object.
       */
-    implicit def toRunnable(f: () ⇒ Unit): Runnable =
+    implicit def toRunnable(f: () => Unit): Runnable =
         new Runnable() {
             override def run(): Unit = f()
         }
@@ -236,7 +236,7 @@ package object common {
       * @param f Lambda to convert.
       * @return Callable object.
       */
-    implicit def toCallable[R](f: () ⇒ R): Callable[R] = () ⇒ f()
+    implicit def toCallable[R](f: () => R): Callable[R] = () => f()
 
     /**
      *

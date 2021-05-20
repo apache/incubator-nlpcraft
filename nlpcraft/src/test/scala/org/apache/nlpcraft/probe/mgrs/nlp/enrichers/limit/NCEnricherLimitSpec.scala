@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.probe.mgrs.nlp.enrichers.limit
 
 import org.apache.nlpcraft.NCTestEnvironment
-import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.{NCDefaultTestModel, NCEnricherBaseSpec, NCTestLimitToken ⇒ lim, NCTestNlpToken ⇒ nlp, NCTestUserToken ⇒ usr}
+import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.{NCDefaultTestModel, NCEnricherBaseSpec, NCTestLimitToken => lim, NCTestNlpToken => nlp, NCTestUserToken => usr}
 import org.junit.jupiter.api.Test
 
 /**
@@ -33,32 +33,32 @@ class NCEnricherLimitSpec extends NCEnricherBaseSpec {
     @Test
     def test(): Unit =
         runBatch(
-            _ ⇒ checkExists(
+            _ => checkExists(
                 "top 23 A",
                 lim(text = "top 23", limit = 23, index = 1, note = "A", asc = false),
                 usr(text = "A", id = "A")
             ),
-            _ ⇒ checkExists(
+            _ => checkExists(
                 "top 10 A",
                 lim(text = "top 10", limit = 10, index = 1, note = "A", asc = false),
                 usr(text = "A", id = "A")
             ),
-            _ ⇒ checkExists(
+            _ => checkExists(
                 "top A",
                 lim(text = "top", limit = 10, index = 1, note = "A", asc = false),
                 usr(text = "A", id = "A")
             ),
-            _ ⇒ checkExists(
+            _ => checkExists(
                 "few A B",
                 lim(text = "few", limit = 3, index = 1, note = "AB", asc = false),
                 usr(text = "A B", id = "AB")
             ),
-            _ ⇒ checkExists(
+            _ => checkExists(
                 "top 10 D1",
                 lim(text = "top 10", limit = 10, index = 1, note = "D1", asc = false),
                 usr(text = "D1", id = "D1")
             ),
-            _ ⇒ checkAll(
+            _ => checkAll(
                 "handful of A B",
                 Seq(
                     lim(text = "handful of", limit = 5, index = 1, note = "AB", asc = false),

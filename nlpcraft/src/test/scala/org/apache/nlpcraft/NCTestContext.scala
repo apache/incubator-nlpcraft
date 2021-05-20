@@ -38,11 +38,11 @@ abstract class NCTestContext {
 
     @BeforeEach
     @throws[Exception]
-    private def beforeEach(info: TestInfo): Unit = start0(() ⇒ getMethodAnnotation(info))
+    private def beforeEach(info: TestInfo): Unit = start0(() => getMethodAnnotation(info))
 
     @BeforeAll
     @throws[Exception]
-    private def beforeAll(info: TestInfo): Unit = start0(() ⇒ getClassAnnotation(info))
+    private def beforeAll(info: TestInfo): Unit = start0(() => getClassAnnotation(info))
 
     @AfterEach
     @throws[Exception]
@@ -63,9 +63,9 @@ abstract class NCTestContext {
         if (info.getTestMethod.isPresent) Option(info.getTestMethod.get().getAnnotation(MDL_CLASS)) else None
 
     @throws[Exception]
-    private def start0(extract: () ⇒ Option[NCTestEnvironment]): Unit =
+    private def start0(extract: () => Option[NCTestEnvironment]): Unit =
         extract() match {
-            case Some(ann) ⇒
+            case Some(ann) =>
                 if (probeStarted || cli != null)
                     throw new IllegalStateException(
                         "Model already initialized. " +
@@ -87,7 +87,7 @@ abstract class NCTestContext {
                     }
                 }
                 
-            case None ⇒ // No-op.
+            case None => // No-op.
         }
 
     @throws[Exception]

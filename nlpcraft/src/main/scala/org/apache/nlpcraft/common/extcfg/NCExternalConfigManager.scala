@@ -117,8 +117,8 @@ object NCExternalConfigManager extends NCService {
             val url = s"${Config.url}/$MD5_FILE"
 
             try
-                managed(Source.fromURL(url)) acquireAndGet { src ⇒
-                    src.getLines().map(_.trim()).filter(s ⇒ s.nonEmpty && !s.startsWith("#")).map(f = p ⇒ {
+                Using.resource(Source.fromURL(url)) { src =>
+                    src.getLines().map(_.trim()).filter(s => s.nonEmpty && !s.startsWith("#")).map(f = p => {
                         def splitPair(s: String, sep: String): (String, String) = {
                             val seq = s.split(sep).map(_.strip)
 
@@ -131,11 +131,11 @@ object NCExternalConfigManager extends NCService {
                         val (resPath, md5) = splitPair(p, " ")
                         val (t, res) = splitPair(resPath, "/")
 
-                        Key(string2Type(t), res) → md5
+                        Key(string2Type(t), res) -> md5
                     }).toList.toMap
                 }
             catch {
-                case e: IOException ⇒ throw new NCE(s"Failed to read: '$url'", e)
+                case e: IOException => throw new NCE(s"Failed to read: '$url'", e)
             }
         }
 
@@ -150,9 +150,9 @@ object NCExternalConfigManager extends NCService {
 
             val v2 =
                 try
-                    managed(Files.newInputStream(f.toPath)) acquireAndGet { in ⇒ DigestUtils.md5Hex(in) }
+                    Using.resource(Files.newInputStream(f.toPath)) { in => DigestUtils.md5Hex(in) }
                 catch {
-                    case e: IOException ⇒ throw new NCE(s"Failed to get MD5 for: '${f.getAbsolutePath}'", e)
+                    case e: IOException => throw new NCE(s"Failed to get MD5 for: '${f.getAbsolutePath}'", e)
                 }
 
             v1 == v2
@@ -164,29 +164,29 @@ object NCExternalConfigManager extends NCService {
       *
       * @param parent Optional parent span.
       */
-    override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ ⇒
+    override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ =>
         ackStarting()
 
         require(NCExternalConfigType.values.size == FILES.map(_.typ).toSeq.distinct.size)
 
         val module = NCModule.getModule
 
-        val mFiles = FILES.filter(_.modules.contains(module)).map(p ⇒ p.typ → p).toMap
+        val mFiles = FILES.filter(_.modules.contains(module)).map(p => p.typ -> p).toMap
 
         if (mFiles.nonEmpty) {
             val m = new ConcurrentHashMap[NCExternalConfigType, File]
 
             U.executeParallel(
-                mFiles.values.flatMap(p ⇒ p.files.map(f ⇒ FileHolder(f, p.typ))).toSeq.map(f ⇒ () ⇒ processFile(f, m)): _*
+                mFiles.values.flatMap(p => p.files.map(f => FileHolder(f, p.typ))).toSeq.map(f => () => processFile(f, m)): _*
             )
 
             val downTypes = m.asScala
 
             if (downTypes.nonEmpty) {
-                U.executeParallel(downTypes.values.toSeq.map(d ⇒ () ⇒ clearDir(d)): _*)
+                U.executeParallel(downTypes.values.toSeq.map(d => () => clearDir(d)): _*)
                 U.executeParallel(
                     downTypes.keys.toSeq.
-                        flatMap(t ⇒ mFiles(t).files.toSeq.map(f ⇒ Download(f, t))).map(d ⇒ () ⇒ download(d)): _*
+                        flatMap(t => mFiles(t).files.toSeq.map(f => Download(f, t))).map(d => () => download(d)): _*
                 )
             }
         }
@@ -199,7 +199,7 @@ object NCExternalConfigManager extends NCService {
      *
      * @param parent Optional parent span.
      */
-    override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
+    override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
         ackStopped()
     }
@@ -230,7 +230,7 @@ object NCExternalConfigManager extends NCService {
       */
     @throws[NCE]
     def getContent(typ: NCExternalConfigType, res: String, parent: Span = null): String =
-        startScopedSpan("getContent", parent, "res" → res) { _ ⇒
+        startScopedSpan("getContent", parent, "res" -> res) { _ =>
             mkString(U.readFile(mkFile(typ, res)))
         }
 
@@ -242,7 +242,7 @@ object NCExternalConfigManager extends NCService {
       */
     @throws[NCE]
     def getStream(typ: NCExternalConfigType, res: String, parent: Span = null): InputStream =
-        startScopedSpan("getStream", parent, "res" → res) { _ ⇒
+        startScopedSpan("getStream", parent, "res" -> res) { _ =>
             new BufferedInputStream(new FileInputStream(mkFile(typ, res)))
         }
 
@@ -255,9 +255,9 @@ object NCExternalConfigManager extends NCService {
       */
     @throws[NCE]
     def getDirContent(
-        typ: NCExternalConfigType, resDir: String, resFilter: String ⇒ Boolean, parent: Span = null
+        typ: NCExternalConfigType, resDir: String, resFilter: String => Boolean, parent: Span = null
     ): Stream[NCExternalConfigHolder] =
-        startScopedSpan("getDirContent", parent, "resDir" → resDir) { _ ⇒
+        startScopedSpan("getDirContent", parent, "resDir" -> resDir) { _ =>
             val resDirPath = getResourcePath(typ, resDir)
 
             val d = new File(Config.dir, resDirPath)
@@ -269,7 +269,7 @@ object NCExternalConfigManager extends NCService {
                 d.listFiles(new FileFilter { override def accept(f: File): Boolean = f.isFile && resFilter(f.getName) })
 
             if (files != null)
-                files.toStream.map(f ⇒ NCExternalConfigHolder(typ, f.getName, mkString(U.readFile(f))))
+                files.toStream.map(f => NCExternalConfigHolder(typ, f.getName, mkString(U.readFile(f))))
             else
                 Stream.empty
         }
@@ -307,15 +307,15 @@ object NCExternalConfigManager extends NCService {
         val url = s"${Config.url}/${type2String(d.typ)}/${d.file.getName}"
 
         try
-            managed(new BufferedInputStream(new URL(url).openStream())) acquireAndGet { src ⇒
-                managed(new FileOutputStream(d.file)) acquireAndGet { dest ⇒
+            Using.resource(new BufferedInputStream(new URL(url).openStream())) { src =>
+                Using.resource(new FileOutputStream(d.file)) { dest =>
                     IOUtils.copy(src, dest)
                 }
 
                 logger.info(s"One-time download for external config [url='$url', file='$filePath']")
             }
         catch {
-            case e: IOException ⇒ throw new NCE(s"Failed to download external config [url='$url', file='$filePath']", e)
+            case e: IOException => throw new NCE(s"Failed to download external config [url='$url', file='$filePath']", e)
         }
 
         def safeDelete(): Unit =
@@ -337,7 +337,7 @@ object NCExternalConfigManager extends NCService {
                 logger.trace(s"File unzipped [file='$filePath', dest='$destDirPath']")
             }
             catch {
-                case e: NCE ⇒
+                case e: NCE =>
                     safeDelete()
 
                     throw e
@@ -360,7 +360,7 @@ object NCExternalConfigManager extends NCService {
         try
             NCExternalConfigType.withName(s.toUpperCase)
         catch {
-            case e: IllegalArgumentException ⇒ throw new NCE(s"Invalid type: '$s'", e)
+            case e: IllegalArgumentException => throw new NCE(s"Invalid type: '$s'", e)
         }
 
     /**

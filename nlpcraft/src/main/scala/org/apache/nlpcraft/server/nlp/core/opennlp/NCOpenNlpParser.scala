@@ -50,21 +50,21 @@ object NCOpenNlpParser extends NCService with NCNlpParser with NCIgniteInstance 
      * @param parent Optional parent span.
      * @return
      */
-    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
+    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span =>
         require(NCOpenNlpTokenizer.isStarted)
 
         ackStarting()
 
         U.executeParallel(
-            () ⇒ {
+            () => {
                 tagger =
-                    managed(NCExternalConfigManager.getStream(OPENNLP, "en-pos-maxent.bin", span)) acquireAndGet { in ⇒
+                    Using.resource(NCExternalConfigManager.getStream(OPENNLP, "en-pos-maxent.bin", span)) { in =>
                         new POSTaggerME(new POSModel(in))
                     }
             },
-            () ⇒ {
+            () => {
                 lemmatizer =
-                    managed(NCExternalConfigManager.getStream(OPENNLP, "en-lemmatizer.dict", span)) acquireAndGet { in ⇒
+                    Using.resource(NCExternalConfigManager.getStream(OPENNLP, "en-lemmatizer.dict", span)) { in =>
                         new DictionaryLemmatizer(in)
                     }
             }
@@ -81,7 +81,7 @@ object NCOpenNlpParser extends NCService with NCNlpParser with NCIgniteInstance 
      *
      * @param parent Optional parent span.
      */
-    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
 
         cache = null
@@ -96,7 +96,7 @@ object NCOpenNlpParser extends NCService with NCNlpParser with NCIgniteInstance 
      * @return Parsed words.
      */
     override def parse(normTxt: String, parent: Span = null): Seq[NCNlpWord] =
-        startScopedSpan("parse", parent, "normTxt" → normTxt) { _ ⇒
+        startScopedSpan("parse", parent, "normTxt" -> normTxt) { _ =>
             // Can be optimized.
             val (toks, words, poses, lemmas) =
                 this.synchronized {
@@ -125,25 +125,25 @@ object NCOpenNlpParser extends NCService with NCNlpParser with NCIgniteInstance 
                             zip(poses).
                             zipWithIndex.flatMap {
                                 // "0" is flag that lemma cannot be obtained for some reasons.
-                                case ((lemma, pos), i) ⇒ if (lemma == "O" && pos == "NN") Some(i) else None
+                                case ((lemma, pos), i) => if (lemma == "O" && pos == "NN") Some(i) else None
                             }
     
                     if (suspIdxs.nonEmpty) {
                         val fixes: Map[Int, String] =
                             lemmatizer.
-                                lemmatize(suspIdxs.map(i ⇒ words(i)).toArray, suspIdxs.map(_ ⇒ "NNN").toArray).
+                                lemmatize(suspIdxs.map(i => words(i)).toArray, suspIdxs.map(_ => "NNN").toArray).
                                 zipWithIndex.
-                                flatMap { case (lemma, i) ⇒ if (lemma != "0") Some(suspIdxs(i) → lemma) else None }.toMap
+                                flatMap { case (lemma, i) => if (lemma != "0") Some(suspIdxs(i) -> lemma) else None }.toMap
     
-                        lemmas = lemmas.zipWithIndex.map { case (lemma, idx) ⇒ fixes.getOrElse(idx, lemma) }
+                        lemmas = lemmas.zipWithIndex.map { case (lemma, idx) => fixes.getOrElse(idx, lemma) }
                     }
     
                     (toks, words, poses, lemmas)
                 }
     
-            cache += normTxt → words
+            cache += normTxt -> words
     
-            toks.zip(poses).zip(lemmas).map { case ((tok, pos), lemma) ⇒
+            toks.zip(poses).zip(lemmas).map { case ((tok, pos), lemma) =>
                 val normalWord = tok.token.toLowerCase
     
                 NCNlpWord(

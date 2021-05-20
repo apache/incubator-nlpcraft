@@ -44,7 +44,7 @@ object NCRestSpec {
     private final val GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create()
     private final val CLI = HttpClients.createDefault
     private final val HANDLER: ResponseHandler[java.util.Map[String, Object]] =
-        (resp: HttpResponse) ⇒ {
+        (resp: HttpResponse) => {
             val code = resp.getStatusLine.getStatusCode
             val js = mkJs(code, resp.getEntity)
 
@@ -52,15 +52,15 @@ object NCRestSpec {
                 throw new RuntimeException(s"Unexpected response [code=$code, response=$js]")
 
             code match {
-                case 200 ⇒ GSON.fromJson(js, TYPE_RESP)
+                case 200 => GSON.fromJson(js, TYPE_RESP)
 
-                case 400 ⇒ throw new RuntimeException(js)
-                case _ ⇒ throw new RuntimeException(s"Unexpected response [code=$code, response=$js]")
+                case 400 => throw new RuntimeException(js)
+                case _ => throw new RuntimeException(s"Unexpected response [code=$code, response=$js]")
             }
         }
 
     private final val ERR_HANDLER: ResponseHandler[Error] =
-        (resp: HttpResponse) ⇒ {
+        (resp: HttpResponse) => {
             val code = resp.getStatusLine.getStatusCode
 
             Error(code, mkJs(code, resp.getEntity))
@@ -143,7 +143,7 @@ class NCRestSpec extends NCTestContext {
       * @param passwd
       */
     protected def signin(email: String, passwd: String): String = {
-        val tkn = post0("signin", "email" → email, "passwd" → passwd)("acsTok").asInstanceOf[String]
+        val tkn = post0("signin", "email" -> email, "passwd" -> passwd)("acsTok").asInstanceOf[String]
 
         assertNotNull(tkn)
 
@@ -165,7 +165,7 @@ class NCRestSpec extends NCTestContext {
       *
       * @param tkn
       */
-    protected def signout(tkn: String): Unit = checkStatus(post0("signout", "acsTok" → tkn))
+    protected def signout(tkn: String): Unit = checkStatus(post0("signout", "acsTok" -> tkn))
 
     /**
       *
@@ -173,7 +173,7 @@ class NCRestSpec extends NCTestContext {
       * @param ps
       * @param validations
       */
-    protected def post[T](url: String, ps: (String, Any)*)(validations: (String, T ⇒ Unit)*): Unit = {
+    protected def post[T](url: String, ps: (String, Any)*)(validations: (String, T => Unit)*): Unit = {
         assertNotNull(tkn)
 
         post(url, tkn, ps: _*)(validations: _*)
@@ -186,7 +186,7 @@ class NCRestSpec extends NCTestContext {
       * @param ps
       * @param validations
       */
-    protected def post[T](url: String, tkn: String, ps: (String, Any)*)(validations: (String, T ⇒ Unit)*): Unit = {
+    protected def post[T](url: String, tkn: String, ps: (String, Any)*)(validations: (String, T => Unit)*): Unit = {
         val resp = post0(url, addToken(tkn, ps): _*)
 
         checkStatus(resp)
@@ -195,28 +195,28 @@ class NCRestSpec extends NCTestContext {
         println(U.colorJson(
             GSON.toJson(
                 Map(
-                    "url" → url,
-                    "params" → new java.util.HashMap[String, Any](ps.toMap.asJava),
-                    "response" → resp.asJava
+                    "url" -> url,
+                    "params" -> new java.util.HashMap[String, Any](ps.toMap.asJava),
+                    "response" -> resp.asJava
                 ).asJava
             ))
         )
 
         val ctx = JsonPath.parse(GSON.toJson(resp.asJava))
 
-        validations.foreach { case (field, validation) ⇒
+        validations.foreach { case (field, validation) =>
             val v: Object =
                 try
                     ctx.read(field)
                 catch {
-                    case _: PathNotFoundException ⇒ null
+                    case _: PathNotFoundException => null
                 }
 
             println(s"Validating value [$field=$v]")
 
             validation(v match {
-                case arr: net.minidev.json.JSONArray ⇒ (0 until arr.size()).map(i ⇒ arr.get(i)).asJava.asInstanceOf[T]
-                case _ ⇒ v.asInstanceOf[T]
+                case arr: net.minidev.json.JSONArray => (0 until arr.size()).map(i => arr.get(i)).asJava.asInstanceOf[T]
+                case _ => v.asInstanceOf[T]
             })
         }
 
@@ -246,9 +246,9 @@ class NCRestSpec extends NCTestContext {
             U.colorJson(
                 GSON.toJson(
                     Map(
-                        "url" → url,
-                        "params" → new java.util.HashMap[String, Any](ps.toMap.asJava),
-                        "response" → Map("httpCode" → err.httpCode, "json" → GSON.fromJson(err.js, TYPE_RESP)).asJava
+                        "url" -> url,
+                        "params" -> new java.util.HashMap[String, Any](ps.toMap.asJava),
+                        "response" -> Map("httpCode" -> err.httpCode, "json" -> GSON.fromJson(err.js, TYPE_RESP)).asJava
                     ).asJava
                 )
             )
@@ -263,7 +263,7 @@ class NCRestSpec extends NCTestContext {
 
         assertEquals(
             errCode,
-            m.asScala.getOrElse("code", () ⇒ throw new RuntimeException(s"Invalid response: $js")).asInstanceOf[String]
+            m.asScala.getOrElse("code", () => throw new RuntimeException(s"Invalid response: $js")).asInstanceOf[String]
         )
     }
 
@@ -273,7 +273,7 @@ class NCRestSpec extends NCTestContext {
       * @param ps
       */
     private def addToken(tkn: String, ps: Seq[(String, Any)]): Seq[(String, Any)] =
-        if (ps.exists(_._1 == "acsTok")) ps else Seq("acsTok" → tkn) ++ ps
+        if (ps.exists(_._1 == "acsTok")) ps else Seq("acsTok" -> tkn) ++ ps
 
     /**
       *
@@ -282,7 +282,7 @@ class NCRestSpec extends NCTestContext {
       * @param expected
       */
     protected def containsLong(data: ResponseList, field: String, expected: Long): Boolean =
-        contains(data, field, (o: Object) ⇒ o.asInstanceOf[Number].longValue(), expected)
+        contains(data, field, (o: Object) => o.asInstanceOf[Number].longValue(), expected)
 
     /**
       *
@@ -291,8 +291,8 @@ class NCRestSpec extends NCTestContext {
       * @param extract
       * @param expected
       */
-    protected def contains[T](data: ResponseList, field: String, extract: Object ⇒ T, expected: T): Boolean =
-        data.asScala.exists(p ⇒ extract(p.get(field)) == expected)
+    protected def contains[T](data: ResponseList, field: String, extract: Object => T, expected: T): Boolean =
+        data.asScala.exists(p => extract(p.get(field)) == expected)
 
     /**
       *
@@ -301,7 +301,7 @@ class NCRestSpec extends NCTestContext {
       * @param expected
       */
     protected def containsStr(data: ResponseList, field: String, expected: String): Boolean =
-        contains(data, field, (o: Object) ⇒ o.asInstanceOf[String], expected)
+        contains(data, field, (o: Object) => o.asInstanceOf[String], expected)
 
     /**
       *
@@ -310,8 +310,8 @@ class NCRestSpec extends NCTestContext {
       * @param extract
       * @param expected
       */
-    protected def count[T](data: ResponseList, field: String, extract: Object ⇒ T, expected: T): Int =
-        data.asScala.count(p ⇒ extract(p.get(field)) == expected)
+    protected def count[T](data: ResponseList, field: String, extract: Object => T, expected: T): Int =
+        data.asScala.count(p => extract(p.get(field)) == expected)
 
     /**
       *
@@ -323,5 +323,5 @@ class NCRestSpec extends NCTestContext {
       * @param n
       * @return
       */
-    protected def mkString(n: Int, ch: Char = '*'): String = (0 to n).map(_ ⇒ ch).mkString
+    protected def mkString(n: Int, ch: Char = '*'): String = (0 to n).map(_ => ch).mkString
 }

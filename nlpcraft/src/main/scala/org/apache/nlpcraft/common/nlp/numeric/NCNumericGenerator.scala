@@ -89,19 +89,19 @@ object NCNumericGenerator {
             val s10x1 = Integer.parseInt(sNum.substring(9, 12))
 
             val n10x9 = s10x9 match {
-                case 0 ⇒ ""
-                case _ ⇒ convertSmall(s10x9) + " billion "
+                case 0 => ""
+                case _ => convertSmall(s10x9) + " billion "
             }
 
             val n10x6 = s10x6 match {
-                case 0 ⇒ ""
-                case _ ⇒ convertSmall(s10x6) + " million "
+                case 0 => ""
+                case _ => convertSmall(s10x6) + " million "
             }
 
             val n10x3 = s10x3 match {
-                case 0 ⇒ ""
-                case 1 ⇒ "one thousand "
-                case _ ⇒ convertSmall(s10x3) + " thousand "
+                case 0 => ""
+                case 1 => "one thousand "
+                case _ => convertSmall(s10x3) + " thousand "
             }
 
             val n10x1 = convertSmall(s10x1)
@@ -110,5 +110,5 @@ object NCNumericGenerator {
         }
     }
 
-    def generate(n: Int): Map[Int, String] = (1 to n).map(i ⇒ i → toWords(i)).toMap
+    def generate(n: Int): Map[Int, String] = (1 to n).map(i => i -> toWords(i)).toMap
 }

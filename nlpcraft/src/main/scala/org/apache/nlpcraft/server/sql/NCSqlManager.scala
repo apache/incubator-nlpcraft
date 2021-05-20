@@ -62,8 +62,8 @@ object NCSqlManager extends NCService with NCIgniteInstance {
     @throws[NCE]
     private def gzip(opt: Option[String]): String =
         opt match {
-            case Some(s) ⇒ U.compress(s)
-            case None ⇒ null
+            case Some(s) => U.compress(s)
+            case None => null
         }
 
     /**
@@ -82,7 +82,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
         try
             if (m != null) U.compress(JS_MAPPER.writeValueAsString(m)) else null
         catch {
-            case e: JsonProcessingException ⇒ throw new NCE(s"JSON serialization error for: $m", e)
+            case e: JsonProcessingException => throw new NCE(s"JSON serialization error for: $m", e)
         }
     }
 
@@ -93,10 +93,10 @@ object NCSqlManager extends NCService with NCIgniteInstance {
      * @return
      */
     @throws[NCE]
-    override def start(parent: Span): NCService = startScopedSpan("start", parent) { span ⇒
+    override def start(parent: Span): NCService = startScopedSpan("start", parent) { span =>
         ackStarting()
 
-        addTags(span, "isIgniteDb" → NCSql.isIgniteDb)
+        addTags(span, "isIgniteDb" -> NCSql.isIgniteDb)
 
         if (NCSql.isIgniteDb)
             prepareIgniteSchema()
@@ -108,7 +108,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
      *
      * @param parent Optional parent span.
      */
-    override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
+    override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
         ackStopped()
     }
@@ -121,7 +121,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
       */
     @throws[NCE]
     def isKnownPasswordHash(hash: String, parent: Span): Boolean =
-        startScopedSpan("isKnownPasswordHash", parent, "hash" → hash) { _ ⇒
+        startScopedSpan("isKnownPasswordHash", parent, "hash" -> hash) { _ =>
             NCSql.exists("passwd_pool WHERE passwd_hash = ?", hash)
         }
 
@@ -133,7 +133,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
       */
     @throws[NCE]
     def isLogExists(srvReqId: String, parent: Span): Boolean =
-        startScopedSpan("isLogExists", parent, "srvReqId" → srvReqId) { _ ⇒
+        startScopedSpan("isLogExists", parent, "srvReqId" -> srvReqId) { _ =>
             NCSql.exists("proc_log WHERE srv_req_id = ?", srvReqId)
         }
 
@@ -146,7 +146,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
       */
     @throws[NCE]
     def addPasswordHash(id: Long, hash: String, parent: Span): Unit =
-        startScopedSpan("addPasswordHash", parent, "id" → id, "hash" → hash) { _ ⇒
+        startScopedSpan("addPasswordHash", parent, "id" -> id, "hash" -> hash) { _ =>
             NCSql.insert("INSERT INTO passwd_pool (id, passwd_hash) VALUES (?, ?)", id, hash)
         }
 
@@ -158,7 +158,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
       */
     @throws[NCE]
     def erasePasswordHash(hash: String, parent: Span): Unit =
-        startScopedSpan("erasePasswordHash", parent, "hash" → hash) { _ ⇒
+        startScopedSpan("erasePasswordHash", parent, "hash" -> hash) { _ =>
             NCSql.delete("DELETE FROM passwd_pool WHERE passwd_hash = ?", hash)
         }
 
@@ -171,7 +171,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
       */
     @throws[NCE]
     def getUserByEmail(email: String, parent: Span): Option[NCUserMdo] =
-        startScopedSpan("getUserByEmail", parent, "email" → email) { _ ⇒
+        startScopedSpan("getUserByEmail", parent, "email" -> email) { _ =>
             NCSql.selectSingle[NCUserMdo](
                 """
                   |SELECT *
@@ -190,7 +190,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
       */
     @throws[NCE]
     def deleteUser(id: Long, parent: Span): Int =
-        startScopedSpan("deleteUser", parent, "usrId" → id) { _ ⇒
+        startScopedSpan("deleteUser", parent, "usrId" -> id) { _ =>
             NCSql.delete("DELETE FROM nc_user WHERE id = ?", id)
         }
 
@@ -202,7 +202,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
       */
     @throws[NCE]
     def deleteCompany(id: Long, parent: Span): Int =
-        startScopedSpan("deleteCompany", parent, "compId" → id) { _ ⇒
+        startScopedSpan("deleteCompany", parent, "compId" -> id) { _ =>
             NCSql.delete("DELETE FROM nc_user WHERE company_id = ?", id)
             NCSql.delete("DELETE FROM nc_company WHERE id = ?", id)
         }
@@ -226,7 +226,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
         propsOpt: Option[String],
         parent: Span
     ): Int =
-        startScopedSpan("updateUser", parent, "usrId" → id) { _ ⇒
+        startScopedSpan("updateUser", parent, "usrId" -> id) { _ =>
             NCSql.update(
                 s"""
                    |UPDATE nc_user
@@ -270,7 +270,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
         propsOpt: Option[String],
         parent: Span
     ): Int =
-        startScopedSpan("updateUser", parent, "usrId" → id) { span ⇒
+        startScopedSpan("updateUser", parent, "usrId" -> id) { span =>
             NCSql.update(
                 s"""
                    |UPDATE nc_user
@@ -304,7 +304,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
       */
     @throws[NCE]
     def updateUserAdmin(id: Long, isAdmin: Boolean, parent: Span): Int =
-        startScopedSpan("updateUserAdmin", parent, "usrId" → id, "isAdmin" → isAdmin) { _ ⇒
+        startScopedSpan("updateUserAdmin", parent, "usrId" -> id, "isAdmin" -> isAdmin) { _ =>
             NCSql.update(
                 s"""
                    |UPDATE nc_user
@@ -346,7 +346,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
         propsOpt: Option[String],
         parent: Span
     ): Int =
-        startScopedSpan("updateCompany", parent, "compId" → id) { _ ⇒
+        startScopedSpan("updateCompany", parent, "compId" -> id) { _ =>
             NCSql.update(
                 s"""
                    |UPDATE nc_company
@@ -384,7 +384,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
       */
     @throws[NCE]
     def updateCompanyToken(id: Long, tkn: String, parent: Span): Int =
-        startScopedSpan("updateCompanyToken", parent, "compId" → id, "tkn" → tkn) { _ ⇒
+        startScopedSpan("updateCompanyToken", parent, "compId" -> id, "tkn" -> tkn) { _ =>
             NCSql.update(
                 s"""
                    |UPDATE nc_company
@@ -410,7 +410,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
       */
     @throws[NCE]
     def getUserById(id: Long, parent: Span): Option[NCUserMdo] =
-        startScopedSpan("getUser", parent, "usrId" → id) { _ ⇒
+        startScopedSpan("getUser", parent, "usrId" -> id) { _ =>
             NCSql.selectSingle[NCUserMdo](
                 s"""
                    |SELECT *
@@ -430,7 +430,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
       */
     @throws[NCE]
     def getCompany(id: Long, parent: Span): Option[NCCompanyMdo] =
-        startScopedSpan("getCompany", parent, "compId" → id) { _ ⇒
+        startScopedSpan("getCompany", parent, "compId" -> id) { _ =>
             NCSql.selectSingle[NCCompanyMdo](
                 s"""
                    |SELECT *
@@ -450,7 +450,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
       */
     @throws[NCE]
     def getCompanyByHashToken(hash: String, parent: Span): Option[NCCompanyMdo] =
-        startScopedSpan("getCompanyByHashToken", parent, "hash" → hash) { _ ⇒
+        startScopedSpan("getCompanyByHashToken", parent, "hash" -> hash) { _ =>
             NCSql.selectSingle[NCCompanyMdo](
                 s"""
                    |SELECT *
@@ -470,7 +470,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
       */
     @throws[NCE]
     def getCompanyByName(name: String, parent: Span): Option[NCCompanyMdo] =
-        startScopedSpan("getCompanyByName", parent, "name" → name) { _ ⇒
+        startScopedSpan("getCompanyByName", parent, "name" -> name) { _ =>
             NCSql.selectSingle[NCCompanyMdo](
                 s"""
                    |SELECT *
@@ -492,7 +492,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
       */
     @throws[NCE]
     def getUserId(companyId: Long, usrExtId: String, parent: Span): Option[Long] =
-        startScopedSpan("getUserId", parent, "companyId" → companyId, "usrExtId" → usrExtId) { _ ⇒
+        startScopedSpan("getUserId", parent, "companyId" -> companyId, "usrExtId" -> usrExtId) { _ =>
             NCSql.selectSingle[Long](
                 "SELECT id FROM nc_user WHERE company_id = ? AND ext_id = ?", companyId, usrExtId
             )
@@ -506,7 +506,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
       */
     @throws[NCE]
     def getLogsCount(parent: Span): Int =
-        startScopedSpan("getLogsCount", parent) { _ ⇒
+        startScopedSpan("getLogsCount", parent) { _ =>
             NCSql.selectSingle[Int]("SELECT count(*) FROM proc_log").getOrElse(0)
         }
 
@@ -518,7 +518,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
       */
     @throws[NCE]
     def getAllUsers(compId: Long, parent: Span): Seq[NCUserMdo] =
-        startScopedSpan("getAllUsers", parent, "compId" → compId) { _ ⇒
+        startScopedSpan("getAllUsers", parent, "compId" -> compId) { _ =>
             NCSql.select[NCUserMdo]("SELECT * FROM nc_user WHERE company_id = ?", compId)
         }
 
@@ -531,7 +531,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
       */
     @throws[NCE]
     def isOtherAdminsExist(usrId: Long, parent: Span): Boolean =
-        startScopedSpan("isOtherAdminsExist", parent, "usrId" → usrId) { _ ⇒
+        startScopedSpan("isOtherAdminsExist", parent, "usrId" -> usrId) { _ =>
             NCSql.exists("nc_user WHERE id <> ? AND is_admin = ?", usrId, true)
         }
 
@@ -564,7 +564,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
         propsOpt: Option[String],
         parent: Span
     ): Unit =
-        startScopedSpan("addCompany", parent, "compId" → id, "name" → name, "tkn" → tkn) { _ ⇒
+        startScopedSpan("addCompany", parent, "compId" -> id, "name" -> name, "tkn" -> tkn) { _ =>
             val now = U.nowUtcTs()
     
             // Insert user.
@@ -639,10 +639,10 @@ object NCSqlManager extends NCService with NCIgniteInstance {
         startScopedSpan(
             "addUser",
             parent,
-            "usrId" → id,
-            "compId" → compId,
-            "email" → email.orNull,
-            "usrExtId" → usrExtId.orNull) { span ⇒
+            "usrId" -> id,
+            "compId" -> compId,
+            "email" -> email.orNull,
+            "usrExtId" -> usrExtId.orNull) { span =>
             val now = U.nowUtcTs()
 
             // Insert user.
@@ -707,7 +707,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
         rcvTstamp: Timestamp,
         data: String,
         parent: Span): Unit =
-        startScopedSpan("newProcessingLog", parent, "usrId" → id, "srvReqId" → srvReqId, "txt" → txt, "mdlId" → mdlId) { _ ⇒
+        startScopedSpan("newProcessingLog", parent, "usrId" -> id, "srvReqId" -> srvReqId, "txt" -> txt, "mdlId" -> mdlId) { _ =>
             NCSql.insert(
                 """
                   |INSERT INTO proc_log (
@@ -748,7 +748,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
         srvReqId: String,
         tstamp: Timestamp,
         parent: Span): Unit =
-        startScopedSpan("updateCancelProcessingLog", parent, "srvReqId" → srvReqId) { _ ⇒
+        startScopedSpan("updateCancelProcessingLog", parent, "srvReqId" -> srvReqId) { _ =>
             NCSql.update(
                 """
                   |UPDATE proc_log
@@ -786,7 +786,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
         tstamp: Timestamp,
         parent: Span
     ): Unit =
-        startScopedSpan("updateReadyProcessingLog", parent, "srvReqId" → srvReqId) { _ ⇒
+        startScopedSpan("updateReadyProcessingLog", parent, "srvReqId" -> srvReqId) { _ =>
             NCSql.update(
                 """
                   |UPDATE proc_log
@@ -857,7 +857,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
         hostAddr: String,
         macAddr: String,
         parent: Span): Unit =
-        startScopedSpan("updateProbeProcessingLog", parent, "srvReqId" → srvReqId) { _ ⇒
+        startScopedSpan("updateProbeProcessingLog", parent, "srvReqId" -> srvReqId) { _ =>
             NCSql.update(
                 """
                   |UPDATE proc_log
@@ -915,7 +915,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
       */
     @throws[NCE]
     def addFeedback(id: Long, srvReqId: String, userId: Long, score: Double, comment: Option[String], parent: Span): Long = {
-        startScopedSpan("addFeedback", parent, "srvReqId" → srvReqId, "userId" → userId) { _ ⇒
+        startScopedSpan("addFeedback", parent, "srvReqId" -> srvReqId, "userId" -> userId) { _ =>
             NCSql.insert(
                 "INSERT INTO feedback(id, srv_req_id, user_id, score, comment, created_on) VALUES(?, ?, ?, ?, ?, ?)",
                 id, srvReqId, userId, score, comment.orNull, U.nowUtcTs()
@@ -932,7 +932,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
       */
     @throws[NCE]
     def deleteFeedback(id: Long, parent: Span): Unit = {
-        startScopedSpan("deleteFeedback", parent) { _ ⇒
+        startScopedSpan("deleteFeedback", parent) { _ =>
             NCSql.delete("DELETE FROM feedback WHERE id = ?", id)
         }
     }
@@ -944,7 +944,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
       */
     @throws[NCE]
     def deleteAllFeedback(companyId: Long, parent: Span): Unit = {
-        startScopedSpan("deleteFeedback", parent) { _ ⇒
+        startScopedSpan("deleteFeedback", parent) { _ =>
             NCSql.delete("DELETE FROM feedback WHERE user_id IN (SELECT id FROM nc_user WHERE company_id = ?)", companyId);
         }
     }
@@ -961,10 +961,10 @@ object NCSqlManager extends NCService with NCIgniteInstance {
         startScopedSpan(
             "getFeedback",
             parent,
-            "companyId" → companyId,
-            "srvReqId" → srvReqId.orNull,
-            "userId" → userId.getOrElse(() ⇒ null)
-        ) { _ ⇒
+            "companyId" -> companyId,
+            "srvReqId" -> srvReqId.orNull,
+            "userId" -> userId.getOrElse(() => null)
+        ) { _ =>
             var sql = "SELECT * FROM feedback WHERE user_id IN (SELECT id from nc_user WHERE company_id = ?)"
             val params = collection.mutable.Buffer.empty[Any]
 
@@ -972,10 +972,10 @@ object NCSqlManager extends NCService with NCIgniteInstance {
 
             def add(name: String, vOpt: Option[Any]): Unit =
                 vOpt match {
-                    case Some(v) ⇒
+                    case Some(v) =>
                         sql = s"$sql AND $name = ?"
                         params += v
-                    case None ⇒ // No-op.
+                    case None => // No-op.
                 }
 
             add("srv_req_id", srvReqId)
@@ -992,7 +992,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
       */
     @throws[NCE]
     def getFeedback(id: Long, parent: Span): Option[NCFeedbackMdo] = {
-        startScopedSpan("getFeedback", parent) { _ ⇒
+        startScopedSpan("getFeedback", parent) { _ =>
             NCSql.selectSingle[NCFeedbackMdo]("SELECT * FROM feedback WHERE id = ?", id)
         }
     }
@@ -1002,22 +1002,22 @@ object NCSqlManager extends NCService with NCIgniteInstance {
       * @param sqlPath
       */
     @throws[NCE]
-    private def executeScript(sqlPath: String): Unit = startScopedSpan("executeScript", "sqlPath" → sqlPath) { _ ⇒
+    private def executeScript(sqlPath: String): Unit = startScopedSpan("executeScript", "sqlPath" -> sqlPath) { _ =>
         U.readResource(sqlPath).
             map(_.strip).
-            filter(p ⇒ !p.startsWith("--")).
+            filter(p => !p.startsWith("--")).
             mkString("\n").
             split(";").
             map(_.strip).
             filter(_.nonEmpty).
-            foreach(p ⇒ NCSql.ddl(p))
+            foreach(p => NCSql.ddl(p))
     }
 
     /**
       *
       */
     @throws[NCE]
-    private def prepareIgniteSchema(): Unit = startScopedSpan("prepareIgniteSchema") { _ ⇒
+    private def prepareIgniteSchema(): Unit = startScopedSpan("prepareIgniteSchema") { _ =>
         val schema = NCSql.sql {
             NCSql.getSchema
         }
@@ -1029,7 +1029,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
             try
                 executeScript("sql/drop_schema.sql")
             catch {
-                case _: NCE ⇒ // No-op.
+                case _: NCE => // No-op.
             }
         
         var init = Config.init
@@ -1038,18 +1038,18 @@ object NCSqlManager extends NCService with NCIgniteInstance {
             logger.info(s"Ignite database schema initialization property found.")
         else {
             val existingTbls = NCSql.sql { NCSql.getSchemaTables("nlpcraft").map(_.toLowerCase) }
-            val missingTbls = DB_TABLES.filter(t ⇒ !existingTbls.contains(t))
+            val missingTbls = DB_TABLES.filter(t => !existingTbls.contains(t))
 
             missingTbls.size match {
                 // All tables created.
-                case 0 ⇒ // No-op.
+                case 0 => // No-op.
 
                 // First start.
-                case size if size == existingTbls.size ⇒
+                case size if size == existingTbls.size =>
                     init = true
 
                 // Invalid previous start.
-                case _  ⇒
+                case _  =>
                     logger.warn(
                         s"Missing Ignite tables detected: ${missingTbls.mkString(", ")}. " +
                         "Ignite database is going to be cleared and re-created again."
@@ -1066,12 +1066,12 @@ object NCSqlManager extends NCService with NCIgniteInstance {
                     
                     executeScript("sql/create_schema.sql")
 
-                    CACHE_2_CLEAR.foreach(name ⇒ ignite.cache(name).clear())
+                    CACHE_2_CLEAR.foreach(name => ignite.cache(name).clear())
 
                     logger.info("Ignite database schema initialized.")
                 }
                 catch {
-                    case e: NCE ⇒
+                    case e: NCE =>
                         safeClear()
 
                         throw e

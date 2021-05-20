@@ -70,13 +70,13 @@ class NCLogSpec extends NCMetaSpecAdapter {
 
             CLIENT.execute(
                 post,
-                (resp: HttpResponse) ⇒ {
+                (resp: HttpResponse) => {
                     val code = resp.getStatusLine.getStatusCode
                     val entity = resp.getEntity
 
                     code match {
-                        case 200 ⇒ EntityUtils.toString(entity)
-                        case _ ⇒ throw new Exception(s"Unexpected response [code=$code, entity=$entity]")
+                        case 200 => EntityUtils.toString(entity)
+                        case _ => throw new Exception(s"Unexpected response [code=$code, entity=$entity]")
                     }
                 }
             )
@@ -95,7 +95,7 @@ class NCLogSpec extends NCMetaSpecAdapter {
             GSON.toJsonTree(
                 getField(
                     GSON.fromJson(
-                        postHttp("ask/sync", "acsTok" → tkn, "txt" → txt, "mdlId" → MDL_ID, "enableLog" → TRUE),
+                        postHttp("ask/sync", "acsTok" -> tkn, "txt" -> txt, "mdlId" -> MDL_ID, "enableLog" -> TRUE),
                         TYPE_RESP
                     ),
                     "state"
@@ -141,7 +141,7 @@ class NCLogSpec extends NCMetaSpecAdapter {
         try {
             check(meta)
 
-            def mkMeta(k: String, v: Object): JavaMeta = Map(k → v).asJava
+            def mkMeta(k: String, v: Object): JavaMeta = Map(k -> v).asJava
 
             val newMeta = MetaHolder(userMeta = mkMeta("userKey", "v1"), companyMeta = mkMeta("compKey", "v2"))
 

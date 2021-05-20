@@ -101,13 +101,13 @@ class SqlModel extends NCModelFileAdapter("sql_model.yaml") with LazyLogging {
     private def findAnyColumnTokenOpt(tok: NCToken): Option[NCToken] = {
         val cols =
             (Seq(tok) ++ tok.findPartTokens().asScala).
-                flatMap(p ⇒ if (p.getGroups.contains("column")) Some(p) else None)
+                flatMap(p => if (p.getGroups.contains("column")) Some(p) else None)
 
         cols.size match {
-            case 1 ⇒ Some(cols.head)
-            case 0 ⇒ None
+            case 1 => Some(cols.head)
+            case 0 => None
 
-            case _ ⇒ throw new RuntimeException(s"Too many columns found for token: $tok")
+            case _ => throw new RuntimeException(s"Too many columns found for token: $tok")
         }
     }
     
@@ -185,21 +185,21 @@ class SqlModel extends NCModelFileAdapter("sql_model.yaml") with LazyLogging {
       * @param allValsToks Values tokens.
       */
     def extractValuesConditions(ext: NCSqlExtractor, allValsToks: Seq[NCToken]): Seq[SqlInCondition] =
-        allValsToks.map(tok ⇒ {
+        allValsToks.map(tok => {
             val valToks = (Seq(tok) ++ tok.findPartTokens().asScala).filter(_.getValue != null)
 
             val valTok =
                 valToks.size match {
-                    case 1 ⇒ valToks.head
+                    case 1 => valToks.head
 
-                    case 0 ⇒ throw new RuntimeException(s"Values column not found for token: $tok")
-                    case _ ⇒ throw new RuntimeException(s"Too many values columns found token: $tok")
+                    case 0 => throw new RuntimeException(s"Values column not found for token: $tok")
+                    case _ => throw new RuntimeException(s"Too many values columns found token: $tok")
                 }
 
             ext.extractColumn(valTok) → valTok.getValue
         }).
-            groupBy { case (col, _) ⇒ col }.
-            map { case (col, seq) ⇒ SqlInCondition(col, seq.map { case (_, value) ⇒ value})}.toSeq
+            groupBy { case (col, _) => col }.
+            map { case (col, seq) => SqlInCondition(col, seq.map { case (_, value) => value})}.toSeq
     
     /**
       * Creates and executes SQL request by given parameters.
@@ -231,27 +231,27 @@ class SqlModel extends NCModelFileAdapter("sql_model.yaml") with LazyLogging {
             query =
                 SqlBuilder(SCHEMA).
                     withTables(tabs.map(ext.extractTable): _*).
-                    withColumns(cols.map(col ⇒ ext.extractColumn(findAnyColumnToken(col))): _*).
+                    withColumns(cols.map(col => ext.extractColumn(findAnyColumnToken(col))): _*).
                     withAndConditions(extractValuesConditions(ext, condVals): _*).
                     withAndConditions(
-                        condDates.map(t ⇒ extractColumnAndCondition(t, "nlpcraft:date")).flatMap(h ⇒
+                        condDates.map(t => extractColumnAndCondition(t, "nlpcraft:date")).flatMap(h =>
                             extractDateRangeConditions(ext, h.column, h.condition)
                         ): _*
                     ).
                     withAndConditions(
-                        condNums.map(t ⇒ extractColumnAndCondition(t, "nlpcraft:num")).flatMap(h ⇒
+                        condNums.map(t => extractColumnAndCondition(t, "nlpcraft:num")).flatMap(h =>
                             extractNumConditions(ext, h.column, h.condition)
                         ): _*
                     ).
                     withSorts(sorts: _*).
-                    withLimit(limitTokOpt.flatMap(limitTok ⇒ Some(ext.extractLimit(limitTok))).orNull).
-                    withFreeDateRange(freeDateOpt.flatMap(freeDate ⇒ Some(ext.extractDateRange(freeDate))).orNull).
+                    withLimit(limitTokOpt.flatMap(limitTok => Some(ext.extractLimit(limitTok))).orNull).
+                    withFreeDateRange(freeDateOpt.flatMap(freeDate => Some(ext.extractDateRange(freeDate))).orNull).
                     build()
 
             NCResult.json(toJson(SqlAccess.select(query, logResult = true), query.sql, query.parameters))
         }
         catch {
-            case e: Exception ⇒
+            case e: Exception =>
                 System.err.println(if (query == null) "Query cannot be prepared." else "Query execution error.")
 
                 e.printStackTrace()
@@ -315,8 +315,8 @@ class SqlModel extends NCModelFileAdapter("sql_model.yaml") with LazyLogging {
             freeDateOpt,
             limitTokOpt,
             sortTokOpt match {
-                case Some(sortTok) ⇒ ext.extractSort(sortTok).asScala
-                case None ⇒ Seq.empty
+                case Some(sortTok) => ext.extractSort(sortTok).asScala
+                case None => Seq.empty
             }
         )
     }
@@ -371,10 +371,10 @@ class SqlModel extends NCModelFileAdapter("sql_model.yaml") with LazyLogging {
                     getOrElse(throw new RuntimeException(s"Column `orders.freight` not found."))
                 override def isAscending: Boolean =
                     sortTok.getId match {
-                        case "sort:best" ⇒ false
-                        case "sort:worst" ⇒ true
+                        case "sort:best" => false
+                        case "sort:worst" => true
 
-                        case  _ ⇒ throw new AssertionError(s"Unexpected ID: ${sortTok.getId}")
+                        case  _ => throw new AssertionError(s"Unexpected ID: ${sortTok.getId}")
                     }
 
                     if (sortTok.getId == "sort:best") false else true
@@ -415,8 +415,8 @@ class SqlModel extends NCModelFileAdapter("sql_model.yaml") with LazyLogging {
             true
         else {
             def isValue(t: NCToken): Boolean = findAnyColumnTokenOpt(t) match {
-                case Some(col) ⇒ col.getValue != null
-                case None ⇒ false
+                case Some(col) => col.getValue != null
+                case None => false
             }
             def isColumn(t: NCToken): Boolean = findAnyColumnTokenOpt(t).isDefined
             def isDate(t: NCToken): Boolean = t.getId == "nlpcraft:date"
@@ -424,7 +424,7 @@ class SqlModel extends NCModelFileAdapter("sql_model.yaml") with LazyLogging {
             val ok = toks.forall(isValue) || toks.forall(isColumn) || toks.size == 1 && isDate(toks.head)
 
             if (!ok) {
-                m.getContext.getConversation.clearStm(_ ⇒ true)
+                m.getContext.getConversation.clearStm(_ => true)
 
                 logger.info("Conversation reset, trying without conversation.")
             }

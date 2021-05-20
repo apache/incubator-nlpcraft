@@ -34,7 +34,7 @@ object NCGeoSyntheticNamesGenerator extends App {
     // Base synonym should be saved for console debug message.
     case class Holder(base: String, var entries: Set[NCGeoEntry])
 
-    private def process(outFile: String) {
+    private def process(outFile: String): Unit = {
         val file = new File(outFile)
 
         if (file.exists() && !file.delete())
@@ -47,7 +47,7 @@ object NCGeoSyntheticNamesGenerator extends App {
 
         println(s"Synonyms count: ${NCGeoManager.getModel.synonyms.size}")
 
-        for ((synonym, entries) ← NCGeoManager.getModel.synonyms) {
+        for ((synonym, entries) <- NCGeoManager.getModel.synonyms) {
             val strs2Process = mutable.Set.empty[String] + synonym
 
             def add(s: String, base: String) =
@@ -55,12 +55,12 @@ object NCGeoSyntheticNamesGenerator extends App {
                     strs2Process += s
 
                     hs.get(s) match {
-                        case Some(syn) ⇒ syn.entries ++= entries
-                        case None ⇒ hs += s → Holder(base, entries)
+                        case Some(syn) => syn.entries ++= entries
+                        case None => hs += s -> Holder(base, entries)
                     }
                 }
 
-            def generateDash(str: String) {
+            def generateDash(str: String): Unit = {
                 def generate(a: String, b: String): Unit =
                     if (str.contains(a))
                         add(str.replaceAll(a, b), str)
@@ -69,10 +69,10 @@ object NCGeoSyntheticNamesGenerator extends App {
                 generate("-", " ")
             }
 
-            def generateSaints(str: String) {
+            def generateSaints(str: String): Unit = {
                 def generate(str: String, beginStr: String, replacements: String*): Unit =
                     if (str.startsWith(beginStr))
-                        replacements.foreach(r ⇒ add(str.replaceFirst(beginStr, r), str))
+                        replacements.foreach(r => add(str.replaceFirst(beginStr, r), str))
 
                 generate(str, "st. ", "saint ", "saint-", "st.", "st-", "st ")
                 generate(str, "saint ", "saint-", "st. ", "st.", "st-", "st ")
@@ -102,45 +102,45 @@ object NCGeoSyntheticNamesGenerator extends App {
             println("All synthetic names already generated. Nothing to add.")
     }
 
-    private def writeJson(buf: Map[String, Holder], outFile: String) {
+    private def writeJson(buf: Map[String, Holder], outFile: String): Unit = {
         val syns = mutable.Map.empty[NCGeoEntry, NCGeoSynonym]
 
-        buf.foreach(p ⇒ {
+        buf.foreach(p => {
             val s: String = p._1
             val es: Set[NCGeoEntry] = p._2.entries
 
-            for (e ← es) {
+            for (e <- es) {
                 syns.get(e) match {
-                    case Some(syn) ⇒ syn.synonyms :+= s
-                    case None ⇒
+                    case Some(syn) => syn.synonyms :+= s
+                    case None =>
                         val synonym = e match {
-                            case e: NCGeoMetro ⇒
+                            case e: NCGeoMetro =>
                                 NCGeoSynonym(None, None, None, None, None, Some(e.name), List(s))
 
-                            case e: NCGeoContinent ⇒
+                            case e: NCGeoContinent =>
                                 NCGeoSynonym(None, None, None, None, Some(e.name), None, List(s))
 
-                            case e: NCGeoSubContinent ⇒
+                            case e: NCGeoSubContinent =>
                                 NCGeoSynonym(None, None, None, Some(e.name), Some(e.continent.name), None, List(s))
 
                             // Short representation (without subcontinent and continent.)
-                            case e: NCGeoCountry ⇒
+                            case e: NCGeoCountry =>
                                 NCGeoSynonym(None, None, Some(e.name), None, None, None, List(s))
 
                             // Short representation (without subcontinent and continent.)
-                            case e: NCGeoRegion ⇒
+                            case e: NCGeoRegion =>
                                 NCGeoSynonym(None, Some(e.name), Some(e.country.name), None, None, None, List(s))
 
                             // Short representation (without subcontinent and continent.)
-                            case e: NCGeoCity ⇒
+                            case e: NCGeoCity =>
                                 NCGeoSynonym(
                                     Some(e.name), Some(e.region.name), Some(e.region.country.name), None, None, None, List(s)
                                 )
 
-                            case _ ⇒ throw new AssertionError(s"Unexpected object: $e")
+                            case _ => throw new AssertionError(s"Unexpected object: $e")
                         }
 
-                        syns += e → synonym
+                        syns += e -> synonym
                 }
             }
         })
@@ -159,21 +159,21 @@ object NCGeoSyntheticNamesGenerator extends App {
         U.getYamlMapper.writeValue(new File(outFile), (syns.values ++ exists).toSet)
     }
 
-    private def printResults(buf: Map[String, Holder]) {
+    private def printResults(buf: Map[String, Holder]): Unit = {
         val map = mutable.Map.empty[String, Seq[String]]
 
-        buf.map(p ⇒ {
+        buf.map(p => {
             val baseSyn = p._2.base
             val newSyn = p._1
 
             map.get(baseSyn) match {
-                case Some(seq) ⇒ map += baseSyn → (seq :+ newSyn)
-                case None ⇒ map += baseSyn → Seq(newSyn)
+                case Some(seq) => map += baseSyn -> (seq :+ newSyn)
+                case None => map += baseSyn -> Seq(newSyn)
             }
         })
 
-        map.toSeq.sortBy(_._1).foreach(p ⇒ {
-            val s = p._2.map(p ⇒ s"'$p'").mkString(", ")
+        map.toSeq.sortBy(_._1).foreach(p => {
+            val s = p._2.map(p => s"'$p'").mkString(", ")
 
             println(s"Synonyms added: $s for base: '${p._1}'.")
         })

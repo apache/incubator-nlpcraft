@@ -133,14 +133,14 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
     private def initializeConfig(args: Array[String], overrideCfg: Option[Config]): ProbeConfig = {
         NCConfigurable.initialize(
             cfgFile = args.find(_.startsWith("-config=")) match {
-                case Some(s) ⇒
+                case Some(s) =>
                     val cfg = s.substring("-config=".length)
 
                     if (!U.isSuitableConfig(cfg))
                         throw new NCE(s"Specified probe configuration file does not exist or cannot be read: $cfg")
 
                     cfg
-                case None ⇒
+                case None =>
                     if (U.isSuitableConfig("probe.conf"))
                         "probe.conf"
                     else if (U.isSuitableConfig("nlpcraft.conf"))
@@ -150,7 +150,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
             },
             overrideCfg = overrideCfg,
             dfltCfg = Some(mkDefault()),
-            valFun = (cfg: Config) ⇒ cfg.hasPath("nlpcraft.probe")
+            valFun = (cfg: Config) => cfg.hasPath("nlpcraft.probe")
         )
         
         object Cfg extends NCConfigurable {
@@ -210,14 +210,14 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
         ackConfig(cfg)
         
         catching(classOf[Throwable]) either startManagers(cfg) match {
-            case Left(e) ⇒ // Exception.
+            case Left(e) => // Exception.
                 U.prettyError(logger, "Failed to start probe:", e)
 
                 stop0()
 
                 fut.complete(1)
             
-            case _ ⇒ // Managers started OK.
+            case _ => // Managers started OK.
                 // Store beacon file once all managers started OK.
                 storeBeacon(cfg)
 
@@ -242,7 +242,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
                     try
                         Thread.currentThread().join()
                     catch {
-                        case _: InterruptedException ⇒ ()
+                        case _: InterruptedException => ()
                     }
         }
     
@@ -261,7 +261,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
          */
         def save(): Unit = {
             try {
-                managed(new ObjectOutputStream(new FileOutputStream(path))) acquireAndGet { stream ⇒
+                Using.resource(new ObjectOutputStream(new FileOutputStream(path))) { stream =>
                     val ver = NCVersion.getCurrent
 
                     stream.writeObject(NCCliProbeBeacon(
@@ -275,7 +275,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
                         jarsFolder = cfg.jarsFolder.orNull,
                         models = cfg.models,
                         beaconPath = path.getAbsolutePath,
-                        startMs = currentTime
+                        startMs = System.currentTimeMillis()
                     ))
 
                     stream.flush()
@@ -285,21 +285,21 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
                 path.deleteOnExit()
             }
             catch {
-                case e: IOException ⇒ U.prettyError(logger, "Failed to save probe beacon.", e)
+                case e: IOException => U.prettyError(logger, "Failed to save probe beacon.", e)
             }
         }
 
         if (path.exists())
             catching(classOf[IOException]) either {
-                managed(new ObjectInputStream(new FileInputStream(path))) acquireAndGet { _.readObject() }
+                Using.resource(new ObjectInputStream(new FileInputStream(path))) { _.readObject() }
             } match {
-                case Left(e) ⇒
+                case Left(e) =>
                     logger.trace(s"Failed to read existing probe beacon: ${path.getAbsolutePath}", e)
                     logger.trace(s"Overriding corrupted probe beacon: ${path.getAbsolutePath}")
 
                     save()
 
-                case Right(rawObj) ⇒
+                case Right(rawObj) =>
                     val beacon = rawObj.asInstanceOf[NCCliProbeBeacon]
 
                     if (ProcessHandle.of(beacon.pid).isPresent)
@@ -432,7 +432,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
     /**
       * Prints ASCII-logo.
       */
-    private def asciiLogo() {
+    private def asciiLogo(): Unit = {
         val ver = NCVersion.getCurrent
 
         println(
@@ -468,8 +468,8 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
     /**
       * Asks server start.
       */
-    private def ackStart() {
-        val dur = s"[${U.format((currentTime - execStart) / 1000.0, 2)} sec]"
+    private def ackStart(): Unit = {
+        val dur = s"[${U.format((System.currentTimeMillis() - execStart) / 1000.0, 2)} sec]"
         
         val tbl = NCAsciiTable()
         
@@ -489,20 +489,20 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
         NCLifecycleManager.start()
         NCLifecycleManager.onInit()
         
-        startScopedSpan("startManagers") { span ⇒
+        startScopedSpan("startManagers") { span =>
             val ver = NCVersion.getCurrent
             
             addTags(
                 span,
-                "id" → cfg.id,
-                "token" → cfg.token,
-                "uplink" → cfg.upLinkString,
-                "downlink" → cfg.downLinkString,
-                "relVer" → ver.version,
-                "relDate" → ver.date.toString,
-                "models" → cfg.models,
-                "lifecycle" → cfg.lifecycle.mkString(","),
-                "jarFolder" → cfg.jarsFolder
+                "id" -> cfg.id,
+                "token" -> cfg.token,
+                "uplink" -> cfg.upLinkString,
+                "downlink" -> cfg.downLinkString,
+                "relVer" -> ver.version,
+                "relDate" -> ver.date.toString,
+                "models" -> cfg.models,
+                "lifecycle" -> cfg.lifecycle.mkString(","),
+                "jarFolder" -> cfg.jarsFolder
             )
 
             startedMgrs += NCThreadPoolManager.start(span)
@@ -533,14 +533,14 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
         try
             mgr.stop(span)
         catch {
-            case e: Throwable ⇒ U.prettyError(logger, s"Failed to stop manager: ${mgr.name}", e)
+            case e: Throwable => U.prettyError(logger, s"Failed to stop manager: ${mgr.name}", e)
         }
 
     /**
       *
       */
     private def stopManagers(): Unit = {
-        startScopedSpan("stopManagers") { span ⇒
+        startScopedSpan("stopManagers") { span =>
             startedMgrs.synchronized {
                 try
                     startedMgrs.reverseIterator.foreach(stopManager(_, span))

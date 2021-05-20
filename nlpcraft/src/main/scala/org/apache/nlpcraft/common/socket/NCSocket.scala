@@ -75,7 +75,7 @@ case class NCSocket(socket: Socket, soTimeout: Int = 20000) extends LazyLogging 
                     try
                         Integer.parseInt(line.strip)
                     catch {
-                        case e: NumberFormatException ⇒ throw new NCE(s"Unexpected content length: $line", e)
+                        case e: NumberFormatException => throw new NCE(s"Unexpected content length: $line", e)
                     }
 
                 if (len <= 0)
@@ -108,7 +108,7 @@ case class NCSocket(socket: Socket, soTimeout: Int = 20000) extends LazyLogging 
             res
         }
         catch {
-            case e: Exception ⇒ throw new NCE("Error reading data.", e)
+            case e: Exception => throw new NCE("Error reading data.", e)
         }
     }
     
@@ -131,7 +131,7 @@ case class NCSocket(socket: Socket, soTimeout: Int = 20000) extends LazyLogging 
                 if (key == null) base64 else NCCipher.encrypt(base64, key)
             }
             catch {
-                case e: Exception ⇒ throw new NCE("Error sending data.", e)
+                case e: Exception => throw new NCE("Error sending data.", e)
             }
 
         rwLock.synchronized {

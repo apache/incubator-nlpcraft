@@ -72,7 +72,7 @@ object NCSpaCyNerEnricher extends NCService with NCNlpNerEnricher with NCIgniteI
      * @param parent Optional parent span.
      * @return
      */
-    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
+    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span =>
         ackStarting()
 
         url = Config.proxyUrl
@@ -85,7 +85,7 @@ object NCSpaCyNerEnricher extends NCService with NCNlpNerEnricher with NCIgniteI
         
         addTags(
             span,
-            "spacyProxyUrl" → url
+            "spacyProxyUrl" -> url
         )
 
         // Tries to access spaCy proxy server.
@@ -93,7 +93,7 @@ object NCSpaCyNerEnricher extends NCService with NCNlpNerEnricher with NCIgniteI
             try
                 getSync(Http().singleRequest(HttpRequest(uri = s"$url?text=Hi"))).status
             catch {
-                case e: Exception ⇒ throw new NCE(s"Failed to connect to spaCy proxy at $url.", e)
+                case e: Exception => throw new NCE(s"Failed to connect to spaCy proxy at $url.", e)
             }
 
         if (status != OK)
@@ -108,7 +108,7 @@ object NCSpaCyNerEnricher extends NCService with NCNlpNerEnricher with NCIgniteI
      *
      * @param parent Optional parent span.
      */
-    override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
+    override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
         ackStopped()
     }
@@ -119,20 +119,20 @@ object NCSpaCyNerEnricher extends NCService with NCNlpNerEnricher with NCIgniteI
       * @param ebiTokens Set of enabled built-in token IDs.
       */
     override def enrich(ns: NCNlpSentence, ebiTokens: Set[String], parent: Span = null): Unit =
-        startScopedSpan("enrich", parent, "srvReqId" → ns.srvReqId, "txt" → ns.text) { _ ⇒
+        startScopedSpan("enrich", parent, "srvReqId" -> ns.srvReqId, "txt" -> ns.text) { _ =>
             val resp = getSync(Http().singleRequest(HttpRequest(uri = s"$url?text=${URLEncoder.encode(ns.text, "UTF-8")}")))
     
             val status = resp.status
     
             status match {
-                case OK ⇒
+                case OK =>
                     val resType = resp.entity.contentType
     
                     resType match {
-                        case ContentTypes.`application/json` ⇒
+                        case ContentTypes.`application/json` =>
                             val spans = getSync(Unmarshal(resp.entity).to[List[SpacySpan]])
     
-                            spans.foreach(span ⇒ {
+                            spans.foreach(span => {
                                 val nerLc = span.ner.toLowerCase
     
                                 if (ebiTokens.contains(nerLc)) {
@@ -147,26 +147,26 @@ object NCSpaCyNerEnricher extends NCService with NCNlpNerEnricher with NCIgniteI
     
                                         val meta = new util.HashMap[String, String]()
     
-                                        span.meta.foreach { case (k, v) ⇒ meta.put(k, v) }
+                                        span.meta.foreach { case (k, v) => meta.put(k, v) }
     
-                                        val toks = ns.filter(t ⇒ t.startCharIndex >= from && t.endCharIndex <= to)
+                                        val toks = ns.filter(t => t.startCharIndex >= from && t.endCharIndex <= to)
     
                                         val note = NCNlpSentenceNote(
                                             toks.map(_.index),
                                             s"spacy:$nerLc",
-                                            "vector" → vector,
-                                            "sentiment" → sentiment,
-                                            "meta" → meta
+                                            "vector" -> vector,
+                                            "sentiment" -> sentiment,
+                                            "meta" -> meta
                                         )
     
                                         toks.foreach(_.add(note))
                                     }
                                 }
                             })
-                        case _ ⇒ throw new NCE(s"spaCy proxy unexpected response type: $resType")
+                        case _ => throw new NCE(s"spaCy proxy unexpected response type: $resType")
                     }
                     
-                case _ ⇒ throw new NCE(s"spaCy proxy unexpected response status: $status")
+                case _ => throw new NCE(s"spaCy proxy unexpected response status: $status")
             }
         }
 
@@ -181,7 +181,7 @@ object NCSpaCyNerEnricher extends NCService with NCNlpNerEnricher with NCIgniteI
         try
             v.toDouble
         catch {
-            case e: NumberFormatException ⇒ throw new NCE(s"Invalid spaCy '$name' value: $span", e)
+            case e: NumberFormatException => throw new NCE(s"Invalid spaCy '$name' value: $span", e)
         }
 
     /**
@@ -193,6 +193,6 @@ object NCSpaCyNerEnricher extends NCService with NCNlpNerEnricher with NCIgniteI
         try
             Await.result(a, Duration(TIMEOUT_SECS, SECONDS))
         catch {
-            case _: TimeoutException ⇒ throw new NCE("spaCy proxy operation timed out.")
+            case _: TimeoutException => throw new NCE("spaCy proxy operation timed out.")
         }
 }

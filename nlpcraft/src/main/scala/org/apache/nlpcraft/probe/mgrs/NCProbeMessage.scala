@@ -38,8 +38,8 @@ class NCProbeMessage(val typ: String) extends mutable.HashMap[String/*Name*/, Se
     put("GUID", guid)
     
     override def equals(obj: Any): Boolean = obj match {
-        case msg: NCProbeMessage ⇒ msg.guid == guid
-        case _ ⇒ false
+        case msg: NCProbeMessage => msg.guid == guid
+        case _ => false
     }
     
     override def hashCode(): Int = hash
@@ -75,8 +75,8 @@ class NCProbeMessage(val typ: String) extends mutable.HashMap[String/*Name*/, Se
       */
     def data[T](key: String): T =
         dataOpt[T](key) match {
-            case None ⇒ throw new AssertionError(s"Probe message missing key [key=$key, data=$this]")
-            case Some(x) ⇒ x.asInstanceOf[T]
+            case None => throw new AssertionError(s"Probe message missing key [key=$key, data=$this]")
+            case Some(x) => x.asInstanceOf[T]
         }
     
     /**
@@ -87,25 +87,25 @@ class NCProbeMessage(val typ: String) extends mutable.HashMap[String/*Name*/, Se
       */
     def dataOpt[T](key: String): Option[T] =
         get(key) match {
-            case None ⇒ None
-            case Some(x) ⇒ x match {
-                case None | null ⇒ None
-                case z ⇒ Some(z.asInstanceOf[T])
+            case None => None
+            case Some(x) => x match {
+                case None | null => None
+                case z => Some(z.asInstanceOf[T])
             }
         }
     
     override def toAscii: String =
-        iterator.toSeq.sortBy(_._1).foldLeft(NCAsciiTable("Key", "Value"))((t, p) ⇒ t += p).toString
+        iterator.toSeq.sortBy(_._1).foldLeft(NCAsciiTable("Key", "Value"))((t, p) => t += p).toString
     
     override def toString(): String =
-        iterator.toSeq.sortWith((t1, t2) ⇒ {
+        iterator.toSeq.sortWith((t1, t2) => {
             if (t1._1 == "TYPE")
                 true
             else if (t2._1 == "TYPE")
                 false
             else
                 t1._1.compare(t2._1) <= 0
-        }).map(t ⇒ s"${t._1} → ${t._2}").mkString("{", ", ", "}")
+        }).map(t => s"${t._1} -> ${t._2}").mkString("{", ", ", "}")
 }
 
 object NCProbeMessage {
@@ -117,7 +117,7 @@ object NCProbeMessage {
     def apply(typ: String, pairs: (String, Serializable)*): NCProbeMessage = {
         val impl = new NCProbeMessage(typ)
     
-        for ((k, v) ← pairs)
+        for ((k, v) <- pairs)
             impl.put(k, v)
         
         impl

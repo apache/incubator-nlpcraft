@@ -32,7 +32,7 @@ trait NCTestStartStop {
      */
     def startServices(srvs: NCService*): Unit =
         srvs.synchronized {
-            srvs.foreach(s ⇒ this.srvs += s)
+            srvs.foreach(s => this.srvs += s)
         }
 
     /**
@@ -40,11 +40,11 @@ trait NCTestStartStop {
      */
     def stopServices(): Unit = {
         srvs.synchronized {
-            srvs.reverse.foreach(p ⇒ {
+            srvs.reverse.foreach(p => {
                 try
                     p.stop()
                 catch {
-                    case e: Exception ⇒ e.printStackTrace()
+                    case e: Exception => e.printStackTrace()
                 }
             })
             

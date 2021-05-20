@@ -95,7 +95,7 @@ class NCDialogSpec extends NCTestContext {
             cli.clearConversation()
             cli.clearDialog()
 
-            pairs.zipWithIndex.foreach { case ((txt, intentId), idx) ⇒
+            pairs.zipWithIndex.foreach { case ((txt, intentId), idx) =>
                 val res = cli.ask(txt)
 
                 if (intentId == null)
@@ -123,33 +123,33 @@ class NCDialogSpec extends NCTestContext {
     @Test
     private[dialog] def test1(): Unit =
         f(
-            "a2" → null,
-            "a1" → "onA1",
-            "a2" → "onA2",
-            "a1" → "onA1",
-            "a1" → "onA1",
+            "a2" -> null,
+            "a1" -> "onA1",
+            "a2" -> "onA2",
+            "a1" -> "onA1",
+            "a1" -> "onA1",
             "a2" -> null
         )
 
     @Test
     private[dialog] def test2(): Unit =
         f(
-            "a3" → null,
-            "a1" → "onA1",
-            "a3" → "onA3",
-            "a1" → "onA1",
-            "a1" → "onA1",
-            "a3" → "onA3"
+            "a3" -> null,
+            "a1" -> "onA1",
+            "a3" -> "onA3",
+            "a1" -> "onA1",
+            "a1" -> "onA1",
+            "a3" -> "onA3"
         )
 
     @Test
     private[dialog] def test3(): Unit =
         f(
-            "a4" → null,
-            "a1" → "onA1",
-            "a1" → "onA1",
-            "a4" → "onA4",
-            "a4" → "onA4"
+            "a4" -> null,
+            "a1" -> "onA1",
+            "a1" -> "onA1",
+            "a4" -> "onA4",
+            "a4" -> "onA4"
         )
 
     @Test
@@ -166,12 +166,12 @@ class NCDialogSpec extends NCTestContext {
     @Test
     private[dialog] def test5(): Unit =
         f(
-            "a8" → null,
-            "a9" → null,
-            "a7" → "onA7",
-            "a9" → null,
-            "a8" → "onA8",
-            "a9" → "onA9"
+            "a8" -> null,
+            "a9" -> null,
+            "a7" -> "onA7",
+            "a9" -> null,
+            "a8" -> "onA8",
+            "a9" -> "onA9"
         )
 
     @Test

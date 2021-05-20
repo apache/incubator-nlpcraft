@@ -23,20 +23,20 @@ import org.junit.jupiter.api.Test
 import scala.collection.JavaConverters._
 
 class NCRestCompanySpec extends NCRestSpec {
-    private final val PROPS = Map("k1" → "v1", "k2" → "v2").asJava
+    private final val PROPS = Map("k1" -> "v1", "k2" -> "v2").asJava
 
     @Test
     def testCurrentCompany(): Unit = {
         var compName: String = null
 
-        post("company/get")(("$.name", (name: String) ⇒ compName = name))
+        post("company/get")(("$.name", (name: String) => compName = name))
 
         assertNotNull(compName)
 
-        post("company/update", "name" → "newName")()
-        post("company/get")(("$.name", (name: String) ⇒ assertEquals("newName", name)))
-        post("company/update", "name" → compName)()
-        post("company/get")(("$.name", (name: String) ⇒ assertEquals(compName, name)))
+        post("company/update", "name" -> "newName")()
+        post("company/get")(("$.name", (name: String) => assertEquals("newName", name)))
+        post("company/update", "name" -> compName)()
+        post("company/get")(("$.name", (name: String) => assertEquals(compName, name)))
     }
 
     @Test
@@ -49,21 +49,21 @@ class NCRestCompanySpec extends NCRestSpec {
         // Adds company.
         post(
             "company/add",
-            "name" → compName,
-            "website" → "website",
-            "country" → "country",
-            "region" → "region",
-            "city" → "city",
-            "address" → "address",
-            "postalCode" → "postalCode",
-            "adminEmail" → adminEmail,
-            "adminPasswd" → adminPswd,
-            "adminFirstName" → "firstName",
-            "adminLastName" → "lastName",
-            "adminAvatarUrl" → "avatarUrl"
+            "name" -> compName,
+            "website" -> "website",
+            "country" -> "country",
+            "region" -> "region",
+            "city" -> "city",
+            "address" -> "address",
+            "postalCode" -> "postalCode",
+            "adminEmail" -> adminEmail,
+            "adminPasswd" -> adminPswd,
+            "adminFirstName" -> "firstName",
+            "adminLastName" -> "lastName",
+            "adminAvatarUrl" -> "avatarUrl"
         )(
-            ("$.token", (tkn: String) ⇒ assertNotNull(tkn)),
-            ("$.adminId", (id: Number) ⇒ assertNotNull(id))
+            ("$.token", (tkn: String) => assertNotNull(tkn)),
+            ("$.adminId", (id: Number) => assertNotNull(id))
         )
 
         val adminTkn = signin(adminEmail, adminPswd)
@@ -71,61 +71,61 @@ class NCRestCompanySpec extends NCRestSpec {
         try {
             // Checks company fields.
             post("company/get", adminTkn)(
-                ("$.name", (name: String) ⇒ assertEquals(compName, name)),
-                ("$.website", (website: String) ⇒ assertEquals("website", website)),
-                ("$.country", (country: String) ⇒ assertEquals("country", country)),
-                ("$.region", (region: String) ⇒ assertEquals("region", region)),
-                ("$.city", (city: String) ⇒ assertEquals("city", city)),
-                ("$.address", (address: String) ⇒ assertEquals("address", address)),
-                ("$.postalCode", (postalCode: String) ⇒ assertEquals("postalCode", postalCode))
+                ("$.name", (name: String) => assertEquals(compName, name)),
+                ("$.website", (website: String) => assertEquals("website", website)),
+                ("$.country", (country: String) => assertEquals("country", country)),
+                ("$.region", (region: String) => assertEquals("region", region)),
+                ("$.city", (city: String) => assertEquals("city", city)),
+                ("$.address", (address: String) => assertEquals("address", address)),
+                ("$.postalCode", (postalCode: String) => assertEquals("postalCode", postalCode))
             )
 
             // Checks company's admin fields.
             post("user/get", adminTkn)(
-                ("$.isAdmin", (isAdmin: Boolean) ⇒ assertTrue(isAdmin)),
-                ("$.email", (email: String) ⇒ assertEquals(adminEmail, email)),
-                ("$.firstName", (firstName: String) ⇒ assertEquals("firstName", firstName)),
-                ("$.lastName", (lastName: String) ⇒ assertEquals("lastName", lastName)),
-                ("$.avatarUrl", (avatarUrl: String) ⇒ assertEquals("avatarUrl", avatarUrl))
+                ("$.isAdmin", (isAdmin: Boolean) => assertTrue(isAdmin)),
+                ("$.email", (email: String) => assertEquals(adminEmail, email)),
+                ("$.firstName", (firstName: String) => assertEquals("firstName", firstName)),
+                ("$.lastName", (lastName: String) => assertEquals("lastName", lastName)),
+                ("$.avatarUrl", (avatarUrl: String) => assertEquals("avatarUrl", avatarUrl))
             )
 
             // Updates company.
             post("company/update", adminTkn,
-                "name" → compName,
-                "website" → "website2",
-                "country" → "country2",
-                "region" → "region2",
-                "city" → "city2",
-                "address" → "address2",
-                "postalCode" → "postalCode2",
-                "properties" → PROPS
+                "name" -> compName,
+                "website" -> "website2",
+                "country" -> "country2",
+                "region" -> "region2",
+                "city" -> "city2",
+                "address" -> "address2",
+                "postalCode" -> "postalCode2",
+                "properties" -> PROPS
             )()
 
             // Checks company fields.
             post("company/get", adminTkn)(
-                ("$.name", (name: String) ⇒ assertEquals(compName, name)),
-                ("$.website", (website: String) ⇒ assertEquals("website2", website)),
-                ("$.country", (country: String) ⇒ assertEquals("country2", country)),
-                ("$.region", (region: String) ⇒ assertEquals("region2", region)),
-                ("$.city", (city: String) ⇒ assertEquals("city2", city)),
-                ("$.address", (address: String) ⇒ assertEquals("address2", address)),
-                ("$.postalCode", (postalCode: String) ⇒ assertEquals("postalCode2", postalCode)),
-                ("$.properties", (properties: java.util.Map[String, String]) ⇒ assertEquals(PROPS, properties))
+                ("$.name", (name: String) => assertEquals(compName, name)),
+                ("$.website", (website: String) => assertEquals("website2", website)),
+                ("$.country", (country: String) => assertEquals("country2", country)),
+                ("$.region", (region: String) => assertEquals("region2", region)),
+                ("$.city", (city: String) => assertEquals("city2", city)),
+                ("$.address", (address: String) => assertEquals("address2", address)),
+                ("$.postalCode", (postalCode: String) => assertEquals("postalCode2", postalCode)),
+                ("$.properties", (properties: java.util.Map[String, String]) => assertEquals(PROPS, properties))
             )
 
             // Updates company.
-            post("company/update", adminTkn, "name" → compName)()
+            post("company/update", adminTkn, "name" -> compName)()
 
             // Checks company fields.
             post("company/get", adminTkn)(
-                ("$.name", (name: String) ⇒ assertEquals(compName, name)),
-                ("$.website", (website: String) ⇒ assertEquals(null, website)),
-                ("$.country", (country: String) ⇒ assertEquals(null, country)),
-                ("$.region", (region: String) ⇒ assertEquals(null, region)),
-                ("$.city", (city: String) ⇒ assertEquals(null, city)),
-                ("$.address", (address: String) ⇒ assertEquals(null, address)),
-                ("$.postalCode", (postalCode: String) ⇒ assertEquals(null, postalCode)),
-                ("$.properties", (properties: java.util.Map[String, String]) ⇒ assertEquals(null, properties)),
+                ("$.name", (name: String) => assertEquals(compName, name)),
+                ("$.website", (website: String) => assertEquals(null, website)),
+                ("$.country", (country: String) => assertEquals(null, country)),
+                ("$.region", (region: String) => assertEquals(null, region)),
+                ("$.city", (city: String) => assertEquals(null, city)),
+                ("$.address", (address: String) => assertEquals(null, address)),
+                ("$.postalCode", (postalCode: String) => assertEquals(null, postalCode)),
+                ("$.properties", (properties: java.util.Map[String, String]) => assertEquals(null, properties)),
             )
 
             // Resets token.
@@ -217,39 +217,39 @@ class NCRestCompanySpec extends NCRestSpec {
 
         post(
             "company/add",
-            "name" → compName,
-            "website" → website.orNull,
-            "country" → country.orNull,
-            "region" → region.orNull,
-            "city" → city.orNull,
-            "address" → address.orNull,
-            "postalCode" → postalCode.orNull,
-            "adminEmail" → adminEmail,
-            "adminPasswd" → adminPswd,
-            "adminFirstName" → "firstName",
-            "adminLastName" → "lastName",
-            "adminAvatarUrl" → adminAvatarUrl.orNull,
-            "properties" → properties.orNull
+            "name" -> compName,
+            "website" -> website.orNull,
+            "country" -> country.orNull,
+            "region" -> region.orNull,
+            "city" -> city.orNull,
+            "address" -> address.orNull,
+            "postalCode" -> postalCode.orNull,
+            "adminEmail" -> adminEmail,
+            "adminPasswd" -> adminPswd,
+            "adminFirstName" -> "firstName",
+            "adminLastName" -> "lastName",
+            "adminAvatarUrl" -> adminAvatarUrl.orNull,
+            "properties" -> properties.orNull
         )(
-            ("$.adminId", (id: Number) ⇒ assertNotNull(id))
+            ("$.adminId", (id: Number) => assertNotNull(id))
         )
 
         def check(paramOpt: Option[Any], exp: Any, js: Any): Unit =
             paramOpt match {
-                case Some(_) ⇒ assertEquals(exp, js)
-                case None ⇒ assertEquals(null, js)
+                case Some(_) => assertEquals(exp, js)
+                case None => assertEquals(null, js)
             }
 
         val adminTkn = signin(adminEmail, adminPswd)
 
         post("company/get", adminTkn)(
-            ("$.website", (websiteJs: String) ⇒ check(website, "website", websiteJs)),
-            ("$.country", (countryJs: String) ⇒ check(country, "country", countryJs)),
-            ("$.region", (regionJs: String) ⇒ check(region, "region", regionJs)),
-            ("$.city", (cityJs: String) ⇒ check(city, "city", cityJs)),
-            ("$.address", (addressJs: String) ⇒ check(address, "address", addressJs)),
-            ("$.postalCode", (postalCodeJs: String) ⇒ check(postalCode, "postalCode", postalCodeJs)),
-            ("$.properties", (propertiesJs: java.util.Map[String, String]) ⇒ check(properties, PROPS, propertiesJs))
+            ("$.website", (websiteJs: String) => check(website, "website", websiteJs)),
+            ("$.country", (countryJs: String) => check(country, "country", countryJs)),
+            ("$.region", (regionJs: String) => check(region, "region", regionJs)),
+            ("$.city", (cityJs: String) => check(city, "city", cityJs)),
+            ("$.address", (addressJs: String) => check(address, "address", addressJs)),
+            ("$.postalCode", (postalCodeJs: String) => check(postalCode, "postalCode", postalCodeJs)),
+            ("$.properties", (propertiesJs: java.util.Map[String, String]) => check(properties, PROPS, propertiesJs))
         )
 
         post("company/delete", adminTkn)()

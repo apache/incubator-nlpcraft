@@ -59,8 +59,8 @@ object NCStopWordGenerator extends App {
     )
 
     private[stopword] def mkPossessiveStopWords: Seq[String] =
-        (for (w1 ← POS1; w2 ← POS2; w3 ← POS3) yield s"$w1 $w2 $w3") ++
-            (for (w2 ← POS2; w3 ← POS3) yield s"$w2 $w3")
+        (for (w1 <- POS1; w2 <- POS2; w3 <- POS3) yield s"$w1 $w2 $w3") ++
+            (for (w2 <- POS2; w3 <- POS3) yield s"$w2 $w3")
 
     private final val QWORDS = Seq(
         "what",
@@ -194,13 +194,13 @@ object NCStopWordGenerator extends App {
         NCUtils.gzipPath(p)
     }
 
-    private[stopword] def mkNounWords() {
+    private[stopword] def mkNounWords(): Unit = {
         val buf = new scala.collection.mutable.ArrayBuffer[String]()
 
-        for (w1 ← NOUN_WORDS)
+        for (w1 <- NOUN_WORDS)
             buf += s"$w1"
 
-        for (w1 ← NOUN_WORDS; w2 ← NOUN_WORDS2)
+        for (w1 <- NOUN_WORDS; w2 <- NOUN_WORDS2)
             buf += s"$w1 $w2"
 
         mkGzip(NOUN_WORDS_FILE, stem(buf))
@@ -211,135 +211,135 @@ object NCStopWordGenerator extends App {
 
     private def stem(seq: Seq[String]): Seq[String] = seq.map(stem)
 
-    private[stopword] def mkFirstWords() {
+    private[stopword] def mkFirstWords(): Unit = {
         val buf = new scala.collection.mutable.ArrayBuffer[String]()
 
         // is there
-        for (w1 ← QWORDS2)
+        for (w1 <- QWORDS2)
             buf += s"$w1"
 
         // please can you show what is
-        for (w0 ← WORDS2; w1 ← DWORDS_PRE; w2 ← DWORDS; w3 ← QWORDS; w4 ← QWORDS_SUP)
+        for (w0 <- WORDS2; w1 <- DWORDS_PRE; w2 <- DWORDS; w3 <- QWORDS; w4 <- QWORDS_SUP)
             buf += s"$w0 $w1 $w2 $w3 $w4"
 
         // is there any
-        for (w1 ← QWORDS2; w2 ← QWORDS_ANY)
+        for (w1 <- QWORDS2; w2 <- QWORDS_ANY)
             buf += s"$w1 $w2"
 
         // what is
-        for (w1 ← QWORDS; w2 ← QWORDS_SUP)
+        for (w1 <- QWORDS; w2 <- QWORDS_SUP)
             buf += s"$w1 $w2"
 
         // what
-        for (w1 ← QWORDS)
+        for (w1 <- QWORDS)
             buf += s"$w1"
 
         // please what is
-        for (w0 ← WORDS2; w1 ← QWORDS; w2 ← QWORDS_SUP)
+        for (w0 <- WORDS2; w1 <- QWORDS; w2 <- QWORDS_SUP)
             buf += s"$w0 $w1 $w2"
 
         // please what
-        for (w0 ← WORDS2; w1 ← QWORDS)
+        for (w0 <- WORDS2; w1 <- QWORDS)
             buf += s"$w0 $w1"
 
         // what is please
-        for (w1 ← QWORDS; w2 ← QWORDS_SUP; w3 ← WORDS2)
+        for (w1 <- QWORDS; w2 <- QWORDS_SUP; w3 <- WORDS2)
             buf += s"$w1 $w2 $w3"
 
         // show me
-        for (w1 ← DWORDS; w2 ← DWORDS_SUP)
+        for (w1 <- DWORDS; w2 <- DWORDS_SUP)
             buf += s"$w1 $w2"
 
         // please show me
-        for (w0 ← WORDS2; w1 ← DWORDS; w2 ← DWORDS_SUP)
+        for (w0 <- WORDS2; w1 <- DWORDS; w2 <- DWORDS_SUP)
             buf += s"$w0 $w1 $w2"
 
         // please show
-        for (w0 ← WORDS2; w1 ← DWORDS)
+        for (w0 <- WORDS2; w1 <- DWORDS)
             buf += s"$w0 $w1"
 
         // show me please
-        for (w1 ← DWORDS; w2 ← DWORDS_SUP; w3 ← WORDS2)
+        for (w1 <- DWORDS; w2 <- DWORDS_SUP; w3 <- WORDS2)
             buf += s"$w1 $w2 $w3"
 
         // show please
-        for (w1 ← DWORDS; w3 ← WORDS2)
+        for (w1 <- DWORDS; w3 <- WORDS2)
             buf += s"$w1 $w3"
 
         // show
-        for (w ← DWORDS)
+        for (w <- DWORDS)
             buf += s"$w"
 
         // can you please show me
-        for (w0 ← DWORDS_PRE; w1 ← WORDS2; w2 ← DWORDS; w3 ← DWORDS_SUP)
+        for (w0 <- DWORDS_PRE; w1 <- WORDS2; w2 <- DWORDS; w3 <- DWORDS_SUP)
             buf += s"$w0 $w1 $w2 $w3"
 
         // can you please show
-        for (w0 ← DWORDS_PRE; w1 ← WORDS2; w2 ← DWORDS)
+        for (w0 <- DWORDS_PRE; w1 <- WORDS2; w2 <- DWORDS)
             buf += s"$w0 $w1 $w2"
 
         // please can you show me
-        for (w0 ← WORDS2; w1 ← DWORDS_PRE; w2 ← DWORDS; w3 ← DWORDS_SUP)
+        for (w0 <- WORDS2; w1 <- DWORDS_PRE; w2 <- DWORDS; w3 <- DWORDS_SUP)
             buf += s"$w0 $w1 $w2 $w3"
 
         // please can you show
-        for (w0 ← WORDS2; w1 ← DWORDS_PRE; w2 ← DWORDS)
+        for (w0 <- WORDS2; w1 <- DWORDS_PRE; w2 <- DWORDS)
             buf += s"$w0 $w1 $w2"
 
         // can you show me
-        for (w0 ← DWORDS_PRE; w2 ← DWORDS; w3 ← DWORDS_SUP)
+        for (w0 <- DWORDS_PRE; w2 <- DWORDS; w3 <- DWORDS_SUP)
             buf += s"$w0 $w2 $w3"
 
         // can you show
-        for (w0 ← DWORDS_PRE; w2 ← DWORDS)
+        for (w0 <- DWORDS_PRE; w2 <- DWORDS)
             buf += s"$w0 $w2"
 
         // can you please show what is
-        for (w0 ← DWORDS_PRE; w1 ← WORDS2; w2 ← DWORDS; w3 ← QWORDS; w4 ← QWORDS_SUP)
+        for (w0 <- DWORDS_PRE; w1 <- WORDS2; w2 <- DWORDS; w3 <- QWORDS; w4 <- QWORDS_SUP)
             buf += s"$w0 $w1 $w2 $w3 $w4"
 
         // can you please
-        for (w0 ← DWORDS_PRE; w1 ← WORDS2)
+        for (w0 <- DWORDS_PRE; w1 <- WORDS2)
             buf += s"$w0 $w1"
 
         // can you please show what
-        for (w0 ← DWORDS_PRE; w1 ← WORDS2; w2 ← DWORDS; w3 ← QWORDS)
+        for (w0 <- DWORDS_PRE; w1 <- WORDS2; w2 <- DWORDS; w3 <- QWORDS)
             buf += s"$w0 $w1 $w2 $w3"
 
         // please can you show what
-        for (w0 ← WORDS2; w1 ← DWORDS_PRE; w2 ← DWORDS; w3 ← QWORDS)
+        for (w0 <- WORDS2; w1 <- DWORDS_PRE; w2 <- DWORDS; w3 <- QWORDS)
             buf += s"$w0 $w1 $w2 $w3"
 
         // can you show what is
-        for (w0 ← DWORDS_PRE; w1 ← DWORDS; w3 ← QWORDS; w4 ← QWORDS_SUP)
+        for (w0 <- DWORDS_PRE; w1 <- DWORDS; w3 <- QWORDS; w4 <- QWORDS_SUP)
             buf += s"$w0 $w1 $w3 $w4"
 
         // can you show what
-        for (w0 ← DWORDS_PRE; w1 ← DWORDS; w3 ← QWORDS)
+        for (w0 <- DWORDS_PRE; w1 <- DWORDS; w3 <- QWORDS)
             buf += s"$w0 $w1 $w3"
 
         // can you please show me what is
-        for (w0 ← DWORDS_PRE; w1 ← WORDS2; w2 ← DWORDS; w3 ← DWORDS_SUP; w4 ← QWORDS; w5 ← QWORDS_SUP)
+        for (w0 <- DWORDS_PRE; w1 <- WORDS2; w2 <- DWORDS; w3 <- DWORDS_SUP; w4 <- QWORDS; w5 <- QWORDS_SUP)
             buf += s"$w0 $w1 $w2 $w3 $w4 $w5"
 
         // can you please show me what
-        for (w0 ← DWORDS_PRE; w1 ← WORDS2; w2 ← DWORDS; w3 ← DWORDS_SUP; w4 ← QWORDS)
+        for (w0 <- DWORDS_PRE; w1 <- WORDS2; w2 <- DWORDS; w3 <- DWORDS_SUP; w4 <- QWORDS)
             buf += s"$w0 $w1 $w2 $w3 $w4"
 
         // please can you show me what is
-        for (w0 ← WORDS2; w1 ← DWORDS_PRE; w2 ← DWORDS; w3 ← DWORDS_SUP; w4 ← QWORDS; w5 ← QWORDS_SUP)
+        for (w0 <- WORDS2; w1 <- DWORDS_PRE; w2 <- DWORDS; w3 <- DWORDS_SUP; w4 <- QWORDS; w5 <- QWORDS_SUP)
             buf += s"$w0 $w1 $w2 $w3 $w4 $w5"
 
         // please can you show me what
-        for (w0 ← WORDS2; w1 ← DWORDS_PRE; w2 ← DWORDS; w3 ← DWORDS_SUP; w4 ← QWORDS)
+        for (w0 <- WORDS2; w1 <- DWORDS_PRE; w2 <- DWORDS; w3 <- DWORDS_SUP; w4 <- QWORDS)
             buf += s"$w0 $w1 $w2 $w3 $w4"
 
         // can you show me what is
-        for (w0 ← DWORDS_PRE; w1 ← DWORDS; w2 ← DWORDS_SUP; w3 ← QWORDS; w4 ← QWORDS_SUP)
+        for (w0 <- DWORDS_PRE; w1 <- DWORDS; w2 <- DWORDS_SUP; w3 <- QWORDS; w4 <- QWORDS_SUP)
             buf += s"$w0 $w1 $w2 $w3 $w4"
 
         // can you show me what
-        for (w0 ← DWORDS_PRE; w1 ← DWORDS; w2 ← DWORDS_SUP; w3 ← QWORDS)
+        for (w0 <- DWORDS_PRE; w1 <- DWORDS; w2 <- DWORDS_SUP; w3 <- QWORDS)
             buf += s"$w0 $w1 $w2 $w3"
 
         mkGzip(FIRST_WORDS_FILE, stem(buf))

@@ -47,7 +47,7 @@ object NCIdlCompilerGlobal {
      *
      * @param mdlId
      */
-    def clearCache(mdlId: String): Unit = fragCache += mdlId → mutable.HashMap.empty[String, NCIdlFragment]
+    def clearCache(mdlId: String): Unit = fragCache += mdlId -> mutable.HashMap.empty[String, NCIdlFragment]
 
     /**
      *
@@ -71,10 +71,10 @@ object NCIdlCompilerGlobal {
         fragCache.getOrElse(mdlId, {
             val m = mutable.HashMap.empty[String, NCIdlFragment]
 
-            fragCache += mdlId → m
+            fragCache += mdlId -> m
 
             m
-        }) += (frag.id → frag)
+        }) += (frag.id -> frag)
 
     /**
      *

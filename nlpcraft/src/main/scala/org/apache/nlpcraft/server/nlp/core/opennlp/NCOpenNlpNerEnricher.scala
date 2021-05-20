@@ -48,7 +48,7 @@ object NCOpenNlpNerEnricher extends NCService with NCNlpNerEnricher with NCIgnit
      * @param parent Optional parent span.
      * @return
      */
-    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
+    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span =>
         ackStarting()
 
         require(NCOpenNlpTokenizer.isStarted)
@@ -57,23 +57,23 @@ object NCOpenNlpNerEnricher extends NCService with NCNlpNerEnricher with NCIgnit
 
         def add(typ: String, res: String): Unit = {
             val f =
-                managed(NCExternalConfigManager.getStream(OPENNLP, res, span)) acquireAndGet { in ⇒
+                Using.resource(NCExternalConfigManager.getStream(OPENNLP, res, span)) { in =>
                     new NameFinderME(new TokenNameFinderModel(in))
                 }
 
             m.synchronized {
-                m += f → typ
+                m += f -> typ
             }
         }
 
         U.executeParallel(
-            () ⇒ add("location", "en-ner-location.bin"),
-            () ⇒ add("money", "en-ner-money.bin"),
-            () ⇒ add("person", "en-ner-person.bin"),
-            () ⇒ add("organization", "en-ner-organization.bin"),
-            () ⇒ add("date", "en-ner-date.bin"),
-            () ⇒ add("time", "en-ner-time.bin"),
-            () ⇒ add("percentage", "en-ner-percentage.bin")
+            () => add("location", "en-ner-location.bin"),
+            () => add("money", "en-ner-money.bin"),
+            () => add("person", "en-ner-person.bin"),
+            () => add("organization", "en-ner-organization.bin"),
+            () => add("date", "en-ner-date.bin"),
+            () => add("time", "en-ner-time.bin"),
+            () => add("percentage", "en-ner-percentage.bin")
         )
 
         nerFinders = m.toMap
@@ -89,7 +89,7 @@ object NCOpenNlpNerEnricher extends NCService with NCNlpNerEnricher with NCIgnit
      *
      * @param parent Optional parent span.
      */
-    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
 
         cache = null
@@ -104,19 +104,19 @@ object NCOpenNlpNerEnricher extends NCService with NCNlpNerEnricher with NCIgnit
      * @param parent Optional parent span.
      */
     override def enrich(ns: NCNlpSentence, ebiTokens: Set[String], parent: Span = null): Unit =
-        startScopedSpan("enrich", parent, "srvReqId" → ns.srvReqId, "txt" → ns.text) { _ ⇒
+        startScopedSpan("enrich", parent, "srvReqId" -> ns.srvReqId, "txt" -> ns.text) { _ =>
             val normTxt = ns.text
     
             val words =
                 catching(wrapIE) {
                     cache(normTxt) match {
-                        case Some(ws) ⇒ ws
-                        case None ⇒
+                        case Some(ws) => ws
+                        case None =>
                             val words = this.synchronized {
                                 NCOpenNlpTokenizer.tokenize(normTxt).toArray.map(_.token)
                             }
     
-                            cache += normTxt → words
+                            cache += normTxt -> words
     
                             words
                     }
@@ -128,10 +128,10 @@ object NCOpenNlpNerEnricher extends NCService with NCNlpNerEnricher with NCIgnit
                 this.
                     synchronized {
                         val res = nerFinders.
-                            filter { case (_, tokName) ⇒ ebiTokens.contains(tokName)}.
+                            filter { case (_, tokName) => ebiTokens.contains(tokName)}.
                             flatMap {
-                                case (finder, name) ⇒
-                                    finder.find(words).map(p ⇒ Holder(p.getStart, p.getEnd - 1, name, p.getProb))
+                                case (finder, name) =>
+                                    finder.find(words).map(p => Holder(p.getStart, p.getEnd - 1, name, p.getProb))
                             }
     
                             nerFinders.keys.foreach(_.clearAdaptiveData())
@@ -140,8 +140,8 @@ object NCOpenNlpNerEnricher extends NCService with NCNlpNerEnricher with NCIgnit
                     }.toSeq
     
             hs.
-                filter(h ⇒ ebiTokens.contains(h.name)).
-                foreach(h ⇒ {
+                filter(h => ebiTokens.contains(h.name)).
+                foreach(h => {
                     val t1 = ns.find(_.index == h.start)
                     val t2 = ns.find(_.index == h.end)
     
@@ -149,12 +149,12 @@ object NCOpenNlpNerEnricher extends NCService with NCNlpNerEnricher with NCIgnit
                         val i1 = t1.get.index
                         val i2 = t2.get.index
     
-                        val toks = ns.filter(t ⇒ t.index >= i1 && t.index <= i2)
+                        val toks = ns.filter(t => t.index >= i1 && t.index <= i2)
     
                         val note = NCNlpSentenceNote(
                             toks.map(_.index),
                             s"opennlp:${h.name}",
-                            "probability" → h.probability
+                            "probability" -> h.probability
                         )
     
                         toks.foreach(_.add(note))

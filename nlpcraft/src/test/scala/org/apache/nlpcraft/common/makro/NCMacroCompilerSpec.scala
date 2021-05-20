@@ -50,7 +50,7 @@ class NCMacroCompilerSpec {
 
             assert(false)
         } catch {
-            case e: NCE ⇒
+            case e: NCE =>
                 println(e.getMessage)
                 assert(true)
         }

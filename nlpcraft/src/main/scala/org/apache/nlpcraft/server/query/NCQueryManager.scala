@@ -57,7 +57,7 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
      * @param parent Optional parent span.
      * @return
      */
-    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ =>
         ackStarting()
 
         asyncAsks = new ConcurrentHashMap[String/*Server request ID*/, Promise[NCQueryStateMdo]]()
@@ -66,12 +66,12 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
             cache = ignite.cache[String/*Server request ID*/, NCQueryStateMdo]("qry-state-cache")
     
             cache.addListener(
-                (evt: CacheEvent) ⇒
+                (evt: CacheEvent) =>
                     try {
                         val srvReqId: String = evt.key()
                         
                         cache(srvReqId) match {
-                            case Some(state) ⇒
+                            case Some(state) =>
                                 if (state.status == QRY_READY.toString) {
                                     val promise = asyncAsks.remove(srvReqId)
 
@@ -79,11 +79,11 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
                                         promise.success(state)
                                 }
                                 
-                            case None ⇒ // No-op.
+                            case None => // No-op.
                         }
                     }
                     catch {
-                        case e: Throwable ⇒ U.prettyError(logger,"Error processing cache events:", e)
+                        case e: Throwable => U.prettyError(logger,"Error processing cache events:", e)
                     }
                 ,
                 EventType.EVT_CACHE_OBJECT_PUT
@@ -99,7 +99,7 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
      *
      * @param parent Optional parent span.
      */
-    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
         ackStopped()
     }
@@ -130,14 +130,14 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
         val srvReqId = U.genGuid()
 
         startScopedSpan("syncAsk", parent,
-            "srvReqId" → srvReqId,
-            "usrId" → usrId,
-            "txt" → txt,
-            "mdlId" → mdlId,
-            "enableLog" → enableLog,
-            "usrAgent" → usrAgent.orNull,
-            "rmtAddr" → rmtAddr.orNull
-        ) { span ⇒
+            "srvReqId" -> srvReqId,
+            "usrId" -> usrId,
+            "txt" -> txt,
+            "mdlId" -> mdlId,
+            "enableLog" -> enableLog,
+            "usrAgent" -> usrAgent.orNull,
+            "rmtAddr" -> rmtAddr.orNull
+        ) { span =>
             val promise = Promise[NCQueryStateMdo]()
 
             asyncAsks.put(srvReqId, promise)
@@ -174,13 +174,13 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
         val srvReqId = U.genGuid()
 
         startScopedSpan("asyncAsk", parent,
-            "srvReqId" → srvReqId,
-            "usrId" → usrId,
-            "txt" → txt,
-            "mdlId" → mdlId,
-            "enableLog" → enableLog,
-            "usrAgent" → usrAgent.orNull,
-            "rmtAddr" → rmtAddr.orNull) { span ⇒
+            "srvReqId" -> srvReqId,
+            "usrId" -> usrId,
+            "txt" -> txt,
+            "mdlId" -> mdlId,
+            "enableLog" -> enableLog,
+            "usrAgent" -> usrAgent.orNull,
+            "rmtAddr" -> rmtAddr.orNull) { span =>
             spawnAskFuture(srvReqId, usrId, txt, mdlId, usrAgent, rmtAddr, data, enableLog, span)
             
             srvReqId
@@ -228,7 +228,7 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
 
         catching(wrapIE) {
             // Enlist for tracking.
-            cache += srvReqId → NCQueryStateMdo(
+            cache += srvReqId -> NCQueryStateMdo(
                 srvReqId,
                 modelId = mdlId,
                 userId = usrId,
@@ -259,7 +259,7 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
         )
 
         Future {
-            startScopedSpan("future", parent, "srvReqId" → srvReqId) { span ⇒
+            startScopedSpan("future", parent, "srvReqId" -> srvReqId) { span =>
                 val tbl = NCAsciiTable()
 
                 tbl += (s"${b("Text")}", rv(txt0))
@@ -277,8 +277,8 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
                 @throws[NCE]
                 def unzipProperties(gzipOpt: Option[String]): Option[JavaMeta] =
                     gzipOpt match {
-                        case Some(gzip) ⇒ Some(jsonToJavaMap(uncompress(gzip)))
-                        case None ⇒ None
+                        case Some(gzip) => Some(jsonToJavaMap(uncompress(gzip)))
+                        case None => None
                     }
 
                 // Enrich the user input and send it to the probe.
@@ -299,9 +299,9 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
                 )
             }
         } onComplete {
-            case Success(_) ⇒ // No-op.
+            case Success(_) => // No-op.
 
-            case Failure(e: NCE) ⇒
+            case Failure(e: NCE) =>
                 logger.error(s"Query processing failed: ${e.getLocalizedMessage}")
 
                 setError(
@@ -310,7 +310,7 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
                     NCErrorCodes.SYSTEM_ERROR
                 )
 
-            case Failure(e: Throwable) ⇒
+            case Failure(e: Throwable) =>
                 U.prettyError(logger,s"System error processing query: ${e.getLocalizedMessage}", e)
 
                 setError(
@@ -331,25 +331,25 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
     @throws[NCE]
     def setError(srvReqId: String, errMsg: String, errCode: Int, parent: Span = null): Unit = {
         startScopedSpan("setError", parent,
-            "srvReqId" → srvReqId,
-            "errMsg" → errMsg,
-            "errCode" → errCode) { span ⇒
+            "srvReqId" -> srvReqId,
+            "errMsg" -> errMsg,
+            "errCode" -> errCode) { span =>
             val now = U.nowUtcTs()
         
             val found = catching(wrapIE) {
                 cache(srvReqId) match {
-                    case Some(copy) ⇒
+                    case Some(copy) =>
                         copy.updateTstamp = now
                         copy.status = QRY_READY.toString
                         copy.error = Some(errMsg)
                         copy.errorCode = Some(errCode)
     
-                        recordStats(M_ROUND_TRIP_LATENCY_MS → (copy.updateTstamp.getTime - copy.createTstamp.getTime))
+                        recordStats(M_ROUND_TRIP_LATENCY_MS -> (copy.updateTstamp.getTime - copy.createTstamp.getTime))
     
-                        cache += srvReqId → copy
+                        cache += srvReqId -> copy
     
                         true
-                    case None ⇒
+                    case None =>
                         // Safely ignore missing status (cancelled before).
                         ignore(srvReqId)
     
@@ -392,16 +392,16 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
         parent: Span = null
     ): Unit = {
         startScopedSpan("setResult", parent,
-            "srvReqId" → srvReqId,
-            "resType" → resType,
-            "resBody" → resBody,
-            "intentId" → intentId
-        ) { span ⇒
+            "srvReqId" -> srvReqId,
+            "resType" -> resType,
+            "resBody" -> resBody,
+            "intentId" -> intentId
+        ) { span =>
             val now = U.nowUtcTs()
             
             val found = catching(wrapIE) {
                 cache(srvReqId) match {
-                    case Some(copy) ⇒
+                    case Some(copy) =>
                         copy.updateTstamp = now
                         copy.status = QRY_READY.toString
                         copy.resultType = Some(resType)
@@ -410,12 +410,12 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
                         copy.logJson = logJson
                         copy.intentId = intentId
     
-                        recordStats(M_ROUND_TRIP_LATENCY_MS → (copy.updateTstamp.getTime - copy.createTstamp.getTime))
+                        recordStats(M_ROUND_TRIP_LATENCY_MS -> (copy.updateTstamp.getTime - copy.createTstamp.getTime))
     
-                        cache += srvReqId → copy
+                        cache += srvReqId -> copy
     
                         true
-                    case None ⇒
+                    case None =>
                         // Safely ignore missing status (cancelled before).
                         ignore(srvReqId)
     
@@ -466,7 +466,7 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
             }
         }
 
-        for (srvReqId ← srvReqIds)
+        for (srvReqId <- srvReqIds)
             NCProcessLogManager.updateCancel(srvReqId, now)
     }
 
@@ -478,7 +478,7 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
       */
     @throws[NCE]
     def cancelForServerRequestIds(srvReqIds: Set[String], parent: Span = null): Unit =
-        startScopedSpan("cancel", parent, "srvReqIds" → srvReqIds.mkString(",")) { _ ⇒
+        startScopedSpan("cancel", parent, "srvReqIds" -> srvReqIds.mkString(",")) { _ =>
             cancel0(Right(srvReqIds))
         }
 
@@ -490,7 +490,7 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
       */
     @throws[NCE]
     def cancelForUserId(usrId: Long, parent: Span = null): Unit =
-        startScopedSpan("cancel", parent, "usrId" → usrId) { _ ⇒
+        startScopedSpan("cancel", parent, "usrId" -> usrId) { _ =>
             cancel0(Left(usrId))
         }
 
@@ -501,9 +501,9 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
       */
     @throws[NCE]
     def getForServerRequestIds(srvReqIds: Set[String], parent: Span = null): Set[NCQueryStateMdo] =
-        startScopedSpan("getForSrvReqIds", parent, "srvReqIds" → srvReqIds.mkString(",")) { _ ⇒
+        startScopedSpan("getForSrvReqIds", parent, "srvReqIds" -> srvReqIds.mkString(",")) { _ =>
             catching(wrapIE) {
-                srvReqIds.flatMap(id ⇒ cache(id))
+                srvReqIds.flatMap(id => cache(id))
             }
         }
 
@@ -514,7 +514,7 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
       */
     @throws[NCE]
     def getForUserId(usrId: Long, parent: Span = null): Set[NCQueryStateMdo] =
-        startScopedSpan("getForUserId", parent, "isrId" → usrId) { _ ⇒
+        startScopedSpan("getForUserId", parent, "isrId" -> usrId) { _ =>
             catching(wrapIE) {
                 cache.values.filter(_.userId == usrId).toSet
             }
@@ -527,7 +527,7 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
       */
     @throws[NCE]
     def contains(srvReqId: String, parent: Span = null): Boolean =
-        startScopedSpan("contains", parent, "srvReqId" → srvReqId) { _ ⇒
+        startScopedSpan("contains", parent, "srvReqId" -> srvReqId) { _ =>
             catching(wrapIE) {
                 cache.containsKey(srvReqId)
             }

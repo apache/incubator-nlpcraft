@@ -63,10 +63,10 @@ class NCProbeSynonym(
       */
     private def getSort(kind: NCSynonymChunkKind): Int =
         kind match {
-            case TEXT ⇒ 0
-            case IDL ⇒ 1
-            case REGEX ⇒ 2
-            case _ ⇒ throw new AssertionError(s"Unexpected kind: $kind")
+            case TEXT => 0
+            case IDL => 1
+            case REGEX => 2
+            case _ => throw new AssertionError(s"Unexpected kind: $kind")
         }
 
     /**
@@ -76,13 +76,13 @@ class NCProbeSynonym(
       */
     private def isMatch(tok: NCNlpSentenceToken, chunk: NCProbeSynonymChunk): Boolean =
         chunk.kind match {
-            case TEXT ⇒ chunk.wordStem == tok.stem
-            case REGEX ⇒
+            case TEXT => chunk.wordStem == tok.stem
+            case REGEX =>
                 val regex = chunk.regex
 
                 regex.matcher(tok.origText).matches() || regex.matcher(tok.normText).matches()
-            case IDL ⇒ throw new AssertionError()
-            case _ ⇒ throw new AssertionError()
+            case IDL => throw new AssertionError()
+            case _ => throw new AssertionError()
         }
 
     /**
@@ -96,8 +96,8 @@ class NCProbeSynonym(
       */
     private def sparseMatch0[T](
         toks: Seq[T],
-        isMatch: (T, NCProbeSynonymChunk) ⇒ Boolean,
-        getIndex: T ⇒ Int,
+        isMatch: (T, NCProbeSynonymChunk) => Boolean,
+        getIndex: T => Int,
         shouldBeNeighbors: Boolean
     ): Option[Seq[T]] =
         if (toks.size >= this.size) {
@@ -106,15 +106,15 @@ class NCProbeSynonym(
 
             var state = 0
 
-            for (chunk ← this if state != -1) {
+            for (chunk <- this if state != -1) {
                 val seq =
                     if (state == 0) {
                         state = 1
 
-                        toks.filter(t ⇒ isMatch(t, chunk))
+                        toks.filter(t => isMatch(t, chunk))
                     }
                     else
-                        toks.filter(t ⇒ !res.contains(t) && isMatch(t, chunk))
+                        toks.filter(t => !res.contains(t) && isMatch(t, chunk))
 
                 if (seq.nonEmpty) {
                     val head = seq.head
@@ -149,20 +149,20 @@ class NCProbeSynonym(
       * @param req
       */
     private def isMatch(tow: NCIdlContent, chunk: NCProbeSynonymChunk, req: NCRequest): Boolean = {
-        def get0[T](fromToken: NCToken ⇒ T, fromWord: NCNlpSentenceToken ⇒ T): T =
+        def get0[T](fromToken: NCToken => T, fromWord: NCNlpSentenceToken => T): T =
             if (tow.isLeft) fromToken(tow.left.get) else fromWord(tow.right.get)
 
         chunk.kind match {
-            case TEXT ⇒ chunk.wordStem == get0(_.stem, _.stem)
-            case REGEX ⇒
+            case TEXT => chunk.wordStem == get0(_.stem, _.stem)
+            case REGEX =>
                 val r = chunk.regex
 
                 r.matcher(get0(_.origText, _.origText)).matches() || r.matcher(get0(_.normText, _.normText)).matches()
 
-            case IDL ⇒
-                get0(t ⇒ chunk.idlPred.apply(t, NCIdlContext(req = req)).value.asInstanceOf[Boolean], _ ⇒ false)
+            case IDL =>
+                get0(t => chunk.idlPred.apply(t, NCIdlContext(req = req)).value.asInstanceOf[Boolean], _ => false)
 
-            case _ ⇒ throw new AssertionError()
+            case _ => throw new AssertionError()
         }
     }
 
@@ -178,7 +178,7 @@ class NCProbeSynonym(
             if (isTextOnly)
                 toks.stemsHash == stemsHash && toks.stems == stems
             else
-                toks.zip(this).sortBy(p ⇒ getSort(p._2.kind)).forall { case (tok, chunk) ⇒ isMatch(tok, chunk) }
+                toks.zip(this).sortBy(p => getSort(p._2.kind)).forall { case (tok, chunk) => isMatch(tok, chunk) }
         }
         else
             false
@@ -194,7 +194,7 @@ class NCProbeSynonym(
         require(tows != null)
 
         if (tows.length == length && tows.count(_.isLeft) >= idlChunks)
-            tows.zip(this).sortBy(p ⇒ getSort(p._2.kind)).forall { case (tow, chunk) ⇒ isMatch(tow, chunk, req) }
+            tows.zip(this).sortBy(p => getSort(p._2.kind)).forall { case (tow, chunk) => isMatch(tow, chunk, req) }
         else
             false
     }
@@ -207,7 +207,7 @@ class NCProbeSynonym(
         require(toks != null)
         require(sparse && !hasIdl)
 
-        sparseMatch0(toks, isMatch, (t: NCNlpSentenceToken) ⇒ t.startCharIndex, shouldBeNeighbors = false)
+        sparseMatch0(toks, isMatch, (t: NCNlpSentenceToken) => t.startCharIndex, shouldBeNeighbors = false)
     }
 
     /**
@@ -222,8 +222,8 @@ class NCProbeSynonym(
 
         sparseMatch0(
             tows,
-            (t: NCIdlContent, chunk: NCProbeSynonymChunk) ⇒ isMatch(t, chunk, req),
-            (t: NCIdlContent) ⇒ if (t.isLeft) t.left.get.getStartCharIndex else t.right.get.startCharIndex,
+            (t: NCIdlContent, chunk: NCProbeSynonymChunk) => isMatch(t, chunk, req),
+            (t: NCIdlContent) => if (t.isLeft) t.left.get.getStartCharIndex else t.right.get.startCharIndex,
             shouldBeNeighbors = !sparse
         )
     }
@@ -236,21 +236,21 @@ class NCProbeSynonym(
 
         def compareIsValueSynonym(): Int =
             isValueSynonym match {
-                case true if !that.isValueSynonym ⇒ 1
-                case false if that.isValueSynonym ⇒ -1
+                case true if !that.isValueSynonym => 1
+                case false if that.isValueSynonym => -1
 
-                case _ ⇒ 0
+                case _ => 0
             }
 
         if (that == null)
             1
         else
             isElementId match {
-                case true if !that.isElementId ⇒ 1
-                case false if that.isElementId ⇒ -1
-                case true if that.isElementId ⇒ 0
+                case true if !that.isElementId => 1
+                case false if that.isElementId => -1
+                case true if that.isElementId => 0
 
-                case _ ⇒ // None are element IDs.
+                case _ => // None are element IDs.
                     if (length > that.length)
                         1
                     else if (length < that.length)
@@ -266,10 +266,10 @@ class NCProbeSynonym(
                             1
                         else // Both direct or indirect.
                             isTextOnly match {
-                                case true if !that.isTextOnly ⇒ 1
-                                case false if that.isTextOnly ⇒ -1
-                                case true if that.isTextOnly ⇒ compareIsValueSynonym()
-                                case _ ⇒
+                                case true if !that.isTextOnly => 1
+                                case false if that.isTextOnly => -1
+                                case true if that.isTextOnly => compareIsValueSynonym()
+                                case _ =>
                                     val thisDynCnt = regexChunks + idlChunks
                                     val thatDynCnt = that.regexChunks + that.idlChunks
 
@@ -288,7 +288,7 @@ class NCProbeSynonym(
     override def canEqual(other: Any): Boolean = other.isInstanceOf[NCProbeSynonym]
 
     override def equals(other: Any): Boolean = other match {
-        case that: NCProbeSynonym ⇒
+        case that: NCProbeSynonym =>
             super.equals(that) &&
                 (that canEqual this) &&
                 isTextOnly == that.isTextOnly &&
@@ -298,7 +298,7 @@ class NCProbeSynonym(
                 isElementId == that.isElementId &&
                 isValueName == that.isValueName &&
                 value == that.value
-        case _ ⇒ false
+        case _ => false
     }
 
     override def hashCode(): Int = {
@@ -313,7 +313,7 @@ class NCProbeSynonym(
             value
         )
 
-        state.map(p ⇒ if (p == null) 0 else p.hashCode()).foldLeft(0)((a, b) ⇒ 31 * a + b)
+        state.map(p => if (p == null) 0 else p.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
     }
 }
 

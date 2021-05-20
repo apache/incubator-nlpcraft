@@ -34,24 +34,24 @@ class NCRestModelSpec extends NCRestSpec {
             data.asScala.map(_.get("score").asInstanceOf[Number].doubleValue())
 
         // Note that checked values are valid for current configuration of `RestTestModel` model.
-        post("model/sugsyn", "mdlId" → "rest.test.model")(
-            ("$.status", (status: String) ⇒ assertEquals("API_OK", status)),
-            ("$.result.suggestions[:1].a.*", (data: java.util.List[java.util.Map[String, Object]]) ⇒ {
+        post("model/sugsyn", "mdlId" -> "rest.test.model")(
+            ("$.status", (status: String) => assertEquals("API_OK", status)),
+            ("$.result.suggestions[:1].a.*", (data: java.util.List[java.util.Map[String, Object]]) => {
                 val scores = extract(data)
 
                 assertTrue(scores.nonEmpty)
-                assertTrue(scores.forall(s ⇒ s >= 0 && s <= 1))
+                assertTrue(scores.forall(s => s >= 0 && s <= 1))
                 assertTrue(scores.exists(_ >= 0.5))
                 assertTrue(scores.exists(_ <= 0.5))
             })
         )
-        post("model/sugsyn", "mdlId" → "rest.test.model", "minScore" → 0.5)(
-            ("$.status", (status: String) ⇒ assertEquals("API_OK", status)),
-            ("$.result.suggestions[:1].a.*", (data: java.util.List[java.util.Map[String, Object]]) ⇒ {
+        post("model/sugsyn", "mdlId" -> "rest.test.model", "minScore" -> 0.5)(
+            ("$.status", (status: String) => assertEquals("API_OK", status)),
+            ("$.result.suggestions[:1].a.*", (data: java.util.List[java.util.Map[String, Object]]) => {
                 val scores = extract(data)
 
                 assertTrue(scores.nonEmpty)
-                assertTrue(scores.forall(s ⇒ s >= 0.5 && s <= 1))
+                assertTrue(scores.forall(s => s >= 0.5 && s <= 1))
             })
         )
     }

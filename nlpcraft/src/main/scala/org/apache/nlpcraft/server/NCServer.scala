@@ -70,7 +70,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
     /**
      * Prints ASCII-logo.
      */
-    private def asciiLogo() {
+    private def asciiLogo(): Unit = {
         val ver = NCVersion.getCurrent
 
         logger.info(
@@ -93,7 +93,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
         NCServerLifecycleManager.start()
         NCServerLifecycleManager.beforeStart()
 
-        startScopedSpan("startManagers", "relVer" → ver.version, "relDate" → ver.date) { span ⇒
+        startScopedSpan("startManagers", "relVer" -> ver.version, "relDate" -> ver.date) { span =>
             startedMgrs += NCThreadPoolManager.start(span)
             startedMgrs += NCExternalConfigManager.start(span)
             startedMgrs += NCWordNetManager.start(span)
@@ -128,12 +128,12 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
         // Lifecycle callback.
         NCServerLifecycleManager.beforeStop()
 
-        startScopedSpan("stopManagers") { span ⇒
-            startedMgrs.reverse.foreach(p ⇒
+        startScopedSpan("stopManagers") { span =>
+            startedMgrs.reverse.foreach(p =>
                 try
                     p.stop(span)
                 catch {
-                    case e: Exception ⇒ U.prettyError(logger, s"Error stopping manager: ${p.name}", e)
+                    case e: Exception => U.prettyError(logger, s"Error stopping manager: ${p.name}", e)
                 }
             )
         }
@@ -146,8 +146,8 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
     /**
      * Acks server start.
      */
-    protected def ackStart() {
-        val dur = s"[${U.format((currentTime - executionStart) / 1000.0, 2)}s]"
+    protected def ackStart(): Unit = {
+        val dur = s"[${U.format((System.currentTimeMillis() - executionStart) / 1000.0, 2)}s]"
 
         val tbl = NCAsciiTable()
 
@@ -177,14 +177,14 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
 
         NCConfigurable.initialize(
             cfgFile = args.find(_.startsWith("-config=")) match {
-                case Some(s) ⇒
+                case Some(s) =>
                     val cfg = s.substring("-config=".length)
 
                     if (!U.isSuitableConfig(cfg))
                         throw new NCE(s"Specified server configuration file does not exist or cannot be read: $cfg")
 
                     cfg
-                case None ⇒
+                case None =>
                     if (U.isSuitableConfig("server.conf"))
                         "server.conf"
                     else if (U.isSuitableConfig("nlpcraft.conf"))
@@ -194,7 +194,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
             },
             overrideCfg = None, // No overrides.
             dfltCfg = None, // No defaults.
-            valFun = (cfg: Config) ⇒ cfg.hasPath("nlpcraft.server")
+            valFun = (cfg: Config) => cfg.hasPath("nlpcraft.server")
         )
 
         asciiLogo()
@@ -202,14 +202,14 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
         val lifecycle = new CountDownLatch(1)
 
         catching(classOf[Throwable]) either startManagers() match {
-            case Left(e) ⇒ // Exception.
+            case Left(e) => // Exception.
                 U.prettyError(logger, "Failed to start server:", e)
 
                 stopManagers()
 
                 System.exit(1)
 
-            case _ ⇒ // Managers started OK.
+            case _ => // Managers started OK.
                 // Store beacon file once all managers started OK.
                 storeBeacon()
 
@@ -267,7 +267,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
             }
 
             try {
-                managed(new ObjectOutputStream(new FileOutputStream(path))) acquireAndGet { stream ⇒
+                Using.resource(new ObjectOutputStream(new FileOutputStream(path))) { stream =>
                     val ver = NCVersion.getCurrent
 
                     stream.writeObject(NCCliServerBeacon(
@@ -292,7 +292,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
                         acsToksScanMins = Config.acsToksScanMins,
                         acsToksExpireMins = Config.acsToksExpireMins,
                         beaconPath = path.getAbsolutePath,
-                        startMs = currentTime
+                        startMs = System.currentTimeMillis()
                     ))
 
                     stream.flush()
@@ -333,23 +333,23 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
                 logger.info(s"Server configuration:\n$tbl")
             }
             catch {
-                case e: IOException ⇒ U.prettyError(logger, "Failed to save server beacon.", e)
+                case e: IOException => U.prettyError(logger, "Failed to save server beacon.", e)
             }
         }
 
         if (path.exists())
             catching(classOf[IOException]) either {
-                managed(new ObjectInputStream(new FileInputStream(path))) acquireAndGet {
+                Using.resource(new ObjectInputStream(new FileInputStream(path))) {
                     _.readObject()
                 }
             } match {
-                case Left(e) ⇒
+                case Left(e) =>
                     logger.trace(s"Failed to read existing server beacon: ${path.getAbsolutePath}", e)
                     logger.trace(s"Overriding corrupted server beacon: ${path.getAbsolutePath}")
 
                     save()
 
-                case Right(rawObj) ⇒
+                case Right(rawObj) =>
                     val beacon = rawObj.asInstanceOf[NCCliServerBeacon]
 
                     if (ProcessHandle.of(beacon.pid).isPresent) {
@@ -376,8 +376,8 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
 
     NCIgniteRunner.runWith(
         args.find(_.startsWith("-igniteConfig=")) match {
-            case None ⇒ null // Will use default on the classpath 'ignite.xml'.
-            case Some(s) ⇒ s.substring(s.indexOf("=") + 1)
+            case None => null // Will use default on the classpath 'ignite.xml'.
+            case Some(s) => s.substring(s.indexOf("=") + 1)
         },
         start()
     )

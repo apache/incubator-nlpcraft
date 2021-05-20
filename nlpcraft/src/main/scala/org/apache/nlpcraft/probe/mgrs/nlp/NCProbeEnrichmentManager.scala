@@ -92,7 +92,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
      * @param parent Optional parent span.
      * @return
      */
-    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ =>
         ackStarting()
 
         embeddedCbs = mutable.HashSet.empty[EMBEDDED_CB]
@@ -104,7 +104,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
      *
      * @param parent Optional parent span.
      */
-    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
 
         mux.synchronized {
@@ -159,10 +159,10 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
         parent: Span = null
     ): Unit = {
         val span = startSpan("ask", parent,
-            "srvReqId" → srvReqId,
-            "txt" → txt,
-            "usrId" → usrId,
-            "mdlId" → mdlId
+            "srvReqId" -> srvReqId,
+            "txt" -> txt,
+            "usrId" -> usrId,
+            "mdlId" -> mdlId
         )
 
         startMs.set(System.currentTimeMillis())
@@ -179,17 +179,17 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                 span
             )
         catch {
-            case e: Throwable ⇒
+            case e: Throwable =>
                 span.setStatus(Status.INTERNAL.withDescription(e.getMessage))
                 
                 U.prettyError(logger,"Failed to process request:", e)
             
                 val msg = NCProbeMessage("P2S_ASK_RESULT",
-                    "srvReqId" → srvReqId,
-                    "error" → "Processing failed due to a system error.",
-                    "errorCode" → UNEXPECTED_ERROR,
-                    "mdlId" → mdlId,
-                    "txt" → txt
+                    "srvReqId" -> srvReqId,
+                    "error" -> "Processing failed due to a system error.",
+                    "errorCode" -> UNEXPECTED_ERROR,
+                    "mdlId" -> mdlId,
+                    "txt" -> txt
                 )
             
                 try
@@ -232,7 +232,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
 
         val tbl = NCAsciiTable()
 
-        tbl += (s"${b("Text")}", nlpSens.map(s ⇒ rv(s.text)))
+        tbl += (s"${b("Text")}", nlpSens.map(s => rv(s.text)))
         tbl += (s"${b("Model ID")}", mdlId)
         tbl += (s"${b("User:")}", "")
         tbl += (s"${b("  ID")}", usrId)
@@ -255,19 +255,19 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
           */
         def getError(code: String): (String, Int) =
             code match {
-                case "MAX_UNKNOWN_WORDS" ⇒ "Too many unknown words." → MAX_UNKNOWN_WORDS
-                case "MAX_FREE_WORDS" ⇒ "Sentence is too complex." → MAX_FREE_WORDS
-                case "MAX_SUSPICIOUS_WORDS" ⇒ "Too many suspicious or unrelated words." → MAX_SUSPICIOUS_WORDS
-                case "ALLOW_SWEAR_WORDS" ⇒ "Swear words are not allowed." → ALLOW_SWEAR_WORDS
-                case "ALLOW_NO_NOUNS" ⇒ "Sentence contains no nouns." → ALLOW_NO_NOUNS
-                case "ALLOW_NON_LATIN_CHARSET" ⇒ "Only latin charset is supported." → ALLOW_NON_LATIN_CHARSET
-                case "ALLOW_NON_ENGLISH" ⇒ "Only english language is supported." → ALLOW_NON_ENGLISH
-                case "ALLOW_NO_USER_TOKENS" ⇒ "Sentence seems unrelated to the data model." → ALLOW_NO_USER_TOKENS
-                case "MIN_WORDS" ⇒ "Sentence is too short." → MIN_WORDS
-                case "MIN_NON_STOPWORDS" ⇒ "Sentence is ambiguous." → MIN_NON_STOPWORDS
-                case "MIN_TOKENS" ⇒ "Sentence is too short." → MIN_TOKENS
-                case "MAX_TOKENS" ⇒ "Sentence is too long." → MAX_TOKENS
-                case _ ⇒ s"System error: $code." → UNEXPECTED_ERROR
+                case "MAX_UNKNOWN_WORDS" => "Too many unknown words." -> MAX_UNKNOWN_WORDS
+                case "MAX_FREE_WORDS" => "Sentence is too complex." -> MAX_FREE_WORDS
+                case "MAX_SUSPICIOUS_WORDS" => "Too many suspicious or unrelated words." -> MAX_SUSPICIOUS_WORDS
+                case "ALLOW_SWEAR_WORDS" => "Swear words are not allowed." -> ALLOW_SWEAR_WORDS
+                case "ALLOW_NO_NOUNS" => "Sentence contains no nouns." -> ALLOW_NO_NOUNS
+                case "ALLOW_NON_LATIN_CHARSET" => "Only latin charset is supported." -> ALLOW_NON_LATIN_CHARSET
+                case "ALLOW_NON_ENGLISH" => "Only english language is supported." -> ALLOW_NON_ENGLISH
+                case "ALLOW_NO_USER_TOKENS" => "Sentence seems unrelated to the data model." -> ALLOW_NO_USER_TOKENS
+                case "MIN_WORDS" => "Sentence is too short." -> MIN_WORDS
+                case "MIN_NON_STOPWORDS" => "Sentence is ambiguous." -> MIN_NON_STOPWORDS
+                case "MIN_TOKENS" => "Sentence is too short." -> MIN_TOKENS
+                case "MAX_TOKENS" => "Sentence is too long." -> MAX_TOKENS
+                case _ => s"System error: $code." -> UNEXPECTED_ERROR
             }
 
         /**
@@ -296,17 +296,17 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
 
             val msg = NCProbeMessage(msgName)
 
-            msg += "srvReqId" → srvReqId
-            msg += "mdlId" → mdlId
-            msg += "txt" → txt
+            msg += "srvReqId" -> srvReqId
+            msg += "mdlId" -> mdlId
+            msg += "txt" -> txt
 
             def addOptional(name: String, vOpt: Option[Serializable]): Unit =
                 if (vOpt.isDefined)
-                    msg += name → vOpt.get
+                    msg += name -> vOpt.get
 
             def addMeta(name: String, vOpt: Option[JavaMeta]): Unit =
                 if (vOpt.isDefined)
-                    msg += name → vOpt.get.asInstanceOf[Serializable]
+                    msg += name -> vOpt.get.asInstanceOf[Serializable]
 
             if (resBody.isDefined && resBody.get.length > Config.resultMaxSize) {
                 addOptional("error", Some("Result is too big. Model result must be corrected."))
@@ -375,14 +375,14 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
         var errData: Option[(String, Int)] = None
 
         val validNlpSens =
-            nlpSens.flatMap(nlpSen ⇒
+            nlpSens.flatMap(nlpSen =>
                 try {
                     NCValidateManager.preValidate(mdl, nlpSen, span)
 
                     Some(nlpSen)
                 }
                 catch {
-                    case e: NCValidateException ⇒
+                    case e: NCValidateException =>
                         val (errMsg, errCode) = getError(e.code)
 
                         if (errData.isEmpty)
@@ -413,7 +413,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
             return
         }
 
-        val sensSeq = validNlpSens.flatMap(nlpSen ⇒ {
+        val sensSeq = validNlpSens.flatMap(nlpSen => {
             // Independent of references.
             NCDictionaryEnricher.enrich(mdl, nlpSen, senMeta, span)
             NCSuspiciousNounsEnricher.enrich(mdl, nlpSen, senMeta, span)
@@ -421,16 +421,16 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
 
             nlpSen.saveNlpNotes()
 
-            case class Holder(enricher: NCProbeEnricher, getNotes: () ⇒ Seq[NCNlpSentenceNote])
+            case class Holder(enricher: NCProbeEnricher, getNotes: () => Seq[NCNlpSentenceNote])
 
             def get(name: String, e: NCProbeEnricher): Option[Holder] =
                 if (mdl.model.getEnabledBuiltInTokens.contains(name))
-                    Some(Holder(e, () ⇒ nlpSen.flatten.filter(_.noteType == name)))
+                    Some(Holder(e, () => nlpSen.flatten.filter(_.noteType == name)))
                 else
                     None
 
             val loopEnrichers = Seq(
-                Some(Holder(NCModelEnricher, () ⇒ nlpSen.flatten.filter(_.isUser))),
+                Some(Holder(NCModelEnricher, () => nlpSen.flatten.filter(_.isUser))),
                 get("nlpcraft:sort", NCSortEnricher),
                 get("nlpcraft:limit", NCLimitEnricher),
                 get("nlpcraft:relation", NCRelationEnricher)
@@ -445,8 +445,8 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                 if (step >= MAX_NESTED_TOKENS)
                     throw new NCE(s"Stack overflow on nested tokens processing (> $MAX_NESTED_TOKENS).")
 
-                val res = loopEnrichers.map(h ⇒ {
-                    def get(): Seq[NCNlpSentenceNote] = h.getNotes().sortBy(p ⇒ (p.tokenIndexes.head, p.noteType))
+                val res = loopEnrichers.map(h => {
+                    def get(): Seq[NCNlpSentenceNote] = h.getNotes().sortBy(p => (p.tokenIndexes.head, p.noteType))
                     val notes1 = get()
 
                     h.enricher.enrich(mdl, nlpSen, senMeta, span)
@@ -457,16 +457,16 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
 
                     if (!same) {
                         def squeeze(typ: String): Boolean = {
-                            val diff = notes2.filter(n ⇒ !notes1.contains(n))
+                            val diff = notes2.filter(n => !notes1.contains(n))
 
-                            val diffRedundant = diff.flatMap(n2 ⇒
-                                notes1.find(n1 ⇒ nlpSen.notesEqualOrSimilar(n1, n2)) match {
-                                    case Some(similar) ⇒ Some(n2 → similar)
-                                    case None ⇒ None
+                            val diffRedundant = diff.flatMap(n2 =>
+                                notes1.find(n1 => nlpSen.notesEqualOrSimilar(n1, n2)) match {
+                                    case Some(similar) => Some(n2 -> similar)
+                                    case None => None
                                 }
                             )
 
-                            diffRedundant.foreach { case (del, similar) ⇒
+                            diffRedundant.foreach { case (del, similar) =>
                                 if (DEEP_DEBUG)
                                     logger.trace(s"Redundant note removed, because similar exists [" +
                                         s"note=$del, " +
@@ -481,19 +481,19 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                         }
 
                         h.enricher match {
-                            case NCSortEnricher ⇒ same = squeeze("nlpcraft:sort")
-                            case NCLimitEnricher ⇒ same = squeeze("nlpcraft:limit")
-                            case NCRelationEnricher ⇒ same = squeeze("nlpcraft:relation")
+                            case NCSortEnricher => same = squeeze("nlpcraft:sort")
+                            case NCLimitEnricher => same = squeeze("nlpcraft:limit")
+                            case NCRelationEnricher => same = squeeze("nlpcraft:relation")
 
-                            case _ ⇒ // No-op.
+                            case _ => // No-op.
                         }
                     }
 
-                    h.enricher → same
+                    h.enricher -> same
                 }).toMap
 
                 // Loop has sense if model is complex (has user defined parsers or IDL based synonyms)
-                continue = NCModelEnricher.isComplex(mdl) && res.exists { case (_, same) ⇒ !same }
+                continue = NCModelEnricher.isComplex(mdl) && res.exists { case (_, same) => !same }
 
                 if (DEEP_DEBUG)
                     if (continue) {
@@ -512,8 +512,8 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
 
             NCSentenceManager.collapse(mdl.model, nlpSen.clone(), lastPhase = true).
                 // Sorted to support deterministic logs.
-                sortBy(p ⇒
-                p.map(p ⇒ {
+                sortBy(p =>
+                p.map(p => {
                     val data = p.
                         filter(!_.isNlp).
                         map(Objects.toString).
@@ -532,7 +532,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
         try
             sensSeq.foreach(NCValidateManager.postValidate(mdl, _, span))
         catch {
-            case e: NCValidateException ⇒
+            case e: NCValidateException =>
                 val (errMsg, errCode) = getError(e.code)
 
                 logger.error(s"Post-enrichment validation error: $errMsg")
@@ -560,22 +560,22 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
         val fltSenVars: Seq[(NCVariant, Int)] =
             senVars.
             zipWithIndex.
-            flatMap { case (variant, i) ⇒ if (mdl.model.onParsedVariant(variant)) Some(variant, i) else None }
+            flatMap { case (variant, i) => if (mdl.model.onParsedVariant(variant)) Some(variant, i) else None }
 
         senVars = fltSenVars.map(_._1)
         val allVars = senVars.flatMap(_.asScala)
 
         // Prints here only filtered variants.
-        val fltIdxs = fltSenVars.map { case (_, i) ⇒ i }
+        val fltIdxs = fltSenVars.map { case (_, i) => i }
 
-        startScopedSpan("logVariants", span) { _ ⇒
+        startScopedSpan("logVariants", span) { _ =>
             val seq = senVars
             val txt = req.getNormalizedText
 
             seq.
                 zipWithIndex.
-                flatMap { case (sen, i) ⇒ if (fltIdxs.contains(i)) Some(sen) else None }.
-                zipWithIndex.foreach { case (sen, i) ⇒
+                flatMap { case (sen, i) => if (fltIdxs.contains(i)) Some(sen) else None }.
+                zipWithIndex.foreach { case (sen, i) =>
                 NCTokenLogger.prepareTable(sen.asScala).
                     info(
                         logger,
@@ -621,7 +621,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
             }
         }
         
-        recordStats(M_SYS_LATENCY_MS → (System.currentTimeMillis() - start))
+        recordStats(M_SYS_LATENCY_MS -> (System.currentTimeMillis() - start))
     
         /**
          *
@@ -652,7 +652,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
 
         // Execute model query asynchronously.
         U.asFuture(
-            _ ⇒ {
+            _ => {
                 // Retain start timestamp.
                 startMs.set(x)
 
@@ -661,14 +661,14 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                 start = System.currentTimeMillis()
     
                 if (res == null && mdl.solver != null)
-                    startScopedSpan("intentMatching", span) { _ ⇒
+                    startScopedSpan("intentMatching", span) { _ =>
                         res = mdl.solver.solve(solverIn, span)
                     }
                 
                 if (res == null && mdl.solver == null)
                     throw new IllegalStateException("No intents and no results from model callbacks.")
     
-                recordStats(M_USER_LATENCY_MS → (System.currentTimeMillis() - start))
+                recordStats(M_USER_LATENCY_MS -> (System.currentTimeMillis() - start))
 
                 if (res == null)
                     throw new IllegalStateException("Result cannot be null.")
@@ -685,13 +685,13 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                 res
             },
             {
-                case e: NCRejection ⇒
+                case e: NCRejection =>
                     try {
                         addTags(
                             span,
-                            "errCode" → MODEL_REJECTION,
-                            "errCodeStr" → "MODEL_REJECTION",
-                            "errMsg" → e.getMessage
+                            "errCode" -> MODEL_REJECTION,
+                            "errCodeStr" -> "MODEL_REJECTION",
+                            "errMsg" -> e.getMessage
                         )
     
                         U.prettyError(logger,s"Rejection for server request ID: ${m(srvReqId)}", e)
@@ -715,13 +715,13 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                     finally
                         onFinish()
 
-                case e: Throwable ⇒
+                case e: Throwable =>
                     try {
                         addTags(
                             span,
-                            "errCode" → UNEXPECTED_ERROR,
-                            "errCodeStr" → "UNEXPECTED_ERROR",
-                            "errMsg" → e.getMessage
+                            "errCode" -> UNEXPECTED_ERROR,
+                            "errCodeStr" -> "UNEXPECTED_ERROR",
+                            "errMsg" -> e.getMessage
                         )
                     
                         U.prettyError(logger,s"Unexpected error for server request ID: $srvReqId", e)
@@ -745,12 +745,12 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                     finally
                         onFinish()
             },
-            (res: NCResult) ⇒ {
+            (res: NCResult) => {
                 try {
                     addTags(
                         span,
-                        "resType" → res.getType,
-                        "resBody" → res.getBody
+                        "resType" -> res.getType,
+                        "resBody" -> res.getBody
                     )
                     
                     val res0 = mdl.model.onResult(solverIn.intentMatch, res)

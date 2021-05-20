@@ -37,7 +37,7 @@ trait NCIgniteExceptions {
       */
     @throws[NCE]
     protected def wrapIE[R]: Catcher[R] = {
-        case e: IgniteException ⇒ throw new NCE(s"Ignite error: ${e.getMessage}", e)
+        case e: IgniteException => throw new NCE(s"Ignite error: ${e.getMessage}", e)
     }
 
     /**
@@ -48,7 +48,7 @@ trait NCIgniteExceptions {
       */
     @throws[NCE]
     protected def wrapSql[R]: Catcher[R] = {
-        case e: SQLException ⇒ throw new NCE(s"SQL error.", e)
+        case e: SQLException => throw new NCE(s"SQL error.", e)
     }
 
     /**
@@ -57,6 +57,6 @@ trait NCIgniteExceptions {
       * @return Catcher.
       */
     protected def logIE(logger: Logger): Catcher[Unit] = {
-        case e: IgniteException ⇒ U.prettyError(logger, s"Ignite error.", e)
+        case e: IgniteException => U.prettyError(logger, s"Ignite error.", e)
     }
 }

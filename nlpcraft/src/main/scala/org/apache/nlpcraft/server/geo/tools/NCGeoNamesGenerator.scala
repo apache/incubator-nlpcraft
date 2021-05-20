@@ -71,7 +71,7 @@ object NCGeoNamesGenerator extends App {
     )
     case class CityInfo(name: String, countryRegion: String, countryCode: String, population: Long)
 
-    // GEO name ID → internal representation mapping.
+    // GEO name ID -> internal representation mapping.
     private val ids = mutable.Map.empty[String, Location]
 
     private def read(path: String): Seq[String] = U.readPath(path).filter(!_.startsWith("#"))
@@ -81,10 +81,10 @@ object NCGeoNamesGenerator extends App {
         case class SubContinent(continent: String, subContinent: String)
 
         def getSubContinent(countryIso: String): SubContinent = {
-            val hs: Seq[SubContinent] = unsdContinents.flatMap(c ⇒
+            val hs: Seq[SubContinent] = unsdContinents.flatMap(c =>
                 c.subContinents.find(_.countries.exists(_.iso3 == countryIso)) match {
-                    case Some(sc) ⇒ Some(SubContinent(c.name, sc.name))
-                    case None ⇒ None
+                    case Some(sc) => Some(SubContinent(c.name, sc.name))
+                    case None => None
                 }
             )
 
@@ -95,7 +95,7 @@ object NCGeoNamesGenerator extends App {
 
         // File format is defined with fixed tabulations.
         // Country - String(sunContinent name)
-        val map: Map[Country, String] = read(pathCountryInfo).flatMap(line ⇒ {
+        val map: Map[Country, String] = read(pathCountryInfo).flatMap(line => {
             val seq = line.split("\t").toSeq
 
             def getStringOpt(idx: Int): Option[String] =
@@ -105,7 +105,7 @@ object NCGeoNamesGenerator extends App {
                     if (s.nonEmpty) Some(s) else None
                 }
                 catch {
-                    case e: ArrayIndexOutOfBoundsException ⇒
+                    case e: ArrayIndexOutOfBoundsException =>
                         // 16 is last mandatory field index (geonameid).
                         if (idx != 17)
                             throw new NCE(s"Error [line=$line, length=${seq.length}, idx=$idx]", e)
@@ -115,19 +115,19 @@ object NCGeoNamesGenerator extends App {
 
             def getString(idx: Int): String =
                 getStringOpt(idx) match {
-                    case Some(s) ⇒ s
-                    case None ⇒ throw new NCE(s"Empty value [$line=$line, idx=$idx]")
+                    case Some(s) => s
+                    case None => throw new NCE(s"Empty value [$line=$line, idx=$idx]")
                 }
 
             def getLongOpt(idx: Int): Option[Long] =
                 getStringOpt(idx) match {
-                    case Some(s) ⇒ Some(s.toLong)
-                    case None ⇒ None
+                    case Some(s) => Some(s.toLong)
+                    case None => None
                 }
             def getDoubleOpt(idx: Int): Option[Double] =
                 getStringOpt(idx) match {
-                    case Some(s) ⇒ Some(s.toDouble)
-                    case None ⇒ None
+                    case Some(s) => Some(s.toDouble)
+                    case None => None
                 }
 
             val iso = getString(0)
@@ -171,7 +171,7 @@ object NCGeoNamesGenerator extends App {
                         neighbours
                     )
 
-                Some(country → sch.subContinent)
+                Some(country -> sch.subContinent)
             }
             else
                 None
@@ -181,11 +181,11 @@ object NCGeoNamesGenerator extends App {
         map.keySet
     }
 
-    // Produce a map of regions (countryCode + regCode → region name)).
+    // Produce a map of regions (countryCode + regCode -> region name)).
     private def processRegions(): mutable.Map[String, String] = {
         val map = mutable.Map.empty[String, String]
 
-        read(pathAllCountries).foreach(line ⇒ {
+        read(pathAllCountries).foreach(line => {
             val seq = line.split("\t").toSeq
 
             if (seq(7) == "ADM1") {
@@ -203,19 +203,19 @@ object NCGeoNamesGenerator extends App {
         map
     }
 
-    // Process cities. Produce map of CountryCode + RegionNr → list of cities.
+    // Process cities. Produce map of CountryCode + RegionNr -> list of cities.
     // Some cities do not have Region information. Some countries does not have
     // region breakdown.
     private def processCities(regCodes: mutable.Map[String, String], isoToNames: Map[String, String]):
     (Map[String, Seq[City]], Set[CityInfo], Set[CityInfo]) = {
         val map = mutable.Map.empty[String, mutable.Buffer[City]] ++
-            regCodes.keys.map(key ⇒ key → mutable.Buffer.empty[City])
+            regCodes.keys.map(key => key -> mutable.Buffer.empty[City])
 
         val worldTop = mutable.Set.empty[CityInfo]
 
         val usTop = mutable.Set.empty[CityInfo]
 
-        read(pathCities5000).zipWithIndex.foreach { case (line, lineNum) ⇒
+        read(pathCities5000).zipWithIndex.foreach { case (line, lineNum) =>
             val seq = line.split("\t").toSeq
 
             def getStringOpt(idx: Int): Option[String] = {
@@ -226,14 +226,14 @@ object NCGeoNamesGenerator extends App {
 
             def getString(idx: Int): String =
                 getStringOpt(idx) match {
-                    case Some(s) ⇒ s
-                    case None ⇒ throw new NCE(s"Empty value [$line=$line, idx=$idx, line: $lineNum]")
+                    case Some(s) => s
+                    case None => throw new NCE(s"Empty value [$line=$line, idx=$idx, line: $lineNum]")
                 }
 
             def getIntOpt(idx: Int): Option[Int] =
                 getStringOpt(idx) match {
-                    case Some(s) ⇒ Some(s.toInt)
-                    case None ⇒ None
+                    case Some(s) => Some(s.toInt)
+                    case None => None
                 }
             def getLong(idx: Int): Long = getString(idx).toLong
             def getInt(idx: Int): Int = getString(idx).toInt
@@ -265,8 +265,8 @@ object NCGeoNamesGenerator extends App {
 
                 // Create region named after country.
                 isoToNames.get(cntrIso) match {
-                    case Some(cntr) ⇒ regCodes.put(cntrReg, cntr)
-                    case None ⇒ // No-op.
+                    case Some(cntr) => regCodes.put(cntrReg, cntr)
+                    case None => // No-op.
                 }
             }
 
@@ -291,58 +291,58 @@ object NCGeoNamesGenerator extends App {
         regCodes: Map[String, String],
         regs: Map[String, Seq[City]]
     ): Set[Country] = {
-        val isoToCountries = countries.map(p ⇒ p.iso → p).toMap
+        val isoToCountries = countries.map(p => p.iso -> p).toMap
 
         val m = mutable.Map.empty[String, Country]
         val ctrsToRegions = mutable.Map.empty[Country, mutable.ArrayBuffer[Region]]
 
         def addRegion(country: Country, region: Region): Unit =
             ctrsToRegions.get(country) match {
-                case Some(seq) ⇒ seq += region
-                case None ⇒
+                case Some(seq) => seq += region
+                case None =>
                     val seq = mutable.ArrayBuffer.empty[Region]
 
                     seq += region
 
-                    ctrsToRegions += country → seq
+                    ctrsToRegions += country -> seq
             }
 
-        // Map of CountryCode + RegionNr → list of cities.
-        for ((countryIsoStr, regCities) ← regs) {
+        // Map of CountryCode + RegionNr -> list of cities.
+        for ((countryIsoStr, regCities) <- regs) {
             val countryIso = countryIsoStr.substring(0, 2)
 
             regCodes.get(countryIsoStr) match {
-                case Some(regName) ⇒
+                case Some(regName) =>
                     m.get(countryIso) match {
-                        case Some(country) ⇒ addRegion(country, Region(regName, regCities))
-                        case None ⇒
+                        case Some(country) => addRegion(country, Region(regName, regCities))
+                        case None =>
                             isoToCountries.get(countryIso) match {
-                                case Some(country) ⇒ addRegion(country,Region(regName, regCities))
-                                case None ⇒ // No-op.
+                                case Some(country) => addRegion(country,Region(regName, regCities))
+                                case None => // No-op.
                             }
                     }
 
-                case None ⇒ // No-op.
+                case None => // No-op.
             }
         }
 
-        isoToNames.foreach(p ⇒ {
+        isoToNames.foreach(p => {
             val iso = p._1
 
             // Just for compatibility.
             if (!m.contains(iso))
-                m += iso → isoToCountries(iso)
+                m += iso -> isoToCountries(iso)
         })
 
         val set = m.values.toSet
 
-        set.foreach(country ⇒ country.regions = ctrsToRegions.getOrElse(country, Seq.empty))
+        set.foreach(country => country.regions = ctrsToRegions.getOrElse(country, Seq.empty))
 
         set
     }
 
     // Go over all countries and serialize to files.
-    private def writeCountries(mapper: ObjectMapper, countries: Set[Country]) {
+    private def writeCountries(mapper: ObjectMapper, countries: Set[Country]): Unit = {
         val dirPath = s"$outDir/countries"
 
         val dir = new File(dirPath)
@@ -354,7 +354,7 @@ object NCGeoNamesGenerator extends App {
                 throw new NCE(s"Couldn't create folder $dirPath")
         }
 
-        for (country ← countries)
+        for (country <- countries)
             mapper.writeValue(new File(s"$outDir/countries/${country.iso}.yaml"), country)
     }
 
@@ -363,7 +363,7 @@ object NCGeoNamesGenerator extends App {
     private def processSynonyms() = {
         val map = mutable.Map.empty[Location, mutable.Set[String]]
 
-        read(pathAlternateNames).foreach(line ⇒ {
+        read(pathAlternateNames).foreach(line => {
             val seq = line.split("\t").toSeq
 
             val origId = seq(1).trim
@@ -374,14 +374,14 @@ object NCGeoNamesGenerator extends App {
             if (lang == "en" || lang.trim.isEmpty && name.length > 1) {
                 // Find out the target of this synonym.
                 ids.get(origId) match {
-                    case Some(x) ⇒
+                    case Some(x) =>
                         // Some names contain 'No.' which causes lemmatizer to fail.
                         if (name != x.name && isAscii(name) && !name.contains("http") && !name.contains("No.")) {
                             val seq = map.getOrElseUpdate(x, mutable.Set.empty[String])
 
                             seq += name
                         }
-                    case None ⇒ // No-op
+                    case None => // No-op
                 }
             }
         })
@@ -409,31 +409,31 @@ object NCGeoNamesGenerator extends App {
     private def writeSynonyms(
         mapper: ObjectMapper,
         synonyms: Map[Location, Set[String]],
-        cntrCodes: Map[String, String], // Country code → Country name.
+        cntrCodes: Map[String, String], // Country code -> Country name.
         regsCodes: Map[String, String]): Unit = {
         case class Holder(country: String, region: Option[String], city: Option[String], synonyms: List[String])
 
-        val hs = synonyms.flatMap(s ⇒ {
+        val hs = synonyms.flatMap(s => {
             val loc = s._1
             val locSyns = s._2.toList
 
             loc.locationType match {
-                case COUNTRY ⇒ Some(Holder(loc.name, None, None, locSyns))
-                case REGION ⇒
+                case COUNTRY => Some(Holder(loc.name, None, None, locSyns))
+                case REGION =>
                     cntrCodes.get(loc.parentName) match {
-                        case Some(cntrCode) ⇒ Some(Holder(cntrCode, Some(loc.name), None, locSyns))
-                        case None ⇒ None
+                        case Some(cntrCode) => Some(Holder(cntrCode, Some(loc.name), None, locSyns))
+                        case None => None
                     }
-                case CITY ⇒
+                case CITY =>
                     val cntrReg = loc.parentName
                     val cntrCode = cntrReg.substring(0, 2)
 
                     cntrCodes.get(cntrCode) match {
-                        case Some(country) ⇒ Some(Holder(country, Some(regsCodes(cntrReg)), Some(loc.name), locSyns))
-                        case None ⇒ None
+                        case Some(country) => Some(Holder(country, Some(regsCodes(cntrReg)), Some(loc.name), locSyns))
+                        case None => None
                     }
             }
-        }).toSeq.sortBy(p ⇒ (p.region.isDefined, p.city.isDefined, p.country, p.region, p.city))
+        }).toSeq.sortBy(p => (p.region.isDefined, p.city.isDefined, p.country, p.region, p.city))
 
         mapper.writeValue(new File(outSynonyms), hs)
     }
@@ -444,10 +444,9 @@ object NCGeoNamesGenerator extends App {
         isoToNames: Map[String, String],
         regCodes: Map[String, String],
         worldTop: Set[CityInfo],
-        usTop: Set[CityInfo]) {
-
+        usTop: Set[CityInfo]): Unit = {
         def write(cities: Set[CityInfo], file: String, qty: Int): Unit = {
-            val topCities = cities.map(p ⇒ {
+            val topCities = cities.map(p => {
                 val cityName = p.name.toLowerCase
 
                 // Checks consistent state.
@@ -465,12 +464,12 @@ object NCGeoNamesGenerator extends App {
 
             val sorder =
                 topCities.map(
-                    c ⇒ Holder(
+                    c => Holder(
                         c.name,
                         isoToNames(c.countryCode).toLowerCase,
                         regCodes.getOrElse(c.countryRegion, "").toLowerCase
                     )
-                ).sortBy(p ⇒ (p.country, p.name))
+                ).sortBy(p => (p.country, p.name))
 
             mapper.writeValue(new File(file), sorder)
         }
@@ -487,9 +486,9 @@ object NCGeoNamesGenerator extends App {
     ): Unit = {
         case class Continent(name: String, iso3: String, iso: String)
 
-        val hs = continents.map(p ⇒
-            p.name → p.subContinents.map(p ⇒
-                p.name → p.countries.map(p ⇒ {
+        val hs = continents.map(p =>
+            p.name -> p.subContinents.map(p =>
+                p.name -> p.countries.map(p => {
                     val iso = iso3ToIso(p.iso3)
 
                     Continent(isoToNames(iso), p.iso3, iso)
@@ -500,14 +499,14 @@ object NCGeoNamesGenerator extends App {
         mapper.writeValue(new File(outContinents), hs)
     }
 
-    private def generate() {
+    private def generate(): Unit = {
         val mapper = U.getYamlMapper
 
         val continents = NCUnsdStatsService.mkContinents()
         val countries = processCountries(continents)
 
-        val isoToNames = countries.map(p ⇒ p.iso → p.name).toMap
-        val iso3ToIso = countries.map(p ⇒ p.iso3 → p.iso).toMap
+        val isoToNames = countries.map(p => p.iso -> p.name).toMap
+        val iso3ToIso = countries.map(p => p.iso3 -> p.iso).toMap
 
         // Go over regions and create them.
         val regCodes = processRegions()
@@ -526,7 +525,7 @@ object NCGeoNamesGenerator extends App {
         writeSynonyms(mapper, syns, isoToNames, regCodes)
         writeTopCities(
             mapper,
-            countriesFixes.map(h ⇒ h.iso → h.regions.map(p ⇒ p.name → p).toMap).toMap,
+            countriesFixes.map(h => h.iso -> h.regions.map(p => p.name -> p).toMap).toMap,
             isoToNames,
             regCodes,
             worldTop,

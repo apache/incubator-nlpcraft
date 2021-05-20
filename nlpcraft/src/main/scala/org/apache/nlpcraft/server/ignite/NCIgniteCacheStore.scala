@@ -43,7 +43,7 @@ abstract class NCIgniteCacheStore[K, V] extends CacheStoreAdapter[K, V] with Ser
       */
     protected def wrapNCE[R]: Catcher[R] = {
         // We assume here that NCR exception is database related.
-        case e: NCE ⇒
+        case e: NCE =>
             println(s"|> Wrapping NCE: ${e.toString}")
 
             if (e.getCause != null) {

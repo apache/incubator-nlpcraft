@@ -86,7 +86,7 @@ object NCGeoManager extends NCService {
      * @return
      */
     @throws[NCE]
-    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ =>
         ackStarting()
 
         model = readAndConstructModel(true)
@@ -98,7 +98,7 @@ object NCGeoManager extends NCService {
      *
      * @param parent Optional parent span.
      */
-    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
 
         model = null
@@ -121,10 +121,10 @@ object NCGeoManager extends NCService {
       */
     private def add(m: mutable.HashMap[String, Any], name: String, v: Any): Unit =
         v match {
-            case x: Option[Any] ⇒
+            case x: Option[Any] =>
                 if (x.isDefined)
-                    m += name → x.get
-            case _ ⇒ m += name → v
+                    m += name -> x.get
+            case _ => m += name -> v
         }
 
     /**
@@ -144,33 +144,33 @@ object NCGeoManager extends NCService {
         val metro = mutable.HashSet.empty[NCGeoMetro]
 
         // Add location internal representation.
-        def addEntry(key: String, geo: NCGeoEntry, lowerCase: Boolean) {
+        def addEntry(key: String, geo: NCGeoEntry, lowerCase: Boolean): Unit = {
             val k = if (lowerCase) key.toLowerCase else key
 
             geoEntries.get(k) match {
-                case Some(set) ⇒ set.add(geo)
-                case None ⇒ geoEntries += k → mutable.HashSet[NCGeoEntry](geo)
+                case Some(set) => set.add(geo)
+                case None => geoEntries += k -> mutable.HashSet[NCGeoEntry](geo)
             }
 
             geo match {
-                case x: NCGeoContinent ⇒ conts += x
-                case x: NCGeoSubContinent ⇒ subs += x
-                case x: NCGeoCountry ⇒ cntrs += x
-                case x: NCGeoRegion ⇒ regions += x
-                case x: NCGeoCity ⇒ cities += x
-                case x: NCGeoMetro ⇒ metro += x
+                case x: NCGeoContinent => conts += x
+                case x: NCGeoSubContinent => subs += x
+                case x: NCGeoCountry => cntrs += x
+                case x: NCGeoRegion => regions += x
+                case x: NCGeoCity => cities += x
+                case x: NCGeoMetro => metro += x
 
-                case _ ⇒ assert(assertion = false)
+                case _ => assert(assertion = false)
             }
         }
 
-        // Subcontinent name → continent.
+        // Subcontinent name -> continent.
         val subCont2ContMap = mutable.HashMap.empty[String, NCGeoContinent]
 
         // +====================+
         // | 1. Process metros. |
         // +====================+
-        for (p ← U.extractYamlString(
+        for (p <- U.extractYamlString(
             NCExternalConfigManager.getContent(GEO, METRO_RESOURCE), METRO_RESOURCE, ignoreCase = true, new TypeReference[List[YamlMetro]] {})
         )
             addEntry(p.name, NCGeoMetro(p.name), lowerCase = true)
@@ -180,7 +180,7 @@ object NCGeoManager extends NCService {
         // +========================+
         val ctrsIsoToSubconts = mutable.HashMap.empty[String, NCGeoSubContinent]
 
-        for ((contName, subMap) ← U.extractYamlString(
+        for ((contName, subMap) <- U.extractYamlString(
             NCExternalConfigManager.getContent(GEO, CONT_RESOURCE),
             CONT_RESOURCE,
             ignoreCase = true,
@@ -190,15 +190,15 @@ object NCGeoManager extends NCService {
 
             addEntry(contName, gCont, lowerCase = true)
 
-            for ((subName, cntrList) ← subMap) {
+            for ((subName, cntrList) <- subMap) {
                 val gSub = NCGeoSubContinent(subName, gCont)
 
-                subCont2ContMap += subName → gCont
+                subCont2ContMap += subName -> gCont
 
                 addEntry(subName, gSub, lowerCase = true)
 
-                for (cntr ← cntrList)
-                    ctrsIsoToSubconts += cntr.iso → gSub
+                for (cntr <- cntrList)
+                    ctrsIsoToSubconts += cntr.iso -> gSub
             }
         }
 
@@ -216,7 +216,7 @@ object NCGeoManager extends NCService {
         val cntrMap = mutable.HashMap.empty[String, NCGeoCountry]
         val citiesMap = mutable.HashMap.empty[CityKey, NCGeoCity]
 
-        for (res ← NCExternalConfigManager.getDirContent(GEO, COUNTRY_DIR, (name: String) ⇒ name.endsWith("yaml"))) {
+        for (res <- NCExternalConfigManager.getDirContent(GEO, COUNTRY_DIR, (name: String) => name.endsWith("yaml"))) {
             val countryYaml =
                 U.extractYamlString(res.content, res.fileName, ignoreCase = true, new TypeReference[YamlCountryHolder] {})
 
@@ -241,17 +241,17 @@ object NCGeoManager extends NCService {
 
             addEntry(geoCountry.name, geoCountry, lowerCase = true)
 
-            cntrMap += geoCountry.name → geoCountry
+            cntrMap += geoCountry.name -> geoCountry
 
             if (countryYaml.regions != null)
-                for (reg ← countryYaml.regions) {
+                for (reg <- countryYaml.regions) {
                     val gReg = NCGeoRegion(reg.name, geoCountry)
 
                     addEntry(reg.name, gReg, lowerCase = true)
 
                     if (reg.cities != null)
                         reg.cities.foreach(
-                            jsCity ⇒ {
+                            jsCity => {
                                 val meta = mutable.HashMap.empty[String, Any]
 
                                 add(meta, "latitude", jsCity.latitude)
@@ -265,7 +265,7 @@ object NCGeoManager extends NCService {
 
                                 addEntry(jsCity.name, geoCity, lowerCase = true)
 
-                                citiesMap += CityKey(jsCity.name, gReg.name, geoCountry.name) → geoCity
+                                citiesMap += CityKey(jsCity.name, gReg.name, geoCountry.name) -> geoCity
                                 citiesMap +=
                                     CityKey(
                                         jsCity.name,
@@ -273,7 +273,7 @@ object NCGeoManager extends NCService {
                                         geoCountry.name,
                                         Some(geoCountry.subContinent.name),
                                         Some(geoCountry.subContinent.continent.name)
-                                    ) → geoCity
+                                    ) -> geoCity
                             }
                         )
                 }
@@ -299,71 +299,71 @@ object NCGeoManager extends NCService {
             country
         }
 
-        def process(s: NCGeoSynonym, add: (Seq[String], NCGeoEntry) ⇒ Unit): Unit =
+        def process(s: NCGeoSynonym, add: (Seq[String], NCGeoEntry) => Unit): Unit =
             s match {
                 // Metro.
-                case NCGeoSynonym(None, None, None, None, None, Some(m), syns) ⇒
+                case NCGeoSynonym(None, None, None, None, None, Some(m), syns) =>
                     add(syns, NCGeoMetro(m))
 
                 // Continent.
-                case NCGeoSynonym(None, None, None, None, Some(cont), None, syns) ⇒
+                case NCGeoSynonym(None, None, None, None, Some(cont), None, syns) =>
                     add(syns, NCGeoContinent(cont))
 
                 // Sub-continent (full representation).
-                case NCGeoSynonym(None, None, None, Some(sub), Some(cont), None, syns) ⇒
+                case NCGeoSynonym(None, None, None, Some(sub), Some(cont), None, syns) =>
                     add(syns, NCGeoSubContinent(sub, NCGeoContinent(cont)))
 
                 // Sub-continent (short representation).
-                case NCGeoSynonym(None, None, None, Some(sub), None, None, syns) ⇒
+                case NCGeoSynonym(None, None, None, Some(sub), None, None, syns) =>
                     add(syns, NCGeoSubContinent(sub, subCont2ContMap(sub)))
 
                 // Country (full representation).
-                case NCGeoSynonym(None, None, Some(cntr), Some(sub), Some(cont), None, syns) ⇒
+                case NCGeoSynonym(None, None, Some(cntr), Some(sub), Some(cont), None, syns) =>
                     add(syns, getCachedCountry(cntr, sub, cont))
 
                 // Country (short representation).
-                case NCGeoSynonym(None, None, Some(cntr), None, None, None, syns) ⇒
+                case NCGeoSynonym(None, None, Some(cntr), None, None, None, syns) =>
                     add(syns, cntrMap(cntr))
 
                 // Region (full representation).
-                case NCGeoSynonym(None, Some(reg), Some(cntr), Some(sub), Some(cont), None, syns) ⇒
+                case NCGeoSynonym(None, Some(reg), Some(cntr), Some(sub), Some(cont), None, syns) =>
                     add(syns, NCGeoRegion(reg, getCachedCountry(cntr, sub, cont)))
 
                 // Region (short representation).
-                case NCGeoSynonym(None, Some(reg), Some(cntr), None, None, None, syns) ⇒
+                case NCGeoSynonym(None, Some(reg), Some(cntr), None, None, None, syns) =>
                     add(syns, NCGeoRegion(reg, cntrMap(cntr)))
 
                 // City (full representation).
-                case NCGeoSynonym(Some(city), Some(reg), Some(cntr), Some(sub), Some(cont), None, syns) ⇒
+                case NCGeoSynonym(Some(city), Some(reg), Some(cntr), Some(sub), Some(cont), None, syns) =>
                     add(syns, citiesMap(CityKey(city, reg, cntr, Some(sub), Some(cont))))
 
                 // City (short representation).
-                case NCGeoSynonym(Some(city), Some(reg), Some(cntr), None, None, None, syns) ⇒
+                case NCGeoSynonym(Some(city), Some(reg), Some(cntr), None, None, None, syns) =>
                     add(syns, citiesMap(CityKey(city, reg, cntr)))
 
-                case _ ⇒ throw new AssertionError(s"Unexpected synonym: $s")
+                case _ => throw new AssertionError(s"Unexpected synonym: $s")
             }
 
         for (
-            res ← NCExternalConfigManager.getDirContent(GEO, SYNONYMS_DIR, (name: String) ⇒ name.endsWith("yaml"));
-            s ← extractSynonyms(res.content, res.fileName, ignoreCase = true)
+            res <- NCExternalConfigManager.getDirContent(GEO, SYNONYMS_DIR, (name: String) => name.endsWith("yaml"));
+            s <- extractSynonyms(res.content, res.fileName, ignoreCase = true)
         )
             process(
                 s,
-                (syns: Seq[String], geoEntry: NCGeoEntry) ⇒
+                (syns: Seq[String], geoEntry: NCGeoEntry) =>
                     geoEntries.get(geoEntry.name.toLowerCase) match {
-                        case Some(set) if set.contains(geoEntry) ⇒
+                        case Some(set) if set.contains(geoEntry) =>
                             // NCGeoSynonym shouldn't be matched with common dictionary word.
                             // Exception - manually defined synonyms.
-                            syns.filter(s ⇒
-                                SYNONYMS_MANUAL_FILES.exists(p ⇒ res.fileName.endsWith(p)) ||
+                            syns.filter(s =>
+                                SYNONYMS_MANUAL_FILES.exists(p => res.fileName.endsWith(p)) ||
                                 (
                                     !dicts.contains(s) &&
                                     !dicts.contains(s.replaceAll("the ", "")) &&
                                     !dicts.contains(s.replaceAll("the-", ""))
                                 )
                             ).foreach(addEntry(_, geoEntry, lowerCase = true))
-                        case _ ⇒ throw new NCE(s"Unknown synonym or its sub-component: $geoEntry")
+                        case _ => throw new NCE(s"Unknown synonym or its sub-component: $geoEntry")
                     }
             )
 
@@ -372,13 +372,13 @@ object NCGeoManager extends NCService {
         // +=====================================+
 
         for (
-            res ← NCExternalConfigManager.getDirContent(GEO, CASE_SENSITIVE_DIR, (name: String) ⇒ name.endsWith("yaml"));
-            s ← extractSynonyms(res.content, res.fileName, ignoreCase = false)
+            res <- NCExternalConfigManager.getDirContent(GEO, CASE_SENSITIVE_DIR, (name: String) => name.endsWith("yaml"));
+            s <- extractSynonyms(res.content, res.fileName, ignoreCase = false)
         ) {
             def toLc(opt: Option[String]): Option[String] =
                 opt match {
-                    case Some(str) ⇒ Some(str.toLowerCase)
-                    case None ⇒ None
+                    case Some(str) => Some(str.toLowerCase)
+                    case None => None
                 }
 
             process(
@@ -391,12 +391,12 @@ object NCGeoManager extends NCService {
                     toLc(s.metro),
                     s.synonyms
                 ),
-                (syns: Seq[String], x: NCGeoEntry) ⇒
+                (syns: Seq[String], x: NCGeoEntry) =>
                     geoEntries.get(x.name) match {
                         // These synonyms are not checked with dictionaries etc.
                         // Case sensitive synonyms (like abbreviations) configuration used as is.
-                        case Some(set) if set.contains(x) ⇒ syns.foreach(addEntry(_, x, lowerCase = false))
-                        case _ ⇒ throw new NCE(s"Unknown synonym or its sub-component: $x")
+                        case Some(set) if set.contains(x) => syns.foreach(addEntry(_, x, lowerCase = false))
+                        case _ => throw new NCE(s"Unknown synonym or its sub-component: $x")
                     }
             )
         }
@@ -404,17 +404,17 @@ object NCGeoManager extends NCService {
         if (extended) {
             // Adds constructions like 'city LA' etc
             def addAux(geoSyn: String, geo: NCGeoEntry, auxes: Seq[String]): Unit =
-                for (aux ← auxes if !geoSyn.split(" ").contains(aux)) {
+                for (aux <- auxes if !geoSyn.split(" ").contains(aux)) {
                     addEntry(s"$aux $geoSyn", geo, lowerCase = true)
                     addEntry(s"$aux of $geoSyn", geo, lowerCase = true)
                     addEntry(s"$geoSyn $aux", geo, lowerCase = true)
                 }
 
-            geoEntries.flatMap(p ⇒ p._2.map(_ → p._1)).foreach(p ⇒
+            geoEntries.flatMap(p => p._2.map(_ -> p._1)).foreach(p =>
                 p._1 match {
-                    case _: NCGeoCity ⇒ addAux(p._2, p._1, CITY_AUX)
-                    case _: NCGeoRegion ⇒ addAux(p._2, p._1, REGION_AUX)
-                    case _ ⇒ // No-op.
+                    case _: NCGeoCity => addAux(p._2, p._1, CITY_AUX)
+                    case _: NCGeoRegion => addAux(p._2, p._1, REGION_AUX)
+                    case _ => // No-op.
                 }
             )
         }
@@ -428,14 +428,14 @@ object NCGeoManager extends NCService {
             U.extractYamlString(
                 NCExternalConfigManager.getContent(GEO, res), res, ignoreCase = true, new TypeReference[List[YamlTopCity]] {}
             ).
-                map(city ⇒
+                map(city =>
                     cntrs.find(_.name == city.country) match {
-                        case Some(country) ⇒
-                            regions.find(r ⇒ r.name == city.region && r.country == country) match {
-                                case Some(region) ⇒ NCTopGeoCity(city.name, region)
-                                case None ⇒ throw new AssertionError(s"Region is not found: ${city.region}")
+                        case Some(country) =>
+                            regions.find(r => r.name == city.region && r.country == country) match {
+                                case Some(region) => NCTopGeoCity(city.name, region)
+                                case None => throw new AssertionError(s"Region is not found: ${city.region}")
                             }
-                        case None ⇒ throw new AssertionError(s"Country is not found: ${city.country}")
+                        case None => throw new AssertionError(s"Country is not found: ${city.country}")
                     }
                 ).toSet
 
@@ -456,7 +456,7 @@ object NCGeoManager extends NCService {
         )
 
         NCGeoModel(
-            geoEntries.map(p ⇒ p._1 → p._2.toSet).toMap,
+            geoEntries.map(p => p._1 -> p._2.toSet).toMap,
             conts.toSet,
             subs.toSet,
             cntrs.toSet,

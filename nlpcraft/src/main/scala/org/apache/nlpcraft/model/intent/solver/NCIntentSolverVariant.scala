@@ -42,7 +42,7 @@ case class NCIntentSolverVariant(tokens: util.List[NCToken]) extends Ordered[NCI
 
         var tokCnt = 0
 
-        for (tok ← tokens.asScala) {
+        for (tok <- tokens.asScala) {
             if (!tok.isFreeWord && !tok.isStopWord) {
                 wordCnt += tok.wordLength
                 totalSparsity += tok.sparsity

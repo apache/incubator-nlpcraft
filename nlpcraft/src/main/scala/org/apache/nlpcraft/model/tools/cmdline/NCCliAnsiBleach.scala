@@ -28,13 +28,13 @@ import resource.managed
  * Used by 'start-server' command of NLPCraft CLI.
  */
 object NCCliAnsiBleach extends App {
-    managed(
+    Using.resource(
         new BufferedReader(
             new InputStreamReader(
                 new BufferedInputStream(System.in)
             )
         )
-    ) acquireAndGet { in ⇒
+    ) { in =>
         var line = in.readLine()
 
         while (line != null) {

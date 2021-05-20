@@ -35,7 +35,7 @@ object NCStanfordNerEnricher extends NCService with NCNlpNerEnricher with NCIgni
      * @param parent Optional parent span.
      * @return
      */
-    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
+    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span =>
         ackStarting()
 
         // Should be started even if another NLP engine configured.
@@ -49,7 +49,7 @@ object NCStanfordNerEnricher extends NCService with NCNlpNerEnricher with NCIgni
      *
      * @param parent Optional parent span.
      */
-    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { span ⇒
+    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { span =>
         ackStopping()
 
         if (NCStanfordCoreManager.isStarted)
@@ -64,12 +64,12 @@ object NCStanfordNerEnricher extends NCService with NCNlpNerEnricher with NCIgni
      * @param ebiTokens Set of enabled built-in token IDs.
      */
     override def enrich(ns: NCNlpSentence, ebiTokens: Set[String], parent: Span = null): Unit =
-        startScopedSpan("enrich", parent, "srvReqId" → ns.srvReqId, "txt" → ns.text) { _ ⇒
+        startScopedSpan("enrich", parent, "srvReqId" → ns.srvReqId, "txt" → ns.text) { _ =>
             NCStanfordCoreManager.
                 annotate(ns.text).
                 entityMentions().asScala.
-                filter(e ⇒ ebiTokens.contains(e.entityType().toLowerCase)).
-                foreach(e ⇒ {
+                filter(e => ebiTokens.contains(e.entityType().toLowerCase)).
+                foreach(e => {
                     val offsets = e.charOffsets()
     
                     val t1 = ns.find(_.startCharIndex == offsets.first)
@@ -93,7 +93,7 @@ object NCStanfordNerEnricher extends NCService with NCNlpNerEnricher with NCIgni
     
                         val i1 = t1.get.startCharIndex
                         val i2 = t2.get.endCharIndex
-                        val toks = ns.filter(t ⇒ t.startCharIndex >= i1 && t.endCharIndex <= i2)
+                        val toks = ns.filter(t => t.startCharIndex >= i1 && t.endCharIndex <= i2)
     
                         val note = NCNlpSentenceNote(toks.map(_.index), s"stanford:$typ", buf: _*)
     

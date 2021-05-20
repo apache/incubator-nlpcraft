@@ -36,7 +36,7 @@ object NCFeedbackManager extends NCService with NCIgniteInstance {
      *
      * @param parent Optional parent span.
      */
-    override def stop(parent: Span): Unit = startScopedSpan("start", parent) { _ ⇒
+    override def stop(parent: Span): Unit = startScopedSpan("start", parent) { _ =>
         ackStopping()
         ackStopped()
     }
@@ -46,7 +46,7 @@ object NCFeedbackManager extends NCService with NCIgniteInstance {
      * @param parent Optional parent span.
      * @return
      */
-    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ =>
         ackStarting()
 
         catching(wrapIE) {
@@ -66,8 +66,8 @@ object NCFeedbackManager extends NCService with NCIgniteInstance {
     def addFeedback(srvReqId: String, usrId: Long, score: Double, comment: Option[String], parent: Span): Long =
         startScopedSpan(
             "addFeedback", parent,
-            "srvReqId" → srvReqId,
-            "userId" → usrId) { span ⇒
+            "srvReqId" -> srvReqId,
+            "userId" -> usrId) { span =>
             NCSql.sql {
                 NCSqlManager.addFeedback(seq.incrementAndGet(), srvReqId, usrId, score, comment, span)
             }
@@ -81,8 +81,8 @@ object NCFeedbackManager extends NCService with NCIgniteInstance {
     def deleteFeedback(id: Long, parent: Span): Unit =
         startScopedSpan(
             "deleteFeedback", parent,
-            "usrId" → id
-        ) { span ⇒
+            "usrId" -> id
+        ) { span =>
             NCSql.sql {
                 NCSqlManager.deleteFeedback(id, span)
             }
@@ -97,8 +97,8 @@ object NCFeedbackManager extends NCService with NCIgniteInstance {
         startScopedSpan(
             "deleteAllFeedback",
             parent,
-            "companyId" → companyId
-        ) { span ⇒
+            "companyId" -> companyId
+        ) { span =>
             NCSql.sql {
                 NCSqlManager.deleteAllFeedback(companyId, span)
             }
@@ -121,10 +121,10 @@ object NCFeedbackManager extends NCService with NCIgniteInstance {
         startScopedSpan(
             "getFeedback",
             parent,
-            "companyId" → companyId,
-            "srvReqId" → srvReqId.orNull,
-            "userId" → usrId.getOrElse(() ⇒ null)
-        ) { span ⇒
+            "companyId" -> companyId,
+            "srvReqId" -> srvReqId.orNull,
+            "userId" -> usrId.getOrElse(() => null)
+        ) { span =>
             NCSql.sql {
                 NCSqlManager.getFeedback(companyId, srvReqId, usrId, span)
             }
@@ -137,7 +137,7 @@ object NCFeedbackManager extends NCService with NCIgniteInstance {
       * @return
       */
     def getFeedback(id: Long, parent: Span): Option[NCFeedbackMdo] =
-        startScopedSpan("getFeedback", parent) { span ⇒
+        startScopedSpan("getFeedback", parent) { span =>
             NCSql.sql {
                 NCSqlManager.getFeedback(id, span)
             }

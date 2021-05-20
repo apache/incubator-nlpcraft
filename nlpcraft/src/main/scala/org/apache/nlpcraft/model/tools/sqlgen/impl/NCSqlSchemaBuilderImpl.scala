@@ -56,7 +56,7 @@ object NCSqlSchemaBuilderImpl {
         val elems = mdl.getElements.asScala
         
         val tabCols =
-            elems.filter(_.getGroups.contains("column")).map(p ⇒ {
+            elems.filter(_.getGroups.contains("column")).map(p => {
                 val col: NCSqlColumn =
                     NCSqlColumnImpl(
                         p.metax("sql:tablename"),
@@ -67,13 +67,13 @@ object NCSqlSchemaBuilderImpl {
                     )
                 
                 col
-            }).groupBy(_.getTable).map { case (tab, cols) ⇒ tab → cols }
+            }).groupBy(_.getTable).map { case (tab, cols) => tab -> cols }
 
         val defSorts = collection.mutable.HashMap.empty[NCSqlSort, String]
 
         var tables =
             elems.filter(_.getGroups.contains("table")).
-                map(p ⇒ {
+                map(p => {
                     def x(l: util.List[String]): Seq[String] = if (l == null) Seq.empty else l.asScala
 
                     val tab: String = p.metax("sql:name")
@@ -82,7 +82,7 @@ object NCSqlSchemaBuilderImpl {
                     val extra = x(p.meta("sql:extratables"))
                     val defDateOpt: Option[String] = p.metaOpt("sql:defaultdate").asScala
 
-                    val cols = tabCols(tab).toSeq.sortBy(p ⇒ (if (p.isPk) 0 else 1, p.getColumn)).asJava
+                    val cols = tabCols(tab).toSeq.sortBy(p => (if (p.isPk) 0 else 1, p.getColumn)).asJava
                     
                     val table: NCSqlTableImpl = NCSqlTableImpl(
                         table = tab,
@@ -91,7 +91,7 @@ object NCSqlSchemaBuilderImpl {
                         selects = dfltSelect,
                         extraTables = extra,
                         defaultDate = defDateOpt match {
-                            case Some(defDate) ⇒
+                            case Some(defDate) =>
                                 def error() = throw new NCException(s"Invalid default date declaration: $defDate")
 
                                 val pair = defDate.split("\\.")
@@ -103,30 +103,30 @@ object NCSqlSchemaBuilderImpl {
                                 val col = pair.last.toLowerCase
 
                                 Some(tabCols.getOrElse(tab, error()).find(_.getColumn == col).getOrElse(error()))
-                            case None ⇒ None
+                            case None => None
                         }
                     )
 
                     dfltSort.
-                        foreach(s ⇒ {
+                        foreach(s => {
                             def error() = throw new NCException(s"Invalid default sort declaration: $s")
 
                             var pair = s.split("\\.")
 
                             val t =
                                 pair.length match {
-                                    case 1 ⇒
+                                    case 1 =>
                                         pair = s.split("#")
 
                                         // By default, same table name.
                                         tab
-                                    case 2 ⇒
+                                    case 2 =>
                                         val t = pair.head
 
                                         pair = pair.last.split("#")
 
                                         t
-                                    case  _ ⇒ error()
+                                    case  _ => error()
                                 }
 
                             if (pair.length != 2)
@@ -138,7 +138,7 @@ object NCSqlSchemaBuilderImpl {
                             if (asc != "asc" && asc != "desc")
                                 error()
 
-                            defSorts += NCSqlSortImpl(findSchemaColumn(cols, t, col), asc == "asc") → t
+                            defSorts += NCSqlSortImpl(findSchemaColumn(cols, t, col), asc == "asc") -> t
                         })
 
                     table
@@ -146,10 +146,10 @@ object NCSqlSchemaBuilderImpl {
 
         val defSortsByTab =
             defSorts.
-                groupBy { case (_, table) ⇒ table }.
-                map { case (table, seq) ⇒ table → seq.map { case (sort, _) ⇒ sort}.toSeq }
+                groupBy { case (_, table) => table }.
+                map { case (table, seq) => table -> seq.map { case (sort, _) => sort}.toSeq }
 
-        tables = tables.map(t ⇒
+        tables = tables.map(t =>
             NCSqlTableImpl(
                 table = t.table,
                 columns = t.columns,
@@ -162,11 +162,11 @@ object NCSqlSchemaBuilderImpl {
 
         val joinsMap = mdl.metax("sql:joins").asInstanceOf[util.List[util.Map[String, Object]]]
     
-        val joins = joinsMap.asScala.map(_.asScala).map(m ⇒ {
+        val joins = joinsMap.asScala.map(_.asScala).map(m => {
             def mget[T](prop: String): T =
                 m.get(prop) match {
-                    case Some(v) ⇒ v.asInstanceOf[T]
-                    case None ⇒ throw new NCException(s"Metadata property not found: $prop")
+                    case Some(v) => v.asInstanceOf[T]
+                    case None => throw new NCException(s"Metadata property not found: $prop")
                 }
             
             val join: NCSqlJoin = NCSqlJoinImpl(

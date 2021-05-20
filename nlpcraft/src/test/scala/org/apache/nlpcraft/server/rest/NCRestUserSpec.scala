@@ -23,72 +23,72 @@ import org.junit.jupiter.api.Test
 import scala.collection.JavaConverters._
 
 class NCRestUserSpec extends NCRestSpec {
-    private final val PROPS = Map("k1" → "v1", "k2" → "v2").asJava
+    private final val PROPS = Map("k1" -> "v1", "k2" -> "v2").asJava
 
     @Test
     def test(): Unit =
         try {
             // Checks own ID.
-            post("user/get")(("$.id", (id: Number) ⇒ assertNotNull(id)))
+            post("user/get")(("$.id", (id: Number) => assertNotNull(id)))
 
             // Adds user.
             val id1 = addUser()
 
             // Checks.
-            post("user/get", "id" → id1)(("$.id", (id: Number) ⇒ assertEquals(id1, id.longValue())))
+            post("user/get", "id" -> id1)(("$.id", (id: Number) => assertEquals(id1, id.longValue())))
 
             // Updates.
             post(
                 "user/update",
-                "firstName" → "firstName",
-                "lastName" → "lastName",
-                "avatarUrl" → "avatarUrl",
-                "properties" → PROPS
+                "firstName" -> "firstName",
+                "lastName" -> "lastName",
+                "avatarUrl" -> "avatarUrl",
+                "properties" -> PROPS
             )()
 
             // Checks updated.
             post("user/get")(
-                ("$.firstName", (firstName: String) ⇒ assertEquals("firstName", firstName)),
-                ("$.lastName", (lastName: String) ⇒ assertEquals("lastName", lastName)),
-                ("$.avatarUrl", (avatarUrl: String) ⇒ assertEquals("avatarUrl", avatarUrl)),
-                ("$.properties", (properties: java.util.Map[String, String]) ⇒ assertEquals(PROPS, properties))
+                ("$.firstName", (firstName: String) => assertEquals("firstName", firstName)),
+                ("$.lastName", (lastName: String) => assertEquals("lastName", lastName)),
+                ("$.avatarUrl", (avatarUrl: String) => assertEquals("avatarUrl", avatarUrl)),
+                ("$.properties", (properties: java.util.Map[String, String]) => assertEquals(PROPS, properties))
             )
 
             // Updates again.
             post(
                 "user/update",
-                "firstName" → "firstName2",
-                "lastName" → "lastName2"
+                "firstName" -> "firstName2",
+                "lastName" -> "lastName2"
             )()
 
             // Checks updated.
             post("user/get")(
-                ("$.firstName", (firstName: String) ⇒ assertEquals("firstName2", firstName)),
-                ("$.lastName", (lastName: String) ⇒ assertEquals("lastName2", lastName)),
-                ("$.avatarUrl", (avatarUrl: String) ⇒ assertEquals(null, avatarUrl)),
-                ("$.properties", (properties: java.util.Map[String, String]) ⇒ assertEquals(null, properties))
+                ("$.firstName", (firstName: String) => assertEquals("firstName2", firstName)),
+                ("$.lastName", (lastName: String) => assertEquals("lastName2", lastName)),
+                ("$.avatarUrl", (avatarUrl: String) => assertEquals(null, avatarUrl)),
+                ("$.properties", (properties: java.util.Map[String, String]) => assertEquals(null, properties))
             )
 
             // Updates (special cases).
-            post("user/admin", "id" → id1, "admin" → true)()
-            post("user/admin", "id" → id1, "admin" → false)()
-            post("user/passwd/reset", "id" → id1, "newPasswd" → "test1")()
+            post("user/admin", "id" -> id1, "admin" -> true)()
+            post("user/admin", "id" -> id1, "admin" -> false)()
+            post("user/passwd/reset", "id" -> id1, "newPasswd" -> "test1")()
 
             // Checks existed.
-            post("user/all")(("$.users", (users: ResponseList) ⇒ assertTrue(containsLong(users, "id", id1))))
+            post("user/all")(("$.users", (users: ResponseList) => assertTrue(containsLong(users, "id", id1))))
 
             // Deletes.
-            post("user/delete", "id" → id1)()
+            post("user/delete", "id" -> id1)()
 
             // Checks not existed.
-            post("user/all")(("$.users", (users: ResponseList) ⇒ assertFalse(containsLong(users, "id", id1))))
+            post("user/all")(("$.users", (users: ResponseList) => assertFalse(containsLong(users, "id", id1))))
 
             // Adds.
             val id2 = addUser()
             val id3 = addUser()
 
             // Checks existed.
-            post("user/all")(("$.users", (users: ResponseList) ⇒ {
+            post("user/all")(("$.users", (users: ResponseList) => {
                 assertTrue(containsLong(users, "id", id2))
                 assertTrue(containsLong(users, "id", id3))
             }))
@@ -97,7 +97,7 @@ class NCRestUserSpec extends NCRestSpec {
             post("user/delete")()
 
             // Checks not existed.
-            post("user/all")(("$.users", (users: ResponseList) ⇒ {
+            post("user/all")(("$.users", (users: ResponseList) => {
                 assertFalse(containsLong(users, "id", id2))
                 assertFalse(containsLong(users, "id", id3))
             }))
@@ -118,15 +118,15 @@ class NCRestUserSpec extends NCRestSpec {
 
         post(
             "user/add",
-            "email" → s"${rnd()}@test.com",
-            "passwd" → "test",
-            "firstName" → "firstName",
-            "lastName" → "lastName",
-            "isAdmin" → isAdmin,
-            "avatarUrl" → avatarUrl.orNull,
-            "properties" → props.orNull
+            "email" -> s"${rnd()}@test.com",
+            "passwd" -> "test",
+            "firstName" -> "firstName",
+            "lastName" -> "lastName",
+            "isAdmin" -> isAdmin,
+            "avatarUrl" -> avatarUrl.orNull,
+            "properties" -> props.orNull
         )(
-            ("$.id", (id: Number) ⇒ usrId = id.longValue())
+            ("$.id", (id: Number) => usrId = id.longValue())
         )
 
         assertTrue(usrId > 0)
@@ -150,6 +150,6 @@ class NCRestUserSpec extends NCRestSpec {
       */
     private def checkUser(
         isAdmin: Boolean = false, avatarUrl: Option[String] = None, props: Option[java.util.Map[String, String]] = None
-    ): Unit = post("user/delete", "id" → addUser(isAdmin, avatarUrl, props))()
+    ): Unit = post("user/delete", "id" -> addUser(isAdmin, avatarUrl, props))()
 }
 

@@ -117,8 +117,8 @@ class NCDateRange(val from: Long, val to: Long, val text: String, val periods: j
     def length: Long = to - from
     
     override def equals(other: Any): Boolean = other match {
-        case it: NCDateRange ⇒ from == it.from && to == it.to
-        case _ ⇒ false
+        case it: NCDateRange => from == it.from && to == it.to
+        case _ => false
     }
     
     override def hashCode(): Int = hash

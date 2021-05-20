@@ -17,7 +17,7 @@
 
 package org.apache.nlpcraft.common.crypto
 
-import java.security.{Key, SecureRandom, GeneralSecurityException ⇒ GSE}
+import java.security.{Key, SecureRandom, GeneralSecurityException => GSE}
 
 import javax.crypto.Cipher
 import javax.crypto.spec.{IvParameterSpec, SecretKeySpec}
@@ -154,7 +154,7 @@ object NCCipher {
       */
     @throws[NCE]
     private def wrapGSE[R]: Catcher[R] = {
-        case e: GSE ⇒ throw new NCE(s"Cryptography error: ${e.getMessage}", e)
+        case e: GSE => throw new NCE(s"Cryptography error: ${e.getMessage}", e)
     }
 
     /**

@@ -54,7 +54,7 @@ class NCMetaSpec extends NCMetaSpecAdapter {
         val currUserCompMeta = getMeta()
         val sys = new SystemProperties
 
-        val m = Map("k1" → "v1".asInstanceOf[Object]).asJava
+        val m = Map("k1" -> "v1".asInstanceOf[Object]).asJava
 
         try {
             // Sets company and user metadata.

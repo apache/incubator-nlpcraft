@@ -46,14 +46,14 @@ case class NCPropTestElement(
     override def getId: String = id
     override def getSynonyms: util.List[String] = util.Collections.singletonList(synonym)
 
-    private def get(opt: Option[Boolean], getSuper: () ⇒ Optional[lang.Boolean]): Optional[lang.Boolean] =
+    private def get(opt: Option[Boolean], getSuper: () => Optional[lang.Boolean]): Optional[lang.Boolean] =
         opt match {
-            case Some(v) ⇒ Optional.of(v)
-            case None ⇒ getSuper()
+            case Some(v) => Optional.of(v)
+            case None => getSuper()
         }
 
-    override def isPermutateSynonyms: Optional[lang.Boolean] = get(perm, () ⇒ super.isPermutateSynonyms)
-    override def isSparse: Optional[lang.Boolean] = get(sparse, () ⇒ super.isSparse)
+    override def isPermutateSynonyms: Optional[lang.Boolean] = get(perm, () => super.isPermutateSynonyms)
+    override def isSparse: Optional[lang.Boolean] = get(sparse, () => super.isSparse)
 }
 
 // 1. All enabled.

@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.common.nlp
 
 import scala.collection.mutable.ArrayBuffer
-import scala.collection.{Seq, IndexedSeq ⇒ IdxSeq}
+import scala.collection.{Seq, IndexedSeq => IdxSeq}
 import scala.language.implicitConversions
 
 /**
@@ -62,9 +62,9 @@ class NCNlpSentenceTokenBuffer(val tokens: ArrayBuffer[NCNlpSentenceToken] = new
         maxLen: Int = Integer.MAX_VALUE,
         withQuoted: Boolean = false
     ): SST = {
-        val toks = tokens.filter(t ⇒ stopWords || (!stopWords && !t.isStopWord))
+        val toks = tokens.filter(t => stopWords || (!stopWords && !t.isStopWord))
 
-        val res = (for (n ← toks.length until 0 by -1 if n <= maxLen) yield toks.sliding(n)).flatten
+        val res = (for (n <- toks.length until 0 by -1 if n <= maxLen) yield toks.sliding(n)).flatten
 
         if (withQuoted) res else res.filter(!_.exists(_.isQuoted))
     }
@@ -81,8 +81,8 @@ class NCNlpSentenceTokenBuffer(val tokens: ArrayBuffer[NCNlpSentenceToken] = new
           * Gets all combinations for sequence of mandatory tokens with stop-words and without.
           *
           * Example:
-          * 'A (stop), B, C(stop) → [A, B, C]; [A, B]; [B, C], [B]
-          * 'A, B(stop), C(stop) → [A, B, C]; [A, B]; [A, C], [A].
+          * 'A (stop), B, C(stop) -> [A, B, C]; [A, B]; [B, C], [B]
+          * 'A, B(stop), C(stop) -> [A, B, C]; [A, B]; [A, C], [A].
           *
           * @param toks Tokens.
           */
@@ -91,13 +91,13 @@ class NCNlpSentenceTokenBuffer(val tokens: ArrayBuffer[NCNlpSentenceToken] = new
                 if (seq.isEmpty)
                     if (t.isStopWord) IdxSeq(IdxSeq(Some(t)), IdxSeq(None)) else IdxSeq(IdxSeq(Some(t)))
                 else {
-                    (for (subSeq ← seq) yield subSeq :+ Some(t)) ++
-                        (if (t.isStopWord) for (subSeq ← seq) yield subSeq :+ None else Seq.empty)
+                    (for (subSeq <- seq) yield subSeq :+ Some(t)) ++
+                        (if (t.isStopWord) for (subSeq <- seq) yield subSeq :+ None else Seq.empty)
                 }
 
             var res: SSOT = IdxSeq.empty
 
-            for (t ← toks)
+            for (t <- toks)
                 res = multiple(res, t)
 
             res.map(_.flatten).filter(_.nonEmpty)
@@ -107,7 +107,7 @@ class NCNlpSentenceTokenBuffer(val tokens: ArrayBuffer[NCNlpSentenceToken] = new
             flatMap(permutations).
             filter(_.nonEmpty).
             distinct.
-            sortBy(seq ⇒ (-seq.length, seq.head.index))
+            sortBy(seq => (-seq.length, seq.head.index))
     }
 }
 

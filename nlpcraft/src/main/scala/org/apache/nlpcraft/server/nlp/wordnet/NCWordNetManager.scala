@@ -35,12 +35,12 @@ object NCWordNetManager extends NCService {
     
     private def pennPos2WordNet(pennPos: String): Option[POS] =
         pennPos.head match {
-            case 'N' ⇒ Some(NOUN)
-            case 'V' ⇒ Some(VERB)
-            case 'J' ⇒ Some(ADJECTIVE)
-            case 'R' ⇒ Some(ADVERB)
+            case 'N' => Some(NOUN)
+            case 'V' => Some(VERB)
+            case 'J' => Some(ADJECTIVE)
+            case 'R' => Some(ADVERB)
             
-            case _ ⇒ None
+            case _ => None
         }
     
     // Process WordNet formatted multi-word entries (they are split with '_').
@@ -51,12 +51,12 @@ object NCWordNetManager extends NCService {
         val word = dic.getIndexWord(initPos, str)
         
         if (word != null)
-            word.getSenses.asScala.flatMap(synset ⇒
-                synset.getPointers(PointerType.DERIVATION).asScala.flatMap(p ⇒ {
+            word.getSenses.asScala.flatMap(synset =>
+                synset.getPointers(PointerType.DERIVATION).asScala.flatMap(p => {
                     val trg = p.getTargetSynset
 
                     if (trg.getPOS == targetPos)
-                        trg.getWords.asScala.map(p ⇒ normalize(p.getLemma))
+                        trg.getWords.asScala.map(p => normalize(p.getLemma))
                     else
                         Seq.empty
                 })
@@ -72,7 +72,7 @@ object NCWordNetManager extends NCService {
      * @return
      */
     @throws[NCE]
-    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ =>
         ackStarting()
 
         dic =  Dictionary.getDefaultResourceInstance
@@ -85,7 +85,7 @@ object NCWordNetManager extends NCService {
      *
      * @param parent Optional parent span.
      */
-    override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
+    override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
         ackStopped()
     }
@@ -109,7 +109,7 @@ object NCWordNetManager extends NCService {
     /**
       * Gets base form using more precision method.
       *
-      * It drops base form like 'Alice'→'louse', 'God'→'od' and 'better'→'well'
+      * It drops base form like 'Alice'->'louse', 'God'->'od' and 'better'->'well'
       * which produced by WordNet if the exact base form not found.
       *
       * @param lemma Lemma to get a WordNet base form.
@@ -117,9 +117,9 @@ object NCWordNetManager extends NCService {
       */
     def getBaseForm(lemma: String, pennPos: String, syns: Set[String] = null): String =
         pennPos2WordNet(pennPos) match {
-            case Some(wnPos) ⇒
+            case Some(wnPos) =>
                 morph.lookupBaseForm(wnPos, lemma) match {
-                    case wnWord: IndexWord ⇒
+                    case wnWord: IndexWord =>
                         val wnLemma = wnWord.getLemma
                         val synonyms = if (syns == null) getSynonyms(lemma, pennPos).flatten.toSet else syns
                         
@@ -127,11 +127,11 @@ object NCWordNetManager extends NCService {
                             wnLemma
                         else
                             lemma
-                    case null ⇒ lemma
+                    case null => lemma
                 }
                 
             // For unsupported POS tags - return the input lemma.
-            case None ⇒ lemma
+            case None => lemma
         }
     
     /**
@@ -142,14 +142,14 @@ object NCWordNetManager extends NCService {
       */
     def getSynonyms(lemma: String, pennPos: String): Seq[Seq[String]] = {
         val res: Seq[Seq[String]] = pennPos2WordNet(pennPos) match {
-            case Some(wnPos) ⇒
+            case Some(wnPos) =>
                 val wnWord = dic.lookupIndexWord(wnPos, lemma)
                 
                 if (wnWord == null)
                     Seq.empty
                 else
                     wnWord.getSynsetOffsets match {
-                        case synsOffs: Array[Long] ⇒
+                        case synsOffs: Array[Long] =>
                             synsOffs.
                                 map(dic.getSynsetAt(wnPos, _)).
                                 filter(_.getPOS == wnPos).
@@ -160,11 +160,11 @@ object NCWordNetManager extends NCService {
                                         map(normalize).toSeq
                                 )
                         
-                        case null ⇒ Seq.empty
+                        case null => Seq.empty
                     }
                 
             // Invalid POS.
-            case None ⇒ Seq.empty
+            case None => Seq.empty
         }
         
         res.filter(_.nonEmpty)

@@ -42,11 +42,11 @@ trait NCOpenCensusModelStats {
     def recordStats(pairs: (Measure, AnyVal)*): Unit = {
         val map = Stats.getStatsRecorder.newMeasureMap()
         
-        for ((m, v) ← pairs) {
+        for ((m, v) <- pairs) {
             m match {
-                case d: MeasureDouble ⇒ map.put(d, v.asInstanceOf[Double])
-                case l: MeasureLong ⇒ map.put(l, v.asInstanceOf[Long])
-                case _ ⇒ throw new AssertionError()
+                case d: MeasureDouble => map.put(d, v.asInstanceOf[Double])
+                case l: MeasureLong => map.put(l, v.asInstanceOf[Long])
+                case _ => throw new AssertionError()
             }
         }
         
@@ -90,7 +90,7 @@ trait NCOpenCensusModelStats {
         val viewMgr = Stats.getViewManager
         
         // Add all views.
-        for (view ← views)
+        for (view <- views)
             viewMgr.registerView(view)
     }
 }

@@ -33,7 +33,7 @@ import scala.collection.JavaConverters._
 /**
  * Front-end for intent solver.
  */
-class NCIntentSolver(intents: List[(NCIdlIntent/*Intent*/, NCIntentMatch ⇒ NCResult/*Callback*/)])
+class NCIntentSolver(intents: List[(NCIdlIntent/*Intent*/, NCIntentMatch => NCResult/*Callback*/)])
     extends LazyLogging with NCOpenCensusTrace {
     class RedoSolver extends RuntimeException
 
@@ -54,7 +54,7 @@ class NCIntentSolver(intents: List[(NCIdlIntent/*Intent*/, NCIntentMatch ⇒ NCR
                 doIt = false
             }
             catch {
-                case _: RedoSolver ⇒ ()
+                case _: RedoSolver => ()
             }
         
         res
@@ -82,7 +82,7 @@ class NCIntentSolver(intents: List[(NCIdlIntent/*Intent*/, NCIntentMatch ⇒ NCR
         }
     
         val results = try NCIntentSolverEngine.solve(ctx, intents, logHldr) catch {
-            case e: Exception ⇒ throw new NCRejection("Processing failed due to unexpected error.", e)
+            case e: Exception => throw new NCRejection("Processing failed due to unexpected error.", e)
         }
         
         if (results.isEmpty)
@@ -90,7 +90,7 @@ class NCIntentSolver(intents: List[(NCIdlIntent/*Intent*/, NCIntentMatch ⇒ NCR
 
         var i = -1
     
-        for (res ← results if res != null) {
+        for (res <- results if res != null) {
             try {
                 i += 1
                 
@@ -101,7 +101,7 @@ class NCIntentSolver(intents: List[(NCIdlIntent/*Intent*/, NCIntentMatch ⇒ NCR
                     override val isAmbiguous: Boolean = !res.isExactMatch
                     override val getIntentId: String = res.intentId
                     override def getTermTokens(idx: Int): java.util.List[NCToken] = res.groups(idx).tokens.asJava
-                    override def getTermTokens(termId: String): java.util.List[NCToken] = res.groups.find(_.termId === termId).flatMap(grp ⇒ Some(grp.tokens)).getOrElse(Nil).asJava
+                    override def getTermTokens(termId: String): java.util.List[NCToken] = res.groups.find(_.termId === termId).flatMap(grp => Some(grp.tokens)).getOrElse(Nil).asJava
                 }
                 
                 if (!in.context.getModel.asInstanceOf[NCModel].onMatchedIntent(intentMatch)) {
@@ -115,7 +115,7 @@ class NCIntentSolver(intents: List[(NCIdlIntent/*Intent*/, NCIntentMatch ⇒ NCR
                 
                 var cbRes: NCResult = null
     
-                startScopedSpan("intentCallback", span) { _ ⇒
+                startScopedSpan("intentCallback", span) { _ =>
                     /*
                      * This can throw NCIntentSkip exception.
                      * ======================================
@@ -149,11 +149,11 @@ class NCIntentSolver(intents: List[(NCIdlIntent/*Intent*/, NCIntentMatch ⇒ NCR
                 return cbRes
             }
             catch {
-                case e: NCIntentSkip ⇒
+                case e: NCIntentSkip =>
                     // No-op - just skipping this result.
                     e.getMessage match {
-                        case s if s != null ⇒ logger.info(s"Selected intent '${res.intentId}' skipped: $s")
-                        case _ ⇒ logger.info(s"Selected intent '${res.intentId}' skipped.")
+                        case s if s != null => logger.info(s"Selected intent '${res.intentId}' skipped: $s")
+                        case _ => logger.info(s"Selected intent '${res.intentId}' skipped.")
                     }
             }
         }

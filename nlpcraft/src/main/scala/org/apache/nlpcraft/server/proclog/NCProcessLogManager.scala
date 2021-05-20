@@ -41,7 +41,7 @@ object NCProcessLogManager extends NCService with NCIgniteInstance {
      * @param parent Optional parent span.
      * @return
      */
-    override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ ⇒
+    override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ =>
         ackStarting()
 
         catching(wrapIE) {
@@ -57,7 +57,7 @@ object NCProcessLogManager extends NCService with NCIgniteInstance {
      *
      * @param parent Optional parent span.
      */
-    override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
+    override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
         ackStopped()
     }
@@ -73,7 +73,7 @@ object NCProcessLogManager extends NCService with NCIgniteInstance {
         srvReqId: String,
         tstamp: Timestamp,
         parent: Span = null): Unit =
-        startScopedSpan("updateCancel", parent, "srvReqId" → srvReqId) { span ⇒
+        startScopedSpan("updateCancel", parent, "srvReqId" -> srvReqId) { span =>
             NCSql.sql {
                 NCSqlManager.updateCancelProcessingLog(
                     srvReqId,
@@ -107,10 +107,10 @@ object NCProcessLogManager extends NCService with NCIgniteInstance {
         parent: Span = null
     ): Unit =
         startScopedSpan("updateReady", parent,
-            "srvReqId" → srvReqId,
-            "errMsg" → errMsg.getOrElse(""),
-            "resType" → resType.getOrElse(""),
-            "resBody" → resBody.getOrElse("")) { span ⇒
+            "srvReqId" -> srvReqId,
+            "errMsg" -> errMsg.getOrElse(""),
+            "resType" -> resType.getOrElse(""),
+            "resBody" -> resBody.getOrElse("")) { span =>
             NCSql.sql {
                 NCSqlManager.updateReadyProcessingLog(
                     srvReqId,
@@ -138,8 +138,8 @@ object NCProcessLogManager extends NCService with NCIgniteInstance {
         probe: NCProbeMdo,
         parent: Span = null): Unit =
         startScopedSpan("updateProbe", parent,
-            "srvReqId" → srvReqId,
-            "probeId" → probe.probeId) { span ⇒
+            "srvReqId" -> srvReqId,
+            "probeId" -> probe.probeId) { span =>
                 NCSql.sql {
                     NCSqlManager.updateProbeProcessingLog(
                         srvReqId,
@@ -193,7 +193,7 @@ object NCProcessLogManager extends NCService with NCIgniteInstance {
         data: String,
         parent: Span = null
     ): Unit =
-        startScopedSpan("newEntry", parent, "srvReqId" → srvReqId, "usrId" → usrId, "mdlId" → mdlId) { span ⇒
+        startScopedSpan("newEntry", parent, "srvReqId" -> srvReqId, "usrId" -> usrId, "mdlId" -> mdlId) { span =>
             val id = logSeq.incrementAndGet()
 
             logLock.acquire()

@@ -36,7 +36,7 @@ object NCSuspiciousNounsEnricher extends NCProbeEnricher {
      * @param parent Optional parent span.
      * @return
      */
-    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ =>
         ackStarting()
         ackStarted()
     }
@@ -45,7 +45,7 @@ object NCSuspiciousNounsEnricher extends NCProbeEnricher {
      *
      * @param parent Optional parent span.
      */
-    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
         ackStopped()
     }
@@ -55,10 +55,10 @@ object NCSuspiciousNounsEnricher extends NCProbeEnricher {
         require(isStarted)
 
         startScopedSpan("enrich", parent,
-            "srvReqId" → ns.srvReqId,
-            "mdlId" → mdl.model.getId,
-            "txt" → ns.text) { _ ⇒
-            ns.filter(t ⇒ mdl.suspWordsStems.contains(t.stem)).foreach(t ⇒ ns.fixNote(t.getNlpNote, "suspNoun" → true))
+            "srvReqId" -> ns.srvReqId,
+            "mdlId" -> mdl.model.getId,
+            "txt" -> ns.text) { _ =>
+            ns.filter(t => mdl.suspWordsStems.contains(t.stem)).foreach(t => ns.fixNote(t.getNlpNote, "suspNoun" -> true))
         }
     }
 }

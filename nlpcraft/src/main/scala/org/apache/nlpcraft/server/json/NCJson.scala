@@ -21,7 +21,7 @@ import java.io.{IOException, _}
 import java.util.zip._
 
 import com.typesafe.scalalogging.LazyLogging
-import net.liftweb.json.{compactRender ⇒ liftCompact, prettyRender ⇒ liftPretty, _}
+import net.liftweb.json.{compactRender => liftCompact, prettyRender => liftPretty, _}
 import org.apache.nlpcraft.common._
 
 import scala.annotation.tailrec
@@ -50,12 +50,12 @@ class NCJson(val json: JValue) {
     def field[T](fn: String): T =
         try
             json \ fn match {
-                case JNothing | null ⇒ throw MissingJsonField(fn)
-                case v: JValue ⇒ v.values.asInstanceOf[T]
+                case JNothing | null => throw MissingJsonField(fn)
+                case v: JValue => v.values.asInstanceOf[T]
             }
         catch {
-            case e: MissingJsonField ⇒ throw e // Rethrow.
-            case e: Throwable ⇒ throw InvalidJsonField(fn, e)
+            case e: MissingJsonField => throw e // Rethrow.
+            case e: Throwable => throw InvalidJsonField(fn, e)
         }
 
     /**
@@ -65,8 +65,8 @@ class NCJson(val json: JValue) {
       */
     def hasField(fn: String): Boolean =
         json \ fn match {
-            case JNothing | null ⇒ false
-            case _: JValue ⇒ true
+            case JNothing | null => false
+            case _: JValue => true
         }
 
     /**
@@ -78,11 +78,11 @@ class NCJson(val json: JValue) {
     def fieldOpt[T](fn: String): Option[T] =
         try
             json \ fn match {
-                case JNothing ⇒ None
-                case v: JValue ⇒ Some(v.values.asInstanceOf[T])
+                case JNothing => None
+                case v: JValue => Some(v.values.asInstanceOf[T])
             }
         catch {
-            case _: Throwable ⇒ None
+            case _: Throwable => None
         }
 
     /**
@@ -157,7 +157,7 @@ object NCJson {
         val pre = Seq(' ', '"', '[', ',', ':')
         val post = Seq(' ', '"', ']', ',', '}')
 
-        def makeMask(chars: Seq[Char]): String = s"[${chars.map(ch ⇒ s"\\$ch").mkString}]"
+        def makeMask(chars: Seq[Char]): String = s"[${chars.map(ch => s"\\$ch").mkString}]"
 
         new Regex(s"${makeMask(pre)}$mask${makeMask(post)}")
     }
@@ -173,8 +173,8 @@ object NCJson {
         require(js != null)
 
         JsonParser.parseOpt(processExpNumbers(js)) match {
-            case Some(a) ⇒ new NCJson(a)
-            case _ ⇒ throw InvalidJson(js)
+            case Some(a) => new NCJson(a)
+            case _ => throw InvalidJson(js)
         }
     }
 
@@ -260,8 +260,8 @@ object NCJson {
         try
             if (ignoreCase) NCJson(readFile(f).toLowerCase).json.extract[T] else NCJson(readFile(f)).json.extract[T]
         catch {
-            case e: IOException ⇒ throw new NCE(s"Failed to read: ${f.getAbsolutePath}", e)
-            case e: Throwable ⇒ throw new NCE(s"Failed to parse: ${f.getAbsolutePath}", e)
+            case e: IOException => throw new NCE(s"Failed to read: ${f.getAbsolutePath}", e)
+            case e: Throwable => throw new NCE(s"Failed to parse: ${f.getAbsolutePath}", e)
         }
 
     /**
@@ -296,8 +296,8 @@ object NCJson {
             if (ignoreCase) NCJson(readStream(in).toLowerCase).json.extract[T] else NCJson(readStream(in)).json.extract[T]
         }
         catch {
-            case e: IOException ⇒ throw new NCE(s"Failed to read: $res", e)
-            case e: Throwable ⇒ throw new NCE(s"Failed to parse: $res", e)
+            case e: IOException => throw new NCE(s"Failed to read: $res", e)
+            case e: Throwable => throw new NCE(s"Failed to parse: $res", e)
         }
 
     // Gets string with removed symbol + from exponent part of numbers.
@@ -305,8 +305,8 @@ object NCJson {
     @tailrec
     def processExpNumbers(s: String): String =
         EXP_REGEX.findFirstMatchIn(s) match {
-            case Some(m) ⇒ processExpNumbers(m.before + m.group(0).replaceAll("\\+", "") + m.after)
-            case None ⇒ s
+            case Some(m) => processExpNumbers(m.before + m.group(0).replaceAll("\\+", "") + m.after)
+            case None => s
         }
 
     // Implicit conversions.

@@ -19,7 +19,7 @@ package org.apache.nlpcraft.server.nlp.enrichers.date
 
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.config.NCConfigurable
-import org.apache.nlpcraft.common.nlp.{NCNlpSentence ⇒ Sentence, NCNlpSentenceNote ⇒ Note, NCNlpSentenceToken => Token}
+import org.apache.nlpcraft.common.nlp.{NCNlpSentence => Sentence, NCNlpSentenceNote => Note, NCNlpSentenceToken => Token}
 import org.apache.nlpcraft.common.pool.NCThreadPoolManager
 import org.apache.nlpcraft.common.{NCService, _}
 import org.apache.nlpcraft.server.nlp.enrichers.NCServerEnricher
@@ -31,7 +31,7 @@ import java.util.{Calendar => C}
 import scala.collection.JavaConverters._
 import scala.collection.immutable.Iterable
 import scala.collection.mutable
-import scala.collection.mutable.{LinkedHashMap ⇒ LHM}
+import scala.collection.mutable.{LinkedHashMap => LHM}
 import scala.concurrent.ExecutionContext
 
 /**
@@ -117,7 +117,7 @@ object NCDateEnricher extends NCServerEnricher {
      *
      * @param parent Optional parent span.
      */
-    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
         ackStopped()
     }
@@ -127,16 +127,16 @@ object NCDateEnricher extends NCServerEnricher {
      * @param parent Optional parent span.
      * @return
      */
-    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
+    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span =>
         ackStarting()
 
         def read(res: String): LHM_SS = {
-            startScopedSpan("read", span, "res" → res) { _ ⇒
+            startScopedSpan("read", span, "res" -> res) { _ =>
                 val m: LHM_SS = new LHM_SS()
              
-                val map = U.readTextGzipResource(res, "UTF-8", logger).map(p ⇒ {
+                val map = U.readTextGzipResource(res, "UTF-8", logger).map(p => {
                     val idx = p.indexOf("|")
-                    p.take(idx).strip → p.drop(idx + 1).trim
+                    p.take(idx).strip -> p.drop(idx + 1).trim
                 })
              
                 m ++= map
@@ -146,20 +146,20 @@ object NCDateEnricher extends NCServerEnricher {
         }
 
         val file = Config.style match {
-            case MDY ⇒ "parts_mdy.txt.gz"
-            case DMY ⇒ "parts_dmy.txt.gz"
-            case YMD ⇒ "parts_ymd.txt.gz"
+            case MDY => "parts_mdy.txt.gz"
+            case DMY => "parts_dmy.txt.gz"
+            case YMD => "parts_ymd.txt.gz"
 
-            case _  ⇒ throw new AssertionError(s"Unexpected format type: ${Config.style}")
+            case _  => throw new AssertionError(s"Unexpected format type: ${Config.style}")
         }
 
         var p1: LHM_SS = null
         var p2: LHM_SS = null
 
         U.executeParallel(
-            () ⇒ cacheFull = read("date/full.txt.gz"),
-            () ⇒ p1 = read("date/parts.txt.gz"),
-            () ⇒ p2 = read(s"date/$file")
+            () => cacheFull = read("date/full.txt.gz"),
+            () => p1 = read("date/parts.txt.gz"),
+            () => p2 = read(s"date/$file")
         )
 
         cacheParts = p1 ++ p2
@@ -174,7 +174,7 @@ object NCDateEnricher extends NCServerEnricher {
      * @throws NCE
      */
     @throws[NCE]
-    override def enrich(ns: Sentence, parent: Span = null) {
+    override def enrich(ns: Sentence, parent: Span = null): Unit = {
         require(isStarted)
 
         // This stage must not be 1st enrichment stage.
@@ -183,7 +183,7 @@ object NCDateEnricher extends NCServerEnricher {
         require(cacheFull != null)
         require(cacheParts != null)
     
-        startScopedSpan("enrich", parent, "srvReqId" → ns.srvReqId, "txt" → ns.text) { _ ⇒
+        startScopedSpan("enrich", parent, "srvReqId" -> ns.srvReqId, "txt" -> ns.text) { _ =>
             val base = U.nowUtcMs()
             val dates = findDates(ns)
             val partsDates = dates.filter(!_.isFull)
@@ -200,16 +200,16 @@ object NCDateEnricher extends NCServerEnricher {
             def findComplexes(ps: Seq[(P, P)], fromIncl: Boolean, toIncl: Boolean): Seq[CR] = {
                 val buf = mutable.Buffer.empty[CR]
                 
-                for (pair ← partsDates.sliding(2) if !pair.exists(_.isProcessed)) {
+                for (pair <- partsDates.sliding(2) if !pair.exists(_.isProcessed)) {
                     val from = pair.head
                     val to = pair.last
                     
-                    ps.find(p ⇒ startWith(from, p._1.length, p._1.words ++ from.words ++ p._2.words ++ to.words)) match {
-                        case Some(e) ⇒
+                    ps.find(p => startWith(from, p._1.length, p._1.words ++ from.words ++ p._2.words ++ to.words)) match {
+                        case Some(e) =>
                             buf += CR(from, e._1.length, fromIncl, to, e._2.length, toIncl)
                             mark(from, to)
                             
-                        case None ⇒ // No-op.
+                        case None => // No-op.
                     }
                 }
                 
@@ -217,15 +217,15 @@ object NCDateEnricher extends NCServerEnricher {
             }
     
             def isDash(toks: Seq[Token]): Boolean = {
-                def isDashChar(t: Token): Boolean = t.origText.forall(ch ⇒ DASHES.contains(ch) || DASHES_LIKE.contains(ch))
+                def isDashChar(t: Token): Boolean = t.origText.forall(ch => DASHES.contains(ch) || DASHES_LIKE.contains(ch))
         
-                toks.exists(isDashChar) && toks.forall(t ⇒ t.isStopWord || isDashChar(t))
+                toks.exists(isDashChar) && toks.forall(t => t.isStopWord || isDashChar(t))
             }
     
             def findComplexDash(): Seq[CRD] = {
                 val buf = mutable.Buffer.empty[CRD]
                 
-                for (pair ← dates.sliding(2) if !pair.exists(_.isProcessed)) {
+                for (pair <- dates.sliding(2) if !pair.exists(_.isProcessed)) {
                     val from = pair.head
                     val to = pair.last
                     val between = ns.slice(from.tokens.last.index + 1, to.tokens.head.index)
@@ -239,16 +239,16 @@ object NCDateEnricher extends NCServerEnricher {
                 buf
             }
     
-            def findSimples[T](ps: Seq[P], mkHolder: (F, P) ⇒ T): Seq[T] = {
+            def findSimples[T](ps: Seq[P], mkHolder: (F, P) => T): Seq[T] = {
                 val buf = mutable.Buffer.empty[T]
                 
-                for (f ← partsDates.filter(!_.isProcessed))
-                    ps.find(p ⇒ startWith(f, p.length, p.words ++ f.words)) match {
-                        case Some(p) ⇒
+                for (f <- partsDates.filter(!_.isProcessed))
+                    ps.find(p => startWith(f, p.length, p.words ++ f.words)) match {
+                        case Some(p) =>
                             buf += mkHolder(f, p)
                             mark(f)
                             
-                        case None ⇒ None
+                        case None => None
                     }
                 
                 buf
@@ -266,7 +266,7 @@ object NCDateEnricher extends NCServerEnricher {
                 findComplexes(prepsBtwIncl, fromIncl = true, toIncl = true) ++
                     findComplexes(prepsBtwExcl, fromIncl = true, toIncl = false)
             
-            for (r ← complexRanges) {
+            for (r <- complexRanges) {
                 val body = s"${r.from.body}:${r.to.body}"
                 val toks = withBefore(r.from.tokens, r.fromLength) ++ withBefore(r.to.tokens, r.toLength)
                 
@@ -275,10 +275,10 @@ object NCDateEnricher extends NCServerEnricher {
             
             // From, to - simple ranges.
             val simpleRanges =
-                findSimples(prepsFrom, (f: F, p: P) ⇒ R(f, p.length, isFromType = true, inclusive = true)) ++
-                    findSimples(prepsTo, (f: F, p: P) ⇒ R(f, p.length, isFromType = false, inclusive = true))
+                findSimples(prepsFrom, (f: F, p: P) => R(f, p.length, isFromType = true, inclusive = true)) ++
+                    findSimples(prepsTo, (f: F, p: P) => R(f, p.length, isFromType = false, inclusive = true))
             
-            for (r ← simpleRanges) {
+            for (r <- simpleRanges) {
                 val b = r.function.body
                 val body = if (r.isFromType) s"$b:" else s":$b"
                 val toks = withBefore(r.function.tokens, r.length)
@@ -286,7 +286,7 @@ object NCDateEnricher extends NCServerEnricher {
                 addNote(body, r.inclusive, r.inclusive, toks, base)
             }
             
-            for (r ← findComplexDash()) {
+            for (r <- findComplexDash()) {
                 val body = s"${r.from.body}:${r.to.body}"
                 val toks = r.from.tokens ++ r.dash ++ r.to.tokens
                 
@@ -294,9 +294,9 @@ object NCDateEnricher extends NCServerEnricher {
             }
             
             // On, in, for - concrete periods.
-            val simpleDates = findSimples(prepsOn, (f: F, p: P) ⇒ D(f, p.length))
+            val simpleDates = findSimples(prepsOn, (f: F, p: P) => D(f, p.length))
             
-            for (d ← simpleDates) {
+            for (d <- simpleDates) {
                 val body = d.function.body
                 val toks = withBefore(d.function.tokens, d.length)
             
@@ -304,13 +304,13 @@ object NCDateEnricher extends NCServerEnricher {
             }
     
             // Full cached dates and ranges.
-            for (f ← fullDates)
+            for (f <- fullDates)
                 addNote(f.body, fromIncl = true, toIncl = true, f.tokens, base)
             
             // Others - partially cached and without prepositions.
             val unknowns = partsDates.filter(!_.isProcessed)
             
-            for (f ← unknowns)
+            for (f <- unknowns)
                 addNote(f.body, fromIncl = true, toIncl = true, f.tokens, base)
             
             collapse(ns)
@@ -319,16 +319,16 @@ object NCDateEnricher extends NCServerEnricher {
 
     private def mkPrepositions(seq: Seq[String]): Seq[P] = seq.map(P).sortBy(-_.length)
 
-    private def mkBetweenPrepositions(seq: Seq[(String, String)]): Seq[(P, P)] = seq.map(t ⇒ P(t._1) → P(t._2))
+    private def mkBetweenPrepositions(seq: Seq[(String, String)]): Seq[(P, P)] = seq.map(t => P(t._1) -> P(t._2))
 
     private def areSuitableTokens(buf: mutable.Buffer[Set[Token]], toks: Seq[Token]): Boolean =
-        toks.forall(t ⇒ !t.isQuoted && !t.isBracketed) && !buf.exists(_.exists(toks.contains))
+        toks.forall(t => !t.isQuoted && !t.isBracketed) && !buf.exists(_.exists(toks.contains))
 
     private def findDates(ns: Sentence): Seq[F] = {
         val buf = mutable.Buffer.empty[Set[Token]]
         val res = mutable.Buffer.empty[F]
 
-        for (toks ← ns.tokenMixWithStopWords()) {
+        for (toks <- ns.tokenMixWithStopWords()) {
             def process(toks: Seq[Token]): Unit = {
                 if (areSuitableTokens(buf, toks)) {
                     val s = toks.map(_.normText).mkString(" ")
@@ -340,11 +340,11 @@ object NCDateEnricher extends NCServerEnricher {
                     }
 
                     cacheFull.get(s) match {
-                        case Some(body) ⇒ add(body, isFull = true)
-                        case None ⇒
+                        case Some(body) => add(body, isFull = true)
+                        case None =>
                             cacheParts.get(s) match {
-                                case Some(body) ⇒ add(body, isFull = false)
-                                case None ⇒ // No-op.
+                                case Some(body) => add(body, isFull = false)
+                                case None => // No-op.
                             }
                     }
                 }
@@ -358,7 +358,7 @@ object NCDateEnricher extends NCServerEnricher {
                 process(nnToks)
         }
 
-        res.sortBy(h ⇒ ns.indexOfSlice(h.tokens))
+        res.sortBy(h => ns.indexOfSlice(h.tokens))
     }
     
     /**
@@ -373,9 +373,9 @@ object NCDateEnricher extends NCServerEnricher {
         Note(
             toks.map(_.index),
             "nlpcraft:date",
-            "from" → range.from,
-            "to" → range.to,
-            "periods" → range.periods
+            "from" -> range.from,
+            "to" -> range.to,
+            "periods" -> range.periods
         )
 
     private def addNote(
@@ -383,7 +383,7 @@ object NCDateEnricher extends NCServerEnricher {
         fromIncl: Boolean,
         toIncl: Boolean,
         tokens: Seq[Token],
-        base: Long) {
+        base: Long): Unit = {
         val note = mkNote(
             NCDateParser.calculate(body, base, fromIncl, toIncl).mkInclusiveDateRange,
             tokens.head.index,
@@ -396,7 +396,7 @@ object NCDateEnricher extends NCServerEnricher {
 
     private def mark(processed: F*): Unit = processed.foreach(_.isProcessed = true)
 
-    private def collapse(ns: Sentence) {
+    private def collapse(ns: Sentence): Unit = {
         removeDuplicates(ns)
         collapsePeriods(ns)
         removeDuplicates(ns)
@@ -404,34 +404,34 @@ object NCDateEnricher extends NCServerEnricher {
 
     private def isValidRange(n: Note): Boolean = n("from").asInstanceOf[Long] < n("to").asInstanceOf[Long]
 
-    private def collapsePeriods(ns: Sentence) {
+    private def collapsePeriods(ns: Sentence): Unit = {
         // a) Months and years.
-        // 1. "m", "m"... "y, m" → fix year for firsts; try to union all.
+        // 1. "m", "m"... "y, m" -> fix year for firsts; try to union all.
         // Example: January, February of 2009.
 
-        // or "m", "m"... "m" → fix year for firsts; try to union all.
+        // or "m", "m"... "m" -> fix year for firsts; try to union all.
         // Example: January, February of previous year. (last month can be represented as Nm-x (x is 1 year))
 
-        // 2. "m", "m"... "y" → fix year for firsts; try to union firsts - if success drop last.
+        // 2. "m", "m"... "y" -> fix year for firsts; try to union firsts - if success drop last.
         // Example: January, February, 2009 year.
 
-        // 3. "y, m", "m"... "m" →  → fix year for lasts; try to union all.
+        // 3. "y, m", "m"... "m" ->  -> fix year for lasts; try to union all.
         // Example: January of 2009 and February.
 
-        // 4. "y", "m"... "m" → fix year for lasts; try to union lasts - if success drop first.
+        // 4. "y", "m"... "m" -> fix year for lasts; try to union lasts - if success drop first.
         // Example: 2009, January and February.
 
         // b) Days of week and week.
-        // 1. "dw", "dw"... "w, dw" → fix week of year for firsts; try to union all.
+        // 1. "dw", "dw"... "w, dw" -> fix week of year for firsts; try to union all.
         // Example: Monday, Tuesday of this week.
 
-        // 2. "dw", "dw"... "w" → fix week of year for firsts; try to union firsts - if success drop last.
+        // 2. "dw", "dw"... "w" -> fix week of year for firsts; try to union firsts - if success drop last.
         // Example: Monday, Tuesday, this week.
 
-        // 3. "w, dw", "dw"... "dw" → fix week of year for lasts; try to union all.
+        // 3. "w, dw", "dw"... "dw" -> fix week of year for lasts; try to union all.
         // Example: Monday of this week and Tuesday.
 
-        // 4. "w", "dw"... "dw" → fix week of year for lasts; try to union lasts - if success drop first.
+        // 4. "w", "dw"... "dw" -> fix week of year for lasts; try to union lasts - if success drop first.
         // Example: this week, Monday and Tuesday.
     
         // c) Days of week.
@@ -439,13 +439,13 @@ object NCDateEnricher extends NCServerEnricher {
         // Try to union all.
         // Example: Monday, Tuesday.
         
-        for (neighbours ← findNeighbours(ns, andSupport = true)) {
+        for (neighbours <- findNeighbours(ns, andSupport = true)) {
             val buf = mutable.Buffer.empty[Seq[Note]]
 
             // Creates all neighbours' sequences starting from longest.
-            val combs: Seq[Seq[Note]] = (2 to neighbours.length).reverse.flatMap(i ⇒ neighbours.sliding(i))
+            val combs: Seq[Seq[Note]] = (2 to neighbours.length).reverse.flatMap(i => neighbours.sliding(i))
 
-            for (comb ← combs if !buf.exists(p ⇒ p.exists(p ⇒ comb.contains(p)))) {
+            for (comb <- combs if !buf.exists(p => p.exists(p => comb.contains(p)))) {
                 val first = comb.head
                 val last = comb.last
                 val firsts = comb.take(comb.size - 1)
@@ -477,10 +477,10 @@ object NCDateEnricher extends NCServerEnricher {
                         NCDateRange(from2, range.to + from2 - from1)
                     }
 
-                    seq.foreach(n ⇒ {
+                    seq.foreach(n => {
                         val r = convertRange(mkDateRange(n))
 
-                        ns.fixNote(n, "from" → r.from, "to" → r.to, "periods" → new util.ArrayList[String]())
+                        ns.fixNote(n, "from" -> r.from, "to" -> r.to, "periods" -> new util.ArrayList[String]())
                     })
 
                     def optHolder(b: Boolean) = if (b) Some(base) else None
@@ -534,8 +534,8 @@ object NCDateEnricher extends NCServerEnricher {
         if (nearRanges(notes)) {
             def getSeq(optH: Option[Note]): Seq[Note] =
                 optH match {
-                    case Some(h) ⇒ Seq(h)
-                    case None ⇒ Seq.empty
+                    case Some(h) => Seq(h)
+                    case None => Seq.empty
                 }
 
             val s = getSeq(before) ++ notes ++ getSeq(after)
@@ -543,11 +543,11 @@ object NCDateEnricher extends NCServerEnricher {
             val from = s.head.tokenFrom
             val to = s.last.tokenTo
 
-            val note = mkNote(mkSumRange(notes), from, to, ns.filter(t ⇒ t.index >= from && t.index <= to))
+            val note = mkNote(mkSumRange(notes), from, to, ns.filter(t => t.index >= from && t.index <= to))
 
             if (isValidRange(note)) {
                 ns.
-                    filter(t ⇒ t.index >= from && t.index <= to).
+                    filter(t => t.index >= from && t.index <= to).
                     filter(!_.isStopWord).
                     foreach(_.add(note)) // Replaces.
                 true
@@ -563,12 +563,12 @@ object NCDateEnricher extends NCServerEnricher {
         ns: Sentence,
         seq: Seq[Note],
         before: Option[Note] = None,
-        after: Option[Note] = None) {
+        after: Option[Note] = None): Unit = {
         if (!compressNotes(ns, seq, before, after)) {
             def remove(nOpt: Option[Note]): Unit =
                 nOpt match {
-                    case Some(h) ⇒ ns.removeNote(h)
-                    case None ⇒ // No-op.
+                    case Some(h) => ns.removeNote(h)
+                    case None => // No-op.
                 }
 
             remove(before)
@@ -583,7 +583,7 @@ object NCDateEnricher extends NCServerEnricher {
 
         val wrappers = hs.map(Wrapper(_, 0))
 
-        val grouped = wrappers.map(w ⇒ {
+        val grouped = wrappers.map(w => {
             val grp =
                 if (w.holder == hs.head)
                     0
@@ -594,9 +594,9 @@ object NCDateEnricher extends NCServerEnricher {
 
                     val g = prevW.group
 
-                    val toksBetween = ns.filter(t ⇒ t.index > prevH.tokenTo && t.index < h.tokenFrom)
+                    val toksBetween = ns.filter(t => t.index > prevH.tokenTo && t.index < h.tokenFrom)
 
-                    if (toksBetween.isEmpty || toksBetween.forall(p ⇒ p.isStopWord || (andSupport && p.origText == "and")))
+                    if (toksBetween.isEmpty || toksBetween.forall(p => p.isStopWord || (andSupport && p.origText == "and")))
                         g
                     else
                         g + 1
@@ -605,28 +605,28 @@ object NCDateEnricher extends NCServerEnricher {
             w.group = grp
 
             w
-        }).map(w ⇒ w.holder → w.group).toMap
+        }).map(w => w.holder -> w.group).toMap
 
         hs.groupBy(grouped(_)).toSeq.sortBy(_._1).map(_._2).filter(_.size > 1)
     }
 
     private def removeDuplicates(ns: Sentence): Unit = {
-        val notes = findNeighbours(ns, andSupport = false).flatMap(g ⇒ {
+        val notes = findNeighbours(ns, andSupport = false).flatMap(g => {
             case class H(from: Long, to: Long) {
                 override def equals(obj: scala.Any): Boolean = obj match {
-                    case v: H ⇒ v.from == from && v.to == to
-                    case _ ⇒ false
+                    case v: H => v.from == from && v.to == to
+                    case _ => false
                 }
 
                 override def hashCode(): Int = (from + to).hashCode()
             }
 
             // Neighbours grouped by equal date ranges.
-            val grouped: Map[H, Seq[Note]] = g.groupBy(h ⇒ H(h("from").asInstanceOf[Long], h("to").asInstanceOf[Long]))
+            val grouped: Map[H, Seq[Note]] = g.groupBy(h => H(h("from").asInstanceOf[Long], h("to").asInstanceOf[Long]))
 
             // Groups ordered to keep node with maximum information (max periods count in date).
             val hs: Iterable[Seq[Note]] =
-                grouped.map(_._2.sortBy(h ⇒ -h("periods").asInstanceOf[java.util.List[String]].asScala.length))
+                grouped.map(_._2.sortBy(h => -h("periods").asInstanceOf[java.util.List[String]].asScala.length))
 
             // First holder will be kept in group, others (tail) should be deleted.
             hs.flatMap(_.tail)
@@ -645,9 +645,9 @@ object NCDateEnricher extends NCServerEnricher {
 
     private def mkSumRange(notes: Seq[Note]): NCDateRange =
         notes.size match {
-            case 0 ⇒ throw new AssertionError("Unexpected empty notes")
-            case 1 ⇒ mkDateRange(notes.head)
-            case _ ⇒
+            case 0 => throw new AssertionError("Unexpected empty notes")
+            case 1 => mkDateRange(notes.head)
+            case _ =>
                 val ranges = notes.map(mkDateRange).sortBy(_.length)
 
                 val maxRange = ranges.last
@@ -666,6 +666,6 @@ object NCDateEnricher extends NCServerEnricher {
     private def getPrevious[T](s: T, seq: Seq[T]): T = seq(seq.indexOf(s) - 1)
     private def nearRanges(ns: Seq[Note]): Boolean =
         ns.forall(
-            n ⇒ if (n == ns.head) true else getPrevious(n, ns)("to").asInstanceOf[Long] == n("from").asInstanceOf[Long]
+            n => if (n == ns.head) true else getPrevious(n, ns)("to").asInstanceOf[Long] == n("from").asInstanceOf[Long]
         )
 }

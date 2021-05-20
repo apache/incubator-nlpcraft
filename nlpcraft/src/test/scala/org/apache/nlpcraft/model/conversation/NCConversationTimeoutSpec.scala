@@ -52,7 +52,7 @@ class NCTimeoutSpecModel extends NCModel {
         val conv = ctx.getContext.getConversation
 
         step match {
-            case 0 ⇒
+            case 0 =>
                 assertTrue(conv.getMetadata.isEmpty)
                 assertTrue(conv.getDialogFlow.isEmpty)
 
@@ -60,22 +60,22 @@ class NCTimeoutSpecModel extends NCModel {
 
                 saveData = conv.getMetadata
 
-            case 1 ⇒
+            case 1 =>
                 assertFalse(conv.getMetadata.isEmpty)
                 assertEquals(saveData, conv.getMetadata)
                 assertEquals("value", conv.getMetadata.getOrDefault("key", "-"))
                 assertFalse(conv.getDialogFlow.isEmpty)
 
-            case 2 ⇒
+            case 2 =>
                 assertTrue(conv.getMetadata.isEmpty)
                 assertTrue(saveData.isEmpty)
                 assertTrue(conv.getDialogFlow.isEmpty)
 
-            case 3 ⇒
+            case 3 =>
                 assertTrue(conv.getMetadata.isEmpty)
                 assertFalse(conv.getDialogFlow.isEmpty)
 
-            case _ ⇒ require(false)
+            case _ => require(false)
         }
 
         val msg = s"Step-$step"

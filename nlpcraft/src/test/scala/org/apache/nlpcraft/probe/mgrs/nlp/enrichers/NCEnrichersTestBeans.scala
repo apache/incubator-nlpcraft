@@ -192,10 +192,10 @@ object NCTestSortToken {
         index: Int
     ): NCTestSortToken =
         typ match {
-            case SUBJ_ONLY ⇒ new NCTestSortToken(text, subjNotes = Seq(note), subjIndexes = Seq(index), asc = None)
-            case BY_ONLY ⇒ new NCTestSortToken(text, byNotes = Seq(note), byIndexes = Seq(index), asc = None)
+            case SUBJ_ONLY => new NCTestSortToken(text, subjNotes = Seq(note), subjIndexes = Seq(index), asc = None)
+            case BY_ONLY => new NCTestSortToken(text, byNotes = Seq(note), byIndexes = Seq(index), asc = None)
 
-            case _ ⇒ throw new AssertionError(s"Unexpected type: $typ")
+            case _ => throw new AssertionError(s"Unexpected type: $typ")
         }
 
     def apply(
@@ -206,10 +206,10 @@ object NCTestSortToken {
         asc: Boolean
     ): NCTestSortToken =
         typ match {
-            case SUBJ_ONLY ⇒ new NCTestSortToken(text, subjNotes = Seq(note), subjIndexes = Seq(index), asc = Some(asc))
-            case BY_ONLY ⇒ new NCTestSortToken(text, byNotes = Seq(note), byIndexes = Seq(index), asc = Some(asc))
+            case SUBJ_ONLY => new NCTestSortToken(text, subjNotes = Seq(note), subjIndexes = Seq(index), asc = Some(asc))
+            case BY_ONLY => new NCTestSortToken(text, byNotes = Seq(note), byIndexes = Seq(index), asc = Some(asc))
 
-            case _ ⇒ throw new AssertionError(s"Unexpected type: $typ")
+            case _ => throw new AssertionError(s"Unexpected type: $typ")
         }
 
     def apply(
@@ -295,27 +295,27 @@ object NCTestToken {
         val id = t.getId
 
         id match {
-            case "nlpcraft:nlp" ⇒ NCTestNlpToken(txt, t.isStopWord)
-            case "nlpcraft:coordinate" ⇒
+            case "nlpcraft:nlp" => NCTestNlpToken(txt, t.isStopWord)
+            case "nlpcraft:coordinate" =>
                 NCTestCoordinateToken(
                     txt,
                     latitude = t.meta("nlpcraft:coordinate:latitude"),
                     longitude = t.meta("nlpcraft:coordinate:longitude")
                 )
-            case "nlpcraft:num" ⇒
+            case "nlpcraft:num" =>
                 NCTestNumericToken(
                     txt,
                     from = t.meta("nlpcraft:num:from"),
                     to = t.meta("nlpcraft:num:to")
                 )
-            case "nlpcraft:date" ⇒ NCTestDateToken(txt)
-            case "nlpcraft:city" ⇒ NCTestCityToken(txt, city = t.meta("nlpcraft:city:city"))
-            case "nlpcraft:region" ⇒ NCTestRegionToken(txt, region = t.meta("nlpcraft:region:region"))
-            case "nlpcraft:country" ⇒ NCTestCountryToken(txt, country = t.meta("nlpcraft:country:country"))
-            case "nlpcraft:subcontinent" ⇒ NCTestSubcontinentToken(txt, subcontinent = t.meta("nlpcraft:subcontinent:subcontinent"))
-            case "nlpcraft:continent" ⇒ NCTestContinentToken(txt, continent = t.meta("nlpcraft:continent:continent"))
-            case "nlpcraft:metro" ⇒ NCTestMetroToken(txt, metro = t.meta("nlpcraft:metro:metro"))
-            case "nlpcraft:sort" ⇒
+            case "nlpcraft:date" => NCTestDateToken(txt)
+            case "nlpcraft:city" => NCTestCityToken(txt, city = t.meta("nlpcraft:city:city"))
+            case "nlpcraft:region" => NCTestRegionToken(txt, region = t.meta("nlpcraft:region:region"))
+            case "nlpcraft:country" => NCTestCountryToken(txt, country = t.meta("nlpcraft:country:country"))
+            case "nlpcraft:subcontinent" => NCTestSubcontinentToken(txt, subcontinent = t.meta("nlpcraft:subcontinent:subcontinent"))
+            case "nlpcraft:continent" => NCTestContinentToken(txt, continent = t.meta("nlpcraft:continent:continent"))
+            case "nlpcraft:metro" => NCTestMetroToken(txt, metro = t.meta("nlpcraft:metro:metro"))
+            case "nlpcraft:sort" =>
                 val subjNotes: Optional[java.util.List[String]] = t.metaOpt("nlpcraft:sort:subjnotes")
                 val subjIndexes: Optional[java.util.List[Int]] = t.metaOpt("nlpcraft:sort:subjindexes")
                 val byNotes: Optional[java.util.List[String]] = t.metaOpt("nlpcraft:sort:bynotes")
@@ -324,12 +324,12 @@ object NCTestToken {
 
                 def get[T](opt: Optional[util.List[T]]) =
                     opt.asScala match {
-                        case Some(list) ⇒ list.asScala
-                        case None ⇒ Seq.empty
+                        case Some(list) => list.asScala
+                        case None => Seq.empty
                     }
 
                 NCTestSortToken(txt, get(subjNotes), get(subjIndexes), get(byNotes), get(byIndexes), asc.asScala)
-            case "nlpcraft:relation" ⇒
+            case "nlpcraft:relation" =>
                 val indexes: java.util.List[Int] = t.meta("nlpcraft:relation:indexes")
 
                 NCTestRelationToken(
@@ -339,7 +339,7 @@ object NCTestToken {
                     note = t.meta("nlpcraft:relation:note")
                 )
 
-            case "nlpcraft:limit" ⇒
+            case "nlpcraft:limit" =>
                 val indexes: java.util.List[Int] = t.meta("nlpcraft:limit:indexes")
                 val asc: Optional[Boolean] = t.metaOpt("nlpcraft:limit:asc")
 
@@ -351,7 +351,7 @@ object NCTestToken {
                     asc.asScala
                 )
 
-            case _ ⇒
+            case _ =>
                 if (t.isUserDefined)
                     NCTestUserToken(txt, id)
                 else
@@ -368,8 +368,8 @@ case class NCTestSentence(tokens: Seq[NCTestToken]) {
 
 object NCTestSentence {
     def serialize(sens: Iterable[NCTestSentence]): String =
-        managed(new ByteArrayOutputStream()) acquireAndGet { bos ⇒
-            managed(new ObjectOutputStream(bos)) acquireAndGet { os ⇒
+        Using.resource(new ByteArrayOutputStream()) { bos =>
+            Using.resource(new ObjectOutputStream(bos)) { os =>
                 os.writeObject(sens)
 
                 os.flush()
@@ -379,9 +379,9 @@ object NCTestSentence {
         }
 
     def deserialize(s: String): Iterable[NCTestSentence] =
-        managed(new ObjectInputStream(
+        Using.resource(new ObjectInputStream(
             new ByteArrayInputStream(Base64.getDecoder.decode(s.getBytes(UTF_8))))
-        ) acquireAndGet { is ⇒
+        ) { is =>
             is.readObject.asInstanceOf[Iterable[NCTestSentence]]
         }
 }

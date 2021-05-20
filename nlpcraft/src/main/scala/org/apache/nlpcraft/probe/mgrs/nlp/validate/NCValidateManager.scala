@@ -36,7 +36,7 @@ object NCValidateManager extends NCService with LazyLogging {
      * @param parent Optional parent span.
      * @return
      */
-    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ =>
         ackStarting()
 
         langFinder = new OptimaizeLangDetector()
@@ -51,7 +51,7 @@ object NCValidateManager extends NCService with LazyLogging {
      *
      * @param parent Optional parent span.
      */
-    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
         ackStopped()
     }
@@ -65,9 +65,9 @@ object NCValidateManager extends NCService with LazyLogging {
     @throws[NCValidateException]
     def preValidate(w: NCProbeModel, ns: NCNlpSentence, parent: Span = null): Unit =
         startScopedSpan("validate", parent,
-            "srvReqId" → ns.srvReqId,
-            "txt" → ns.text,
-            "mdlId" → w.model.getId) { _ ⇒
+            "srvReqId" -> ns.srvReqId,
+            "txt" -> ns.text,
+            "mdlId" -> w.model.getId) { _ =>
             val mdl = w.model
 
             if (!mdl.isNotLatinCharsetAllowed && !ns.text.matches("""[\s\w\p{Punct}]+"""))
@@ -91,12 +91,12 @@ object NCValidateManager extends NCService with LazyLogging {
     @throws[NCValidateException]
     def postValidate(w: NCProbeModel, ns: NCNlpSentence, parent: Span = null): Unit =
         startScopedSpan("validate", parent,
-            "srvReqId" → ns.srvReqId,
-            "txt" → ns.text,
-            "mdlId" → w.model.getId) { _ ⇒
+            "srvReqId" -> ns.srvReqId,
+            "txt" -> ns.text,
+            "mdlId" -> w.model.getId) { _ =>
             val mdl = w.model
             val types = ns.flatten.filter(!_.isNlp).map(_.noteType).distinct
-            val overlapNotes = ns.map(tkn ⇒ types.flatMap(tp ⇒ tkn.getNotes(tp))).filter(_.size > 1).flatten
+            val overlapNotes = ns.map(tkn => types.flatMap(tp => tkn.getNotes(tp))).filter(_.size > 1).flatten
 
             if (overlapNotes.nonEmpty)
                 throw NCValidateException("OVERLAP_NOTES")
@@ -108,7 +108,7 @@ object NCValidateManager extends NCService with LazyLogging {
                 throw NCValidateException("MIN_NON_STOPWORDS")
             if (mdl.getMinTokens > ns.size)
                 throw NCValidateException("MIN_TOKENS")
-            if (mdl.getMaxUnknownWords < ns.count(t ⇒ t.isNlp && !t.isSynthetic && !t.isKnownWord))
+            if (mdl.getMaxUnknownWords < ns.count(t => t.isNlp && !t.isSynthetic && !t.isKnownWord))
                 throw NCValidateException("MAX_UNKNOWN_WORDS")
             if (mdl.getMaxSuspiciousWords < ns.count(_.getNlpValueOpt[Boolean]("suspNoun").getOrElse(false)))
                 throw NCValidateException("MAX_SUSPICIOUS_WORDS")

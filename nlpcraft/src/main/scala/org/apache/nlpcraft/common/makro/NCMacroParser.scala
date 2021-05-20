@@ -54,7 +54,7 @@ object NCMacroParser {
     def apply(macros: (String, String)*): NCMacroParser = {
         val obj = new NCMacroParser
         
-        macros.foreach(m ⇒ obj.addMacro(m._1, m._2))
+        macros.foreach(m => obj.addMacro(m._1, m._2))
         
         obj
     }
@@ -73,12 +73,12 @@ object NCMacroParser {
   * - Excessive pairs'{' and '}' are ignored
   *
   * Examples:
-  *      "A {B|C}[1,2] D" ⇒ "A B D", "A C D", "A B B D", "A C C D"
-  *      "A \{B\|C\} D" ⇒ "A {B|C} D"
-  *      "A {B|_} D" ⇒ "A D", "A B D"
-  *      "A {_|B|C} {D}[1,2]" ⇒ "A D", "A B D", "A C D", "A D D", "A B D D", "A C D D"
-  *      "A <MACRO>" ⇒ "A ..." based on <MACRO> content.
-  *      "A {<MACRO>|_}" ⇒ "A", "A ..." based on <MACRO> content.
+  *      "A {B|C}[1,2] D" => "A B D", "A C D", "A B B D", "A C C D"
+  *      "A \{B\|C\} D" => "A {B|C} D"
+  *      "A {B|_} D" => "A D", "A B D"
+  *      "A {_|B|C} {D}[1,2]" => "A D", "A B D", "A C D", "A D D", "A B D D", "A C D D"
+  *      "A <MACRO>" => "A ..." based on <MACRO> content.
+  *      "A {<MACRO>|_}" => "A", "A ..." based on <MACRO> content.
   *
   * NOTE: Macros cannot be recursive.
   * NOTE: Macros and '{...}' options groups can be nested.
@@ -149,7 +149,7 @@ class NCMacroParser {
                 throw new NCE(s"Unknown macro [macro=$ms, txt=$txt]")
             
             // Expand all registered macros.
-            for ((k, v) ← macros) s = s.replace(k, v)
+            for ((k, v) <- macros) s = s.replace(k, v)
             
             // Grab another macro match, if any.
             m = MACRO_REGEX.findFirstMatchIn(s)
@@ -201,7 +201,7 @@ class NCMacroParser {
         if (str.contains(name))
            throw new NCE(s"Recursion is not supported, macro: $name")
     
-        macros += name → str
+        macros += name -> str
     }
     
     /**

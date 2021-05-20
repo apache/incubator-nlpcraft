@@ -38,7 +38,7 @@ import scala.language.implicitConversions
  */
 class NCDateGeneratorSpec  {
     private def print(
-        f: LHM[String, String] ⇒ Unit, cnt: Int = 500, asc: Boolean = true, keys2Check: Option[Seq[String]] = None
+        f: LHM[String, String] => Unit, cnt: Int = 500, asc: Boolean = true, keys2Check: Option[Seq[String]] = None
     ) {
         val base = scala.compat.Platform.currentTime
 
@@ -52,18 +52,18 @@ class NCDateGeneratorSpec  {
 
         val seq = if (asc) map.take(cnt).toSeq else map.toSeq.takeRight(cnt)
 
-        seq.foreach(t ⇒ tbl += (t._1, t._2, NCDateParser.calculate(t._2, base)))
+        seq.foreach(t => tbl += (t._1, t._2, NCDateParser.calculate(t._2, base)))
 
         tbl.render()
 
         println(s"\nGenerated records count is ${map.size}.")
 
         keys2Check match {
-            case Some(keys) ⇒
-                val missed = keys.filter(k ⇒ !map.contains(k))
+            case Some(keys) =>
+                val missed = keys.filter(k => !map.contains(k))
 
                 assertTrue(missed.isEmpty, s"Missed keys: ${missed.mkString(", ")}")
-            case None ⇒ // No-op.
+            case None => // No-op.
         }
     }
 
@@ -131,22 +131,22 @@ class NCDateGeneratorSpec  {
 
     @Test
     def testMonths(): Unit = {
-        print((df: LHM_SS) ⇒ NCDateGenerator.months(df, MONTH_YEAR_COMMON.map(new SimpleDateFormat(_))))
+        print((df: LHM_SS) => NCDateGenerator.months(df, MONTH_YEAR_COMMON.map(new SimpleDateFormat(_))))
     }
 
     @Test
     def testMonthsDmy(): Unit = {
-        print((df: LHM_SS) ⇒ NCDateGenerator.months(df, MONTH_YEAR_COUNTRY(DMY).map(new SimpleDateFormat(_))))
+        print((df: LHM_SS) => NCDateGenerator.months(df, MONTH_YEAR_COUNTRY(DMY).map(new SimpleDateFormat(_))))
     }
 
     @Test
     def testMonthsMdy(): Unit = {
-        print((df: LHM_SS) ⇒ NCDateGenerator.months(df, MONTH_YEAR_COUNTRY(MDY).map(new SimpleDateFormat(_))))
+        print((df: LHM_SS) => NCDateGenerator.months(df, MONTH_YEAR_COUNTRY(MDY).map(new SimpleDateFormat(_))))
     }
 
     @Test
     def testMonthsYmd(): Unit = {
-        print((df: LHM_SS) ⇒ NCDateGenerator.months(df, MONTH_YEAR_COUNTRY(YMD).map(new SimpleDateFormat(_))))
+        print((df: LHM_SS) => NCDateGenerator.months(df, MONTH_YEAR_COUNTRY(YMD).map(new SimpleDateFormat(_))))
     }
 
     @Test
@@ -156,13 +156,13 @@ class NCDateGeneratorSpec  {
 
     @Test
     def testDays(): Unit = {
-        print((df: LHM_SS) ⇒ NCDateGenerator.days(df, NCDateGenerator.FMT_DAYS_YEAR_COMMON), cnt = 5000)
+        print((df: LHM_SS) => NCDateGenerator.days(df, NCDateGenerator.FMT_DAYS_YEAR_COMMON), cnt = 5000)
     }
 
     @Test
     def testDates(): Unit = {
-        print((df: LHM_SS) ⇒ NCDateGenerator.dates(df, NCDateGenerator.FMT_DATES_COMMON), cnt = 2000)
-        print((df: LHM_SS) ⇒ NCDateGenerator.days(df, NCDateGenerator.FMT_DAYS_YEAR_COMMON), cnt = 2000, asc = false)
+        print((df: LHM_SS) => NCDateGenerator.dates(df, NCDateGenerator.FMT_DATES_COMMON), cnt = 2000)
+        print((df: LHM_SS) => NCDateGenerator.days(df, NCDateGenerator.FMT_DAYS_YEAR_COMMON), cnt = 2000, asc = false)
     }
 
     @Test
@@ -274,7 +274,7 @@ class NCDateGeneratorSpec  {
 
         val c = Calendar.getInstance()
 
-        (0 to 6).foreach(i ⇒ {
+        (0 to 6).foreach(i => {
             c.setTime(sunday)
             c.add(Calendar.DAY_OF_YEAR, i)
 

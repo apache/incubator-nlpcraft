@@ -75,14 +75,14 @@ object NCConnectionManager extends NCService {
       *
       * @param msg Message to send to server.
       */
-    def send(msg: NCProbeMessage, parent: Span = null): Unit = startScopedSpan("send", parent) { span ⇒
+    def send(msg: NCProbeMessage, parent: Span = null): Unit = startScopedSpan("send", parent) { span =>
         addTags(
             span,
-            "probeId" → Config.id,
-            "token" → Config.token,
-            "probeGuid" → probeGuid,
-            "msgType" → msg.getType,
-            "msgGuid" → msg.getGuid
+            "probeId" -> Config.id,
+            "token" -> Config.token,
+            "probeGuid" -> probeGuid,
+            "msgType" -> msg.getType,
+            "msgGuid" -> msg.getGuid
         )
         
         // Set probe identification for each message, if necessary.
@@ -124,17 +124,17 @@ object NCConnectionManager extends NCService {
         
             // Payload.
             // Probe identification.
-            "PROBE_TOKEN" → Config.token,
-            "PROBE_ID" → Config.id,
-            "PROBE_GUID" → probeGuid
+            "PROBE_TOKEN" -> Config.token,
+            "PROBE_ID" -> Config.id,
+            "PROBE_GUID" -> probeGuid
         ), cryptoKey)
     
         val resp = sock.read[NCProbeMessage](cryptoKey) // Get handshake response.
     
         resp.getType match {
-            case "P2S_PROBE_OK" ⇒ logger.trace("Downlink handshake OK.") // Bingo!
-            case "P2S_PROBE_NOT_FOUND" ⇒  throw new HandshakeError("Probe failed to start due to unknown error.")
-            case _ ⇒  throw new HandshakeError(s"Unexpected REST server message: ${resp.getType}")
+            case "P2S_PROBE_OK" => logger.trace("Downlink handshake OK.") // Bingo!
+            case "P2S_PROBE_NOT_FOUND" =>  throw new HandshakeError("Probe failed to start due to unknown error.")
+            case _ =>  throw new HandshakeError(s"Unexpected REST server message: ${resp.getType}")
         }
     
         sock
@@ -153,7 +153,7 @@ object NCConnectionManager extends NCService {
             val addrs = netItf.getHardwareAddress
         
             if (addrs != null)
-                hwAddrs = addrs.foldLeft("")((s, b) ⇒ s + (if (s == "") f"$b%02X" else f"-$b%02X"))
+                hwAddrs = addrs.foldLeft("")((s, b) => s + (if (s == "") f"$b%02X" else f"-$b%02X"))
         }
     
         val (host, port) = Config.upLink
@@ -170,7 +170,7 @@ object NCConnectionManager extends NCService {
         val hashResp = sock.read[NCProbeMessage]()
 
         hashResp.getType match { // Get hash check response.
-            case "S2P_HASH_CHECK_OK" ⇒
+            case "S2P_HASH_CHECK_OK" =>
                 val ver = NCVersion.getCurrent
                 val tmz = TimeZone.getDefault
     
@@ -191,28 +191,28 @@ object NCConnectionManager extends NCService {
         
                     // Payload.
                     // Probe identification.
-                    "PROBE_TOKEN" → Config.token,
-                    "PROBE_ID" → Config.id,
-                    "PROBE_GUID" → probeGuid,
+                    "PROBE_TOKEN" -> Config.token,
+                    "PROBE_ID" -> Config.id,
+                    "PROBE_GUID" -> probeGuid,
         
                     // Handshake data,
-                    "PROBE_API_DATE" → ver.date,
-                    "PROBE_API_VERSION" → ver.version,
-                    "PROBE_OS_VER" → sysProps.getProperty("os.version"),
-                    "PROBE_OS_NAME" → sysProps.getProperty("os.name"),
-                    "PROBE_OS_ARCH" → sysProps.getProperty("os.arch"),
-                    "PROBE_START_TSTAMP" → U.nowUtcMs(),
-                    "PROBE_TMZ_ID" → tmz.getID,
-                    "PROBE_TMZ_ABBR" → tmz.getDisplayName(false, TimeZone.SHORT),
-                    "PROBE_TMZ_NAME" → tmz.getDisplayName(),
-                    "PROBE_SYS_USERNAME" → sysProps.getProperty("user.name"),
-                    "PROBE_JAVA_VER" → sysProps.getProperty("java.version"),
-                    "PROBE_JAVA_VENDOR" → sysProps.getProperty("java.vendor"),
-                    "PROBE_HOST_NAME" → localHost.getHostName,
-                    "PROBE_HOST_ADDR" → localHost.getHostAddress,
-                    "PROBE_HW_ADDR" → hwAddrs,
-                    "PROBE_MODELS" →
-                        NCModelManager.getAllModels().map(wrapper ⇒ {
+                    "PROBE_API_DATE" -> ver.date,
+                    "PROBE_API_VERSION" -> ver.version,
+                    "PROBE_OS_VER" -> sysProps.getProperty("os.version"),
+                    "PROBE_OS_NAME" -> sysProps.getProperty("os.name"),
+                    "PROBE_OS_ARCH" -> sysProps.getProperty("os.arch"),
+                    "PROBE_START_TSTAMP" -> U.nowUtcMs(),
+                    "PROBE_TMZ_ID" -> tmz.getID,
+                    "PROBE_TMZ_ABBR" -> tmz.getDisplayName(false, TimeZone.SHORT),
+                    "PROBE_TMZ_NAME" -> tmz.getDisplayName(),
+                    "PROBE_SYS_USERNAME" -> sysProps.getProperty("user.name"),
+                    "PROBE_JAVA_VER" -> sysProps.getProperty("java.version"),
+                    "PROBE_JAVA_VENDOR" -> sysProps.getProperty("java.vendor"),
+                    "PROBE_HOST_NAME" -> localHost.getHostName,
+                    "PROBE_HOST_ADDR" -> localHost.getHostAddress,
+                    "PROBE_HW_ADDR" -> hwAddrs,
+                    "PROBE_MODELS" ->
+                        NCModelManager.getAllModels().map(wrapper => {
                             val mdl = wrapper.model
 
                             // Model already validated.
@@ -231,17 +231,17 @@ object NCConnectionManager extends NCService {
                 val resp = sock.read[NCProbeMessage](cryptoKey) // Get handshake response.
     
                 resp.getType match {
-                    case "S2P_PROBE_MULTIPLE_INSTANCES" ⇒  throw new HandshakeError("Duplicate probes ID detected. Each probe has to have a unique ID.")
-                    case "S2P_PROBE_NOT_FOUND" ⇒  throw new HandshakeError("Probe failed to start due to unknown error.")
-                    case "S2P_PROBE_VERSION_MISMATCH" ⇒  throw new HandshakeError(s"REST server does not support probe version: ${ver.version}")
-                    case "S2P_PROBE_UNSUPPORTED_TOKENS_TYPES" ⇒  throw new HandshakeError(s"REST server does not support some model enabled tokes types.")
-                    case "S2P_PROBE_OK" ⇒ logger.trace("Uplink handshake OK.") // Bingo!
-                    case _ ⇒  throw new HandshakeError(s"Unknown REST server message: ${resp.getType}")
+                    case "S2P_PROBE_MULTIPLE_INSTANCES" =>  throw new HandshakeError("Duplicate probes ID detected. Each probe has to have a unique ID.")
+                    case "S2P_PROBE_NOT_FOUND" =>  throw new HandshakeError("Probe failed to start due to unknown error.")
+                    case "S2P_PROBE_VERSION_MISMATCH" =>  throw new HandshakeError(s"REST server does not support probe version: ${ver.version}")
+                    case "S2P_PROBE_UNSUPPORTED_TOKENS_TYPES" =>  throw new HandshakeError(s"REST server does not support some model enabled tokes types.")
+                    case "S2P_PROBE_OK" => logger.trace("Uplink handshake OK.") // Bingo!
+                    case _ =>  throw new HandshakeError(s"Unknown REST server message: ${resp.getType}")
                 }
     
                 sock
 
-            case "S2P_HASH_CHECK_UNKNOWN" ⇒ throw new HandshakeError(s"Sever does not recognize probe token: ${Config.token}.")
+            case "S2P_HASH_CHECK_UNKNOWN" => throw new HandshakeError(s"Sever does not recognize probe token: ${Config.token}.")
         }
     }
     
@@ -260,7 +260,7 @@ object NCConnectionManager extends NCService {
       *
       * @return
       */
-    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ =>
         require(NCCommandManager.isStarted)
         require(NCModelManager.isStarted)
 
@@ -271,7 +271,7 @@ object NCConnectionManager extends NCService {
 
         val ctrlLatch = new CountDownLatch(1)
      
-        ctrlThread = U.mkThread("probe-ctrl-thread") { t ⇒
+        ctrlThread = U.mkThread("probe-ctrl-thread") { t =>
             var dnSock: NCSocket = null
             var upSock: NCSocket = null
             var dnThread: Thread = null
@@ -334,19 +334,19 @@ object NCConnectionManager extends NCService {
                         exitLatch.countDown()
                     }
             
-                    upThread = U.mkThread("probe-uplink") { t ⇒
+                    upThread = U.mkThread("probe-uplink") { t =>
                         // Main reading loop.
                         while (!t.isInterrupted)
                             try
                                 NCCommandManager.processServerMessage(upSock.read[NCProbeMessage](cryptoKey))
                             catch {
-                                case _: InterruptedIOException | _: InterruptedException ⇒ ()
-                                case _: EOFException ⇒ exit(t, s"Uplink REST server connection closed.")
-                                case e: Exception ⇒ exit(t, s"Uplink connection failed.", e)
+                                case _: InterruptedIOException | _: InterruptedException => ()
+                                case _: EOFException => exit(t, s"Uplink REST server connection closed.")
+                                case e: Exception => exit(t, s"Uplink connection failed.", e)
                             }
                     }
                     
-                    dnThread = U.mkThread("probe-downlink") { t ⇒
+                    dnThread = U.mkThread("probe-downlink") { t =>
                         while (!t.isInterrupted)
                             try {
                                 dnLinkQueue.synchronized {
@@ -375,9 +375,9 @@ object NCConnectionManager extends NCService {
                                 }
                             }
                             catch {
-                                case _: InterruptedIOException | _: InterruptedException ⇒ ()
-                                case _: EOFException ⇒ exit(t, s"Downlink REST server connection closed.")
-                                case e: Exception ⇒ exit(t, s"Downlink connection failed.", e)
+                                case _: InterruptedIOException | _: InterruptedException => ()
+                                case _: EOFException => exit(t, s"Downlink REST server connection closed.")
+                                case e: Exception => exit(t, s"Downlink connection failed.", e)
                             }
                     }
             
@@ -406,7 +406,7 @@ object NCConnectionManager extends NCService {
                         logger.info(s"REST server connection closed.")
                 }
                 catch {
-                    case e: HandshakeError ⇒
+                    case e: HandshakeError =>
                         // Clean up.
                         closeAll()
                     
@@ -415,7 +415,7 @@ object NCConnectionManager extends NCService {
                     
                         abort()
             
-                    case e: IOException ⇒
+                    case e: IOException =>
                         // Clean up.
                         closeAll()
 
@@ -424,7 +424,7 @@ object NCConnectionManager extends NCService {
 
                         timeout()
             
-                    case e: Exception ⇒
+                    case e: Exception =>
                         // Clean up.
                         closeAll()
                 
@@ -448,7 +448,7 @@ object NCConnectionManager extends NCService {
     /**
       *
       */
-    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
 
         U.stopThread(ctrlThread)

@@ -24,22 +24,22 @@ import org.junit.jupiter.api.Test
   */
 class NCIdlFunctionsToken extends NCIdlFunctions {
     private final val meta: Map[String, AnyRef] = Map(
-        "nlpcraft:nlp:stopword" → java.lang.Boolean.TRUE,
-        "nlpcraft:nlp:freeword" → java.lang.Boolean.TRUE,
-        "nlpcraft:nlp:origtext" → "orig text",
-        "nlpcraft:nlp:index" → java.lang.Integer.valueOf(11),
-        "nlpcraft:nlp:normtext" → "norm text",
-        "nlpcraft:nlp:direct" → java.lang.Boolean.TRUE,
-        "nlpcraft:nlp:english" → java.lang.Boolean.TRUE,
-        "nlpcraft:nlp:swear" → java.lang.Boolean.TRUE,
-        "nlpcraft:nlp:quoted" → java.lang.Boolean.TRUE,
-        "nlpcraft:nlp:bracketed" → java.lang.Boolean.TRUE,
-        "nlpcraft:nlp:dict" → java.lang.Boolean.TRUE,
-        "nlpcraft:nlp:lemma" → "lemma",
-        "nlpcraft:nlp:stem" → "stem",
-        "nlpcraft:nlp:sparsity" → java.lang.Integer.valueOf(112),
-        "nlpcraft:nlp:pos" → "pos",
-        "nlpcraft:nlp:unid" → "21421"
+        "nlpcraft:nlp:stopword" -> java.lang.Boolean.TRUE,
+        "nlpcraft:nlp:freeword" -> java.lang.Boolean.TRUE,
+        "nlpcraft:nlp:origtext" -> "orig text",
+        "nlpcraft:nlp:index" -> java.lang.Integer.valueOf(11),
+        "nlpcraft:nlp:normtext" -> "norm text",
+        "nlpcraft:nlp:direct" -> java.lang.Boolean.TRUE,
+        "nlpcraft:nlp:english" -> java.lang.Boolean.TRUE,
+        "nlpcraft:nlp:swear" -> java.lang.Boolean.TRUE,
+        "nlpcraft:nlp:quoted" -> java.lang.Boolean.TRUE,
+        "nlpcraft:nlp:bracketed" -> java.lang.Boolean.TRUE,
+        "nlpcraft:nlp:dict" -> java.lang.Boolean.TRUE,
+        "nlpcraft:nlp:lemma" -> "lemma",
+        "nlpcraft:nlp:stem" -> "stem",
+        "nlpcraft:nlp:sparsity" -> java.lang.Integer.valueOf(112),
+        "nlpcraft:nlp:pos" -> "pos",
+        "nlpcraft:nlp:unid" -> "21421"
     )
 
     private def mkMeta(truth: String):TestDesc = TestDesc(truth = truth, token = tkn(meta = meta))

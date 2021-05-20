@@ -83,7 +83,7 @@ class NCStanfordAnnotator extends Annotator {
       * @param toks
       */
     private def setTokenBeginTokenEnd(toks: util.List[CoreLabel]): Unit =
-        toks.zipWithIndex.foreach { case (tok, idx) ⇒
+        toks.zipWithIndex.foreach { case (tok, idx) =>
             tok.set(classOf[TokenBeginAnnotation], idx)
             tok.set(classOf[TokenEndAnnotation], idx + 1)
         }

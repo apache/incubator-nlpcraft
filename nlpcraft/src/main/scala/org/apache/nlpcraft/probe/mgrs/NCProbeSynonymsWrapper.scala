@@ -38,7 +38,7 @@ object NCProbeSynonymsWrapper {
         val other = syns.filter(!_.isTextOnly).sorted.reverse
 
         def filter(seq: Seq[NCProbeSynonym], direct: Boolean): Seq[NCProbeSynonym] = seq.filter(_.isDirect == direct)
-        def toMap(seq: Seq[NCProbeSynonym]): Map[String, NCProbeSynonym] = seq.map(s ⇒ s.stems → s).toMap
+        def toMap(seq: Seq[NCProbeSynonym]): Map[String, NCProbeSynonym] = seq.map(s => s.stems -> s).toMap
 
         NCProbeSynonymsWrapper(
             txtDirectSynonyms = toMap(filter(txtSyns, direct = true)),

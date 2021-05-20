@@ -22,7 +22,6 @@ import java.io.{IOException, PrintStream}
 import com.typesafe.scalalogging.Logger
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.ascii.NCAsciiTable._
-import resource._
 import org.apache.nlpcraft.common.ansi.NCAnsi._
 
 import scala.collection.JavaConverters._
@@ -57,7 +56,7 @@ class NCAsciiTable {
             val cs = new Style
 
             if (sty.nonEmpty) {
-                for (e ← sty.split(',')) {
+                for (e <- sty.split(',')) {
                     val a = e.split(":")
 
                     require(a.length == 2, s"Invalid cell style: ${e.trim}")
@@ -66,11 +65,11 @@ class NCAsciiTable {
                     val a1 = a(1).trim
 
                     a0 match {
-                        case "leftPad" ⇒ cs.leftPad = a1.toInt
-                        case "rightPad" ⇒ cs.rightPad = a1.toInt
-                        case "maxWidth" ⇒ cs.maxWidth = a1.toInt
-                        case "align" ⇒ cs.align = a1.toLowerCase
-                        case _ ⇒ assert(assertion = false, s"Invalid style: ${e.trim}")
+                        case "leftPad" => cs.leftPad = a1.toInt
+                        case "rightPad" => cs.rightPad = a1.toInt
+                        case "maxWidth" => cs.maxWidth = a1.toInt
+                        case "align" => cs.align = a1.toLowerCase
+                        case _ => assert(assertion = false, s"Invalid style: ${e.trim}")
                     }
                 }
             }
@@ -172,14 +171,14 @@ class NCAsciiTable {
     /**
      * Starts data row.
      */
-    def startRow() {
+    def startRow(): Unit = {
         curRow = IndexedSeq.empty[Cell]
     }
 
     /**
      * Ends data row.
      */
-    def endRow() {
+    def endRow(): Unit = {
         rows :+= curRow
 
         curRow = null
@@ -194,8 +193,8 @@ class NCAsciiTable {
         startRow()
 
         cells foreach {
-            case i: Iterable[_] ⇒ addRowCell(i.iterator.toSeq: _*)
-            case a ⇒ addRowCell(a)
+            case i: Iterable[_] => addRowCell(i.iterator.toSeq: _*)
+            case a => addRowCell(a)
         }
 
         endRow()
@@ -212,9 +211,9 @@ class NCAsciiTable {
         startRow()
 
         cells foreach {
-            case i if i._2.isInstanceOf[Iterable[_]] ⇒
+            case i if i._2.isInstanceOf[Iterable[_]] =>
                 addStyledRowCell(i._1, i._2.asInstanceOf[Iterable[_]].iterator.toSeq: _*)
-            case a ⇒
+            case a =>
                 addStyledRowCell(a._1, a._2)
         }
 
@@ -231,7 +230,7 @@ class NCAsciiTable {
     def addRow(cells: java.util.List[Any]): NCAsciiTable = {
         startRow()
 
-        cells.asScala.foreach(p ⇒ addRowCell(p))
+        cells.asScala.foreach(p => addRowCell(p))
 
         endRow()
 
@@ -245,8 +244,8 @@ class NCAsciiTable {
      */
     def #=(cells: Any*): NCAsciiTable = {
         cells foreach {
-            case i: Iterable[_] ⇒ addHeaderCell(i.iterator.toSeq: _*)
-            case a ⇒ addHeaderCell(a)
+            case i: Iterable[_] => addHeaderCell(i.iterator.toSeq: _*)
+            case a => addHeaderCell(a)
         }
 
         this
@@ -259,8 +258,8 @@ class NCAsciiTable {
      */
     def #/(cells: (String, Any)*): NCAsciiTable = {
         cells foreach {
-            case i if i._2.isInstanceOf[Iterable[_]] ⇒ addStyledHeaderCell(i._1, i._2.asInstanceOf[Iterable[_]].iterator.toSeq: _*)
-            case a ⇒ addStyledHeaderCell(a._1, a._2)
+            case i if i._2.isInstanceOf[Iterable[_]] => addStyledHeaderCell(i._1, i._2.asInstanceOf[Iterable[_]].iterator.toSeq: _*)
+            case a => addStyledHeaderCell(a._1, a._2)
         }
 
         this
@@ -291,8 +290,8 @@ class NCAsciiTable {
 
     // Handles the 'null' strings.
     private def x(s: Any): String = s match {
-        case null ⇒ "<null>"
-        case _ ⇒ s.toString
+        case null => "<null>"
+        case _ => s.toString
     }
 
     /**
@@ -302,7 +301,7 @@ class NCAsciiTable {
      * @return
      */
     private def breakUpByNearestSpace(maxWidth: Int, lines: Seq[String]): Seq[String] =
-        lines.flatMap(line ⇒ {
+        lines.flatMap(line => {
             if (line.isEmpty)
                 mutable.Buffer("")
             else {
@@ -357,14 +356,14 @@ class NCAsciiTable {
         var strLines = lines.map(x)
 
         if (hdr)
-            strLines = strLines.map(s ⇒ s"$ansiBlueFg$s$ansiReset")
+            strLines = strLines.map(s => s"$ansiBlueFg$s$ansiReset")
 
         Cell(
             st,
             if (breakUpByWords)
                 breakUpByNearestSpace(st.maxWidth, strLines)
             else
-                (for (str ← strLines) yield str.grouped(st.maxWidth)).flatten
+                (for (str <- strLines) yield str.grouped(st.maxWidth)).flatten
         )
     }
 
@@ -440,10 +439,10 @@ class NCAsciiTable {
         val d = width - U.stripAnsi(txt).length
 
         sty.align match {
-            case "center" ⇒ space(d / 2) + txt + space(d / 2 + d % 2)
-            case "left" ⇒ space(sty.leftPad) + txt + space(d - sty.leftPad)
-            case "right" ⇒ space(d - sty.rightPad) + txt + space(sty.rightPad)
-            case _ ⇒ throw new AssertionError(s"Invalid align option: $sty")
+            case "center" => space(d / 2) + txt + space(d / 2 + d % 2)
+            case "left" => space(sty.leftPad) + txt + space(d - sty.leftPad)
+            case "right" => space(d - sty.rightPad) + txt + space(sty.rightPad)
+            case _ => throw new AssertionError(s"Invalid align option: $sty")
         }
     }
 
@@ -465,7 +464,7 @@ class NCAsciiTable {
             colsNum = hdr.size
 
         // Calc number of columns and make sure all rows are even.
-        for (r ← rows)
+        for (r <- rows)
             if (colsNum == -1)
                 colsNum = r.size
             else if (colsNum != r.size)
@@ -483,7 +482,7 @@ class NCAsciiTable {
         var hdrH = 0
 
         // Initialize column widths with header row (if any).
-        for (i ← hdr.indices) {
+        for (i <- hdr.indices) {
             val c = hdr(i)
 
             colWs(i) = c.width
@@ -492,7 +491,7 @@ class NCAsciiTable {
         }
 
         // Calculate row heights and column widths.
-        for (i ← rows.indices; j ← 0 until colsNum) {
+        for (i <- rows.indices; j <- 0 until colsNum) {
             val c = rows(i)(j)
 
             rowHs(i) = math.max(rowHs(i), c.height)
@@ -505,7 +504,7 @@ class NCAsciiTable {
         val tbl = new StringBuilder
 
         // Top margin.
-        for (_ ← 0 until margin.top)
+        for (_ <- 0 until margin.top)
             tbl ++= " \n"
 
         /**
@@ -521,11 +520,11 @@ class NCAsciiTable {
         if (isHdr) {
             tbl ++= mkAsciiLine(HDR_CRS, HDR_HOR)
 
-            for (i ← 0 until hdrH) {
+            for (i <- 0 until hdrH) {
                 // Left margin and '|'.
                 tbl ++= s"${space(margin.left)}$HDR_VER"
 
-                for (j ← hdr.indices) {
+                for (j <- hdr.indices) {
                     val c = hdr(j)
 
                     if (i >= 0 && i < c.height)
@@ -547,18 +546,18 @@ class NCAsciiTable {
 
         // Print rows, if any.
         if (rows.nonEmpty) {
-            val horLine = (i: Int) ⇒ {
+            val horLine = (i: Int) => {
                 // Left margin and '+'
                 tbl ++= s"${space(margin.left)}$ROW_CRS"
 
-                for (k ← rows(i).indices)
+                for (k <- rows(i).indices)
                     tbl ++= s"${dash(ROW_HOR, colWs(k))}$ROW_CRS"
 
                 // Right margin.
                 tbl ++= s"${space(margin.right)}\n"
             }
 
-            for (i ← rows.indices) {
+            for (i <- rows.indices) {
                 val r = rows(i)
 
                 val rowH = rowHs(i)
@@ -566,11 +565,11 @@ class NCAsciiTable {
                 if (i > 0 && ((rowH > 1 && autoBorder) || insideBorder) && rowHs(i - 1) == 1)
                     horLine(i)
 
-                for (j ← 0 until rowH) {
+                for (j <- 0 until rowH) {
                     // Left margin and '|'
                     tbl ++= s"${space(margin.left)}$ROW_VER"
 
-                    for (k ← r.indices) {
+                    for (k <- r.indices) {
                         val c = r(k)
                         val w = colWs(k)
 
@@ -594,7 +593,7 @@ class NCAsciiTable {
         }
 
         // Bottom margin.
-        for (_ ← 1 to margin.bottom)
+        for (_ <- 1 to margin.bottom)
             tbl ++= s" \n"
 
         val res = tbl.toString
@@ -670,13 +669,13 @@ class NCAsciiTable {
     def render(file: java.io.File): Unit = renderPrintStream(new PrintStream(file), file.getAbsolutePath)
 
 
-    private def renderPrintStream(f: ⇒ PrintStream, file: String): Unit =
+    private def renderPrintStream(f: => PrintStream, file: String): Unit =
         try
-            managed(f) acquireAndGet { ps ⇒
+            Using.resource(f) { ps =>
                 ps.print(mkString)
             }
         catch {
-            case e: IOException ⇒ throw new NCE(s"Error writing file: $file", e)
+            case e: IOException => throw new NCE(s"Error writing file: $file", e)
         }
 }
 

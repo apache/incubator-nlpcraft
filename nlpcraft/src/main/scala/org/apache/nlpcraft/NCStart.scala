@@ -61,7 +61,7 @@ object NCStart extends App with LazyLogging {
                 s"${NCVersion.copyright}${U.NL}"
             )
             
-            for (msg ← msgs)
+            for (msg <- msgs)
                 logger.error(msg)
     
             logger.info(g("Usage:"))

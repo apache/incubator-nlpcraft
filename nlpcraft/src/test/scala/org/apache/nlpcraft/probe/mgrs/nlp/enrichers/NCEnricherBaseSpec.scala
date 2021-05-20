@@ -118,20 +118,20 @@ abstract class NCEnricherBaseSpec extends NCTestContext {
       *
       * @param tests
       */
-    protected def runBatch(tests: Unit ⇒ Unit*): Unit = {
-        val errs = tests.zipWithIndex.flatMap { case (test, i) ⇒
+    protected def runBatch(tests: Unit => Unit*): Unit = {
+        val errs = tests.zipWithIndex.flatMap { case (test, i) =>
             try {
                 test.apply(())
 
                 None
             }
             catch {
-                case e: Throwable ⇒ Some(e, i)
+                case e: Throwable => Some(e, i)
             }
         }
 
         if (errs.nonEmpty) {
-            errs.foreach { case (err, i) ⇒
+            errs.foreach { case (err, i) =>
                 println(s"${i + 1}. Test failed: ${err.getLocalizedMessage}")
 
                 err.printStackTrace(System.out)

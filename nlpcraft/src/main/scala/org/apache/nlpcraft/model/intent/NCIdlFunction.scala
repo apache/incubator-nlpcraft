@@ -22,4 +22,4 @@ import org.apache.nlpcraft.model.NCToken
 /**
  *
  */
-trait NCIdlFunction extends ((NCToken, NCIdlContext) ⇒ NCIdlStackItem)
+trait NCIdlFunction extends ((NCToken, NCIdlContext) => NCIdlStackItem)

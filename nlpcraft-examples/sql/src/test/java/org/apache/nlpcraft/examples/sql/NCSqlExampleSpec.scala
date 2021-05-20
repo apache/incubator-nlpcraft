@@ -43,8 +43,8 @@ class NCSqlExampleSpec extends NCTestContext {
     private val DIFF = DiffRowGenerator.create.
         showInlineDiffs(true).
         inlineDiffByWord(true).
-        oldTag((_: java.lang.Boolean) ⇒ "~").
-        newTag((_: java.lang.Boolean) ⇒ "**").
+        oldTag((_: java.lang.Boolean) => "~").
+        newTag((_: java.lang.Boolean) => "**").
         build
 
     case class Case(texts: Seq[String], sql: String)
@@ -54,7 +54,7 @@ class NCSqlExampleSpec extends NCTestContext {
 
     private def normalize(s: String): String =
         NORM.
-            foldLeft(s) { (res, s) ⇒ res.replaceAll(s, " ") }.
+            foldLeft(s) { (res, s) => res.replaceAll(s, " ") }.
             split(" ").
             map(_.strip).
             filter(_.nonEmpty).
@@ -72,9 +72,9 @@ class NCSqlExampleSpec extends NCTestContext {
         val cli = getClient
 
         cases.
-            flatMap(c ⇒ c.texts.map(t ⇒ t → normalize(c.sql))).
+            flatMap(c => c.texts.map(t => t → normalize(c.sql))).
             foreach {
-                case (txt, expSqlNorm) ⇒
+                case (txt, expSqlNorm) =>
                     val res = cli.ask(txt)
 
                     if (res.isOk) {
@@ -94,7 +94,7 @@ class NCSqlExampleSpec extends NCTestContext {
 
                                 val tbl = NCAsciiTable("Expected", "Real")
 
-                                rows.foreach(r ⇒ tbl += (r.getOldLine, r.getNewLine))
+                                rows.foreach(r => tbl += (r.getOldLine, r.getNewLine))
 
                                 errs += txt → s"Unexpected SQL:\n$tbl"
                             }
@@ -108,7 +108,7 @@ class NCSqlExampleSpec extends NCTestContext {
             }
 
         if (errs.nonEmpty) {
-            errs.foreach { case (txt, err) ⇒ System.err.println(s"Text: $txt\nError: $err\n") }
+            errs.foreach { case (txt, err) => System.err.println(s"Text: $txt\nError: $err\n") }
 
             throw new Exception(s"Test finished with errors [passed=${cases.size - errs.size}, failed=${errs.size}]")
         }

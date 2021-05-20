@@ -17,7 +17,7 @@
 
 package org.apache.nlpcraft.probe.mgrs.cmd
 
-import java.io.{Serializable ⇒ JSerializable}
+import java.io.{Serializable => JSerializable}
 import com.google.gson.Gson
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.{NCService, _}
@@ -44,7 +44,7 @@ object NCCommandManager extends NCService {
      *
      * @param parent Optional parent span.
      */
-    override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ ⇒
+    override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ =>
         ackStarting()
         ackStarted()
     }
@@ -54,7 +54,7 @@ object NCCommandManager extends NCService {
      *
      * @param parent Optional parent span.
      */
-    override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
+    override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
         ackStopped()
     }
@@ -68,32 +68,32 @@ object NCCommandManager extends NCService {
         require(isStarted)
         
         startScopedSpan("processServerMessage", parent,
-            "msgType" → msg.getType,
-            "srvReqId" → msg.dataOpt[String]("srvReqId").getOrElse(""),
-            "usrId" → msg.dataOpt[Long]("userId").getOrElse(-1),
-            "mdlId" → msg.dataOpt[String]("mdlId").getOrElse("")) { span ⇒
+            "msgType" -> msg.getType,
+            "srvReqId" -> msg.dataOpt[String]("srvReqId").getOrElse(""),
+            "usrId" -> msg.dataOpt[Long]("userId").getOrElse(-1),
+            "mdlId" -> msg.dataOpt[String]("mdlId").getOrElse("")) { span =>
             if (msg.getType != "S2P_PING")
                 logger.trace(s"Probe server message received: $msg")
             
             try
                 msg.getType match {
-                    case "S2P_PING" ⇒ ()
+                    case "S2P_PING" => ()
     
-                    case "S2P_CLEAR_CONV" ⇒
+                    case "S2P_CLEAR_CONV" =>
                         NCConversationManager.getConversation(
                             msg.data[Long]("usrId"),
                             msg.data[String]("mdlId"),
                             span
-                        ).clearTokens((_: NCToken) ⇒ true)
+                        ).clearTokens((_: NCToken) => true)
 
-                    case "S2P_CLEAR_DLG" ⇒
+                    case "S2P_CLEAR_DLG" =>
                         NCDialogFlowManager.clear(
                             msg.data[Long]("usrId"),
                             msg.data[String]("mdlId"),
                             span
                         )
 
-                    case "S2P_ASK" ⇒
+                    case "S2P_ASK" =>
                         NCProbeEnrichmentManager.ask(
                             srvReqId = msg.data[String]("srvReqId"),
                             txt = msg.data[String]("txt"),
@@ -105,35 +105,35 @@ object NCCommandManager extends NCService {
                             span
                     )
 
-                    case "S2P_MODEL_INFO" ⇒
+                    case "S2P_MODEL_INFO" =>
                         val mdlId = msg.data[String]("mdlId")
 
                         val mdlData = NCModelManager.getModel(mdlId)
 
                         val macros: util.Map[String, String] = mdlData.model.getMacros
-                        val syns: util.Map[String, util.List[String]] = mdlData.model.getElements.asScala.map(p ⇒ p.getId → p.getSynonyms).toMap.asJava
-                        val samples: util.Map[String, util.List[util.List[String]]] = mdlData.samples.map(p ⇒ p._1 → p._2.map(_.asJava).asJava).toMap.asJava
+                        val syns: util.Map[String, util.List[String]] = mdlData.model.getElements.asScala.map(p => p.getId -> p.getSynonyms).toMap.asJava
+                        val samples: util.Map[String, util.List[util.List[String]]] = mdlData.samples.map(p => p._1 -> p._2.map(_.asJava).asJava).toMap.asJava
 
                         NCConnectionManager.send(
                             NCProbeMessage(
                                 "P2S_MODEL_INFO",
-                                "reqGuid" → msg.getGuid,
-                                "resp" → GSON.toJson(
+                                "reqGuid" -> msg.getGuid,
+                                "resp" -> GSON.toJson(
                                     Map(
-                                        "macros" → macros.asInstanceOf[JSerializable],
-                                        "synonyms" → syns.asInstanceOf[JSerializable],
-                                        "samples" → samples.asInstanceOf[JSerializable]
+                                        "macros" -> macros.asInstanceOf[JSerializable],
+                                        "synonyms" -> syns.asInstanceOf[JSerializable],
+                                        "samples" -> samples.asInstanceOf[JSerializable]
                                     ).asJava
                                 )
                             ),
                             span
                         )
 
-                    case _ ⇒
+                    case _ =>
                         logger.error(s"Received unknown server message (you need to update the probe): ${msg.getType}")
                 }
             catch {
-                case e: Throwable ⇒ U.prettyError(logger, s"Error while processing server message (ignoring): ${msg.getType}", e)
+                case e: Throwable => U.prettyError(logger, s"Error while processing server message (ignoring): ${msg.getType}", e)
             }
         }
     }

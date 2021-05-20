@@ -56,7 +56,7 @@ object NCTokenLogger extends LazyLogging {
 
     // Filters for notes types. If filter is not set all columns will display.
     private final val NOTE_COLUMNS = Map[String, Seq[String]](
-        "nlpcraft:nlp" →
+        "nlpcraft:nlp" ->
             Seq(
                 "index",
                 "origText",
@@ -74,17 +74,17 @@ object NCTokenLogger extends LazyLogging {
     
     private final val SORT: Map[String, Map[String, Int]] =
         Map(
-            "nlpcraft:continent" → Seq("continent"),
-            "nlpcraft:subcontinent" → Seq("subcontinent", "continent"),
-            "nlpcraft:country" → Seq("country", "subcontinent", "continent"),
-            "nlpcraft:metro" → Seq("metro"),
-            "nlpcraft:region" → Seq("region", "country", "subcontinent", "continent", "metro"),
-            "nlpcraft:city" → Seq("city", "latitude", "longitude", "region", "country", "subcontinent", "continent"),
-            "nlpcraft:date" → Seq("from", "to", "periods"),
-            "nlpcraft:relation" → Seq("type", "indexes", "note"),
-            "nlpcraft:sort" → Seq("asc", "subjnotes", "subjindexes", "bynotes", "byindexes"),
-            "nlpcraft:limit" → Seq("limit", "indexes", "asc", "note")
-        ).map(p ⇒ p._1 → p._2.zipWithIndex.map(p ⇒ p._1 → p._2).toMap)
+            "nlpcraft:continent" -> Seq("continent"),
+            "nlpcraft:subcontinent" -> Seq("subcontinent", "continent"),
+            "nlpcraft:country" -> Seq("country", "subcontinent", "continent"),
+            "nlpcraft:metro" -> Seq("metro"),
+            "nlpcraft:region" -> Seq("region", "country", "subcontinent", "continent", "metro"),
+            "nlpcraft:city" -> Seq("city", "latitude", "longitude", "region", "country", "subcontinent", "continent"),
+            "nlpcraft:date" -> Seq("from", "to", "periods"),
+            "nlpcraft:relation" -> Seq("type", "indexes", "note"),
+            "nlpcraft:sort" -> Seq("asc", "subjnotes", "subjindexes", "bynotes", "byindexes"),
+            "nlpcraft:limit" -> Seq("limit", "indexes", "asc", "note")
+        ).map(p => p._1 -> p._2.zipWithIndex.map(p => p._1 -> p._2).toMap)
 
     private def format(l: Long): String = new SimpleDateFormat("yyyy/MM/dd").format(new java.util.Date(l))
     private def mkMore(incl: Boolean): String = if (incl) ">=" else ">"
@@ -97,21 +97,21 @@ object NCTokenLogger extends LazyLogging {
      */
     private def filterKeysPairs(pairs: Seq[(String, String)]): Seq[NoteMetadata] = {
         val seq =
-            pairs.map(_._1).distinct.map(p ⇒ p → pairs.filter(_._1 == p).map(_._2)).
-                sortBy(p ⇒ {
+            pairs.map(_._1).distinct.map(p => p -> pairs.filter(_._1 == p).map(_._2)).
+                sortBy(p => {
                     val idx = NOTE_TYPES.indexWhere(_ == p._1)
 
                     if (idx >= 0) idx else Integer.MAX_VALUE
                 })
 
-        seq.map(s ⇒ {
+        seq.map(s => {
             val t = s._1
 
             val (filtered, isFull) =
                 if (t.startsWith("nlpcraft:"))
                     NOTE_COLUMNS.get(t) match {
-                        case Some(fs) ⇒ (s._2.filter(fs.contains).sortBy(p ⇒ fs.indexWhere(_ == p)), false)
-                        case None ⇒ (Seq.empty[String], true)
+                        case Some(fs) => (s._2.filter(fs.contains).sortBy(p => fs.indexWhere(_ == p)), false)
+                        case None => (Seq.empty[String], true)
                     }
                 else
                     (Seq.empty[String], true)
@@ -132,18 +132,18 @@ object NCTokenLogger extends LazyLogging {
      * @param md Notes.
      */
     private def mkTable(md: Seq[NoteMetadata]): NCAsciiTable =
-        NCAsciiTable(md.flatMap(h ⇒
+        NCAsciiTable(md.flatMap(h =>
             if (h.isFull)
                 Seq(normalizeHeader(h.noteType))
             else
-                h.filtered.map(p ⇒ s"${normalizeHeader(h.noteType)}:${p.toLowerCase}")
+                h.filtered.map(p => s"${normalizeHeader(h.noteType)}:${p.toLowerCase}")
         ): _*)
     
     private def note2String(note: NCNlpSentenceNote): String = {
         val sorted: Seq[(String, java.io.Serializable)] =
             SORT.get(note.noteType) match {
-                case Some(map) ⇒ note.toSeq.sortBy(p ⇒ map.getOrElse(p._1, Int.MaxValue))
-                case None ⇒ note.toSeq
+                case Some(map) => note.toSeq.sortBy(p => map.getOrElse(p._1, Int.MaxValue))
+                case None => note.toSeq
             }
 
         def vals2String(seq: Seq[(String, java.io.Serializable)]): String = {
@@ -163,8 +163,8 @@ object NCTokenLogger extends LazyLogging {
             }
             def mkBool(name: String): Boolean = getValue(name).asInstanceOf[Boolean]
             def mkBoolOpt(name: String): Option[Boolean] = getValueOpt(name) match {
-                case Some(b) ⇒ Some(b.asInstanceOf[Boolean])
-                case None ⇒ None
+                case Some(b) => Some(b.asInstanceOf[Boolean])
+                case None => None
             }
             def mkString(name: String): String = getValue(name).toString
             def mkJListString(name: String): String =
@@ -173,29 +173,29 @@ object NCTokenLogger extends LazyLogging {
 
             def getValueOpt(name: String): Option[java.io.Serializable] =
                 seq.find(_._1 == name) match {
-                    case Some(x) ⇒ Some(x._2)
-                    case None ⇒ None
+                    case Some(x) => Some(x._2)
+                    case None => None
                 }
 
             def mkStringOpt(name: String): Option[String] =
                 getValueOpt(name) match {
-                    case Some(jv) ⇒ Some(jv.toString)
-                    case None ⇒ None
+                    case Some(jv) => Some(jv.toString)
+                    case None => None
                 }
 
             def mkDouble3(name: String): Double = (getValue(name).asInstanceOf[Double] * 1000).intValue / 1000.0
             def indexes2String(v: java.io.Serializable): String = v.asInstanceOf[util.List[Int]].asScala.mkString(",")
             def mkIndexes(name: String): String = indexes2String(getValue(name))
-            def getSeq(names: String*): String = names.flatMap(name ⇒ mkStringOpt(name)).mkString("|")
+            def getSeq(names: String*): String = names.flatMap(name => mkStringOpt(name)).mkString("|")
 
             note.noteType match {
-                case "nlpcraft:continent" ⇒ getSeq("continent")
-                case "nlpcraft:subcontinent" ⇒ getSeq("continent", "subcontinent")
-                case "nlpcraft:country" ⇒ getSeq("continent", "subcontinent", "country")
-                case "nlpcraft:region" ⇒ getSeq("continent", "subcontinent", "country", "region")
-                case "nlpcraft:city" ⇒ getSeq("continent", "subcontinent", "country", "region", "city")
-                case "nlpcraft:metro" ⇒ getSeq("metro")
-                case "nlpcraft:date" ⇒
+                case "nlpcraft:continent" => getSeq("continent")
+                case "nlpcraft:subcontinent" => getSeq("continent", "subcontinent")
+                case "nlpcraft:country" => getSeq("continent", "subcontinent", "country")
+                case "nlpcraft:region" => getSeq("continent", "subcontinent", "country", "region")
+                case "nlpcraft:city" => getSeq("continent", "subcontinent", "country", "region", "city")
+                case "nlpcraft:metro" => getSeq("metro")
+                case "nlpcraft:date" =>
                     val from = mkDate("from")
                     val to = mkDate("to")
                     val ps = mkJListString("periods")
@@ -204,24 +204,24 @@ object NCTokenLogger extends LazyLogging {
                 
                     s"range=$r, periods=$ps"
 
-                case "nlpcraft:relation" ⇒
+                case "nlpcraft:relation" =>
                     val t = mkString("type")
                     val note = mkString("note")
 
                     s"type=$t, indexes=[${mkIndexes("indexes")}], note=$note"
 
-                case "nlpcraft:sort" ⇒
+                case "nlpcraft:sort" =>
                     var s = mkStringOpt("subjnotes") match {
-                        case Some(subjnotes) ⇒ s"subjnotes=$subjnotes, subjindexes=${mkIndexes("subjindexes")}"
-                        case None ⇒ ""
+                        case Some(subjnotes) => s"subjnotes=$subjnotes, subjindexes=${mkIndexes("subjindexes")}"
+                        case None => ""
                     }
 
                     mkStringOpt("bynotes") match {
-                        case Some(bynotes) ⇒
+                        case Some(bynotes) =>
                             val sBy = s"bynotes=$bynotes, byindexes=${mkIndexes("byindexes")}"
 
                             s = if (s.nonEmpty) s"$s, $sBy" else sBy
-                        case None ⇒ // No-op.
+                        case None => // No-op.
                     }
 
                     val ascOpt = mkBoolOpt("asc")
@@ -231,7 +231,7 @@ object NCTokenLogger extends LazyLogging {
 
                     s
 
-                case "nlpcraft:limit" ⇒
+                case "nlpcraft:limit" =>
                     val limit = mkDouble3("limit")
                     val ascOpt = mkBoolOpt("asc")
                     val note = mkString("note")
@@ -243,9 +243,9 @@ object NCTokenLogger extends LazyLogging {
 
                     s
 
-                case "nlpcraft:coordinate" ⇒ s"${getValue("latitude")} and ${getValue("longitude")}"
+                case "nlpcraft:coordinate" => s"${getValue("latitude")} and ${getValue("longitude")}"
 
-                case "nlpcraft:num" ⇒
+                case "nlpcraft:num" =>
                     val from = mkValue("from", "isFractional")
                     val to = mkValue("to", "isFractional")
                     val fromIncl = mkBool("fromIncl")
@@ -271,17 +271,17 @@ object NCTokenLogger extends LazyLogging {
                         }
 
                     s = getValueOpt("unit") match {
-                        case Some(u) ⇒ s"$s, unit=$u(${getValue("unitType")})"
-                        case None ⇒ s
+                        case Some(u) => s"$s, unit=$u(${getValue("unitType")})"
+                        case None => s
                     }
 
                     s
 
-                case name if name.startsWith("google:") ⇒
+                case name if name.startsWith("google:") =>
                     val meta =
                         getValue("meta").
                             asInstanceOf[java.util.Map[String, java.io.Serializable]].
-                            asScala.map(p ⇒ s"${p._1}=${p._2}").mkString(",")
+                            asScala.map(p => s"${p._1}=${p._2}").mkString(",")
 
                     // Mentions.
                     val beginOffsets = getValue("mentionsBeginOffsets").asInstanceOf[java.util.List[Int]]
@@ -293,51 +293,51 @@ object NCTokenLogger extends LazyLogging {
 
                     val mentions =
                         beginOffsets.asScala.zip(contents.asScala).zip(types.asScala).
-                            map { case ((o, c), t) ⇒ s"beginOffset=$o, content=$c, type=$t" }.mkString(", ")
+                            map { case ((o, c), t) => s"beginOffset=$o, content=$c, type=$t" }.mkString(", ")
 
                     val sal = mkDouble3("salience")
 
                     s"meta=[$meta], mentions=[$mentions], salience=$sal"
 
-                case name if name.startsWith("stanford:") ⇒
+                case name if name.startsWith("stanford:") =>
                     var s = s"confidence=${mkDouble3("confidence")}"
 
                     mkStringOpt("nne") match {
-                        case Some(nne) ⇒ s = s"$s, nne=$nne"
-                        case None ⇒ // No-op.
+                        case Some(nne) => s = s"$s, nne=$nne"
+                        case None => // No-op.
                     }
 
                     s
-                case name if name.startsWith("opennlp:") ⇒
+                case name if name.startsWith("opennlp:") =>
                     s"probability=${mkDouble3("probability")}"
 
-                case name if name.startsWith("spacy:") ⇒
+                case name if name.startsWith("spacy:") =>
                     var s = s"vector=${mkDouble3("vector")}, sentiment=${mkDouble3("sentiment")}"
 
                     getValueOpt("meta") match {
-                        case Some(m) ⇒
+                        case Some(m) =>
                             val metaMap = m.asInstanceOf[java.util.Map[String, String]].asScala
 
                             if (metaMap.nonEmpty) {
-                                val v = metaMap.map(p ⇒ s"${p._1}=${p._2}").mkString(",")
+                                val v = metaMap.map(p => s"${p._1}=${p._2}").mkString(",")
 
                                 s = s"$s, meta=$v"
                             }
 
-                        case None ⇒ // No-op.
+                        case None => // No-op.
                     }
 
                     s
 
                 // User tokens.
-                case _ ⇒ ""
+                case _ => ""
             }
         }
     
-        val v = if (sorted.lengthCompare(1) > 0) vals2String(sorted) else sorted.map(p ⇒ s"${p._2}").mkString(", ")
+        val v = if (sorted.lengthCompare(1) > 0) vals2String(sorted) else sorted.map(p => s"${p._2}").mkString(", ")
     
         if (note.tokenFrom < note.tokenTo) {
-            if (note.tokenIndexes.tail.zipWithIndex.forall { case (v, i) ⇒ v == note.tokenIndexes(i) + 1 })
+            if (note.tokenIndexes.tail.zipWithIndex.forall { case (v, i) => v == note.tokenIndexes(i) + 1 })
                 s"$v ${s"<${note.tokenFrom} to ${note.tokenTo}>"}"
             else
                 s"$v ${s"<${note.tokenIndexes.mkString(",")}>"}"
@@ -349,12 +349,12 @@ object NCTokenLogger extends LazyLogging {
     private def mkCells(hs: Seq[NoteMetadata], t: NCNlpSentenceToken): Seq[String] = {
         def filter(h: NoteMetadata): Iterable[NCNlpSentenceNote] = t.filter(_.noteType == h.noteType)
         
-        hs.flatMap(h ⇒
+        hs.flatMap(h =>
             if (h.isFull)
-                Seq(filter(h).map(p ⇒ note2String(p)).mkString(", "))
+                Seq(filter(h).map(p => note2String(p)).mkString(", "))
             else
                 h.filtered.
-                    map(p ⇒ filter(h).filter(_.contains(p)).map(n ⇒ n(p)).mkString(", "))
+                    map(p => filter(h).filter(_.contains(p)).map(n => n(p)).mkString(", "))
         )
     }
     
@@ -362,11 +362,11 @@ object NCTokenLogger extends LazyLogging {
       * Prepares table to print.
       */
     def prepareTable(sen: NCNlpSentence): NCAsciiTable = {
-        val md = filterKeysPairs(sen.flatMap(t ⇒ t.map(n ⇒ for (vk ← n.keys) yield n.noteType → vk)).flatten.distinct)
+        val md = filterKeysPairs(sen.flatMap(t => t.map(n => for (vk <- n.keys) yield n.noteType -> vk)).flatten.distinct)
         
         val tbl = mkTable(md)
         
-        for (t ← sen) tbl += (mkCells(md, t): _*)
+        for (t <- sen) tbl += (mkCells(md, t): _*)
         
         tbl
     }
@@ -396,7 +396,7 @@ object NCTokenLogger extends LazyLogging {
 
         val tbl = NCAsciiTable(headers :_*)
 
-        toks.foreach(tok ⇒ {
+        toks.foreach(tok => {
             val md = tok.getMetadata
             val id = tok.getId
 
@@ -410,7 +410,7 @@ object NCTokenLogger extends LazyLogging {
 
             def has(name: String): Boolean = md.containsKey(mkFullName(name))
 
-            def mkString(names: String*): String = names.flatMap(name ⇒ {
+            def mkString(names: String*): String = names.flatMap(name => {
                 val opt = getOpt(name)
 
                 opt
@@ -455,15 +455,15 @@ object NCTokenLogger extends LazyLogging {
             else {
                 val v =
                     id match {
-                        case "nlpcraft:nlp" ⇒ ""
+                        case "nlpcraft:nlp" => ""
 
-                        case "nlpcraft:continent" ⇒ mkString("continent")
-                        case "nlpcraft:subcontinent" ⇒ mkString("continent", "subcontinent")
-                        case "nlpcraft:country" ⇒ mkString("continent", "subcontinent", "country")
-                        case "nlpcraft:region" ⇒ mkString("continent", "subcontinent", "country", "region")
-                        case "nlpcraft:city" ⇒ mkString("continent", "subcontinent", "country", "region", "city")
-                        case "nlpcraft:metro" ⇒ mkString("metro")
-                        case "nlpcraft:date" ⇒
+                        case "nlpcraft:continent" => mkString("continent")
+                        case "nlpcraft:subcontinent" => mkString("continent", "subcontinent")
+                        case "nlpcraft:country" => mkString("continent", "subcontinent", "country")
+                        case "nlpcraft:region" => mkString("continent", "subcontinent", "country", "region")
+                        case "nlpcraft:city" => mkString("continent", "subcontinent", "country", "region", "city")
+                        case "nlpcraft:metro" => mkString("metro")
+                        case "nlpcraft:date" =>
                             val from = format(get("from"))
                             val to = format(get("to"))
                             val ps: java.util.List[String] = get("periods")
@@ -472,22 +472,22 @@ object NCTokenLogger extends LazyLogging {
 
                             s"range=$r, periods=${ps.asScala.mkString(",")}"
 
-                        case "nlpcraft:relation" ⇒
+                        case "nlpcraft:relation" =>
                             val t = mkString("type")
                             val note = mkString("note")
 
                             s"type=$t, indexes=[${getIndexes("indexes")}], note=$note"
 
-                        case "nlpcraft:sort" ⇒
+                        case "nlpcraft:sort" =>
                             def x(l: java.util.List[String]): String = l.asScala.mkString(", ")
 
                             def getList(notesName: String, indexesName: String): String = {
                                 val notesOpt: Option[java.util.List[String]] = getOpt(notesName)
 
                                 notesOpt match {
-                                    case Some(notes) ⇒
+                                    case Some(notes) =>
                                         s"$notesName=${x(notes)}, $indexesName=[${getIndexes(indexesName)}]"
-                                    case None ⇒ ""
+                                    case None => ""
                                 }
                             }
 
@@ -503,7 +503,7 @@ object NCTokenLogger extends LazyLogging {
                                 s = s"$s, asc=${get("asc")}"
 
                             s
-                        case "nlpcraft:limit" ⇒
+                        case "nlpcraft:limit" =>
                             val limit = mkDouble3("limit")
                             val note = mkString("note")
 
@@ -514,7 +514,7 @@ object NCTokenLogger extends LazyLogging {
 
                             s
 
-                        case "nlpcraft:num" ⇒
+                        case "nlpcraft:num" =>
                             def mkValue(name: String, fractionalField: String): String = {
                                 val d: Double = get(name)
                                 val fr: Boolean = get(fractionalField)
@@ -554,10 +554,10 @@ object NCTokenLogger extends LazyLogging {
                             }
 
                             s
-                        case "nlpcraft:coordinate" ⇒ mkString("latitude", "longitude")
-                        case name if name.startsWith("google:") ⇒
+                        case "nlpcraft:coordinate" => mkString("latitude", "longitude")
+                        case name if name.startsWith("google:") =>
                             val meta: java.util.Map[String, java.io.Serializable] = get("meta")
-                            val metaS = meta.asScala.map(p ⇒ s"${p._1}=${p._2}").mkString(",")
+                            val metaS = meta.asScala.map(p => s"${p._1}=${p._2}").mkString(",")
 
                             // Mentions.
                             val beginOffsets: java.util.List[Int] = get("mentionsbeginoffsets")
@@ -569,46 +569,46 @@ object NCTokenLogger extends LazyLogging {
 
                             val mentions =
                                 beginOffsets.asScala.zip(contents.asScala).zip(types.asScala).
-                                    map { case ((o, c), t) ⇒ s"beginOffset=$o, content=$c, type=$t" }.mkString(", ")
+                                    map { case ((o, c), t) => s"beginOffset=$o, content=$c, type=$t" }.mkString(", ")
 
                             val sal = mkDouble3("salience")
 
                             s"meta=[$metaS], mentions=[$mentions], salience=$sal"
-                        case name if name.startsWith("opennlp:") ⇒ s"probability=${mkDouble3("probability")}"
-                        case name if name.startsWith("stanford:") ⇒
+                        case name if name.startsWith("opennlp:") => s"probability=${mkDouble3("probability")}"
+                        case name if name.startsWith("stanford:") =>
                             var s = s"confidence=${mkDouble3("confidence")}"
 
                             if (has("nne"))
                                 s = s"$s, nne=${get("nne")}"
 
                             s
-                        case name if name.startsWith("spacy:") ⇒
+                        case name if name.startsWith("spacy:") =>
                             var s = s"vector=${mkDouble3("vector")}, sentiment=${mkDouble3("sentiment")}"
 
                             val metaOpt: Option[java.util.Map[String, String]] = getOpt("meta")
 
                             metaOpt match {
-                                case Some(m) ⇒
+                                case Some(m) =>
                                     val ms = m.asScala
 
                                     if (ms.nonEmpty) {
-                                        val v = ms.map(p ⇒ s"${p._1}=${p._2}").mkString(",")
+                                        val v = ms.map(p => s"${p._1}=${p._2}").mkString(",")
 
                                         s = s"$s, meta=$v"
                                     }
-                                case None ⇒ // No-op.
+                                case None => // No-op.
                             }
 
                             s
                             
                         // User defined token.
-                        case _ ⇒
+                        case _ =>
                             def tok2Str(t: NCToken): String = {
                                 var s = s"id=${t.getId}"
 
                                 t.meta(TOK_META_ALIASES_KEY).asInstanceOf[java.util.Set[String]] match {
-                                    case null ⇒ // No-op.
-                                    case aliases ⇒ s = s"$s, aliases='${aliases.asScala.mkString(",")}'"
+                                    case null => // No-op.
+                                    case aliases => s = s"$s, aliases='${aliases.asScala.mkString(",")}'"
                                 }
 
                                 val parts = t.getPartTokens.asScala.map(tok2Str).mkString("|")

@@ -80,7 +80,7 @@ object NCGeoEnricher extends NCServerEnricher {
      *
      * @param parent Optional parent span.
      */
-    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
 
         commons = null
@@ -96,7 +96,7 @@ object NCGeoEnricher extends NCServerEnricher {
      * @param parent Optional parent span.
      * @return
      */
-    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ =>
         ackStarting()
 
         locations = NCGeoManager.getModel.synonyms
@@ -108,9 +108,9 @@ object NCGeoEnricher extends NCServerEnricher {
             NCExternalConfigManager.getDirContent(
                 GEO,
                 EXCEPTIONS_PATH,
-                (name: String) ⇒ name.endsWith("yaml")
+                (name: String) => name.endsWith("yaml")
             ).
-                flatMap(p ⇒
+                flatMap(p =>
                     U.extractYamlString(
                         p.content,
                         p.fileName,
@@ -118,17 +118,17 @@ object NCGeoEnricher extends NCServerEnricher {
                         new TypeReference[immutable.Map[String, immutable.Set[String]]] {}
                     )
                 ).
-                map(p ⇒ NCGeoLocationKind.withName(p._1.toUpperCase) → p._2).
+                map(p => NCGeoLocationKind.withName(p._1.toUpperCase) -> p._2).
                 groupBy(_._1).
-                map(p ⇒ p._1 → p._2.flatMap(_._2).toSet).map(p ⇒ p._1 → p._2.map(_.toLowerCase))
+                map(p => p._1 -> p._2.flatMap(_._2).toSet).map(p => p._1 -> p._2.map(_.toLowerCase))
 
         def readCities(res: String): List[TopCity] =
             U.extractYamlString(
                 NCExternalConfigManager.getContent(GEO, res), res, ignoreCase = true, new TypeReference[List[TopCity]] {}
             )
 
-        topUsa = readCities(US_TOP_PATH).map(city ⇒ glue(city.name, city.region)).toSet
-        topWorld = readCities(WORLD_TOP_PATH).map(city ⇒ glue(city.name, city.region)).toSet
+        topUsa = readCities(US_TOP_PATH).map(city => glue(city.name, city.region)).toSet
+        topWorld = readCities(WORLD_TOP_PATH).map(city => glue(city.name, city.region)).toSet
 
         ackStarted()
     }
@@ -143,90 +143,90 @@ object NCGeoEnricher extends NCServerEnricher {
     override def enrich(ns: NCNlpSentence, parent: Span = null): Unit = {
         require(isStarted)
 
-        startScopedSpan("enrich", parent, "srvReqId" → ns.srvReqId, "txt" → ns.text) { _ ⇒
+        startScopedSpan("enrich", parent, "srvReqId" -> ns.srvReqId, "txt" -> ns.text) { _ =>
             // This stage must not be 1st enrichment stage.
             assume(ns.nonEmpty)
 
-            for (toks ← ns.tokenMixWithStopWords(withQuoted = true)) {
+            for (toks <- ns.tokenMixWithStopWords(withQuoted = true)) {
                 def mkNote(kind: NCGeoLocationKind, seq: (String, Any)*): NCNlpSentenceNote =
                     NCNlpSentenceNote(toks.map(_.index), mkName(kind), seq :_*)
 
                 def toSerializable(m: Map[String, Any]): java.io.Serializable= {
                     val ser = new util.HashMap[String, Object]()
 
-                    m.foreach { case (k, v) ⇒ ser.put(k, v.asInstanceOf[Object]) }
+                    m.foreach { case (k, v) => ser.put(k, v.asInstanceOf[Object]) }
 
                     ser
                 }
 
                 def make(e: NCGeoEntry): NCNlpSentenceNote =
                     e match {
-                        case x: NCGeoMetro ⇒
+                        case x: NCGeoMetro =>
                             mkNote(
                                 METRO,
-                                "metro" → x.name
+                                "metro" -> x.name
                             )
 
-                        case x: NCGeoContinent ⇒
+                        case x: NCGeoContinent =>
                             mkNote(
                                 CONTINENT,
-                                "continent" → x.name
+                                "continent" -> x.name
                             )
 
-                        case x: NCGeoSubContinent ⇒
+                        case x: NCGeoSubContinent =>
                             mkNote(
                                 SUBCONTINENT,
-                                "continent" → x.continent.name,
-                                "subcontinent" → x.name
+                                "continent" -> x.continent.name,
+                                "subcontinent" -> x.name
                             )
 
-                        case x: NCGeoCountry ⇒
+                        case x: NCGeoCountry =>
                             mkNote(
                                 COUNTRY,
-                                "continent" → x.subContinent.continent.name,
-                                "subcontinent" → x.subContinent.name,
-                                "country" → x.name,
-                                "countrymeta" → toSerializable(x.meta)
+                                "continent" -> x.subContinent.continent.name,
+                                "subcontinent" -> x.subContinent.name,
+                                "country" -> x.name,
+                                "countrymeta" -> toSerializable(x.meta)
                             )
 
-                        case x: NCGeoRegion ⇒
+                        case x: NCGeoRegion =>
                             mkNote(
                                 REGION,
-                                "continent" → x.country.subContinent.continent.name,
-                                "subcontinent" → x.country.subContinent.name,
-                                "country" → x.country.name,
-                                "region" → x.name,
-                                "countrymeta" → toSerializable(x.country.meta)
+                                "continent" -> x.country.subContinent.continent.name,
+                                "subcontinent" -> x.country.subContinent.name,
+                                "country" -> x.country.name,
+                                "region" -> x.name,
+                                "countrymeta" -> toSerializable(x.country.meta)
                             )
 
-                        case x: NCGeoCity ⇒
+                        case x: NCGeoCity =>
                             mkNote(
                                 CITY,
-                                "continent" → x.region.country.subContinent.continent.name,
-                                "subcontinent" → x.region.country.subContinent.name,
-                                "country" → x.region.country.name,
-                                "region" → x.region.name,
-                                "city" → x.name,
-                                "countrymeta" → toSerializable(x.region.country.meta),
-                                "citymeta" → toSerializable(x.meta)
+                                "continent" -> x.region.country.subContinent.continent.name,
+                                "subcontinent" -> x.region.country.subContinent.name,
+                                "country" -> x.region.country.name,
+                                "region" -> x.region.name,
+                                "city" -> x.name,
+                                "countrymeta" -> toSerializable(x.region.country.meta),
+                                "citymeta" -> toSerializable(x.meta)
                             )
                             
-                        case _ ⇒ throw new AssertionError(s"Unexpected data: $e")
+                        case _ => throw new AssertionError(s"Unexpected data: $e")
                     }
 
                 def addAll(locs: Set[NCGeoEntry]): Unit =
-                    for (loc ← locs) {
+                    for (loc <- locs) {
                         val note = make(loc)
 
-                        toks.foreach(t ⇒ t.add(note))
+                        toks.foreach(t => t.add(note))
 
                         // Other types(JJ etc) and quoted word are not re-marked.
-                        toks.filter(t ⇒ !NCPennTreebank.NOUNS_POS.contains(t.pos) && t.pos != "FW").
-                            foreach(t ⇒ ns.fixNote(t.getNlpNote, "pos" → NCPennTreebank.SYNTH_POS))
+                        toks.filter(t => !NCPennTreebank.NOUNS_POS.contains(t.pos) && t.pos != "FW").
+                            foreach(t => ns.fixNote(t.getNlpNote, "pos" -> NCPennTreebank.SYNTH_POS))
                     }
 
                 locations.get(toks.map(_.normText).mkString(" ")) match {
-                    case Some(locs) ⇒
+                    case Some(locs) =>
                         // If multiple token match - add it.
                         if (toks.length > 1)
                             addAll(locs)
@@ -250,41 +250,41 @@ object NCGeoEnricher extends NCServerEnricher {
                                 }
 
                                 addAll(locs.collect {
-                                    case g: NCGeoContinent ⇒ g
-                                    case g: NCGeoSubContinent ⇒ g
-                                    case g: NCGeoCountry ⇒ g
-                                    case g: NCGeoMetro ⇒ g
-                                    case g: NCGeoRegion if g.country.name == "united states" ⇒ g
-                                    case g: NCGeoCity if isTopCity(g) ⇒ g
+                                    case g: NCGeoContinent => g
+                                    case g: NCGeoSubContinent => g
+                                    case g: NCGeoCountry => g
+                                    case g: NCGeoMetro => g
+                                    case g: NCGeoRegion if g.country.name == "united states" => g
+                                    case g: NCGeoCity if isTopCity(g) => g
                                 })
                             }
                             // In all other cases - ignore one-token match.
                         }
-                    case None ⇒
+                    case None =>
                         // Case sensitive synonyms.
                         locations.get(toks.map(_.origText).mkString(" ")) match {
-                            case Some(locs) ⇒ addAll(locs)
-                            case None ⇒
+                            case Some(locs) => addAll(locs)
+                            case None =>
                                 // If there is no direct match try to convert JJs to NNs and re-check
-                                // for a possible match, e.g. "american" ⇒ "america".
+                                // for a possible match, e.g. "american" => "america".
                                 if (toks.size == 1) {
                                     val tok = toks.head
 
                                     if (NCPennTreebank.JJS_POS.contains(tok.pos)) {
                                         var endLoop = false
 
-                                        for (noun ← NCWordNetManager.getNNsForJJ(tok.normText); if !endLoop) {
+                                        for (noun <- NCWordNetManager.getNNsForJJ(tok.normText); if !endLoop) {
                                             def onResult(locs: Set[NCGeoEntry]): Unit = {
                                                 addAll(locs)
                                                 endLoop = true
                                             }
 
                                             locations.get(noun) match {
-                                                case Some(locs) ⇒ onResult(locs)
-                                                case None ⇒
+                                                case Some(locs) => onResult(locs)
+                                                case None =>
                                                     locations.get(noun.toLowerCase) match {
-                                                        case Some(locs) ⇒ onResult(locs)
-                                                        case None ⇒ // No-op.
+                                                        case Some(locs) => onResult(locs)
+                                                        case None => // No-op.
                                                     }
                                             }
                                         }
@@ -300,19 +300,19 @@ object NCGeoEnricher extends NCServerEnricher {
 
     private def getValue(note: NCNlpSentenceNote, key: String): String = note(key).asInstanceOf[String]
     private def getValueOpt(note: NCNlpSentenceNote, key: String): Option[String] = note.get(key) match {
-        case Some(s) ⇒ Some(s.asInstanceOf[String])
-        case None ⇒ None
+        case Some(s) => Some(s.asInstanceOf[String])
+        case None => None
     }
 
     private def getName(kind: NCGeoLocationKind, note: NCNlpSentenceNote): String =
         kind match {
-            case METRO ⇒ getValue(note, "metro")
-            case CONTINENT ⇒ getValue(note, "continent")
-            case SUBCONTINENT ⇒ getValue(note, "subcontinent")
-            case COUNTRY ⇒ getValue(note, "country")
-            case REGION ⇒ getValue(note, "region")
-            case CITY ⇒ getValue(note, "city")
-            case _ ⇒ throw new AssertionError(s"sUnexpected kind: $kind")
+            case METRO => getValue(note, "metro")
+            case CONTINENT => getValue(note, "continent")
+            case SUBCONTINENT => getValue(note, "subcontinent")
+            case COUNTRY => getValue(note, "country")
+            case REGION => getValue(note, "region")
+            case CITY => getValue(note, "city")
+            case _ => throw new AssertionError(s"sUnexpected kind: $kind")
         }
 
     private def isChild(note: NCNlpSentenceNote, parent: NCNlpSentenceNote): Boolean = {
@@ -323,63 +323,63 @@ object NCGeoEnricher extends NCServerEnricher {
 
         if (nKind != pKind)
             nKind match {
-                case CITY ⇒
+                case CITY =>
                     pKind match {
-                        case REGION ⇒ same("country") && same("region")
-                        case COUNTRY ⇒ same("country")
-                        case _ ⇒ false
+                        case REGION => same("country") && same("region")
+                        case COUNTRY => same("country")
+                        case _ => false
                     }
-                case REGION ⇒
+                case REGION =>
                     pKind match {
-                        case COUNTRY ⇒ same("country")
-                        case SUBCONTINENT ⇒ same("subcontinent")
-                        case CONTINENT ⇒ same("continent")
-                        case _ ⇒ false
+                        case COUNTRY => same("country")
+                        case SUBCONTINENT => same("subcontinent")
+                        case CONTINENT => same("continent")
+                        case _ => false
                     }
-                case COUNTRY ⇒
+                case COUNTRY =>
                     pKind match {
-                        case CONTINENT ⇒ same("continent")
-                        case SUBCONTINENT ⇒ same("subcontinent")
-                        case _ ⇒ false
+                        case CONTINENT => same("continent")
+                        case SUBCONTINENT => same("subcontinent")
+                        case _ => false
                     }
-                case CONTINENT ⇒ false
-                case METRO ⇒ false
+                case CONTINENT => false
+                case METRO => false
             }
         else
             false
     }
 
     @throws[NCE]
-    private def collapse(ns: NCNlpSentence) {
+    private def collapse(ns: NCNlpSentence): Unit = {
         // Candidates for excluding.
         // GEO names matched with common words. (Single words only)
-        val excls = new mutable.HashSet[NCNlpSentenceNote]() ++ getGeoNotes(ns).filter(note ⇒ {
+        val excls = new mutable.HashSet[NCNlpSentenceNote]() ++ getGeoNotes(ns).filter(note => {
             val kind = extractKind(note)
 
             commons.get(kind) match {
                 // GEO is common word defined directly or via synonym.
-                case Some(cs) ⇒
+                case Some(cs) =>
                     cs.contains(getName(kind, note)) ||
                         cs.contains(
                             ns.
-                                filter(t ⇒ t.index >= note.tokenFrom && t.index <= note.tokenTo).
+                                filter(t => t.index >= note.tokenFrom && t.index <= note.tokenTo).
                                 filter(!_.isStopWord).
                                 map(_.normText).
                                 mkString(" ")
                         )
-                case None ⇒ false
+                case None => false
             }
         })
 
         // Also added tokens with very short GEO names (with length is 1)
-        excls ++= getGeoNotes(ns).filter(note ⇒ getName(extractKind(note), note).length == 1)
+        excls ++= getGeoNotes(ns).filter(note => getName(extractKind(note), note).length == 1)
 
         def removeNote(n: NCNlpSentenceNote): Unit = ns.removeNote(n)
 
         // Check that city is inside country or region.
         // When true - remove larger location note and replace with
         // enlarged more detailed location note.
-        def checkExtendNote(first: NCNlpSentenceNote, second: NCNlpSentenceNote, small: NCNlpSentenceNote, big: NCNlpSentenceNote) {
+        def checkExtendNote(first: NCNlpSentenceNote, second: NCNlpSentenceNote, small: NCNlpSentenceNote, big: NCNlpSentenceNote): Unit = {
             if (isChild(small, big) || small == big) {
                 logger.debug(s"Extending $small and swallow $big.")
 
@@ -394,7 +394,7 @@ object NCGeoEnricher extends NCServerEnricher {
                 excls -= first
 
                 ns.
-                    filter(t ⇒ t.index >= first.tokenFrom && t.index <= second.tokenTo && !t.isStopWord).
+                    filter(t => t.index >= first.tokenFrom && t.index <= second.tokenTo && !t.isStopWord).
                     foreach(_.add(note))
             }
         }
@@ -402,15 +402,15 @@ object NCGeoEnricher extends NCServerEnricher {
         // Finds two collapsible neighboring location entities, takes more detailed one,
         // removes less detailed one, and enlarges the remaining (more detailed) one to
         // "cover" the tokens originally occupied by both entities.
-        def enlarge(withOverlap: Boolean) {
+        def enlarge(withOverlap: Boolean): Unit = {
             val locs = getGeoNotes(ns)
 
-            locs.foreach(p ⇒ {
+            locs.foreach(p => {
                 // Get holders after the end of this one immediately or separated by IN_WORDS strings.
-                locs.filter(x ⇒
+                locs.filter(x =>
                     if (x.tokenFrom > p.tokenFrom) {
                         val strBetween = ns.
-                            filter(t ⇒ t.index > p.tokenTo && t.index < x.tokenFrom).
+                            filter(t => t.index > p.tokenTo && t.index < x.tokenFrom).
                             map(_.normText).mkString(" ")
 
                         ((x.tokenFrom <= p.tokenTo) && (x.tokenTo > p.tokenTo) &&
@@ -420,7 +420,7 @@ object NCGeoEnricher extends NCServerEnricher {
                     }
                     else
                         false
-                ).foreach(z ⇒ {
+                ).foreach(z => {
                     if (extractKind(p) > extractKind(z))
                         checkExtendNote(p, z, p, z) // 'a' is smaller and more detailed.
                     else
@@ -435,7 +435,7 @@ object NCGeoEnricher extends NCServerEnricher {
         enlarge(false)
         enlarge(true)
 
-        excls.foreach(e ⇒ removeNote(e))
+        excls.foreach(e => removeNote(e))
 
         // Calculate a weight to rank locations.
         // ------------------------------------
@@ -450,13 +450,13 @@ object NCGeoEnricher extends NCServerEnricher {
             val kind = extractKind(note)
 
             // Most important factor - length of catch tokens.
-            val lenFactor = ns.filter(t ⇒ t.index >= note.tokenFrom && t.index <= note.tokenTo).count(!_.isStopWord)
+            val lenFactor = ns.filter(t => t.index >= note.tokenFrom && t.index <= note.tokenTo).count(!_.isStopWord)
 
             // If location is a city - top world cities get 20 additional points while US top
             // cities get 10 point. Note that 'DLGeoLocationKind' enumeration value ID is used
             // for scoring (city has bigger ID than region and country).
             val topsFactor = kind match {
-                case CITY ⇒
+                case CITY =>
                     val cityReg = glue(get("city"), get("region"))
 
                     if (topWorld.contains(cityReg))
@@ -465,26 +465,26 @@ object NCGeoEnricher extends NCServerEnricher {
                         1
                     else
                         0
-                case _ ⇒ 0
+                case _ => 0
             }
 
             val usaFactor = getOpt("country") match {
-                case Some(v) ⇒ if (v == "united states") 1 else 0
-                case None ⇒ 0
+                case Some(v) => if (v == "united states") 1 else 0
+                case None => 0
             }
 
             // Note length has higher priority, than goes type of location
             // So, country > region > city for other countries).
             val kindFactor =
                 kind match {
-                    case CITY ⇒ 0
-                    case REGION ⇒ 1
-                    case METRO ⇒ 2
-                    case COUNTRY ⇒ 3
-                    case SUBCONTINENT ⇒ 4
-                    case CONTINENT ⇒ 5
+                    case CITY => 0
+                    case REGION => 1
+                    case METRO => 2
+                    case COUNTRY => 3
+                    case SUBCONTINENT => 4
+                    case CONTINENT => 5
 
-                    case _ ⇒ throw new AssertionError(s"Unexpected kind: $kind")
+                    case _ => throw new AssertionError(s"Unexpected kind: $kind")
                 }
 
             Seq(lenFactor, topsFactor, kindFactor, usaFactor)
@@ -492,14 +492,14 @@ object NCGeoEnricher extends NCServerEnricher {
 
         case class Holder(note: NCNlpSentenceNote, kind: NCGeoLocationKind, weight: Seq[Int])
 
-        for (tok ← ns) {
+        for (tok <- ns) {
             val sorted = getGeoNotes(tok).
-                map(n ⇒ Holder(n, extractKind(n), calcWeight(n))).
+                map(n => Holder(n, extractKind(n), calcWeight(n))).
                 toSeq.
                 sortBy(
                     -_.weight.
                     reverse.
-                    zipWithIndex.map { case (v, idx) ⇒ v * Math.pow(10, idx) }.sum
+                    zipWithIndex.map { case (v, idx) => v * Math.pow(10, idx) }.sum
                 )
 
             if (sorted.nonEmpty) {
@@ -507,10 +507,10 @@ object NCGeoEnricher extends NCServerEnricher {
 
                 // Keeps best candidates for each GEO kind.
                 val remainHs = sortedByKind.values.
-                    flatMap(hsByKind ⇒ Seq(hsByKind.head) ++ hsByKind.tail.filter(_.weight == hsByKind.head.weight)).
+                    flatMap(hsByKind => Seq(hsByKind.head) ++ hsByKind.tail.filter(_.weight == hsByKind.head.weight)).
                     toSeq
 
-                sorted.diff(remainHs).foreach(p ⇒ removeNote(p.note))
+                sorted.diff(remainHs).foreach(p => removeNote(p.note))
             }
         }
 

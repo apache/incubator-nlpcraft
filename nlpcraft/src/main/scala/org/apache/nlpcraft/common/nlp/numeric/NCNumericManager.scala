@@ -58,7 +58,7 @@ object NCNumericManager extends NCService {
     private def dropRedundantSeparators(s: String): String = {
         val lastDotIdx = s.lastIndexOf("\\.")
 
-        s.zipWithIndex.filter { case (ch, idx) ⇒ ch != '.' || idx == lastDotIdx }.map(_._1).mkString
+        s.zipWithIndex.filter { case (ch, idx) => ch != '.' || idx == lastDotIdx }.map(_._1).mkString
     }
     
     /**
@@ -70,7 +70,7 @@ object NCNumericManager extends NCService {
         try
             Some(NUM_FMT.synchronized { NUM_FMT.parse(dropRedundantSeparators(s)) }.doubleValue())
         catch {
-            case _: ParseException ⇒ None
+            case _: ParseException => None
         }
     
     /**
@@ -81,7 +81,7 @@ object NCNumericManager extends NCService {
       * @return
       */
     private def toString(seq: Seq[NCNlpSentenceToken], sep: String = " ", stem: Boolean = false) =
-        seq.map(t ⇒ if (stem) t.stem else t.normText).mkString(sep)
+        seq.map(t => if (stem) t.stem else t.normText).mkString(sep)
     
     /**
       *
@@ -106,11 +106,11 @@ object NCNumericManager extends NCService {
                 Some(NCNumeric(Seq(t), java.lang.Double.valueOf(num), isFractional = isFractional(num), unit = Some(u)))
 
             unitsOrigs.get(after) match {
-                case Some(u) ⇒ mkNumeric(u)
-                case None ⇒
+                case Some(u) => mkNumeric(u)
+                case None =>
                     unitsStem.get(NCNlpCoreManager.stem(after)) match {
-                        case Some(u) ⇒ mkNumeric(u)
-                        case None ⇒ None
+                        case Some(u) => mkNumeric(u)
+                        case None => None
                     }
             }
         }
@@ -122,7 +122,7 @@ object NCNumericManager extends NCService {
      *
      * @param parent Optional parent span.
      */
-    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
         ackStopped()
     }
@@ -132,13 +132,13 @@ object NCNumericManager extends NCService {
      * @param parent Optional parent span.
      * @return
      */
-    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ =>
         ackStarting()
 
         genNums = mapResource("numeric/numeric.txt", "utf-8", logger, {
-            _.filter(s ⇒ s.nonEmpty && !s.trim.startsWith("#")).
+            _.filter(s => s.nonEmpty && !s.trim.startsWith("#")).
             map(_.split("=")).
-            map(s ⇒ (s(1), s(0).toInt)).
+            map(s => (s(1), s(0).toInt)).
             toMap
         })
 
@@ -146,11 +146,11 @@ object NCNumericManager extends NCService {
         case class U(name: String, unitType: String, synonyms: Seq[String]) {
             val extSynonyms: Seq[String] =
                 synonyms ++
-                    // Extends by dot for shortenings, like "mm" → "mm ."
+                    // Extends by dot for shortenings, like "mm" -> "mm ."
                     // Skips whole words and constructions like `ft/s`
-                    synonyms.filter(_.length <= 3).filter(p ⇒ !p.exists(_ == '/')).
+                    synonyms.filter(_.length <= 3).filter(p => !p.exists(_ == '/')).
                         // To avoid difference in tokenization behaviour.
-                        flatMap(p ⇒ Seq(s"$p .", s"$p."))
+                        flatMap(p => Seq(s"$p .", s"$p."))
     
             val stem: String = NCNlpCoreManager.stem(name)
         }
@@ -270,8 +270,8 @@ object NCNumericManager extends NCService {
         check(hs.flatMap(_.extSynonyms))
         check(hs.map(_.stem))
         
-        unitsOrigs = hs.flatMap(p ⇒ p.extSynonyms.map(s ⇒ s → NCNumericUnit(p.name, p.unitType))).toMap
-        unitsStem = hs.map(p ⇒ p.stem → NCNumericUnit(p.name, p.unitType)).toMap
+        unitsOrigs = hs.flatMap(p => p.extSynonyms.map(s => s -> NCNumericUnit(p.name, p.unitType))).toMap
+        unitsStem = hs.map(p => p.stem -> NCNumericUnit(p.name, p.unitType)).toMap
         maxSynWords = (unitsOrigs ++ unitsStem).keySet.map(_.split(" ").length).max
         
         ackStarted()
@@ -294,11 +294,11 @@ object NCNumericManager extends NCService {
 
         seq.size match {
             // 111, 11.11 - any value valid.
-            case 1 | 2 ⇒ true
+            case 1 | 2 => true
             // First and last sections - any length, others - 3 digits.
             // 1.111.11 - valid.
             // 111.11.111 - invalid.
-            case _ ⇒ seq.drop(1).reverse.drop(1).forall(p ⇒ p.length == 3)
+            case _ => seq.drop(1).reverse.drop(1).forall(p => p.length == 3)
         }
     }
 
@@ -316,7 +316,7 @@ object NCNumericManager extends NCService {
       */
     private def isOrdinal(normTxt: String): Boolean =
         ORD_SUFFIXES.exists(
-            s ⇒
+            s =>
                 normTxt.endsWith(s) &&
                 normTxt.length != s.length &&
                 isDigitText(normTxt.take(normTxt.length - s.length))
@@ -336,13 +336,13 @@ object NCNumericManager extends NCService {
       * @param parent Optional span parent.
       */
     def find(ns: NCNlpSentence, parent: Span = null): Seq[NCNumeric] = {
-        startScopedSpan("find", parent, "srvReqId" → ns.srvReqId) { _ ⇒
+        startScopedSpan("find", parent, "srvReqId" -> ns.srvReqId) { _ =>
             // 1. We have to filter by POS because for sentences like `between 11 and 12` word 'and' marked as NUMBER (POS CC).
             // 2. Condition CD + letter or digit - to avoid detection as CD some symbols like `==` (unexpected Stanford behaviour).
-            val cds = ns.filter(p ⇒ p.pos == "CD" && canBeNum(p.origText) || isOrdinal(p.normText))
+            val cds = ns.filter(p => p.pos == "CD" && canBeNum(p.origText) || isOrdinal(p.normText))
         
             val grps: Seq[Seq[NCNlpSentenceToken]] =
-                cds.groupBy(cd ⇒ {
+                cds.groupBy(cd => {
                     var i = cds.indexOf(cd)
         
                     if (i == 0)
@@ -360,70 +360,70 @@ object NCNumericManager extends NCService {
                     }
                 }).toSeq.map(_._2)
         
-            val nums = grps.flatMap(seq ⇒ {
+            val nums = grps.flatMap(seq => {
                 def mkNums(v: Double, isFractional: Boolean): Seq[NCNumeric] = {
                     // Units synonyms are not stemmed.
-                    Range.inclusive(1, maxSynWords).reverse.toStream.flatMap(i ⇒ {
+                    Range.inclusive(1, maxSynWords).reverse.toStream.flatMap(i => {
                         val afterNum = ns.slice(seq.last.index + 1, seq.last.index + i + 1)
                         
                         if (afterNum.nonEmpty && !afterNum.exists(cds.contains)) {
-                            def process(syns: Map[String, NCNumericUnit], getter: NCNlpSentenceToken ⇒ String):
+                            def process(syns: Map[String, NCNumericUnit], getter: NCNlpSentenceToken => String):
         
                             Option[(NCNumericUnit, Seq[NCNlpSentenceToken])] = {
                                 val str = afterNum.map(getter).mkString(" ")
     
                                 syns.get(str) match {
-                                    case Some(unit) ⇒ Some((unit, afterNum))
-                                    case None ⇒ None
+                                    case Some(unit) => Some((unit, afterNum))
+                                    case None => None
                                 }
                             }
                     
-                            process(unitsOrigs, (t: NCNlpSentenceToken) ⇒ t.normText) match {
-                                case Some(p) ⇒ Some(p)
-                                case None ⇒ process(unitsStem, (t: NCNlpSentenceToken) ⇒ t.stem)
+                            process(unitsOrigs, (t: NCNlpSentenceToken) => t.normText) match {
+                                case Some(p) => Some(p)
+                                case None => process(unitsStem, (t: NCNlpSentenceToken) => t.stem)
                             }
                         }
                         else
                             None
                     }).headOption match {
-                        case Some((unit, unitToks)) ⇒
+                        case Some((unit, unitToks)) =>
                             val numWithUnit = NCNumeric(seq ++ unitToks, v, isFractional = isFractional, Some(unit))
 
                             // If unit name is same as user element name,
                             // it returns both variants: numeric with unit and without.
-                            unitToks.flatten.count(p ⇒ !p.isNlp && p.noteType != "nlpcraft:num") match {
-                                case 1 ⇒ Seq(numWithUnit, NCNumeric(seq, v, isFractional = isFractional, None))
-                                case _ ⇒ Seq(numWithUnit)
+                            unitToks.flatten.count(p => !p.isNlp && p.noteType != "nlpcraft:num") match {
+                                case 1 => Seq(numWithUnit, NCNumeric(seq, v, isFractional = isFractional, None))
+                                case _ => Seq(numWithUnit)
                             }
-                        case None ⇒ Seq(NCNumeric(seq, v, isFractional = isFractional, None))
+                        case None => Seq(NCNumeric(seq, v, isFractional = isFractional, None))
                     }
                 }
         
                 seq.size match {
-                    case 1 ⇒
+                    case 1 =>
                         val txt = seq.head.normText
                         genNums.get(txt) match {
-                            case Some(intVal) ⇒ mkNums(intVal.toDouble, isFractional = false)
+                            case Some(intVal) => mkNums(intVal.toDouble, isFractional = false)
         
-                            case None ⇒
+                            case None =>
                                 toNumeric(txt) match {
-                                    case Some(dblVal) ⇒ mkNums(dblVal, isFractional = isFractional(txt))
-                                    case None ⇒ None
+                                    case Some(dblVal) => mkNums(dblVal, isFractional = isFractional(txt))
+                                    case None => None
                                 }
                         }
-                    case _ ⇒
+                    case _ =>
                         genNums.get(toString(seq)) match {
-                            case Some(intVal) ⇒ mkNums(intVal.toDouble, isFractional = false)
+                            case Some(intVal) => mkNums(intVal.toDouble, isFractional = false)
         
                             // Try to parse space separated numerics 1 000 000.
-                            case None ⇒
+                            case None =>
                                 // To skip mixed variants like: twenty 2, 22 twenty.
-                                if (seq.forall(t ⇒ toNumeric(t.normText).isDefined)) {
+                                if (seq.forall(t => toNumeric(t.normText).isDefined)) {
                                     val txt = toString(seq, "")
          
                                     toNumeric(txt) match {
-                                        case Some(dblVal) ⇒ mkNums(dblVal, isFractional = isFractional(txt))
-                                        case None ⇒ None
+                                        case Some(dblVal) => mkNums(dblVal, isFractional = isFractional(txt))
+                                        case None => None
                                     }
                                 }
                                 else
@@ -434,7 +434,7 @@ object NCNumericManager extends NCService {
          
             val usedToks = nums.flatMap(_.tokens)
          
-            (nums ++ ns.filter(t ⇒ !usedToks.contains(t)).flatMap(mkSolidNumUnit)).sortBy(_.tokens.head.index).distinct
+            (nums ++ ns.filter(t => !usedToks.contains(t)).flatMap(mkSolidNumUnit)).sortBy(_.tokens.head.index).distinct
         }
     }
 }

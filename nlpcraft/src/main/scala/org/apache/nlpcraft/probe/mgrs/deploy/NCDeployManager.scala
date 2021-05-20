@@ -128,7 +128,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
         val macros = mdl.getMacros.asScala
         val set = mdl.getElements.asScala.flatMap(_.getSynonyms.asScala) ++ macros.values
 
-        for (makro ← macros.keys if !set.exists(_.contains(makro)))
+        for (makro <- macros.keys if !set.exists(_.contains(makro)))
             logger.warn(s"Unused macro detected [mdlId=${mdl.getId}, macro=$makro]")
     }
 
@@ -145,7 +145,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
         val mdlId = mdl.getId
 
-        for (elm ← mdl.getElements.asScala) {
+        for (elm <- mdl.getElements.asScala) {
             if (!elm.getId.matches(ID_REGEX))
                 throw new NCE(
                 s"Model element ID does not match regex [" +
@@ -161,9 +161,9 @@ object NCDeployManager extends NCService with DecorateAsScala {
         val parser = new NCMacroParser
 
         // Initialize macro parser.
-        mdl.getMacros.asScala.foreach(t ⇒ parser.addMacro(t._1, t._2))
+        mdl.getMacros.asScala.foreach(t => parser.addMacro(t._1, t._2))
 
-        for (elm ← mdl.getElements.asScala)
+        for (elm <- mdl.getElements.asScala)
             checkElement(mdl, elm)
 
         checkElementIdsDups(mdl)
@@ -176,7 +176,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
          * @return
          */
         def checkAndStemmatize(jc: java.util.Set[String], name: String): Set[String] =
-            for (word: String ← jc.asScala.toSet) yield
+            for (word: String <- jc.asScala.toSet) yield
                 if (hasWhitespace(word))
                     throw new NCE(s"Model property cannot contain a string with whitespaces [" +
                         s"mdlId=$mdlId, " +
@@ -195,18 +195,18 @@ object NCDeployManager extends NCService with DecorateAsScala {
         val syns = mutable.HashSet.empty[SynonymHolder]
 
         def ok(b: Boolean, exp: Boolean): Boolean = if (exp) b else !b
-        def idl(syns: Set[SynonymHolder], idl: Boolean): Set[SynonymHolder] = syns.filter(s ⇒ ok(s.syn.hasIdl, idl))
-        def sparse(syns: Set[SynonymHolder], sp: Boolean): Set[SynonymHolder] = syns.filter(s ⇒ ok(s.syn.sparse, sp))
+        def idl(syns: Set[SynonymHolder], idl: Boolean): Set[SynonymHolder] = syns.filter(s => ok(s.syn.hasIdl, idl))
+        def sparse(syns: Set[SynonymHolder], sp: Boolean): Set[SynonymHolder] = syns.filter(s => ok(s.syn.sparse, sp))
 
         var cnt = 0
         val maxCnt = mdl.getMaxTotalSynonyms
 
         // Process and check elements.
-        for (elm ← mdl.getElements.asScala) {
+        for (elm <- mdl.getElements.asScala) {
             val elmId = elm.getId
 
             // Checks before macros processing.
-            val susp = elm.getSynonyms.asScala.filter(syn ⇒ SUSP_SYNS_CHARS.exists(susp ⇒ syn.contains(susp)))
+            val susp = elm.getSynonyms.asScala.filter(syn => SUSP_SYNS_CHARS.exists(susp => syn.contains(susp)))
 
             if (susp.nonEmpty)
                 logger.warn(
@@ -270,7 +270,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                     !isElementId &&
                     chunks.forall(_.wordStem != null)
                 )
-                    simplePermute(chunks).map(p ⇒ p.map(_.wordStem) → p).toMap.values.foreach(seq ⇒
+                    simplePermute(chunks).map(p => p.map(_.wordStem) -> p).toMap.values.foreach(seq =>
                         add(seq, isDirect = seq == chunks, perm = true, sparse = sp)
                     )
                 else
@@ -296,13 +296,13 @@ object NCDeployManager extends NCService with DecorateAsScala {
                     chunks ++= U.splitTrimFilter(x.substring(start, curr), " ")
 
                     x.indexOf(fix, curr + fix.length) match {
-                        case -1 ⇒
+                        case -1 =>
                             throw new NCE(s"Invalid synonym definition [" +
                                 s"mdlId=$mdlId, " +
                                 s"chunks=$x" +
                             s"]")
 
-                        case n ⇒
+                        case n =>
                             chunks += x.substring(curr, n + fix.length)
                             start = n + fix.length
                             curr = start
@@ -347,7 +347,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
             // Add element ID as a synonyms.
             Seq(chunkIdSplit(elmId))
                 .distinct
-                .foreach(chunks ⇒ addSynonym(
+                .foreach(chunks => addSynonym(
                     isElementId = true,
                     isValueName = false,
                     null,
@@ -355,9 +355,9 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 ))
 
             // Add straight element synonyms.
-            (for (syn ← elm.getSynonyms.asScala.flatMap(parser.expand)) yield chunkSplit(syn))
+            (for (syn <- elm.getSynonyms.asScala.flatMap(parser.expand)) yield chunkSplit(syn))
                 .distinct
-                .foreach(chunks ⇒ addSynonym(
+                .foreach(chunks => addSynonym(
                     isElementId = false,
                     isValueName = false,
                     null,
@@ -368,20 +368,20 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 (if (elm.getValues != null) elm.getValues.asScala else Seq.empty) ++
                 (
                     elm.getValueLoader.asScala match {
-                        case Some(ldr) ⇒ ldr.load(elm).asScala
-                        case None ⇒ Seq.empty
+                        case Some(ldr) => ldr.load(elm).asScala
+                        case None => Seq.empty
                     }
                 )
 
             // Add value synonyms.
-            for (v ← vals.map(p ⇒ p.getName → p).toMap.values) {
+            for (v <- vals.map(p => p.getName -> p).toMap.values) {
                 val valName = v.getName
                 val valSyns = v.getSynonyms.asScala
 
                 val nameChunks = Seq(chunkIdSplit(valName))
 
                 // Add value name as a synonyms.
-                nameChunks.distinct.foreach(chunks ⇒ addSynonym(
+                nameChunks.distinct.foreach(chunks => addSynonym(
                     isElementId = false,
                     isValueName = true,
                     valName,
@@ -390,7 +390,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
                 var skippedOneLikeName = false
 
-                val chunks = valSyns.flatMap(parser.expand).flatMap(valSyn ⇒ {
+                val chunks = valSyns.flatMap(parser.expand).flatMap(valSyn => {
                     val valSyns = chunkSplit(valSyn)
 
                     if (nameChunks.contains(valSyns) && !skippedOneLikeName) {
@@ -402,7 +402,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                         Some(valSyns)
                 })
 
-                chunks.distinct.foreach(chunks ⇒ addSynonym(
+                chunks.distinct.foreach(chunks => addSynonym(
                     isElementId = false,
                     isValueName = false,
                     valName,
@@ -420,13 +420,13 @@ object NCDeployManager extends NCService with DecorateAsScala {
               s"]")
 
         // Discard value loaders.
-        for (elm ← mdl.getElements.asScala)
+        for (elm <- mdl.getElements.asScala)
             elm.getValueLoader.ifPresent(_.onDiscard())
 
         val allAliases = syns
             .flatMap(_.syn)
             .groupBy(_.origText)
-            .map(x ⇒ (x._1, x._2.map(_.alias).filter(_ != null)))
+            .map(x => (x._1, x._2.map(_.alias).filter(_ != null)))
             .values
             .flatten
             .toList
@@ -451,11 +451,11 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
         // Check for synonym dups across all elements.
         for (
-            ((syn, isDirect), holders) ←
-                syns.groupBy(p ⇒ (p.syn.mkString(" "), p.syn.isDirect)) if holders.size > 1 && isDirect
+            ((syn, isDirect), holders) <-
+                syns.groupBy(p => (p.syn.mkString(" "), p.syn.isDirect)) if holders.size > 1 && isDirect
         ) {
             dupSyns.append((
-                holders.map(p ⇒ s"id=${p.elmId}${if (p.syn.value == null) "" else s", value=${p.syn.value}"}").toSeq,
+                holders.map(p => s"id=${p.elmId}${if (p.syn.value == null) "" else s", value=${p.syn.value}"}").toSeq,
                 syn
             ))
         }
@@ -464,7 +464,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
             if (mdl.isDupSynonymsAllowed) {
                 val tbl = NCAsciiTable("Elements", "Dup Synonym")
 
-                dupSyns.foreach(row ⇒ tbl += (
+                dupSyns.foreach(row => tbl += (
                     row._1,
                     row._2
                 ))
@@ -488,24 +488,24 @@ object NCDeployManager extends NCService with DecorateAsScala {
         if (intents.nonEmpty) {
             // Check the uniqueness of intent IDs.
             U.getDups(intents.map(_._1).toSeq.map(_.id)) match {
-                case ids if ids.nonEmpty ⇒
+                case ids if ids.nonEmpty =>
                     throw new NCE(s"Duplicate intent IDs [" +
                         s"mdlId=$mdlId, " +
                         s"mdlOrigin=${mdl.getOrigin}, " +
                         s"ids=${ids.mkString(",")}" +
                     s"]")
-                case _ ⇒ ()
+                case _ => ()
             }
 
             solver = new NCIntentSolver(
-                intents.toList.map(x ⇒ (x._1, (z: NCIntentMatch) ⇒ x._2._2.apply(z)))
+                intents.toList.map(x => (x._1, (z: NCIntentMatch) => x._2._2.apply(z)))
             )
         }
         else
             logger.warn(s"Model has no intent: $mdlId")
 
         def toMap(set: Set[SynonymHolder]): Map[String, Seq[NCProbeSynonym]] =
-            set.groupBy(_.elmId).map(p ⇒ p._1 → p._2.map(_.syn).toSeq.sorted.reverse)
+            set.groupBy(_.elmId).map(p => p._1 -> p._2.map(_.syn).toSeq.sorted.reverse)
 
         val simple = idl(syns.toSet, idl = false)
 
@@ -519,7 +519,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
             addStopWordsStems = addStopWords,
             exclStopWordsStems = exclStopWords,
             suspWordsStems = suspWords,
-            elements = mdl.getElements.asScala.map(elm ⇒ (elm.getId, elm)).toMap,
+            elements = mdl.getElements.asScala.map(elm => (elm.getId, elm)).toMap,
             samples = scanSamples(mdl)
         )
     }
@@ -536,8 +536,8 @@ object NCDeployManager extends NCService with DecorateAsScala {
             newInstance().
             asInstanceOf[NCModelFactory]
         match {
-            case Left(e) ⇒ throw new NCE(s"Failed to instantiate model factory for: $clsName", e)
-            case Right(factory) ⇒ factory
+            case Left(e) => throw new NCE(s"Failed to instantiate model factory for: $clsName", e)
+            case Right(factory) => factory
         }
 
     /**
@@ -554,7 +554,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 )
             )
         catch {
-            case e: Throwable ⇒ throw new NCE(s"Failed to instantiate model: $clsName", e)
+            case e: Throwable => throw new NCE(s"Failed to instantiate model: $clsName", e)
         }
 
     /**
@@ -562,19 +562,19 @@ object NCDeployManager extends NCService with DecorateAsScala {
       * @param set
       * @return
       */
-    private def mkFastAccessMap[T](set: Set[SynonymHolder], f: Seq[NCProbeSynonym] ⇒ T):
+    private def mkFastAccessMap[T](set: Set[SynonymHolder], f: Seq[NCProbeSynonym] => T):
         Map[String /*Element ID*/ , Map[Int /*Synonym length*/ , T]] =
         set
             .groupBy(_.elmId)
             .map {
-                case (elmId, holders) ⇒ (
+                case (elmId, holders) => (
                     elmId,
                     holders
                         .map(_.syn)
                         .groupBy(_.size)
                         .map {
                             // Sort synonyms from most important to least important.
-                            case (k, v) ⇒ (k, f(v.toSeq))
+                            case (k, v) => (k, f(v.toSeq))
                         }
                 )
             }
@@ -587,9 +587,9 @@ object NCDeployManager extends NCService with DecorateAsScala {
     @throws[NCE]
     private def makeModelFromSource(cls: Class[_ <: NCModel], src: String): NCModel =
         catching(classOf[Throwable]) either mdlFactory.mkModel(cls) match {
-            case Left(e) ⇒ e match {
-                case _: NCE ⇒ throw e
-                case _ ⇒
+            case Left(e) => e match {
+                case _: NCE => throw e
+                case _ =>
                     throw new NCE(s"Failed to instantiate model [" +
                         s"cls=${cls.getName}, " +
                         s"factory=${mdlFactory.getClass.getName}, " +
@@ -599,7 +599,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                     )
             }
 
-            case Right(model) ⇒ model
+            case Right(model) => model
         }
 
     /**
@@ -612,7 +612,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
         val classes = mutable.ArrayBuffer.empty[Class[_ <: NCModel]]
 
-        managed(new JarInputStream(new BufferedInputStream(new FileInputStream(jarFile)))) acquireAndGet { in ⇒
+        Using.resource(new JarInputStream(new BufferedInputStream(new FileInputStream(jarFile)))) { in =>
             var entry = in.getNextJarEntry
 
             while (entry != null) {
@@ -628,8 +628,8 @@ object NCDeployManager extends NCService with DecorateAsScala {
                     catch {
                         // Errors are possible for JARs like log4j etc, which have runtime dependencies.
                         // We don't need these messages in log beside trace, so ignore...
-                        case _: ClassNotFoundException ⇒ ()
-                        case _: NoClassDefFoundError ⇒ ()
+                        case _: ClassNotFoundException => ()
+                        case _: NoClassDefFoundError => ()
                     }
                 }
 
@@ -637,7 +637,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
             }
         }
 
-        classes.map(cls ⇒
+        classes.map(cls =>
             wrap(
                 makeModelFromSource(cls, jarFile.getPath)
             )
@@ -651,26 +651,26 @@ object NCDeployManager extends NCService with DecorateAsScala {
      * @return
      */
     @throws[NCE]
-    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ =>
         ackStarting()
 
         data = ArrayBuffer.empty[NCProbeModel]
 
         mdlFactory = Config.modelFactoryType match {
-            case Some(mft) ⇒
+            case Some(mft) =>
                 val mf = makeModelFactory(mft)
 
                 mf.initialize(Config.modelFactoryProps.getOrElse(Map.empty[String, String]).asJava)
                 
                 mf
 
-            case None ⇒ new NCBasicModelFactory
+            case None => new NCBasicModelFactory
         }
 
         data ++= U.splitTrimFilter(Config.models, ",").map(makeModelWrapper)
 
         Config.jarsFolder match {
-            case Some(jarsFolder) ⇒
+            case Some(jarsFolder) =>
                 val jarsFile = new File(jarsFolder)
 
                 if (!jarsFile.exists())
@@ -681,10 +681,10 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 val src = this.getClass.getProtectionDomain.getCodeSource
                 val locJar = if (src == null) null else new File(src.getLocation.getPath)
 
-                for (jar ← scanJars(jarsFile) if jar != locJar)
+                for (jar <- scanJars(jarsFile) if jar != locJar)
                     data ++= extractModels(jar)
 
-            case None ⇒ // No-op.
+            case None => // No-op.
         }
 
         val ids = data.map(_.model.getId).toList
@@ -701,7 +701,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
      * @throws NCE
      */
     @throws[NCE]
-    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
 
         if (mdlFactory != null)
@@ -734,11 +734,11 @@ object NCDeployManager extends NCService with DecorateAsScala {
       */
     private def simplePermute[T](seq: Seq[T]): Seq[Seq[T]] =
         seq.length match {
-            case 0 ⇒ Seq.empty
-            case 1 ⇒ Seq(seq)
-            case n ⇒
+            case 0 => Seq.empty
+            case 1 => Seq(seq)
+            case n =>
                 def permute(idx1: Int, idx2: Int): Seq[T] =
-                    seq.zipWithIndex.map { case (t, idx) ⇒
+                    seq.zipWithIndex.map { case (t, idx) =>
                         if (idx == idx1)
                             seq(idx2)
                         else if (idx == idx2)
@@ -748,7 +748,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                     }
 
                 Seq(seq) ++
-                    seq.zipWithIndex.flatMap { case (_, idx) ⇒
+                    seq.zipWithIndex.flatMap { case (_, idx) =>
                         if (idx == 0)
                             Seq(permute(0, 1))
                         else if (idx == n - 1)
@@ -765,7 +765,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
       */
     @throws[NCE]
     private def checkCyclicDependencies(mdl: NCModel): Unit =
-        for (elm ← mdl.getElements.asScala) {
+        for (elm <- mdl.getElements.asScala) {
             if (elm.getParentId != null) {
                 val seen = mutable.ArrayBuffer.empty[String]
 
@@ -807,7 +807,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
     private def checkElementIdsDups(mdl: NCModel): Unit = {
         val ids = mutable.HashSet.empty[String]
 
-        for (id ← mdl.getElements.asScala.map(_.getId))
+        for (id <- mdl.getElements.asScala.map(_.getId))
             if (ids.contains(id))
                 throw new NCE(s"Duplicate model element ID [" +
                     s"mdlId=${mdl.getId}, " +
@@ -923,7 +923,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
         checkCollection("metadata", mdl.getMetadata)
         checkCollection("restrictedCombinations", mdl.getRestrictedCombinations)
 
-        for ((elm, restrs: util.Set[String]) ← mdl.getRestrictedCombinations.asScala) {
+        for ((elm, restrs: util.Set[String]) <- mdl.getRestrictedCombinations.asScala) {
             if (elm != "nlpcraft:limit" && elm != "nlpcraft:sort" && elm != "nlpcraft:relation")
                 throw new NCE(s"Unsupported restricting element ID [" +
                     s"mdlId=$mdlId, " +
@@ -937,10 +937,10 @@ object NCDeployManager extends NCService with DecorateAsScala {
         }
 
         val unsToksBlt =
-            mdl.getEnabledBuiltInTokens.asScala.filter(t ⇒
+            mdl.getEnabledBuiltInTokens.asScala.filter(t =>
                 // 'stanford', 'google', 'opennlp', 'spacy' - any names, not validated.
                 t == null ||
-                !TOKENS_PROVIDERS_PREFIXES.exists(typ ⇒ t.startsWith(typ)) ||
+                !TOKENS_PROVIDERS_PREFIXES.exists(typ => t.startsWith(typ)) ||
                 // 'nlpcraft' names validated.
                 (t.startsWith("nlpcraft:") && !NCModelView.DFLT_ENABLED_BUILTIN_TOKENS.contains(t))
             )
@@ -952,7 +952,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
             s"]")
 
         // We can't check other names because they can be created by custom parsers.
-        val unsToksAbstract = mdl.getAbstractTokens.asScala.filter(t ⇒ t == null || t == "nlpcraft:nlp")
+        val unsToksAbstract = mdl.getAbstractTokens.asScala.filter(t => t == null || t == "nlpcraft:nlp")
 
         if (unsToksAbstract.nonEmpty)
             throw new NCE(s"Invalid token IDs for 'abstractToken' model property [" +
@@ -988,7 +988,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 try
                     NCProbeSynonymChunk(kind = REGEX, origText = chunk, regex = Pattern.compile(ptrn))
                 catch {
-                    case e: PatternSyntaxException ⇒
+                    case e: PatternSyntaxException =>
                         throw new NCE(s"Invalid regex synonym syntax detected [" +
                             s"mdlId=$mdlId, " +
                             s"chunk=$chunk" +
@@ -1123,23 +1123,23 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
         // Gets terms IDs.
         val termIds = tokParamAnns.toList.zipWithIndex.map {
-            case (anns, idx) ⇒
+            case (anns, idx) =>
                 def mkArg(): String = arg2Str(mtd, idx, ctxFirstParam)
 
                 val annsTerms = anns.filter(_.isInstanceOf[NCIntentTerm])
 
                 // Each method arguments (second and later) must have one NCIntentTerm annotation.
                 annsTerms.length match {
-                    case 1 ⇒ annsTerms.head.asInstanceOf[NCIntentTerm].value()
+                    case 1 => annsTerms.head.asInstanceOf[NCIntentTerm].value()
 
-                    case 0 ⇒
+                    case 0 =>
                         throw new NCE(s"Missing @NCIntentTerm annotation for [" +
                             s"mdlId=$mdlId, " +
                             s"intentId=${intent.id}, " +
                             s"arg=${mkArg()}" +
                         s"]")
 
-                    case _ ⇒
+                    case _ =>
                         throw new NCE(s"Too many @NCIntentTerm annotations for [" +
                             s"mdlId=$mdlId, " +
                             s"intentId=${intent.id}, " +
@@ -1161,7 +1161,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
         // Checks correctness of term IDs.
         // Note we don't restrict them to be duplicated.
         val intentTermIds = terms.flatMap(_.id)
-        val invalidIds = termIds.filter(id ⇒ !intentTermIds.contains(id))
+        val invalidIds = termIds.filter(id => !intentTermIds.contains(id))
 
         if (invalidIds.nonEmpty) {
             // Report only the first one for simplicity & clarity.
@@ -1181,14 +1181,14 @@ object NCDeployManager extends NCService with DecorateAsScala {
         checkTypes(mdl, mtd, tokParamTypes, paramGenTypes, ctxFirstParam)
 
         // Checks limits.
-        val allLimits = terms.map(t ⇒ t.id.orNull → (t.min, t.max)).toMap
+        val allLimits = terms.map(t => t.id.orNull -> (t.min, t.max)).toMap
 
         checkMinMax(mdl, mtd, tokParamTypes, termIds.map(allLimits), ctxFirstParam)
 
         // Prepares invocation method.
         (
             mtd.toString,
-            (ctx: NCIntentMatch) ⇒ {
+            (ctx: NCIntentMatch) => {
                 invoke(
                     mtd,
                     mdl,
@@ -1228,18 +1228,18 @@ object NCDeployManager extends NCService with DecorateAsScala {
             mtd.invoke(obj, args: _*).asInstanceOf[NCResult]
         }
         catch {
-            case e: InvocationTargetException ⇒ e.getTargetException match {
-                case e: NCIntentSkip ⇒ throw e
-                case e: NCRejection ⇒ throw e
-                case e: NCE ⇒ throw e
-                case e: Throwable ⇒
+            case e: InvocationTargetException => e.getTargetException match {
+                case e: NCIntentSkip => throw e
+                case e: NCRejection => throw e
+                case e: NCE => throw e
+                case e: Throwable =>
                     throw new NCE(s"Intent callback invocation error [" +
                         s"mdlId=$mdlId, " +
                         s"callback=${method2Str(mtd)}" +
                     s"]", e)
             }
 
-            case e: Throwable ⇒
+            case e: Throwable =>
                 throw new NCE(s"Unexpected intent callback invocation error [" +
                     s"mdlId=$mdlId, " +
                     s"callback=${method2Str(mtd)}" +
@@ -1250,7 +1250,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 try
                     mtd.setAccessible(false)
                 catch {
-                    case e: SecurityException ⇒
+                    case e: SecurityException =>
                         throw new NCE(s"Access or security error in intent callback [" +
                             s"mdlId=$mdlId, " +
                             s"callback=${method2Str(mtd)}" +
@@ -1274,7 +1274,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
         argsList: Seq[util.List[NCToken]],
         ctxFirstParam: Boolean
     ): Seq[AnyRef] =
-        paramClss.zip(argsList).zipWithIndex.map { case ((paramCls, argList), i) ⇒
+        paramClss.zip(argsList).zipWithIndex.map { case ((paramCls, argList), i) =>
             def mkArg(): String = arg2Str(mtd, i, ctxFirstParam)
 
             val toksCnt = argList.size()
@@ -1302,9 +1302,9 @@ object NCDeployManager extends NCService with DecorateAsScala {
             // Scala and java optional token.
             else if (paramCls == CLS_SCALA_OPT)
                 toksCnt match {
-                    case 0 ⇒ None
-                    case 1 ⇒ Some(argList.get(0))
-                    case _ ⇒
+                    case 0 => None
+                    case 1 => Some(argList.get(0))
+                    case _ =>
                         throw new NCE(s"Too many tokens ($toksCnt) for scala.Option[_] @NCIntentTerm annotated argument [" +
                             s"mdlId$mdlId, " +
                             s"arg=${mkArg()}" +
@@ -1312,9 +1312,9 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 }
             else if (paramCls == CLS_JAVA_OPT)
                 toksCnt match {
-                    case 0 ⇒ util.Optional.empty()
-                    case 1 ⇒ util.Optional.of(argList.get(0))
-                    case _ ⇒
+                    case 0 => util.Optional.empty()
+                    case 1 => util.Optional.of(argList.get(0))
+                    case _ =>
                         throw new NCE(s"Too many tokens ($toksCnt) for java.util.Optional @NCIntentTerm annotated argument [" +
                             s"mdlId$mdlId, " +
                             s"arg=${mkArg()}" +
@@ -1348,7 +1348,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
         val mdlId = mdl.getId
 
-        paramCls.zip(paramGenTypes).zipWithIndex.foreach { case ((pClass, pGenType), i) ⇒
+        paramCls.zip(paramGenTypes).zipWithIndex.foreach { case ((pClass, pGenType), i) =>
             def mkArg(): String = arg2Str(mtd, i, ctxFirstParam)
 
             // Token.
@@ -1369,7 +1369,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
             // Tokens collection and optionals.
             else if (COMP_CLS.contains(pClass))
                 pGenType match {
-                    case pt: ParameterizedType ⇒
+                    case pt: ParameterizedType =>
                         val actTypes = pt.getActualTypeArguments
                         val compTypes = if (actTypes == null) Seq.empty else actTypes.toSeq
 
@@ -1386,7 +1386,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
                         compType match {
                             // Java, Scala, Groovy.
-                            case _: Class[_] ⇒
+                            case _: Class[_] =>
                                 val genClass = compTypes.head.asInstanceOf[Class[_]]
 
                                 if (genClass != CLS_TOKEN)
@@ -1397,7 +1397,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                                         s"arg=${mkArg()}" +
                                     s"]")
                             // Kotlin.
-                            case _: WildcardType ⇒
+                            case _: WildcardType =>
                                 val wildcardType = compTypes.head.asInstanceOf[WildcardType]
 
                                 val lowBounds = wildcardType.getLowerBounds
@@ -1411,7 +1411,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                                             s"type=${wc2Str(wildcardType)}, " +
                                             s"arg=${mkArg()}" +
                                         s"]")
-                            case _ ⇒
+                            case _ =>
                                 throw new NCE(s"Unexpected generic type for @NCIntentTerm annotated argument [" +
                                     s"mdlId=$mdlId, " +
                                     s"mdlOrigin=${mdl.getOrigin}, " +
@@ -1420,7 +1420,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                                 s"]")
                         }
 
-                    case _ ⇒ throw new NCE(s"Unexpected parameter type for @NCIntentTerm annotated argument [" +
+                    case _ => throw new NCE(s"Unexpected parameter type for @NCIntentTerm annotated argument [" +
                         s"mdlId=$mdlId, " +
                         s"mdlOrigin=${mdl.getOrigin}, " +
                         s"type=${pGenType.getTypeName}, " +
@@ -1457,7 +1457,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
         val mdlId = mdl.getId
 
-        paramCls.zip(limits).zipWithIndex.foreach { case ((cls, (min, max)), i) ⇒
+        paramCls.zip(limits).zipWithIndex.foreach { case ((cls, (min, max)), i) =>
             def mkArg(): String = arg2Str(mtd, i, ctxFirstParam)
 
             val p1 = "its @NCIntentTerm annotated argument"
@@ -1506,13 +1506,13 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
         // First, get intent declarations from the JSON/YAML file, if any.
         mdl match {
-            case adapter: NCModelFileAdapter ⇒
+            case adapter: NCModelFileAdapter =>
                 intentDecls ++= adapter
                     .getIntents
                     .asScala
                     .flatMap(NCIdlCompiler.compileIntents(_, mdl, mdl.getOrigin))
 
-            case _ ⇒ ()
+            case _ => ()
         }
 
         // Second, scan class for class-level @NCIntent annotations (intent declarations).
@@ -1522,7 +1522,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
             try {
                 val cls = Class.forName(mdlCls)
 
-                for (ann ← cls.getAnnotationsByType(CLS_INTENT); intent ← NCIdlCompiler.compileIntents(ann.value(), mdl, mdlCls))
+                for (ann <- cls.getAnnotationsByType(CLS_INTENT); intent <- NCIdlCompiler.compileIntents(ann.value(), mdl, mdlCls))
                     if (intentDecls.exists(_.id == intent.id))
                         throw new NCE(s"Duplicate intent ID [" +
                             s"mdlId=$mdlId, " +
@@ -1534,16 +1534,16 @@ object NCDeployManager extends NCService with DecorateAsScala {
                         intentDecls += intent
             }
             catch {
-                case _: ClassNotFoundException ⇒ throw new NCE(s"Failed to scan class for @NCIntent annotation: $mdlCls")
+                case _: ClassNotFoundException => throw new NCE(s"Failed to scan class for @NCIntent annotation: $mdlCls")
             }
         }
 
         // Third, scan all methods for intent-callback bindings.
-        for (m ← getAllMethods(mdl)) {
+        for (m <- getAllMethods(mdl)) {
             val mtdStr = method2Str(m)
 
             def bindIntent(intent: NCIdlIntent, cb: Callback): Unit = {
-                if (intents.exists(i ⇒ i._1.id == intent.id && i._2._1 != cb._1))
+                if (intents.exists(i => i._1.id == intent.id && i._2._1 != cb._1))
                     throw new NCE(s"The intent cannot be bound to more than one callback [" +
                         s"mdlId=$mdlId, " +
                         s"mdlOrigin=${mdl.getOrigin}, " +
@@ -1552,12 +1552,12 @@ object NCDeployManager extends NCService with DecorateAsScala {
                     s"]")
                 else {
                     intentDecls += intent
-                    intents += (intent → prepareCallback(m, mdl, intent))
+                    intents += (intent -> prepareCallback(m, mdl, intent))
                 }
             }
 
             // Process inline intent declarations by @NCIntent annotation.
-            for (ann ← m.getAnnotationsByType(CLS_INTENT); intent ← NCIdlCompiler.compileIntents(ann.value(), mdl, mtdStr))
+            for (ann <- m.getAnnotationsByType(CLS_INTENT); intent <- NCIdlCompiler.compileIntents(ann.value(), mdl, mtdStr))
                 if (intentDecls.exists(_.id == intent.id) || intents.exists(_._1.id == intent.id))
                     throw new NCE(s"Duplicate intent ID [" +
                         s"mdlId=$mdlId, " +
@@ -1569,12 +1569,12 @@ object NCDeployManager extends NCService with DecorateAsScala {
                     bindIntent(intent, prepareCallback(m, mdl, intent))
 
             // Process intent references from @NCIntentRef annotation.
-            for (ann ← m.getAnnotationsByType(CLS_INTENT_REF)) {
+            for (ann <- m.getAnnotationsByType(CLS_INTENT_REF)) {
                 val refId = ann.value().trim
 
                 intentDecls.find(_.id == refId) match {
-                    case Some(intent) ⇒ bindIntent(intent, prepareCallback(m, mdl, intent))
-                    case None ⇒ throw new NCE(
+                    case Some(intent) => bindIntent(intent, prepareCallback(m, mdl, intent))
+                    case None => throw new NCE(
                         s"""@NCIntentRef("$refId") references unknown intent ID [""" +
                             s"mdlId=$mdlId, " +
                             s"mdlOrigin=${mdl.getOrigin}, " +
@@ -1585,7 +1585,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
             }
         }
 
-        val unusedIntents = intentDecls.filter(i ⇒ !intents.exists(_._1.id == i.id))
+        val unusedIntents = intentDecls.filter(i => !intents.exists(_._1.id == i.id))
 
         if (unusedIntents.nonEmpty)
             logger.warn(s"Declared but unused intents: [" +
@@ -1608,7 +1608,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
         val samples = mutable.Buffer.empty[Sample]
 
-        for (m ← getAllMethods(mdl)) {
+        for (m <- getAllMethods(mdl)) {
             val mtdStr = method2Str(m)
 
             val smpAnns = m.getAnnotationsByType(CLS_SAMPLE)
@@ -1628,12 +1628,12 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
                     val distinct = seqSeq.map(_.distinct).distinct
 
-                    for (ann ← intAnns) {
-                        for (intent ← NCIdlCompiler.compileIntents(ann.value(), mdl, mtdStr))
-                            samples += (intent.id → distinct)
+                    for (ann <- intAnns) {
+                        for (intent <- NCIdlCompiler.compileIntents(ann.value(), mdl, mtdStr))
+                            samples += (intent.id -> distinct)
                     }
-                    for (ann ← refAnns)
-                        samples += (ann.value() → distinct)
+                    for (ann <- refAnns)
+                        samples += (ann.value() -> distinct)
                 }
             }
             else if (intAnns.nonEmpty || refAnns.nonEmpty)
@@ -1643,7 +1643,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
         if (samples.nonEmpty) {
             val parser = new NCMacroParser
 
-            mdl.getMacros.asScala.foreach { case (name, str) ⇒ parser.addMacro(name, str) }
+            mdl.getMacros.asScala.foreach { case (name, str) => parser.addMacro(name, str) }
 
             val allSyns: Set[Seq[String]] =
                 mdl.getElements.
@@ -1657,10 +1657,10 @@ object NCDeployManager extends NCService with DecorateAsScala {
             val processed = mutable.HashSet.empty[Case]
 
             samples.
-                flatMap { case (_, samples) ⇒ samples.flatten.map(_.toLowerCase) }.
-                map(s ⇒ s → SEPARATORS.foldLeft(s)((s, ch) ⇒ s.replaceAll(s"\\$ch", s" $ch "))).
+                flatMap { case (_, samples) => samples.flatten.map(_.toLowerCase) }.
+                map(s => s -> SEPARATORS.foldLeft(s)((s, ch) => s.replaceAll(s"\\$ch", s" $ch "))).
                 foreach {
-                    case (s, sNorm) ⇒
+                    case (s, sNorm) =>
                         if (processed.add(Case(mdlId, s))) {
                             val seq: Seq[String] = sNorm.split(" ").map(NCNlpPorterStemmer.stem)
 

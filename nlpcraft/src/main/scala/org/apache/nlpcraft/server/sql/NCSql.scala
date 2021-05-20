@@ -42,7 +42,7 @@ object NCSql extends LazyLogging {
     // Some built-in implicit parsers for simple values.
     object Implicits {
         /** A function that takes active result set and produces an object  by parsing one or multiple rows. */
-        type RsParser[T] = ResultSet ⇒ T
+        type RsParser[T] = ResultSet => T
 
         implicit val IntRsParser: RsParser[Int] = _.getInt(1)
         implicit val LongRsParser: RsParser[Long] = _.getLong(1)
@@ -98,13 +98,13 @@ object NCSql extends LazyLogging {
         ds.setJdbcUrl(Config.url)
 
         Config.username match {
-            case Some(username) ⇒ ds.setUser(username)
-            case None ⇒ // No-op.
+            case Some(username) => ds.setUser(username)
+            case None => // No-op.
         }
 
         Config.passwd match {
-            case Some(passwd) ⇒ ds.setPassword(passwd)
-            case None ⇒ // No-op.
+            case Some(passwd) => ds.setPassword(passwd)
+            case None => // No-op.
         }
 
         // c3p0 settings.
@@ -130,7 +130,7 @@ object NCSql extends LazyLogging {
      */
     @throws[NCE]
     private def psqlErrorCodes[R]: Catcher[R] = {
-        case e: SQLException ⇒ throw new NCE(s"Database error: ${e.getLocalizedMessage}", e)
+        case e: SQLException => throw new NCE(s"Database error: ${e.getLocalizedMessage}", e)
     }
 
     // Strips extra new lines, tabs a white spaces.
@@ -149,8 +149,8 @@ object NCSql extends LazyLogging {
      */
     @throws[NCE]
     def connection(): Connection = threadLocal.get() match {
-        case c: Connection ⇒ c
-        case null ⇒ throw new NCE("JDBC connection is not available (ensure to call 'Psql.sql').")
+        case c: Connection => c
+        case null => throw new NCE("JDBC connection is not available (ensure to call 'Psql.sql').")
     }
     
     /**
@@ -160,36 +160,36 @@ object NCSql extends LazyLogging {
      * @param params Set of tuples with JDBC types (legacy only) or individual values for the parameters to set.
      */
     private def prepareParams(ps: PreparedStatement, params: Any*): Unit = {
-        params.zipWithIndex.foreach(z ⇒ {
+        params.zipWithIndex.foreach(z => {
             val p = z._1
     
             val idx = z._2 + 1
             
             p match {
-                case x: (_, _) ⇒
+                case x: (_, _) =>
                     val obj: Any = x._1
                     val typ: Int = x._2.asInstanceOf[Int]
     
                     obj match {
-                        case None | null ⇒ ps.setNull(idx, typ)
-                        case some: Some[_] ⇒ ps.setObject(idx, some.get, typ)
-                        case _ ⇒ ps.setObject(idx, obj, typ)
+                        case None | null => ps.setNull(idx, typ)
+                        case some: Some[_] => ps.setObject(idx, some.get, typ)
+                        case _ => ps.setObject(idx, obj, typ)
                     }
                     
-                case _ ⇒
+                case _ =>
                     def setObject(obj: Any): Unit = {
                         obj match {
                             // Special handling for java.util.Date.
-                            case d: java.util.Date ⇒ ps.setObject(idx, d, TIMESTAMP)
-                            case a: Array[_] ⇒ ps.setObject(idx, a, BINARY)
-                            case x: Any ⇒ ps.setObject(idx, x)
+                            case d: java.util.Date => ps.setObject(idx, d, TIMESTAMP)
+                            case a: Array[_] => ps.setObject(idx, a, BINARY)
+                            case x: Any => ps.setObject(idx, x)
                         }
                     }
                     
                     p match {
-                        case None | null ⇒ ps.setNull(idx, NULL)
-                        case Some(x) ⇒ setObject(x)
-                        case _ ⇒ setObject(p)
+                        case None | null => ps.setNull(idx, NULL)
+                        case Some(x) => setObject(x)
+                        case _ => setObject(p)
                     }
             }
         })
@@ -306,7 +306,7 @@ object NCSql extends LazyLogging {
       * @return Result of SQL execution.
       */
     @throws[NCE]
-    def sql[R](f: ⇒ R): R = {
+    def sql[R](f: => R): R = {
         if (NCTxManager.inTx())
             sqlTx(NCTxManager.tx())(f)
         else
@@ -328,7 +328,7 @@ object NCSql extends LazyLogging {
       * @return Result of SQL execution.
       */
     @throws[NCE]
-    def sqlTx[R](tx: Transaction = null)(f: ⇒ R): R =
+    def sqlTx[R](tx: Transaction = null)(f: => R): R =
         sqlEx(Connection.TRANSACTION_READ_COMMITTED, tx)(f)
     
     /**
@@ -342,7 +342,7 @@ object NCSql extends LazyLogging {
       * @return Result of SQL execution.
       */
     @throws[NCE]
-    def sqlNoTx[R](f: ⇒ R): R =
+    def sqlNoTx[R](f: => R): R =
         sqlEx(Connection.TRANSACTION_READ_COMMITTED, null)(f)
 
     /**
@@ -361,7 +361,7 @@ object NCSql extends LazyLogging {
     @throws[NCE]
     def sqlEx[R](
         isoLvl: Int = Connection.TRANSACTION_READ_COMMITTED,
-        tx: Transaction = null)(f: ⇒ R): R = {
+        tx: Transaction = null)(f: => R): R = {
         catching[R](psqlErrorCodes) {
             val inTx = tx != null
           
@@ -415,7 +415,7 @@ object NCSql extends LazyLogging {
                 }
                 catch {
                     // Strange that Scala-ARM doesn't support it automatically.
-                    case e: Throwable ⇒
+                    case e: Throwable =>
                         ignoring(classOf[SQLException])(c.rollback())
 
                         throw e
@@ -467,7 +467,7 @@ object NCSql extends LazyLogging {
         var r = List.empty[R]
 
         catching(psqlErrorCodes) {
-            for (ps ← managed { prepare(sql, params) } ; rs ← managed { ps.executeQuery() } )
+            for (ps <- managed { prepare(sql, params) } ; rs <- managed { ps.executeQuery() } )
                 while (rs.next)
                     r :+= p(rs)
 
@@ -485,8 +485,8 @@ object NCSql extends LazyLogging {
     @throws[NCE]
     def exists(sql: String, params: Any*): Boolean =
         selectSingle[Long](s"SELECT count(*) FROM $sql", params: _*) match {
-            case Some(cnt) ⇒ cnt > 0
-            case None ⇒ throw new AssertionError("Unexpected empty result")
+            case Some(cnt) => cnt > 0
+            case None => throw new AssertionError("Unexpected empty result")
         }
 
     /**
@@ -503,9 +503,9 @@ object NCSql extends LazyLogging {
     def selectSingle[R](sql: String, params: Any*)(implicit p: RsParser[R]): Option[R] = {
         catching(psqlErrorCodes) {
             select(sql, params: _*)(p) match {
-                case Nil ⇒ None
-                case List(r) ⇒ Some(r)
-                case _ ⇒ throw new SQLException("Single value expected.")
+                case Nil => None
+                case List(r) => Some(r)
+                case _ => throw new SQLException("Single value expected.")
             }
         }
     }
@@ -520,7 +520,7 @@ object NCSql extends LazyLogging {
     @throws[NCE]
     def insert(sql: String, params: Any*): Unit =
         catching(psqlErrorCodes) {
-            managed { prepare(sql, params) } acquireAndGet { _.executeUpdate }
+            managed { prepare(sql, params) } { _.executeUpdate }
         }
 
     /**
@@ -531,7 +531,7 @@ object NCSql extends LazyLogging {
      */
     private def exec(sql: String, params: Any*): Int =
         catching[Int](psqlErrorCodes) {
-            managed { prepare(sql, params) } acquireAndGet { _.executeUpdate }
+            managed { prepare(sql, params) } { _.executeUpdate }
         }
 
     /**
@@ -577,9 +577,9 @@ object NCSql extends LazyLogging {
      * @tparam R Type of result objects.
      */
     @throws[NCE]
-    def select[R](sql: String, callback: R ⇒ Unit, params: Any*) (implicit p: RsParser[R]): Unit =
+    def select[R](sql: String, callback: R => Unit, params: Any*) (implicit p: RsParser[R]): Unit =
         catching(psqlErrorCodes) {
-            for (ps ← managed { prepare(sql, params) } ; rs ← managed { ps.executeQuery() } )
+            for (ps <- managed { prepare(sql, params) } ; rs <- managed { ps.executeQuery() } )
                 while (rs.next)
                     callback(p(rs))
         }
@@ -614,7 +614,7 @@ object NCSql extends LazyLogging {
         val tbls = mutable.ArrayBuffer.empty[String]
 
         catching(psqlErrorCodes) {
-            for (rs ← managed { connection().getMetaData.getTables(null, null, null, null)})
+            for (rs <- managed { connection().getMetaData.getTables(null, null, null, null)})
                 while (rs.next) {
                     val tblSchema = rs.getString(2)
              
