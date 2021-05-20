@@ -376,19 +376,18 @@ object NCTokenLogger extends LazyLogging {
     def prepareTable(toks: Seq[NCToken]): NCAsciiTable = {
         val allFree = toks.forall(_.isFreeWord)
 
-        val headers = ArrayBuffer.empty[String] ++
-            Seq(
-                "idx",
-                "origtext",
-                "lemma",
-                "pos",
-                "quoted",
-                "stopword",
-                "freeword",
-                "wordindexes",
-                "direct",
-                "sparsity"
-            )
+        var headers = Seq(
+            "idx",
+            "Longtext",
+            "lemma",
+            "pos",
+            "quoted",
+            "stopword",
+            "freeword",
+            "wordindexes",
+            "direct",
+            "sparsity"
+        )
 
         if (!allFree)
             headers += "token data"
