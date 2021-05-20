@@ -21,8 +21,6 @@ import io.opencensus.trace.Span
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.server.nlp.spell.NCSpellCheckManager
 
-import scala.collection._
-
 /**
   * Centralized pre-processor for raw text coming from user.
   */

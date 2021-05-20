@@ -203,7 +203,7 @@ object NCStopWordGenerator extends App {
         for (w1 <- NOUN_WORDS; w2 <- NOUN_WORDS2)
             buf += s"$w1 $w2"
 
-        mkGzip(NOUN_WORDS_FILE, stem(buf))
+        mkGzip(NOUN_WORDS_FILE, stem(buf.toSeq))
     }
 
     private def stem(s: String): String =
@@ -342,7 +342,7 @@ object NCStopWordGenerator extends App {
         for (w0 <- DWORDS_PRE; w1 <- DWORDS; w2 <- DWORDS_SUP; w3 <- QWORDS)
             buf += s"$w0 $w1 $w2 $w3"
 
-        mkGzip(FIRST_WORDS_FILE, stem(buf))
+        mkGzip(FIRST_WORDS_FILE, stem(buf.toSeq))
     }
 
     mkFirstWords()

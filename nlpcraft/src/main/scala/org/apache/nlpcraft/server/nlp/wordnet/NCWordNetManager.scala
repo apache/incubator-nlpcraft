@@ -24,7 +24,7 @@ import net.sf.extjwnl.dictionary.{Dictionary, MorphologicalProcessor}
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.NCService
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.CollectionHasAsScala
 
 /**
   * WordNet manager.
@@ -60,7 +60,7 @@ object NCWordNetManager extends NCService {
                     else
                         Seq.empty
                 })
-            ).distinct
+            ).toSeq.distinct
         else
             Seq.empty[String]
     }
