@@ -31,15 +31,15 @@ import org.apache.nlpcraft.probe.mgrs.{NCProbeModel, NCProbeVariants, NCProbeSyn
 import java.io.Serializable
 import java.util
 import java.util.{List => JList}
-import scala.collection.JavaConverters._
-import scala.collection.convert.DecorateAsScala
+
+import scala.jdk.CollectionConverters._
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.{Map, Seq, mutable}
 
 /**
   * Model elements enricher.
   */
-object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
+object NCModelEnricher extends NCProbeEnricher {
     type TokType = (NCToken, NCSynonymChunkKind)
     type Cache = mutable.Map[String, ArrayBuffer[Seq[Int]]]
 

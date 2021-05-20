@@ -134,8 +134,8 @@ class NCProbeSynonym(
                     state = -1
             }
 
-            if (state != -1 && all.size == res.size && (!shouldBeNeighbors || U.isIncreased(res.map(getIndex).sorted)))
-                Some(res)
+            if (state != -1 && all.size == res.size && (!shouldBeNeighbors || U.isIncreased(res.map(getIndex).sorted.toSeq)))
+                Some(res.toSeq)
             else
                 None
         }
@@ -207,7 +207,7 @@ class NCProbeSynonym(
         require(toks != null)
         require(sparse && !hasIdl)
 
-        sparseMatch0(toks, isMatch, (t: NCNlpSentenceToken) => t.startCharIndex, shouldBeNeighbors = false)
+        sparseMatch0(toks.toSeq, isMatch, (t: NCNlpSentenceToken) => t.startCharIndex, shouldBeNeighbors = false)
     }
 
     /**

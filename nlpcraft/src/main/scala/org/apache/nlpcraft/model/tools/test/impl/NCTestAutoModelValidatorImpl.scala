@@ -24,7 +24,7 @@ import org.apache.nlpcraft.model.tools.embedded.NCEmbeddedProbe
 import org.apache.nlpcraft.model.tools.test.{NCTestAutoModelValidator, NCTestClientBuilder}
 import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 /**
   * Implementation for `NCTestAutoModelValidator` class.

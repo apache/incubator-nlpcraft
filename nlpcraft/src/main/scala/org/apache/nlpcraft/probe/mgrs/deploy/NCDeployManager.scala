@@ -39,17 +39,17 @@ import org.apache.nlpcraft.model.intent._
 import org.apache.nlpcraft.probe.mgrs.NCProbeSynonymChunkKind.{IDL, REGEX, TEXT}
 import org.apache.nlpcraft.probe.mgrs.{NCProbeModel, NCProbeSynonym, NCProbeSynonymChunk, NCProbeSynonymsWrapper}
 
-import scala.collection.JavaConverters._
 import scala.compat.java8.OptionConverters._
-import scala.collection.convert.DecorateAsScala
+import scala.jdk.CollectionConverters._
 import scala.collection.mutable
 import scala.collection.mutable.{ArrayBuffer, ListBuffer}
+import scala.util.Using
 import scala.util.control.Exception._
 
 /**
   * Model deployment manager.
   */
-object NCDeployManager extends NCService with DecorateAsScala {
+object NCDeployManager extends NCService {
     private final val TOKENS_PROVIDERS_PREFIXES = Set("nlpcraft:", "google:", "stanford:", "opennlp:", "spacy:")
     private final val ID_REGEX = "^[_a-zA-Z]+[a-zA-Z0-9:\\-_]*$"
 
@@ -323,7 +323,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 chunks ++= U.splitTrimFilter(x.substring(start), " ")
 
                 chunks.map(mkChunk(mdl, _))
-            }
+            }.toSeq
 
             /**
               *
@@ -611,7 +611,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
         val classes = mutable.ArrayBuffer.empty[Class[_ <: NCModel]]
 
-        managed(new JarInputStream(new BufferedInputStream(new FileInputStream(jarFile)))) acquireAndGet { in =>
+        Using.resource(new JarInputStream(new BufferedInputStream(new FileInputStream(jarFile)))) { in =>
             var entry = in.getNextJarEntry
 
             while (entry != null) {
@@ -641,7 +641,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 makeModelFromSource(cls, jarFile.getPath)
             )
         )
-    }
+    }.toSeq
 
     /**
      *
@@ -716,7 +716,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
       *
       * @return
       */
-    def getModels: Seq[NCProbeModel] = data
+    def getModels: Seq[NCProbeModel] = data.toSeq
 
     /**
       * Permutes and drops duplicated.

@@ -28,7 +28,7 @@ import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.opencensus.NCOpenCensusTrace
 import org.apache.nlpcraft.model._
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.collection.mutable
 
 /**
