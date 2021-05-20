@@ -27,6 +27,7 @@ import org.apache.nlpcraft.model.NCToken
 import org.apache.nlpcraft.model.impl.NCTokenPimp._
 import org.apache.nlpcraft.common.ansi.NCAnsi._
 
+import scala.collection.mutable.ArrayBuffer
 import scala.jdk.CollectionConverters._
 
 /**
@@ -375,7 +376,7 @@ object NCTokenLogger extends LazyLogging {
     def prepareTable(toks: Seq[NCToken]): NCAsciiTable = {
         val allFree = toks.forall(_.isFreeWord)
 
-        var headers = Seq(
+        val headers = ArrayBuffer(
             "idx",
             "Longtext",
             "lemma",
@@ -391,7 +392,7 @@ object NCTokenLogger extends LazyLogging {
         if (!allFree)
             headers += "token data"
 
-        val tbl = NCAsciiTable(headers :_*)
+        val tbl = NCAsciiTable(headers.toSeq :_*)
 
         toks.foreach(tok => {
             val md = tok.getMetadata
@@ -433,19 +434,18 @@ object NCTokenLogger extends LazyLogging {
                 else
                     tok.origText
 
-            val row =
-                Seq(
-                    tok.index,
-                    origTxtStr,
-                    tok.lemma,
-                    tok.pos,
-                    tok.isQuoted,
-                    if (tok.isStopWord) s"${r("true")}" else "false",
-                    if (tok.isFreeWord) s"${y("true")}" else "false",
-                    s"[${tok.wordIndexes.mkString(",")}]",
-                    tok.isDirect,
-                    tok.sparsity
-                )
+            val row = Seq(
+                tok.index,
+                origTxtStr,
+                tok.lemma,
+                tok.pos,
+                tok.isQuoted,
+                if (tok.isStopWord) s"${r("true")}" else "false",
+                if (tok.isFreeWord) s"${y("true")}" else "false",
+                s"[${tok.wordIndexes.mkString(",")}]",
+                tok.isDirect,
+                tok.sparsity
+            )
 
             if (allFree)
                 tbl += (row :_*)

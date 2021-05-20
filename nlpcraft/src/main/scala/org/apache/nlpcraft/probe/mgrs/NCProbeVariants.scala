@@ -19,14 +19,14 @@ package org.apache.nlpcraft.probe.mgrs
 
 import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote, NCNlpSentenceToken}
 import org.apache.nlpcraft.common.nlp.pos.NCPennTreebank
-import org.apache.nlpcraft.common.{NCE, TOK_META_ALIASES_KEY}
+import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.model.impl.{NCTokenImpl, NCTokenLogger, NCVariantImpl}
-import org.apache.nlpcraft.model.{NCToken, NCVariant}
+import org.apache.nlpcraft.model._
 
-import java.io.{Serializable => JSerializable}
 import java.util
 import java.util.Collections.singletonList
-import scala.collection.{Seq, mutable}
+import scala.collection._
+import scala.collection.mutable.ArrayBuffer
 import scala.jdk.CollectionConverters._
 
 /**
@@ -34,13 +34,13 @@ import scala.jdk.CollectionConverters._
   */
 object NCProbeVariants {
     private final val IDX: java.lang.Integer = -1
-    private final val IDXS: JSerializable = singletonList(IDX).asInstanceOf[JSerializable]
-    private final val IDXS2: JSerializable = singletonList(singletonList(IDX)).asInstanceOf[JSerializable]
+    private final val IDXS: java.io.Serializable = singletonList(IDX).asInstanceOf[java.io.Serializable]
+    private final val IDXS2: java.io.Serializable = singletonList(singletonList(IDX)).asInstanceOf[java.io.Serializable]
 
     case class Key(id: String, from: Int, to: Int)
 
     object Key {
-        def apply(m: util.HashMap[String, JSerializable]): Key = {
+        def apply(m: util.HashMap[String, java.io.Serializable]): Key = {
             def get[T](name: String): T = m.get(name).asInstanceOf[T]
 
             Key(get("id"), get("startcharindex"), get("endcharindex"))
@@ -103,7 +103,7 @@ object NCProbeVariants {
                             artTok.add(mkNote(toks))
 
                             if (key.id != "nlpcraft:nlp") {
-                                var ps = mkNlpNoteParams()
+                                val ps = mkNlpNoteParams()
 
                                 delNote.noteType match {
                                     case "nlpcraft:relation" | "nlpcraft:limit" => ps += "indexes" -> IDXS
@@ -111,7 +111,7 @@ object NCProbeVariants {
                                     case _ => // No-op.
                                 }
 
-                                artTok.add(delNote.clone(ps :_*))
+                                artTok.add(delNote.clone(ps.toSeq :_*))
                             }
 
                             Some(artTok)
@@ -125,8 +125,8 @@ object NCProbeVariants {
       *
       * @return
       */
-    private def mkNlpNoteParams(): Seq[(String, JSerializable)] =
-        Seq("tokMinIndex" -> IDX, "tokMaxIndex" -> IDX)
+    private def mkNlpNoteParams(): ArrayBuffer[(String, java.io.Serializable)] =
+        ArrayBuffer("tokMinIndex" -> IDX, "tokMaxIndex" -> IDX)
 
     /**
       *
@@ -175,7 +175,12 @@ object NCProbeVariants {
             "swear" -> exists(_.isSwearWord)
         )
 
-        NCNlpSentenceNote(Seq(IDX.intValue()), srcToks.flatMap(_.wordIndexes).distinct.sorted, "nlpcraft:nlp", params: _*)
+        NCNlpSentenceNote(
+            Seq(IDX.intValue()),
+            srcToks.flatMap(_.wordIndexes).distinct.sorted,
+            "nlpcraft:nlp",
+            params: _*)
+
     }
 
     /**
@@ -203,7 +208,7 @@ object NCProbeVariants {
                 val keys2Toks = toks.map(t => Key(t) -> t).toMap
 
                 def process(tok: NCTokenImpl, tokNlp: NCNlpSentenceToken): Unit = {
-                    val optList: Option[util.List[util.HashMap[String, JSerializable]]] =
+                    val optList: Option[util.List[util.HashMap[String, java.io.Serializable]]] =
                         tokNlp.find(_.isUser) match {
                             case Some(u) => u.dataOpt("parts")
                             case None => None
@@ -234,7 +239,7 @@ object NCProbeVariants {
                                                     case Some(nlpNote) =>
                                                         val artTok = NCNlpSentenceToken(IDX)
 
-                                                        artTok.add(nlpNote.clone(mkNlpNoteParams(): _*))
+                                                        artTok.add(nlpNote.clone(mkNlpNoteParams().toSeq: _*))
 
                                                         mkToken(artTok)
                                                     case None =>
