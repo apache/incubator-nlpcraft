@@ -22,8 +22,8 @@ import java.util.function.{BiPredicate, Consumer, Supplier, Function => JFunctio
 import org.apache.nlpcraft.common.ansi.NCAnsi._
 import org.apache.nlpcraft.common.util._
 
+import scala.jdk.CollectionConverters.MapHasAsScala
 import scala.language.implicitConversions
-import scala.collection.JavaConverters._
 
 /**
   * Package scope.

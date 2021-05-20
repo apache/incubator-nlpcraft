@@ -31,9 +31,9 @@ import java.io._
 import java.net.URL
 import java.nio.file.Files
 import java.util.concurrent.ConcurrentHashMap
-import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext
 import scala.io.Source
+import scala.jdk.CollectionConverters.ConcurrentMapHasAsScala
 import scala.util.Using
 
 /**

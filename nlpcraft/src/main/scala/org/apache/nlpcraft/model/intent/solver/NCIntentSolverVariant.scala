@@ -21,7 +21,6 @@ import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.model.NCToken
 import org.apache.nlpcraft.model.impl.NCTokenPimp._
 
-import scala.collection.JavaConverters._
 import java.util
 
 /**

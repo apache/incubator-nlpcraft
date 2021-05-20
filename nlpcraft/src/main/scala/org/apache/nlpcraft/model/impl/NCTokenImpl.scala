@@ -19,14 +19,13 @@ package org.apache.nlpcraft.model.impl
 
 import java.io.{Serializable => JSerializable}
 import java.util.Collections
-
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.nlp.NCNlpSentenceToken
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.probe.mgrs.NCProbeModel
 
-import scala.collection.JavaConverters._
 import scala.collection.{Seq, mutable}
+import scala.jdk.CollectionConverters.{MapHasAsJava, SeqHasAsJava}
 
 /**
   *

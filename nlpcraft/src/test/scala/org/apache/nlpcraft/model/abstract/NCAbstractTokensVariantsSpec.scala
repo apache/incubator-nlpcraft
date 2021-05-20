@@ -22,7 +22,7 @@ import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
 import org.junit.jupiter.api.Test
 
 import java.util
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.CollectionHasAsScala
 
 class NCAbstractTokensModelVariants extends NCAbstractTokensModel {
     private def checkId(t: NCToken, id: String): Unit =

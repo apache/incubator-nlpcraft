@@ -29,8 +29,6 @@ import org.apache.nlpcraft.model.{NCContext, NCDialogFlowItem, NCIntentMatch, NC
 import org.apache.nlpcraft.probe.mgrs.dialogflow.NCDialogFlowManager
 
 import java.util.function.Function
-import scala.collection.JavaConverters._
-import scala.collection.convert.ImplicitConversions._
 import scala.collection.mutable
 
 /**

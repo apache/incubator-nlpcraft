@@ -23,8 +23,7 @@ import org.apache.nlpcraft.common.ascii._
 import scala.language.implicitConversions
 import java.io.{Serializable => JSerializable}
 import scala.collection.mutable
-import scala.compat.java8.FunctionConverters.enrichAsJavaFunction
-import scala.jdk.CollectionConverters.CollectionHasAsScala
+import scala.jdk.CollectionConverters.{CollectionHasAsScala, SeqHasAsJava}
 
 /**
   * Sentence token note is a typed map of KV pairs.

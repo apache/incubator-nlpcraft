@@ -26,7 +26,6 @@ import org.junit.jupiter.api.BeforeEach
 
 import java.util
 import java.util.{Collections, Optional}
-import scala.collection.JavaConverters._
 import scala.language.implicitConversions
 
 /**

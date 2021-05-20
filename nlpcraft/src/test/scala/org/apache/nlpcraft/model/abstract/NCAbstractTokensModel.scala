@@ -21,7 +21,7 @@ import org.apache.nlpcraft.NCTestElement
 import org.apache.nlpcraft.model.{NCElement, NCModelAdapter}
 
 import java.util
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.SetHasAsJava
 
 class NCAbstractTokensModel extends NCModelAdapter(
     "nlpcraft.abstract.elems.mdl.test", "Abstract Elements Test Model", "1.0"

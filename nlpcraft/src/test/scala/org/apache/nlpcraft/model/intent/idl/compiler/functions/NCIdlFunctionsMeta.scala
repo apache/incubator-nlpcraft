@@ -23,7 +23,6 @@ import org.junit.jupiter.api.Test
 
 import java.util
 import java.util.Optional
-import scala.collection.JavaConverters._
 import scala.sys.SystemProperties
 
 /**

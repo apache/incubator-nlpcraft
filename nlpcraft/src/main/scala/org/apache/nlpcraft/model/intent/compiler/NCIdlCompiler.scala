@@ -29,7 +29,6 @@ import org.apache.nlpcraft.model.intent.{NCIdlContext, NCIdlFunction, NCIdlInten
 
 import java.io._
 import java.net._
-import scala.collection.JavaConverters._
 import java.util.Optional
 import java.util.regex.{Pattern, PatternSyntaxException}
 import scala.collection.mutable

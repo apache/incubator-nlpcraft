@@ -23,7 +23,6 @@ import org.junit.jupiter.api.Test
 
 import java.util.Optional
 import java.{lang, util}
-import scala.collection.JavaConverters._
 
 abstract class NCTokenPropertiesModelAbstract extends NCModelAdapter(
     "nlpcraft.tokens.prop.test.mdl", "Tokens Properties Test Model", "1.0"

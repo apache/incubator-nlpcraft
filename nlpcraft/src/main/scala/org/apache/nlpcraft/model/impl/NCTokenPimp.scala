@@ -19,7 +19,6 @@ package org.apache.nlpcraft.model.impl
 
 import org.apache.nlpcraft.model.NCToken
 import scala.language.implicitConversions
-import scala.collection.JavaConverters._
 
 /**
   *

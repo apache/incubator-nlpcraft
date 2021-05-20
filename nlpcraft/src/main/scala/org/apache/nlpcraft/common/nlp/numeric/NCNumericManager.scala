@@ -358,12 +358,12 @@ object NCNumericManager extends NCService {
         
                         cds(i)
                     }
-                }).toSeq.map(_._2)
+                }).toSeq.map(_._2.toSeq)
         
             val nums = grps.flatMap(seq => {
                 def mkNums(v: Double, isFractional: Boolean): Seq[NCNumeric] = {
                     // Units synonyms are not stemmed.
-                    Range.inclusive(1, maxSynWords).reverse.toStream.flatMap(i => {
+                    Range.inclusive(1, maxSynWords).reverse.to(LazyList).flatMap(i => {
                         val afterNum = ns.slice(seq.last.index + 1, seq.last.index + i + 1)
                         
                         if (afterNum.nonEmpty && !afterNum.exists(cds.contains)) {

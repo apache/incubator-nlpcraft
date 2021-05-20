@@ -18,8 +18,9 @@
 package org.apache.nlpcraft.common.makro
 
 import org.apache.nlpcraft.common._
-import scala.collection.JavaConverters._
+
 import scala.collection._
+import scala.jdk.CollectionConverters.ConcurrentMapHasAsScala
 
 object NCMacroParser {
     private final val CHARS = "[A-Za-z0-9-_]+"
