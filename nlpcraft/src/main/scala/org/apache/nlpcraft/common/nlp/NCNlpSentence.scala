@@ -222,7 +222,7 @@ class NCNlpSentence(
     /**
       *
       */
-    def getDeletedNotes: Predef.Map[NCNlpSentenceNote, Seq[NCNlpSentenceToken]] = deletedNotes.toMap
+    def getDeletedNotes: Map[NCNlpSentenceNote, Seq[NCNlpSentenceToken]] = deletedNotes.toMap
 
     /***
       *

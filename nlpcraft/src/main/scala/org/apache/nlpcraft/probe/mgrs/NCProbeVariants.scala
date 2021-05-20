@@ -25,7 +25,7 @@ import org.apache.nlpcraft.model._
 
 import java.util
 import java.util.Collections.singletonList
-import scala.collection._
+import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import scala.jdk.CollectionConverters._
 
@@ -84,7 +84,7 @@ object NCProbeVariants {
         key: Key,
         delNotes: Map[NCNlpSentenceNote, Seq[NCNlpSentenceToken]],
         noteTypePred: String => Boolean
-    ): Option[NCNlpSentenceNote] =
+    ): Option[NCNlpSentenceToken] =
         delNotes.to(LazyList).
             flatMap { case (delNote, delNoteToks) =>
                 if (noteTypePred(delNote.noteType)) {
@@ -179,8 +179,8 @@ object NCProbeVariants {
             Seq(IDX.intValue()),
             srcToks.flatMap(_.wordIndexes).distinct.sorted,
             "nlpcraft:nlp",
-            params: _*)
-
+            params: _*
+        )
     }
 
     /**
@@ -312,16 +312,16 @@ object NCProbeVariants {
 
             if (bestVars.size != vars.size)
                 // Reverts orders.
-                vars = bestVars.sortBy(sortedVars.indexOf)
+                vars = bestVars.sortBy(sortedVars.indexOf).toSeq
         }
 
         for (v <- vars; t <- v.asScala)
             require(
                 t.getIndex >= 0,
                 s"Invalid token: $t with index: ${t.getIndex}, " +
-                    s"lastPhase: $lastPhase, " +
-                    s"sentence:\n${NCTokenLogger.prepareTable(v.asScala)}" +
-                    s""
+                s"lastPhase: $lastPhase, " +
+                s"sentence:\n${NCTokenLogger.prepareTable(v.asScala.toSeq)}" +
+                s""
             )
 
         vars

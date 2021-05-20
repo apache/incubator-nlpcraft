@@ -260,6 +260,6 @@ object NCNlpSentenceNote {
       * @param typ Type of the node.
       * @param params Parameters.
       */
-    def apply(indexes: collection.Seq[Int], wordIndexes: collection.Seq[Int], typ: String, params: (String, Any)*): NCNlpSentenceNote =
+    def apply(indexes: Seq[Int], wordIndexes: Seq[Int], typ: String, params: (String, Any)*): NCNlpSentenceNote =
         apply(indexes, Some(wordIndexes), typ, params: _*)
 }
