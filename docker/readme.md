@@ -28,9 +28,9 @@ also prepare your own images following the instructions below.
 
 #### Using Server Image
  1. [Install](https://docs.docker.com/install/) docker.
- 2. Pull actual NLPCraft server image: ```docker pull nlpcraftserver/server:0.8.0```, 
- where `0.7.5` is the desired version.
- 3. Run image: ```docker run -m 8G -p 8081:8081 -p 8201:8201 -p 8202:8202 nlpcraftserver/server:0.8.0```
+ 2. Pull actual NLPCraft server image: ```docker pull nlpcraftserver/server:1.0.0```, 
+ where `1.0.0` is the desired version.
+ 3. Run image: ```docker run -m 8G -p 8081:8081 -p 8201:8201 -p 8202:8202 nlpcraftserver/server:1.0.0```
 
 **NOTE**:
  Default docker image run REST server with default configuration (see file `build/nlpcraft.conf`). See [configuration](https://nlpcraft.apache.org/server-and-probe.html)
@@ -40,13 +40,13 @@ also prepare your own images following the instructions below.
 You can prepare your own NLPCraft server image following these instructions:
  1. Build the release with maven: ```mvn clean package -P release```  
  2. Prepare docker image with `prepare.sh` (modify it if necessary):
-   ```./prepare.sh docker_acct server 0.8.0```, where
-    * `0.8.0` - maven build version, prepared on previous step.
+   ```./prepare.sh docker_acct server 1.0.0```, where
+    * `1.0.0` - maven build version, prepared on previous step.
     * `docker_acct` - change it to your own [DockerHub](https://hub.docker.com) account.    
  
-    Note that docker image name will be `docker_acct/server:0.8.0`   
+    Note that docker image name will be `docker_acct/server:1.0.0`   
  3. Login to [DockerHub](https://hub.docker.com): ```docker login```   
- 4. Push prepared docker image: ```docker push docker_acct/server:0.8.0```  
+ 4. Push prepared docker image: ```docker push docker_acct/server:1.0.0```  
  5. Logout from [DockerHub](https://hub.docker.com): ```docker logout```
 
 **NOTE**:
