@@ -27,8 +27,8 @@ import org.apache.nlpcraft.probe.mgrs.NCProbeModel
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
 
 import java.io.Serializable
-import scala.collection.JavaConverters._
-import scala.collection.{Map, Seq, mutable}
+import scala.collection.mutable
+import scala.jdk.CollectionConverters._
 
 /**
   * Limit enricher.
@@ -260,14 +260,14 @@ object NCLimitEnricher extends NCProbeEnricher {
 
             // Tries to grab tokens reverse way.
             // Example: A, B, C => ABC, BC, AB .. (BC will be processed first)
-            for (toks <- ns.tokenMixWithStopWords().sortBy(p => (-p.size, -p.head.index)) if validImportant(ns, toks)) {
+            for (toks <- ns.tokenMixWithStopWords().sortBy(p => (-p.size, -p.head.index)) if validImportant(ns, toks.toSeq)) {
                 if (numsMap == null) {
                     numsMap = NCNumericManager.find(ns).map(p => p.tokens -> p).toMap
                     groupsMap = groupNums(ns, numsMap.values)
                     tech = (numsMap.keys.flatten ++ groupsMap.keys.flatten).toSet
                 }
 
-                tryToMatch(numsMap, groupsMap, tech, toks) match {
+                tryToMatch(numsMap, groupsMap, tech, toks.toSeq) match {
                     case Some(m) =>
                         for (refNote <- m.refNotes if !restricted.contains(refNote)) {
                             val ps = mutable.ArrayBuffer.empty[(String, Any)]
@@ -279,7 +279,7 @@ object NCLimitEnricher extends NCProbeEnricher {
                             if (m.asc.isDefined)
                                 ps += "asc" -> m.asc.get
 
-                            val note = NCNlpSentenceNote(m.matched.map(_.index), TOK_ID, ps: _*)
+                            val note = NCNlpSentenceNote(m.matched.map(_.index), TOK_ID, ps.toSeq: _*)
 
                             if (!notes.exists(n => ns.notesEqualOrSimilar(n, note))) {
                                 notes += note
@@ -371,7 +371,7 @@ object NCLimitEnricher extends NCProbeEnricher {
         val numsMap = nums.map(n => n.tokens -> n).toMap
 
         // All groups combinations.
-        val tks2Nums: Seq[(NCNlpSentenceToken, Option[Int])] = ns.filter(!_.isStopWord).map(t => t -> fuzzyNums.get(t.stem))
+        val tks2Nums: Seq[(NCNlpSentenceToken, Option[Int])] = ns.filter(!_.isStopWord).map(t => t -> fuzzyNums.get(t.stem)).toSeq
 
         // Tokens: A;  B;  20;  C;  twenty; two, D
         // NERs  : -;  -;  20;  -;  22;     22;  -

@@ -24,6 +24,7 @@ import org.apache.nlpcraft.common.nlp.numeric._
 import org.apache.nlpcraft.server.nlp.enrichers.NCServerEnricher
 
 import scala.collection._
+import scala.language.implicitConversions
 
 /**
  * Numeric enricher.
@@ -228,7 +229,7 @@ object NCNumericEnricher extends NCServerEnricher {
                 params += "unitType" -> unit.unitType
             case None => // No-op.
         }
-    
+
         NCNlpSentenceNote(toks.map(_.index), "nlpcraft:num", params:_*)
     }
 

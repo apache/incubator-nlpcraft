@@ -203,7 +203,7 @@ object NCModelEnricher extends NCProbeEnricher {
 
         val idxs = toks.map(_.index).sorted
 
-        val note = NlpNote(idxs, elem.getId, params: _*)
+        val note = NlpNote(idxs, elem.getId, params.toSeq: _*)
 
         toks.foreach(_.add(note))
 
@@ -367,7 +367,7 @@ object NCModelEnricher extends NCProbeEnricher {
         val complexesWords = ns.map(Complex(_))
 
         val complexes =
-            NCProbeVariants.convert(ns.srvReqId, mdl, NCSentenceManager.collapse(mdl.model, ns.clone())).
+            NCProbeVariants.convert(ns.srvReqId, mdl, NCSentenceManager.collapse(mdl.model, ns.clone()).toSeq).
                 map(_.asScala).
                 par.
                 flatMap(sen =>

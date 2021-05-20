@@ -27,8 +27,8 @@ import org.apache.nlpcraft.model.NCModel
 import java.io.{Serializable => JSerializable}
 import java.util
 import java.util.{List => JList}
-import scala.collection.JavaConverters.{asScalaBufferConverter, _}
-import scala.collection.{Map, Seq, mutable}
+import scala.collection.mutable
+import scala.jdk.CollectionConverters._
 import scala.language.implicitConversions
 
 /**
