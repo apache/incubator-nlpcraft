@@ -217,7 +217,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
 
                         // Isolated sentence tokens.
                         val senToks = Seq.empty[UsedToken] ++ availToks.map(UsedToken(false, false, _))
-                        val senTokGroups = availToks.map(t => if (t.getGroups != null) t.getGroups.sorted else Seq.empty)
+                        val senTokGroups = availToks.map(t => if (t.getGroups != null) t.getGroups.asScala.sorted else Seq.empty)
 
                         // Isolated conversation tokens.
                         val convToks =
@@ -296,11 +296,10 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                                 require(x2 == 0)
 
                                 def calcHash(m: MatchHolder): Int = {
-                                    val variantPart =
-                                        m.variant.
-                                            tokens.
-                                            map(t => s"${t.getId}${t.getGroups}${t.getValue}${t.normText}").
-                                            mkString("")
+                                    val variantPart = m.variant.
+                                        tokens.asScala.
+                                        map(t => s"${t.getId}${t.getGroups}${t.getValue}${t.normText}").
+                                        mkString("")
 
                                     val intentPart = m.intentMatch.intent.toString
 
