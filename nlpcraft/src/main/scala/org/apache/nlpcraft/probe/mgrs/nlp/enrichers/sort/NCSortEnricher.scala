@@ -28,8 +28,7 @@ import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
 
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.{Map, Seq, mutable}
-import scala.compat.java8.FunctionConverters.enrichAsJavaFunction
-import scala.jdk.CollectionConverters.CollectionHasAsScala
+import scala.jdk.CollectionConverters._
 
 /**
   * Sort enricher.
