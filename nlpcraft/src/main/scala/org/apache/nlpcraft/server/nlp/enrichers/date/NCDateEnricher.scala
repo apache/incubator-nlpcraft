@@ -27,10 +27,10 @@ import org.apache.nlpcraft.server.nlp.enrichers.date.NCDateConstants._
 import org.apache.nlpcraft.server.nlp.enrichers.date.NCDateFormatType._
 
 import java.util
-import java.util.{Calendar ⇒ C}
+import java.util.{Calendar => C}
 import scala.collection.immutable.Iterable
 import scala.collection.mutable
-import scala.collection.mutable.{LinkedHashMap ⇒ LHM}
+import scala.collection.mutable.{LinkedHashMap => LHM}
 import scala.concurrent.ExecutionContext
 import scala.jdk.CollectionConverters.CollectionHasAsScala
 

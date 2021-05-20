@@ -43,6 +43,8 @@ import java.security.Key
 import java.util
 import java.util.Collections
 import java.util.concurrent.ConcurrentHashMap
+
+import scala.jdk.CollectionConverters._
 import scala.collection.{Map, mutable}
 import scala.concurrent.{ExecutionContext, Future, Promise}
 import scala.util.{Failure, Success}
