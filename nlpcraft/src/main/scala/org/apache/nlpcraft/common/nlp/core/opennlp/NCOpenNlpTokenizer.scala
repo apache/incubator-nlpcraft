@@ -22,7 +22,7 @@ import opennlp.tools.tokenize.{Tokenizer, TokenizerME, TokenizerModel}
 import org.apache.nlpcraft.common.NCService
 import org.apache.nlpcraft.common.nlp.core.{NCNlpCoreToken, NCNlpTokenizer}
 import org.apache.nlpcraft.common.extcfg.NCExternalConfigManager
-import resource.managed
+import scala.util.Using
 import org.apache.nlpcraft.common.extcfg.NCExternalConfigType.OPENNLP
 import scala.language.{implicitConversions, postfixOps}
 

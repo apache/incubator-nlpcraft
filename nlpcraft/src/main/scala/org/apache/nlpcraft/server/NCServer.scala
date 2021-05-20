@@ -51,7 +51,7 @@ import org.apache.nlpcraft.server.sql.NCSqlManager
 import org.apache.nlpcraft.server.sugsyn.NCSuggestSynonymManager
 import org.apache.nlpcraft.server.tx.NCTxManager
 import org.apache.nlpcraft.server.user.NCUserManager
-import resource.managed
+import scala.util.Using
 
 import java.io._
 import java.util.concurrent.CountDownLatch

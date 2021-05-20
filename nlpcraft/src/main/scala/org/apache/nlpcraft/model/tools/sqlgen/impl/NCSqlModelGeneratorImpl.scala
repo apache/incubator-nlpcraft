@@ -34,7 +34,7 @@ import org.apache.nlpcraft.common.version.NCVersion
 import org.apache.nlpcraft.model.impl.json.{NCElementJson, NCMacroJson, NCModelJson}
 import org.apache.nlpcraft.model.tools.sqlgen.NCSqlJoinType
 import org.apache.nlpcraft.common._
-import resource.managed
+import scala.util.Using
 
 import scala.collection.JavaConverters._
 import scala.collection.immutable.HashMap

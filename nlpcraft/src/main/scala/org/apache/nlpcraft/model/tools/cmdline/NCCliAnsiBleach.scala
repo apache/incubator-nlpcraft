@@ -21,7 +21,7 @@ import java.io.{BufferedInputStream, BufferedReader}
 
 import org.apache.nlpcraft.common._
 import org.jline.utils.InputStreamReader
-import resource.managed
+import scala.util.Using
 
 /**
  * Pipe filter to remove ANSI escape sequences.

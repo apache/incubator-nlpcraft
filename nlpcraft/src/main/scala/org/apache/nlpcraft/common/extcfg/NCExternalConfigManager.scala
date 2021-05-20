@@ -26,7 +26,6 @@ import org.apache.nlpcraft.common.module.NCModule
 import org.apache.nlpcraft.common.module.NCModule.{NCModule, PROBE, SERVER}
 import org.apache.nlpcraft.common.pool.NCThreadPoolManager
 import org.apache.nlpcraft.common.{NCE, NCService, U}
-import resource.managed
 
 import java.io._
 import java.net.URL
@@ -35,6 +34,7 @@ import java.util.concurrent.ConcurrentHashMap
 import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext
 import scala.io.Source
+import scala.util.Using
 
 /**
   * External configuration manager.

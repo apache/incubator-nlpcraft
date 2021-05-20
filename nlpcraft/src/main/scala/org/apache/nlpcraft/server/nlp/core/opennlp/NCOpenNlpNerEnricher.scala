@@ -29,7 +29,7 @@ import org.apache.nlpcraft.common.{NCService, U}
 import org.apache.nlpcraft.server.ignite.NCIgniteHelpers._
 import org.apache.nlpcraft.server.ignite.NCIgniteInstance
 import org.apache.nlpcraft.server.nlp.core.NCNlpNerEnricher
-import resource.managed
+import scala.util.Using
 
 import scala.concurrent.ExecutionContext
 import scala.util.control.Exception.catching

@@ -50,7 +50,7 @@ import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.stopword.NCStopWordEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.suspicious.NCSuspiciousNounsEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.validate.NCValidateManager
 import org.apache.nlpcraft.probe.mgrs.sentence.NCSentenceManager
-import resource.managed
+import scala.util.Using
 
 import java.io._
 import java.util.concurrent.CompletableFuture

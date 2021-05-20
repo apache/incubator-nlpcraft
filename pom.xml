@@ -126,9 +126,9 @@
         <maven.clean.plugin.ver>3.1.0</maven.clean.plugin.ver>
         <apache.rat.plugin.ver>0.13</apache.rat.plugin.ver>
         <org.antlr4.ver>4.9</org.antlr4.ver>
-        <akka.http.2.12.ver>10.2.0</akka.http.2.12.ver>
-        <akka.stream.2.12.ver>2.6.8</akka.stream.2.12.ver>
-        <akka.http.spray.json.2.12.ver>10.2.0</akka.http.spray.json.2.12.ver>
+        <akka.http.2.13.ver>10.2.4</akka.http.2.13.ver>
+        <akka.stream.2.13.ver>2.6.14</akka.stream.2.13.ver>
+        <akka.http.spray.json.2.13.ver>10.2.0</akka.http.spray.json.2.13.ver>
         <google.guava.ver>29.0-jre</google.guava.ver>
         <diff.utils.ver>4.7</diff.utils.ver>
         <vertical.blank.ver>1.0.1</vertical.blank.ver>
@@ -274,7 +274,7 @@
 
             <dependency>
                 <groupId>com.typesafe.scala-logging</groupId>
-                <artifactId>scala-logging_3.0.0-RC1</artifactId>
+                <artifactId>scala-logging_2.13</artifactId>
                 <version>${scala.logging.ver}</version>
             </dependency>
 
@@ -400,20 +400,20 @@
 
             <dependency>
                 <groupId>com.typesafe.akka</groupId>
-                <artifactId>akka-http_2.12</artifactId>
-                <version>${akka.http.2.12.ver}</version>
+                <artifactId>akka-http_2.13</artifactId>
+                <version>${akka.http.2.13.ver}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.typesafe.akka</groupId>
-                <artifactId>akka-stream_2.12</artifactId>
-                <version>${akka.stream.2.12.ver}</version>
+                <artifactId>akka-stream_2.13</artifactId>
+                <version>${akka.stream.2.13.ver}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.typesafe.akka</groupId>
-                <artifactId>akka-http-spray-json_2.12</artifactId>
-                <version>${akka.http.spray.json.2.12.ver}</version>
+                <artifactId>akka-http-spray-json_2.13</artifactId>
+                <version>${akka.http.spray.json.2.13.ver}</version>
             </dependency>
 
             <dependency>
@@ -510,10 +510,7 @@
                         <jvmArg>-Xss2048k</jvmArg>
                     </jvmArgs>
                     <args>
-                        <arg>-unchecked</arg>
-                        <arg>-deprecation</arg>
-                        <arg>-explaintypes</arg>
-                        <arg>-feature</arg>
+                        <arg>-Ytasty-reader</arg>
                     </args>
                     <!-- Suppress warnings on release versions of Scala. -->
                     <scalaCompatVersion>2.13</scalaCompatVersion>

@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.probe.mgrs.nlp.enrichers
 
 import org.apache.nlpcraft.model.NCToken
-import resource.managed
+import scala.util.Using
 
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream, ObjectInputStream, ObjectOutputStream}
 import java.nio.charset.StandardCharsets.UTF_8
