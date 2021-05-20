@@ -25,7 +25,6 @@ import org.apache.nlpcraft.model.tools.sqlgen.NCSqlJoinType._
 import org.apache.nlpcraft.model.tools.sqlgen._
 import org.apache.nlpcraft.model.tools.sqlgen.impl.NCSqlSortImpl
 
-import scala.collection.JavaConverters._
 import scala.collection.{Seq, mutable}
 import scala.compat.java8.OptionConverters._
 

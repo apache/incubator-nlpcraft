@@ -23,7 +23,6 @@ import org.apache.nlpcraft.examples.sql.db._
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.model.tools.sqlgen._
 
-import scala.collection.JavaConverters._
 import scala.language.implicitConversions
 
 /**

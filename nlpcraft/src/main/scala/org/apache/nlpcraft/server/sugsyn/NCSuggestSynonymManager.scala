@@ -36,7 +36,6 @@ import org.apache.nlpcraft.server.probe.NCProbeManager
 import java.util
 import java.util.concurrent._
 import java.util.concurrent.atomic.{AtomicInteger, AtomicReference}
-import scala.collection.JavaConverters._
 import scala.collection.{Seq, mutable}
 import scala.concurrent.{ExecutionContext, Future, Promise}
 import scala.util.{Failure, Success}

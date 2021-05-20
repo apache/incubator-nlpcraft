@@ -18,7 +18,6 @@
 package org.apache.nlpcraft.server.nlp.enrichers.date
 
 import java.util.{Locale, Calendar => C}
-import scala.collection.JavaConverters._
 import org.apache.nlpcraft.common._
 
 /**

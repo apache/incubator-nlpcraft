@@ -21,8 +21,6 @@ import org.apache.nlpcraft.NCTestEnvironment
 import org.junit.jupiter.api.Assertions._
 import org.junit.jupiter.api.Test
 
-import scala.collection.JavaConverters._
-
 /**
   * Note that context word server should be started.
   */

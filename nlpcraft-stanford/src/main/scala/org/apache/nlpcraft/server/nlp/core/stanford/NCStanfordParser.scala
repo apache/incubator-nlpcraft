@@ -26,7 +26,6 @@ import org.apache.nlpcraft.common.{NCE, NCService}
 import org.apache.nlpcraft.server.ignite.NCIgniteInstance
 import org.apache.nlpcraft.server.nlp.core.{NCNlpParser, NCNlpWord}
 
-import scala.collection.JavaConverters._
 import scala.collection.Seq
 
 /**

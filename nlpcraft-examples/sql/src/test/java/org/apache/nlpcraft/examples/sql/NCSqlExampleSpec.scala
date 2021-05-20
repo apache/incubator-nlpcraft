@@ -27,8 +27,6 @@ import org.apache.nlpcraft.examples.sql.db.SqlServer
 import org.junit.jupiter.api.Test
 
 import java.util
-import scala.collection.JavaConverters._
-import scala.compat.java8.OptionConverters.RichOptionalGeneric
 
 /**
   * SQL model test.

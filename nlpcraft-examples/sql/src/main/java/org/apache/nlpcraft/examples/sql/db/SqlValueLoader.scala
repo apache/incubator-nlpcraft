@@ -23,7 +23,6 @@ import java.util.Collections
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.model._
 
-import scala.collection.JavaConverters._
 import scala.language.implicitConversions
 
 /**

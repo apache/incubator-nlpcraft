@@ -21,7 +21,6 @@ import java.io.StringReader
 
 import edu.stanford.nlp.process.PTBTokenizer
 import org.apache.nlpcraft.common.nlp.core.{NCNlpCoreToken, NCNlpTokenizer}
-import scala.collection.JavaConverters._
 
 /**
   * Stanford tokenizer implementation.
