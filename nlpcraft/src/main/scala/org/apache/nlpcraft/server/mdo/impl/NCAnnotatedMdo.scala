@@ -188,16 +188,17 @@ object NCAnnotatedMdo {
             val (p, cls) = t
             val col = p.ann.column()
 
+            // Special handling for options.
+            def getOption(rs: ResultSet, get: ResultSet ⇒ AnyRef): Option[AnyRef] = {
+                val obj = get(rs)
+
+                if (rs.wasNull()) None else Some(obj)
+            }
+
             cls match {
-                // Special handling for options.
-                case x if x == classOf[Option[_]] ⇒
-                    val obj = rs.getObject(col)
-
-                    if (rs.wasNull())
-                        None
-                    else
-                        Some(obj)
-
+                // String processed special way because CLOB, TEXT etc nullable fields processing of different databases.
+                case x if x == classOf[Option[String]] ⇒ getOption(rs, rs ⇒ rs.getString(col))
+                case x if x == classOf[Option[_]] ⇒ getOption(rs, rs ⇒ rs.getObject(col))
                 // Handle AnyVals manually to get proper values in case of `NULL`s.
                 case x if x == classOf[Long] ⇒ rs.getLong(col)
                 case x if x == classOf[Int] ⇒ rs.getInt(col)

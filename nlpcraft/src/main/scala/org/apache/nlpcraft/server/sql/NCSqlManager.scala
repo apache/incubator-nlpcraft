@@ -917,7 +917,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
     def addFeedback(id: Long, srvReqId: String, userId: Long, score: Double, comment: Option[String], parent: Span): Long = {
         startScopedSpan("addFeedback", parent, "srvReqId" → srvReqId, "userId" → userId) { _ ⇒
             NCSql.insert(
-                "INSERT INTO feedback(id, srv_req_id, user_id, score, comment, created_on) VALUES(?, ?, ?, ?, ?, ?)",
+                "INSERT INTO feedback(id, srv_req_id, user_id, score, feedback_comment, created_on) VALUES(?, ?, ?, ?, ?, ?)",
                 id, srvReqId, userId, score, comment.orNull, U.nowUtcTs()
             )
 

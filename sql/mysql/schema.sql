@@ -98,7 +98,7 @@ CREATE TABLE proc_log (
     -- Result parts.
     res_type VARCHAR(32) NULL,
     res_body_gzip TEXT NULL, -- GZIP-ed result body.
-    res_body_meta TEXT NULL, -- GZIP-ed result meta.
+    res_meta_gzip TEXT NULL, -- GZIP-ed result meta.
     intent_id VARCHAR(256) NULL,
     error TEXT NULL,
     -- Probe information for this request.
@@ -132,7 +132,7 @@ CREATE TABLE feedback (
     srv_req_id VARCHAR(64) NOT NULL,
     user_id BIGINT NOT NULL,
     score DECIMAL NOT NULL,
-    comment VARCHAR(1024) NULL,
+    feedback_comment VARCHAR(1024) NULL,
     created_on TIMESTAMP(3) NOT NULL DEFAULT current_timestamp(3)
 );
 

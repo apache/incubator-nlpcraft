@@ -31,7 +31,7 @@ case class NCFeedbackMdo(
     @NCMdoField(column = "srv_req_id") srvReqId: String,
     @NCMdoField(column = "user_id") userId: Long,
     @NCMdoField(column = "score") score: Double,
-    @NCMdoField(column = "comment") comment: Option[String],
+    @NCMdoField(column = "feedback_comment") feedbackComment: Option[String],
     @NCMdoField(column = "created_on") createdOn: Timestamp
 ) extends NCAnnotatedMdo[NCFeedbackMdo]
 

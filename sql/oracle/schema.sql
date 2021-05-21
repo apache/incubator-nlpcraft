@@ -66,7 +66,8 @@ CREATE TABLE nc_user (
 );
 
 CREATE UNIQUE INDEX nc_user_idx_1 ON nc_user(email);
-CREATE UNIQUE INDEX nc_user_idx_2 ON nc_user(company_id, ext_id);
+-- Drop it if your Oracle version doesn't support this syntax.
+CREATE UNIQUE INDEX nc_user_idx_2 ON nc_user(CASE WHEN ext_id IS NOT NULL THEN company_id END, CASE WHEN ext_id IS NOT NULL THEN ext_id END);
 CREATE INDEX nc_user_idx_3 ON nc_user(company_id);
 
 --
@@ -97,7 +98,7 @@ CREATE TABLE proc_log (
     -- Result parts.
     res_type VARCHAR2(32) NULL,
     res_body_gzip CLOB NULL, -- GZIP-ed result body.
-    res_body_meta CLOB NULL, -- GZIP-ed result meta.
+    res_meta_gzip CLOB NULL, -- GZIP-ed result meta.
     intent_id VARCHAR2(256) NULL,
     error CLOB NULL,
     -- Probe information for this request.
@@ -131,7 +132,7 @@ CREATE TABLE feedback (
     srv_req_id VARCHAR2(64) NOT NULL,
     user_id NUMBER NOT NULL,
     score NUMBER NOT NULL,
-    comment VARCHAR2(1024) NULL,
+    feedback_comment VARCHAR2(1024) NULL,
     created_on DATE DEFAULT sysdate NOT NULL
 );
 

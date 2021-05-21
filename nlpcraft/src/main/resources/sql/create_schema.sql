@@ -111,7 +111,7 @@ CREATE TABLE feedback (
     srv_req_id VARCHAR NOT NULL,
     user_id LONG NOT NULL,
     score DOUBLE NOT NULL,
-    comment VARCHAR NULL,
+    feedback_comment VARCHAR NULL,
     created_on TIMESTAMP NOT NULL
 );
 

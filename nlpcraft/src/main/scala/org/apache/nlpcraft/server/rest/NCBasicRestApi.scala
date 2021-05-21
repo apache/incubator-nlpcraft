@@ -1257,7 +1257,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                             f.srvReqId,
                             f.userId,
                             f.score,
-                            f.comment,
+                            f.feedbackComment,
                             f.createdOn.getTime
                         )
                     )
