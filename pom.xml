@@ -510,6 +510,7 @@
                     <args>
                         <arg>-Ytasty-reader</arg>
                     </args>
+                    <scalaVersion>3.0.0</scalaVersion>
                 </configuration>
                 <executions>
                     <execution>

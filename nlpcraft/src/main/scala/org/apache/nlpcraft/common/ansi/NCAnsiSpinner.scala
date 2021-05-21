@@ -103,9 +103,7 @@ class NCAnsiSpinner(out: PrintWriter, useAnsi: Boolean = true) {
      */
     def stop(): Unit = {
         U.stopThread(thread)
-
-        if true then 1 else 0
-
+        
         if (useAnsi && frame > 0) mux.synchronized {
             clean()
 
