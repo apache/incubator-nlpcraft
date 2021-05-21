@@ -46,7 +46,7 @@ class NCIdlCompilerSpec {
             assert(true)
         }
         catch {
-            case e: Exception ⇒ assert(assertion = false, e)
+            case e: Exception => assert(assertion = false, e)
         }
 
     /**
@@ -59,7 +59,7 @@ class NCIdlCompilerSpec {
 
             assert(false)
         } catch {
-            case e: NCE ⇒
+            case e: NCE =>
                 println(e.getMessage)
                 assert(true)
         }

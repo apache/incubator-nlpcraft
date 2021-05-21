@@ -66,12 +66,12 @@ object NCServerEnricher {
       * @param toks
       * @param get
       */
-    def mkSumString(toks: Seq[NCNlpSentenceToken], get: NCNlpSentenceToken ⇒ String): String = {
+    def mkSumString(toks: Seq[NCNlpSentenceToken], get: NCNlpSentenceToken => String): String = {
         val buf = mutable.Buffer.empty[String]
         
         val n = toks.size
         
-        toks.zipWithIndex.foreach(p ⇒ {
+        toks.zipWithIndex.foreach(p => {
             val t = p._1
             val idx = p._2
             

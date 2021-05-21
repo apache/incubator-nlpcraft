@@ -90,7 +90,7 @@ class NCAnsiProgressBar(
                 val bar = if (tick == 1) 1 else Math.round((tick.toFloat / totalTicks.toFloat) * dispSize)
 
                 out.print(PB_LEFT)
-                for (i ← 0 until dispSize)
+                for (i <- 0 until dispSize)
                     out.print(if (i < bar) PB_FULL else PB_EMPTY)
                 out.print(PB_RIGHT)
                 out.flush()

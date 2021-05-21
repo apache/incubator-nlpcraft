@@ -32,8 +32,8 @@ import java.util.concurrent.{ExecutorService, LinkedBlockingQueue, RejectedExecu
 import java.util.jar.JarFile
 import java.util.regex.Pattern
 import java.util.stream.Collectors
-import java.util.zip.{ZipInputStream, GZIPInputStream ⇒ GIS, GZIPOutputStream ⇒ GOS}
-import java.util.{Locale, Properties, Random, Timer, TimerTask, Calendar ⇒ C}
+import java.util.zip.{ZipInputStream, GZIPInputStream => GIS, GZIPOutputStream => GOS}
+import java.util.{Locale, Properties, Random, Timer, TimerTask, Calendar => C}
 import com.fasterxml.jackson.annotation.JsonInclude.Include
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper}
@@ -103,7 +103,7 @@ object NCUtils extends LazyLogging {
         ansiBlackBg,
         ansiCyanBg
     )
-    private lazy val ANSI_COLORS = for (fg ← ANSI_FG_COLORS; bg ← ANSI_BG_COLORS) yield s"$fg$bg"
+    private lazy val ANSI_COLORS = for (fg <- ANSI_FG_COLORS; bg <- ANSI_BG_COLORS) yield s"$fg$bg"
 
     // Various decimal formats.
     private final val DEC_FMT0 = mkDecimalFormat("#0")
@@ -256,16 +256,16 @@ object NCUtils extends LazyLogging {
         else {
             val sb = new StringBuilder
 
-            for (ch ← s.toCharArray)
+            for (ch <- s.toCharArray)
                 ch match {
-                    case '\\' | '"' ⇒ sb += '\\' += ch
-                    case '/' ⇒ sb += '\\' += ch
-                    case '\b' ⇒ sb ++= "\\b"
-                    case '\t' ⇒ sb ++= "\\t"
-                    case '\n' ⇒ sb ++= "\\n"
-                    case '\f' ⇒ sb ++= "\\f"
-                    case '\r' ⇒ sb ++= "\\r"
-                    case _ ⇒
+                    case '\\' | '"' => sb += '\\' += ch
+                    case '/' => sb += '\\' += ch
+                    case '\b' => sb ++= "\\b"
+                    case '\t' => sb ++= "\\t"
+                    case '\n' => sb ++= "\\n"
+                    case '\f' => sb ++= "\\f"
+                    case '\r' => sb ++= "\\r"
+                    case _ =>
                         if (ch < ' ') {
                             val t = "000" + Integer.toHexString(ch)
 
@@ -284,12 +284,12 @@ object NCUtils extends LazyLogging {
       *
       * @param f Closure to convert.
       */
-    implicit def toRun(f: ⇒ Unit): Runnable = () ⇒ try {
+    implicit def toRun(f: => Unit): Runnable = () => try {
         f
     }
     catch {
-        case _: InterruptedException ⇒ Thread.currentThread().interrupt()
-        case e: Throwable ⇒ prettyError(logger, "Unhandled exception caught:", e)
+        case _: InterruptedException => Thread.currentThread().interrupt()
+        case e: Throwable => prettyError(logger, "Unhandled exception caught:", e)
     }
 
     /**
@@ -313,20 +313,20 @@ object NCUtils extends LazyLogging {
       * Type case with option.
       */
     def as[T: Manifest](any: Any): Option[T] = any match {
-        case _: T ⇒ Some(any.asInstanceOf[T])
-        case _ ⇒ None
+        case _: T => Some(any.asInstanceOf[T])
+        case _ => None
     }
 
     /**
       *
       * @param body Expression that can produce [[InterruptedException]].
       */
-    def ignoreInterrupt(body: ⇒ Unit): Unit =
+    def ignoreInterrupt(body: => Unit): Unit =
         try {
             body
         }
         catch {
-            case _: InterruptedException ⇒ ()
+            case _: InterruptedException => ()
         }
 
     /**
@@ -369,7 +369,7 @@ object NCUtils extends LazyLogging {
       * @param mapper Function to map lines.
       */
     @throws[NCE]
-    def mapResource[T](res: String, enc: String = "UTF-8", log: Logger = logger, mapper: Iterator[String] ⇒ T): T =
+    def mapResource[T](res: String, enc: String = "UTF-8", log: Logger = logger, mapper: Iterator[String] => T): T =
         mapStream(getStream(res), enc, log, mapper)
 
     /**
@@ -393,11 +393,11 @@ object NCUtils extends LazyLogging {
     @throws[NCE]
     def readFile(f: File, enc: String = "UTF-8", log: Logger = logger): List[String] =
         try
-            managed(Source.fromFile(f, enc)) acquireAndGet { src ⇒
-                getAndLog(src.getLines().map(p ⇒ p).toList, f, log)
+            managed(Source.fromFile(f, enc)) acquireAndGet { src =>
+                getAndLog(src.getLines().map(p => p).toList, f, log)
             }
         catch {
-            case e: IOException ⇒ throw new NCE(s"Failed to read file: ${f.getAbsolutePath}", e)
+            case e: IOException => throw new NCE(s"Failed to read file: ${f.getAbsolutePath}", e)
         }
 
     /**
@@ -409,7 +409,7 @@ object NCUtils extends LazyLogging {
       */
     @throws[NCE]
     def readStream(in: InputStream, enc: String = "UTF-8", log: Logger = logger): List[String] =
-        mapStream(in, enc, log, _.map(p ⇒ p).toList)
+        mapStream(in, enc, log, _.map(p => p).toList)
 
     /**
       * Maps lines from the given stream to an object.
@@ -420,14 +420,14 @@ object NCUtils extends LazyLogging {
       * @param mapper Function to read lines.
       */
     @throws[NCE]
-    def mapStream[T](in: InputStream, enc: String, log: Logger = logger, mapper: Iterator[String] ⇒ T): T =
+    def mapStream[T](in: InputStream, enc: String, log: Logger = logger, mapper: Iterator[String] => T): T =
         try {
-            managed(Source.fromInputStream(in, enc)) acquireAndGet { src ⇒
+            managed(Source.fromInputStream(in, enc)) acquireAndGet { src =>
                 mapper(src.getLines())
             }
         }
         catch {
-            case e: IOException ⇒ throw new NCE(s"Failed to read stream.", e)
+            case e: IOException => throw new NCE(s"Failed to read stream.", e)
         }
 
     /**
@@ -441,7 +441,7 @@ object NCUtils extends LazyLogging {
     @throws[NCE]
     def readTextFile(f: File, enc: String, log: Logger = logger): List[String] =
         try
-            managed(Source.fromFile(f, enc)) acquireAndGet { src ⇒
+            managed(Source.fromFile(f, enc)) acquireAndGet { src =>
                 getAndLog(
                     readLcTrimFilter(src),
                     f,
@@ -449,7 +449,7 @@ object NCUtils extends LazyLogging {
                 )
             }
         catch {
-            case e: IOException ⇒ throw new NCE(s"Failed to read text file: ${f.getAbsolutePath}", e)
+            case e: IOException => throw new NCE(s"Failed to read text file: ${f.getAbsolutePath}", e)
         }
 
     /**
@@ -463,7 +463,7 @@ object NCUtils extends LazyLogging {
     @throws[NCE]
     def readTextGzipFile(f: File, enc: String, log: Logger = logger): List[String] =
         try
-            managed(Source.fromInputStream(new GIS(new FileInputStream(f)), enc)) acquireAndGet { src ⇒
+            managed(Source.fromInputStream(new GIS(new FileInputStream(f)), enc)) acquireAndGet { src =>
                 getAndLog(
                     readLcTrimFilter(src),
                     f,
@@ -471,7 +471,7 @@ object NCUtils extends LazyLogging {
                 )
             }
         catch {
-            case e: IOException ⇒ throw new NCE(s"Failed to read text GZIP file: ${f.getAbsolutePath}", e)
+            case e: IOException => throw new NCE(s"Failed to read text GZIP file: ${f.getAbsolutePath}", e)
         }
 
     /**
@@ -485,11 +485,11 @@ object NCUtils extends LazyLogging {
     @throws[NCE]
     def readTextStream(in: InputStream, enc: String, log: Logger = logger): List[String] =
         try
-            managed(Source.fromInputStream(in, enc)) acquireAndGet { src ⇒
+            managed(Source.fromInputStream(in, enc)) acquireAndGet { src =>
                 readLcTrimFilter(src)
             }
         catch {
-            case e: IOException ⇒ throw new NCE(s"Failed to read stream.", e)
+            case e: IOException => throw new NCE(s"Failed to read stream.", e)
         }
 
     /**
@@ -503,11 +503,11 @@ object NCUtils extends LazyLogging {
     @throws[NCE]
     def readTextGzipResource(res: String, enc: String, log: Logger = logger): List[String] =
         try
-            managed(Source.fromInputStream(new GIS(getStream(res)), enc)) acquireAndGet { src ⇒
+            managed(Source.fromInputStream(new GIS(getStream(res)), enc)) acquireAndGet { src =>
                 readLcTrimFilter(src)
             }
         catch {
-            case e: IOException ⇒ throw new NCE(s"Failed to read stream.", e)
+            case e: IOException => throw new NCE(s"Failed to read stream.", e)
         }
 
     /**
@@ -516,7 +516,7 @@ object NCUtils extends LazyLogging {
      * @return
      */
     private def readLcTrimFilter(in: BufferedSource): List[String] =
-        in.getLines().map(_.toLowerCase.strip).filter(s ⇒ s.nonEmpty && !s.startsWith("#")).toList
+        in.getLines().map(_.toLowerCase.strip).filter(s => s.nonEmpty && !s.startsWith("#")).toList
 
     /**
       * Reads lines from given file converting to lower case, trimming, and filtering
@@ -594,7 +594,7 @@ object NCUtils extends LazyLogging {
       * @param mins Minutes of start. Optional.
       * @param secs Seconds of start. Optional.
       */
-    def mkDailyTimer(name: String, body: Unit ⇒ Unit, hour: Int, mins: Int = 0, secs: Int = 0): Timer = {
+    def mkDailyTimer(name: String, body: Unit => Unit, hour: Int, mins: Int = 0, secs: Int = 0): Timer = {
         val timer = new Timer()
 
         val cal = C.getInstance()
@@ -623,7 +623,7 @@ object NCUtils extends LazyLogging {
                         logger.debug(s"Timer task executed [name=$name, execution-time=${System.currentTimeMillis() - now}]")
                     }
                     catch {
-                        case e: Throwable ⇒ prettyError(logger, s"Error executing daily '$name' timer:", e)
+                        case e: Throwable => prettyError(logger, s"Error executing daily '$name' timer:", e)
                     }
                 }
             },
@@ -646,11 +646,11 @@ object NCUtils extends LazyLogging {
     @throws[NCE]
     def readGzipFile(f: File, enc: String, log: Logger = logger): List[String] =
         try
-            managed(Source.fromInputStream(new GIS(new FileInputStream(f)), enc)) acquireAndGet { src ⇒
-                getAndLog(src.getLines().map(p ⇒ p).toList, f, log)
+            managed(Source.fromInputStream(new GIS(new FileInputStream(f)), enc)) acquireAndGet { src =>
+                getAndLog(src.getLines().map(p => p).toList, f, log)
             }
         catch {
-            case e: IOException ⇒ throw new NCE(s"Failed to read GZIP file: ${f.getAbsolutePath}", e)
+            case e: IOException => throw new NCE(s"Failed to read GZIP file: ${f.getAbsolutePath}", e)
         }
 
     /**
@@ -663,11 +663,11 @@ object NCUtils extends LazyLogging {
     @throws[NCE]
     def readGzipResource(in: InputStream, enc: String, log: Logger = logger): List[String] =
         try
-            managed(Source.fromInputStream(new GIS(in), enc)) acquireAndGet { src ⇒
-                src.getLines().map(p ⇒ p).toList
+            managed(Source.fromInputStream(new GIS(in), enc)) acquireAndGet { src =>
+                src.getLines().map(p => p).toList
             }
         catch {
-            case e: IOException ⇒ throw new NCE(s"Failed to read stream", e)
+            case e: IOException => throw new NCE(s"Failed to read stream", e)
         }
 
     /**
@@ -690,14 +690,14 @@ object NCUtils extends LazyLogging {
         try {
             val arr = new Array[Byte](f.length().toInt)
 
-            managed(new FileInputStream(f)) acquireAndGet { in ⇒
+            managed(new FileInputStream(f)) acquireAndGet { in =>
                 in.read(arr)
             }
 
             getAndLog(arr, f, log)
         }
         catch {
-            case e: IOException ⇒ throw new NCE(s"Error reading file: $f", e)
+            case e: IOException => throw new NCE(s"Error reading file: $f", e)
         }
     }
 
@@ -727,13 +727,13 @@ object NCUtils extends LazyLogging {
 
         // Do not user BOS here - it makes files corrupted.
         try
-            managed(new GOS(new FileOutputStream(gz))) acquireAndGet { stream ⇒
+            managed(new GOS(new FileOutputStream(gz))) acquireAndGet { stream =>
                 stream.write(readFileBytes(f))
 
                 stream.flush()
             }
         catch {
-            case e: IOException ⇒ throw new NCE(s"Error gzip file: $f", e)
+            case e: IOException => throw new NCE(s"Error gzip file: $f", e)
         }
 
         if (!f.delete())
@@ -764,7 +764,7 @@ object NCUtils extends LazyLogging {
         val file = new File(path)
 
         managed(new PrintStream(file)) acquireAndGet {
-            ps ⇒
+            ps =>
                 import java.util._
 
                 // Could be long for large sequences...
@@ -841,8 +841,8 @@ object NCUtils extends LazyLogging {
     @throws[NCE]
     def serialize(obj: Any): Array[Byte] = {
         try {
-            managed(new ByteArrayOutputStream()) acquireAndGet { baos ⇒
-                manageOutput(baos) acquireAndGet { out ⇒
+            managed(new ByteArrayOutputStream()) acquireAndGet { baos =>
+                manageOutput(baos) acquireAndGet { out =>
                     out.writeObject(obj)
                 }
 
@@ -850,7 +850,7 @@ object NCUtils extends LazyLogging {
             }
         }
         catch {
-            case e: IOException ⇒ throw new NCE(s"Error serializing data: $obj", e)
+            case e: IOException => throw new NCE(s"Error serializing data: $obj", e)
         }
     }
 
@@ -862,14 +862,14 @@ object NCUtils extends LazyLogging {
     @throws[NCE]
     def serializePath(path: String, obj: Any): Unit =
         try {
-            manageOutput(new FileOutputStream(path)) acquireAndGet { out ⇒
+            manageOutput(new FileOutputStream(path)) acquireAndGet { out =>
                 out.writeObject(obj)
             }
 
             logger.info(s"File $path is written.")
         }
         catch {
-            case e: IOException ⇒ throw new NCE(s"Error writing file: $path", e)
+            case e: IOException => throw new NCE(s"Error writing file: $path", e)
         }
 
     /**
@@ -888,7 +888,7 @@ object NCUtils extends LazyLogging {
     @throws[NCE]
     def deserializePath[T](path: String, log: Logger = logger): T =
         try {
-            val res = manageInput(new FileInputStream(path)) acquireAndGet { in ⇒
+            val res = manageInput(new FileInputStream(path)) acquireAndGet { in =>
                 in.readObject().asInstanceOf[T]
             }
 
@@ -897,7 +897,7 @@ object NCUtils extends LazyLogging {
             res
         }
         catch {
-            case e: IOException ⇒ throw new NCE(s"Error reading path: $path", e)
+            case e: IOException => throw new NCE(s"Error reading path: $path", e)
         }
 
     /**
@@ -908,11 +908,11 @@ object NCUtils extends LazyLogging {
     @throws[NCE]
     def deserialize[T](arr: Array[Byte]): T =
         try
-            manageInput(new ByteArrayInputStream(arr)) acquireAndGet { in ⇒
+            manageInput(new ByteArrayInputStream(arr)) acquireAndGet { in =>
                 in.readObject().asInstanceOf[T]
             }
         catch {
-            case e: IOException ⇒ throw new NCE(s"Error deserialization data", e)
+            case e: IOException => throw new NCE(s"Error deserialization data", e)
         }
 
     /**
@@ -975,7 +975,7 @@ object NCUtils extends LazyLogging {
                 override def visitFile(file: Path, attrs: BasicFileAttributes): FileVisitResult = delete(file)
             })
         catch {
-            case e: IOException ⇒ throw new NCE(s"Couldn't clear folder: '$rootDir'", e)
+            case e: IOException => throw new NCE(s"Couldn't clear folder: '$rootDir'", e)
         }
 
         if (delFolder && !new File(rootDir).delete())
@@ -991,16 +991,16 @@ object NCUtils extends LazyLogging {
       * @param ec Optional execution context. If not provided - the default Scala execution context will be used.
       */
     def asFuture[T](
-        body: Unit ⇒ T,
-        onFailure: Throwable ⇒ Unit = _ ⇒ Unit,
-        onSuccess: T ⇒ Unit = (_: T) ⇒ ())(implicit ec: ExecutionContext): Future[T] = {
+        body: Unit => T,
+        onFailure: Throwable => Unit = _ => Unit,
+        onSuccess: T => Unit = (_: T) => ())(implicit ec: ExecutionContext): Future[T] = {
         val fut = Future {
             body(())
         }(ec)
 
         fut.onComplete {
-            case Success(ok) ⇒ onSuccess(ok)
-            case Failure(err) ⇒ onFailure(err)
+            case Success(ok) => onSuccess(ok)
+            case Failure(err) => onFailure(err)
         }(ec)
 
         fut
@@ -1012,7 +1012,7 @@ object NCUtils extends LazyLogging {
       * @param name Name.
       * @param body Thread body.
       */
-    def mkThread(name: String)(body: Thread ⇒ Unit): Thread =
+    def mkThread(name: String)(body: Thread => Unit): Thread =
         new Thread(name) {
             @volatile private var stopped = false
 
@@ -1033,8 +1033,8 @@ object NCUtils extends LazyLogging {
                     logger.trace(s"Thread exited: $name")
                 }
                 catch {
-                    case _: InterruptedException ⇒ logger.trace(s"Thread interrupted: $name")
-                    case e: Throwable ⇒ prettyError(logger, s"Unexpected error during '$name' thread execution:", e)
+                    case _: InterruptedException => logger.trace(s"Thread interrupted: $name")
+                    case e: Throwable => prettyError(logger, s"Unexpected error during '$name' thread execution:", e)
                 }
                 finally
                     stopped = true
@@ -1048,7 +1048,7 @@ object NCUtils extends LazyLogging {
      * @param body Thread body.
      */
     def mkThread(name: String, body: Runnable): Thread =
-        mkThread(name) { _ ⇒ body.run() }
+        mkThread(name) { _ => body.run() }
 
     /**
       * System-wide process of normalizing emails (trim & lower case).
@@ -1103,8 +1103,8 @@ object NCUtils extends LazyLogging {
       */
     def isSysEnvTrue(s: String): Boolean =
         sysEnv(s) match {
-            case None ⇒ false
-            case Some(v) ⇒ java.lang.Boolean.valueOf(v) == java.lang.Boolean.TRUE
+            case None => false
+            case Some(v) => java.lang.Boolean.valueOf(v) == java.lang.Boolean.TRUE
         }
 
     /**
@@ -1126,7 +1126,7 @@ object NCUtils extends LazyLogging {
         val src = scala.collection.mutable.ArrayBuffer.empty[T] ++ seq
         val dest = scala.collection.mutable.ArrayBuffer.empty[T]
 
-        (0 until n).foreach(_ ⇒ dest += src.remove(RND.nextInt(src.size)))
+        (0 until n).foreach(_ => dest += src.remove(RND.nextInt(src.size)))
 
         dest
     }
@@ -1139,8 +1139,8 @@ object NCUtils extends LazyLogging {
     @throws[NCE]
     def mandatorySysEnv(s: String): String =
         sysEnv(s) match {
-            case Some(v) ⇒ v
-            case None ⇒ throw new NCE(s"Cannot find environment variable or system property: $s")
+            case Some(v) => v
+            case None => throw new NCE(s"Cannot find environment variable or system property: $s")
         }
 
     /**
@@ -1154,14 +1154,14 @@ object NCUtils extends LazyLogging {
         val arr = new ByteArrayOutputStream(1024)
 
         try {
-            managed(new GOS(arr)) acquireAndGet { zip ⇒
+            managed(new GOS(arr)) acquireAndGet { zip =>
                 zip.write(rawStr.getBytes)
             }
 
             Base64.encodeBase64String(arr.toByteArray)
         }
         catch {
-            case e: Exception ⇒ throw new NCE("Error during data compression.", e)
+            case e: Exception => throw new NCE("Error during data compression.", e)
         }
     }
 
@@ -1176,7 +1176,7 @@ object NCUtils extends LazyLogging {
         try
             IOUtils.toString(new GIS(new ByteArrayInputStream(Base64.decodeBase64(zipStr))), Charset.defaultCharset())
         catch {
-            case e: Exception ⇒ throw new NCE("Error during data decompression.", e)
+            case e: Exception => throw new NCE("Error during data decompression.", e)
         }
 
     /**
@@ -1188,8 +1188,8 @@ object NCUtils extends LazyLogging {
         try
             Thread.sleep(delay)
         catch {
-            case _: InterruptedException ⇒ Thread.currentThread().interrupt()
-            case e: Throwable ⇒ prettyError(logger, "Unhandled exception caught during sleep:", e)
+            case _: InterruptedException => Thread.currentThread().interrupt()
+            case e: Throwable => prettyError(logger, "Unhandled exception caught during sleep:", e)
         }
 
     /**
@@ -1204,7 +1204,7 @@ object NCUtils extends LazyLogging {
             try
                 t.join()
             catch {
-                case _: InterruptedException ⇒ logger.trace("Thread joining was interrupted (ignoring).")
+                case _: InterruptedException => logger.trace("Thread joining was interrupted (ignoring).")
             }
         }
 
@@ -1229,7 +1229,7 @@ object NCUtils extends LazyLogging {
             try
                 es.awaitTermination(Long.MaxValue, TimeUnit.MILLISECONDS)
             catch {
-                case _: InterruptedException ⇒ () // Safely ignore.
+                case _: InterruptedException => () // Safely ignore.
             }
         }
 
@@ -1281,8 +1281,8 @@ object NCUtils extends LazyLogging {
     @annotation.tailrec
     def containsDups[T](list: List[T], seen: Set[T] = Set.empty[T]): Boolean =
         list match {
-            case x :: xs ⇒ if (seen.contains(x)) true else containsDups(xs, seen + x)
-            case _ ⇒ false
+            case x :: xs => if (seen.contains(x)) true else containsDups(xs, seen + x)
+            case _ => false
         }
 
     /**
@@ -1378,8 +1378,8 @@ object NCUtils extends LazyLogging {
 
             try {
                 val anonym = NetworkInterface.getByInetAddress(InetAddress.getLocalHost) match {
-                    case null ⇒ 555
-                    case nif ⇒
+                    case null => 555
+                    case nif =>
                         val addr = nif.getHardwareAddress
 
                         if (addr == null)
@@ -1411,7 +1411,7 @@ object NCUtils extends LazyLogging {
                 )
             }
             catch {
-                case _: Exception ⇒ () // Ignore.
+                case _: Exception => () // Ignore.
             }
         }
     }
@@ -1423,9 +1423,9 @@ object NCUtils extends LazyLogging {
       * @param precision Number of digits after decimal point.
       */
     def format(num: Double, precision: Int): String = precision match {
-        case 0 ⇒ DEC_FMT0.format(num)
-        case 1 ⇒ DEC_FMT1.format(num)
-        case _ ⇒ DEC_FMT2.format(num)
+        case 0 => DEC_FMT0.format(num)
+        case 1 => DEC_FMT1.format(num)
+        case _ => DEC_FMT2.format(num)
     }
 
     /**
@@ -1490,7 +1490,7 @@ object NCUtils extends LazyLogging {
                 else
                     s"$exClsName$errMsg $ansiCyanFg->$ansiReset ($fileName:$lineNum)"
 
-            msg.split("\n").foreach(line ⇒ {
+            msg.split("\n").foreach(line => {
                 val s = s"${" " * indent}${if (first) ansiBlue("+-+ ") else "   "}${bo(y(line))}"
 
                 logger.log(s)
@@ -1498,7 +1498,7 @@ object NCUtils extends LazyLogging {
                 first = false
             })
 
-            val traces = x.getStackTrace.filter {t ⇒
+            val traces = x.getStackTrace.filter {t =>
                 val mtdName = t.getMethodName
                 val clsName = t.getClassName
 
@@ -1509,7 +1509,7 @@ object NCUtils extends LazyLogging {
                 !mtdName.contains('$')
             }
 
-            for (trace ← traces) {
+            for (trace <- traces) {
                 val fileName = trace.getFileName
                 val lineNum = trace.getLineNumber
                 val mtdName = trace.getMethodName
@@ -1564,7 +1564,7 @@ object NCUtils extends LazyLogging {
      * @return
      */
     private def randomRainbowImpl(s: String, colors: Seq[String], addOn: String): String =
-        s.zipWithIndex.foldLeft(new StringBuilder())((buf, zip) ⇒ {
+        s.zipWithIndex.foldLeft(new StringBuilder())((buf, zip) => {
             buf ++= s"${colors(RND.nextInt(colors.size))}$addOn${zip._1}"
         })
         .toString + ansiReset
@@ -1577,7 +1577,7 @@ object NCUtils extends LazyLogging {
      * @return
      */
     private def rainbowImpl(s: String, colors: Seq[String], addOn: String): String =
-        s.zipWithIndex.foldLeft(new StringBuilder())((buf, zip) ⇒ {
+        s.zipWithIndex.foldLeft(new StringBuilder())((buf, zip) => {
             buf ++= s"${colors(zip._2 % colors.size)}$addOn${zip._1}"
         })
         .toString + ansiReset
@@ -1593,12 +1593,12 @@ object NCUtils extends LazyLogging {
 
         var inQuotes = false
 
-        for (ch ← json) {
+        for (ch <- json) {
             ch match {
-                case ':' if !inQuotes ⇒ buf ++= r(":")
-                case '[' | ']' | '{' | '}' if !inQuotes ⇒ buf ++= y(s"$ch")
-                case ',' if !inQuotes ⇒ buf ++= g(s"$ch")
-                case '"' ⇒
+                case ':' if !inQuotes => buf ++= r(":")
+                case '[' | ']' | '{' | '}' if !inQuotes => buf ++= y(s"$ch")
+                case ',' if !inQuotes => buf ++= g(s"$ch")
+                case '"' =>
                     if (inQuotes)
                         buf ++= b(s"$ch")
                     else
@@ -1606,7 +1606,7 @@ object NCUtils extends LazyLogging {
 
                     inQuotes = !inQuotes
 
-                case _ ⇒ buf ++= s"$ch"
+                case _ => buf ++= s"$ch"
             }
         }
 
@@ -1627,7 +1627,7 @@ object NCUtils extends LazyLogging {
             try
                 GSON.toJson(GSON.getAdapter(classOf[JsonElement]).fromJson(json))
             catch {
-                case _: Exception ⇒ ""
+                case _: Exception => ""
             }
     }
 
@@ -1698,7 +1698,7 @@ object NCUtils extends LazyLogging {
         try
             GSON.fromJson(json, classOf[java.util.HashMap[String, Object]])
         catch {
-            case e: Exception ⇒ throw new NCE(s"Cannot deserialize JSON to map: '$json'", e)
+            case e: Exception => throw new NCE(s"Cannot deserialize JSON to map: '$json'", e)
         }
     }
 
@@ -1713,7 +1713,7 @@ object NCUtils extends LazyLogging {
         try
             GSON.getAdapter(classOf[JsonElement]).fromJson(json).getAsJsonObject.get(field).getAsBoolean
         catch {
-            case e: Exception ⇒ throw new NCE(s"Cannot deserialize JSON to map: '$json'", e)
+            case e: Exception => throw new NCE(s"Cannot deserialize JSON to map: '$json'", e)
         }
 
     /**
@@ -1758,7 +1758,7 @@ object NCUtils extends LazyLogging {
 
         mkDir(new File(outDir))
 
-        managed(new ZipInputStream(new BufferedInputStream(new FileInputStream(zipFile)))) acquireAndGet { in ⇒
+        managed(new ZipInputStream(new BufferedInputStream(new FileInputStream(zipFile)))) acquireAndGet { in =>
             var entry = in.getNextEntry
 
             while (entry != null) {
@@ -1771,12 +1771,12 @@ object NCUtils extends LazyLogging {
                         if (!f.createNewFile())
                             throw new NCE(s"File cannot be created: ${f.getAbsolutePath}")
 
-                        managed(new BufferedOutputStream(new FileOutputStream(f))) acquireAndGet { out ⇒
+                        managed(new BufferedOutputStream(new FileOutputStream(f))) acquireAndGet { out =>
                             IOUtils.copy(in, out)
                         }
                     }
                     catch {
-                        case e: IOException ⇒ throw new NCE(s"IO error processing file: ${f.getAbsolutePath}.", e)
+                        case e: IOException => throw new NCE(s"IO error processing file: ${f.getAbsolutePath}.", e)
                     }
                 }
 
@@ -1805,7 +1805,7 @@ object NCUtils extends LazyLogging {
      * @param items Items to construct the hashcode from.
      * @return Hashcode.
      */
-    def mkJavaHash(items: Any*): Int = Seq(items: _*).map(_.hashCode()).foldLeft(0)((a, b) ⇒ 31 * a + b)
+    def mkJavaHash(items: Any*): Int = Seq(items: _*).map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
 
     /**
       * Makes properties file based on input string.
@@ -1819,7 +1819,7 @@ object NCUtils extends LazyLogging {
         try
             p.load(new StringReader(s))
         catch {
-            case e: IOException ⇒ throw new NCE(s"Error reading properties: $s", e)
+            case e: IOException => throw new NCE(s"Error reading properties: $s", e)
         }
 
         p
@@ -1831,8 +1831,8 @@ object NCUtils extends LazyLogging {
       * @param t Error.
       */
     def toString(t: Throwable): String =
-        managed(new ByteArrayOutputStream()) acquireAndGet { out ⇒
-            managed(new PrintStream(out)) acquireAndGet { ps ⇒
+        managed(new ByteArrayOutputStream()) acquireAndGet { out =>
+            managed(new PrintStream(out)) acquireAndGet { ps =>
                 t.printStackTrace(ps)
 
                 new String(out.toByteArray, "UTF-8")
@@ -1878,13 +1878,13 @@ object NCUtils extends LazyLogging {
         }
 
         url.getProtocol match {
-            case "file" ⇒
-                managed(new InputStreamReader(getStream(resDir))) acquireAndGet { reader ⇒
-                    managed(new BufferedReader(reader)) acquireAndGet { bReader ⇒
-                        bReader.lines().collect(Collectors.toList[String]).asScala.map(p ⇒ s"$resDir/$p")
+            case "file" =>
+                managed(new InputStreamReader(getStream(resDir))) acquireAndGet { reader =>
+                    managed(new BufferedReader(reader)) acquireAndGet { bReader =>
+                        bReader.lines().collect(Collectors.toList[String]).asScala.map(p => s"$resDir/$p")
                     }
                 }
-            case "jar" ⇒
+            case "jar" =>
                 val jar = new JarFile(URLDecoder.decode(url.getPath.substring(5, url.getPath.indexOf("!")), "UTF-8"))
                 val entries = jar.entries
 
@@ -1898,7 +1898,7 @@ object NCUtils extends LazyLogging {
                 }
 
                 res
-            case _ ⇒ throw new NCE(s"Cannot list files for: $resDir")
+            case _ => throw new NCE(s"Cannot list files for: $resDir")
         }
     }
 
@@ -1907,9 +1907,9 @@ object NCUtils extends LazyLogging {
       */
     @throws[IOException]
     def getExternalIp: String =
-        managed(new URL("http://checkip.amazonaws.com").openStream()) acquireAndGet { is ⇒
-            managed(new InputStreamReader(is)) acquireAndGet { reader ⇒
-                managed(new BufferedReader(reader)) acquireAndGet { bufReader ⇒
+        managed(new URL("http://checkip.amazonaws.com").openStream()) acquireAndGet { is =>
+            managed(new InputStreamReader(is)) acquireAndGet { reader =>
+                managed(new BufferedReader(reader)) acquireAndGet { bufReader =>
                     bufReader.readLine()
                 }
             }
@@ -1954,7 +1954,7 @@ object NCUtils extends LazyLogging {
         try
             GSON.fromJson(js, classOf[Object])
         catch {
-            case e: Exception ⇒ throw new NCE(s"Failed to convert JSON string to map: $js", e)
+            case e: Exception => throw new NCE(s"Failed to convert JSON string to map: $js", e)
         }
 
     /**
@@ -1962,8 +1962,8 @@ object NCUtils extends LazyLogging {
       * @param bodies
       * @param ec
       */
-    def executeParallel(bodies: (() ⇒ Any)*)(implicit ec: ExecutionContext): Unit = {
-        bodies.map(body ⇒ {
+    def executeParallel(bodies: (() => Any)*)(implicit ec: ExecutionContext): Unit = {
+        bodies.map(body => {
             Future {
                 body()
             }(ec)
@@ -1980,7 +1980,7 @@ object NCUtils extends LazyLogging {
       * @return
       */
     @throws[NCE]
-    def callMethod[T: ClassTag, R: ClassTag](objFac: () ⇒ Any, mtdName: String, arg: T): R =
+    def callMethod[T: ClassTag, R: ClassTag](objFac: () => Any, mtdName: String, arg: T): R =
         try {
             val obj: Any = objFac()
 
@@ -2000,7 +2000,7 @@ object NCUtils extends LazyLogging {
                 try
                     obj.getClass.getMethod(mtdName, argCls)
                 catch {
-                    case e: NoSuchMethodException ⇒ throw new NCE(s"Method not found $mkErrors", e)
+                    case e: NoSuchMethodException => throw new NCE(s"Method not found $mkErrors", e)
                 }
 
             var flag = mtd.canAccess(obj)
@@ -2018,7 +2018,7 @@ object NCUtils extends LazyLogging {
                     try
                         mtd.invoke(obj, arg.asInstanceOf[Object])
                     catch {
-                        case e: Throwable ⇒ throw new NCE(s"Failed to execute method $mkErrors", e)
+                        case e: Throwable => throw new NCE(s"Failed to execute method $mkErrors", e)
                     }
 
                 if (res == null)
@@ -2027,7 +2027,7 @@ object NCUtils extends LazyLogging {
                 try
                     res.asInstanceOf[R]
                 catch {
-                    case e: ClassCastException ⇒ throw new NCE(s"Invalid method result type $mkErrors", e)
+                    case e: ClassCastException => throw new NCE(s"Invalid method result type $mkErrors", e)
                 }
             }
             finally {
@@ -2036,8 +2036,8 @@ object NCUtils extends LazyLogging {
             }
         }
         catch {
-            case e: NCE ⇒ throw e
-            case e: Throwable ⇒ throw new NCE(s"Unexpected error calling method: $mtdName(...)", e)
+            case e: NCE => throw e
+            case e: Throwable => throw new NCE(s"Unexpected error calling method: $mtdName(...)", e)
         }
 
     /**
@@ -2052,14 +2052,14 @@ object NCUtils extends LazyLogging {
             // Try Java reflection first.
             Class.forName(clsName).getDeclaredConstructor().newInstance().asInstanceOf[T]
         catch {
-            case _: Throwable ⇒
+            case _: Throwable =>
                 // Try Scala reflection second.
                 val mirror = runtimeMirror(getClass.getClassLoader)
 
                 try
                     mirror.reflectModule(mirror.staticModule(clsName)).instance.asInstanceOf[T]
                 catch {
-                    case e: Throwable ⇒ throw new NCE(s"Error initializing object of type: $clsName", e)
+                    case e: Throwable => throw new NCE(s"Error initializing object of type: $clsName", e)
                 }
         }
     }
@@ -2094,7 +2094,7 @@ object NCUtils extends LazyLogging {
       * @return
       */
     def calcSparsity(idx: Seq[Int]): Int =
-        idx.zipWithIndex.tail.map { case (v, i) ⇒ Math.abs(v - idx(i - 1)) }.sum - idx.length + 1
+        idx.zipWithIndex.tail.map { case (v, i) => Math.abs(v - idx(i - 1)) }.sum - idx.length + 1
 
     /**
       * Extracts type `T` from given YAML `file`.
@@ -2131,8 +2131,8 @@ object NCUtils extends LazyLogging {
         try
             YAML.readValue(if (ignoreCase) data.toLowerCase else data, tr)
         catch {
-            case e: IOException ⇒ throw new NCE(s"Failed to read: $res", e)
-            case e: Throwable ⇒ throw new NCE(s"Failed to parse: $res", e)
+            case e: IOException => throw new NCE(s"Failed to read: $res", e)
+            case e: Throwable => throw new NCE(s"Failed to parse: $res", e)
         }
 
     /**
@@ -2149,8 +2149,8 @@ object NCUtils extends LazyLogging {
       */
     def permute[T](list: List[List[T]]): List[List[T]] =
         list match {
-            case Nil ⇒ List(Nil)
-            case head :: tail ⇒ for (h ← head; t ← permute(tail)) yield h :: t
+            case Nil => List(Nil)
+            case head :: tail => for (h <- head; t <- permute(tail)) yield h :: t
         }
 
     /**
@@ -2162,12 +2162,12 @@ object NCUtils extends LazyLogging {
         require(idxs.nonEmpty)
 
         idxs.size match {
-            case 0 ⇒ throw new AssertionError()
-            case 1 ⇒ true
-            case _ ⇒
+            case 0 => throw new AssertionError()
+            case 1 => true
+            case _ =>
                 val list = idxs.view
 
-                list.zip(list.tail).forall { case (x, y) ⇒ x + 1 == y }
+                list.zip(list.tail).forall { case (x, y) => x + 1 == y }
         }
     }
 
@@ -2180,12 +2180,12 @@ object NCUtils extends LazyLogging {
         require(idxs.nonEmpty)
 
         idxs.size match {
-            case 0 ⇒ throw new AssertionError()
-            case 1 ⇒ true
-            case _ ⇒
+            case 0 => throw new AssertionError()
+            case 1 => true
+            case _ =>
                 val list = idxs.view
 
-                !list.zip(list.tail).exists { case (x, y) ⇒ x > y }
+                !list.zip(list.tail).exists { case (x, y) => x > y }
         }
     }
 
@@ -2209,7 +2209,7 @@ object NCUtils extends LazyLogging {
                 true
             }
             catch {
-                case _: MalformedURLException ⇒ false
+                case _: MalformedURLException => false
             }
 
         isFile || isResource || isUrl

@@ -44,21 +44,21 @@ object NCNlpCoreManager extends NCService {
      * @param parent Optional parent span.
      * @return
      */
-    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
+    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span =>
         ackStarting()
 
         // NOTE: DO NOT confuse this with token providers.
         if (!SUPPORTED_NLP_ENGINES.contains(Config.engine))
             throw new NCE(s"Unsupported NLP engine: ${Config.engine}")
         
-        addTags(span, "nlpEngine" → Config.engine)
+        addTags(span, "nlpEngine" -> Config.engine)
       
         val factory: NCNlpTokenizerFactory =
             Config.engine match {
-                case "stanford" ⇒ U.mkObject("org.apache.nlpcraft.common.nlp.core.stanford.NCStanfordTokenizerFactory")
-                case "opennlp" ⇒ U.mkObject("org.apache.nlpcraft.common.nlp.core.opennlp.NCOpenNlpTokenizerFactory")
+                case "stanford" => U.mkObject("org.apache.nlpcraft.common.nlp.core.stanford.NCStanfordTokenizerFactory")
+                case "opennlp" => U.mkObject("org.apache.nlpcraft.common.nlp.core.opennlp.NCOpenNlpTokenizerFactory")
 
-                case _ ⇒ throw new AssertionError(s"Unexpected engine: ${Config.engine}")
+                case _ => throw new AssertionError(s"Unexpected engine: ${Config.engine}")
             }
 
         tokenizer = factory.mkTokenizer()
@@ -72,7 +72,7 @@ object NCNlpCoreManager extends NCService {
      *
      * @param parent Optional parent span.
      */
-    override def stop(parent: Span): Unit = startScopedSpan("stop", parent) {span ⇒
+    override def stop(parent: Span): Unit = startScopedSpan("stop", parent) {span =>
         ackStopping()
 
         if (tokenizer != null)
@@ -88,13 +88,13 @@ object NCNlpCoreManager extends NCService {
       * @return Sentence with stemmed words.
       */
     def stem(words: String): String = {
-        val seq = tokenizer.tokenize(words).map(p ⇒ p → NCNlpPorterStemmer.stem(p.token))
+        val seq = tokenizer.tokenize(words).map(p => p -> NCNlpPorterStemmer.stem(p.token))
 
-        seq.zipWithIndex.map { case ((tok, stem), idx) ⇒
+        seq.zipWithIndex.map { case ((tok, stem), idx) =>
             idx match {
-                case 0 ⇒ stem
+                case 0 => stem
                 // Suppose there aren't multiple spaces.
-                case _ ⇒ if (seq(idx - 1)._1.to + 1 < tok.from) s" $stem"
+                case _ => if (seq(idx - 1)._1.to + 1 < tok.from) s" $stem"
                 else stem
             }
         }.mkString(" ")

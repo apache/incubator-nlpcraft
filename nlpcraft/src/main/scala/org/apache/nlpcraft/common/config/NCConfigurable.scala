@@ -132,9 +132,9 @@ trait NCConfigurable {
             s"]")
             
         try
-            ep.substring(0, i) → ep.substring(i + 1).toInt
+            ep.substring(0, i) -> ep.substring(i + 1).toInt
         catch {
-            case _: NumberFormatException ⇒
+            case _: NumberFormatException =>
                 throw new NCE(s"Invalid 'host:port' endpoint configuration property port [" +
                     s"name=$name, " +
                     s"endpoint=$ep" +
@@ -158,7 +158,7 @@ trait NCConfigurable {
       * @param dfltPort Default port value.
       */
     def getHostPortOrElse(name: String, dfltHost: String, dfltPort: Int): (String, Integer) =
-        getHostPortOpt(name).getOrElse(dfltHost → dfltPort)
+        getHostPortOpt(name).getOrElse(dfltHost -> dfltPort)
 
     /**
       * Gets mandatory configuration property.
@@ -176,7 +176,7 @@ trait NCConfigurable {
       *
       * @param name Full configuration property path (name).
       */
-    def getObject[T](name: String, f: String ⇒ T): T = {
+    def getObject[T](name: String, f: String => T): T = {
         checkMandatory(name)
     
         val v = hocon.getString(name)
@@ -184,7 +184,7 @@ trait NCConfigurable {
         try
             f(v)
         catch {
-            case _: Exception ⇒
+            case _: Exception =>
                 throw new NCE(s"Configuration property cannot be extracted [" +
                     s"name=$name, " +
                     s"value='$v'" +
@@ -203,7 +203,7 @@ trait NCConfigurable {
         try
             hocon.getAnyRef(name).asInstanceOf[java.util.Map[K, V]].asScala.toMap
         catch {
-            case e: ClassCastException ⇒
+            case e: ClassCastException =>
                 throw new NCE(s"Configuration property has unexpected type (expecting 'java.util.Map') [" +
                     s"name=$name" +
                 s"]", e)
@@ -291,7 +291,7 @@ object NCConfigurable extends LazyLogging {
         cfgFile: String,
         overrideCfg: Option[Config],
         dfltCfg: Option[Config],
-        valFun: Config ⇒ Boolean
+        valFun: Config => Boolean
     ): Unit = {
         val tmpCfg = {
             logger.info(s"Attempting to load/merge configuration from configuration file: $cfgFile")
@@ -302,7 +302,7 @@ object NCConfigurable extends LazyLogging {
             try
                 cfg = cfg.withFallback(ConfigFactory.parseURL(new URL(cfgFile)))
             catch {
-                case _: MalformedURLException ⇒ // No-op.
+                case _: MalformedURLException => // No-op.
             }
 
             cfg = cfg.withFallback(ConfigFactory.parseResources(cfgFile))

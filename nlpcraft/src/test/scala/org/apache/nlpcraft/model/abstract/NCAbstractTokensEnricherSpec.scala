@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.model.`abstract`
 
 import org.apache.nlpcraft.NCTestEnvironment
-import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.{NCEnricherBaseSpec, NCEnrichersTestContext, NCTestNlpToken ⇒ nlp, NCTestUserToken ⇒ usr}
+import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.{NCEnricherBaseSpec, NCEnrichersTestContext, NCTestNlpToken => nlp, NCTestUserToken => usr}
 import org.junit.jupiter.api.Test
 
 class NCAbstractTokensModelEnrichers extends NCAbstractTokensModel with NCEnrichersTestContext
@@ -29,24 +29,24 @@ class NCAbstractTokensEnricherSpec extends NCEnricherBaseSpec {
     def test(): Unit = {
         // Checks that there aren't any other variants.
         runBatch(
-            _ ⇒ checkAll(
+            _ => checkAll(
                 "word the word",
                 Seq(
                     nlp(text = "word"),
                     usr("the word", "wrapAnyWord")
                 )
             ),
-            _ ⇒ checkExists(
+            _ => checkExists(
                 "10 w1 10 w2",
                 nlp(text = "10"),
                 usr("w1 10 w2", "wrapNum")
             ),
-            _ ⇒ checkExists(
+            _ => checkExists(
                 "before limit top 6 the any",
                 usr("before limit top 6", "wrapLimit"),
                 usr("the any", "wrapAnyWord")
             ),
-            _ ⇒ checkExists(
+            _ => checkExists(
                 "a wrap before limit top 6 the any",
                 nlp("a", isStop = true),
                 usr("wrap before limit top 6", "wrapWrapLimit"),

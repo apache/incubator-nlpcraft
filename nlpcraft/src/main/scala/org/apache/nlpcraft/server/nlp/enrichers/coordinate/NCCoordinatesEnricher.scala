@@ -56,7 +56,7 @@ object NCCoordinatesEnricher extends NCServerEnricher {
      * @param parent Optional parent span.
      * @return
      */
-    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ =>
         ackStarting()
 
         latStems = Seq("lat", "latitude").map(NCNlpCoreManager.stem)
@@ -69,7 +69,7 @@ object NCCoordinatesEnricher extends NCServerEnricher {
      *
      * @param parent Optional parent span.
      */
-    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
 
         latStems = null
@@ -92,7 +92,7 @@ object NCCoordinatesEnricher extends NCServerEnricher {
       * @return
       */
     private def similar2Coordinates(nums: NCNumeric*): Boolean =
-        nums.forall(n ⇒ {
+        nums.forall(n => {
             val v = Math.abs(n.value)
             val s = v.toString
             val len = s.length - s.indexOf('.') - 1
@@ -109,7 +109,7 @@ object NCCoordinatesEnricher extends NCServerEnricher {
       * @return
       */
     private def get(
-        ns: NCNlpSentence, from: Int, to: Int, filter: Seq[NCNlpSentenceToken] ⇒ Boolean, mkData: () ⇒ Seq[NCNlpSentenceToken]
+        ns: NCNlpSentence, from: Int, to: Int, filter: Seq[NCNlpSentenceToken] => Boolean, mkData: () => Seq[NCNlpSentenceToken]
     ): Option[Seq[NCNlpSentenceToken]] =
         if (to >= from) {
             val seq = ns.slice(from, to)
@@ -131,12 +131,12 @@ object NCCoordinatesEnricher extends NCServerEnricher {
             val from = toks.head.index
 
             markers.toStream.
-                flatMap(m ⇒ get(
+                flatMap(m => get(
                     ns,
                     from,
                     m.head.index,
-                    (seq: Seq[NCNlpSentenceToken]) ⇒ seq.forall(_.isStopWord),
-                    () ⇒ m
+                    (seq: Seq[NCNlpSentenceToken]) => seq.forall(_.isStopWord),
+                    () => m
                 )).
                 headOption.
                 getOrElse(Seq.empty)
@@ -156,15 +156,15 @@ object NCCoordinatesEnricher extends NCServerEnricher {
             val to = toks.last.index + 1
 
             markers.toStream.
-                flatMap(m ⇒ get(
+                flatMap(m => get(
                     ns,
                     m.last.index + 1,
                     to,
-                    (seq: Seq[NCNlpSentenceToken]) ⇒ seq.forall(t ⇒ t.isStopWord || EQUALS.contains(t.normText)),
-                    () ⇒ ns.
+                    (seq: Seq[NCNlpSentenceToken]) => seq.forall(t => t.isStopWord || EQUALS.contains(t.normText)),
+                    () => ns.
                         take(m.head.index).
                         reverse.
-                        takeWhile(t ⇒ t.pos == "IN" || EQUALS.contains(t.normText)).
+                        takeWhile(t => t.pos == "IN" || EQUALS.contains(t.normText)).
                         reverse ++ m
                 )).
                 headOption.
@@ -179,27 +179,27 @@ object NCCoordinatesEnricher extends NCServerEnricher {
       * @param stems
       * @return
       */
-    private def hasStem(toks: Seq[NCNlpSentenceToken], stems: Seq[String]): Boolean = toks.exists(t ⇒ stems.contains(t.stem))
+    private def hasStem(toks: Seq[NCNlpSentenceToken], stems: Seq[String]): Boolean = toks.exists(t => stems.contains(t.stem))
     
     override def enrich(ns: NCNlpSentence, parent: Span = null): Unit = {
         require(isStarted)
 
-        startScopedSpan("enrich", parent, "srvReqId" → ns.srvReqId, "txt" → ns.text) { _ ⇒
+        startScopedSpan("enrich", parent, "srvReqId" -> ns.srvReqId, "txt" -> ns.text) { _ =>
             val nums = NCNumericManager.find(ns).sortBy(_.tokens.head.index)
 
             if (nums.size >= 2) {
                 val markers = mutable.Buffer.empty[Seq[NCNlpSentenceToken]]
 
                 def areSuitableTokens(toks: Seq[NCNlpSentenceToken]): Boolean =
-                    toks.forall(t ⇒ !t.isQuoted && !t.isBracketed) && !markers.exists(_.exists(t ⇒ toks.contains(t)))
+                    toks.forall(t => !t.isQuoted && !t.isBracketed) && !markers.exists(_.exists(t => toks.contains(t)))
 
-                for (toks ← ns.tokenMixWithStopWords() if areSuitableTokens(toks) && MARKERS_STEMS.contains(toks.map(_.stem).mkString(" ")))
+                for (toks <- ns.tokenMixWithStopWords() if areSuitableTokens(toks) && MARKERS_STEMS.contains(toks.map(_.stem).mkString(" ")))
                     markers += toks
 
                 val allMarkers = markers.flatten
                 val buf = mutable.Buffer.empty[NCNlpSentenceToken]
 
-                for (pair ← nums.sliding(2) if !buf.exists(t ⇒ pair.flatMap(_.tokens).contains(t))) {
+                for (pair <- nums.sliding(2) if !buf.exists(t => pair.flatMap(_.tokens).contains(t))) {
                     var lat = pair.head
                     var lon = pair.last
 
@@ -221,7 +221,7 @@ object NCCoordinatesEnricher extends NCServerEnricher {
 
                         if (normBetween.isEmpty ||
                             normBetween.forall(
-                                t ⇒ t.isEmpty || t.pos == "IN" || SEPS.contains(t.normText) || EQUALS.contains(t.normText))
+                                t => t.isEmpty || t.pos == "IN" || SEPS.contains(t.normText) || EQUALS.contains(t.normText))
                         ) {
                             val extra = (before ++ after ++ between).sortBy(_.index)
 
@@ -231,8 +231,8 @@ object NCCoordinatesEnricher extends NCServerEnricher {
                                 val note = NCNlpSentenceNote(
                                     toks.map(_.index),
                                     "nlpcraft:coordinate",
-                                    "latitude" → lat.value,
-                                    "longitude" → lon.value
+                                    "latitude" -> lat.value,
+                                    "longitude" -> lon.value
                                 )
 
                                 toks.foreach(_.add(note))

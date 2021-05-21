@@ -43,7 +43,7 @@ class SqlValueLoader extends NCValueLoader with LazyLogging {
             map(_.strip).
             filter(_.nonEmpty).
             map(
-                v ⇒ new NCValue {
+                v => new NCValue {
                     override def getName: String = v
                     override def getSynonyms: util.List[String] = Collections.singletonList(v)
                     override def toString: String = s"Value: $v"

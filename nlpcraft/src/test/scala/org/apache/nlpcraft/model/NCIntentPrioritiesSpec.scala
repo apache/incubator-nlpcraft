@@ -47,7 +47,7 @@ class NCIntentPrioritiesSpecModel extends NCModelAdapter(
 @NCTestEnvironment(model = classOf[NCIntentPrioritiesSpecModel], startClient = true)
 class NCIntentPrioritiesSpec extends NCTestContext {
     private def checkHigh(txts: String*): Unit =
-        txts.foreach(txt ⇒ assertEquals("high", getClient.ask(txt).getIntentId, s"Error on: $txt"))
+        txts.foreach(txt => assertEquals("high", getClient.ask(txt).getIntentId, s"Error on: $txt"))
 
     @Test
     def test(): Unit =

@@ -59,7 +59,7 @@ class NCCipherSpec  {
         val buf = new StringBuilder
         
         // Max long string.
-        for (i ← 0 to 1275535) buf.append(i.toString)
+        for (i <- 0 to 1275535) buf.append(i.toString)
         
         val str = buf.toString
         

@@ -37,7 +37,7 @@ object NCGoogleNerEnricher extends NCService with NCNlpNerEnricher with NCIgnite
      * @param parent Optional parent span.
      * @return
      */
-    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ =>
         ackStarting()
 
         try {
@@ -51,7 +51,7 @@ object NCGoogleNerEnricher extends NCService with NCNlpNerEnricher with NCIgnite
             logger.trace("Google Natural Language validation request processed.")
         }
         catch {
-            case e: Exception ⇒
+            case e: Exception =>
                 throw new NCE(
                     "Google Natural Language may not be configured correctly. " +
                     "Make sure that environment variable 'GOOGLE_APPLICATION_CREDENTIALS' points " +
@@ -67,7 +67,7 @@ object NCGoogleNerEnricher extends NCService with NCNlpNerEnricher with NCIgnite
      *
      * @param parent Optional parent span.
      */
-    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
 
         if (srv != null)
@@ -83,17 +83,17 @@ object NCGoogleNerEnricher extends NCService with NCNlpNerEnricher with NCIgnite
      * @param parent Optional parent span.
      */
     override def enrich(ns: NCNlpSentence, ebiTokens: Set[String], parent: Span = null): Unit =
-        startScopedSpan("enrich", parent, "srvReqId" → ns.srvReqId, "txt" → ns.text) { _ ⇒
+        startScopedSpan("enrich", parent, "srvReqId" -> ns.srvReqId, "txt" -> ns.text) { _ =>
             try {
                 val resp = ask(ns.text)
     
                 case class Holder(entityType: String, entity: Entity, mention: EntityMention, salience: Double)
     
-                resp.getEntitiesList.asScala.flatMap(e ⇒ {
+                resp.getEntitiesList.asScala.flatMap(e => {
                     val typLc = e.getType.toString.toLowerCase
     
                     if (e.getMentionsList != null && ebiTokens.contains(typLc)) {
-                        e.getMentionsList.asScala.flatMap(m ⇒ {
+                        e.getMentionsList.asScala.flatMap(m => {
                             val span = m.getText
     
                             val start = span.getBeginOffset
@@ -109,8 +109,8 @@ object NCGoogleNerEnricher extends NCService with NCNlpNerEnricher with NCIgnite
     
                                 if (m.getText.getContent == e.getName)
                                     ns.
-                                        filter(t ⇒ t.startCharIndex >= from && t.endCharIndex <= to).
-                                        map(t ⇒ t → Holder(typLc, e, m, e.getSalience))
+                                        filter(t => t.startCharIndex >= from && t.endCharIndex <= to).
+                                        map(t => t -> Holder(typLc, e, m, e.getSalience))
                                 else
                                     Seq.empty
                             }
@@ -118,14 +118,14 @@ object NCGoogleNerEnricher extends NCService with NCNlpNerEnricher with NCIgnite
                     }
                     else
                         Seq.empty
-                }).groupBy { case (_, h) ⇒ h }.map { case (h, seq) ⇒ h → seq.map { case (t, _) ⇒ t } }.
-                    foreach { case (h, toks) ⇒
+                }).groupBy { case (_, h) => h }.map { case (h, seq) => h -> seq.map { case (t, _) => t } }.
+                    foreach { case (h, toks) =>
                         // Pure java style used to avoid serialization problems with scala proxies classes.
                         val beginOffsets = new java.util.ArrayList[Int]()
                         val contents = new java.util.ArrayList[String]()
                         val types = new java.util.ArrayList[String]()
     
-                        h.entity.getMentionsList.asScala.foreach(p ⇒ {
+                        h.entity.getMentionsList.asScala.foreach(p => {
                             beginOffsets.add(p.getText.getBeginOffset)
                             contents.add(p.getText.getContent)
                             types.add(p.getType.toString)
@@ -135,7 +135,7 @@ object NCGoogleNerEnricher extends NCService with NCNlpNerEnricher with NCIgnite
                             NCNlpSentenceNote(
                                 toks.map(_.index),
                                 s"google:${h.entityType}",
-                                "meta" → {
+                                "meta" -> {
                                     // To be sure that it is serializable map.
                                     val meta = new java.util.HashMap[String, String]()
     
@@ -143,17 +143,17 @@ object NCGoogleNerEnricher extends NCService with NCNlpNerEnricher with NCIgnite
     
                                     meta
                                 },
-                                "salience" → h.salience,
-                                "mentionsBeginOffsets" → beginOffsets,
-                                "mentionsContents" → contents,
-                                "mentionsTypes" → types
+                                "salience" -> h.salience,
+                                "mentionsBeginOffsets" -> beginOffsets,
+                                "mentionsContents" -> contents,
+                                "mentionsTypes" -> types
                             )
     
                         toks.foreach(_.add(note))
                     }
             }
             catch {
-                case e: Exception ⇒ throw new NCE("Google Natural Language request failed.", e)
+                case e: Exception => throw new NCE("Google Natural Language request failed.", e)
             }
         }
 

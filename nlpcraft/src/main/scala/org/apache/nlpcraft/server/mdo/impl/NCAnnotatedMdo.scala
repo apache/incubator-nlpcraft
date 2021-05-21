@@ -30,7 +30,7 @@ import org.apache.nlpcraft.common._
 import scala.collection.mutable
 import scala.language.existentials
 import scala.reflect.runtime.universe._
-import scala.reflect.runtime.{universe ⇒ ru}
+import scala.reflect.runtime.{universe => ru}
 import scala.util.control.Exception._
 
 sealed case class NCMdoEntityAnnotationException(c: Class[_])
@@ -112,16 +112,16 @@ object NCAnnotatedMdo {
             if (ctorParams.length != ctor.getParameterCount)
                 throw NCMdoFieldAnnotationException(cls)
 
-            val params = ctorParams.map { tup ⇒
+            val params = ctorParams.map { tup =>
                 val (ctorParam, name) = tup
                 val fldAnn = ctorParam.getAnnotation(classOf[NCMdoField])
                 val getter = getters.find(_.getName == name) match {
-                    case Some(g) ⇒ g
-                    case None ⇒ throw NCMdoMissingGetterException(fldAnn, cls)
+                    case Some(g) => g
+                    case None => throw NCMdoMissingGetterException(fldAnn, cls)
                 }
                 val jsonConverter = fldAnn.jsonConverter() match {
-                    case "" ⇒ None
-                    case mtdName ⇒
+                    case "" => None
+                    case mtdName =>
                         val zeroArgMtd = catching(classOf[NoSuchMethodException]) either
                             rtCls.getMethod(mtdName)
                         val oneArgMtd = catching(classOf[NoSuchMethodException]) either
@@ -143,7 +143,7 @@ object NCAnnotatedMdo {
             var pkFound = false
 
             // Checks.
-            for (param ← params) {
+            for (param <- params) {
                 if (sql && param.ann.sql()) {
                     val col = param.ann.column
 
@@ -176,7 +176,7 @@ object NCAnnotatedMdo {
     /**
       * Auto-generated result set parser.
       */
-    def mkRsParser[T <: NCAnnotatedMdo[T]](cls: Class[T]): RsParser[T] = { rs: ResultSet ⇒
+    def mkRsParser[T <: NCAnnotatedMdo[T]](cls: Class[T]): RsParser[T] = { rs: ResultSet =>
         val entity = scanAndGet(cls)
 
         if (!entity.ann.sql)
@@ -184,12 +184,12 @@ object NCAnnotatedMdo {
 
         val ctor = entity.ctor
 
-        val args: Seq[Any] = entity.params.zip(ctor.getParameterTypes).map { t ⇒
+        val args: Seq[Any] = entity.params.zip(ctor.getParameterTypes).map { t =>
             val (p, cls) = t
             val col = p.ann.column()
 
             // Special handling for options.
-            def getOption(rs: ResultSet, get: ResultSet ⇒ AnyRef): Option[AnyRef] = {
+            def getOption(rs: ResultSet, get: ResultSet => AnyRef): Option[AnyRef] = {
                 val obj = get(rs)
 
                 if (rs.wasNull()) None else Some(obj)
@@ -197,20 +197,20 @@ object NCAnnotatedMdo {
 
             cls match {
                 // String processed special way because CLOB, TEXT etc nullable fields processing of different databases.
-                case x if x == classOf[Option[String]] ⇒ getOption(rs, rs ⇒ rs.getString(col))
-                case x if x == classOf[Option[_]] ⇒ getOption(rs, rs ⇒ rs.getObject(col))
+                case x if x == classOf[Option[String]] => getOption(rs, rs => rs.getString(col))
+                case x if x == classOf[Option[_]] => getOption(rs, rs => rs.getObject(col))
                 // Handle AnyVals manually to get proper values in case of `NULL`s.
-                case x if x == classOf[Long] ⇒ rs.getLong(col)
-                case x if x == classOf[Int] ⇒ rs.getInt(col)
-                case x if x == classOf[Short] ⇒ rs.getShort(col)
-                case x if x == classOf[Byte] ⇒ rs.getByte(col)
-                case x if x == classOf[Float] ⇒ rs.getFloat(col)
-                case x if x == classOf[Double] ⇒ rs.getDouble(col)
-                case x if x == classOf[Boolean] ⇒ rs.getBoolean(col)
-                case x if x == classOf[Array[Byte]] ⇒ rs.getBytes(col)
+                case x if x == classOf[Long] => rs.getLong(col)
+                case x if x == classOf[Int] => rs.getInt(col)
+                case x if x == classOf[Short] => rs.getShort(col)
+                case x if x == classOf[Byte] => rs.getByte(col)
+                case x if x == classOf[Float] => rs.getFloat(col)
+                case x if x == classOf[Double] => rs.getDouble(col)
+                case x if x == classOf[Boolean] => rs.getBoolean(col)
+                case x if x == classOf[Array[Byte]] => rs.getBytes(col)
 
                 // Bulk-handle AnyRefs.
-                case _ ⇒ rs.getObject(col)
+                case _ => rs.getObject(col)
             }
         }
 
@@ -290,23 +290,23 @@ trait NCAnnotatedMdo[T <: NCAnnotatedMdo[T]] extends NCJsonLike with NCAsciiLike
       * @return
       */
     override def toAscii: String = {
-        entity.params.filter(_.ann.json).map { p ⇒
+        entity.params.filter(_.ann.json).map { p =>
             val pVal = invoke(this, p.getterName)
         
             val v = p.jsonConverter match {
-                case None ⇒ pVal
-                case Some(f) ⇒ f.getParameterCount match {
-                    case 0 ⇒ invoke(this, f.getName)
-                    case 1 ⇒ invoke(this, f.getName, pVal.asInstanceOf[Object])
-                    case _ ⇒ throw new AssertionError(s"Invalid JSON converter: $f")
+                case None => pVal
+                case Some(f) => f.getParameterCount match {
+                    case 0 => invoke(this, f.getName)
+                    case 1 => invoke(this, f.getName, pVal.asInstanceOf[Object])
+                    case _ => throw new AssertionError(s"Invalid JSON converter: $f")
                 }
             }
         
             jsonValue(v) match {
-                case Some(a) ⇒ p.jsonName → a
-                case None ⇒ p.jsonName → ""
+                case Some(a) => p.jsonName -> a
+                case None => p.jsonName -> ""
             }
-        }.foldLeft(NCAsciiTable())((tbl, pair) ⇒ tbl += (pair._1, pair._2)).toString
+        }.foldLeft(NCAsciiTable())((tbl, pair) => tbl += (pair._1, pair._2)).toString
     }
     
     /**
@@ -318,45 +318,45 @@ trait NCAnnotatedMdo[T <: NCAnnotatedMdo[T]] extends NCJsonLike with NCAsciiLike
             None
         else
             v match {
-                case s: String ⇒ Some(s""""${U.escapeJson(s)}"""")
-                case _: Unit ⇒ None
-                case z: Boolean ⇒ Some(z.toString)
-                case b: Byte ⇒ Some(b.toString)
-                case c: Char ⇒ Some(s""""$c"""")
-                case s: Short ⇒ Some(s.toString)
-                case i: Int ⇒ Some(i.toString)
-                case j: Long ⇒ Some(j.toString)
-                case f: Float ⇒ Some(f.toString)
-                case d: Double ⇒ Some(d.toString)
-                case t: Traversable[_] ⇒ Some(s"[${t.filter(_ != null).flatMap(jsonValue).mkString(",")}]")
-                case a: Array[_] ⇒ Some(s"[${a.filter(_ != null).flatMap(jsonValue).mkString(",")}]")
-                case j: NCJson ⇒ Some(j.compact)
-                case x: NCJsonLike ⇒ Some(x.toJson)
-                case d: java.util.Date ⇒ Some(d.getTime.toString) // Special handling for dates.
-                case Some(s) ⇒ jsonValue(s)
-                case None ⇒ None // Skip 'None' values.
-                case _ ⇒ Some(s""""${U.escapeJson(v.toString)}"""")
+                case s: String => Some(s""""${U.escapeJson(s)}"""")
+                case _: Unit => None
+                case z: Boolean => Some(z.toString)
+                case b: Byte => Some(b.toString)
+                case c: Char => Some(s""""$c"""")
+                case s: Short => Some(s.toString)
+                case i: Int => Some(i.toString)
+                case j: Long => Some(j.toString)
+                case f: Float => Some(f.toString)
+                case d: Double => Some(d.toString)
+                case t: Traversable[_] => Some(s"[${t.filter(_ != null).flatMap(jsonValue).mkString(",")}]")
+                case a: Array[_] => Some(s"[${a.filter(_ != null).flatMap(jsonValue).mkString(",")}]")
+                case j: NCJson => Some(j.compact)
+                case x: NCJsonLike => Some(x.toJson)
+                case d: java.util.Date => Some(d.getTime.toString) // Special handling for dates.
+                case Some(s) => jsonValue(s)
+                case None => None // Skip 'None' values.
+                case _ => Some(s""""${U.escapeJson(v.toString)}"""")
             }
     
     /**
       * Convert to JSON presentation.
       */
     override def toJson: NCJson = {
-        val fields = entity.params.filter(_.ann.json).flatMap { p ⇒
+        val fields = entity.params.filter(_.ann.json).flatMap { p =>
             val pVal = invoke(this, p.getterName)
             
             val v = p.jsonConverter match {
-                case None ⇒ pVal
-                case Some(f) ⇒ f.getParameterCount match {
-                    case 0 ⇒ invoke(this, f.getName)
-                    case 1 ⇒ invoke(this, f.getName, pVal.asInstanceOf[Object])
-                    case _ ⇒ throw new AssertionError(s"Invalid JSON converter: $f")
+                case None => pVal
+                case Some(f) => f.getParameterCount match {
+                    case 0 => invoke(this, f.getName)
+                    case 1 => invoke(this, f.getName, pVal.asInstanceOf[Object])
+                    case _ => throw new AssertionError(s"Invalid JSON converter: $f")
                 }
             }
             
             jsonValue(v) match {
-                case Some(a) ⇒ Some(s""""${p.jsonName}": $a""")
-                case None ⇒ None
+                case Some(a) => Some(s""""${p.jsonName}": $a""")
+                case None => None
             }
         }
         

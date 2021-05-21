@@ -60,7 +60,7 @@ class NCTokensRestrictionsSpec1 extends NCTestContext {
 class NCTokensRestrictionsModel2 extends NCTokensRestrictionsModelAbstract {
     override def getRestrictedCombinations: util.Map[String, util.Set[String]] =
         Set("nlpcraft:limit", "nlpcraft:sort", "nlpcraft:relation").
-            map(_ → Set("a").asJava).toMap.asJava
+            map(_ -> Set("a").asJava).toMap.asJava
 }
 
 @NCTestEnvironment(model = classOf[NCTokensRestrictionsModel2], startClient = true)

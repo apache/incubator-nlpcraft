@@ -47,7 +47,7 @@ object NCNlpServerManager extends NCService {
           * 
           */
         def check(): Unit = {
-            val unsupported = tokenProviders.filter(t ⇒ !TOKEN_PROVIDERS.contains(t))
+            val unsupported = tokenProviders.filter(t => !TOKEN_PROVIDERS.contains(t))
 
             if (unsupported.nonEmpty)
                 throw new NCE(s"Configuration property contains unsupported token providers [" +
@@ -69,23 +69,23 @@ object NCNlpServerManager extends NCService {
      * @param parent Optional parent span.
      * @return
      */
-    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
+    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span =>
         ackStarting()
 
         addTags(span,
-            "stanfordNer" → isStanfordNer,
-            "googleNer" → isGoogleNer,
-            "opennlpNer" → isOpenNer,
-            "spacyNer" → isSpacyNer,
-            "nlpEngine" → NCNlpCoreManager.getEngine
+            "stanfordNer" -> isStanfordNer,
+            "googleNer" -> isGoogleNer,
+            "opennlpNer" -> isOpenNer,
+            "spacyNer" -> isSpacyNer,
+            "nlpEngine" -> NCNlpCoreManager.getEngine
         )
         
         parser =
             NCNlpCoreManager.getEngine match {
-                case "stanford" ⇒ U.mkObject("org.apache.nlpcraft.server.nlp.core.stanford.NCStanfordParser")
-                case "opennlp" ⇒ U.mkObject("org.apache.nlpcraft.server.nlp.core.opennlp.NCOpenNlpParser")
+                case "stanford" => U.mkObject("org.apache.nlpcraft.server.nlp.core.stanford.NCStanfordParser")
+                case "opennlp" => U.mkObject("org.apache.nlpcraft.server.nlp.core.opennlp.NCOpenNlpParser")
 
-                case _ ⇒ throw new AssertionError(s"Unexpected NLP engine: ${NCNlpCoreManager.getEngine}")
+                case _ => throw new AssertionError(s"Unexpected NLP engine: ${NCNlpCoreManager.getEngine}")
             }
 
         parser.start()
@@ -93,25 +93,25 @@ object NCNlpServerManager extends NCService {
         val m = collection.mutable.HashMap.empty[String, NCNlpNerEnricher]
 
         if (isGoogleNer) {
-            m += "google" → U.mkObject("org.apache.nlpcraft.server.nlp.core.google.NCGoogleNerEnricher")
+            m += "google" -> U.mkObject("org.apache.nlpcraft.server.nlp.core.google.NCGoogleNerEnricher")
             
             logger.info("Google Natural Language NER started.")
         }
         
         if (isOpenNer) {
-            m += "opennlp" → U.mkObject("org.apache.nlpcraft.server.nlp.core.opennlp.NCOpenNlpNerEnricher")
+            m += "opennlp" -> U.mkObject("org.apache.nlpcraft.server.nlp.core.opennlp.NCOpenNlpNerEnricher")
         
             logger.info("OpenNLP NER started.")
         }
         
         if (isStanfordNer) {
-            m += "stanford" → U.mkObject("org.apache.nlpcraft.server.nlp.core.stanford.NCStanfordNerEnricher")
+            m += "stanford" -> U.mkObject("org.apache.nlpcraft.server.nlp.core.stanford.NCStanfordNerEnricher")
     
             logger.info("Stanford CoreNLP NER started.")
         }
 
         if (isSpacyNer) {
-            m += "spacy" → U.mkObject("org.apache.nlpcraft.server.nlp.core.spacy.NCSpaCyNerEnricher")
+            m += "spacy" -> U.mkObject("org.apache.nlpcraft.server.nlp.core.spacy.NCSpaCyNerEnricher")
 
             logger.info("spaCy NER started.")
         }
@@ -119,7 +119,7 @@ object NCNlpServerManager extends NCService {
         ners = m.toMap
 
         // These component can be started independently.
-        U.executeParallel(ners.values.map(ner ⇒ () ⇒ ner.start()).toSeq: _*)
+        U.executeParallel(ners.values.map(ner => () => ner.start()).toSeq: _*)
     
         ackStarted()
     }
@@ -128,7 +128,7 @@ object NCNlpServerManager extends NCService {
      *
      * @param parent Optional parent span.
      */
-    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
 
         if (ners != null)

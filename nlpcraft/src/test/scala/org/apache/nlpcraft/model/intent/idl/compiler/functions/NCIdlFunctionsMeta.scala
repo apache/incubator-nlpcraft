@@ -46,28 +46,28 @@ class NCIdlFunctionsMeta extends NCIdlFunctions {
     def testMetaToken(): Unit =
         testValue(
             "meta_tok",
-            token = Some(tkn(meta = Map("k1" → "v1")))
+            token = Some(tkn(meta = Map("k1" -> "v1")))
         )
 
     @Test
     def testMetaRequest(): Unit =
         testValue(
             "meta_req",
-            ctx(reqData = Map("k1" → "v1"))
+            ctx(reqData = Map("k1" -> "v1"))
         )
 
     @Test
     def testMetaConv(): Unit =
         testValue(
             "meta_conv",
-            ctx(convMeta = Map("k1" → "v1"))
+            ctx(convMeta = Map("k1" -> "v1"))
         )
 
     @Test
     def testMetaFrag(): Unit =
         testValue(
             "meta_frag",
-            ctx(fragMeta = Map("k1" → "v1"))
+            ctx(fragMeta = Map("k1" -> "v1"))
         )
 
     @Test
@@ -84,7 +84,7 @@ class NCIdlFunctionsMeta extends NCIdlFunctions {
                     override def isAdmin: Boolean = true
                     override def getSignupTimestamp: Long = -1
                     override def getMetadata: util.Map[String, AnyRef] =
-                        Map("k1" → "v1").map(p ⇒ p._1 → p._2.asInstanceOf[AnyRef]).asJava
+                        Map("k1" -> "v1").map(p => p._1 -> p._2.asInstanceOf[AnyRef]).asJava
                 }
             )
         )
@@ -104,7 +104,7 @@ class NCIdlFunctionsMeta extends NCIdlFunctions {
                     override def getAddress: Optional[String] = Optional.empty()
                     override def getPostalCode: Optional[String] = Optional.empty()
                     override def getMetadata: util.Map[String, AnyRef] =
-                        Map("k1" → "v1").map(p ⇒ p._1 → p._2.asInstanceOf[AnyRef]).asJava
+                        Map("k1" -> "v1").map(p => p._1 -> p._2.asInstanceOf[AnyRef]).asJava
                 }
             )
         )
@@ -117,9 +117,9 @@ class NCIdlFunctionsMeta extends NCIdlFunctions {
     @Test
     def testMetaIntent(): Unit = testNoValue("meta_intent", ctx())
 
-    private def testValue(f: String, idlCtx: ⇒ NCIdlContext = ctx(), token: Option[NCToken] = None): Unit =
+    private def testValue(f: String, idlCtx: => NCIdlContext = ctx(), token: Option[NCToken] = None): Unit =
         test(TestDesc(truth = s"$f('k1') == 'v1'", token = token, idlCtx = idlCtx))
 
-    private def testNoValue(f: String, idlCtx: ⇒ NCIdlContext = ctx(), token: Option[NCToken] = None): Unit =
+    private def testNoValue(f: String, idlCtx: => NCIdlContext = ctx(), token: Option[NCToken] = None): Unit =
         test(TestDesc(truth = s"$f('k1') == null", token = token, idlCtx = idlCtx))
 }

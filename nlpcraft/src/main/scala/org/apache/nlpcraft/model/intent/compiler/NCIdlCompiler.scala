@@ -20,12 +20,12 @@ package org.apache.nlpcraft.model.intent.compiler
 import com.typesafe.scalalogging.LazyLogging
 import org.antlr.v4.runtime.tree.ParseTreeWalker
 import org.antlr.v4.runtime._
-import org.antlr.v4.runtime.{ParserRuleContext ⇒ PRC}
+import org.antlr.v4.runtime.{ParserRuleContext => PRC}
 import org.apache.nlpcraft.common._
-import org.apache.nlpcraft.model.intent.compiler.antlr4.{NCIdlBaseListener, NCIdlLexer, NCIdlParser ⇒ IDP}
-import org.apache.nlpcraft.model.intent.compiler.{NCIdlCompilerGlobal ⇒ Global}
+import org.apache.nlpcraft.model.intent.compiler.antlr4.{NCIdlBaseListener, NCIdlLexer, NCIdlParser => IDP}
+import org.apache.nlpcraft.model.intent.compiler.{NCIdlCompilerGlobal => Global}
 import org.apache.nlpcraft.model._
-import org.apache.nlpcraft.model.intent.{NCIdlContext, NCIdlFunction, NCIdlIntent, NCIdlStack, NCIdlStackItem ⇒ Z, NCIdlSynonym, NCIdlTerm}
+import org.apache.nlpcraft.model.intent.{NCIdlContext, NCIdlFunction, NCIdlIntent, NCIdlStack, NCIdlStackItem => Z, NCIdlSynonym, NCIdlTerm}
 
 import java.io._
 import java.net._
@@ -117,7 +117,7 @@ object NCIdlCompiler extends LazyLogging {
         override def exitAlias(ctx: IDP.AliasContext): Unit = alias = ctx.id().getText
 
         override def enterCallExpr(ctx: IDP.CallExprContext): Unit =
-            expr += ((_, stack: NCIdlStack, _) ⇒ stack.push(stack.PLIST_MARKER))
+            expr += ((_, stack: NCIdlStack, _) => stack.push(stack.PLIST_MARKER))
 
         /**
          *
@@ -135,7 +135,7 @@ object NCIdlCompiler extends LazyLogging {
             if (!vars.contains(varName))
                 throw newSyntaxError(s"Undefined variable: @$varName")(ctx)
 
-            val instr: SI = (tok: NCToken, stack: S, idlCtx: NCIdlContext) ⇒ stack.push(() ⇒ idlCtx.vars(varName)(tok, idlCtx))
+            val instr: SI = (tok: NCToken, stack: S, idlCtx: NCIdlContext) => stack.push(() => idlCtx.vars(varName)(tok, idlCtx))
 
             expr += instr
         }
@@ -146,7 +146,7 @@ object NCIdlCompiler extends LazyLogging {
             if (vars.contains(varName))
                 throw newSyntaxError(s"Duplicate variable: @$varName")(ctx)
 
-            vars += varName → exprToFunction("Variable declaration", _ ⇒ true)(ctx)
+            vars += varName -> exprToFunction("Variable declaration", _ => true)(ctx)
 
             expr.clear()
         }
@@ -181,7 +181,7 @@ object NCIdlCompiler extends LazyLogging {
             }
             catch {
                 // Errors should be caught during compilation phase.
-                case _: NumberFormatException ⇒ assert(false)
+                case _: NumberFormatException => assert(false)
             }
         }
 
@@ -193,7 +193,7 @@ object NCIdlCompiler extends LazyLogging {
         override def exitTermId(ctx: IDP.TermIdContext): Unit = {
             termId = ctx.id().getText
 
-            if (terms.exists(t ⇒ t.id === termId))
+            if (terms.exists(t => t.id === termId))
                 throw newSyntaxError(s"Duplicate intent term ID: $termId")(ctx.id())
         }
 
@@ -202,7 +202,7 @@ object NCIdlCompiler extends LazyLogging {
 
             val pred = exprToFunction("Synonym", isBool)
             val capture = alias
-            val wrapper: NCIdlFunction = (tok: NCToken, ctx: NCIdlContext) ⇒ {
+            val wrapper: NCIdlFunction = (tok: NCToken, ctx: NCIdlContext) => {
                 val Z(res, tokUses) = pred(tok, ctx)
 
                 // Store predicate's alias, if any, in token metadata if this token satisfies this predicate.
@@ -238,16 +238,16 @@ object NCIdlCompiler extends LazyLogging {
             val id = ctx.id().getText
 
             Global.getFragment(mdl.getId, id) match {
-                case Some(frag) ⇒
+                case Some(frag) =>
                     val meta = if (fragMeta == null) Map.empty[String, Any] else fragMeta
 
-                    for (fragTerm ← frag.terms)
-                        if (terms.exists(t ⇒ t.id === fragTerm.id))
+                    for (fragTerm <- frag.terms)
+                        if (terms.exists(t => t.id === fragTerm.id))
                             throw newSyntaxError(s"Duplicate term ID '${fragTerm.id.get}' in fragment '$id'.")(ctx.id())
                         else
                             terms += fragTerm.cloneWithFragMeta(meta)
 
-                case None ⇒ throw newSyntaxError(s"Unknown intent fragment ID: $id")(ctx.id())
+                case None => throw newSyntaxError(s"Unknown intent fragment ID: $id")(ctx.id())
             }
 
             fragMeta = null
@@ -267,7 +267,7 @@ object NCIdlCompiler extends LazyLogging {
                     try
                         Pattern.compile(flowRegex.get)
                     catch {
-                        case e: PatternSyntaxException ⇒
+                        case e: PatternSyntaxException =>
                             newSyntaxError(s"${e.getDescription} in intent flow regex '${e.getPattern}' near index ${e.getIndex}.")(ctx.qstring())
                     }
             }
@@ -291,7 +291,7 @@ object NCIdlCompiler extends LazyLogging {
                 val cls = clsName.orNull
                 val mtd = mtdName.orNull
 
-                (tok: NCToken, termCtx: NCIdlContext) ⇒ {
+                (tok: NCToken, termCtx: NCIdlContext) => {
                     val javaCtx: NCTokenPredicateContext = new NCTokenPredicateContext {
                         override lazy val getRequest: NCRequest = termCtx.req
                         override lazy val getToken: NCToken = tok
@@ -307,7 +307,7 @@ object NCIdlCompiler extends LazyLogging {
 
                     try {
                         val res = U.callMethod[NCTokenPredicateContext, NCTokenPredicateResult](
-                            () ⇒ if (cls == null) mdl else U.mkObject(cls),
+                            () => if (cls == null) mdl else U.mkObject(cls),
                             mtd,
                             javaCtx
                         )
@@ -315,7 +315,7 @@ object NCIdlCompiler extends LazyLogging {
                         Z(res.getResult, res.getTokenUses)
                     }
                     catch {
-                        case e: Exception ⇒
+                        case e: Exception =>
                             throw newRuntimeError(s"Failed to invoke custom intent term: $mdlCls.$mtd(...)", e)(ctx.mtdDecl())
                     }
                 }
@@ -352,7 +352,7 @@ object NCIdlCompiler extends LazyLogging {
          */
         private def exprToFunction(
             subj: String,
-            check: Object ⇒ Boolean
+            check: Object => Boolean
         )
         (
             implicit ctx: PRC
@@ -361,7 +361,7 @@ object NCIdlCompiler extends LazyLogging {
 
             code ++= expr
 
-            (tok: NCToken, termCtx: NCIdlContext) ⇒ {
+            (tok: NCToken, termCtx: NCIdlContext) => {
                 val stack = new S()
 
                 // Execute all instructions.
@@ -441,7 +441,7 @@ object NCIdlCompiler extends LazyLogging {
                             x
                         )
                     catch {
-                        case _: Exception ⇒ throw newSyntaxError(s"Invalid or unknown import location: $x")(ctx.qstring())
+                        case _: Exception => throw newSyntaxError(s"Invalid or unknown import location: $x")(ctx.qstring())
                     }
                 }
 
@@ -546,8 +546,8 @@ object NCIdlCompiler extends LazyLogging {
         val posPtr = dash.substring(0, pos) + r("^") + y(dash.substring(pos + 1))
         val idlPtr = idlLine.substring(0, pos) + r(idlLine.charAt(pos)) + y(idlLine.substring(pos + 1))
         val aMsg = U.decapitalize(msg) match {
-            case s: String if s.last == '.' ⇒ s
-            case s: String ⇒ s + '.'
+            case s: String if s.last == '.' => s
+            case s: String => s + '.'
         }
 
         s"IDL $kind error in '$srcName' at line $line:${charPos + 1} - $aMsg\n" +
@@ -668,7 +668,7 @@ object NCIdlCompiler extends LazyLogging {
         parser.addErrorListener(new CompilerErrorListener(idl, mdl, origin))
 
         // State automata + it's parser.
-        new FiniteStateMachine(origin, idl, mdl) → parser
+        new FiniteStateMachine(origin, idl, mdl) -> parser
     }
 
     /**

@@ -30,64 +30,64 @@ object NCPreProcessManager extends NCService {
     // List of unambiguous contractions.
     private final val CONTRACTIONS: Map[String, Seq[String]] =
         Map[String, String](
-            "aren't" → "are not",
-            "can't" → "cannot",
-            "aren't" → "are not",
-            "can't" → "cannot",
-            "could've" → "could have",
-            "couldn't" → "could not",
-            "didn't" → "did not",
-            "doesn't" → "does not",
-            "don't" → "do not",
-            "hadn't" → "had not",
-            "hasn't" → "has not",
-            "haven't" → "have not",
-            "he'll" → "he will",
-            "how'd" → "how did",
-            "how'll" → "how will",
-            "i'll" → "I will",
-            "i'm" → "I am",
-            "i've" → "I have",
-            "isn't" → "is not",
-            "it'll" → "it will",
-            "let's" → "let us",
-            "ma'am" → "madam",
-            "might've" → "might have",
-            "must've" → "must have",
-            "needn't" → "need not",
-            "o'clock" → "of the clock",
-            "shan't" → "shall not",
-            "she'll" → "she will",
-            "should've" → "should have",
-            "shouldn't" → "should not",
-            "they'll" → "they will",
-            "they're" → "they are",
-            "they've" → "they have",
-            "wasn't" → "was not",
-            "we'll" → "we will",
-            "we're" → "we are",
-            "we've" → "we have",
-            "weren't" → "were not",
-            "what'll" → "what will",
-            "what're" → "what are",
-            "where'd" → "where did",
-            "where've" → "where have",
-            "who'll" → "who will",
-            "won't" → "will not",
-            "would've" → "would have",
-            "wouldn't" → "would not",
-            "y'all" → "you are all",
-            "you'll" → "you will",
-            "you're" → "you are",
-            "you've" → "you have"
-        ).map(p ⇒ p._1 → p._2.split(' ').toSeq)
+            "aren't" -> "are not",
+            "can't" -> "cannot",
+            "aren't" -> "are not",
+            "can't" -> "cannot",
+            "could've" -> "could have",
+            "couldn't" -> "could not",
+            "didn't" -> "did not",
+            "doesn't" -> "does not",
+            "don't" -> "do not",
+            "hadn't" -> "had not",
+            "hasn't" -> "has not",
+            "haven't" -> "have not",
+            "he'll" -> "he will",
+            "how'd" -> "how did",
+            "how'll" -> "how will",
+            "i'll" -> "I will",
+            "i'm" -> "I am",
+            "i've" -> "I have",
+            "isn't" -> "is not",
+            "it'll" -> "it will",
+            "let's" -> "let us",
+            "ma'am" -> "madam",
+            "might've" -> "might have",
+            "must've" -> "must have",
+            "needn't" -> "need not",
+            "o'clock" -> "of the clock",
+            "shan't" -> "shall not",
+            "she'll" -> "she will",
+            "should've" -> "should have",
+            "shouldn't" -> "should not",
+            "they'll" -> "they will",
+            "they're" -> "they are",
+            "they've" -> "they have",
+            "wasn't" -> "was not",
+            "we'll" -> "we will",
+            "we're" -> "we are",
+            "we've" -> "we have",
+            "weren't" -> "were not",
+            "what'll" -> "what will",
+            "what're" -> "what are",
+            "where'd" -> "where did",
+            "where've" -> "where have",
+            "who'll" -> "who will",
+            "won't" -> "will not",
+            "would've" -> "would have",
+            "wouldn't" -> "would not",
+            "y'all" -> "you are all",
+            "you'll" -> "you will",
+            "you're" -> "you are",
+            "you've" -> "you have"
+        ).map(p => p._1 -> p._2.split(' ').toSeq)
 
     /**
      *
      * @param parent Optional parent span.
      * @return
      */
-    override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ ⇒
+    override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ =>
         ackStarting()
         ackStarted()
     }
@@ -96,7 +96,7 @@ object NCPreProcessManager extends NCService {
      *
      * @param parent Optional parent span.
      */
-    override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
+    override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
         ackStopped()
     }
@@ -108,10 +108,10 @@ object NCPreProcessManager extends NCService {
       * @return
       */
     private def replaceContractions(sen: Seq[String]): Seq[String] =
-        sen.flatMap(s ⇒ {
+        sen.flatMap(s => {
             CONTRACTIONS.get(s.toLowerCase) match {
-                case Some(seq) ⇒ seq
-                case None ⇒ Seq(s)
+                case Some(seq) => seq
+                case None => Seq(s)
             }
         })
     
@@ -136,7 +136,7 @@ object NCPreProcessManager extends NCService {
       * @param parent Optional parent span.
       */
     def normalize(rawTxt: String, spellCheck: Boolean, parent: Span = null): String =
-        startScopedSpan("normalize", parent, "txt" → rawTxt, "spellCheck" → spellCheck) { _ ⇒
+        startScopedSpan("normalize", parent, "txt" -> rawTxt, "spellCheck" -> spellCheck) { _ =>
             // Fix Apple/MacOS smart quotes & dashes.
             val s0 = rawTxt.trim().
                 replace('‘', '\'').

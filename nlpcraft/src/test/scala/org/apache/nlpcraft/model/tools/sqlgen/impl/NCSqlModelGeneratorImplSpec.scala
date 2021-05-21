@@ -32,7 +32,7 @@ class NCSqlModelGeneratorImplSpec {
      * @return
      */
     def substituteMacros(s: String): String =
-        s.split(" ").filter(_.nonEmpty).map(w ⇒ {
+        s.split(" ").filter(_.nonEmpty).map(w => {
             if (w == "id")
                 "<ID>"
             else
@@ -45,10 +45,10 @@ class NCSqlModelGeneratorImplSpec {
      * @param s
      * @return
      */
-    private def mkPrefixFun(s: String): String ⇒ String = {
+    private def mkPrefixFun(s: String): String => String = {
         val arr = U.splitTrimFilter(s, ",")
 
-        z ⇒ (for (fix ← arr if z.startsWith(fix)) yield z.substring(fix.length)).headOption.getOrElse(z)
+        z => (for (fix <- arr if z.startsWith(fix)) yield z.substring(fix.length)).headOption.getOrElse(z)
     }
     
     /**
@@ -57,10 +57,10 @@ class NCSqlModelGeneratorImplSpec {
      * @param s
      * @return
      */
-    private def mkSuffixFun(s: String): String ⇒ String = {
+    private def mkSuffixFun(s: String): String => String = {
         val arr = U.splitTrimFilter(s, ",")
         
-        z ⇒ (for (fix ← arr if z.endsWith(fix)) yield z.substring(0, z.length - fix.length)).headOption.getOrElse(z)
+        z => (for (fix <- arr if z.endsWith(fix)) yield z.substring(0, z.length - fix.length)).headOption.getOrElse(z)
     }
 
     /**
@@ -70,9 +70,9 @@ class NCSqlModelGeneratorImplSpec {
      * @return
      */
     private def removeSeqDups(s: String): String =
-        s.split(" ").filter(_.nonEmpty).foldRight[List[String]](Nil)((w, list) ⇒ list.headOption match {
-            case Some(head) if head == w ⇒ list // Skip duplicate 'w'.
-            case _ ⇒ w :: list
+        s.split(" ").filter(_.nonEmpty).foldRight[List[String]](Nil)((w, list) => list.headOption match {
+            case Some(head) if head == w => list // Skip duplicate 'w'.
+            case _ => w :: list
         }).mkString(" ")
 
     @Test

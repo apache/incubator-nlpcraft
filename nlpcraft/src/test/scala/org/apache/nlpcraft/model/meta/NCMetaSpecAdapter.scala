@@ -33,11 +33,11 @@ abstract class NCMetaSpecAdapter extends NCRestSpec {
         var companyMeta: JavaMeta = null
 
         post("user/get")(
-            ("$.properties", (props: JavaMeta) ⇒ userMeta = props)
+            ("$.properties", (props: JavaMeta) => userMeta = props)
         )
 
         post("company/get")(
-            ("$.properties", (props: JavaMeta) ⇒ companyMeta = props)
+            ("$.properties", (props: JavaMeta) => companyMeta = props)
         )
 
         MetaHolder(userMeta, companyMeta)
@@ -56,24 +56,24 @@ abstract class NCMetaSpecAdapter extends NCRestSpec {
         var compPostalCode: String = null
 
         post("company/get")(
-            ("$.name", (v: String) ⇒ compName = v),
-            ("$.website", (v: String) ⇒ compWebsite = v),
-            ("$.country", (v: String) ⇒ compCountry = v),
-            ("$.region", (v: String) ⇒ compRegion = v),
-            ("$.city", (v: String) ⇒ compCity = v),
-            ("$.address", (v: String) ⇒ compAddress = v),
-            ("$.postalCode", (v: String) ⇒ compPostalCode = v)
+            ("$.name", (v: String) => compName = v),
+            ("$.website", (v: String) => compWebsite = v),
+            ("$.country", (v: String) => compCountry = v),
+            ("$.region", (v: String) => compRegion = v),
+            ("$.city", (v: String) => compCity = v),
+            ("$.address", (v: String) => compAddress = v),
+            ("$.postalCode", (v: String) => compPostalCode = v)
         )
 
         post("company/update",
-            "name" → compName,
-            "website" → compWebsite,
-            "country" → compCountry,
-            "region" → compRegion,
-            "city" → compCity,
-            "address" → compAddress,
-            "postalCode" → compPostalCode,
-            "properties" → convert(h.companyMeta)
+            "name" -> compName,
+            "website" -> compWebsite,
+            "country" -> compCountry,
+            "region" -> compRegion,
+            "city" -> compCity,
+            "address" -> compAddress,
+            "postalCode" -> compPostalCode,
+            "properties" -> convert(h.companyMeta)
         )()
 
         // 2. We have to save all existing user's fields for following updates.
@@ -82,16 +82,16 @@ abstract class NCMetaSpecAdapter extends NCRestSpec {
         var usrAvatarUrl: String = null
 
         post("user/get")(
-            ("$.firstName", (v: String) ⇒ usrFirstName = v),
-            ("$.lastName", (v: String) ⇒ usrLastName = v),
-            ("$.avatarUrl", (v: String) ⇒ usrAvatarUrl = v)
+            ("$.firstName", (v: String) => usrFirstName = v),
+            ("$.lastName", (v: String) => usrLastName = v),
+            ("$.avatarUrl", (v: String) => usrAvatarUrl = v)
         )
 
         post("user/update",
-        "firstName" → usrFirstName,
-            "lastName" → usrLastName,
-            "avatarUrl" → usrAvatarUrl,
-            "properties" → convert(h.userMeta)
+        "firstName" -> usrFirstName,
+            "lastName" -> usrLastName,
+            "avatarUrl" -> usrAvatarUrl,
+            "properties" -> convert(h.userMeta)
         )()
     }
 }

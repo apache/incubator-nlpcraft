@@ -166,11 +166,11 @@ object NCNumericEnricher extends NCServerEnricher {
 
     // Supported prepositions which contains one word only.
     private val BETWEEN_PREPS: Map[(String, String), T] = Map(
-        ("between", "and") → BETWEEN_EXCLUSIVE,
-        ("from", "to") → BETWEEN_INCLUSIVE,
-        ("since", "to") → BETWEEN_INCLUSIVE,
-        ("since", "till") → BETWEEN_INCLUSIVE,
-        ("from", "till") → BETWEEN_INCLUSIVE
+        ("between", "and") -> BETWEEN_EXCLUSIVE,
+        ("from", "to") -> BETWEEN_INCLUSIVE,
+        ("since", "to") -> BETWEEN_INCLUSIVE,
+        ("since", "till") -> BETWEEN_INCLUSIVE,
+        ("from", "till") -> BETWEEN_INCLUSIVE
     )
 
     /**
@@ -178,7 +178,7 @@ object NCNumericEnricher extends NCServerEnricher {
      * @param parent Optional parent span.
      * @return
      */
-    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ =>
         ackStarting()
         ackStarted()
     }
@@ -187,16 +187,16 @@ object NCNumericEnricher extends NCServerEnricher {
      *
      * @param parent Optional parent span.
      */
-    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
         ackStopped()
     }
 
     private def mkMap(seq: Seq[String], c: T): Map[String, P] =
-        seq.map(s ⇒ s → P(s, s.split(" ").length, c)).toMap
+        seq.map(s => s -> P(s, s.split(" ").length, c)).toMap
 
     private def toString(seq: Seq[NCNlpSentenceToken], sep: String = " ", stem: Boolean = false) =
-        seq.map(t ⇒ if (stem) t.stem else t.normText).mkString(sep)
+        seq.map(t => if (stem) t.stem else t.normText).mkString(sep)
 
     private def mkNote(
         toks: Seq[NCNlpSentenceToken],
@@ -210,23 +210,23 @@ object NCNumericEnricher extends NCServerEnricher {
     ): NCNlpSentenceNote = {
         val params = mutable.ArrayBuffer.empty[(String, Any)] ++
             Seq(
-                "from" → from,
-                "fromIncl" → fromIncl,
-                "to" → to,
-                "toIncl" → toIncl,
-                "isFractional" → (fromFractional || toFractional),
-                "isRangeCondition" → (from != to),
-                "isEqualCondition" → (from == to && fromIncl && toIncl),
-                "isNotEqualCondition" → (from == to && !fromIncl && !toIncl),
-                "isFromNegativeInfinity" → (from == MIN_VALUE),
-                "isToPositiveInfinity" → (to == MAX_VALUE)
+                "from" -> from,
+                "fromIncl" -> fromIncl,
+                "to" -> to,
+                "toIncl" -> toIncl,
+                "isFractional" -> (fromFractional || toFractional),
+                "isRangeCondition" -> (from != to),
+                "isEqualCondition" -> (from == to && fromIncl && toIncl),
+                "isNotEqualCondition" -> (from == to && !fromIncl && !toIncl),
+                "isFromNegativeInfinity" -> (from == MIN_VALUE),
+                "isToPositiveInfinity" -> (to == MAX_VALUE)
             )
 
         unitOpt match {
-            case Some(unit) ⇒
-                params += "unit" → unit.name
-                params += "unitType" → unit.unitType
-            case None ⇒ // No-op.
+            case Some(unit) =>
+                params += "unit" -> unit.name
+                params += "unitType" -> unit.unitType
+            case None => // No-op.
         }
     
         NCNlpSentenceNote(toks.map(_.index), "nlpcraft:num", params:_*)
@@ -242,7 +242,7 @@ object NCNumericEnricher extends NCServerEnricher {
     override def enrich(ns: NCNlpSentence, parent: Span = null): Unit = {
         require(isStarted)
 
-        startScopedSpan("enrich", parent, "srvReqId" → ns.srvReqId, "txt" → ns.text) { _ ⇒
+        startScopedSpan("enrich", parent, "srvReqId" -> ns.srvReqId, "txt" -> ns.text) { _ =>
             val nums = NCNumericManager.find(ns)
     
             val toksStopFree = ns.filter(!_.isStopWord)
@@ -251,7 +251,7 @@ object NCNumericEnricher extends NCServerEnricher {
     
             // Adds complex 'condition' notes.
             // Note that all complex prepositions contains from single words only.
-            for (ps ← nums.sliding(2) if !processed.exists(p ⇒ ps.flatMap(_.tokens).contains(p)); p ← BETWEEN_PREPS) {
+            for (ps <- nums.sliding(2) if !processed.exists(p => ps.flatMap(_.tokens).contains(p)); p <- BETWEEN_PREPS) {
                 val num1 = ps.head
                 val num2 = ps.last
     
@@ -291,7 +291,7 @@ object NCNumericEnricher extends NCServerEnricher {
                             }
     
                         val note = p._2 match {
-                            case BETWEEN_EXCLUSIVE ⇒
+                            case BETWEEN_EXCLUSIVE =>
                                 mkNote(
                                     prepToks,
                                     d1,
@@ -302,7 +302,7 @@ object NCNumericEnricher extends NCServerEnricher {
                                     toFractional = isF2,
                                     unit
                                 )
-                            case BETWEEN_INCLUSIVE ⇒
+                            case BETWEEN_INCLUSIVE =>
                                 mkNote(
                                     prepToks,
                                     d1,
@@ -313,7 +313,7 @@ object NCNumericEnricher extends NCServerEnricher {
                                     toFractional = isF2,
                                     unit
                                 )
-                            case _ ⇒ throw new AssertionError(s"Illegal note type: ${p._2}.")
+                            case _ => throw new AssertionError(s"Illegal note type: ${p._2}.")
                         }
     
                         prepToks.foreach(_.add(note))
@@ -327,12 +327,12 @@ object NCNumericEnricher extends NCServerEnricher {
             // Special case - processing with words which were defined as stop words before.
             // Example: symbol '!' for condition '! ='.
             // Adds simple 'condition' notes.
-            for (num ← nums) {
+            for (num <- nums) {
                 def process(candidates: Seq[NCNlpSentenceToken]): Unit =
                     if (!processed.exists(num.tokens.contains)) {
                         val strBuf = toString(candidates)
     
-                        val preps: Seq[(String, P)] = BEFORE_PREPS.filter(p ⇒ strBuf.endsWith(p._1)).toSeq.sortBy(-_._2.length)
+                        val preps: Seq[(String, P)] = BEFORE_PREPS.filter(p => strBuf.endsWith(p._1)).toSeq.sortBy(-_._2.length)
     
                         if (preps.nonEmpty) {
                             val prep = preps.head._2
@@ -342,7 +342,7 @@ object NCNumericEnricher extends NCServerEnricher {
     
                             val note =
                                 prep.prepositionType match {
-                                    case MORE ⇒
+                                    case MORE =>
                                         mkNote(
                                             toks,
                                             num.value,
@@ -353,7 +353,7 @@ object NCNumericEnricher extends NCServerEnricher {
                                             toFractional = num.isFractional,
                                             num.unit
                                         )
-                                    case MORE_OR_EQUAL ⇒
+                                    case MORE_OR_EQUAL =>
                                         mkNote(
                                             toks,
                                             num.value,
@@ -364,7 +364,7 @@ object NCNumericEnricher extends NCServerEnricher {
                                             toFractional = num.isFractional,
                                             num.unit
                                         )
-                                    case LESS ⇒
+                                    case LESS =>
                                         mkNote(
                                             toks,
                                             MIN_VALUE,
@@ -375,7 +375,7 @@ object NCNumericEnricher extends NCServerEnricher {
                                             toFractional = num.isFractional,
                                             num.unit
                                         )
-                                    case LESS_OR_EQUAL ⇒
+                                    case LESS_OR_EQUAL =>
                                         mkNote(
                                             toks,
                                             MIN_VALUE,
@@ -386,7 +386,7 @@ object NCNumericEnricher extends NCServerEnricher {
                                             toFractional = num.isFractional,
                                             num.unit
                                         )
-                                    case EQUAL ⇒
+                                    case EQUAL =>
                                         mkNote(
                                             toks,
                                             num.value,
@@ -397,7 +397,7 @@ object NCNumericEnricher extends NCServerEnricher {
                                             toFractional = num.isFractional,
                                             num.unit
                                         )
-                                    case NOT_EQUAL ⇒
+                                    case NOT_EQUAL =>
                                         mkNote(
                                             toks,
                                             num.value,
@@ -408,7 +408,7 @@ object NCNumericEnricher extends NCServerEnricher {
                                             toFractional = num.isFractional,
                                             num.unit
                                         )
-                                    case _ ⇒ throw new AssertionError(s"Illegal note type: ${prep.prepositionType}.")
+                                    case _ => throw new AssertionError(s"Illegal note type: ${prep.prepositionType}.")
                                 }
     
                             toks.foreach(_.add(note))
@@ -422,7 +422,7 @@ object NCNumericEnricher extends NCServerEnricher {
             }
     
             // Numeric without conditions.
-            for (num ← nums if !processed.exists(num.tokens.contains)) {
+            for (num <- nums if !processed.exists(num.tokens.contains)) {
                 val note = mkNote(
                     num.tokens,
                     num.value,

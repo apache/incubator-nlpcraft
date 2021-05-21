@@ -42,7 +42,7 @@ class NCTxCacheStoreSessionListener extends CacheStoreSessionListener {
                     else
                         con.rollback()
                 catch {
-                    case e: SQLException ⇒ throw new CacheWriterException(e)
+                    case e: SQLException => throw new CacheWriterException(e)
                 }
             }
         }

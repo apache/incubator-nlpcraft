@@ -22,7 +22,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker
 import org.antlr.v4.runtime._
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.makro.antlr4._
-import org.apache.nlpcraft.common.makro.antlr4.{NCMacroDslParser ⇒ P}
+import org.apache.nlpcraft.common.makro.antlr4.{NCMacroDslParser => P}
 import scala.collection.mutable
 
 /**
@@ -109,7 +109,7 @@ object NCMacroCompiler extends LazyLogging {
                 if (prn.isGroup)
                     prn.buffer ++= expr.buffer
                 else
-                    prn.buffer = for (z ← expr.buffer; i ← prn.buffer.indices) yield concat(prn.buffer(i), z)
+                    prn.buffer = for (z <- expr.buffer; i <- prn.buffer.indices) yield concat(prn.buffer(i), z)
             }
         }
 
@@ -133,12 +133,12 @@ object NCMacroCompiler extends LazyLogging {
                 try
                     min = java.lang.Integer.parseInt(s.substring(0, comma).trim)
                 catch {
-                    case _: NumberFormatException ⇒ throw compilerError(s"Invalid min quantifier: $orig")
+                    case _: NumberFormatException => throw compilerError(s"Invalid min quantifier: $orig")
                 }
                 try
                     max = java.lang.Integer.parseInt(s.substring(comma + 1).trim)
                 catch {
-                    case _: NumberFormatException ⇒ throw compilerError(s"Invalid max quantifier: $orig")
+                    case _: NumberFormatException => throw compilerError(s"Invalid max quantifier: $orig")
                 }
 
                 if (min < 0 || max < 0 || min > max || max == 0)
@@ -157,7 +157,7 @@ object NCMacroCompiler extends LazyLogging {
             val prn = stack.top
 
             prn.buffer = prn.buffer.flatMap {
-                s ⇒ (for (z ← grp.buffer; i ← min to max) yield concat(s, s"$z " * i).trim).toSet
+                s => (for (z <- grp.buffer; i <- min to max) yield concat(s, s"$z " * i).trim).toSet
             }
         }
 
@@ -172,7 +172,7 @@ object NCMacroCompiler extends LazyLogging {
 
             require(buf.nonEmpty)
 
-            for (i ← buf.indices) buf.update(i, concat(buf(i), syn))
+            for (i <- buf.indices) buf.update(i, concat(buf(i), syn))
         }
     
         override def exitList(ctx: P.ListContext): Unit =

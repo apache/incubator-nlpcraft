@@ -138,7 +138,7 @@ class NCCliBase extends App {
     case class TooManyArguments(cmd: Command) extends ISE(s"Too many arguments, ${help(cmd)}")
     case class NotEnoughArguments(cmd: Command) extends ISE(s"Not enough arguments, ${help(cmd)}")
     case class MissingParameter(cmd: Command, paramId: String) extends ISE( s"Missing mandatory parameter $C${"'" + cmd.params.find(_.id == paramId).get.names.head + "'"}$RST, ${help(cmd)}")
-    case class MissingMandatoryJsonParameters(cmd: Command, missingParams: Seq[RestSpecParameter], path: String) extends ISE(s"Missing mandatory JSON parameters (${missingParams.map(s ⇒ y(s.name)).mkString(",")}) for $C${"'" + cmd.name + s" --path=$path'"}$RST, ${help(cmd)}")
+    case class MissingMandatoryJsonParameters(cmd: Command, missingParams: Seq[RestSpecParameter], path: String) extends ISE(s"Missing mandatory JSON parameters (${missingParams.map(s => y(s.name)).mkString(",")}) for $C${"'" + cmd.name + s" --path=$path'"}$RST, ${help(cmd)}")
     case class InvalidParameter(cmd: Command, paramId: String) extends ISE(s"Invalid parameter $C${"'" + cmd.params.find(_.id == paramId).get.names.head + "'"}$RST, ${help(cmd)}")
     case class InvalidJsonParameter(cmd: Command, param: String) extends ISE(s"Invalid JSON parameter $C${"'" + param + "'"}$RST, ${help(cmd)}")
 }

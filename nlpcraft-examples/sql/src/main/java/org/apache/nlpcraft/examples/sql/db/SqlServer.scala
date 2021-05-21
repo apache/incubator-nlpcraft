@@ -69,7 +69,7 @@ object SqlServer extends LazyLogging {
             logger.info(s"Database schema initialized for: $H2_URL")
         }
         catch {
-            case e: SQLException ⇒
+            case e: SQLException =>
                 // Table or view already exists - https://www.h2database.com/javadoc/org/h2/api/ErrorCode.html
                 if (e.getErrorCode != 42101)
                     throw e

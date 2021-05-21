@@ -78,13 +78,13 @@ object NCStanfordCoreManager extends NCService with NCIgniteInstance {
     def annotate(txt: String): CoreDocument =
         catching(wrapIE) {
             cache(txt) match {
-                case Some(doc) ⇒ doc
-                case None ⇒
+                case Some(doc) => doc
+                case None =>
                     val doc = new CoreDocument(txt)
 
                     stanford.annotate(doc)
 
-                    cache += txt → doc
+                    cache += txt -> doc
 
                     doc
             }

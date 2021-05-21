@@ -76,7 +76,7 @@ class NCMacroParserSpec  {
 
         val N = 50000
 
-        for (_ ← 0 to N)
+        for (_ <- 0 to N)
             parser.expand("a {{{<C>}}} {c|d|e|f|g|h|j|k|l|n|m|p|r}")
 
         val duration = currentTime - start
@@ -95,7 +95,7 @@ class NCMacroParserSpec  {
 
             assert(false)
         } catch {
-            case e: NCE ⇒
+            case e: NCE =>
                 println(e.getMessage)
                 assert(true)
         }

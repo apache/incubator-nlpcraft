@@ -106,10 +106,10 @@ object NCStopWordEnricher extends NCServerEnricher {
     ) {
         def matches(s: String, posOpt: Option[String]): Boolean =
             posOpt match {
-                case Some(pos) ⇒
+                case Some(pos) =>
                     !excludes.getOrElse(pos, Set.empty).contains(s) &&
                     (any.contains(s) || includes.getOrElse(pos, Set.empty).contains(s))
-                case _ ⇒ any.contains(s)
+                case _ => any.contains(s)
             }
     }
 
@@ -125,24 +125,24 @@ object NCStopWordEnricher extends NCServerEnricher {
         includes: Map[String, Set[Wildcard]],
         excludes: Map[String, Set[Wildcard]]
     ) {
-        require(!any.exists { case (begin, end) ⇒ begin.isEmpty && end.isEmpty })
+        require(!any.exists { case (begin, end) => begin.isEmpty && end.isEmpty })
 
         // Optimization for full wildcard cases (configurations like * | DT)
         private val inclPoses = filterPoses(includes)
         private val exclPoses = filterPoses(excludes)
 
         private def filterPoses(m: Map[String, Set[Wildcard]]): Set[String] =
-            m.filter { case(_, pair) ⇒ pair.exists { case (begin, end) ⇒ begin.isEmpty && end.isEmpty } }.keySet
+            m.filter { case(_, pair) => pair.exists { case (begin, end) => begin.isEmpty && end.isEmpty } }.keySet
 
         private def matches(s: String, set: Set[Wildcard]): Boolean =
-            set.exists { case (b, e) ⇒ (b.isEmpty || s.startsWith(b)) && (e.isEmpty || s.endsWith(e)) }
+            set.exists { case (b, e) => (b.isEmpty || s.startsWith(b)) && (e.isEmpty || s.endsWith(e)) }
 
         def matches(s: String, posOpt: Option[String]): Boolean =
             if (s.contains(' '))
                 false
             else
                 posOpt match {
-                    case Some(pos) ⇒
+                    case Some(pos) =>
                         !exclPoses.contains(pos) &&
                         !matches(s, excludes.getOrElse(pos, Set.empty)) &&
                         (
@@ -150,7 +150,7 @@ object NCStopWordEnricher extends NCServerEnricher {
                             matches(s, any) ||
                             matches(s, includes.getOrElse(pos, Set.empty))
                         )
-                    case _ ⇒ throw new AssertionError(s"Unexpected missed POS.")
+                    case _ => throw new AssertionError(s"Unexpected missed POS.")
                 }
     }
 
@@ -173,9 +173,9 @@ object NCStopWordEnricher extends NCServerEnricher {
         def matches(toks: Seq[NCNlpSentenceToken]): Boolean = {
             val posOpt =
                 toks.size match {
-                    case 0 ⇒ throw new AssertionError(s"Unexpected empty tokens.")
-                    case 1 ⇒ Some(toks.head.pos)
-                    case _ ⇒ None
+                    case 0 => throw new AssertionError(s"Unexpected empty tokens.")
+                    case 1 => Some(toks.head.pos)
+                    case _ => None
                 }
 
             // Hash access.
@@ -215,15 +215,15 @@ object NCStopWordEnricher extends NCServerEnricher {
                     any += cond
                 else {
                     def add(m: mutable.HashMap[String, mutable.HashSet[T]], incl: Boolean): Unit =
-                        poses.filter { case (_, isIncl) ⇒ isIncl == incl }.keys.foreach(pos ⇒
+                        poses.filter { case (_, isIncl) => isIncl == incl }.keys.foreach(pos =>
                             m.get(pos) match {
-                                case Some(set) ⇒ set.add(cond)
-                                case _ ⇒
+                                case Some(set) => set.add(cond)
+                                case _ =>
                                     val set = mutable.HashSet.empty[T]
 
                                     set += cond
 
-                                    m += pos → set
+                                    m += pos -> set
                             }
                         )
 
@@ -232,16 +232,16 @@ object NCStopWordEnricher extends NCServerEnricher {
                 }
         }
 
-        def mkEntry[T](f: WordForm, mkT: Unit ⇒ T, isExc: Boolean):((Boolean, WordForm), T) = (isExc, f) → mkT(())
-        def mkMap[T](mkT: Unit ⇒ T): Map[(Boolean, WordForm), T] =
-            WordForm.values.flatMap(f ⇒ Map(mkEntry(f, mkT, isExc = true), mkEntry(f, mkT, isExc = false))).toMap
+        def mkEntry[T](f: WordForm, mkT: Unit => T, isExc: Boolean):((Boolean, WordForm), T) = (isExc, f) -> mkT(())
+        def mkMap[T](mkT: Unit => T): Map[(Boolean, WordForm), T] =
+            WordForm.values.flatMap(f => Map(mkEntry(f, mkT, isExc = true), mkEntry(f, mkT, isExc = false))).toMap
 
         // Prepares collections.
-        val mHash = mkMap(_ ⇒ new Condition[Word]())
-        val mScan = mkMap(_ ⇒ new Condition[Wildcard]())
+        val mHash = mkMap(_ => new Condition[Word]())
+        val mScan = mkMap(_ => new Condition[Wildcard]())
 
         // 2. Accumulates data of each parsed line.
-        for (line ← lines) {
+        for (line <- lines) {
             @throws[NCE]
             def throwError(msg: String): Unit =
                 throw new NCE(s"Invalid stop word configuration [line=$line, reason=$msg]")
@@ -275,7 +275,7 @@ object NCStopWordEnricher extends NCServerEnricher {
                         map(_.trim.toUpperCase).
                         filter(_.nonEmpty).
                         toSeq.
-                        map(p ⇒ if (p.head == '~') p.drop(1).strip → false else p → true).
+                        map(p => if (p.head == '~') p.drop(1).strip -> false else p -> true).
                         toMap
                 else
                     Map.empty
@@ -333,13 +333,13 @@ object NCStopWordEnricher extends NCServerEnricher {
         }
 
         // 3. Converts data to service format.
-        def toImmutable[T](m: mutable.HashMap[String, mutable.HashSet[T]]): Map[String, Set[T]] = m.map(p ⇒ p._1 → p._2.toSet).toMap
+        def toImmutable[T](m: mutable.HashMap[String, mutable.HashSet[T]]): Map[String, Set[T]] = m.map(p => p._1 -> p._2.toSet).toMap
 
-        Seq(true, false).map(isExc ⇒ {
+        Seq(true, false).map(isExc => {
             def mkHolder[T, R](
                 m: Map[(Boolean, WordForm), Condition[T]],
                 form: WordForm,
-                mkInstance: (Set[T], Map[String, Set[T]], Map[String, Set[T]]) ⇒ R): R = {
+                mkInstance: (Set[T], Map[String, Set[T]], Map[String, Set[T]]) => R): R = {
 
                 val any = m((isExc, form)).any.toSet
                 val incl = toImmutable(m((isExc, form)).includes)
@@ -351,7 +351,7 @@ object NCStopWordEnricher extends NCServerEnricher {
             def mkHash(form: WordForm): HashHolder = mkHolder(mHash, form, HashHolder)
             def mkScan(form: WordForm): ScanHolder = mkHolder(mScan, form, ScanHolder)
 
-            isExc → StopWordHolder(mkHash(STEM), mkHash(LEM), mkHash(ORIG), mkScan(LEM), mkScan(ORIG))
+            isExc -> StopWordHolder(mkHash(STEM), mkHash(LEM), mkHash(ORIG), mkScan(LEM), mkScan(ORIG))
         }).toMap
     }
 
@@ -367,18 +367,18 @@ object NCStopWordEnricher extends NCServerEnricher {
      */
     @tailrec
     private def markBefore(
-        ns: NCNlpSentence, stopPoses: Seq[String], lastIdx: Int, isException: Seq[NCNlpSentenceToken] ⇒ Boolean
+        ns: NCNlpSentence, stopPoses: Seq[String], lastIdx: Int, isException: Seq[NCNlpSentenceToken] => Boolean
     ): Boolean = {
         var stop = true
 
         for (
-            (tok, idx) ← ns.zipWithIndex
+            (tok, idx) <- ns.zipWithIndex
             if idx != lastIdx &&
                 !tok.isStopWord &&
                 !isException(Seq(tok)) &&
                 stopPoses.contains(tok.pos) &&
                 ns(idx + 1).isStopWord) {
-            ns.fixNote(tok.getNlpNote, "stopWord" → true)
+            ns.fixNote(tok.getNlpNote, "stopWord" -> true)
 
             stop = false
         }
@@ -393,13 +393,13 @@ object NCStopWordEnricher extends NCServerEnricher {
      * @param cache Cache map.
      * @param get Calculation method based on given tokens.
      */
-    private def exists(toks: Seq[NCNlpSentenceToken], cache: mutable.HashMap[Seq[NCNlpSentenceToken], Boolean], get: Seq[NCNlpSentenceToken] ⇒ Boolean): Boolean =
+    private def exists(toks: Seq[NCNlpSentenceToken], cache: mutable.HashMap[Seq[NCNlpSentenceToken], Boolean], get: Seq[NCNlpSentenceToken] => Boolean): Boolean =
         cache.get(toks) match {
-            case Some(b) ⇒ b
-            case None ⇒
+            case Some(b) => b
+            case None =>
                 val b = get(toks)
 
-                cache += toks → b
+                cache += toks -> b
 
                 b
         }
@@ -414,7 +414,7 @@ object NCStopWordEnricher extends NCServerEnricher {
 
         def process(): Unit =
             ns.filter(!_.isQuoted).find(isBR) match {
-                case Some(t) ⇒
+                case Some(t) =>
                     // Invalid sentence if first bracket is right.
                     if (isRBR(t))
                         throw new NCE("Invalid left bracket")
@@ -432,7 +432,7 @@ object NCStopWordEnricher extends NCServerEnricher {
 
                     val buf = mutable.Buffer.empty[NCNlpSentenceToken]
 
-                    for (tok ← copy) {
+                    for (tok <- copy) {
                         if (isLBR(tok) && !tok.isQuoted) {
                             inBrackets = true
 
@@ -446,7 +446,7 @@ object NCStopWordEnricher extends NCServerEnricher {
                             val newTok = tok.clone(idx)
 
                             def replace(nt: String): Unit =
-                                newTok.getNotes(nt).map(n ⇒ (n, n.clone(Seq(idx), Seq(idx)))).foreach(p ⇒ {
+                                newTok.getNotes(nt).map(n => (n, n.clone(Seq(idx), Seq(idx)))).foreach(p => {
                                     newTok.remove(p._1)
                                     newTok.add(p._2)
                                 })
@@ -457,7 +457,7 @@ object NCStopWordEnricher extends NCServerEnricher {
                             // NLP note special case because has index field.
                             ns += newTok
 
-                            ns.fixNote(newTok.getNlpNote, "index" → idx)
+                            ns.fixNote(newTok.getNlpNote, "index" -> idx)
                         }
 
                         if (isRBR(tok) && !tok.isQuoted)
@@ -472,7 +472,7 @@ object NCStopWordEnricher extends NCServerEnricher {
                                     inBrackets = false
 
                                 if (!inBrackets) {
-                                    val origText = mkSumString(buf, (t: NCNlpSentenceToken) ⇒ t.origText)
+                                    val origText = mkSumString(buf, (t: NCNlpSentenceToken) => t.origText)
 
                                     val head = buf.head
                                     val last = buf.last
@@ -486,19 +486,19 @@ object NCStopWordEnricher extends NCServerEnricher {
                                     val note = NCNlpSentenceNote(
                                         Seq(idx),
                                         "nlpcraft:nlp",
-                                        "pos" → NCPennTreebank.SYNTH_POS,
-                                        "posDesc" → NCPennTreebank.SYNTH_POS_DESC,
-                                        "lemma" → mkSumString(buf, (t: NCNlpSentenceToken) ⇒ t.lemma),
-                                        "origText" → origText,
-                                        "normText" → mkSumString(buf, (t: NCNlpSentenceToken) ⇒ t.normText),
-                                        "stem" → mkSumString(buf, (t: NCNlpSentenceToken) ⇒ t.stem),
-                                        "start" → head.startCharIndex,
-                                        "end" → last.endCharIndex,
-                                        "charLength" → origText.length,
-                                        "quoted" → isBodyQuoted,
-                                        "stopWord" → false,
-                                        "bracketed" → true,
-                                        "direct" → buf.forall(_.isDirect)
+                                        "pos" -> NCPennTreebank.SYNTH_POS,
+                                        "posDesc" -> NCPennTreebank.SYNTH_POS_DESC,
+                                        "lemma" -> mkSumString(buf, (t: NCNlpSentenceToken) => t.lemma),
+                                        "origText" -> origText,
+                                        "normText" -> mkSumString(buf, (t: NCNlpSentenceToken) => t.normText),
+                                        "stem" -> mkSumString(buf, (t: NCNlpSentenceToken) => t.stem),
+                                        "start" -> head.startCharIndex,
+                                        "end" -> last.endCharIndex,
+                                        "charLength" -> origText.length,
+                                        "quoted" -> isBodyQuoted,
+                                        "stopWord" -> false,
+                                        "bracketed" -> true,
+                                        "direct" -> buf.forall(_.isDirect)
                                     )
 
                                     val newTok = NCNlpSentenceToken(idx)
@@ -516,13 +516,13 @@ object NCStopWordEnricher extends NCServerEnricher {
                         throw new NCE("Missed right bracket")
 
                 // Sentence doesn't contain any brackets.
-                case None ⇒ // No-op.
+                case None => // No-op.
             }
 
         try
             process()
         catch {
-            case e: NCE ⇒
+            case e: NCE =>
                 logger.trace(s"Brackets processing error: ${e.getMessage}")
 
                 ns.clear()
@@ -537,7 +537,7 @@ object NCStopWordEnricher extends NCServerEnricher {
         // This stage must not be 1st enrichment stage.
         assume(ns.nonEmpty)
     
-        startScopedSpan("enrich", parent, "srvReqId" → ns.srvReqId, "txt" → ns.text) { _ ⇒
+        startScopedSpan("enrich", parent, "srvReqId" -> ns.srvReqId, "txt" -> ns.text) { _ =>
             // +---------------------------------+
             // | Pass #1.                        |
             // | Brackets processing.            |
@@ -552,7 +552,7 @@ object NCStopWordEnricher extends NCServerEnricher {
     
             def isException(toks: Seq[NCNlpSentenceToken]): Boolean = exists(toks, cacheEx, exceptions.matches)
     
-            for (p ← ns.zipWithIndex) {
+            for (p <- ns.zipWithIndex) {
                 val tok = p._1
                 val idx = p._2
                 val pos = tok.pos
@@ -588,7 +588,7 @@ object NCStopWordEnricher extends NCServerEnricher {
                     // be, was, is etc. or have done etc.
                     isCommonVerbs("have", "do")
                 if (stop)
-                    ns.fixNote(tok.getNlpNote, "stopWord" → true)
+                    ns.fixNote(tok.getNlpNote, "stopWord" -> true)
             }
             // +--------------------------------------+
             // | Pass #3.                             |
@@ -597,20 +597,20 @@ object NCStopWordEnricher extends NCServerEnricher {
             val buf = mutable.Buffer.empty[Seq[NCNlpSentenceToken]]
             val mix = ns.tokenMixWithStopWords()
             
-            for (toks ← mix if !buf.exists(_.containsSlice(toks)) && isStop(toks) && !isException(toks)) {
-                toks.foreach(tok ⇒ ns.fixNote(tok.getNlpNote, "stopWord" → true))
+            for (toks <- mix if !buf.exists(_.containsSlice(toks)) && isStop(toks) && !isException(toks)) {
+                toks.foreach(tok => ns.fixNote(tok.getNlpNote, "stopWord" -> true))
                 buf += toks
             }
             
             // Capture the token mix at this point minus the initial stop words found up to this point.
-            val origToks: Seq[(Seq[NCNlpSentenceToken], String)] = (for (toks ← mix) yield toks).map(s ⇒ s → toStemKey(s))
+            val origToks: Seq[(Seq[NCNlpSentenceToken], String)] = (for (toks <- mix) yield toks).map(s => s -> toStemKey(s))
     
             // +--------------------------------------------+
             // | Pass #4.                                   |
             // | Check external possessive stop-word file.  |
             // +--------------------------------------------+
-            for (tup ← origToks; key = tup._2 if possessiveWords.contains(key) && !isException(tup._1))
-                tup._1.foreach(tok ⇒ ns.fixNote(tok.getNlpNote, "stopWord" → true))
+            for (tup <- origToks; key = tup._2 if possessiveWords.contains(key) && !isException(tup._1))
+                tup._1.foreach(tok => ns.fixNote(tok.getNlpNote, "stopWord" -> true))
             
             // +--------------------------------------------------+
             // | Pass #5.                                         |
@@ -620,10 +620,10 @@ object NCStopWordEnricher extends NCServerEnricher {
             val foundKeys = new mutable.HashSet[String]()
             
             // All sentence first stop words + first non stop word.
-            val startToks = ns.takeWhile(_.isStopWord) ++ ns.find(!_.isStopWord).map(p ⇒ p)
-            for (startTok ← startToks; tup ← origToks.filter(_._1.head == startTok); key = tup._2
+            val startToks = ns.takeWhile(_.isStopWord) ++ ns.find(!_.isStopWord).map(p => p)
+            for (startTok <- startToks; tup <- origToks.filter(_._1.head == startTok); key = tup._2
                 if firstWords.contains(key) && !isException(tup._1)) {
-                tup._1.foreach(tok ⇒ ns.fixNote(tok.getNlpNote, "stopWord" → true))
+                tup._1.foreach(tok => ns.fixNote(tok.getNlpNote, "stopWord" -> true))
                 foundKeys += key
             }
     
@@ -631,12 +631,12 @@ object NCStopWordEnricher extends NCServerEnricher {
             // | Pass #6.                                        |
             // | Check for sentence beginners with ending nouns. |
             // +-------------------------------------------------+
-            for (tup ← origToks; key = tup._2 if !foundKeys.contains(key) && !isException(tup._1))
+            for (tup <- origToks; key = tup._2 if !foundKeys.contains(key) && !isException(tup._1))
                 foundKeys.find(key.startsWith) match {
-                    case Some(s) ⇒
+                    case Some(s) =>
                         if (nounWords.contains(key.substring(s.length).strip))
-                            tup._1.foreach(tok ⇒ ns.fixNote(tok.getNlpNote, "stopWord" → true))
-                    case None ⇒ ()
+                            tup._1.foreach(tok => ns.fixNote(tok.getNlpNote, "stopWord" -> true))
+                    case None => ()
                 }
     
             // +-------------------------------------------------+
@@ -654,7 +654,7 @@ object NCStopWordEnricher extends NCServerEnricher {
      * @return
      */
     @throws[NCE]
-    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ =>
         ackStarting()
 
         percents = Set(
@@ -678,7 +678,7 @@ object NCStopWordEnricher extends NCServerEnricher {
         val m =
             readStopWords(
                 U.readResource("stopwords/stop_words.txt", "UTF-8", logger).
-                    map(_.strip).filter(s ⇒ s.nonEmpty && !s.startsWith("#")).toSeq
+                    map(_.strip).filter(s => s.nonEmpty && !s.startsWith("#")).toSeq
             )
 
         stopWords = m(false)
@@ -691,7 +691,7 @@ object NCStopWordEnricher extends NCServerEnricher {
      *
      * @param parent Optional parent span.
      */
-    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
         ackStopped()
     }

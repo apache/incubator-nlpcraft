@@ -65,7 +65,7 @@ object NCSuggestSynonymManager extends NCService {
     }
 
     private final val HANDLER: ResponseHandler[Seq[Seq[Suggestion]]] =
-        (resp: HttpResponse) ⇒ {
+        (resp: HttpResponse) => {
             val code = resp.getStatusLine.getStatusCode
             val e = resp.getEntity
 
@@ -75,12 +75,12 @@ object NCSuggestSynonymManager extends NCService {
                 throw new NCE(s"Unexpected empty HTTP response from `ctxword` server [code=$code]")
 
             code match {
-                case 200 ⇒
+                case 200 =>
                     val data: util.List[util.List[Suggestion]] = GSON.fromJson(js, TYPE_RESP)
 
-                    data.asScala.map(p ⇒ if (p.isEmpty) Seq.empty else p.asScala.tail)
+                    data.asScala.map(p => if (p.isEmpty) Seq.empty else p.asScala.tail)
 
-                case _ ⇒
+                case _ =>
                     throw new NCE(
                     s"Unexpected HTTP response from `ctxword` server [" +
                     s"code=$code, " +
@@ -97,7 +97,7 @@ object NCSuggestSynonymManager extends NCService {
     case class Word(word: String, stem: String) {
         require(!word.contains(" "), s"Word cannot contains spaces: $word")
         require(
-            word.forall(ch ⇒
+            word.forall(ch =>
                 ch.isLetterOrDigit ||
                 ch == '\'' ||
                 SEPARATORS.contains(ch)
@@ -138,13 +138,13 @@ object NCSuggestSynonymManager extends NCService {
      * @return
      */
     def suggest(mdlId: String, minScoreOpt: Option[Double], parent: Span = null): Future[NCSuggestSynonymResult] =
-        startScopedSpan("inspect", parent, "mdlId" → mdlId) { _ ⇒
+        startScopedSpan("inspect", parent, "mdlId" -> mdlId) { _ =>
             val now = System.currentTimeMillis()
 
             val promise = Promise[NCSuggestSynonymResult]()
 
             NCProbeManager.getModelInfo(mdlId, parent).onComplete {
-                case Success(m) ⇒
+                case Success(m) =>
                     try {
                         require(
                             m.containsKey("macros") &&
@@ -155,10 +155,10 @@ object NCSuggestSynonymManager extends NCService {
                         val mdlMacros = m.get("macros").
                             asInstanceOf[util.Map[String, String]].asScala
                         val mdlSyns = m.get("synonyms").
-                            asInstanceOf[util.Map[String, util.List[String]]].asScala.map(p ⇒ p._1 → p._2.asScala)
+                            asInstanceOf[util.Map[String, util.List[String]]].asScala.map(p => p._1 -> p._2.asScala)
                         val mdlExs = m.get("samples").
                             asInstanceOf[util.Map[String, util.List[util.List[String]]]].asScala.
-                            map(p ⇒ p._1 → p._2.asScala.flatMap(_.asScala.toSeq).distinct)
+                            map(p => p._1 -> p._2.asScala.flatMap(_.asScala.toSeq).distinct)
 
                         val minScore = minScoreOpt.getOrElse(DFLT_MIN_SCORE)
 
@@ -180,7 +180,7 @@ object NCSuggestSynonymManager extends NCService {
                         else {
                             val url = s"${Config.urlOpt.getOrElse(throw new NCE("Context word server is not configured."))}/suggestions"
 
-                            val allSamplesCnt = mdlExs.map { case (_, samples) ⇒ samples.size }.sum
+                            val allSamplesCnt = mdlExs.map { case (_, samples) => samples.size }.sum
 
                             val warns = mutable.ArrayBuffer.empty[String]
 
@@ -192,8 +192,8 @@ object NCSuggestSynonymManager extends NCService {
                             else {
                                 val ids =
                                     mdlExs.
-                                        filter { case (_, samples) ⇒ samples.size < MIN_CNT_INTENT }.
-                                        map { case (intentId, _) ⇒ intentId }
+                                        filter { case (_, samples) => samples.size < MIN_CNT_INTENT }.
+                                        map { case (intentId, _) => intentId }
 
                                 if (ids.nonEmpty)
                                     warns +=
@@ -203,36 +203,36 @@ object NCSuggestSynonymManager extends NCService {
 
                             val parser = new NCMacroParser()
 
-                            mdlMacros.foreach { case (name, str) ⇒ parser.addMacro(name, str) }
+                            mdlMacros.foreach { case (name, str) => parser.addMacro(name, str) }
 
                             // Note that we don't use system tokenizer, because 'ctxword' module' doesn't have this tokenizer.
                             // We split examples words by spaces. We also treat separator as separate words.
 
                             val exs = mdlExs.
-                                flatMap { case (_, samples) ⇒ samples }.
-                                map(ex ⇒ SEPARATORS.foldLeft(ex)((s, ch) ⇒ s.replaceAll(s"\\$ch", s" $ch "))).
-                                map(ex ⇒ {
+                                flatMap { case (_, samples) => samples }.
+                                map(ex => SEPARATORS.foldLeft(ex)((s, ch) => s.replaceAll(s"\\$ch", s" $ch "))).
+                                map(ex => {
                                     val seq = ex.split(" ")
 
-                                    seq → seq.map(toStemWord)
+                                    seq -> seq.map(toStemWord)
                                 }).
                                 toMap
 
                             val elemSyns =
-                                mdlSyns.map { case (elemId, syns) ⇒ elemId → syns.flatMap(parser.expand) }.
-                                    map { case (id, seq) ⇒ id → seq.map(txt ⇒ split(txt).map(p ⇒ Word(p, toStemWord(p)))) }
+                                mdlSyns.map { case (elemId, syns) => elemId -> syns.flatMap(parser.expand) }.
+                                    map { case (id, seq) => id -> seq.map(txt => split(txt).map(p => Word(p, toStemWord(p)))) }
 
                             val allReqs =
                                 elemSyns.map {
-                                    case (elemId, syns) ⇒
+                                    case (elemId, syns) =>
                                         // Current implementation supports suggestions only for single words synonyms.
                                         val normSyns: Seq[Seq[Word]] = syns.filter(_.size == 1)
                                         val synsStems = normSyns.map(_.map(_.stem))
                                         val synsWords = normSyns.map(_.map(_.word))
 
                                         val reqs =
-                                            exs.flatMap { case (exWords, exampleStems) ⇒
-                                                val exIdxs = synsStems.flatMap(synStems ⇒ getAllSlices(exampleStems, synStems))
+                                            exs.flatMap { case (exWords, exampleStems) =>
+                                                val exIdxs = synsStems.flatMap(synStems => getAllSlices(exampleStems, synStems))
 
                                                 def mkRequestData(idx: Int, synStems: Seq[String], synStemsIdx: Int): RequestData = {
                                                     val fromIncl = idx
@@ -240,11 +240,11 @@ object NCSuggestSynonymManager extends NCService {
 
                                                     RequestData(
                                                         sentence = exWords.zipWithIndex.flatMap {
-                                                            case (exWord, i) ⇒
+                                                            case (exWord, i) =>
                                                                 i match {
-                                                                    case x if x == fromIncl ⇒ synsWords(synStemsIdx)
-                                                                    case x if x > fromIncl && x < toExcl ⇒ Seq.empty
-                                                                    case _ ⇒ Seq(exWord)
+                                                                    case x if x == fromIncl => synsWords(synStemsIdx)
+                                                                    case x if x > fromIncl && x < toExcl => Seq.empty
+                                                                    case _ => Seq(exWord)
                                                                 }
                                                         }.mkString(" "),
                                                         ex = exWords.mkString(" "),
@@ -253,17 +253,17 @@ object NCSuggestSynonymManager extends NCService {
                                                     )
                                                 }
 
-                                                (for (idx ← exIdxs; (synStems, i) ← synsStems.zipWithIndex)
+                                                (for (idx <- exIdxs; (synStems, i) <- synsStems.zipWithIndex)
                                                     yield mkRequestData(idx, synStems, i)).distinct
                                             }
 
-                                        elemId → reqs.toSet
+                                        elemId -> reqs.toSet
                                 }.filter(_._2.nonEmpty)
 
                             val noExElems =
                                 mdlSyns.
-                                    filter { case (elemId, syns) ⇒ syns.nonEmpty && !allReqs.contains(elemId) }.
-                                    map { case (elemId, _) ⇒ elemId }
+                                    filter { case (elemId, syns) => syns.nonEmpty && !allReqs.contains(elemId) }.
+                                    map { case (elemId, _) => elemId }
 
                             if (noExElems.nonEmpty)
                                 warns += s"Elements do not have *single word* synonyms in their @NCIntentSample - " +
@@ -289,9 +289,9 @@ object NCSuggestSynonymManager extends NCService {
                                 val cli = HttpClients.createDefault
                                 val err = new AtomicReference[Throwable]()
 
-                                for ((elemId, reqs) ← allReqs; batch ← reqs.sliding(BATCH_SIZE, BATCH_SIZE).map(_.toSeq)) {
+                                for ((elemId, reqs) <- allReqs; batch <- reqs.sliding(BATCH_SIZE, BATCH_SIZE).map(_.toSeq)) {
                                     U.asFuture(
-                                        _ ⇒ {
+                                        _ => {
                                             val post = new HttpPost(url)
 
                                             post.setHeader("Content-Type", "application/json")
@@ -299,7 +299,7 @@ object NCSuggestSynonymManager extends NCService {
                                                 new StringEntity(
                                                     GSON.toJson(
                                                         RestRequest(
-                                                            sentences = batch.map(p ⇒ RestRequestSentence(p.sentence, Seq(p.index).asJava)).asJava,
+                                                            sentences = batch.map(p => RestRequestSentence(p.sentence, Seq(p.index).asJava)).asJava,
                                                             minScore = 0,
                                                             limit = MAX_LIMIT
                                                         )
@@ -315,25 +315,25 @@ object NCSuggestSynonymManager extends NCService {
 
                                             require(batch.size == resps.size, s"Batch: ${batch.size}, responses: ${resps.size}")
 
-                                            batch.zip(resps).foreach { case (req, resp) ⇒ debugs += req → resp }
+                                            batch.zip(resps).foreach { case (req, resp) => debugs += req -> resp }
 
                                             val i = cnt.addAndGet(batch.size)
 
                                             logger.debug(s"Executed: $i requests...")
 
                                             allSgsts.
-                                                computeIfAbsent(elemId, (_: String) ⇒ new CopyOnWriteArrayList[Suggestion]()).
+                                                computeIfAbsent(elemId, (_: String) => new CopyOnWriteArrayList[Suggestion]()).
                                                 addAll(resps.flatten.asJava)
 
                                             if (i == allReqsCnt)
                                                 cdl.countDown()
                                         },
-                                        (e: Throwable) ⇒ {
+                                        (e: Throwable) => {
                                             err.compareAndSet(null, e)
 
                                             cdl.countDown()
                                         },
-                                        (_: Unit) ⇒ ()
+                                        (_: Unit) => ()
                                     )
                                 }
 
@@ -344,34 +344,34 @@ object NCSuggestSynonymManager extends NCService {
 
                                 val allSynsStems = elemSyns.flatMap(_._2).flatten.map(_.stem).toSet
 
-                                val nonEmptySgsts = allSgsts.asScala.map(p ⇒ p._1 → p._2.asScala).filter(_._2.nonEmpty)
+                                val nonEmptySgsts = allSgsts.asScala.map(p => p._1 -> p._2.asScala).filter(_._2.nonEmpty)
 
                                 val res = mutable.HashMap.empty[String, mutable.ArrayBuffer[SuggestionResult]]
 
-                                nonEmptySgsts.foreach { case (elemId, elemSgsts) ⇒
+                                nonEmptySgsts.foreach { case (elemId, elemSgsts) =>
                                     elemSgsts.
-                                        map(sgst ⇒ (sgst, toStem(sgst.word))).
-                                        groupBy { case (_, stem) ⇒ stem }.
+                                        map(sgst => (sgst, toStem(sgst.word))).
+                                        groupBy { case (_, stem) => stem }.
                                         // Drops already defined.
-                                        filter { case (stem, _) ⇒ !allSynsStems.contains(stem) }.
-                                        map { case (_, group) ⇒
-                                            val seq = group.map { case (sgst, _) ⇒ sgst }.sortBy(-_.score)
+                                        filter { case (stem, _) => !allSynsStems.contains(stem) }.
+                                        map { case (_, group) =>
+                                            val seq = group.map { case (sgst, _) => sgst }.sortBy(-_.score)
 
                                             // Drops repeated.
                                             (seq.head.word, seq.length, seq.map(_.score).sum / seq.size)
                                         }.
                                         toSeq.
-                                        map { case (sgst, cnt, score) ⇒ (sgst, cnt, score * cnt / elemSgsts.size) }.
-                                        sortBy { case (_, _, sumFactor) ⇒ -sumFactor }.
+                                        map { case (sgst, cnt, score) => (sgst, cnt, score * cnt / elemSgsts.size) }.
+                                        sortBy { case (_, _, sumFactor) => -sumFactor }.
                                         zipWithIndex.
-                                        foreach { case ((word, _, sumFactor), _) ⇒
+                                        foreach { case ((word, _, sumFactor), _) =>
                                             val seq =
                                                 res.get(elemId) match {
-                                                    case Some(seq) ⇒ seq
-                                                    case None ⇒
+                                                    case Some(seq) => seq
+                                                    case None =>
                                                         val buf = mutable.ArrayBuffer.empty[SuggestionResult]
 
-                                                        res += elemId → buf
+                                                        res += elemId -> buf
 
                                                         buf
                                                 }
@@ -381,7 +381,7 @@ object NCSuggestSynonymManager extends NCService {
                                 }
 
                                 val resJ: util.Map[String, util.List[util.HashMap[String, Any]]] =
-                                    res.map { case (id, data) ⇒
+                                    res.map { case (id, data) =>
                                         val norm =
                                             if (data.nonEmpty) {
                                                 val factors = data.map(_.score)
@@ -396,13 +396,13 @@ object NCSuggestSynonymManager extends NCService {
                                                 def normalize(v: Double): Double = (v - min) / delta
 
                                                 data.
-                                                    map(s ⇒ SuggestionResult(s.synonym, normalize(s.score))).
+                                                    map(s => SuggestionResult(s.synonym, normalize(s.score))).
                                                     filter(_.score >= minScore)
                                             }
                                             else
                                                 Seq.empty
 
-                                        id → norm.map(d ⇒ {
+                                        id -> norm.map(d => {
                                             val m = new util.HashMap[String, Any]()
 
                                             m.put("synonym", d.synonym.toLowerCase)
@@ -427,13 +427,13 @@ object NCSuggestSynonymManager extends NCService {
                         }
                     }
                     catch {
-                        case e: NCE ⇒ promise.failure(e)
-                        case e: Throwable ⇒
+                        case e: NCE => promise.failure(e)
+                        case e: Throwable =>
                             U.prettyError(logger, "Unexpected error:", e)
 
                             promise.failure(e)
                     }
-                case Failure(e) ⇒ promise.failure(e)
+                case Failure(e) => promise.failure(e)
             }
 
             promise.future
@@ -444,7 +444,7 @@ object NCSuggestSynonymManager extends NCService {
      * @param parent Optional parent span.
      * @return
      */
-    override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ ⇒
+    override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ =>
         ackStarting()
         ackStarted()
     }
@@ -453,7 +453,7 @@ object NCSuggestSynonymManager extends NCService {
      *
      * @param parent Optional parent span.
      */
-    override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
+    override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
         ackStopped()
     }

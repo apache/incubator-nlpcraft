@@ -17,7 +17,7 @@
 
 package org.apache.nlpcraft.server.nlp.enrichers.date
 
-import java.util.{Locale, Calendar ⇒ C}
+import java.util.{Locale, Calendar => C}
 import scala.collection.JavaConverters._
 import org.apache.nlpcraft.common._
 
@@ -51,34 +51,34 @@ object NCDateParser {
     private val NUM_MONTH_MAP: Map[Int, Int] = zipIndexValue(CAL_MONTHS)
 
     private val QUARTERS_BEGIN = Map(
-        1 → C.JANUARY,
-        2 → C.APRIL,
-        3 → C.JULY,
-        4 → C.OCTOBER
+        1 -> C.JANUARY,
+        2 -> C.APRIL,
+        3 -> C.JULY,
+        4 -> C.OCTOBER
     )
 
-    private val QUARTERS: Map[Int, Int] = NUM_MONTH_MAP.map(m ⇒ m._1 → (m._2 / 3 + 1))
+    private val QUARTERS: Map[Int, Int] = NUM_MONTH_MAP.map(m => m._1 -> (m._2 / 3 + 1))
 
     private val SEASONS = Map(
-        C.DECEMBER → 1,
-        C.JANUARY → 1,
-        C.FEBRUARY → 1,
-        C.MARCH → 2,
-        C.APRIL → 2,
-        C.MAY → 2,
-        C.JUNE → 3,
-        C.JULY → 3,
-        C.AUGUST → 3,
-        C.SEPTEMBER → 4,
-        C.OCTOBER → 4,
-        C.NOVEMBER → 4
+        C.DECEMBER -> 1,
+        C.JANUARY -> 1,
+        C.FEBRUARY -> 1,
+        C.MARCH -> 2,
+        C.APRIL -> 2,
+        C.MAY -> 2,
+        C.JUNE -> 3,
+        C.JULY -> 3,
+        C.AUGUST -> 3,
+        C.SEPTEMBER -> 4,
+        C.OCTOBER -> 4,
+        C.NOVEMBER -> 4
     )
 
     private val SEASONS_BEGIN = Map(
-        1 → C.DECEMBER,
-        2 → C.MARCH,
-        3 → C.JUNE,
-        4 → C.SEPTEMBER
+        1 -> C.DECEMBER,
+        2 -> C.MARCH,
+        3 -> C.JUNE,
+        4 -> C.SEPTEMBER
     )
 
     // USA week.
@@ -93,15 +93,15 @@ object NCDateParser {
     )
 
     private val PERIODS_WEIGHT = Map(
-        "d" → 1,
-        "dw" → 1,
-        "w" → 2,
-        "m" → 3,
-        "q" → 4,
-        "s" → 4,
-        "y" → 5,
-        "e" → 6,
-        "c" → 7
+        "d" -> 1,
+        "dw" -> 1,
+        "w" -> 2,
+        "m" -> 3,
+        "q" -> 4,
+        "s" -> 4,
+        "y" -> 5,
+        "e" -> 6,
+        "c" -> 7
     )
 
     private val NUM_WEEK_DAYS_MAP: Map[Int, Int] = zipIndexValue(WEEK_DAYS)
@@ -111,7 +111,7 @@ object NCDateParser {
 
         seq.length match {
             // from d1
-            case _ if f.startsWith(":") ⇒
+            case _ if f.startsWith(":") =>
                 val res = calculatePart(f.drop(1), base)
 
                 val to = mkTo(res, inclTo)
@@ -119,7 +119,7 @@ object NCDateParser {
                 NCDateRange(NCDateRange.MIN_VALUE, to, f, (Seq(":") ++ res.periods).asJava)
 
             // to d2
-            case _ if f.endsWith(":") ⇒
+            case _ if f.endsWith(":") =>
                 val res = calculatePart(f.take(f.length - 1), base)
 
                 var from = mkFrom(res, inclFrom)
@@ -130,7 +130,7 @@ object NCDateParser {
                 NCDateRange(from, NCDateRange.MAX_VALUE, f, (res.periods :+ ":").asJava)
 
             // between d1 and d2
-            case 2 ⇒
+            case 2 =>
                 val part1 = seq.head
                 val part2 = seq.last
 
@@ -173,25 +173,25 @@ object NCDateParser {
                     tryUsingWeights()
                 else
                     NCDateRange(d1, d2, f, sumPeriods.asJava)
-            case _ ⇒
+            case _ =>
                 val res = calculatePart(f, base)
     
                 NCDateRange(res.from, res.to, f, res.periods.asJava)
         }
     }
 
-    private def zipIndexValue[T](seq: Seq[T]): Map[Int, T] = seq.zipWithIndex.map(p ⇒ (p._2 + 1) → p._1).toMap
+    private def zipIndexValue[T](seq: Seq[T]): Map[Int, T] = seq.zipWithIndex.map(p => (p._2 + 1) -> p._1).toMap
 
-    private def zipValueIndex[T](seq: Seq[T]): Map[T, Int] = seq.zipWithIndex.map(p ⇒ p._1 → (p._2 + 1)).toMap
+    private def zipValueIndex[T](seq: Seq[T]): Map[T, Int] = seq.zipWithIndex.map(p => p._1 -> (p._2 + 1)).toMap
 
     private def set(cal: C, pairs: (Int, Int)*): C = {
-        for (pair ← pairs) cal.set(pair._1, pair._2)
+        for (pair <- pairs) cal.set(pair._1, pair._2)
 
         cal
     }
 
     private def add(cal: C, pairs: (Int, Int)*): C = {
-        for (pair ← pairs) cal.add(pair._1, pair._2)
+        for (pair <- pairs) cal.add(pair._1, pair._2)
 
         cal
     }
@@ -204,10 +204,10 @@ object NCDateParser {
 
         set(
             cal,
-            C.HOUR_OF_DAY → 0,
-            C.MINUTE → 0,
-            C.SECOND → 0,
-            C.MILLISECOND → 0
+            C.HOUR_OF_DAY -> 0,
+            C.MINUTE -> 0,
+            C.SECOND -> 0,
+            C.MILLISECOND -> 0
         )
     }
 
@@ -215,12 +215,12 @@ object NCDateParser {
 
     private def mkFrom(period: String, opt: Option[Int], d: Long): Long =
         opt match {
-            case Some(v) ⇒ mkFrom(period, v, d)
-            case None ⇒ mkFrom(period, d)
+            case Some(v) => mkFrom(period, v, d)
+            case None => mkFrom(period, d)
         }
 
     // Winter starts in previous year.
-    private def adjustWinter(season: Int, cal: C) = if (season == 1) add(cal, C.YEAR → -1)
+    private def adjustWinter(season: Int, cal: C) = if (season == 1) add(cal, C.YEAR -> -1)
 
     private def mkFrom(period: String, d: Long): Long = {
         val cal = mkCalendar(Some(d))
@@ -228,36 +228,36 @@ object NCDateParser {
         def set0(pairs: (Int, Int)*): C = set(cal, pairs: _*)
 
         (period match {
-            case "d" | "dw" ⇒ cal
-            case "w" ⇒ set0(C.DAY_OF_WEEK → FIRST_DAY_OF_WEEK)
-            case "m" ⇒ set0(C.DAY_OF_MONTH → 1)
-            case "q" ⇒ set0(
-                C.MONTH → QUARTERS_BEGIN(QUARTERS(MONTH_NUM_MAP(cal.get(C.MONTH)))),
-                C.DAY_OF_MONTH → 1
+            case "d" | "dw" => cal
+            case "w" => set0(C.DAY_OF_WEEK -> FIRST_DAY_OF_WEEK)
+            case "m" => set0(C.DAY_OF_MONTH -> 1)
+            case "q" => set0(
+                C.MONTH -> QUARTERS_BEGIN(QUARTERS(MONTH_NUM_MAP(cal.get(C.MONTH)))),
+                C.DAY_OF_MONTH -> 1
             )
-            case "y" ⇒ set0(
-                C.MONTH → C.JANUARY,
-                C.DAY_OF_YEAR → 1
+            case "y" => set0(
+                C.MONTH -> C.JANUARY,
+                C.DAY_OF_YEAR -> 1
             )
-            case "e" ⇒
+            case "e" =>
                 set0(
-                    C.YEAR → (cal.get(C.YEAR) / 10 * 10 + 1),
-                    C.MONTH → C.JANUARY,
-                    C.DAY_OF_YEAR → 1
+                    C.YEAR -> (cal.get(C.YEAR) / 10 * 10 + 1),
+                    C.MONTH -> C.JANUARY,
+                    C.DAY_OF_YEAR -> 1
                 )
-            case "c" ⇒ set0(
-                C.YEAR → (cal.get(C.YEAR) / 100 * 100 + (if (cal.get(C.YEAR) < 100) 0 else 1)),
-                C.MONTH → C.JANUARY,
-                C.DAY_OF_YEAR → 1
+            case "c" => set0(
+                C.YEAR -> (cal.get(C.YEAR) / 100 * 100 + (if (cal.get(C.YEAR) < 100) 0 else 1)),
+                C.MONTH -> C.JANUARY,
+                C.DAY_OF_YEAR -> 1
             )
-            case "s" ⇒
+            case "s" =>
                 val s = SEASONS(cal.get(C.MONTH))
 
                 adjustWinter(s, cal)
 
                 set0(
-                    C.MONTH → SEASONS_BEGIN(s),
-                    C.DAY_OF_MONTH → 1
+                    C.MONTH -> SEASONS_BEGIN(s),
+                    C.DAY_OF_MONTH -> 1
                 )
 
         }).getTimeInMillis
@@ -269,42 +269,42 @@ object NCDateParser {
         def set0(pairs: (Int, Int)*): C = set(cal, pairs: _*)
 
         (period match {
-            case "d" ⇒ set0(C.DAY_OF_MONTH → v)
-            case "w" ⇒ set0(
-                C.DAY_OF_WEEK → FIRST_DAY_OF_WEEK,
-                C.WEEK_OF_MONTH → v
+            case "d" => set0(C.DAY_OF_MONTH -> v)
+            case "w" => set0(
+                C.DAY_OF_WEEK -> FIRST_DAY_OF_WEEK,
+                C.WEEK_OF_MONTH -> v
             )
-            case "m" ⇒ set0(
-                C.MONTH → NUM_MONTH_MAP(v),
-                C.DAY_OF_MONTH → 1
+            case "m" => set0(
+                C.MONTH -> NUM_MONTH_MAP(v),
+                C.DAY_OF_MONTH -> 1
             )
-            case "q" ⇒ set0(
-                C.MONTH → QUARTERS_BEGIN(v),
-                C.DAY_OF_MONTH → 1
+            case "q" => set0(
+                C.MONTH -> QUARTERS_BEGIN(v),
+                C.DAY_OF_MONTH -> 1
             )
-            case "y" ⇒ set0(
-                C.YEAR → v,
-                C.MONTH → C.JANUARY,
-                C.DAY_OF_MONTH → 1
+            case "y" => set0(
+                C.YEAR -> v,
+                C.MONTH -> C.JANUARY,
+                C.DAY_OF_MONTH -> 1
             )
-            case "e" ⇒
+            case "e" =>
                 set0(
-                    C.YEAR → (cal.get(C.YEAR) / 100 * 100 + (v - 1) * 10 + 1),
-                    C.MONTH → C.JANUARY,
-                    C.DAY_OF_YEAR → 1
+                    C.YEAR -> (cal.get(C.YEAR) / 100 * 100 + (v - 1) * 10 + 1),
+                    C.MONTH -> C.JANUARY,
+                    C.DAY_OF_YEAR -> 1
                 )
-            case "c" ⇒ set0(
-                C.YEAR → ((v - 1) * 100 + 1),
-                C.MONTH → C.JANUARY,
-                C.DAY_OF_MONTH → 1
+            case "c" => set0(
+                C.YEAR -> ((v - 1) * 100 + 1),
+                C.MONTH -> C.JANUARY,
+                C.DAY_OF_MONTH -> 1
             )
-            case "dw" ⇒ set0(C.DAY_OF_WEEK → NUM_WEEK_DAYS_MAP(v))
-            case "s" ⇒
+            case "dw" => set0(C.DAY_OF_WEEK -> NUM_WEEK_DAYS_MAP(v))
+            case "s" =>
                 adjustWinter(v, cal)
 
                 set0(
-                    C.MONTH → SEASONS_BEGIN(v),
-                    C.DAY_OF_MONTH → 1
+                    C.MONTH -> SEASONS_BEGIN(v),
+                    C.DAY_OF_MONTH -> 1
                 )
         }).getTimeInMillis
     }
@@ -315,15 +315,15 @@ object NCDateParser {
         def add0(pairs: (Int, Int)*) = add(cal, pairs: _*)
 
         (period match {
-            case "d" ⇒ add0(C.DAY_OF_YEAR → 1)
-            case "w" ⇒ add0(C.WEEK_OF_YEAR → 1)
-            case "m" ⇒ add0(C.MONTH → 1)
-            case "q" ⇒ add0(C.MONTH → 3)
-            case "y" ⇒ add0(C.YEAR → 1)
-            case "e" ⇒ add0(C.YEAR → 10)
-            case "c" ⇒ add0(C.YEAR → 100)
-            case "dw" ⇒ add0(C.DAY_OF_YEAR → 1)
-            case "s" ⇒ add0(C.MONTH → 3)
+            case "d" => add0(C.DAY_OF_YEAR -> 1)
+            case "w" => add0(C.WEEK_OF_YEAR -> 1)
+            case "m" => add0(C.MONTH -> 1)
+            case "q" => add0(C.MONTH -> 3)
+            case "y" => add0(C.YEAR -> 1)
+            case "e" => add0(C.YEAR -> 10)
+            case "c" => add0(C.YEAR -> 100)
+            case "dw" => add0(C.DAY_OF_YEAR -> 1)
+            case "s" => add0(C.MONTH -> 3)
         }).getTimeInMillis
     }
 
@@ -333,15 +333,15 @@ object NCDateParser {
         def add0(pairs: (Int, Int)*) = add(cal, pairs: _*)
 
         (period match {
-            case "d" ⇒ add0(C.DAY_OF_YEAR → n)
-            case "w" ⇒ add0(C.WEEK_OF_YEAR → n)
-            case "m" ⇒ add0(C.MONTH → n)
-            case "q" ⇒ add0(C.MONTH → (3 * n))
-            case "y" ⇒ add0(C.YEAR → n)
-            case "e" ⇒ add0(C.YEAR → (10 * n))
-            case "c" ⇒ add0(C.YEAR → (100 * n))
-            case "dw" ⇒ add0(C.WEEK_OF_YEAR → n)
-            case "s" ⇒ add0(C.YEAR → n)
+            case "d" => add0(C.DAY_OF_YEAR -> n)
+            case "w" => add0(C.WEEK_OF_YEAR -> n)
+            case "m" => add0(C.MONTH -> n)
+            case "q" => add0(C.MONTH -> (3 * n))
+            case "y" => add0(C.YEAR -> n)
+            case "e" => add0(C.YEAR -> (10 * n))
+            case "c" => add0(C.YEAR -> (100 * n))
+            case "dw" => add0(C.WEEK_OF_YEAR -> n)
+            case "s" => add0(C.YEAR -> n)
         }).getTimeInMillis
     }
 
@@ -357,15 +357,15 @@ object NCDateParser {
 
     private def getShiftPeriod(period: String) =
         period match {
-            case "m" | "q" | "s" ⇒ "y"
-            case "dw" ⇒ "w"
-            case _ ⇒ period //d, w, y, e, c
+            case "m" | "q" | "s" => "y"
+            case "dw" => "w"
+            case _ => period //d, w, y, e, c
         }
 
     private[date] def calculatePart(fns: String, base: Long): PartResult = {
         var res = PartResult(base, base, "", Seq.empty[String])
 
-        for (fn ← U.splitTrimFilter(fns, ",")) {
+        for (fn <- U.splitTrimFilter(fns, ",")) {
             val resFrom = res.from
 
             def after(heads: String*): String = fn.drop(heads.map(_.length).sum)
@@ -380,13 +380,13 @@ object NCDateParser {
                 val from = mkFrom(period, parseInt(d1), resFrom)
 
                 parseInt(d2Opt) match {
-                    case Some(d2) ⇒
+                    case Some(d2) =>
                         val to = mkTo(period, from)
 
                         val periodShift = getShiftPeriod(period)
 
                         PartResult(shift(from, periodShift, d2), shift(to, periodShift, d2), period, res.periods)
-                    case None ⇒
+                    case None =>
                         val to = mkTo(period, from)
 
                         PartResult(from, to, period, res.periods)
@@ -402,36 +402,36 @@ object NCDateParser {
 
                 parseInt(d1Opt) match {
                     // m2 (shift impossible)
-                    case Some(d1) ⇒
+                    case Some(d1) =>
                         val from = resFrom
                         val to = shift(from, period, d1)
 
                         PartResult(from, to, period, res.periods)
                     // m
-                    case None ⇒
+                    case None =>
                         val from = mkFrom(period, None, resFrom)
                         val to = mkTo(period, from)
 
                         parseInt(d2Opt) match {
-                            case Some(d2) ⇒
+                            case Some(d2) =>
                                 PartResult(shift(from, period, d2), shift(to, period, d2), period, res.periods)
-                            case None ⇒ PartResult(from, to, period, res.periods)
+                            case None => PartResult(from, to, period, res.periods)
                         }
                 }
             }
 
             def mkDayResult(c: C): PartResult =
-                PartResult(c.getTimeInMillis, add(c, C.DAY_OF_YEAR → 1).getTimeInMillis, "d", res.periods)
+                PartResult(c.getTimeInMillis, add(c, C.DAY_OF_YEAR -> 1).getTimeInMillis, "d", res.periods)
 
             def now(): PartResult = mkDayResult(mkCalendar(Some(base)))
 
-            def lastDay(shift: C ⇒ C): PartResult = mkDayResult(shift(mkCalendar(Some(resFrom))))
+            def lastDay(shift: C => C): PartResult = mkDayResult(shift(mkCalendar(Some(resFrom))))
 
-            def ldw(): PartResult = lastDay((c: C) ⇒ set(c, C.DAY_OF_WEEK → LAST_DAY_OF_WEEK))
-            def ldm(): PartResult = lastDay((c: C) ⇒ set(c, C.DAY_OF_MONTH → c.getActualMaximum(C.DAY_OF_MONTH)))
-            def ldy(): PartResult = lastDay((c: C) ⇒ set(c, C.DAY_OF_YEAR → c.getActualMaximum(C.DAY_OF_YEAR)))
+            def ldw(): PartResult = lastDay((c: C) => set(c, C.DAY_OF_WEEK -> LAST_DAY_OF_WEEK))
+            def ldm(): PartResult = lastDay((c: C) => set(c, C.DAY_OF_MONTH -> c.getActualMaximum(C.DAY_OF_MONTH)))
+            def ldy(): PartResult = lastDay((c: C) => set(c, C.DAY_OF_YEAR -> c.getActualMaximum(C.DAY_OF_YEAR)))
 
-            def ldYears(years: Int): PartResult = lastDay((c: C) ⇒ {
+            def ldYears(years: Int): PartResult = lastDay((c: C) => {
                 val curYear = c.get(C.YEAR)
                 var shift = curYear % years
 
@@ -439,39 +439,39 @@ object NCDateParser {
                     shift = years - shift
 
                 // Should not be in one function call (last day is relative).
-                set(c, C.YEAR → (curYear + shift))
-                set(c, C.DAY_OF_YEAR → c.getActualMaximum(C.DAY_OF_YEAR))
+                set(c, C.YEAR -> (curYear + shift))
+                set(c, C.DAY_OF_YEAR -> c.getActualMaximum(C.DAY_OF_YEAR))
             })
 
             def lde(): PartResult = ldYears(10)
             def ldc(): PartResult = ldYears(100)
 
-            def ld3M(map3m: Map[Int, Int], getIndex: Int ⇒ Int): PartResult = lastDay((c: C) ⇒ {
+            def ld3M(map3m: Map[Int, Int], getIndex: Int => Int): PartResult = lastDay((c: C) => {
                 val n = map3m(getIndex(c.get(C.MONTH)))
 
                 // Should not be in one function call (last day is relative).
                 // Note that keys in `map3m` sorted.
-                set(c, C.MONTH → NUM_MONTH_MAP(map3m.filter(_._2 == n).keys.toSeq.max))
-                set(c, C.DAY_OF_MONTH → c.getActualMaximum(C.DAY_OF_MONTH))
+                set(c, C.MONTH -> NUM_MONTH_MAP(map3m.filter(_._2 == n).keys.toSeq.max))
+                set(c, C.DAY_OF_MONTH -> c.getActualMaximum(C.DAY_OF_MONTH))
             })
 
-            def ldq(): PartResult = ld3M(QUARTERS, i ⇒ MONTH_NUM_MAP(i))
-            def lds(): PartResult = ld3M(SEASONS, i ⇒ i)
+            def ldq(): PartResult = ld3M(QUARTERS, i => MONTH_NUM_MAP(i))
+            def lds(): PartResult = ld3M(SEASONS, i => i)
 
             res = fn match {
-                case "now" ⇒ now()
+                case "now" => now()
 
-                case "$dw" ⇒ ldw()
-                case "$dm" ⇒ ldm()
-                case "$dq" ⇒ ldq()
-                case "$dy" ⇒ ldy()
-                case "$de" ⇒ lde()
-                case "$dc" ⇒ ldc()
-                case "$ds" ⇒ lds()
+                case "$dw" => ldw()
+                case "$dm" => ldm()
+                case "$dq" => ldq()
+                case "$dy" => ldy()
+                case "$de" => lde()
+                case "$dc" => ldc()
+                case "$ds" => lds()
 
-                case _ if fn.head.isDigit ⇒ periodRange() // 4d; 4d+2
+                case _ if fn.head.isDigit => periodRange() // 4d; 4d+2
 
-                case _ ⇒ durationRange() // m, m+2, m2 (not m2+2)
+                case _ => durationRange() // m, m+2, m2 (not m2+2)
             }
         }
 

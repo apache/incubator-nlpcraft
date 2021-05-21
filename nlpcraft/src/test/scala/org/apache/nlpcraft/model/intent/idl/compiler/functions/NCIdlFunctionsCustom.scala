@@ -44,7 +44,7 @@ class NCIdlFunctionsCustom extends NCIdlFunctions {
     @Test
     def testErrors(): Unit = {
         def test(truth: String*): Unit =
-            for (t ← truth)
+            for (t <- truth)
                 expectError(TestDesc(truth = t, isCustom = true))
 
         test(

@@ -30,11 +30,11 @@ import scala.collection._
 object NCUnsdStatsService {
     // Mapping between continents and subcontinents.
     private val CONTINENTS = Map(
-        "002" → Seq("014", "017", "015", "018", "011"),
-        "019" → Seq("029", "013", "005", "021"),
-        "142" → Seq("143", "030", "034", "035", "145"),
-        "150" → Seq("151", "154", "039", "155"),
-        "009" → Seq("053", "054", "057", "061")
+        "002" -> Seq("014", "017", "015", "018", "011"),
+        "019" -> Seq("029", "013", "005", "021"),
+        "142" -> Seq("143", "030", "034", "035", "145"),
+        "150" -> Seq("151", "154", "039", "155"),
+        "009" -> Seq("053", "054", "057", "061")
     )
 
     // (United States Minor Outlying Islands,UM,UMI)
@@ -60,11 +60,11 @@ object NCUnsdStatsService {
     // They defined manually (Country iso codes mapped to subcontinents codes)
     private val SPEC_CASES = Map(
         // Caribbean
-        "029" → Seq(NCUnsdStatsCountry("ANT", "Netherlands Antilles")),
+        "029" -> Seq(NCUnsdStatsCountry("ANT", "Netherlands Antilles")),
         // Eastern Asia
-        "030" → Seq(NCUnsdStatsCountry("TWN", "Taiwan")),
+        "030" -> Seq(NCUnsdStatsCountry("TWN", "Taiwan")),
         // Southern Europe
-        "039" → Seq(NCUnsdStatsCountry("XKX", "Kosovo"))
+        "039" -> Seq(NCUnsdStatsCountry("XKX", "Kosovo"))
     )
 
     private val dir = s"${U.mkPath("nlpcraft/src/main/scala")}/${U.toPath(this)}"
@@ -77,12 +77,12 @@ object NCUnsdStatsService {
     def skip(iso: String): Boolean = SKIPPED_COUNTRIES_ISO3.contains(iso)
 
     def mkContinents(): Seq[NCUnsdStatsContinent] = {
-        val countries = read(codesPath).map(line ⇒ {
+        val countries = read(codesPath).map(line => {
             val numCode = line.take(3)
             val isoCode = line.drop(line.length - 3)
             val name = line.slice(3, line.length - 6 + 3).trim
 
-            numCode → NCUnsdStatsCountry(isoCode, name)
+            numCode -> NCUnsdStatsCountry(isoCode, name)
         }).toMap
 
         val subContsCodes = CONTINENTS.flatMap(_._2).toSeq
@@ -91,7 +91,7 @@ object NCUnsdStatsService {
         val buf = mutable.Buffer.empty[NCUnsdStatsContinent]
 
         // # -  Comment was added manually for for unknown 419 code Latin 'America and the Caribbean'
-        read(subContsPath).foreach(line ⇒ {
+        read(subContsPath).foreach(line => {
             val numCode = line.take(3)
             val name = line.drop(3).trim
 
@@ -101,8 +101,8 @@ object NCUnsdStatsService {
                 val sc = NCUnsdStatsSubContinent(name)
 
                 SPEC_CASES.get(numCode) match {
-                    case Some(cntrs) ⇒ sc.countries ++= cntrs
-                    case None ⇒ // No-op.
+                    case Some(cntrs) => sc.countries ++= cntrs
+                    case None => // No-op.
                 }
 
                 buf.last.subContinents += sc

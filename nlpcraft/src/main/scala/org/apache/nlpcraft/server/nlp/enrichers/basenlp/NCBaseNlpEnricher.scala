@@ -62,12 +62,12 @@ object NCBaseNlpEnricher extends NCServerEnricher {
     // The acronyms stand for (Left|Right) (Round|Square|Curly) Bracket.
     // http://www.cis.upenn.edu/~treebank/tokenization.html
     private final val BRACKETS = Map(
-        "-LRB-" → "(",
-        "-RRB-" → ")",
-        "-LSB-" → "[",
-        "-RSB-" → "]",
-        "-LCB-" → "{",
-        "-RCB-" → "}"
+        "-LRB-" -> "(",
+        "-RRB-" -> ")",
+        "-LSB-" -> "[",
+        "-RSB-" -> "]",
+        "-LCB-" -> "{",
+        "-RCB-" -> "}"
     )
 
     @volatile private var parser: NCNlpParser = _
@@ -77,7 +77,7 @@ object NCBaseNlpEnricher extends NCServerEnricher {
      * @param parent Optional parent span.
      * @return
      */
-    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ =>
         ackStarting()
 
         parser = NCNlpServerManager.getParser
@@ -89,7 +89,7 @@ object NCBaseNlpEnricher extends NCServerEnricher {
      *
      * @param parent Optional parent span.
      */
-    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
         ackStopped()
     }
@@ -104,13 +104,13 @@ object NCBaseNlpEnricher extends NCServerEnricher {
     override def enrich(ns: NCNlpSentence, parent: Span = null) {
         require(isStarted)
 
-        startScopedSpan("enrich", parent, "srvReqId" → ns.srvReqId, "txt" → ns.text) { _ ⇒
+        startScopedSpan("enrich", parent, "srvReqId" -> ns.srvReqId, "txt" -> ns.text) { _ =>
             // This must be 1st enricher in the pipeline.
             assume(ns.isEmpty)
             
             var idx = 0
             
-            for (word ← parser.parse(ns.text)) {
+            for (word <- parser.parse(ns.text)) {
                 val value = word.word.toLowerCase
                 val origTxt = word.word
                 val tok = NCNlpSentenceToken(idx)
@@ -119,20 +119,20 @@ object NCBaseNlpEnricher extends NCServerEnricher {
                 // (INTERJECTIONS and lemma are should be in lowercase.)
                 val pos = if (INTERJECTIONS.contains(word.lemma)) "UH" else word.pos
                 val seq = mutable.ArrayBuffer(
-                    "lemma" → processBracket(word.lemma),
-                    "index" → idx,
-                    "pos" → pos,
-                    "origText" → processBracket(origTxt),
-                    "normText" → processBracket(value),
-                    "charLength" → value.length,
-                    "stem" → processBracket(word.stem),
-                    "posDesc" → NCPennTreebank.description(pos).getOrElse(pos),
-                    "start" → word.start,
-                    "end" → word.end,
-                    "quoted" → false,
-                    "stopWord" → false,
-                    "bracketed" → false,
-                    "direct" → true
+                    "lemma" -> processBracket(word.lemma),
+                    "index" -> idx,
+                    "pos" -> pos,
+                    "origText" -> processBracket(origTxt),
+                    "normText" -> processBracket(value),
+                    "charLength" -> value.length,
+                    "stem" -> processBracket(word.stem),
+                    "posDesc" -> NCPennTreebank.description(pos).getOrElse(pos),
+                    "start" -> word.start,
+                    "end" -> word.end,
+                    "quoted" -> false,
+                    "stopWord" -> false,
+                    "bracketed" -> false,
+                    "direct" -> true
                 )
                 
                 tok.add(NCNlpSentenceNote(Seq(idx), "nlpcraft:nlp", seq: _*))

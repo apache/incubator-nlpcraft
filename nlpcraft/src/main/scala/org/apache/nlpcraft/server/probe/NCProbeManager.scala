@@ -163,7 +163,7 @@ object NCProbeManager extends NCService {
      * @param parent Optional parent span.
      * @return
      */
-    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
+    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span =>
         ackStarting()
 
         probes = mutable.HashMap.empty[ProbeKey, ProbeHolder]
@@ -174,8 +174,8 @@ object NCProbeManager extends NCService {
         val (upHost, upPort) =  Config.getUpHostPort
 
         addTags(span,
-            "uplink" → s"$upHost:$upPort",
-            "downlink" → s"$dnHost:$dnPort"
+            "uplink" -> s"$upHost:$upPort",
+            "downlink" -> s"$dnHost:$dnPort"
         )
 
         modelsInfo = new ConcurrentHashMap[String, Promise[JavaMeta]]()
@@ -186,7 +186,7 @@ object NCProbeManager extends NCService {
         dnSrv.start()
         upSrv.start()
         
-        pingSrv = U.mkThread("probe-pinger") { t ⇒
+        pingSrv = U.mkThread("probe-pinger") { t =>
             while (!t.isInterrupted) {
                 U.sleep(Config.pingTimeoutMs)
         
@@ -208,7 +208,7 @@ object NCProbeManager extends NCService {
      *
      * @param parent Optional parent span.
      */
-    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
 
         U.stopThread(pingSrv)
@@ -246,20 +246,20 @@ object NCProbeManager extends NCService {
     private def closeAndRemoveHolder(probeKey: ProbeKey): Unit =
         // Check pending queue first.
         pending.synchronized { pending.remove(probeKey) } match {
-            case None ⇒
+            case None =>
                 // Check active probes second.
                 probes.synchronized { probes.remove(probeKey) } match {
-                    case None ⇒
-                    case Some(holder) ⇒
+                    case None =>
+                    case Some(holder) =>
                         holder.close()
             
                         logger.info(s"Probe removed: ${probeKey.short}")
 
                         // Clears unused models.
-                        mdls --= mdls.keys.filter(id ⇒ !probes.exists { case (_, p) ⇒ p.probe.models.exists(_.id == id) })
+                        mdls --= mdls.keys.filter(id => !probes.exists { case (_, p) => p.probe.models.exists(_.id == id) })
                 }
 
-            case Some(hld) ⇒
+            case Some(hld) =>
                 hld.close()
                 
                 logger.info(s"Pending probe removed: ${probeKey.short}")
@@ -271,11 +271,11 @@ object NCProbeManager extends NCService {
       * @param probeMsg Probe message to send.
       */
     private def sendToProbe(probeKey: ProbeKey, probeMsg: NCProbeMessage, parent: Span): Unit =
-        startScopedSpan("sendToProbe", parent, "probeId" → probeKey.probeId, "msgType" → probeMsg.getType) { _ ⇒
+        startScopedSpan("sendToProbe", parent, "probeId" -> probeKey.probeId, "msgType" -> probeMsg.getType) { _ =>
             val (sock, cryptoKey) = probes.synchronized {
                 probes.get(probeKey) match {
-                    case None ⇒ (null, null)
-                    case Some(h) ⇒ (h.upSocket, h.cryptoKey)
+                    case None => (null, null)
+                    case Some(h) => (h.upSocket, h.cryptoKey)
                 }
             }
          
@@ -285,12 +285,12 @@ object NCProbeManager extends NCService {
                         sock.write(probeMsg, cryptoKey)
                     }
                     catch {
-                        case _: EOFException ⇒
+                        case _: EOFException =>
                             logger.trace(s"Probe closed connection: ${probeKey.short}")
          
                             closeAndRemoveHolder(probeKey)
 
-                        case e: Throwable ⇒
+                        case e: Throwable =>
                             logger.error(s"Uplink socket error [" +
                                 s"sock=$sock, " +
                                 s"probeKey=${probeKey.short}, " +
@@ -316,7 +316,7 @@ object NCProbeManager extends NCService {
       * @param port Local port to bind.
       * @param fn Function.
       */
-    private def startServer(name: String, host: String, port: Int, fn: NCSocket ⇒ Unit): Thread = {
+    private def startServer(name: String, host: String, port: Int, fn: NCSocket => Unit): Thread = {
         val thName = name.toLowerCase
         
         new Thread(s"probe-mgr-$thName") {
@@ -343,8 +343,8 @@ object NCProbeManager extends NCService {
                     logger.trace(s"Thread exited: $thName")
                 }
                 catch {
-                    case _: InterruptedException ⇒ logger.trace(s"Thread interrupted: $thName")
-                    case e: Throwable ⇒
+                    case _: InterruptedException => logger.trace(s"Thread interrupted: $thName")
+                    case e: Throwable =>
                         U.prettyError(
                             logger,
                             s"Unexpected error during '$thName' thread execution:",
@@ -375,11 +375,11 @@ object NCProbeManager extends NCService {
                                 logger.trace(s"'$name' server accepted new connection.")
                             }
                             catch {
-                                case _: InterruptedIOException ⇒ // No-op.
+                                case _: InterruptedIOException => // No-op.
                                 
                                 // Note that server socket must be closed and created again.
                                 // So, error should be thrown.
-                                case e: Exception ⇒
+                                case e: Exception =>
                                     U.close(sock)
                                     
                                     throw e
@@ -391,17 +391,17 @@ object NCProbeManager extends NCService {
                                 }
 
                                 fut.onComplete {
-                                    case Success(_) ⇒ // No-op.
+                                    case Success(_) => // No-op.
 
-                                    case Failure(e: NCE) ⇒ U.prettyError(logger, e.getMessage, e)
-                                    case Failure(_: EOFException) ⇒ () // Just ignoring.
-                                    case Failure(e: Throwable) ⇒ U.prettyError(logger, s"Socket error:", e)
+                                    case Failure(e: NCE) => U.prettyError(logger, e.getMessage, e)
+                                    case Failure(_: EOFException) => () // Just ignoring.
+                                    case Failure(e: Throwable) => U.prettyError(logger, s"Socket error:", e)
                                 }
                             }
                         }
                     }
                     catch {
-                        case e: Exception ⇒
+                        case e: Exception =>
                             if (!isStopping) {
                                 // Release socket asap.
                                 U.close(srv)
@@ -453,7 +453,7 @@ object NCProbeManager extends NCService {
     
         val threadName = "probe-downlink-" + probeId.toLowerCase + "-" + probeGuid.toLowerCase
     
-        val p2sThread = U.mkThread(threadName) { t ⇒
+        val p2sThread = U.mkThread(threadName) { t =>
             try {
                 sock.socket.setSoTimeout(Config.soTimeoutMs)
             
@@ -463,14 +463,14 @@ object NCProbeManager extends NCService {
                     }
                     catch {
                         // Normal thread interruption.
-                        case _: SocketTimeoutException | _: InterruptedException | _: InterruptedIOException ⇒ ()
+                        case _: SocketTimeoutException | _: InterruptedException | _: InterruptedIOException => ()
                     
-                        case _: EOFException ⇒
+                        case _: EOFException =>
                             logger.info(s"Probe closed downlink connection: ${probeKey.short}")
                         
                             t.interrupt()
                     
-                        case e: Throwable ⇒
+                        case e: Throwable =>
                             U.prettyError(logger, s"Error reading downlink socket for probe: ${probeKey.short}", e)
 
                             t.interrupt()
@@ -492,12 +492,12 @@ object NCProbeManager extends NCService {
         // Update probe holder.
         val holder = pending.synchronized {
             pending.remove(probeKey) match {
-                case None ⇒ () // Probe has been removed already?
+                case None => () // Probe has been removed already?
                     respond("P2S_PROBE_NOT_FOUND")
                 
                     null
             
-                case Some(h) ⇒
+                case Some(h) =>
                     h.dnThread = p2sThread
                     h.dnSocket = sock
                 
@@ -507,9 +507,9 @@ object NCProbeManager extends NCService {
     
         if (holder != null)
             probes.synchronized {
-                probes += probeKey → holder
+                probes += probeKey -> holder
 
-                holder.probe.models.foreach(m ⇒ mdls += m.id → m)
+                holder.probe.models.foreach(m => mdls += m.id -> m)
     
                 val tbl = NCAsciiTable()
     
@@ -536,7 +536,7 @@ object NCProbeManager extends NCService {
       */
     private def isMultipleProbeRegistrations(probeKey: ProbeKey): Boolean =
         probes.synchronized {
-            probes.values.count(p ⇒
+            probes.values.count(p =>
                 p.probeKey.probeToken == probeKey.probeToken &&
                     p.probeKey.probeId == probeKey.probeId
             ) > 1
@@ -568,13 +568,13 @@ object NCProbeManager extends NCService {
 
             respond(
                 "S2P_HASH_CHECK_OK",
-                "NLP_ENGINE" → NCNlpCoreManager.getEngine
+                "NLP_ENGINE" -> NCNlpCoreManager.getEngine
             )
 
             cryptoKey = k
         }
         catch {
-            case _: NCE ⇒
+            case _: NCE =>
                 respond("S2P_HASH_CHECK_UNKNOWN")
 
                 throw new NCE(s"Rejecting probe connection due to unknown probe token hash: $tokHash")
@@ -621,7 +621,7 @@ object NCProbeManager extends NCService {
                                 mdlName,
                                 mdlVer,
                                 enabledBuiltInToks
-                            ) ⇒
+                            ) =>
                                 require(mdlId != null)
                                 require(mdlName != null)
                                 require(mdlVer != null)
@@ -638,7 +638,7 @@ object NCProbeManager extends NCService {
                 val probeTokTypes = models.flatMap(_.enabledBuiltInTokens).map(_.takeWhile(_ != ':'))
                 val tokProviders = NCServerEnrichmentManager.getSupportedProviders
 
-                if (probeTokTypes.exists(typ ⇒ !tokProviders.contains(typ)))
+                if (probeTokTypes.exists(typ => !tokProviders.contains(typ)))
                     respond("S2P_PROBE_UNSUPPORTED_TOKENS_TYPES")
                 else {
                     val probeApiDate = hsMsg.data[java.time.LocalDate]("PROBE_API_DATE")
@@ -673,7 +673,7 @@ object NCProbeManager extends NCService {
                     )
 
                     pending.synchronized {
-                        pending += probeKey → holder
+                        pending += probeKey -> holder
                     }
 
                     // Bingo!
@@ -705,16 +705,16 @@ object NCProbeManager extends NCService {
             val typ = probeMsg.getType
 
             typ match {
-                case "P2S_PING" ⇒ ()
+                case "P2S_PING" => ()
 
-                case "P2S_MODEL_INFO" ⇒
+                case "P2S_MODEL_INFO" =>
                     val p = modelsInfo.remove(probeMsg.data[String]("reqGuid"))
 
                     if (p != null)
                         p.success(GSON.fromJson(probeMsg.data[String]("resp"), TYPE_MODEL_INFO_RESP))
                     else
                         logger.warn(s"Message ignored: $probeMsg")
-                case "P2S_ASK_RESULT" ⇒
+                case "P2S_ASK_RESULT" =>
                     val srvReqId = probeMsg.data[String]("srvReqId")
                     
                     try {
@@ -754,7 +754,7 @@ object NCProbeManager extends NCService {
                         }
                     }
                     catch {
-                        case e: Throwable ⇒
+                        case e: Throwable =>
                             U.prettyError(logger,s"Failed to process probe message: $typ", e)
         
                             NCQueryManager.setError(
@@ -763,7 +763,7 @@ object NCProbeManager extends NCService {
                                 NCErrorCodes.UNEXPECTED_ERROR
                             )
                     }
-                case _ ⇒
+                case _ =>
                     logger.error(s"Received unrecognized probe message (ignoring): $probeMsg")
             }
         }
@@ -776,7 +776,7 @@ object NCProbeManager extends NCService {
      */
     private def getProbesForModelId(modelId: String): Iterable[ProbeHolder] =
         probes.synchronized {
-            probes.values.filter(_.probe.models.exists(mdl ⇒ mdl.id == modelId))
+            probes.values.filter(_.probe.models.exists(mdl => mdl.id == modelId))
         }
 
     /**
@@ -815,7 +815,7 @@ object NCProbeManager extends NCService {
             s"${probe.osName} ver. ${probe.osVersion}",
             s"${probe.tmzAbbr}, ${probe.tmzId}",
             s"${probe.hostName} (${probe.hostAddr})",
-            probe.models.map(m ⇒ s"${b(m.id)}, v${m.version}").toSeq
+            probe.models.map(m => s"${b(m.id)}, v${m.version}").toSeq
         )
         
         tbl
@@ -852,50 +852,50 @@ object NCProbeManager extends NCService {
         companyMeta: Option[JavaMeta],
         enableLog: Boolean,
         parent: Span = null): Unit = {
-        startScopedSpan("askProbe", parent, "srvReqId" → srvReqId, "usrId" → usr.id, "mdlId" → mdlId, "txt" → txt) { span ⇒
+        startScopedSpan("askProbe", parent, "srvReqId" -> srvReqId, "usrId" -> usr.id, "mdlId" -> mdlId, "txt" -> txt) { span =>
             val senMeta = new util.HashMap[String, java.io.Serializable]()
 
             Map(
-                "NORMTEXT" → nlpSen.text,
-                "USER_AGENT" → usrAgent.orNull,
-                "USER_ID" → usr.id,
-                "REMOTE_ADDR" → rmtAddr.orNull,
-                "RECEIVE_TSTAMP" → U.nowUtcMs(),
-                "FIRST_NAME" → usr.firstName.orNull,
-                "LAST_NAME" → usr.lastName.orNull,
-                "EMAIL" → usr.email.orNull,
-                "SIGNUP_TSTAMP" → usr.createdOn.getTime,
-                "IS_ADMIN" → usr.isAdmin,
-                "AVATAR_URL" → usr.avatarUrl.orNull,
-                "DATA" → data.orNull,
-                "META" → usrMeta.orNull,
-                "COMPANY_ID" → company.id,
-                "COMPANY_NAME" → company.name,
-                "COMPANY_WEBSITE" → company.website.orNull,
-                "COMPANY_COUNTRY" → company.country.orNull,
-                "COMPANY_REGION" → company.region.orNull,
-                "COMPANY_CITY" → company.city.orNull,
-                "COMPANY_ADDRESS" → company.address.orNull,
-                "COMPANY_POSTAL" → company.postalCode.orNull,
-                "COMPANY_META" → companyMeta.orNull
+                "NORMTEXT" -> nlpSen.text,
+                "USER_AGENT" -> usrAgent.orNull,
+                "USER_ID" -> usr.id,
+                "REMOTE_ADDR" -> rmtAddr.orNull,
+                "RECEIVE_TSTAMP" -> U.nowUtcMs(),
+                "FIRST_NAME" -> usr.firstName.orNull,
+                "LAST_NAME" -> usr.lastName.orNull,
+                "EMAIL" -> usr.email.orNull,
+                "SIGNUP_TSTAMP" -> usr.createdOn.getTime,
+                "IS_ADMIN" -> usr.isAdmin,
+                "AVATAR_URL" -> usr.avatarUrl.orNull,
+                "DATA" -> data.orNull,
+                "META" -> usrMeta.orNull,
+                "COMPANY_ID" -> company.id,
+                "COMPANY_NAME" -> company.name,
+                "COMPANY_WEBSITE" -> company.website.orNull,
+                "COMPANY_COUNTRY" -> company.country.orNull,
+                "COMPANY_REGION" -> company.region.orNull,
+                "COMPANY_CITY" -> company.city.orNull,
+                "COMPANY_ADDRESS" -> company.address.orNull,
+                "COMPANY_POSTAL" -> company.postalCode.orNull,
+                "COMPANY_META" -> companyMeta.orNull
             ).
                 filter(_._2 != null).
-                foreach(p ⇒ senMeta.put(p._1, p._2.asInstanceOf[java.io.Serializable]))
+                foreach(p => senMeta.put(p._1, p._2.asInstanceOf[java.io.Serializable]))
 
             getProbeForModelId(mdlId) match {
-                case Some(holder) ⇒
+                case Some(holder) =>
                     sendToProbe(
                         holder.probeKey,
                         NCProbeMessage(
                             "S2P_ASK",
-                            "srvReqId" → srvReqId,
-                            "txt" → txt,
+                            "srvReqId" -> srvReqId,
+                            "txt" -> txt,
                             // Initial sentence can be extended with synonyms etc.
-                            "nlpSens" → Collections.singletonList(nlpSen.asInstanceOf[java.io.Serializable]).asInstanceOf[java.io.Serializable],
-                            "senMeta" → senMeta,
-                            "userId" → usr.id,
-                            "mdlId" → mdlId,
-                            "enableLog" → enableLog
+                            "nlpSens" -> Collections.singletonList(nlpSen.asInstanceOf[java.io.Serializable]).asInstanceOf[java.io.Serializable],
+                            "senMeta" -> senMeta,
+                            "userId" -> usr.id,
+                            "mdlId" -> mdlId,
+                            "enableLog" -> enableLog
                         ),
                         span
                     )
@@ -909,7 +909,7 @@ object NCProbeManager extends NCService {
                     
                     addTags(
                         span,
-                        "probeId" → holder.probeKey.probeId
+                        "probeId" -> holder.probeKey.probeId
                     )
     
                     NCProcessLogManager.updateProbe(
@@ -917,7 +917,7 @@ object NCProbeManager extends NCService {
                         holder.probe
                     )
     
-                case None ⇒ throw new NCE(s"Unknown model ID: $mdlId")
+                case None => throw new NCE(s"Unknown model ID: $mdlId")
             }
         }
     }
@@ -938,7 +938,7 @@ object NCProbeManager extends NCService {
      */
     @throws[NCE]
     def getAllProbes(compId: Long, parent: Span = null): Seq[NCProbeMdo] =
-        startScopedSpan("getAllProbes", parent, "compId" → compId) { _ ⇒
+        startScopedSpan("getAllProbes", parent, "compId" -> compId) { _ =>
             val authTok = getCompany(compId).authToken
          
             probes.synchronized {
@@ -957,7 +957,7 @@ object NCProbeManager extends NCService {
      * @return
      */
     def existsForModel(compId: Long, mdlId: String, parent: Span = null): Boolean =
-        startScopedSpan("existsForModel", parent, "compId" → compId, "mdlId" → mdlId) { _ ⇒
+        startScopedSpan("existsForModel", parent, "compId" -> compId, "mdlId" -> mdlId) { _ =>
             val authTok = getCompany(compId).authToken
 
             probes.synchronized {
@@ -973,10 +973,10 @@ object NCProbeManager extends NCService {
       */
     @throws[NCE]
     def clearConversation(usrId: Long, mdlId: String, parent: Span = null): Unit =
-        startScopedSpan("clearConversation", parent, "usrId" → usrId, "mdlId" → mdlId) { span ⇒
+        startScopedSpan("clearConversation", parent, "usrId" -> usrId, "mdlId" -> mdlId) { span =>
             val msg = NCProbeMessage("S2P_CLEAR_CONV",
-                "usrId" → usrId,
-                "mdlId" → mdlId
+                "usrId" -> usrId,
+                "mdlId" -> mdlId
             )
     
             // Send to all probes.
@@ -991,10 +991,10 @@ object NCProbeManager extends NCService {
      */
     @throws[NCE]
     def clearDialog(usrId: Long, mdlId: String, parent: Span = null): Unit =
-        startScopedSpan("clearDialog", parent, "usrId" → usrId, "mdlId" → mdlId) { span ⇒
+        startScopedSpan("clearDialog", parent, "usrId" -> usrId, "mdlId" -> mdlId) { span =>
             val msg = NCProbeMessage("S2P_CLEAR_DLG",
-                "usrId" → usrId,
-                "mdlId" → mdlId
+                "usrId" -> usrId,
+                "mdlId" -> mdlId
             )
             
             // Send to all probes.
@@ -1007,7 +1007,7 @@ object NCProbeManager extends NCService {
       * @param parent Optional parent span.
       */
     def getModel(mdlId: String, parent: Span = null): NCProbeModelMdo =
-        startScopedSpan("getModel", parent, "mdlId" → mdlId) { _ ⇒
+        startScopedSpan("getModel", parent, "mdlId" -> mdlId) { _ =>
             probes.synchronized {
                 mdls.getOrElse(mdlId, throw new NCE(s"Unknown model ID: $mdlId"))
             }
@@ -1020,10 +1020,10 @@ object NCProbeManager extends NCService {
       * @return
       */
     def getModelInfo(mdlId: String, parent: Span = null): Future[JavaMeta] =
-        startScopedSpan("getModelInfo", parent, "mdlId" → mdlId) { _ ⇒
+        startScopedSpan("getModelInfo", parent, "mdlId" -> mdlId) { _ =>
             getProbeForModelId(mdlId) match {
-                case Some(probe) ⇒
-                    val msg = NCProbeMessage("S2P_MODEL_INFO", "mdlId" → mdlId)
+                case Some(probe) =>
+                    val msg = NCProbeMessage("S2P_MODEL_INFO", "mdlId" -> mdlId)
 
                     val p = Promise[JavaMeta]()
 
@@ -1033,7 +1033,7 @@ object NCProbeManager extends NCService {
 
                     p.future
 
-                case None ⇒ throw new NCE(s"Probe not found for model: '$mdlId''")
+                case None => throw new NCE(s"Probe not found for model: '$mdlId''")
             }
         }
 }

@@ -77,7 +77,7 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
       * @return
       */
     private def getWithGroup(tok: NCToken, grp: String): Seq[NCToken] =
-        (Seq(tok) ++ tok.findPartTokens().asScala).flatMap(p ⇒ if (p.getGroups.contains(grp)) Some(p) else None)
+        (Seq(tok) ++ tok.findPartTokens().asScala).flatMap(p => if (p.getGroups.contains(grp)) Some(p) else None)
     
     /**
       *
@@ -88,9 +88,9 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
         val tabs = getWithGroup(tok, "table")
         
         tabs.size match {
-            case 1 ⇒ Some(findSchemaTable(tabs.head.metax("sql:name")))
-            case 0 ⇒ None
-            case _ ⇒ throw new NCException(s"Too many tables found for: $tok")
+            case 1 => Some(findSchemaTable(tabs.head.metax("sql:name")))
+            case 0 => None
+            case _ => throw new NCException(s"Too many tables found for: $tok")
         }
     }
     
@@ -103,9 +103,9 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
         val cols = getWithGroup(tok, "column")
         
         cols.size match {
-            case 1 ⇒ Some(cols.head)
-            case 0 ⇒ None
-            case _ ⇒ throw new NCException(s"Too many columns found for token: $tok")
+            case 1 => Some(cols.head)
+            case 0 => None
+            case _ => throw new NCException(s"Too many columns found for token: $tok")
         }
     }
 
@@ -118,12 +118,12 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
     private def findColumn(link: NCToken, element: String): NCSqlColumn =
         findAnyColumnTokenOpt(link) match {
             // If reference is column - sort by column.
-            case Some(t) ⇒ extractColumn(t)
-            case None ⇒
+            case Some(t) => extractColumn(t)
+            case None =>
                 // If reference is table - sort by any PK column of table.
                 findAnyTableTokenOpt(link) match {
-                    case Some(tab) ⇒ tab.getColumns.asScala.minBy(col ⇒ if (col.isPk) 0 else 1)
-                    case None ⇒ throw new NCException(s"Unexpected $element link: $link")
+                    case Some(tab) => tab.getColumns.asScala.minBy(col => if (col.isPk) 0 else 1)
+                    case None => throw new NCException(s"Unexpected $element link: $link")
                 }
         }
 
@@ -135,11 +135,11 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
      */
     private def findTable(link: NCToken, typ: String): NCSqlTable =
         findAnyTableTokenOpt(link) match {
-            case Some(t) ⇒ t
-            case None ⇒
+            case Some(t) => t
+            case None =>
                 findAnyColumnTokenOpt(link) match {
-                    case Some(col) ⇒ findSchemaTable(extractColumn(col).getTable)
-                    case None ⇒ throw new NCException(s"Unexpected $typ link: $link")
+                    case Some(col) => findSchemaTable(extractColumn(col).getTable)
+                    case None => throw new NCException(s"Unexpected $typ link: $link")
                 }
         }
 
@@ -153,10 +153,10 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
         val idxsOpt: Option[util.List[Integer]] = tok.metaOpt(s"${tok.getId}:$idxsField").asScala
 
         idxsOpt match {
-            case Some(idxs) ⇒
+            case Some(idxs) =>
                 val notes: util.List[String] = tok.metax(s"${tok.getId}:$notesField")
 
-                idxs.asScala.map(idx ⇒ {
+                idxs.asScala.map(idx => {
                     if (idx < variant.size) {
                         val link = variant.get(idx)
 
@@ -168,7 +168,7 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
                     else
                         throw new NCException(s"Token not found with index: $idx")
                 })
-            case None ⇒ Seq.empty
+            case None => Seq.empty
         }
     }
 
@@ -185,7 +185,7 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
 
         val note: String = tok.metax(s"${tok.getId}:$noteField")
 
-        idxs.asScala.map(idx ⇒
+        idxs.asScala.map(idx =>
             if (idx < variant.size) {
                 val link = variant.get(idx)
 
@@ -223,7 +223,7 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
         val links = getSingleMandatoryLinks(variant, limitTok, "indexes", "note")
 
         links.size match {
-            case 1 ⇒
+            case 1 =>
                 val limit: Double = limitTok.metax("nlpcraft:limit:limit")
 
                 NCSqlLimitImpl(
@@ -231,7 +231,7 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
                     limit.intValue(),
                     getAsc(limitTok, "nlpcraft:limit:asc", dflt = false)
                 )
-            case n ⇒ throw new NCException(s"Unexpected LIMIT links count: $n")
+            case n => throw new NCException(s"Unexpected LIMIT links count: $n")
         }
     }
     
@@ -244,19 +244,19 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
         checkTokenId(sortTok, "nlpcraft:sort")
 
         val tables = getOptionalLinks(variant, sortTok, "subjindexes", "subjnotes").
-            map(link ⇒ findTable(link, "SORT"))
+            map(link => findTable(link, "SORT"))
 
         val cols = getOptionalLinks(variant, sortTok, "byindexes", "bynotes").
-            map(link ⇒ findColumn(link, "SORT BY"))
+            map(link => findColumn(link, "SORT BY"))
 
         val asc = getAsc(sortTok, "nlpcraft:sort:asc", dflt = false)
 
         require(tables.nonEmpty || cols.nonEmpty)
 
-        def getSorts(cols: Seq[NCSqlColumn]): Seq[NCSqlSort] = cols.map(col ⇒ NCSqlSortImpl(col, asc))
+        def getSorts(cols: Seq[NCSqlColumn]): Seq[NCSqlSort] = cols.map(col => NCSqlSortImpl(col, asc))
 
         if (tables.nonEmpty)
-            tables.flatMap(t ⇒ {
+            tables.flatMap(t => {
                 var colTabs = cols.filter(_.getTable == t.getTable)
 
                 if (colTabs.isEmpty)

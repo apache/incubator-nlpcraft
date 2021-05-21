@@ -88,9 +88,9 @@ object NCLimitEnricher extends NCProbeEnricher {
             val numElems = groups.filter(_.number.isDefined)
 
             numElems.size match {
-                case 0 ⇒ DFLT_LIMIT
-                case 1 ⇒ numElems.head.number.get
-                case _ ⇒ throw new AssertionError(s"Unexpected numeric count in template: ${numElems.size}")
+                case 0 => DFLT_LIMIT
+                case 1 => numElems.head.number.get
+                case _ => throw new AssertionError(s"Unexpected numeric count in template: ${numElems.size}")
             }
         }
 
@@ -98,8 +98,8 @@ object NCLimitEnricher extends NCProbeEnricher {
             val sorts: Seq[Boolean] = tokens.map(_.stem).flatMap(sortWords.get)
 
             sorts.size match {
-                case 1 ⇒ sorts.head
-                case _ ⇒ false
+                case 1 => sorts.head
+                case _ => false
             }
         }
 
@@ -120,7 +120,7 @@ object NCLimitEnricher extends NCProbeEnricher {
       *
       * @param m Map.
       */
-    private def stemmatizeWords[T](m: Map[String, T]): Map[String, T] = m.map(p ⇒ NCNlpCoreManager.stem(p._1) → p._2)
+    private def stemmatizeWords[T](m: Map[String, T]): Map[String, T] = m.map(p => NCNlpCoreManager.stem(p._1) -> p._2)
 
     /**
       *
@@ -128,8 +128,8 @@ object NCLimitEnricher extends NCProbeEnricher {
       */
     private def isUserNotValue(t: NCNlpSentenceToken): Boolean =
         t.find(_.isUser) match {
-            case Some(n) ⇒ !n.contains("value")
-            case None ⇒ false
+            case Some(n) => !n.contains("value")
+            case None => false
         }
 
     /**
@@ -143,26 +143,26 @@ object NCLimitEnricher extends NCProbeEnricher {
       * @param parent Optional parent span.
       * @return
       */
-    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ =>
         ackStarting()
 
         // Note that single words only supported now in code.
         fuzzyNums = stemmatizeWords(Map(
-            "few" → 3,
-            "several" → 3,
-            "handful" → 5,
-            "single" → 1,
-            "some" → 3,
-            "couple" → 2
+            "few" -> 3,
+            "several" -> 3,
+            "handful" -> 5,
+            "single" -> 1,
+            "some" -> 3,
+            "couple" -> 2
         ))
 
         // Note that single words only supported now in code.
         sortWords = stemmatizeWords(Map(
-            "top" → false,
-            "most" → false,
-            "first" → false,
-            "bottom" → true,
-            "last" → true
+            "top" -> false,
+            "most" -> false,
+            "first" -> false,
+            "bottom" -> true,
+            "last" -> true
         ))
 
         topWords = Seq(
@@ -182,18 +182,18 @@ object NCLimitEnricher extends NCProbeEnricher {
 
         // Macros: SORT_WORDS, TOP_WORDS, POST_WORDS
         macros = Map(
-            "SORT_WORDS" → sortWords.keys,
-            "TOP_WORDS" → topWords,
-            "POST_WORDS" → postWords
+            "SORT_WORDS" -> sortWords.keys,
+            "TOP_WORDS" -> topWords,
+            "POST_WORDS" -> postWords
         )
 
         limits= {
             // Few numbers cannot be in on template.
-            require(SYNONYMS.forall(s ⇒ U.splitTrimFilter(s, " ").count(_ == CD) < 2))
+            require(SYNONYMS.forall(s => U.splitTrimFilter(s, " ").count(_ == CD) < 2))
 
             def toMacros(seq: Iterable[String]): String = seq.mkString("|")
 
-            val parser = NCMacroParser(macros.map { case (name, seq) ⇒ s"<$name>" → s"{${toMacros(seq)}}" })
+            val parser = NCMacroParser(macros.map { case (name, seq) => s"<$name>" -> s"{${toMacros(seq)}}" })
 
             // Duplicated elements is not a problem.
             SYNONYMS.flatMap(parser.expand).distinct
@@ -208,7 +208,7 @@ object NCLimitEnricher extends NCProbeEnricher {
       *
       * @param parent Optional parent span.
       */
-    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
 
         fuzzyNums = null
@@ -249,9 +249,9 @@ object NCLimitEnricher extends NCProbeEnricher {
                 asScala
 
         startScopedSpan("enrich", parent,
-            "srvReqId" → ns.srvReqId,
-            "mdlId" → mdl.model.getId,
-            "txt" → ns.text) { _ ⇒
+            "srvReqId" -> ns.srvReqId,
+            "mdlId" -> mdl.model.getId,
+            "txt" -> ns.text) { _ =>
             val notes = mutable.HashSet.empty[NCNlpSentenceNote]
 
             var numsMap: Map[Seq[NCNlpSentenceToken], NCNumeric] = null
@@ -259,35 +259,35 @@ object NCLimitEnricher extends NCProbeEnricher {
             var tech: Set[NCNlpSentenceToken] = null
 
             // Tries to grab tokens reverse way.
-            // Example: A, B, C ⇒ ABC, BC, AB .. (BC will be processed first)
-            for (toks ← ns.tokenMixWithStopWords().sortBy(p ⇒ (-p.size, -p.head.index)) if validImportant(ns, toks)) {
+            // Example: A, B, C => ABC, BC, AB .. (BC will be processed first)
+            for (toks <- ns.tokenMixWithStopWords().sortBy(p => (-p.size, -p.head.index)) if validImportant(ns, toks)) {
                 if (numsMap == null) {
-                    numsMap = NCNumericManager.find(ns).map(p ⇒ p.tokens → p).toMap
+                    numsMap = NCNumericManager.find(ns).map(p => p.tokens -> p).toMap
                     groupsMap = groupNums(ns, numsMap.values)
                     tech = (numsMap.keys.flatten ++ groupsMap.keys.flatten).toSet
                 }
 
                 tryToMatch(numsMap, groupsMap, tech, toks) match {
-                    case Some(m) ⇒
-                        for (refNote ← m.refNotes if !restricted.contains(refNote)) {
+                    case Some(m) =>
+                        for (refNote <- m.refNotes if !restricted.contains(refNote)) {
                             val ps = mutable.ArrayBuffer.empty[(String, Any)]
 
-                            ps += "limit" → m.limit
-                            ps += "indexes" → m.refIndexes
-                            ps += "note" → refNote
+                            ps += "limit" -> m.limit
+                            ps += "indexes" -> m.refIndexes
+                            ps += "note" -> refNote
 
                             if (m.asc.isDefined)
-                                ps += "asc" → m.asc.get
+                                ps += "asc" -> m.asc.get
 
                             val note = NCNlpSentenceNote(m.matched.map(_.index), TOK_ID, ps: _*)
 
-                            if (!notes.exists(n ⇒ ns.notesEqualOrSimilar(n, note))) {
+                            if (!notes.exists(n => ns.notesEqualOrSimilar(n, note))) {
                                 notes += note
 
                                 m.matched.foreach(_.add(note))
                             }
                         }
-                    case None ⇒ // No-op.
+                    case None => // No-op.
                 }
             }
         }
@@ -300,12 +300,12 @@ object NCLimitEnricher extends NCProbeEnricher {
     private def getCommonNotes(toks: Seq[NCNlpSentenceToken]): Set[String] = {
         def get(sorted: Seq[NCNlpSentenceToken]): Set[String] =
             sorted.size match {
-                case 0 ⇒ Set.empty
-                case _ ⇒
+                case 0 => Set.empty
+                case _ =>
                     val h = sorted.head
                     val l = sorted.last
 
-                    h.filter(!_.isNlp).filter(n ⇒ h.index == n.tokenFrom && l.index == n.tokenTo).map(_.noteType).toSet
+                    h.filter(!_.isNlp).filter(n => h.index == n.tokenFrom && l.index == n.tokenTo).map(_.noteType).toSet
             }
 
         val sortedToks = toks.sortBy(_.index)
@@ -330,19 +330,19 @@ object NCLimitEnricher extends NCProbeEnricher {
             lazy val cmnRefNotes = getCommonNotes(refCands)
             lazy val matchCands = toks.diff(refCands)
 
-            def try0(g: ⇒ Seq[NCNlpSentenceToken]): Option[Match] =
+            def try0(g: => Seq[NCNlpSentenceToken]): Option[Match] =
                 groupsMap.get(g) match {
-                    case Some(h) ⇒
+                    case Some(h) =>
                         if (limits.contains(h.value) || h.isFuzzyNum)
                             Some(Match(h.limit, Some(h.asc), matchCands, cmnRefNotes, refCands.map(_.index).asJava))
                         else
                             numsMap.get(g) match {
-                                case Some(num) ⇒
+                                case Some(num) =>
                                     Some(Match(num.value, None, matchCands, cmnRefNotes, refCands.map(_.index).asJava))
-                                case None ⇒
+                                case None =>
                                     None
                             }
-                    case None ⇒ None
+                    case None => None
                 }
 
             // Reference should be last.
@@ -355,8 +355,8 @@ object NCLimitEnricher extends NCProbeEnricher {
         val i1 = toks.head.index
         val i2 = toks.last.index
 
-        def f(seq: ⇒ Seq[NCNlpSentenceToken]): Seq[NCNlpSentenceToken] =
-            seq.filter(_.exists(n ⇒ isUserNotValue(n) && n.tokenIndexes.head >= i1 && n.tokenIndexes.last <= i2))
+        def f(seq: => Seq[NCNlpSentenceToken]): Seq[NCNlpSentenceToken] =
+            seq.filter(_.exists(n => isUserNotValue(n) && n.tokenIndexes.head >= i1 && n.tokenIndexes.last <= i2))
 
         Stream(tryCandidates(f(toks)), tryCandidates(f(toks.dropWhile(tech.contains)))).flatten.headOption
     }
@@ -368,15 +368,15 @@ object NCLimitEnricher extends NCProbeEnricher {
       * @return
       */
     private def groupNums(ns: NCNlpSentence, nums: Iterable[NCNumeric]): Map[Seq[NCNlpSentenceToken], GroupsHolder] = {
-        val numsMap = nums.map(n ⇒ n.tokens → n).toMap
+        val numsMap = nums.map(n => n.tokens -> n).toMap
 
         // All groups combinations.
-        val tks2Nums: Seq[(NCNlpSentenceToken, Option[Int])] = ns.filter(!_.isStopWord).map(t ⇒ t → fuzzyNums.get(t.stem))
+        val tks2Nums: Seq[(NCNlpSentenceToken, Option[Int])] = ns.filter(!_.isStopWord).map(t => t -> fuzzyNums.get(t.stem))
 
         // Tokens: A;  B;  20;  C;  twenty; two, D
         // NERs  : -;  -;  20;  -;  22;     22;  -
-        // Groups: (A) → -; (B) → -; (20) → 20; (C) → -; (twenty, two) → 22; (D) → -;
-        val groups: Seq[Group] = tks2Nums.zipWithIndex.groupBy { case ((_, numOpt), idx) ⇒
+        // Groups: (A) -> -; (B) -> -; (20) -> 20; (C) -> -; (twenty, two) -> 22; (D) -> -;
+        val groups: Seq[Group] = tks2Nums.zipWithIndex.groupBy { case ((_, numOpt), idx) =>
             // Groups by artificial flag.
             // Flag is first index of independent token.
             // Tokens:  A;  B;  20;  C;  twenty; two, D
@@ -394,16 +394,16 @@ object NCLimitEnricher extends NCProbeEnricher {
             }
         }.
             // Converts from artificial group to tokens groups (Seq[Token], Option[Int])
-            map { case (_, gs) ⇒ gs.map { case (seq, _) ⇒ seq } }.
-            map(seq ⇒ {
-                val toks = seq.map { case (t, _) ⇒ t }
+            map { case (_, gs) => gs.map { case (seq, _) => seq } }.
+            map(seq => {
+                val toks = seq.map { case (t, _) => t }
                 var numOpt = seq.head._2
                 val isFuzzyNum = numOpt.nonEmpty
 
                 if (numOpt.isEmpty)
                     numOpt = numsMap.get(toks) match {
-                        case Some(num) ⇒ Some(num.value.intValue())
-                        case None ⇒ None
+                        case Some(num) => Some(num.value.intValue())
+                        case None => None
                     }
 
                 Group(toks, numOpt, isFuzzyNum)
@@ -411,9 +411,9 @@ object NCLimitEnricher extends NCProbeEnricher {
             // Converts to sequence and sorts.
             toSeq.sortBy(_.index)
 
-        (for (n ← groups.length until 0 by -1) yield groups.sliding(n).map(GroupsHolder)).
+        (for (n <- groups.length until 0 by -1) yield groups.sliding(n).map(GroupsHolder)).
             flatten.
-            map(p ⇒ p.tokens → p).
+            map(p => p.tokens -> p).
             toMap
     }
 }

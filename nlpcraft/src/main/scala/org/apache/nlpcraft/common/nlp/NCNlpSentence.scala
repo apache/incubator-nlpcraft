@@ -18,8 +18,8 @@
 package org.apache.nlpcraft.common.nlp
 
 import org.apache.nlpcraft.common._
-import java.io.{Serializable ⇒ JSerializable}
-import java.util.{Collections, List ⇒ JList}
+import java.io.{Serializable => JSerializable}
+import java.util.{Collections, List => JList}
 import scala.collection.JavaConverters._
 import scala.collection.{Map, Seq, Set, mutable}
 import scala.language.implicitConversions
@@ -67,7 +67,7 @@ class NCNlpSentence(
             text = text,
             enabledBuiltInToks = enabledBuiltInToks,
             tokens = tokens.map(_.clone()),
-            deletedNotes = deletedNotes.map(p ⇒ p._1.clone() → p._2.map(_.clone())),
+            deletedNotes = deletedNotes.map(p => p._1.clone() -> p._2.map(_.clone())),
             initNlpNotes = initNlpNotes,
             nlpTokens = nlpTokens,
             firstProbePhase = firstProbePhase
@@ -99,13 +99,13 @@ class NCNlpSentence(
     }
 
     override def equals(obj: Any): Boolean = obj match {
-        case x: NCNlpSentence ⇒
+        case x: NCNlpSentence =>
             tokens == x.tokens &&
                 srvReqId == x.srvReqId &&
                 text == x.text &&
                 enabledBuiltInToks == x.enabledBuiltInToks
 
-        case _ ⇒ false
+        case _ => false
     }
 
     /**
@@ -116,7 +116,7 @@ class NCNlpSentence(
     def fixNote(note: NCNlpSentenceNote, kvs: (String, JSerializable)*): Unit = {
         val fixed = note.clone(kvs: _*)
 
-        this.filter(t ⇒ t.index >= fixed.tokenIndexes.head && t.index <= fixed.tokenIndexes.last).foreach(t ⇒ {
+        this.filter(t => t.index >= fixed.tokenIndexes.head && t.index <= fixed.tokenIndexes.last).foreach(t => {
             t.remove(note)
             t.add(fixed)
         })
@@ -165,15 +165,15 @@ class NCNlpSentence(
                 require(n1.noteType == n2.noteType)
 
                 n1.noteType match {
-                    case "nlpcraft:sort" ⇒
+                    case "nlpcraft:sort" =>
                         tokensEqualOrSimilar(getListList(n1, "subjindexes"), getListList(n2, "subjindexes")) &&
                             tokensEqualOrSimilar(getListList(n1, "byindexes"), getListList(n2, "byindexes"))
-                    case "nlpcraft:limit" ⇒
+                    case "nlpcraft:limit" =>
                         tokensEqualOrSimilar(getList(n1, "indexes"), getList(n2, "indexes"))
-                    case "nlpcraft:reference" ⇒
+                    case "nlpcraft:reference" =>
                         tokensEqualOrSimilar(getList(n1, "indexes"), getList(n2, "indexes"))
 
-                    case _ ⇒ true
+                    case _ => true
                 }
             }
 
@@ -189,7 +189,7 @@ class NCNlpSentence(
       *
       */
     def saveNlpNotes(): Unit =
-        initNlpNotes = this.map(t ⇒ NoteKey(t.startCharIndex, t.endCharIndex) → t.getNlpNote).toMap
+        initNlpNotes = this.map(t => NoteKey(t.startCharIndex, t.endCharIndex) -> t.getNlpNote).toMap
 
     /**
       *
@@ -205,7 +205,7 @@ class NCNlpSentence(
     def addNlpToken(nlp: NCNlpSentenceToken): Unit = {
         require(nlp.size <= 2)
 
-        nlp.foreach(n ⇒ nlpTokens += TokenKey(n.noteType, nlp.startCharIndex, nlp.endCharIndex) → nlp)
+        nlp.foreach(n => nlpTokens += TokenKey(n.noteType, nlp.startCharIndex, nlp.endCharIndex) -> nlp)
     }
 
     /**

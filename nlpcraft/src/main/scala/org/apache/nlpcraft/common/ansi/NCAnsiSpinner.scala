@@ -66,7 +66,7 @@ class NCAnsiSpinner(out: PrintWriter, useAnsi: Boolean = true) {
      */
     def start(): Unit =
         if (useAnsi) {
-            thread =  U.mkThread("ansi-spinner") { t ⇒
+            thread =  U.mkThread("ansi-spinner") { t =>
                 frame = 0
                 lastLength = 0
 
