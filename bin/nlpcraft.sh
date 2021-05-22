@@ -24,6 +24,19 @@
 # POSIX-complaint implementation for GNU "readlink -f" functionality.
 # Works on Linux/MacOS.
 #
+
+# NLPCraft hidden directory
+#NLPCRAFT_LOGDIR=$HOME/.nlpcraft
+#
+## Create necessary directories for NLPCraft to run
+#create_dirs() {
+#  if [ ! -d "$NLPCRAFT_LOGDIR" ]; then
+#    mkdir $NLPCRAFT_LOGDIR >/dev/null 2>&1 || echo "$NLPCRAFT_LOGDIR does not exist & failed creation.Please create it."
+#  fi
+#}
+#
+#create_dirs
+
 readlinkf_posix() {
   [ "${1:-}" ] || return 1
   max_symlinks=40
