@@ -566,8 +566,8 @@
 
                                 ------------------------------------------------------------------------
                                 You are trying to compile NLPCraft with inappropriate JDK version!
-                                Detected JDK Version: ${java.runtime.version}
-                                JDK version should be 11 or later
+                                Detected JDK Version: ${java.runtime.version}.
+                                JDK version should be 11 or later.
                                 ------------------------------------------------------------------------
 
                             </message>
