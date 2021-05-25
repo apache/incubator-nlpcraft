@@ -347,7 +347,7 @@ object NCUtils extends LazyLogging {
     def ensureHomeDir(): Unit = {
         val home = new File(SystemUtils.getUserHome, ".nlpcraft")
 
-        if (!home.exists() && !home.mkdirs())
+        if (home.exists() && home.isFile || !home.exists() && !home.mkdirs())
             throw new NCException(s"Failed to create NLPCraft internal directory: ${home.getAbsolutePath}")
     }
 
