@@ -173,6 +173,8 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
     private def start(): Unit = {
         NCAnsi.ackStatus()
 
+        U.ensureHomeDir()
+
         setSysProps()
 
         NCConfigurable.initialize(
@@ -244,25 +246,25 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
             final object Config extends NCConfigurable {
                 final private val pre = "nlpcraft.server"
 
-                lazy val pid = ProcessHandle.current().pid()
-                lazy val restHost = getString(s"$pre.rest.host")
-                lazy val restApi = getString(s"$pre.rest.apiImpl")
-                lazy val restPort = getInt(s"$pre.rest.port")
-                lazy val upLink = getString(s"$pre.probe.links.upLink")
-                lazy val downLink = getString(s"$pre.probe.links.downLink")
-                lazy val dbUrl = getString(s"$pre.database.jdbc.url")
-                lazy val dbDriver = getString(s"$pre.database.jdbc.driver")
-                lazy val dbPoolMin = getInt(s"$pre.database.c3p0.pool.minSize")
-                lazy val dbPoolMax = getInt(s"$pre.database.c3p0.pool.maxSize")
-                lazy val dbPoolInit = getInt(s"$pre.database.c3p0.pool.initSize")
-                lazy val dbPoolInc = getInt(s"$pre.database.c3p0.pool.acquireIncrement")
-                lazy val dbInit = getBool(s"$pre.database.igniteDbInitialize")
-                lazy val tokProviders = getString(s"$pre.tokenProviders")
-                lazy val acsToksScanMins = getInt(s"$pre.user.timeoutScannerFreqMins")
-                lazy val acsToksExpireMins = getInt(s"$pre.user.accessTokenExpireTimeoutMins")
-                lazy val nlpEngine = getString("nlpcraft.nlpEngine")
-                lazy val extCfgUrl = getString("nlpcraft.extConfig.extUrl")
-                lazy val extCfgCheckMd5 = getBool("nlpcraft.extConfig.checkMd5")
+                lazy val pid: Long = ProcessHandle.current().pid()
+                lazy val restHost: String = getString(s"$pre.rest.host")
+                lazy val restApi: String = getString(s"$pre.rest.apiImpl")
+                lazy val restPort: Int = getInt(s"$pre.rest.port")
+                lazy val upLink: String = getString(s"$pre.probe.links.upLink")
+                lazy val downLink: String = getString(s"$pre.probe.links.downLink")
+                lazy val dbUrl: String = getString(s"$pre.database.jdbc.url")
+                lazy val dbDriver: String = getString(s"$pre.database.jdbc.driver")
+                lazy val dbPoolMin: Int = getInt(s"$pre.database.c3p0.pool.minSize")
+                lazy val dbPoolMax: Int = getInt(s"$pre.database.c3p0.pool.maxSize")
+                lazy val dbPoolInit: Int = getInt(s"$pre.database.c3p0.pool.initSize")
+                lazy val dbPoolInc: Int = getInt(s"$pre.database.c3p0.pool.acquireIncrement")
+                lazy val dbInit: Boolean = getBool(s"$pre.database.igniteDbInitialize")
+                lazy val tokProviders: String = getString(s"$pre.tokenProviders")
+                lazy val acsToksScanMins: Int = getInt(s"$pre.user.timeoutScannerFreqMins")
+                lazy val acsToksExpireMins: Int = getInt(s"$pre.user.accessTokenExpireTimeoutMins")
+                lazy val nlpEngine: String = getString("nlpcraft.nlpEngine")
+                lazy val extCfgUrl: String = getString("nlpcraft.extConfig.extUrl")
+                lazy val extCfgCheckMd5: Boolean = getBool("nlpcraft.extConfig.checkMd5")
                 lazy val restEndpoint = s"${Config.restHost}:${Config.restPort}/api/v1"
             }
 

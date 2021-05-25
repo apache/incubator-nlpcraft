@@ -32,7 +32,7 @@ import java.util.regex.Pattern
 class NCCliBase extends App {
     final val NAME = "NLPCraft CLI"
 
-    private final val dir = ".nlpcraft"
+    protected final val NLPCRAFT_LOC_DIR = ".nlpcraft"
 
     /*
      * Disable warnings from Ignite on JDK 11.
@@ -67,9 +67,9 @@ class NCCliBase extends App {
     // | MAKE SURE TO UPDATE THIS VAR WHEN NUMBER OF SERVICES IS CHANGED. |
     // +==================================================================+
 
-    final val SRV_BEACON_PATH = s"$dir/server_beacon"
-    final val PRB_BEACON_PATH = s"$dir/probe_beacon"
-    final val HIST_PATH = s"$dir/.cli_history"
+    final val SRV_BEACON_PATH = s"$NLPCRAFT_LOC_DIR/server_beacon"
+    final val PRB_BEACON_PATH = s"$NLPCRAFT_LOC_DIR/probe_beacon"
+    final val HIST_PATH = s"$NLPCRAFT_LOC_DIR/.cli_history"
 
     final val DFLT_USER_EMAIL = "admin@admin.com"
     final val DFLT_USER_PASSWD = "admin"

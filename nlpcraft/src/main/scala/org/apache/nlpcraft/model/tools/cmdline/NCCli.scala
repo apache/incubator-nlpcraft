@@ -72,6 +72,8 @@ object NCCli extends NCCliBase {
 
     var term: Terminal = _
 
+    U.ensureHomeDir()
+
     NCModule.setModule(NCModule.CLI)
 
     // Project templates for 'gen-project' command.
@@ -172,7 +174,6 @@ object NCCli extends NCCliBase {
      * @param args
      * @param id
      * @param dflt
-     * @throws
      * @return
      */
     @throws[InvalidParameter]
@@ -195,7 +196,6 @@ object NCCli extends NCCliBase {
      * @param args
      * @param id
      * @param dflt
-     * @throws
      * @return
      */
     @throws[InvalidParameter]
@@ -317,15 +317,6 @@ object NCCli extends NCCliBase {
     }
 
     /**
-     * Checks whether given list of models contains class names outside of NLPCraft project.
-     *
-     * @param mdls Comma-separated list of fully qualified class names for data models.
-     * @return
-     */
-    private def hasExternalModels(mdls: String): Boolean =
-        U.splitTrimFilter(mdls, ",").exists(!_.startsWith("org.apache.nlpcraft."))
-
-    /**
      * Handles tilda and checks that every component of the given class path exists relative to the current user working
      * directory of this process.
      *
@@ -349,7 +340,7 @@ object NCCli extends NCCliBase {
     private def cleanUpTempFiles(): Unit = {
         val tstamp = currentTime - 1000 * 60 * 60 * 24 * 2 // 2 days ago.
 
-        val files = new File(SystemUtils.getUserHome, ".nlpcraft").listFiles()
+        val files = new File(SystemUtils.getUserHome, NLPCRAFT_LOC_DIR).listFiles()
         
         if (files != null)
             for (file <- files)
@@ -988,7 +979,7 @@ object NCCli extends NCCliBase {
                     beacon.ph = ph
 
                     // See if we can detect server log if server was started by this script.
-                    val files = new File(SystemUtils.getUserHome, ".nlpcraft").listFiles(new FilenameFilter {
+                    val files = new File(SystemUtils.getUserHome, NLPCRAFT_LOC_DIR).listFiles(new FilenameFilter {
                         override def accept(dir: File, name: String): Boolean =
                             name.startsWith(s".pid_$ph")
                     })
@@ -1092,7 +1083,7 @@ object NCCli extends NCCliBase {
                     beacon.ph = ph
 
                     // See if we can detect probe log if server was started by this script.
-                    val files = new File(SystemUtils.getUserHome, ".nlpcraft").listFiles(new FilenameFilter {
+                    val files = new File(SystemUtils.getUserHome, NLPCRAFT_LOC_DIR).listFiles(new FilenameFilter {
                         override def accept(dir: File, name: String): Boolean =
                             name.startsWith(s".pid_$ph")
                     })

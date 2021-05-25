@@ -44,6 +44,7 @@ import com.typesafe.scalalogging.{LazyLogging, Logger}
 import org.apache.commons.codec.binary.Base64
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.io.IOUtils
+import org.apache.commons.lang3.SystemUtils
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.ansi.NCAnsi._
 import org.apache.nlpcraft.common.blowfish.NCBlowfishHasher
@@ -338,6 +339,17 @@ object NCUtils extends LazyLogging {
       * Converts class into path.
       */
     def toPath(`class`: Class[_]): String = `class`.getPackage.getName.replaceAll("\\.", "/")
+
+    /**
+     * Ensures that NLPCraft home folder (${USER_HOME}/.nlpcraft) folder exists.
+     * Creates one, if necessary.
+     */
+    def ensureHomeDir(): Unit = {
+        val home = new File(SystemUtils.getUserHome, ".nlpcraft")
+
+        if (!home.exists() && !home.mkdirs())
+            throw new NCException(s"Failed to create NLPCraft internal directory: ${home.getAbsolutePath}")
+    }
 
     /**
       * Reads lines from given file.
