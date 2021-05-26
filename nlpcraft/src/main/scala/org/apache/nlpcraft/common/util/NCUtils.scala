@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,8 +32,8 @@ import java.util.concurrent.{ExecutorService, LinkedBlockingQueue, RejectedExecu
 import java.util.jar.JarFile
 import java.util.regex.Pattern
 import java.util.stream.Collectors
-import java.util.zip.{ZipInputStream, GZIPInputStream ⇒ GIS, GZIPOutputStream ⇒ GOS}
-import java.util.{Locale, Properties, Random, Timer, TimerTask, Calendar ⇒ C}
+import java.util.zip.{ZipInputStream, GZIPInputStream => GIS, GZIPOutputStream => GOS}
+import java.util.{Locale, Properties, Random, Timer, TimerTask, Calendar => C}
 import com.fasterxml.jackson.annotation.JsonInclude.Include
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper}
@@ -786,7 +786,7 @@ object NCUtils extends LazyLogging {
       * @param sort Whether to sort output or not.
       */
     @throws[IOException]
-    def mkTextFile(path: String, lines: Iterable[Any], sort: Boolean = true) {
+    def mkTextFile(path: String, lines: Iterable[Any], sort: Boolean = true): Unit = {
         val file = new File(path)
 
         Using.resource(new PrintStream(file)) {
@@ -808,7 +808,7 @@ object NCUtils extends LazyLogging {
                 ps.println(s"# (the 'License'); you may not use this file except in compliance with")
                 ps.println(s"# the License.  You may obtain a copy of the License at")
                 ps.println(s"#")
-                ps.println(s"#      http://www.apache.org/licenses/LICENSE-2.0")
+                ps.println(s"#      https://www.apache.org/licenses/LICENSE-2.0")
                 ps.println(s"#")
                 ps.println(s"# Unless required by applicable law or agreed to in writing, software")
                 ps.println(s"# distributed under the License is distributed on an 'AS IS' BASIS,")
@@ -978,7 +978,7 @@ object NCUtils extends LazyLogging {
       * @param delFolder Flag, deleted or not root folder itself.
       */
     @throws[NCE]
-    def clearFolder(rootDir: String, delFolder: Boolean = false) {
+    def clearFolder(rootDir: String, delFolder: Boolean = false): Unit = {
         val rootPath = Paths.get(rootDir)
 
         try
@@ -1417,7 +1417,7 @@ object NCUtils extends LazyLogging {
                 HttpClient.newHttpClient.send(
                     HttpRequest.newBuilder()
                         .uri(
-                            URI.create("http://www.google-analytics.com/collect") // HTTPs?
+                            URI.create("https://www.google-analytics.com/collect") // HTTPs?
                         )
                         .POST(
                             HttpRequest.BodyPublishers.ofString(
@@ -1739,7 +1739,7 @@ object NCUtils extends LazyLogging {
         try
             GSON.getAdapter(classOf[JsonElement]).fromJson(json).getAsJsonObject.get(field).getAsBoolean
         catch {
-            case e: Exception => throw new NCE(s"Cannot deserialize JSON to map: '$json'", e)
+            case e: Exception => throw new NCE(s"Cannot extract JSON field '$field' from: '$json'", e)
         }
 
     /**
@@ -1936,7 +1936,7 @@ object NCUtils extends LazyLogging {
       */
     @throws[IOException]
     def getExternalIp: String =
-        Using.resource(new URL("http://checkip.amazonaws.com").openStream()) { is =>
+        Using.resource(new URL("https://checkip.amazonaws.com").openStream()) { is =>
             Using.resource(new InputStreamReader(is)) { reader =>
                 Using.resource(new BufferedReader(reader)) { bufReader =>
                     bufReader.readLine()

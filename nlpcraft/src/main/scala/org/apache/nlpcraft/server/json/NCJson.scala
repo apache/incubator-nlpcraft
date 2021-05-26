@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -242,13 +242,6 @@ object NCJson {
     private def readFile(f: File): String = removeComments(U.readFile(f).mkString)
 
     /**
-      * Reads stream.
-      *
-      * @param in Stream to extract from.
-      */
-    private def readStream(in: InputStream): String = removeComments(U.readStream(in).mkString)
-
-    /**
      * Extracts type `T` from given JSON `file`.
      *
      * @param f File to extract from.
@@ -280,25 +273,6 @@ object NCJson {
      */
     @throws[NCE]
     def extractPath[T: Manifest](path: String, ignoreCase: Boolean): T = extractFile(new java.io.File(path), ignoreCase)
-
-    /**
-      * Extracts type `T` from given JSON `file`.
-      *
-      * @param res Resource to extract from.
-      * @param ignoreCase Whether or not to ignore case.
-      * @tparam T Type of the object to extract.
-      */
-    @throws[NCE]
-    def extractResource[T: Manifest](res: String, ignoreCase: Boolean): T =
-        try {
-            val in = U.getStream(res)
-
-            if (ignoreCase) NCJson(readStream(in).toLowerCase).json.extract[T] else NCJson(readStream(in)).json.extract[T]
-        }
-        catch {
-            case e: IOException => throw new NCE(s"Failed to read: $res", e)
-            case e: Throwable => throw new NCE(s"Failed to parse: $res", e)
-        }
 
     // Gets string with removed symbol + from exponent part of numbers.
     // It is developed to avoid Lift parsing errors during processing numbers like '2E+2'.

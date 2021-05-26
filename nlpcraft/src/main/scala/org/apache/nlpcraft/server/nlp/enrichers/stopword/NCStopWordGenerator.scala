@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -194,7 +194,7 @@ object NCStopWordGenerator extends App {
         NCUtils.gzipPath(p)
     }
 
-    private[stopword] def mkNounWords() {
+    private[stopword] def mkNounWords(): Unit = {
         val buf = new scala.collection.mutable.ArrayBuffer[String]()
 
         for (w1 <- NOUN_WORDS)
@@ -211,7 +211,7 @@ object NCStopWordGenerator extends App {
 
     private def stem(seq: Seq[String]): Seq[String] = seq.map(stem)
 
-    private[stopword] def mkFirstWords() {
+    private[stopword] def mkFirstWords(): Unit = {
         val buf = new scala.collection.mutable.ArrayBuffer[String]()
 
         // is there

@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -617,7 +617,7 @@ object NCDateGenerator {
     // case "m" | "q" | "s" => "y"
     // case "dw" => "w"
     // case _ => period //d, w, y, e, c
-    private[date] def relativeDuration(df: LHM_SS, n: Int, period: String, parent: String) {
+    private[date] def relativeDuration(df: LHM_SS, n: Int, period: String, parent: String): Unit = {
         case class PeriodHolder(text: String, count: Int)
 
         val hs = (1 to n).flatMap {

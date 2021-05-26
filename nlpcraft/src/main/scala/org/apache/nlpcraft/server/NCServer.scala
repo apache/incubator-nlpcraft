@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -69,7 +69,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
     /**
      * Prints ASCII-logo.
      */
-    private def asciiLogo() {
+    private def asciiLogo(): Unit = {
         val ver = NCVersion.getCurrent
 
         logger.info(
@@ -145,7 +145,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
     /**
      * Acks server start.
      */
-    protected def ackStart() {
+    protected def ackStart(): Unit = {
         val dur = s"[${U.format((U.now() - executionStart) / 1000.0, 2)}s]"
 
         val tbl = NCAsciiTable()
