@@ -130,10 +130,6 @@
             <artifactId>commons-io</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.jsuereth</groupId>
-            <artifactId>scala-arm_${scala.base}</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-langdetect</artifactId>
             <!-- Ignite contains 13 version but it contains 12. -->
