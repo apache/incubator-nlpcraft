@@ -139,7 +139,7 @@ object NCSuggestSynonymManager extends NCService {
      */
     def suggest(mdlId: String, minScoreOpt: Option[Double], parent: Span = null): Future[NCSuggestSynonymResult] =
         startScopedSpan("inspect", parent, "mdlId" -> mdlId) { _ =>
-            val now = System.currentTimeMillis()
+            val now = U.now()
 
             val promise = Promise[NCSuggestSynonymResult]()
 
@@ -167,7 +167,7 @@ object NCSuggestSynonymManager extends NCService {
                                 NCSuggestSynonymResult(
                                     modelId = mdlId,
                                     minScore = minScore,
-                                    durationMs = System.currentTimeMillis() - now,
+                                    durationMs = U.now() - now,
                                     timestamp = now,
                                     error = err,
                                     suggestions = Seq.empty.asJava,
@@ -416,7 +416,7 @@ object NCSuggestSynonymManager extends NCService {
                                     NCSuggestSynonymResult(
                                         modelId = mdlId,
                                         minScore = minScore,
-                                        durationMs = System.currentTimeMillis() - now,
+                                        durationMs = U.now() - now,
                                         timestamp = now,
                                         error = null,
                                         suggestions = Seq(resJ.asInstanceOf[AnyRef]).asJava,

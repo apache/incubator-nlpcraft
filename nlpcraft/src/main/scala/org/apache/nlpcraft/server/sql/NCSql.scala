@@ -27,7 +27,6 @@ import org.apache.ignite.transactions.Transaction
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.server.tx.NCTxManager
-import resource._
 
 import scala.collection._
 import scala.util.control.Exception._
@@ -467,7 +466,7 @@ object NCSql extends LazyLogging {
         var r = List.empty[R]
 
         catching(psqlErrorCodes) {
-            for (ps <- managed { prepare(sql, params) } ; rs <- managed { ps.executeQuery() } )
+            for (ps <- Using.resource { prepare(sql, params) } ; rs <- Using.resource { ps.executeQuery() } )
                 while (rs.next)
                     r :+= p(rs)
 
@@ -520,7 +519,7 @@ object NCSql extends LazyLogging {
     @throws[NCE]
     def insert(sql: String, params: Any*): Unit =
         catching(psqlErrorCodes) {
-            managed { prepare(sql, params) } acquireAndGet { _.executeUpdate }
+            Using.resource { prepare(sql, params) } { _.executeUpdate }
         }
 
     /**
@@ -531,7 +530,7 @@ object NCSql extends LazyLogging {
      */
     private def exec(sql: String, params: Any*): Int =
         catching[Int](psqlErrorCodes) {
-            managed { prepare(sql, params) } acquireAndGet { _.executeUpdate }
+            Using.resource { prepare(sql, params) } { _.executeUpdate }
         }
 
     /**
@@ -579,7 +578,7 @@ object NCSql extends LazyLogging {
     @throws[NCE]
     def select[R](sql: String, callback: R => Unit, params: Any*) (implicit p: RsParser[R]): Unit =
         catching(psqlErrorCodes) {
-            for (ps <- managed { prepare(sql, params) } ; rs <- managed { ps.executeQuery() } )
+            for (ps <- Using.resource { prepare(sql, params) } ; rs <- Using.resource { ps.executeQuery() } )
                 while (rs.next)
                     callback(p(rs))
         }
@@ -614,7 +613,7 @@ object NCSql extends LazyLogging {
         val tbls = mutable.ArrayBuffer.empty[String]
 
         catching(psqlErrorCodes) {
-            for (rs <- managed { connection().getMetaData.getTables(null, null, null, null)})
+            for (rs <- Using.resource { connection().getMetaData.getTables(null, null, null, null)})
                 while (rs.next) {
                     val tblSchema = rs.getString(2)
              

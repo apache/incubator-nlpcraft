@@ -46,7 +46,7 @@ class NCIdlFunctionsDate extends NCIdlFunctions {
                 s"week_of_month() - ${c.get(C.WEEK_OF_MONTH)} == 0",
                 s"week_of_year() - ${c.get(C.WEEK_OF_YEAR)} == 0",
                 s"quarter() - ${d.get(IsoFields.QUARTER_OF_YEAR)} == 0",
-                s"now() - ${System.currentTimeMillis()} < 5000"
+                s"now() - ${U.now()} < 5000"
             )
         }
 

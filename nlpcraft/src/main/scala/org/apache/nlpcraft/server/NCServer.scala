@@ -51,12 +51,11 @@ import org.apache.nlpcraft.server.sql.NCSqlManager
 import org.apache.nlpcraft.server.sugsyn.NCSuggestSynonymManager
 import org.apache.nlpcraft.server.tx.NCTxManager
 import org.apache.nlpcraft.server.user.NCUserManager
-import resource.managed
+import scala.util.Using
 
 import java.io._
 import java.util.concurrent.CountDownLatch
 import scala.collection.mutable
-import scala.compat.Platform.currentTime
 import scala.util.control.Exception.{catching, ignoring}
 
 /**
@@ -147,7 +146,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
      * Acks server start.
      */
     protected def ackStart() {
-        val dur = s"[${U.format((currentTime - executionStart) / 1000.0, 2)}s]"
+        val dur = s"[${U.format((U.now() - executionStart) / 1000.0, 2)}s]"
 
         val tbl = NCAsciiTable()
 
@@ -269,7 +268,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
             }
 
             try {
-                managed(new ObjectOutputStream(new FileOutputStream(path))) acquireAndGet { stream =>
+                Using.resource(new ObjectOutputStream(new FileOutputStream(path))) { stream =>
                     val ver = NCVersion.getCurrent
 
                     stream.writeObject(NCCliServerBeacon(
@@ -294,7 +293,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
                         acsToksScanMins = Config.acsToksScanMins,
                         acsToksExpireMins = Config.acsToksExpireMins,
                         beaconPath = path.getAbsolutePath,
-                        startMs = currentTime
+                        startMs = U.now()
                     ))
 
                     stream.flush()
@@ -341,9 +340,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
 
         if (path.exists())
             catching(classOf[IOException]) either {
-                managed(new ObjectInputStream(new FileInputStream(path))) acquireAndGet {
-                    _.readObject()
-                }
+                U.readObject(path)
             } match {
                 case Left(e) =>
                     logger.trace(s"Failed to read existing server beacon: ${path.getAbsolutePath}", e)

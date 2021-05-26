@@ -26,15 +26,15 @@ import org.apache.nlpcraft.common.module.NCModule
 import org.apache.nlpcraft.common.module.NCModule.{NCModule, PROBE, SERVER}
 import org.apache.nlpcraft.common.pool.NCThreadPoolManager
 import org.apache.nlpcraft.common.{NCE, NCService, U}
-import resource.managed
 
 import java.io._
 import java.net.URL
 import java.nio.file.Files
 import java.util.concurrent.ConcurrentHashMap
-import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext
 import scala.io.Source
+import scala.jdk.CollectionConverters.ConcurrentMapHasAsScala
+import scala.util.Using
 
 /**
   * External configuration manager.
@@ -117,7 +117,7 @@ object NCExternalConfigManager extends NCService {
             val url = s"${Config.url}/$MD5_FILE"
 
             try
-                managed(Source.fromURL(url)) acquireAndGet { src =>
+                Using.resource(Source.fromURL(url)) { src =>
                     src.getLines().map(_.trim()).filter(s => s.nonEmpty && !s.startsWith("#")).map(f = p => {
                         def splitPair(s: String, sep: String): (String, String) = {
                             val seq = s.split(sep).map(_.strip)
@@ -150,7 +150,7 @@ object NCExternalConfigManager extends NCService {
 
             val v2 =
                 try
-                    managed(Files.newInputStream(f.toPath)) acquireAndGet { in => DigestUtils.md5Hex(in) }
+                    Using.resource(Files.newInputStream(f.toPath)) { in => DigestUtils.md5Hex(in) }
                 catch {
                     case e: IOException => throw new NCE(s"Failed to get MD5 for: '${f.getAbsolutePath}'", e)
                 }
@@ -256,7 +256,7 @@ object NCExternalConfigManager extends NCService {
     @throws[NCE]
     def getDirContent(
         typ: NCExternalConfigType, resDir: String, resFilter: String => Boolean, parent: Span = null
-    ): Stream[NCExternalConfigHolder] =
+    ): LazyList[NCExternalConfigHolder] =
         startScopedSpan("getDirContent", parent, "resDir" -> resDir) { _ =>
             val resDirPath = getResourcePath(typ, resDir)
 
@@ -269,9 +269,9 @@ object NCExternalConfigManager extends NCService {
                 d.listFiles(new FileFilter { override def accept(f: File): Boolean = f.isFile && resFilter(f.getName) })
 
             if (files != null)
-                files.toStream.map(f => NCExternalConfigHolder(typ, f.getName, mkString(U.readFile(f))))
+                files.to(LazyList).map(f => NCExternalConfigHolder(typ, f.getName, mkString(U.readFile(f))))
             else
-                Stream.empty
+                LazyList.empty
         }
 
     /**
@@ -307,8 +307,8 @@ object NCExternalConfigManager extends NCService {
         val url = s"${Config.url}/${type2String(d.typ)}/${d.file.getName}"
 
         try
-            managed(new BufferedInputStream(new URL(url).openStream())) acquireAndGet { src =>
-                managed(new FileOutputStream(d.file)) acquireAndGet { dest =>
+            Using.resource(new BufferedInputStream(new URL(url).openStream())) { src =>
+                Using.resource(new FileOutputStream(d.file)) { dest =>
                     IOUtils.copy(src, dest)
                 }
 

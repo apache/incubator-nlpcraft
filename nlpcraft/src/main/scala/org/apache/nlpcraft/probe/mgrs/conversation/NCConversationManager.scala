@@ -46,7 +46,7 @@ object NCConversationManager extends NCService {
             while (!t.isInterrupted)
                 try
                     convs.synchronized {
-                        val sleepTime = clearForTimeout() - System.currentTimeMillis()
+                        val sleepTime = clearForTimeout() - U.now()
 
                         if (sleepTime > 0)
                             convs.wait(sleepTime)
@@ -85,7 +85,7 @@ object NCConversationManager extends NCService {
         startScopedSpan("clearForTimeout") { _ =>
             require(Thread.holdsLock(convs))
 
-            val now = System.currentTimeMillis()
+            val now = U.now()
             val delKeys = mutable.HashSet.empty[Key]
 
             for ((key, value) <- convs) {

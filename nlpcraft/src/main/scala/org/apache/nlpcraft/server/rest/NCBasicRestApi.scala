@@ -1910,12 +1910,12 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       * @return
       */
     private def withMetric(m: Measure, f: () => Route): Route = {
-        val start = System.currentTimeMillis()
+        val start = U.now()
 
         try
             f()
         finally {
-            recordStats(m -> (System.currentTimeMillis() - start))
+            recordStats(m -> (U.now() - start))
         }
     }
 

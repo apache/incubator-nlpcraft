@@ -18,15 +18,14 @@
 package org.apache.nlpcraft.common.ascii
 
 import java.io.{IOException, PrintStream}
-
 import com.typesafe.scalalogging.Logger
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.ascii.NCAsciiTable._
-import resource._
 import org.apache.nlpcraft.common.ansi.NCAnsi._
 
-import scala.collection.JavaConverters._
 import scala.collection.mutable
+import scala.jdk.CollectionConverters.CollectionHasAsScala
+import scala.util.Using
 
 /**
  * `ASCII`-based table with minimal styling support.
@@ -204,6 +203,14 @@ class NCAsciiTable {
     }
 
     /**
+     * Adds row (one or more row cells).
+     *
+     * @param cells Row cells. For multi-line cells - use `Seq(...)`.
+     */
+    def +=(cells: mutable.Seq[Any]): NCAsciiTable =
+        +=(cells.toSeq: _*)
+
+    /**
      * Adds row (one or more row cells) with a given style.
      *
      * @param cells Row cells tuples (style, text). For multi-line cells - use `Seq(...)`.
@@ -251,6 +258,14 @@ class NCAsciiTable {
 
         this
     }
+
+    /**
+     * Adds header (one or more header cells).
+     *
+     * @param cells Header cells. For multi-line cells - use `Seq(...)`.
+     */
+    def #=(cells: mutable.Seq[Any]): NCAsciiTable =
+        #=(cells.toSeq: _*)
 
     /**
      * Adds styled header (one or more header cells).
@@ -672,11 +687,11 @@ class NCAsciiTable {
 
     private def renderPrintStream(f: => PrintStream, file: String): Unit =
         try
-            managed(f) acquireAndGet { ps =>
+            Using.resource(f) { ps =>
                 ps.print(mkString)
             }
         catch {
-            case e: IOException => throw new NCE(s"Error writing file: $file", e)
+            case e: IOException => throw new NCE(s"Error outputting table into file: $file", e)
         }
 }
 

@@ -1265,7 +1265,7 @@ trait NCIdlCompilerBase {
             case "week_of_month" => z0(() => Z(Calendar.getInstance().get(Calendar.WEEK_OF_MONTH), 0))
             case "week_of_year" => z0(() => Z(Calendar.getInstance().get(Calendar.WEEK_OF_YEAR), 0))
             case "quarter" => z0(() => Z(LocalDate.now().get(IsoFields.QUARTER_OF_YEAR), 0))
-            case "now" => z0(() => Z(System.currentTimeMillis(), 0)) // Epoc time.
+            case "now" => z0(() => Z(U.now(), 0)) // Epoc time.
 
             case _ => throw rtUnknownFunError(fun) // Assertion.
         }

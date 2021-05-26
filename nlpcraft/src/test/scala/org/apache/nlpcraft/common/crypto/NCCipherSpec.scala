@@ -67,11 +67,11 @@ class NCCipherSpec  {
         
         val key = NCCipher.makeTokenKey(U.genGuid())
         
-        val now = System.currentTimeMillis()
+        val now = U.now()
         
         val sec = NCCipher.encrypt(Base64.getEncoder.encodeToString(bytes), key)
         
-        val dur = System.currentTimeMillis() - now
+        val dur = U.now() - now
         
         println(s"Input length: ${str.length}")
         println(s"Output length: ${sec.length}")

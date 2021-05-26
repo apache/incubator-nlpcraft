@@ -57,7 +57,7 @@ object NCDialogFlowManager extends NCService {
             while (!t.isInterrupted)
                 try
                     flow.synchronized {
-                        val sleepTime = clearForTimeout() - System.currentTimeMillis()
+                        val sleepTime = clearForTimeout() - U.now()
 
                         if (sleepTime > 0)
                             flow.wait(sleepTime)
@@ -160,7 +160,7 @@ object NCDialogFlowManager extends NCService {
         startScopedSpan("clearForTimeout") { _ =>
             require(Thread.holdsLock(flow))
 
-            val now = System.currentTimeMillis()
+            val now = U.now()
             val delKeys = mutable.HashSet.empty[Key]
             val timeouts = mutable.HashMap.empty[String, Long]
 

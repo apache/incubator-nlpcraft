@@ -82,11 +82,11 @@ private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
                     cli.open(mdlId)
 
                     txts.map (txt => {
-                        var t = System.currentTimeMillis()
+                        var t = U.now()
 
                         val res = cli.ask(txt)
 
-                        t = System.currentTimeMillis() - t
+                        t = U.now() - t
 
                         if (res.isFailed)
                             Result(mdlId, intentId, txt, pass = false, Some(res.getResultError.get()), t)

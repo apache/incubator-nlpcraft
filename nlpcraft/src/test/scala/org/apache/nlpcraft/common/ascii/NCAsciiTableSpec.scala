@@ -75,7 +75,7 @@ class NCAsciiTableSpec {
     def testWithVeryBigTable() {
         val NUM = 100
 
-        val start = System.currentTimeMillis()
+        val start = U.now()
 
         val t = NCAsciiTable()
         
@@ -88,7 +88,7 @@ class NCAsciiTableSpec {
 
         t.render()
 
-        val dur = System.currentTimeMillis() - start
+        val dur = U.now() - start
 
         println(s"Rendered in ${dur}ms.")
     }

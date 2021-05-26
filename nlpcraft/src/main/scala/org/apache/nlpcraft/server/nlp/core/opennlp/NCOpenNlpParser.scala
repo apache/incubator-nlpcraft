@@ -30,7 +30,7 @@ import org.apache.nlpcraft.common.{NCService, U}
 import org.apache.nlpcraft.server.ignite.NCIgniteHelpers._
 import org.apache.nlpcraft.server.ignite.NCIgniteInstance
 import org.apache.nlpcraft.server.nlp.core.{NCNlpParser, NCNlpWord}
-import resource.managed
+import scala.util.Using
 
 import scala.concurrent.ExecutionContext
 import scala.util.control.Exception.catching
@@ -58,13 +58,13 @@ object NCOpenNlpParser extends NCService with NCNlpParser with NCIgniteInstance 
         U.executeParallel(
             () => {
                 tagger =
-                    managed(NCExternalConfigManager.getStream(OPENNLP, "en-pos-maxent.bin", span)) acquireAndGet { in =>
+                    Using.resource(NCExternalConfigManager.getStream(OPENNLP, "en-pos-maxent.bin", span)) { in =>
                         new POSTaggerME(new POSModel(in))
                     }
             },
             () => {
                 lemmatizer =
-                    managed(NCExternalConfigManager.getStream(OPENNLP, "en-lemmatizer.dict", span)) acquireAndGet { in =>
+                    Using.resource(NCExternalConfigManager.getStream(OPENNLP, "en-lemmatizer.dict", span)) { in =>
                         new DictionaryLemmatizer(in)
                     }
             }

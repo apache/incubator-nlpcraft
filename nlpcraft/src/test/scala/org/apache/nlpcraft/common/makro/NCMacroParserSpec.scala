@@ -72,14 +72,14 @@ class NCMacroParserSpec  {
 
     // @Test
     def testPerformance() {
-        val start = currentTime
+        val start = U.now()
 
         val N = 50000
 
         for (_ <- 0 to N)
             parser.expand("a {{{<C>}}} {c|d|e|f|g|h|j|k|l|n|m|p|r}")
 
-        val duration = currentTime - start
+        val duration = U.now() - start
 
         println(s"${N * 1000 / duration} expansions/sec.")
     }

@@ -76,7 +76,7 @@ abstract class NCService extends LazyLogging with NCOpenCensusTrace {
      */
     protected def ackStarting(): NCService = {
         starting = true
-        timeStampMs = currentTime
+        timeStampMs = U.now()
 
         logger.trace(s"$name staring...")
 
@@ -94,7 +94,7 @@ abstract class NCService extends LazyLogging with NCOpenCensusTrace {
      */
     protected def ackStopping(): NCService = {
         stopping = true
-        timeStampMs = currentTime
+        timeStampMs = U.now()
 
         logger.trace(s"$name stopping...")
 
@@ -117,7 +117,7 @@ abstract class NCService extends LazyLogging with NCOpenCensusTrace {
 
         addTags(
             currentSpan(),
-            "startDurationMs" -> (currentTime - timeStampMs),
+            "startDurationMs" -> (U.now() - timeStampMs),
             "state" -> "started"
         )
 
@@ -140,7 +140,7 @@ abstract class NCService extends LazyLogging with NCOpenCensusTrace {
         started = false
 
         addTags(currentSpan(),
-            "stopDurationMs" -> (currentTime - timeStampMs),
+            "stopDurationMs" -> (U.now() - timeStampMs),
             "state" -> "stopped"
         )
 

@@ -22,9 +22,10 @@ import opennlp.tools.tokenize.{Tokenizer, TokenizerME, TokenizerModel}
 import org.apache.nlpcraft.common.NCService
 import org.apache.nlpcraft.common.nlp.core.{NCNlpCoreToken, NCNlpTokenizer}
 import org.apache.nlpcraft.common.extcfg.NCExternalConfigManager
-import resource.managed
 import org.apache.nlpcraft.common.extcfg.NCExternalConfigType.OPENNLP
+
 import scala.language.{implicitConversions, postfixOps}
+import scala.util.Using
 
 /**
   * OpenNLP tokenizer implementation.
@@ -42,7 +43,7 @@ object NCOpenNlpTokenizer extends NCNlpTokenizer {
     override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ =>
         ackStarting()
 
-        tokenizer = managed(NCExternalConfigManager.getStream(OPENNLP, RESOURCE)) acquireAndGet { in =>
+        tokenizer = Using.resource(NCExternalConfigManager.getStream(OPENNLP, RESOURCE)) { in =>
             new TokenizerME(new TokenizerModel(in))
         }
 

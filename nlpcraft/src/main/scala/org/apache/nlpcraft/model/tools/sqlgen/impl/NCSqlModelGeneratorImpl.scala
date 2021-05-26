@@ -23,7 +23,6 @@ import java.time.format.DateTimeFormatter
 import java.time.{Instant, LocalDateTime}
 import java.util
 import java.util.regex.{Pattern, PatternSyntaxException}
-
 import com.fasterxml.jackson.annotation.JsonInclude.Include
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
@@ -34,11 +33,11 @@ import org.apache.nlpcraft.common.version.NCVersion
 import org.apache.nlpcraft.model.impl.json.{NCElementJson, NCMacroJson, NCModelJson}
 import org.apache.nlpcraft.model.tools.sqlgen.NCSqlJoinType
 import org.apache.nlpcraft.common._
-import resource.managed
 
-import scala.collection.JavaConverters._
+import scala.util.Using
 import scala.collection.immutable.HashMap
 import scala.collection.{Seq, mutable}
+import scala.jdk.CollectionConverters.{IterableHasAsJava, SeqHasAsJava}
 import scala.util.Try
 
 /**
@@ -57,7 +56,7 @@ object NCSqlModelGeneratorImpl {
 
         private lazy val nameWs = U.normalize(elmNameLc.replaceAll("_"," ")," ")
 
-        lazy val synonym =
+        lazy val synonym: String =
             if (elmNameLc == nameWs)
                 substituteMacros(elmNameLc)
             else
@@ -72,10 +71,9 @@ object NCSqlModelGeneratorImpl {
         isNullable: String,
         isPk: Boolean
     ) extends NamedEntity {
-        val nameLc = name.toLowerCase()
-        val elmNameLc = elmName.toLowerCase()
-
-        lazy val isNull = isNullable == "YES"
+        val nameLc: String = name.toLowerCase()
+        val elmNameLc: String = elmName.toLowerCase()
+        lazy val isNull: Boolean = isNullable == "YES"
     }
 
     case class Table(
@@ -84,8 +82,8 @@ object NCSqlModelGeneratorImpl {
         joins: Seq[Join],
         columns: mutable.ArrayBuffer[Column] = mutable.ArrayBuffer.empty[Column]
     ) extends NamedEntity {
-        val nameLc = name.toLowerCase()
-        val elmNameLc = elmName.toLowerCase()
+        val nameLc: String = name.toLowerCase()
+        val elmNameLc: String = elmName.toLowerCase()
     }
     
     case class ParametersHolder(
@@ -405,7 +403,7 @@ object NCSqlModelGeneratorImpl {
         }
 
         try {
-            managed(new FileOutputStream(file)) acquireAndGet { stream =>
+            Using.resource(new FileOutputStream(file)) { stream =>
                 mapper.writerWithDefaultPrettyPrinter().writeValue(stream, mdl)
 
                 stream.flush()
@@ -481,12 +479,12 @@ object NCSqlModelGeneratorImpl {
 
             val pks = mutable.HashSet.empty[String]
 
-            managed { getConnection } acquireAndGet { conn =>
+            Using.resource { getConnection } { conn =>
                 val md = conn.getMetaData
 
-                managed {
+                Using.resource {
                     md.getColumns(null, params.schema, null, null)
-                } acquireAndGet { rs =>
+                } { rs =>
                     while (rs.next()) {
                         val schNameOrigin = rs.getString("TABLE_SCHEM")
                         val tblNameOrigin = rs.getString("TABLE_NAME")
@@ -512,7 +510,7 @@ object NCSqlModelGeneratorImpl {
                             case None if isAllowed(tblName) =>
                                 pks.clear()
                               
-                                managed { md.getPrimaryKeys(null, schNameOrigin, tblNameOrigin) } acquireAndGet { rs =>
+                                Using.resource { md.getPrimaryKeys(null, schNameOrigin, tblNameOrigin) } { rs =>
                                     while (rs.next())
                                         pks += rs.getString("COLUMN_NAME").toLowerCase
                                 }
@@ -529,7 +527,7 @@ object NCSqlModelGeneratorImpl {
 
                                 val fks = mutable.ArrayBuffer.empty[Fk]
 
-                                managed { md.getImportedKeys(null, schNameOrigin, tblNameOrigin) } acquireAndGet { rs =>
+                                Using.resource { md.getImportedKeys(null, schNameOrigin, tblNameOrigin) } { rs =>
                                     while (rs.next())
                                         fks += Fk(
                                             name = rs.getString("FK_NAME"),

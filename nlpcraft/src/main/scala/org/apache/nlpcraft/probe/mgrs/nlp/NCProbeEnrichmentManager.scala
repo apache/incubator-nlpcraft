@@ -165,7 +165,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
             "mdlId" -> mdlId
         )
 
-        startMs.set(System.currentTimeMillis())
+        startMs.set(U.now())
 
         try
             ask0(
@@ -228,7 +228,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
     ): Unit = {
         require(nlpSens.nonEmpty)
 
-        var start = System.currentTimeMillis()
+        var start = U.now()
 
         val tbl = NCAsciiTable()
 
@@ -344,7 +344,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
 
             NCConnectionManager.send(msg, span)
 
-            val durMs = System.currentTimeMillis() - startMs.get
+            val durMs = U.now() - startMs.get
 
             if (errMsg.isEmpty)
                 logger.info(s"" +
@@ -621,7 +621,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
             }
         }
         
-        recordStats(M_SYS_LATENCY_MS -> (System.currentTimeMillis() - start))
+        recordStats(M_SYS_LATENCY_MS -> (U.now() - start))
     
         /**
          *
@@ -658,7 +658,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
 
                 var res = mdl.model.onContext(ctx)
     
-                start = System.currentTimeMillis()
+                start = U.now()
     
                 if (res == null && mdl.solver != null)
                     startScopedSpan("intentMatching", span) { _ =>
@@ -668,7 +668,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                 if (res == null && mdl.solver == null)
                     throw new IllegalStateException("No intents and no results from model callbacks.")
     
-                recordStats(M_USER_LATENCY_MS -> (System.currentTimeMillis() - start))
+                recordStats(M_USER_LATENCY_MS -> (U.now() - start))
 
                 if (res == null)
                     throw new IllegalStateException("Result cannot be null.")
