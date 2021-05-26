@@ -846,7 +846,7 @@ object NCCli extends NCCliBase {
                 breakable {
                     for (_ <- 0 until lines)
                         in.readLine() match {
-                            case null => break
+                            case null => break()
                             case line => tail ::= line
                         }
                 }
@@ -1882,7 +1882,7 @@ object NCCli extends NCCliBase {
         outEntry: String,
         extractHeader: Option[Seq[String] => (Int, Int)],
         repls: (String, String)*
-    ) {
+    ): Unit = {
         val key = s"$zipInDir/$inEntry"
 
         require(PRJ_TEMPLATES.contains(key), s"Unexpected template entry for: $key")

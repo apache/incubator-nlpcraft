@@ -29,8 +29,6 @@ import org.apache.nlpcraft.model.{NCContext, NCDialogFlowItem, NCIntentMatch, NC
 import org.apache.nlpcraft.probe.mgrs.dialogflow.NCDialogFlowManager
 
 import java.util.function.Function
-import scala.collection.JavaConverters._
-import scala.collection.convert.ImplicitConversions._
 import scala.collection.mutable
 
 /**
@@ -119,12 +117,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
             res
         }
 
-        /**
-         *
-         * @return
-         */
-        def toSeq: Seq[Int] = buf
-
+        def toSeq: Seq[Int] = buf.toSeq
         def toAnsiString: String = buf.mkString(y(bo("[")), ", ", y(bo("]")))
     }
 

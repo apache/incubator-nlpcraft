@@ -19,7 +19,6 @@ package org.apache.nlpcraft.server.sql
 
 import java.sql.Types._
 import java.sql.{Connection, PreparedStatement, ResultSet, SQLException, Timestamp}
-
 import com.mchange.v2.c3p0.ComboPooledDataSource
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.ignite.{Ignite, IgniteAtomicSequence, IgniteJdbcThinDriver}
@@ -29,6 +28,7 @@ import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.server.tx.NCTxManager
 
 import scala.collection._
+import scala.util.Using
 import scala.util.control.Exception._
 
 /**

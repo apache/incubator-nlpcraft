@@ -40,7 +40,7 @@ object NCIdlCompilerGlobal {
      */
     private def clearImportCache(): Unit =
         importCache.synchronized {
-            importCache.clear
+            importCache.clear()
         }
 
     /**

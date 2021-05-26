@@ -30,7 +30,7 @@ import java.time.temporal.IsoFields
 import java.time.{LocalDate, LocalTime}
 import java.util
 import java.util.{Calendar, Collections, Collection => JColl, List => JList, Map => JMap}
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.{CollectionHasAsScala, IterableHasAsJava}
 
 trait NCIdlCompilerBase {
     type S = NCIdlStack
@@ -387,6 +387,7 @@ trait NCIdlCompilerBase {
         val (x1, x2) = pop2()(stack, ctx)
 
         def doEq(v1: Object, v2: Object): Boolean = {
+            //noinspection ComparingUnrelatedTypes
             if (v1 eq v2) true
             else if (v1 == null && v2 == null) true
             else if ((v1 == null && v2 != null) || (v1 != null && v2 == null)) false
@@ -740,7 +741,7 @@ trait NCIdlCompilerBase {
                     if (lst.isEmpty)
                         throw newRuntimeError(s"Unexpected empty list in IDL function: $fun()")
                     else {
-                        val seq: Seq[Double] = lst.asScala.map(p => JDouble.valueOf(p.toString).doubleValue())
+                        val seq: Seq[Double] = lst.asScala.map(p => JDouble.valueOf(p.toString).doubleValue()).toSeq
 
                         Z(seq.sum / seq.length, n)
                     }
@@ -762,7 +763,7 @@ trait NCIdlCompilerBase {
                     if (lst.isEmpty)
                         throw newRuntimeError(s"Unexpected empty list in IDL function: $fun()")
                     else {
-                        val seq: Seq[Double] = lst.asScala.map(p => JDouble.valueOf(p.toString).doubleValue())
+                        val seq: Seq[Double] = lst.asScala.map(p => JDouble.valueOf(p.toString).doubleValue()).toSeq
 
                         val mean = seq.sum / seq.length
                         val stdDev = Math.sqrt(seq.map( _ - mean).map(t => t * t).sum / seq.length)
@@ -869,7 +870,7 @@ trait NCIdlCompilerBase {
             stack.push(() => {
                 val Z(v, n) = x()
 
-                val jl = toList(v).asScala.distinct.asJava
+                val jl = toList(v).asScala.toSeq.distinct.asJava
 
                 Z(jl, n)
             })

@@ -433,7 +433,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
     /**
       * Prints ASCII-logo.
       */
-    private def asciiLogo() {
+    private def asciiLogo(): Unit = {
         val ver = NCVersion.getCurrent
 
         println(
@@ -469,7 +469,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
     /**
       * Asks server start.
       */
-    private def ackStart() {
+    private def ackStart(): Unit = {
         val dur = s"[${U.format((U.now() - execStart) / 1000.0, 2)} sec]"
         
         val tbl = NCAsciiTable()
