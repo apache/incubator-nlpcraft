@@ -36,9 +36,9 @@ import org.apache.nlpcraft.server.probe.NCProbeManager
 import java.util
 import java.util.concurrent._
 import java.util.concurrent.atomic.{AtomicInteger, AtomicReference}
-import scala.collection.JavaConverters._
-import scala.collection.{Seq, mutable}
+import scala.collection.mutable
 import scala.concurrent.{ExecutionContext, Future, Promise}
+import scala.jdk.CollectionConverters.{ListHasAsScala, MapHasAsScala}
 import scala.util.{Failure, Success}
 
 /**
@@ -78,7 +78,7 @@ object NCSuggestSynonymManager extends NCService {
                 case 200 =>
                     val data: util.List[util.List[Suggestion]] = GSON.fromJson(js, TYPE_RESP)
 
-                    data.asScala.map(p => if (p.isEmpty) Seq.empty else p.asScala.tail)
+                    data.asScala.map(p => if (p.isEmpty) Seq.empty else p.asScala.tail.toSeq).toSeq
 
                 case _ =>
                     throw new NCE(

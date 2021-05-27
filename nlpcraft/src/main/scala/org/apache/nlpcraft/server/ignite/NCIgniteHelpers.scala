@@ -18,12 +18,11 @@
 package org.apache.nlpcraft.server.ignite
 
 import java.util.UUID
-
 import org.apache.ignite.IgniteCache
 import org.apache.ignite.events.CacheEvent
 import org.apache.ignite.lang.{IgniteBiPredicate, IgnitePredicate}
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.{IterableHasAsScala, MapHasAsJava, SeqHasAsJava}
 
 /*
  * Helpers for working with Ignite.

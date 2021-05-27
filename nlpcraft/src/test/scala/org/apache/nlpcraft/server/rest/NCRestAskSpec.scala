@@ -21,7 +21,7 @@ import org.apache.nlpcraft.NCTestEnvironment
 import org.junit.jupiter.api.Assertions._
 import org.junit.jupiter.api.{BeforeEach, Test}
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.{ListHasAsScala, MapHasAsJava, SetHasAsJava}
 
 @NCTestEnvironment(model = classOf[RestTestModel], startClient = false)
 class NCRestAskSpec extends NCRestSpec {

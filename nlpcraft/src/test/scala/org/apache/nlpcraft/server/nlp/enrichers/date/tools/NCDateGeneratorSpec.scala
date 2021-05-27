@@ -27,9 +27,8 @@ import org.junit.jupiter.api.Test
 
 import java.text.SimpleDateFormat
 import java.util.{Calendar, Date, Locale}
-import scala.collection.JavaConverters._
-import scala.collection._
-import scala.collection.mutable.{LinkedHashMap => LHM}
+import scala.collection.mutable.{LinkedHashMap ⇒ LHM}
+import scala.jdk.CollectionConverters.SeqHasAsJava
 import scala.language.implicitConversions
 
 /**

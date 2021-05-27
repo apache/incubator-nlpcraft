@@ -24,7 +24,7 @@ import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote}
 import org.apache.nlpcraft.server.ignite.NCIgniteInstance
 import org.apache.nlpcraft.server.nlp.core.NCNlpNerEnricher
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.ListHasAsScala
 
 /**
   * Google language cloud service NER enricher.

@@ -21,7 +21,7 @@ import org.apache.nlpcraft.common.U
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.{ListHasAsScala, MapHasAsScala}
 
 class NCRestErrorsSpec extends NCRestSpec {
     @Test

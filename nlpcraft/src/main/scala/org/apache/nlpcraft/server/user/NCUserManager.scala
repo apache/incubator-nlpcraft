@@ -31,7 +31,6 @@ import org.apache.nlpcraft.server.mdo.NCUserMdo
 import org.apache.nlpcraft.server.sql.{NCSql, NCSqlManager}
 import org.apache.nlpcraft.server.tx.NCTxManager
 
-import scala.collection.JavaConverters._
 import scala.util.control.Exception._
 
 /**

@@ -17,13 +17,15 @@
 
 package org.apache.nlpcraft.server.nlp.enrichers.date
 
-import java.util.{Locale, Calendar => C}
-import scala.collection.JavaConverters._
+import java.util.{Locale, Calendar ⇒ C}
 import org.apache.nlpcraft.common._
+
+import scala.jdk.CollectionConverters.SeqHasAsJava
 
 /**
   * Date parser.
   */
+//noinspection DuplicatedCode
 object NCDateParser {
     // For english calendar settings.
     Locale.setDefault(Locale.forLanguageTag("EN"))

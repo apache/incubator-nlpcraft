@@ -33,7 +33,7 @@ import org.junit.jupiter.api.{AfterEach, BeforeEach}
 
 import java.util
 import java.util.UUID
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.{ListHasAsScala, MapHasAsJava, MapHasAsScala, SeqHasAsJava}
 
 object NCRestSpec {
     private final val DFLT_BASEURL = "http://localhost:8081/api/v1/"

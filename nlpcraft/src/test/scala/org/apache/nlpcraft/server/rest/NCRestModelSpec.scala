@@ -21,7 +21,7 @@ import org.apache.nlpcraft.NCTestEnvironment
 import org.junit.jupiter.api.Assertions._
 import org.junit.jupiter.api.Test
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.ListHasAsScala
 
 /**
   * Note that context word server should be started.
@@ -31,7 +31,7 @@ class NCRestModelSpec extends NCRestSpec {
     @Test
     def test(): Unit = {
         def extract(data: java.util.List[java.util.Map[String, Object]]): Seq[Double] =
-            data.asScala.map(_.get("score").asInstanceOf[Number].doubleValue())
+            data.asScala.map(_.get("score").asInstanceOf[Number].doubleValue()).toSeq
 
         // Note that checked values are valid for current configuration of `RestTestModel` model.
         post("model/sugsyn", "mdlId" -> "rest.test.model")(

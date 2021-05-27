@@ -24,7 +24,7 @@ import net.sf.extjwnl.dictionary.{Dictionary, MorphologicalProcessor}
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.NCService
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.ListHasAsScala
 
 /**
   * WordNet manager.

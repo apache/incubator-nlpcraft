@@ -20,7 +20,7 @@ package org.apache.nlpcraft.server.rest
 import org.junit.jupiter.api.Assertions._
 import org.junit.jupiter.api.Test
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.MapHasAsJava
 
 class NCRestCompanySpec extends NCRestSpec {
     private final val PROPS = Map("k1" -> "v1", "k2" -> "v2").asJava
