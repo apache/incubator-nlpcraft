@@ -23,7 +23,7 @@ import org.apache.nlpcraft.common._
 
 import java.io.File
 import java.net.{MalformedURLException, URL}
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.MapHasAsScala
 
 /**
   * Mixin for configuration factory based on https://github.com/lightbend/config.

@@ -18,15 +18,14 @@
 package org.apache.nlpcraft.common.makro
 
 import org.apache.nlpcraft.common._
-import scala.collection.JavaConverters._
-import scala.collection._
+
+import scala.jdk.CollectionConverters.{ConcurrentMapHasAsScala, SetHasAsJava}
 
 object NCMacroParser {
-    private final val CHARS = "[A-Za-z0-9-_]+"
     private final val ESC_CHARS = """{}\<>_[]|,"""
-    private final val MACRO_REGEX = s"<$CHARS>".r
-    private final val BROKEN_MACRO_REGEX1 = s"<$CHARS".r
-    private final val BROKEN_MACRO_REGEX2 = s"$CHARS>".r
+    private final val MACRO_REGEX = s"<[A-Za-z0-9-_]+>".r
+    private final val BROKEN_MACRO_REGEX1 = s"<[A-Za-z0-9-_]+".r
+    private final val BROKEN_MACRO_REGEX2 = s"[A-Za-z0-9-_]+>".r
     
     /**
       * Constructor.

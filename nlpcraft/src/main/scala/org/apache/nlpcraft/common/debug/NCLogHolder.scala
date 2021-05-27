@@ -18,11 +18,12 @@
 package org.apache.nlpcraft.common.debug
 
 import org.apache.nlpcraft.common._
+
 import java.util
 import com.google.gson.Gson
 import org.apache.nlpcraft.model._
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.{CollectionHasAsScala, SeqHasAsJava}
 
 //
 // NOTE: these classes are specifically designed for JSON marshalling.

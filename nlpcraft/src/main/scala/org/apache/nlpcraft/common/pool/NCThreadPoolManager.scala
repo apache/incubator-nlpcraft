@@ -21,8 +21,8 @@ import io.opencensus.trace.Span
 import org.apache.nlpcraft.common._
 
 import java.util.concurrent._
-import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext
+import scala.jdk.CollectionConverters.CollectionHasAsScala
 
 /**
  * Common thread pool manager.

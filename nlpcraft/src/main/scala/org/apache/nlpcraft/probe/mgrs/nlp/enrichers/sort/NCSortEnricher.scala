@@ -27,7 +27,7 @@ import org.apache.nlpcraft.probe.mgrs.NCProbeModel
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
 
 import scala.collection.mutable
-import scala.jdk.CollectionConverters.IterableHasAsJava
+import scala.jdk.CollectionConverters.{CollectionHasAsScala, IterableHasAsJava, MapHasAsScala}
 
 /**
   * Sort enricher.
@@ -237,7 +237,7 @@ object NCSortEnricher extends NCProbeEnricher {
                 s"]"
             )
 
-        res
+        res.toSeq
     }
 
     /**
@@ -277,8 +277,8 @@ object NCSortEnricher extends NCProbeEnricher {
                     map(toks => toks.map(_.stem).mkString(" ") -> toks).toMap.
                     flatMap { case (stem, stemToks) =>
                         if (keyStems.contains(stem)) Some(KeyWord(stemToks, keyStems.indexOf(stem))) else None
-                    }.toStream.headOption
-            ).toStream.headOption
+                    }.to(LazyList).headOption
+            ).to(LazyList).headOption
         }
 
         var res: Option[Match] = None
@@ -468,7 +468,11 @@ object NCSortEnricher extends NCProbeEnricher {
                             }
 
                             def mkNote(params: mutable.ArrayBuffer[(String, Any)]): Unit = {
-                                val note = NCNlpSentenceNote(m.main.map(_.index), TOK_ID, params: _*)
+                                val note = NCNlpSentenceNote(
+                                    m.main.map(_.index),
+                                    TOK_ID,
+                                    params.toSeq: _*
+                                )
 
                                 if (!notes.exists(n => ns.notesEqualOrSimilar(n, note))) {
                                     notes += note

@@ -28,7 +28,7 @@ import org.apache.nlpcraft.model.intent.NCIdlIntent
 import org.apache.nlpcraft.model.{NCContext, NCIntentMatch, NCIntentSkip, NCModel, NCRejection, NCResult, NCToken, NCVariant}
 import org.apache.nlpcraft.probe.mgrs.dialogflow.NCDialogFlowManager
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.SeqHasAsJava
 
 /**
  * Front-end for intent solver.

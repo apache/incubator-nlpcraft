@@ -253,6 +253,16 @@ object NCNlpSentenceNote {
         apply(indexes, None, typ, params: _*)
 
     /**
+     * Creates new note with given parameters.
+     *
+     * @param indexes Indexes in the sentence.
+     * @param typ Type of the node.
+     * @param params Parameters.
+     */
+    def apply(indexes: mutable.Seq[Int], typ: String, params: (String, Any)*): NCNlpSentenceNote =
+        apply(indexes.toSeq, None, typ, params: _*)
+
+    /**
       * Creates new note with given parameters.
       *
       * @param indexes Indexes in the sentence.
@@ -262,4 +272,15 @@ object NCNlpSentenceNote {
       */
     def apply(indexes: Seq[Int], wordIndexes: Seq[Int], typ: String, params: (String, Any)*): NCNlpSentenceNote =
         apply(indexes, Some(wordIndexes), typ, params: _*)
+
+    /**
+     * Creates new note with given parameters.
+     *
+     * @param indexes Indexes in the sentence.
+     * @param wordIndexes Word indexes in the sentence.
+     * @param typ Type of the node.
+     * @param params Parameters.
+     */
+    def apply(indexes: mutable.Seq[Int], wordIndexes: mutable.Seq[Int], typ: String, params: (String, Any)*): NCNlpSentenceNote =
+        apply(indexes.toSeq, Some(wordIndexes.toSeq), typ, params: _*)
 }

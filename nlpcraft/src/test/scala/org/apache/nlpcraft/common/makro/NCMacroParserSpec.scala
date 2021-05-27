@@ -22,8 +22,7 @@ import org.apache.nlpcraft.model.NCMacroProcessor
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
-import scala.compat.Platform._
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.CollectionHasAsScala
 
 /**
   * Tests for text parser.

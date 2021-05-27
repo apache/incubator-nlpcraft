@@ -27,8 +27,7 @@ import org.apache.nlpcraft.common.{NCE, NCService}
 import org.apache.nlpcraft.probe.mgrs.NCProbeModel
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
 
-import scala.collection.JavaConverters._
-import scala.collection.{Map, Seq, mutable}
+import scala.collection.mutable
 
 /**
   * Relation enricher.

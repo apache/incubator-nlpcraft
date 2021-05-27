@@ -21,8 +21,6 @@ import org.apache.nlpcraft.model.intent.NCIdlIntent
 import org.apache.nlpcraft.model.intent.solver.NCIntentSolver
 import org.apache.nlpcraft.model.{NCElement, NCModel}
 
-import scala.collection.{Map, Seq}
-
 /**
   *
   * @param model

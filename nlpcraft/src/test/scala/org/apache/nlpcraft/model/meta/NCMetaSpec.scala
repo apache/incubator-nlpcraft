@@ -23,7 +23,7 @@ import org.apache.nlpcraft.{NCTestElement, NCTestEnvironment}
 import org.junit.jupiter.api.Test
 
 import java.util
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.MapHasAsJava
 import scala.sys.SystemProperties
 
 /**

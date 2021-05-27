@@ -19,7 +19,6 @@ package org.apache.nlpcraft.model.impl
 
 import java.text.SimpleDateFormat
 import java.util
-
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.ascii._
@@ -28,12 +27,13 @@ import org.apache.nlpcraft.model.NCToken
 import org.apache.nlpcraft.model.impl.NCTokenPimp._
 import org.apache.nlpcraft.common.ansi.NCAnsi._
 
-import scala.collection.JavaConverters._
-import scala.collection._
+import scala.collection.mutable
+import scala.jdk.CollectionConverters.{CollectionHasAsScala, MapHasAsScala}
 
 /**
  * Utility service that provides supporting functionality for ASCII rendering.
  */
+//noinspection DuplicatedCode
 object NCTokenLogger extends LazyLogging {
     case class NoteMetadata(noteType: String, filtered: Seq[String], isFull: Boolean)
     
@@ -167,8 +167,7 @@ object NCTokenLogger extends LazyLogging {
                 case None => None
             }
             def mkString(name: String): String = getValue(name).toString
-            def mkJListString(name: String): String =
-                getValue(name).asInstanceOf[java.util.List[String]].asScala.mkString(",")
+            def mkJListString(name: String): String = getValue(name).asInstanceOf[java.util.List[String]].asScala.mkString(",")
             def mkDate(name: String): String = format(getValue(name).asInstanceOf[Long])
 
             def getValueOpt(name: String): Option[java.io.Serializable] =
@@ -362,7 +361,7 @@ object NCTokenLogger extends LazyLogging {
       * Prepares table to print.
       */
     def prepareTable(sen: NCNlpSentence): NCAsciiTable = {
-        val md = filterKeysPairs(sen.flatMap(t => t.map(n => for (vk <- n.keys) yield n.noteType -> vk)).flatten.distinct)
+        val md = filterKeysPairs(sen.flatMap(t => t.map(n => for (vk <- n.keys) yield n.noteType -> vk)).flatten.toSeq.distinct)
         
         val tbl = mkTable(md)
         
@@ -394,7 +393,7 @@ object NCTokenLogger extends LazyLogging {
         if (!allFree)
             headers += "token data"
 
-        val tbl = NCAsciiTable(headers :_*)
+        val tbl = NCAsciiTable(headers)
 
         toks.foreach(tok => {
             val md = tok.getMetadata

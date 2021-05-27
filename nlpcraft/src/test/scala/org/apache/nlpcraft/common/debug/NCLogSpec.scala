@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test
 import java.lang.Boolean.TRUE
 import java.lang.reflect.Type
 import java.util
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.{MapHasAsJava, MapHasAsScala}
 import scala.language.implicitConversions
 
 object NCLogSpecModel {

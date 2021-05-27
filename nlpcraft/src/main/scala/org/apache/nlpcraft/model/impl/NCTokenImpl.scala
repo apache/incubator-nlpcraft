@@ -17,16 +17,15 @@
 
 package org.apache.nlpcraft.model.impl
 
-import java.io.{Serializable => JSerializable}
+import java.io.{Serializable ⇒ JSerializable}
 import java.util.Collections
-
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.nlp.NCNlpSentenceToken
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.probe.mgrs.NCProbeModel
 
-import scala.collection.JavaConverters._
-import scala.collection.{Seq, mutable}
+import scala.collection.mutable
+import scala.jdk.CollectionConverters.{CollectionHasAsScala, MapHasAsJava, MapHasAsScala, SeqHasAsJava}
 
 /**
   *
@@ -146,9 +145,9 @@ private[nlpcraft] object NCTokenImpl {
                     mdl.model,
                     srvReqId = srvReqId,
                     id = elm.getId,
-                    grps = elm.getGroups.asScala,
+                    grps = elm.getGroups.asScala.toSeq,
                     parentId = elm.getParentId,
-                    ancestors = ancestors,
+                    ancestors = ancestors.toSeq,
                     value = usrNote.dataOpt("value").orNull,
                     startCharIndex = tok.startCharIndex,
                     endCharIndex = tok.endCharIndex,

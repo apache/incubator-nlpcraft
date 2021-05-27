@@ -26,7 +26,7 @@ import org.junit.jupiter.api.BeforeEach
 
 import java.util
 import java.util.{Collections, Optional}
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.{MapHasAsJava, SeqHasAsJava, SetHasAsJava}
 import scala.language.implicitConversions
 
 /**
@@ -35,7 +35,7 @@ import scala.language.implicitConversions
 private[functions] trait NCIdlFunctions {
     private final val MODEL_ID = "test.mdl.id"
 
-    // It shouldn't be anonimous class because we need access to 'trueAlwaysCustomToken' method via reflection.
+    // It shouldn't be anonymous class because we need access to 'trueAlwaysCustomToken' method via reflection.
     class TestModel extends NCModel {
         override val getId: String = MODEL_ID
         override val getName: String = MODEL_ID
