@@ -18,7 +18,6 @@
 package org.apache.nlpcraft.server.user
 
 import java.util.{Timer, TimerTask}
-
 import io.opencensus.trace.Span
 import org.apache.commons.validator.routines.EmailValidator
 import org.apache.ignite.{IgniteAtomicSequence, IgniteCache, IgniteSemaphore, IgniteState, Ignition}
@@ -31,6 +30,7 @@ import org.apache.nlpcraft.server.mdo.NCUserMdo
 import org.apache.nlpcraft.server.sql.{NCSql, NCSqlManager}
 import org.apache.nlpcraft.server.tx.NCTxManager
 
+import scala.jdk.CollectionConverters.IterableHasAsScala
 import scala.util.control.Exception._
 
 /**
