@@ -24,7 +24,6 @@ import org.apache.nlpcraft.common.nlp._
 import org.apache.nlpcraft.common.{NCService, _}
 import org.apache.nlpcraft.probe.mgrs.NCProbeModel
 
-import scala.collection.Map
 import scala.language.implicitConversions
 
 /**

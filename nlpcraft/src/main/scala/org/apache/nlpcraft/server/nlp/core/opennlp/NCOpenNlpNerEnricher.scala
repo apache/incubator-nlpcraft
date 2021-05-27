@@ -129,6 +129,7 @@ object NCOpenNlpNerEnricher extends NCService with NCNlpNerEnricher with NCIgnit
                     synchronized {
                         val res = nerFinders.
                             filter { case (_, tokName) => ebiTokens.contains(tokName)}.
+                            toSeq.
                             flatMap {
                                 case (finder, name) =>
                                     finder.find(words).map(p => Holder(p.getStart, p.getEnd - 1, name, p.getProb))

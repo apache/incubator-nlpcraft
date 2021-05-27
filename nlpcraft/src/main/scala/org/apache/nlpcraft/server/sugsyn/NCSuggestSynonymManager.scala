@@ -38,7 +38,7 @@ import java.util.concurrent._
 import java.util.concurrent.atomic.{AtomicInteger, AtomicReference}
 import scala.collection.mutable
 import scala.concurrent.{ExecutionContext, Future, Promise}
-import scala.jdk.CollectionConverters.{ListHasAsScala, MapHasAsScala}
+import scala.jdk.CollectionConverters.{ListHasAsScala, MapHasAsScala, SeqHasAsJava}
 import scala.util.{Failure, Success}
 
 /**
