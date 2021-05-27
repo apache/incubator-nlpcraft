@@ -191,8 +191,8 @@ class NCLogHolder extends Serializable {
         
         this.queryContext = ContextJson(
             request = reqJs,
-            variants = ctx.getVariants.asScala.map(seq => seq.asScala.map(convert).asJava).toSeq.asJava,
-            convTokens = ctx.getConversation.getTokens.asScala.map(convert).asJava
+            variants = ctx.getVariants.asScala.map(seq => seq.asScala.map(convert).toSeq.asJava).toSeq.asJava,
+            convTokens = ctx.getConversation.getTokens.asScala.map(convert).toSeq.asJava
         )
     }
     

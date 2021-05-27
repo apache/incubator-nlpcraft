@@ -37,7 +37,7 @@ import org.apache.nlpcraft.common._
 import scala.util.Using
 import scala.collection.immutable.HashMap
 import scala.collection.{Seq, mutable}
-import scala.jdk.CollectionConverters.{IterableHasAsJava, SeqHasAsJava}
+import scala.jdk.CollectionConverters.{SeqHasAsJava, SetHasAsJava, MapHasAsJava}
 import scala.util.Try
 
 /**
@@ -320,52 +320,54 @@ object NCSqlModelGeneratorImpl {
         mdl.setEnabledBuiltInTokens(Array())
         mdl.setIntents(Array())
 
-        mdl.setMetadata(HashMap[String, Object](
-            "sql:timestamp" -> s"${Instant.now}",
-            "sql:url" -> params.url,
-            "sql:driver" -> params.driver,
-            "sql:user" -> params.user,
-            "sql:output" -> params.output,
-            "sql:schema" -> params.schema,
-            "sql:cmdline" -> params.cmdLine,
-            "sql:joins" ->
-                tables.flatMap(t => t.joins.map(j => {
-                    val fromTable = t.name.toLowerCase
-                    val toTable = j.toTable.toLowerCase
-                    val fromCols = j.fromColumns.map(_.toLowerCase)
-                    val toCols = j.toColumns.map(_.toLowerCase)
+        mdl.setMetadata(
+            HashMap[String, AnyRef](
+                "sql:timestamp" -> s"${Instant.now}",
+                "sql:url" -> params.url,
+                "sql:driver" -> params.driver,
+                "sql:user" -> params.user,
+                "sql:output" -> params.output,
+                "sql:schema" -> params.schema,
+                "sql:cmdline" -> params.cmdLine,
+                "sql:joins" ->
+                    tables.flatMap(t => t.joins.map(j => {
+                        val fromTable = t.name.toLowerCase
+                        val toTable = j.toTable.toLowerCase
+                        val fromCols = j.fromColumns.map(_.toLowerCase)
+                        val toCols = j.toColumns.map(_.toLowerCase)
 
-                    def mkNullables(t: String, cols: Seq[String]): Seq[Boolean] = {
-                        val tabCols = tablesMap(t).columns
+                        def mkNullables(t: String, cols: Seq[String]): Seq[Boolean] = {
+                            val tabCols = tablesMap(t).columns
 
-                        cols.map(col => tabCols.find(_.name == col).get.isNull)
-                    }
+                            cols.map(col => tabCols.find(_.name == col).get.isNull)
+                        }
 
-                    val fromColsNulls = mkNullables(fromTable, fromCols)
-                    val toColsNulls =mkNullables(toTable, toCols)
+                        val fromColsNulls = mkNullables(fromTable, fromCols)
+                        val toColsNulls =mkNullables(toTable, toCols)
 
-                    def forall(seq: Seq[Boolean], v: Boolean): Boolean = seq.forall(_ == v)
+                        def forall(seq: Seq[Boolean], v: Boolean): Boolean = seq.forall(_ == v)
 
-                    val typ =
-                        if (forall(fromColsNulls, v = true) && forall(toColsNulls, v = false))
-                            NCSqlJoinType.LEFT
-                        else if (forall(fromColsNulls, v = false) && forall(toColsNulls, v = true))
-                            NCSqlJoinType.RIGHT
-                        else
-                            // Default value.
-                            NCSqlJoinType.INNER
+                        val typ =
+                            if (forall(fromColsNulls, v = true) && forall(toColsNulls, v = false))
+                                NCSqlJoinType.LEFT
+                            else if (forall(fromColsNulls, v = false) && forall(toColsNulls, v = true))
+                                NCSqlJoinType.RIGHT
+                            else
+                                // Default value.
+                                NCSqlJoinType.INNER
 
-                    val m = new util.LinkedHashMap[String, Object]()
+                        val m = new util.LinkedHashMap[String, Object]()
 
-                    m.put("fromtable", fromTable)
-                    m.put("fromcolumns", fromCols.asJava)
-                    m.put("totable", toTable)
-                    m.put("tocolumns", toCols.asJava)
-                    m.put("jointype", typ.toString.toLowerCase)
+                        m.put("fromtable", fromTable)
+                        m.put("fromcolumns", fromCols.asJava)
+                        m.put("totable", toTable)
+                        m.put("tocolumns", toCols.asJava)
+                        m.put("jointype", typ.toString.toLowerCase)
 
-                    m
-                })).asJava
-        ).asJava)
+                        m
+                    })).asJava
+            ).asJava
+        )
         
         mdl.setElements(elems.toArray)
 

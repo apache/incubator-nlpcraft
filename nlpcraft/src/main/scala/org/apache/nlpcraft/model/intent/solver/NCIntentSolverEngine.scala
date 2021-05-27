@@ -24,12 +24,13 @@ import org.apache.nlpcraft.common.debug.{NCLogGroupToken, NCLogHolder}
 import org.apache.nlpcraft.common.opencensus.NCOpenCensusTrace
 import org.apache.nlpcraft.model.impl.NCTokenLogger
 import org.apache.nlpcraft.model.impl.NCTokenPimp._
-import org.apache.nlpcraft.model.intent.{NCIdlContext, NCIdlFunction, NCIdlIntent, NCIdlTerm, NCIdlStackItem => Z}
+import org.apache.nlpcraft.model.intent.{NCIdlContext, NCIdlFunction, NCIdlIntent, NCIdlTerm, NCIdlStackItem ⇒ Z}
 import org.apache.nlpcraft.model.{NCContext, NCDialogFlowItem, NCIntentMatch, NCResult, NCToken}
 import org.apache.nlpcraft.probe.mgrs.dialogflow.NCDialogFlowManager
 
 import java.util.function.Function
 import scala.collection.mutable
+import scala.jdk.CollectionConverters.{CollectionHasAsScala, MapHasAsScala, SeqHasAsJava}
 
 /**
  * Intent solver that finds the best matching intent given user sentence.
@@ -200,8 +201,8 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
             val matches = mutable.ArrayBuffer.empty[MatchHolder]
 
             // Find all matches across all intents and sentence variants.
-            for ((vrn, vrnIdx) <- ctx.getVariants.zipWithIndex) {
-                val availToks = vrn.filter(t => !t.isStopWord)
+            for ((vrn, vrnIdx) <- ctx.getVariants.asScala.zipWithIndex) {
+                val availToks = vrn.asScala.filter(t => !t.isStopWord)
 
                 matches.appendAll(
                     intents.flatMap(pair => {
@@ -210,7 +211,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
 
                         // Isolated sentence tokens.
                         val senToks = Seq.empty[UsedToken] ++ availToks.map(UsedToken(false, false, _))
-                        val senTokGroups = availToks.map(t => if (t.getGroups != null) t.getGroups.sorted else Seq.empty)
+                        val senTokGroups = availToks.map(t => if (t.getGroups != null) t.getGroups.asScala.sorted else Seq.empty)
 
                         // Isolated conversation tokens.
                         val convToks =
@@ -218,9 +219,9 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                                 Seq.empty[UsedToken] ++
                                     // We shouldn't mix tokens with same group from conversation
                                     // history and processed sentence.
-                                    ctx.getConversation.getTokens.
+                                    ctx.getConversation.getTokens.asScala.
                                         filter(t => {
-                                            val convTokGroups = t.getGroups.sorted
+                                            val convTokGroups = t.getGroups.asScala.sorted
 
                                             !senTokGroups.exists(convTokGroups.containsSlice)
                                         }).
@@ -292,6 +293,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                                     val variantPart =
                                         m.variant.
                                             tokens.
+                                            asScala.
                                             map(t => s"${t.getId}${t.getGroups}${t.getValue}${t.normText}").
                                             mkString("")
 

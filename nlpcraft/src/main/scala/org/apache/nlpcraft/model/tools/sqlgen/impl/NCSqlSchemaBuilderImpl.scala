@@ -23,7 +23,7 @@ import org.apache.nlpcraft.model.NCModel
 import org.apache.nlpcraft.model.tools.sqlgen._
 
 import scala.compat.java8.OptionConverters._
-import scala.jdk.CollectionConverters.{CollectionHasAsScala, ListHasAsScala}
+import scala.jdk.CollectionConverters.{CollectionHasAsScala, ListHasAsScala, MapHasAsScala, SeqHasAsJava}
 
 /**
   * 
@@ -72,7 +72,7 @@ object NCSqlSchemaBuilderImpl {
         var tables =
             elems.filter(_.getGroups.contains("table")).
                 map(p => {
-                    def x(l: util.List[String]): Seq[String] = if (l == null) Seq.empty else l.asScala
+                    def x(l: util.List[String]): Seq[String] = if (l == null) Seq.empty else l.asScala.toSeq
 
                     val tab: String = p.metax("sql:name")
                     val dfltSelect = x(p.metax("sql:defaultselect"))
@@ -84,7 +84,7 @@ object NCSqlSchemaBuilderImpl {
                     
                     val table: NCSqlTableImpl = NCSqlTableImpl(
                         table = tab,
-                        columns = cols.asScala,
+                        columns = cols.asScala.toSeq,
                         sorts = Seq.empty,
                         selects = dfltSelect,
                         extraTables = extra,
@@ -170,14 +170,14 @@ object NCSqlSchemaBuilderImpl {
             val join: NCSqlJoin = NCSqlJoinImpl(
                 mget("fromtable").asInstanceOf[String],
                 mget("totable").asInstanceOf[String],
-                mget("fromcolumns").asInstanceOf[util.List[String]].asScala,
-                mget("tocolumns").asInstanceOf[util.List[String]].asScala,
+                mget("fromcolumns").asInstanceOf[util.List[String]].asScala.toSeq,
+                mget("tocolumns").asInstanceOf[util.List[String]].asScala.toSeq,
                 NCSqlJoinType.valueOf(mget("jointype").asInstanceOf[String].toUpperCase())
             )
             
             join
         })
         
-        NCSqlSchemaImpl(tables, joins)
+        NCSqlSchemaImpl(tables, joins.toSeq)
     }
 }
