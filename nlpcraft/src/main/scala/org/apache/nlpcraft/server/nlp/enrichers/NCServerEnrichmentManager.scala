@@ -36,7 +36,6 @@ import org.apache.nlpcraft.server.nlp.enrichers.quote.NCQuoteEnricher
 import org.apache.nlpcraft.server.nlp.enrichers.stopword.NCStopWordEnricher
 import org.apache.nlpcraft.server.nlp.preproc.NCPreProcessManager
 
-import scala.collection.Seq
 import scala.concurrent.ExecutionContext
 import scala.util.control.Exception.catching
 
@@ -207,7 +206,7 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
             (x._1 * 100) + x._2.indexOf(hdr.noteName)
         })
 
-        val tbl = NCAsciiTable(headers.map(_.header): _*)
+        val tbl = NCAsciiTable(headers.map(_.header))
 
         /**
          *

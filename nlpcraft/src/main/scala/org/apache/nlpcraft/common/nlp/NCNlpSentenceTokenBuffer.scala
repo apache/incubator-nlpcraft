@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.common.nlp
 
 import scala.collection.mutable.ArrayBuffer
-import scala.collection.{Seq, IndexedSeq => IdxSeq}
+import scala.collection.{Seq, IndexedSeq}
 import scala.language.implicitConversions
 
 /**
@@ -32,8 +32,8 @@ class NCNlpSentenceTokenBuffer(val tokens: ArrayBuffer[NCNlpSentenceToken] = new
     /** Stem-based hashcode. */
     lazy val stemsHash: Int = stems.hashCode()
 
-    type SSOT = IdxSeq[IdxSeq[Option[NCNlpSentenceToken]]]
-    type SST = IdxSeq[IdxSeq[NCNlpSentenceToken]]
+    type SSOT = IndexedSeq[IndexedSeq[Option[NCNlpSentenceToken]]]
+    type SST = IndexedSeq[IndexedSeq[NCNlpSentenceToken]]
 
     /**
       * Gets all sequential permutations of tokens in this NLP sentence.
@@ -89,13 +89,13 @@ class NCNlpSentenceTokenBuffer(val tokens: ArrayBuffer[NCNlpSentenceToken] = new
         def permutations(toks: Seq[NCNlpSentenceToken]): SST = {
             def multiple(seq: SSOT, t: NCNlpSentenceToken): SSOT =
                 if (seq.isEmpty)
-                    if (t.isStopWord) IdxSeq(IdxSeq(Some(t)), IdxSeq(None)) else IdxSeq(IdxSeq(Some(t)))
+                    if (t.isStopWord) IndexedSeq(IndexedSeq(Some(t)), IndexedSeq(None)) else IndexedSeq(IndexedSeq(Some(t)))
                 else {
                     (for (subSeq <- seq) yield subSeq :+ Some(t)) ++
                         (if (t.isStopWord) for (subSeq <- seq) yield subSeq :+ None else Seq.empty)
                 }
 
-            var res: SSOT = IdxSeq.empty
+            var res: SSOT = IndexedSeq.empty
 
             for (t <- toks)
                 res = multiple(res, t)

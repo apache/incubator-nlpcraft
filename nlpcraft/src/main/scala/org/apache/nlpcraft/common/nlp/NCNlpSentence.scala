@@ -18,10 +18,11 @@
 package org.apache.nlpcraft.common.nlp
 
 import org.apache.nlpcraft.common._
+
 import java.io.{Serializable => JSerializable}
 import java.util.{Collections, List => JList}
-import scala.collection.JavaConverters._
-import scala.collection.{Map, Seq, Set, mutable}
+import scala.collection.mutable
+import scala.jdk.CollectionConverters.CollectionHasAsScala
 import scala.language.implicitConversions
 
 object NCNlpSentence {
@@ -80,7 +81,7 @@ class NCNlpSentence(
       *
       * @param noteType Note type.
       */
-    def getNotes(noteType: String): Seq[NCNlpSentenceNote] = this.flatMap(_.getNotes(noteType)).distinct
+    def getNotes(noteType: String): Seq[NCNlpSentenceNote] = this.flatMap(_.getNotes(noteType)).toSeq.distinct
 
     /**
       * Utility method that removes note with given ID from all tokens in this sentence.

@@ -60,7 +60,7 @@ object NCWordNetManager extends NCService {
                     else
                         Seq.empty
                 })
-            ).distinct
+            ).toSeq.distinct
         else
             Seq.empty[String]
     }

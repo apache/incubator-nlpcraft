@@ -20,6 +20,8 @@ package org.apache.nlpcraft.server.nlp.enrichers.stopword
 import org.apache.nlpcraft.common.nlp.core.NCNlpPorterStemmer
 import org.apache.nlpcraft.common.util.NCUtils
 
+import scala.collection.mutable
+
 /**
   * Generates first word sequences.
   */
@@ -187,7 +189,7 @@ object NCStopWordGenerator extends App {
         "couple of"
     )
 
-    private def mkGzip(path: String, lines: Traversable[Any]): Unit = {
+    private def mkGzip(path: String, lines: Iterable[Any]): Unit = {
         val p = NCUtils.mkPath(s"nlpcraft/src/main/resources/stopwords/$path")
 
         NCUtils.mkTextFile(p, lines)
@@ -195,7 +197,7 @@ object NCStopWordGenerator extends App {
     }
 
     private[stopword] def mkNounWords(): Unit = {
-        val buf = new scala.collection.mutable.ArrayBuffer[String]()
+        val buf = new mutable.ArrayBuffer[String]()
 
         for (w1 <- NOUN_WORDS)
             buf += s"$w1"
@@ -203,7 +205,7 @@ object NCStopWordGenerator extends App {
         for (w1 <- NOUN_WORDS; w2 <- NOUN_WORDS2)
             buf += s"$w1 $w2"
 
-        mkGzip(NOUN_WORDS_FILE, stem(buf))
+        mkGzip(NOUN_WORDS_FILE, stem(buf.toSeq))
     }
 
     private def stem(s: String): String =
@@ -342,7 +344,7 @@ object NCStopWordGenerator extends App {
         for (w0 <- DWORDS_PRE; w1 <- DWORDS; w2 <- DWORDS_SUP; w3 <- QWORDS)
             buf += s"$w0 $w1 $w2 $w3"
 
-        mkGzip(FIRST_WORDS_FILE, stem(buf))
+        mkGzip(FIRST_WORDS_FILE, stem(buf.toSeq))
     }
 
     mkFirstWords()

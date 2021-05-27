@@ -24,7 +24,7 @@ import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote, NCNlpSe
 import org.apache.nlpcraft.server.nlp.core.{NCNlpParser, NCNlpServerManager}
 import org.apache.nlpcraft.server.nlp.enrichers.NCServerEnricher
 
-import scala.collection._
+import scala.collection.mutable
 
 /**
   * Base NLP enricher.
@@ -135,7 +135,7 @@ object NCBaseNlpEnricher extends NCServerEnricher {
                     "direct" -> true
                 )
                 
-                tok.add(NCNlpSentenceNote(Seq(idx), "nlpcraft:nlp", seq: _*))
+                tok.add(NCNlpSentenceNote(Seq(idx), "nlpcraft:nlp", seq.toSeq: _*))
         
                 // Add new token to NLP sentence.
                 ns += tok

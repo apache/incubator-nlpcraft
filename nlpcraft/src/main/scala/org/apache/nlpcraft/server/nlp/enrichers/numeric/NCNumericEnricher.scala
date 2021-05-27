@@ -23,7 +23,7 @@ import org.apache.nlpcraft.common.nlp._
 import org.apache.nlpcraft.common.nlp.numeric._
 import org.apache.nlpcraft.server.nlp.enrichers.NCServerEnricher
 
-import scala.collection._
+import scala.collection.mutable
 
 /**
  * Numeric enricher.
@@ -415,7 +415,7 @@ object NCNumericEnricher extends NCServerEnricher {
                         }
                 }
     
-                val toks = ns.takeWhile(_ != num.tokens.head)
+                val toks = ns.takeWhile(_ != num.tokens.head).toSeq
     
                 process(toks)
                 process(toks.filter(!_.isStopWord))

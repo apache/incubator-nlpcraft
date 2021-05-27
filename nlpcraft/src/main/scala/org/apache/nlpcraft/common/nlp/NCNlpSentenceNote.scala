@@ -20,10 +20,10 @@ package org.apache.nlpcraft.common.nlp
 import org.apache.nlpcraft.common.U
 import org.apache.nlpcraft.common.ascii._
 
-import scala.collection.JavaConverters._
-import scala.collection.{Seq, Set, mutable}
-import scala.language.implicitConversions
 import java.io.{Serializable => JSerializable}
+import scala.collection.mutable
+import scala.language.implicitConversions
+import scala.jdk.CollectionConverters.{CollectionHasAsScala, SeqHasAsJava}
 
 /**
   * Sentence token note is a typed map of KV pairs.
@@ -39,8 +39,8 @@ class NCNlpSentenceNote(private val values: Map[String, JSerializable]) extends 
     lazy val noteType: String = values("noteType").asInstanceOf[String]
     lazy val tokenFrom: Int = values("tokMinIndex").asInstanceOf[Int] // First index.
     lazy val tokenTo: Int = values("tokMaxIndex").asInstanceOf[Int] // Last index.
-    lazy val tokenIndexes: Seq[Int] = values("tokWordIndexes").asInstanceOf[java.util.List[Int]].asScala // Includes 1st and last indices too.
-    lazy val wordIndexes: Seq[Int] = values("wordIndexes").asInstanceOf[java.util.List[Int]].asScala // Includes 1st and last indices too.
+    lazy val tokenIndexes: Seq[Int] = values("tokWordIndexes").asInstanceOf[java.util.List[Int]].asScala.toSeq // Includes 1st and last indices too.
+    lazy val wordIndexes: Seq[Int] = values("wordIndexes").asInstanceOf[java.util.List[Int]].asScala.toSeq // Includes 1st and last indices too.
     lazy val sparsity: Int = values("sparsity").asInstanceOf[Int]
     lazy val isDirect: Boolean = values("direct").asInstanceOf[Boolean]
     lazy val isUser: Boolean = {

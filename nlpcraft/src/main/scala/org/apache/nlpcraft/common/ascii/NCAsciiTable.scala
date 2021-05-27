@@ -719,6 +719,14 @@ object NCAsciiTable {
     def apply(hdrs: Any*): NCAsciiTable = new NCAsciiTable #= (hdrs: _*)
 
     /**
+     * Creates new ASCII table with given header cells.
+     *
+     * @param hdrs Header.
+     * @return Newly created ASCII table.
+     */
+    def apply(hdrs: mutable.Seq[_]): NCAsciiTable = new NCAsciiTable #= (hdrs.toSeq: _*)
+
+    /**
      * Creates new ASCII table with given headers and data.
      *
      * @param hdrs Headers.

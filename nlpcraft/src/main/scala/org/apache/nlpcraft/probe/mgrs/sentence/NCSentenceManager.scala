@@ -27,8 +27,8 @@ import org.apache.nlpcraft.model.NCModel
 import java.io.{Serializable => JSerializable}
 import java.util
 import java.util.{List => JList}
-import scala.collection.JavaConverters.{asScalaBufferConverter, _}
-import scala.collection.{Map, Seq, mutable}
+import scala.collection.mutable
+import scala.jdk.CollectionConverters.CollectionHasAsScala
 import scala.language.implicitConversions
 
 /**
@@ -290,7 +290,7 @@ object NCSentenceManager extends NCService {
       * @param ns Sentence.
       * @param userNoteTypes Notes types.
       */
-    private def fixIndexes(ns: NCNlpSentence, userNoteTypes: Seq[String]) {
+    private def fixIndexes(ns: NCNlpSentence, userNoteTypes: Seq[String]): Unit = {
         // Replaces other notes indexes.
         for (t <- userNoteTypes :+ "nlpcraft:nlp"; note <- ns.getNotes(t)) {
             val toks = ns.filter(_.contains(note)).sortBy(_.index)

@@ -52,9 +52,7 @@ import org.apache.nlpcraft.common.version.NCVersion
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 
-import java.net.http.HttpClient
-import java.net.http.HttpRequest
-import java.net.http.HttpResponse
+import java.net.http._
 import scala.annotation.tailrec
 import scala.collection.mutable
 import scala.concurrent.duration._
