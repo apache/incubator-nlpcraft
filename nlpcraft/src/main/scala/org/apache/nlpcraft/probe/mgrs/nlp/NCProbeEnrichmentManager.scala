@@ -552,7 +552,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
         }
 
         val meta = mutable.HashMap.empty[String, Any] ++ senMeta
-        val req = NCRequestImpl(meta, srvReqId)
+        val req = NCRequestImpl(meta.toMap, srvReqId)
 
         var senVars = NCProbeVariants.convert(srvReqId, mdl, sensSeq, lastPhase = true)
 

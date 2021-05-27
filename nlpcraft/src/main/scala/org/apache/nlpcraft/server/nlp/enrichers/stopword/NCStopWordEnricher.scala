@@ -678,7 +678,7 @@ object NCStopWordEnricher extends NCServerEnricher {
         val m =
             readStopWords(
                 U.readResource("stopwords/stop_words.txt", "UTF-8", logger).
-                    map(_.strip).filter(s => s.nonEmpty && !s.startsWith("#")).toSeq
+                    map(_.strip).filter(s => s.nonEmpty && !s.startsWith("#"))
             )
 
         stopWords = m(false)
