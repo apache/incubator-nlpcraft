@@ -18,13 +18,13 @@
 package org.apache.nlpcraft.server.nlp.enrichers.date.tools
 
 import java.text.{DateFormat, SimpleDateFormat}
-import java.util.{Date, Locale, Calendar ⇒ C}
+import java.util.{Date, Locale, Calendar => C}
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.nlp.numeric.NCNumericGenerator
 import org.apache.nlpcraft.server.nlp.enrichers.date.NCDateConstants._
 import org.apache.nlpcraft.server.nlp.enrichers.date.NCDateFormatType._
 
-import scala.collection.mutable.{LinkedHashMap ⇒ LHM}
+import scala.collection.mutable.{LinkedHashMap => LHM}
 import NCDateGenerator._
 
 import scala.collection.mutable

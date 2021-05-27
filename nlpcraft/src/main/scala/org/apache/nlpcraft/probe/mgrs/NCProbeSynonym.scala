@@ -134,8 +134,8 @@ class NCProbeSynonym(
                     state = -1
             }
 
-            if (state != -1 && all.size == res.size && (!shouldBeNeighbors || U.isIncreased(res.map(getIndex).sorted)))
-                Some(res)
+            if (state != -1 && all.size == res.size && (!shouldBeNeighbors || U.isIncreased(res.map(getIndex).toSeq.sorted)))
+                Some(res.toSeq)
             else
                 None
         }

@@ -22,6 +22,7 @@ import org.apache.nlpcraft.model.NCToken
 import org.apache.nlpcraft.model.impl.NCTokenPimp._
 
 import java.util
+import scala.jdk.CollectionConverters.ListHasAsScala
 
 /**
  * Sentence variant & its weight.

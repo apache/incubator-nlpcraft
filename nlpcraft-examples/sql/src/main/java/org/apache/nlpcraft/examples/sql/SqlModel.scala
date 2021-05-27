@@ -23,7 +23,7 @@ import org.apache.nlpcraft.examples.sql.db._
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.model.tools.sqlgen._
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.{CollectionHasAsScala, ListHasAsScala, SeqHasAsJava}
 import scala.language.implicitConversions
 
 /**
@@ -315,7 +315,7 @@ class SqlModel extends NCModelFileAdapter("sql_model.yaml") with LazyLogging {
             freeDateOpt,
             limitTokOpt,
             sortTokOpt match {
-                case Some(sortTok) => ext.extractSort(sortTok).asScala
+                case Some(sortTok) => ext.extractSort(sortTok).asScala.toSeq
                 case None => Seq.empty
             }
         )

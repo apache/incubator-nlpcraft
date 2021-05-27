@@ -24,7 +24,7 @@ import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote}
 import org.apache.nlpcraft.server.ignite.NCIgniteInstance
 import org.apache.nlpcraft.server.nlp.core.NCNlpNerEnricher
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.{ListHasAsScala, MapHasAsScala}
 
 /**
   * Stanford NLP NER enricher.
@@ -94,8 +94,12 @@ object NCStanfordNerEnricher extends NCService with NCNlpNerEnricher with NCIgni
                         val i1 = t1.get.startCharIndex
                         val i2 = t2.get.endCharIndex
                         val toks = ns.filter(t => t.startCharIndex >= i1 && t.endCharIndex <= i2)
-    
-                        val note = NCNlpSentenceNote(toks.map(_.index), s"stanford:$typ", buf: _*)
+
+                        val note = NCNlpSentenceNote(
+                            toks.map(_.index),
+                            s"stanford:$typ",
+                            buf.toSeq: _*
+                        )
     
                         toks.foreach(_.add(note))
                     }

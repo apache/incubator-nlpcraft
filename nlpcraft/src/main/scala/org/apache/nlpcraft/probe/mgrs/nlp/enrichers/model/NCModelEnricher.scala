@@ -19,18 +19,18 @@ package org.apache.nlpcraft.probe.mgrs.nlp.enrichers.model
 
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common._
-import org.apache.nlpcraft.common.nlp.{NCNlpSentence ⇒ Sentence, NCNlpSentenceNote ⇒ NlpNote, NCNlpSentenceToken ⇒ NlpToken}
+import org.apache.nlpcraft.common.nlp.{NCNlpSentence => Sentence, NCNlpSentenceNote => NlpNote, NCNlpSentenceToken => NlpToken}
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.probe.mgrs.NCProbeSynonym.NCIdlContent
 import org.apache.nlpcraft.probe.mgrs.NCProbeSynonymChunkKind.{NCSynonymChunkKind, _}
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.impl.NCRequestImpl
 import org.apache.nlpcraft.probe.mgrs.sentence.NCSentenceManager
-import org.apache.nlpcraft.probe.mgrs.{NCProbeModel, NCProbeVariants, NCProbeSynonym ⇒ Synonym}
+import org.apache.nlpcraft.probe.mgrs.{NCProbeModel, NCProbeVariants, NCProbeSynonym => Synonym}
 
 import java.io.Serializable
 import java.util
-import java.util.{List ⇒ JList}
+import java.util.{List => JList}
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.{ListHasAsScala, MapHasAsJava, MapHasAsScala, SeqHasAsJava}

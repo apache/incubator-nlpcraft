@@ -26,12 +26,12 @@ import org.apache.nlpcraft.common.{NCE, NCService}
 import org.apache.nlpcraft.server.ignite.NCIgniteInstance
 import org.apache.nlpcraft.server.nlp.core.{NCNlpParser, NCNlpWord}
 
-import scala.collection.JavaConverters._
-import scala.collection.Seq
+import scala.jdk.CollectionConverters.ListHasAsScala
 
 /**
   * Stanford NLP parser implementation.
   */
+//noinspection DuplicatedCode
 object NCStanfordParser extends NCService with NCNlpParser with NCIgniteInstance {
     /**
      *
@@ -79,12 +79,13 @@ object NCStanfordParser extends NCService with NCNlpParser with NCIgniteInstance
                     word = t.originalText(),
                     normalWord = normalWord,
                     lemma = t.lemma().toLowerCase,
-                    stem = NCNlpCoreManager.stemWord(normalWord).toString,
+                    stem = NCNlpCoreManager.stemWord(normalWord),
                     pos = t.tag(),
                     start = t.beginPosition,
                     end = t.endPosition(),
                     length = t.endPosition() - t.beginPosition()
                 )
             })
+            .toSeq
     }
 }

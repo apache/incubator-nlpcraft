@@ -17,7 +17,7 @@
 
 package org.apache.nlpcraft.model.impl
 
-import java.io.{Serializable ⇒ JSerializable}
+import java.io.{Serializable => JSerializable}
 import java.util.Collections
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.nlp.NCNlpSentenceToken

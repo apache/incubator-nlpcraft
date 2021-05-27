@@ -18,7 +18,7 @@
 package org.apache.nlpcraft
 
 import java.util.concurrent.Callable
-import java.util.function.{BiPredicate, Consumer, Supplier, Function ⇒ JFunction, Predicate ⇒ JPredicate}
+import java.util.function.{BiPredicate, Consumer, Supplier, Function => JFunction, Predicate => JPredicate}
 import org.apache.nlpcraft.common.ansi.NCAnsi._
 import org.apache.nlpcraft.common.util._
 

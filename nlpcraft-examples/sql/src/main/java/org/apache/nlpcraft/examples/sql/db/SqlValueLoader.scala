@@ -19,11 +19,10 @@ package org.apache.nlpcraft.examples.sql.db
 
 import java.util
 import java.util.Collections
-
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.model._
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.SetHasAsJava
 import scala.language.implicitConversions
 
 /**

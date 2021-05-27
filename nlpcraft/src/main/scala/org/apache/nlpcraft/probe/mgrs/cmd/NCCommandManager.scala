@@ -17,7 +17,7 @@
 
 package org.apache.nlpcraft.probe.mgrs.cmd
 
-import java.io.{Serializable ⇒ JSerializable}
+import java.io.{Serializable => JSerializable}
 import com.google.gson.Gson
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.{NCService, _}

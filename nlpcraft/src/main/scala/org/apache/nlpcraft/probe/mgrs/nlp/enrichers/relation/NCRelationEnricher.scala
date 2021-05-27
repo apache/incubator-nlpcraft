@@ -18,7 +18,6 @@
 package org.apache.nlpcraft.probe.mgrs.nlp.enrichers.relation
 
 import java.io.Serializable
-
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.makro.NCMacroParser
 import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
@@ -28,6 +27,7 @@ import org.apache.nlpcraft.probe.mgrs.NCProbeModel
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
 
 import scala.collection.mutable
+import scala.jdk.CollectionConverters.SeqHasAsJava
 
 /**
   * Relation enricher.

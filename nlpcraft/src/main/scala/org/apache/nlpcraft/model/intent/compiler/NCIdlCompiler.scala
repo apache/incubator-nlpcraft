@@ -20,12 +20,12 @@ package org.apache.nlpcraft.model.intent.compiler
 import com.typesafe.scalalogging.LazyLogging
 import org.antlr.v4.runtime.tree.ParseTreeWalker
 import org.antlr.v4.runtime._
-import org.antlr.v4.runtime.{ParserRuleContext ⇒ PRC}
+import org.antlr.v4.runtime.{ParserRuleContext => PRC}
 import org.apache.nlpcraft.common._
-import org.apache.nlpcraft.model.intent.compiler.antlr4.{NCIdlBaseListener, NCIdlLexer, NCIdlParser ⇒ IDP}
-import org.apache.nlpcraft.model.intent.compiler.{NCIdlCompilerGlobal ⇒ Global}
+import org.apache.nlpcraft.model.intent.compiler.antlr4.{NCIdlBaseListener, NCIdlLexer, NCIdlParser => IDP}
+import org.apache.nlpcraft.model.intent.compiler.{NCIdlCompilerGlobal => Global}
 import org.apache.nlpcraft.model._
-import org.apache.nlpcraft.model.intent.{NCIdlContext, NCIdlFunction, NCIdlIntent, NCIdlStack, NCIdlSynonym, NCIdlTerm, NCIdlStackItem ⇒ Z}
+import org.apache.nlpcraft.model.intent.{NCIdlContext, NCIdlFunction, NCIdlIntent, NCIdlStack, NCIdlSynonym, NCIdlTerm, NCIdlStackItem => Z}
 
 import java.io._
 import java.net._

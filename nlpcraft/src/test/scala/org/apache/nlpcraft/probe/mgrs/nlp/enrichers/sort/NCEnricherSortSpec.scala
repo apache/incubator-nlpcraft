@@ -20,7 +20,7 @@ package org.apache.nlpcraft.probe.mgrs.nlp.enrichers.sort
 import org.apache.nlpcraft.{NCTestElement, NCTestEnvironment}
 import org.apache.nlpcraft.model.NCElement
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.NCTestSortTokenType._
-import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.{NCDefaultTestModel, NCEnricherBaseSpec, NCTestNlpToken ⇒ nlp, NCTestSortToken ⇒ srt, NCTestUserToken ⇒ usr}
+import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.{NCDefaultTestModel, NCEnricherBaseSpec, NCTestNlpToken => nlp, NCTestSortToken => srt, NCTestUserToken => usr}
 import org.junit.jupiter.api.Test
 
 import java.util

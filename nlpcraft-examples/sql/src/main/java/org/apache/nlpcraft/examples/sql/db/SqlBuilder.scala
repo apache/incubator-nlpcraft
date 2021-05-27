@@ -18,16 +18,15 @@
 package org.apache.nlpcraft.examples.sql.db
 
 import java.sql.Types
-
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.model.tools.sqlgen.NCSqlJoinType._
 import org.apache.nlpcraft.model.tools.sqlgen._
 import org.apache.nlpcraft.model.tools.sqlgen.impl.NCSqlSortImpl
 
-import scala.collection.JavaConverters._
-import scala.collection.{Seq, mutable}
+import scala.collection.mutable
 import scala.compat.java8.OptionConverters._
+import scala.jdk.CollectionConverters.CollectionHasAsScala
 
 /**
   * SQL builder that takes parsed SQL schema and creates SQL query based on configured parameters.
@@ -358,7 +357,7 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
             val weight2 = if (!schemaJoins.exists(_.getToTable == t.getTable)) 0 else 1
 
             (weight1, weight2)
-        }).flatMap(_.getDefaultDate.asScala).toStream.headOption match {
+        }).flatMap(_.getDefaultDate.asScala).to(LazyList).headOption match {
             case Some(col) => Some(col)
             case None =>
                 logger.warn("Free date condition ignored without throwing exceptions.")
@@ -465,7 +464,7 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
         sortsNorm.foreach(sort => { tblsNorm += schemaTblsByNames(sort.getColumn.getTable); colsNorm += sort.getColumn })
 
         var freeDateColOpt =
-            if (freeDateRangeOpt.isDefined) tblsNorm.flatMap(_.getDefaultDate.asScala).toStream.headOption else None
+            if (freeDateRangeOpt.isDefined) tblsNorm.flatMap(_.getDefaultDate.asScala).to(LazyList).headOption else None
 
         tblsNorm = tblsNorm.distinct
 
