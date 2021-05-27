@@ -22,10 +22,10 @@ import org.apache.nlpcraft.model.{NCElement, NCModelAdapter, NCResult, NCValue}
 
 import java.util
 import java.util.Collections
-import scala.collection.JavaConverters._
 import scala.language.implicitConversions
-
 import NCDefaultTestModel._
+
+import scala.jdk.CollectionConverters.{SeqHasAsJava, SetHasAsJava}
 
 /**
   * Enrichers default test model.

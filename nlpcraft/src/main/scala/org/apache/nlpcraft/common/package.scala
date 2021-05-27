@@ -22,6 +22,7 @@ import java.util.function.{BiPredicate, Consumer, Supplier, Function ⇒ JFuncti
 import org.apache.nlpcraft.common.ansi.NCAnsi._
 import org.apache.nlpcraft.common.util._
 
+import scala.collection.mutable
 import scala.jdk.CollectionConverters.MapHasAsScala
 import scala.language.implicitConversions
 
@@ -180,6 +181,9 @@ package object common {
     implicit class OptionEq2[T](private val opt: T) {
         def === (x: Option[T]): Boolean = x.isDefined && opt == x.get
     }
+
+    implicit def mutableToImmutableSeq[T](opt: mutable.Iterable[T]): Seq[T] = opt.toSeq
+    implicit def iterableToImmutableSeq[T](opt: Iterable[T]): Seq[T] = opt.toSeq
 
     /**
      * 

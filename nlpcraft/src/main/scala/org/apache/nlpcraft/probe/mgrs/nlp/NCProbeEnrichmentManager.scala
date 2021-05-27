@@ -50,9 +50,9 @@ import java.io.Serializable
 import java.util
 import java.util.function.Predicate
 import java.util.{Date, Objects}
-import scala.collection.JavaConverters._
-import scala.collection.{Seq, _}
+import scala.collection.mutable
 import scala.concurrent.ExecutionContext
+import scala.jdk.CollectionConverters.{CollectionHasAsScala, ListHasAsScala, SeqHasAsJava}
 
 /**
   * Probe enrichment manager.

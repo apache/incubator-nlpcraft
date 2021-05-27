@@ -26,8 +26,7 @@ import org.apache.nlpcraft.model.{NCToken, NCVariant}
 import java.io.{Serializable => JSerializable}
 import java.util
 import java.util.Collections.singletonList
-import scala.collection.JavaConverters._
-import scala.collection.{Seq, mutable}
+import scala.collection.mutable
 
 /**
   * Sentence to variants converter.

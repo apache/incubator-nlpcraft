@@ -20,12 +20,10 @@ package org.apache.nlpcraft.model.tools.sqlgen.impl
 import java.sql.Timestamp
 import java.util
 import java.util.Optional
-
 import org.apache.nlpcraft.model.tools.sqlgen._
 
-import scala.collection.JavaConverters._
-import scala.collection._
-import scala.compat.java8.OptionConverters._
+import scala.compat.java8.OptionConverters.RichOptionForJava8
+import scala.jdk.CollectionConverters.SeqHasAsJava
 
 /**
   *

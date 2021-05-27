@@ -20,7 +20,6 @@ package org.apache.nlpcraft.probe.mgrs.conversation
 import java.util
 import java.util.concurrent.ConcurrentHashMap
 import java.util.function.Predicate
-
 import com.typesafe.scalalogging.LazyLogging
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common._
@@ -28,8 +27,8 @@ import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.opencensus.NCOpenCensusTrace
 import org.apache.nlpcraft.model._
 
-import scala.collection.JavaConverters._
 import scala.collection.mutable
+import scala.jdk.CollectionConverters.{BufferHasAsJava, ListHasAsScala, SeqHasAsJava}
 
 /**
   * An active conversation is an ordered set of utterances for the specific user and data model.

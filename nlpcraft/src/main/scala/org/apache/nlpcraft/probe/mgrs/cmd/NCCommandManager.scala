@@ -17,7 +17,7 @@
 
 package org.apache.nlpcraft.probe.mgrs.cmd
 
-import java.io.{Serializable => JSerializable}
+import java.io.{Serializable ⇒ JSerializable}
 import com.google.gson.Gson
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.{NCService, _}
@@ -31,7 +31,7 @@ import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnrichmentManager
 
 import java.util
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.{ListHasAsScala, MapHasAsJava, MapHasAsScala, SeqHasAsJava, SetHasAsScala}
 
 /**
   * Probe commands processor.

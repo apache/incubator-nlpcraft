@@ -18,19 +18,19 @@
 package org.apache.nlpcraft.probe.mgrs.nlp.enrichers
 
 import org.apache.nlpcraft.model.NCToken
-import scala.util.Using
 
+import scala.util.Using
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream, ObjectInputStream, ObjectOutputStream}
 import java.nio.charset.StandardCharsets.UTF_8
 import java.util
 import java.util.{Base64, Optional}
-import scala.collection.JavaConverters._
+
 import scala.compat.java8.OptionConverters._
+import scala.jdk.CollectionConverters.ListHasAsScala
 
 /**
   * Tests infrastructure beans.
   */
-
 sealed trait NCTestToken {
     def id: String
     def text: String // Case-sensitive
@@ -324,7 +324,7 @@ object NCTestToken {
 
                 def get[T](opt: Optional[util.List[T]]) =
                     opt.asScala match {
-                        case Some(list) => list.asScala
+                        case Some(list) => list.asScala.toSeq
                         case None => Seq.empty
                     }
 
@@ -335,7 +335,7 @@ object NCTestToken {
                 NCTestRelationToken(
                     txt,
                     `type` = t.meta("nlpcraft:relation:type"),
-                    indexes = indexes.asScala,
+                    indexes = indexes.asScala.toSeq,
                     note = t.meta("nlpcraft:relation:note")
                 )
 
@@ -346,7 +346,7 @@ object NCTestToken {
                 NCTestLimitToken(
                     txt,
                     limit = t.meta("nlpcraft:limit:limit"),
-                    indexes = indexes.asScala,
+                    indexes = indexes.asScala.toSeq,
                     note = t.meta("nlpcraft:limit:note"),
                     asc.asScala
                 )

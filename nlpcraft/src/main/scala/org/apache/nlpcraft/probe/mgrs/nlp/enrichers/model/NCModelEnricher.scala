@@ -19,27 +19,27 @@ package org.apache.nlpcraft.probe.mgrs.nlp.enrichers.model
 
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common._
-import org.apache.nlpcraft.common.nlp.{NCNlpSentenceToken => NlpToken, NCNlpSentenceNote => NlpNote, NCNlpSentence => Sentence}
+import org.apache.nlpcraft.common.nlp.{NCNlpSentence ⇒ Sentence, NCNlpSentenceNote ⇒ NlpNote, NCNlpSentenceToken ⇒ NlpToken}
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.probe.mgrs.NCProbeSynonym.NCIdlContent
 import org.apache.nlpcraft.probe.mgrs.NCProbeSynonymChunkKind.{NCSynonymChunkKind, _}
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.impl.NCRequestImpl
 import org.apache.nlpcraft.probe.mgrs.sentence.NCSentenceManager
-import org.apache.nlpcraft.probe.mgrs.{NCProbeModel, NCProbeVariants, NCProbeSynonym => Synonym}
+import org.apache.nlpcraft.probe.mgrs.{NCProbeModel, NCProbeVariants, NCProbeSynonym ⇒ Synonym}
 
 import java.io.Serializable
 import java.util
-import java.util.{List => JList}
-import scala.collection.JavaConverters._
-import scala.collection.convert.DecorateAsScala
+import java.util.{List ⇒ JList}
 import scala.collection.mutable.ArrayBuffer
-import scala.collection.{Map, Seq, mutable}
+import scala.collection.mutable
+import scala.jdk.CollectionConverters.{ListHasAsScala, MapHasAsJava, MapHasAsScala, SeqHasAsJava}
+import scala.collection.parallel.CollectionConverters._
 
 /**
   * Model elements enricher.
   */
-object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
+object NCModelEnricher extends NCProbeEnricher {
     type TokType = (NCToken, NCSynonymChunkKind)
     type Cache = mutable.Map[String, ArrayBuffer[Seq[Int]]]
 
@@ -462,7 +462,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
             "enrich", parent, "srvReqId" -> ns.srvReqId, "mdlId" -> mdl.model.getId, "txt" -> ns.text
         ) { span =>
             val req = NCRequestImpl(senMeta, ns.srvReqId)
-            val combToks = combos(ns)
+            val combToks = combos(ns.toSeq)
             lazy val ch = mkComplexes(mdl, ns)
 
             def execute(simpleEnabled: Boolean, idlEnabled: Boolean): Unit =

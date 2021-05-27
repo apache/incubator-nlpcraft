@@ -22,9 +22,8 @@ import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.model.impl._
 
 import java.util.{Collections, Optional}
-import scala.collection.JavaConverters._
-import scala.collection._
 import scala.compat.java8.OptionConverters._
+import scala.jdk.CollectionConverters.MapHasAsJava
 
 /**
  *

@@ -22,7 +22,7 @@ import org.apache.nlpcraft.{NCTestContext, NCTestElement, NCTestEnvironment}
 import org.junit.jupiter.api.Test
 
 import java.util
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.SetHasAsJava
 
 /**
   * Nested Elements test model.

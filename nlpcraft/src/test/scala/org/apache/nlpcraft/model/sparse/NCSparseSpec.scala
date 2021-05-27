@@ -23,8 +23,8 @@ import org.apache.nlpcraft.{NCTestContext, NCTestElement, NCTestEnvironment}
 import org.junit.jupiter.api.Test
 
 import java.util
-import scala.collection.JavaConverters._
 import scala.collection.mutable
+import scala.jdk.CollectionConverters.CollectionHasAsScala
 
 class NCSparseModel extends NCAbstractTokensModel {
     override def getElements: util.Set[NCElement] = Set(NCTestElement("xyz", "x y z"))
@@ -38,14 +38,14 @@ class NCSparseModel extends NCAbstractTokensModel {
         def checkOneVariant(sparsity: Int): Unit = {
             require(variants.size == 1, "There is should be single variant.")
 
-            val toks = variants.head.asScala.filter(_.getId == "xyz")
+            val toks = variants.head.asScala.filter(_.getId == "xyz").toSeq
 
             require(toks.size == 3, "There are should be 3 `xyz` tokens.")
 
             checkSparsity(sparsity, toks)
         }
 
-        def checkSparsity(sparsity: Int, toks: mutable.Buffer[NCToken]): Unit =
+        def checkSparsity(sparsity: Int, toks: Seq[NCToken]): Unit =
             require(
                 toks.forall(_.getMetadata.get("nlpcraft:nlp:sparsity").asInstanceOf[Int] == sparsity),
                 s"Sparsity of each tokens should be: $sparsity."
@@ -54,7 +54,7 @@ class NCSparseModel extends NCAbstractTokensModel {
         def checkExists(sparsity: Int): Unit =
             require(
                 variants.exists(v => {
-                    val toks = v.asScala.filter(_.getId == "xyz")
+                    val toks = v.asScala.filter(_.getId == "xyz").toSeq
 
                     toks.size match {
                         case 3 =>

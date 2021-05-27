@@ -18,14 +18,12 @@
 package org.apache.nlpcraft.model.tools.sqlgen.impl
 
 import java.util
-
 import org.apache.nlpcraft.common.NCException
 import org.apache.nlpcraft.model.NCModel
 import org.apache.nlpcraft.model.tools.sqlgen._
 
-import scala.collection.JavaConverters._
-import scala.collection.Seq
 import scala.compat.java8.OptionConverters._
+import scala.jdk.CollectionConverters.{CollectionHasAsScala, ListHasAsScala}
 
 /**
   * 

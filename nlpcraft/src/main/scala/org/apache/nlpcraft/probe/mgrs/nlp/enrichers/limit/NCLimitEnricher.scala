@@ -27,8 +27,8 @@ import org.apache.nlpcraft.probe.mgrs.NCProbeModel
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
 
 import java.io.Serializable
-import scala.collection.JavaConverters._
-import scala.collection.{Map, Seq, mutable}
+import scala.collection.mutable
+import scala.jdk.CollectionConverters.{CollectionHasAsScala, MapHasAsScala, SeqHasAsJava}
 
 /**
   * Limit enricher.

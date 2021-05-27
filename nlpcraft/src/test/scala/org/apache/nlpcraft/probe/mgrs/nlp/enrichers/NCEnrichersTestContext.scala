@@ -19,7 +19,7 @@ package org.apache.nlpcraft.probe.mgrs.nlp.enrichers
 
 import org.apache.nlpcraft.model.{NCContext, NCModel, NCResult}
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.CollectionHasAsScala
 
 /**
   * Enricher test model behaviour.
@@ -27,6 +27,6 @@ import scala.collection.JavaConverters._
 trait NCEnrichersTestContext extends NCModel {
     override final def onContext(ctx: NCContext): NCResult =
         NCResult.text(
-            NCTestSentence.serialize(ctx.getVariants.asScala.map(v => NCTestSentence(v.asScala.map(NCTestToken(_)))))
+            NCTestSentence.serialize(ctx.getVariants.asScala.map(v => NCTestSentence(v.asScala.map(NCTestToken(_)).toSeq)))
         )
 }

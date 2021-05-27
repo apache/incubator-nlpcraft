@@ -20,7 +20,7 @@ package org.apache.nlpcraft.models.stm
 import org.apache.nlpcraft.model.{NCIntentMatch, _}
 
 import java.util
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.{SeqHasAsJava, SetHasAsJava}
 import scala.language.implicitConversions
 
 /**

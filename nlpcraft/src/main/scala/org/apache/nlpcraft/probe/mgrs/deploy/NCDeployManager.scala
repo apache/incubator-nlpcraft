@@ -38,19 +38,17 @@ import org.apache.nlpcraft.model.intent.solver.NCIntentSolver
 import org.apache.nlpcraft.model.intent._
 import org.apache.nlpcraft.probe.mgrs.NCProbeSynonymChunkKind.{IDL, REGEX, TEXT}
 import org.apache.nlpcraft.probe.mgrs.{NCProbeModel, NCProbeSynonym, NCProbeSynonymChunk, NCProbeSynonymsWrapper}
-import scala.util.Using
 
-import scala.collection.JavaConverters._
+import scala.util.Using
 import scala.compat.java8.OptionConverters._
-import scala.collection.convert.DecorateAsScala
 import scala.collection.mutable
-import scala.collection.mutable.{ArrayBuffer, ListBuffer}
+import scala.jdk.CollectionConverters.{ListHasAsScala, MapHasAsJava, MapHasAsScala, SetHasAsScala}
 import scala.util.control.Exception._
 
 /**
   * Model deployment manager.
   */
-object NCDeployManager extends NCService with DecorateAsScala {
+object NCDeployManager extends NCService {
     private final val TOKENS_PROVIDERS_PREFIXES = Set("nlpcraft:", "google:", "stanford:", "opennlp:", "spacy:")
     private final val ID_REGEX = "^[_a-zA-Z]+[a-zA-Z0-9:\\-_]*$"
 
@@ -85,7 +83,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
     private final val SUSP_SYNS_CHARS = Seq("?", "*", "+")
 
-    @volatile private var data: ArrayBuffer[NCProbeModel] = _
+    @volatile private var data: mutable.ArrayBuffer[NCProbeModel] = _
     @volatile private var mdlFactory: NCModelFactory = _
 
     object Config extends NCConfigurable {
@@ -286,7 +284,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
             def chunkSplit(s: String): Seq[NCProbeSynonymChunk] = {
                 val x = s.trim()
 
-                val chunks = ListBuffer.empty[String]
+                val chunks = mutable.ArrayBuffer.empty[String]
 
                 var start = 0
                 var curr = 0
@@ -654,7 +652,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ =>
         ackStarting()
 
-        data = ArrayBuffer.empty[NCProbeModel]
+        data = mutable.ArrayBuffer.empty[NCProbeModel]
 
         mdlFactory = Config.modelFactoryType match {
             case Some(mft) =>
