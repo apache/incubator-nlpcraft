@@ -24,11 +24,11 @@ import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote, NCNlpSe
 import org.apache.nlpcraft.common.{NCE, NCService, U}
 import org.apache.nlpcraft.model.NCModel
 
-import java.io.{Serializable => JSerializable}
+import java.io.{Serializable ⇒ JSerializable}
 import java.util
-import java.util.{List => JList}
+import java.util.{List ⇒ JList}
 import scala.collection.mutable
-import scala.jdk.CollectionConverters.CollectionHasAsScala
+import scala.jdk.CollectionConverters.{ListHasAsScala, SeqHasAsJava}
 import scala.language.implicitConversions
 
 /**
@@ -77,9 +77,10 @@ object NCSentenceManager extends NCService {
                 require(names.size() == idxsSeq.size())
 
                 noteLinks ++=
-                    (for ((name, idxs) <- names.asScala.zip(idxsSeq.asScala.map(_.asScala)))
-                        yield NoteLink(name, idxs.sorted)
-                        )
+                    (
+                        for ((name, idxs) <- names.asScala.zip(idxsSeq.asScala.map(_.asScala)))
+                            yield NoteLink(name, idxs.sorted.toSeq)
+                    )
             }
 
             if (n.contains("subjnotes")) add("subjnotes", "subjindexes")
@@ -164,7 +165,7 @@ object NCSentenceManager extends NCService {
         ns.filter(_.isTypeOf(noteType)).foreach(tok =>
             tok.getNoteOpt(noteType, idxsField) match {
                 case Some(n) =>
-                    val idxs: Seq[Int] = n.data[JList[Int]](idxsField).asScala
+                    val idxs: Seq[Int] = n.data[JList[Int]](idxsField).asScala.toSeq
                     var fixed = idxs
 
                     history.foreach { case (idxOld, idxNew) => fixed = fixed.map(i => if (i == idxOld) idxNew else i) }
@@ -178,7 +179,7 @@ object NCSentenceManager extends NCService {
         )
 
         ns.flatMap(_.getNotes(noteType)).forall(
-            n => checkRelation(ns, n.data[JList[Int]]("indexes").asScala, n.data[String](noteField), n)
+            n => checkRelation(ns, n.data[JList[Int]]("indexes").asScala.toSeq, n.data[String](noteField), n)
         )
     }
 

@@ -23,7 +23,6 @@ import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
 import org.apache.nlpcraft.common.pool.NCThreadPoolManager
 import org.apache.nlpcraft.common.{NCService, _}
 
-import scala.collection.Seq
 import scala.concurrent.ExecutionContext
 
 /**

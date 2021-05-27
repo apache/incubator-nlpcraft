@@ -27,7 +27,6 @@ import org.apache.nlpcraft.probe.mgrs.NCProbeModel
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
 
 import scala.annotation.tailrec
-import scala.collection.{Map, Seq}
 
 /**
   * Stop words enricher.

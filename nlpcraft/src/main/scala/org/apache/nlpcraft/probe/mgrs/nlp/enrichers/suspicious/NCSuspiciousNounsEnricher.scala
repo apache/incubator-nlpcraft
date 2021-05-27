@@ -25,8 +25,6 @@ import org.apache.nlpcraft.common.nlp._
 import org.apache.nlpcraft.probe.mgrs.NCProbeModel
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
 
-import scala.collection.Map
-
 /**
   * Suspicious words enricher.
   */

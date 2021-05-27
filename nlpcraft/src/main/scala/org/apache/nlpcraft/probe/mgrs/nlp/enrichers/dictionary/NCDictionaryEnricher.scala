@@ -28,7 +28,6 @@ import org.apache.nlpcraft.probe.mgrs.NCProbeModel
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
 
 import java.io.Serializable
-import scala.collection.Map
 
 /**
   * Dictionary enricher.

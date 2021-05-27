@@ -20,8 +20,6 @@ package org.apache.nlpcraft.server.nlp.core
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.NCService
 
-import scala.collection.Seq
-
 /**
   * NLP parser.
   */
