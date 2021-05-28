@@ -28,6 +28,8 @@ import org.apache.nlpcraft.model.intent.NCIdlIntent
 import org.apache.nlpcraft.model.{NCContext, NCIntentMatch, NCIntentSkip, NCModel, NCRejection, NCResult, NCToken, NCVariant}
 import org.apache.nlpcraft.probe.mgrs.dialogflow.NCDialogFlowManager
 
+import java.util.{List => JList}
+
 import scala.jdk.CollectionConverters.SeqHasAsJava
 
 /**
@@ -96,12 +98,12 @@ class NCIntentSolver(intents: List[(NCIdlIntent/*Intent*/, NCIntentMatch => NCRe
                 
                 val intentMatch: NCIntentMatch = new NCMetadataAdapter with NCIntentMatch {
                     override val getContext: NCContext = ctx
-                    override val getIntentTokens: java.util.List[java.util.List[NCToken]] = res.groups.map(_.tokens.asJava).asJava
+                    override val getIntentTokens: JList[JList[NCToken]] = res.groups.map(_.tokens.asJava).asJava
                     override val getVariant: NCVariant = new NCVariantImpl(res.variant.tokens)
                     override val isAmbiguous: Boolean = !res.isExactMatch
                     override val getIntentId: String = res.intentId
-                    override def getTermTokens(idx: Int): java.util.List[NCToken] = res.groups(idx).tokens.asJava
-                    override def getTermTokens(termId: String): java.util.List[NCToken] = res.groups.find(_.termId === termId).flatMap(grp => Some(grp.tokens)).getOrElse(Nil).asJava
+                    override def getTermTokens(idx: Int): JList[NCToken] = res.groups(idx).tokens.asJava
+                    override def getTermTokens(termId: String): JList[NCToken] = res.groups.find(_.termId === termId).flatMap(grp => Some(grp.tokens)).getOrElse(Nil).asJava
                 }
                 
                 if (!in.context.getModel.asInstanceOf[NCModel].onMatchedIntent(intentMatch)) {

@@ -28,6 +28,8 @@ import org.apache.nlpcraft.server.nlp.enrichers.date.NCDateFormatType._
 
 import java.util
 import java.util.{Calendar => C}
+import java.util.{List => JList}
+
 import scala.collection.immutable.Iterable
 import scala.collection.mutable
 import scala.collection.mutable.{LinkedHashMap => LHM}
@@ -626,7 +628,7 @@ object NCDateEnricher extends NCServerEnricher {
 
             // Groups ordered to keep node with maximum information (max periods count in date).
             val hs: Iterable[Seq[Note]] =
-                grouped.map(_._2.sortBy(h => -h("periods").asInstanceOf[java.util.List[String]].asScala.length))
+                grouped.map(_._2.sortBy(h => -h("periods").asInstanceOf[JList[String]].asScala.length))
 
             // First holder will be kept in group, others (tail) should be deleted.
             hs.flatMap(_.tail)
@@ -661,7 +663,7 @@ object NCDateEnricher extends NCServerEnricher {
     private def mkDateRange(n1: Note, n2: Note): NCDateRange = NCDateRange(n1("from").asInstanceOf[Long], n2("to").asInstanceOf[Long])
     private def mkDateRange(n: Note): NCDateRange = mkDateRange(n, n)
     private def getField(d: Long, field: Int): Int = mkCalendar(d).get(field)
-    private def equalHolder(h: Note, ps: String*): Boolean = h("periods").asInstanceOf[java.util.List[String]].asScala.sorted == ps.sorted
+    private def equalHolder(h: Note, ps: String*): Boolean = h("periods").asInstanceOf[JList[String]].asScala.sorted == ps.sorted
     private def equalHolders(hs: Seq[Note], ps: String*): Boolean = hs.forall(equalHolder(_, ps: _*))
     private def getPrevious[T](s: T, seq: Seq[T]): T = seq(seq.indexOf(s) - 1)
     private def nearRanges(ns: Seq[Note]): Boolean =

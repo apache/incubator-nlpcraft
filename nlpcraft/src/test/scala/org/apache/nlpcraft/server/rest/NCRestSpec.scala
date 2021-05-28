@@ -32,7 +32,9 @@ import org.junit.jupiter.api.Assertions._
 import org.junit.jupiter.api.{AfterEach, BeforeEach}
 
 import java.util
+import java.util.{List => JList}
 import java.util.UUID
+
 import scala.jdk.CollectionConverters.{ListHasAsScala, MapHasAsJava, MapHasAsScala, SeqHasAsJava}
 
 object NCRestSpec {
@@ -127,8 +129,8 @@ import org.apache.nlpcraft.server.rest.NCRestSpec._
 
 class NCRestSpec extends NCTestContext {
     type ResponseContent = java.util.Map[String, Object]
-    type ResponseList = java.util.List[ResponseContent]
-    type JList[T] = java.util.List[T]
+    type ResponseList = JList[ResponseContent]
+    type JList[T] = JList[T]
 
     protected var tkn: String = _
     /**

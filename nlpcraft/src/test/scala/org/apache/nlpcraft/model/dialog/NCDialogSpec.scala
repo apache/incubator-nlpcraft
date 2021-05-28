@@ -23,16 +23,18 @@ import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
 import org.junit.jupiter.api.Test
 
 import java.util
+import java.util.{List => JList}
+
 import scala.jdk.CollectionConverters.CollectionHasAsScala
 
 /**
   * Test model.
   */
 class NCDialogSpecModelFlow {
-    def trueAlways(flow: java.util.List[NCDialogFlowItem]): Boolean = true
-    def falseAlways(flow: java.util.List[NCDialogFlowItem]): Boolean = false
-    def trueAfterOnA7(flow: java.util.List[NCDialogFlowItem]): Boolean = flow.asScala.exists(_.getIntentId == "onA7")
-    def trueAfterOnA7AndA8(flow: java.util.List[NCDialogFlowItem]): Boolean = {
+    def trueAlways(flow: JList[NCDialogFlowItem]): Boolean = true
+    def falseAlways(flow: JList[NCDialogFlowItem]): Boolean = false
+    def trueAfterOnA7(flow: JList[NCDialogFlowItem]): Boolean = flow.asScala.exists(_.getIntentId == "onA7")
+    def trueAfterOnA7AndA8(flow: JList[NCDialogFlowItem]): Boolean = {
         val seq = flow.asScala
         seq.exists(_.getIntentId == "onA7") && seq.exists(_.getIntentId == "onA8")
     }
@@ -72,12 +74,12 @@ class NCDialogSpecModel extends NCModel {
     @NCIntent("intent=onA9 flow=/org.apache.nlpcraft.model.dialog.NCDialogSpecModelFlow#trueAfterOnA7AndA8/ term~{tok_id() == 'a9'}")
     def onA9(): NCResult = NCResult.text("ok")
 
-    def trueAlwaysInternal(flow: java.util.List[NCDialogFlowItem]): Boolean = true
+    def trueAlwaysInternal(flow: JList[NCDialogFlowItem]): Boolean = true
 
     @NCIntent("intent=onA10 flow=/#trueAlwaysInternal/ term~{tok_id() == 'a10'}")
     def onA10(): NCResult = NCResult.text("ok")
 
-    def falseAlwaysInternal(flow: java.util.List[NCDialogFlowItem]): Boolean = false
+    def falseAlwaysInternal(flow: JList[NCDialogFlowItem]): Boolean = false
 
     @NCIntent("intent=onA11 flow=/#falseAlwaysInternal/ term~{tok_id() == 'a11'}")
     def onA11(): NCResult = NCResult.text("ok")

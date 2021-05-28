@@ -20,6 +20,8 @@ package org.apache.nlpcraft.probe.mgrs.nlp.enrichers
 import org.apache.nlpcraft.model.NCToken
 
 import scala.util.Using
+
+import java.util.{List => JList}
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream, ObjectInputStream, ObjectOutputStream}
 import java.nio.charset.StandardCharsets.UTF_8
 import java.util
@@ -316,10 +318,10 @@ object NCTestToken {
             case "nlpcraft:continent" => NCTestContinentToken(txt, continent = t.meta("nlpcraft:continent:continent"))
             case "nlpcraft:metro" => NCTestMetroToken(txt, metro = t.meta("nlpcraft:metro:metro"))
             case "nlpcraft:sort" =>
-                val subjNotes: Optional[java.util.List[String]] = t.metaOpt("nlpcraft:sort:subjnotes")
-                val subjIndexes: Optional[java.util.List[Int]] = t.metaOpt("nlpcraft:sort:subjindexes")
-                val byNotes: Optional[java.util.List[String]] = t.metaOpt("nlpcraft:sort:bynotes")
-                val byIndexes: Optional[java.util.List[Int]] = t.metaOpt("nlpcraft:sort:byindexes")
+                val subjNotes: Optional[JList[String]] = t.metaOpt("nlpcraft:sort:subjnotes")
+                val subjIndexes: Optional[JList[Int]] = t.metaOpt("nlpcraft:sort:subjindexes")
+                val byNotes: Optional[JList[String]] = t.metaOpt("nlpcraft:sort:bynotes")
+                val byIndexes: Optional[JList[Int]] = t.metaOpt("nlpcraft:sort:byindexes")
                 val asc: Optional[Boolean] = t.metaOpt("nlpcraft:sort:asc")
 
                 def get[T](opt: Optional[util.List[T]]) =
@@ -330,7 +332,7 @@ object NCTestToken {
 
                 NCTestSortToken(txt, get(subjNotes), get(subjIndexes), get(byNotes), get(byIndexes), asc.asScala)
             case "nlpcraft:relation" =>
-                val indexes: java.util.List[Int] = t.meta("nlpcraft:relation:indexes")
+                val indexes: JList[Int] = t.meta("nlpcraft:relation:indexes")
 
                 NCTestRelationToken(
                     txt,
@@ -340,7 +342,7 @@ object NCTestToken {
                 )
 
             case "nlpcraft:limit" =>
-                val indexes: java.util.List[Int] = t.meta("nlpcraft:limit:indexes")
+                val indexes: JList[Int] = t.meta("nlpcraft:limit:indexes")
                 val asc: Optional[Boolean] = t.metaOpt("nlpcraft:limit:asc")
 
                 NCTestLimitToken(

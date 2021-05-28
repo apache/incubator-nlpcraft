@@ -19,8 +19,9 @@ package org.apache.nlpcraft.common.nlp
 
 import org.apache.nlpcraft.common.nlp.pos._
 
+import java.util.{List => JList}
 import scala.collection.mutable
-import scala.jdk.CollectionConverters.IterableHasAsScala
+import scala.jdk.CollectionConverters.ListHasAsScala
 import scala.language.implicitConversions
 
 /**
@@ -41,7 +42,7 @@ case class NCNlpSentenceToken(
     def origText: String = getNlpValue[String]("origText")
     def words: Int = origText.split(" ").length
     def wordLength: Int = getNlpValue[Int]("wordLength").intValue()
-    def wordIndexes: Seq[Int] = getNlpValue[java.util.List[Int]]("wordIndexes").asScala.toSeq
+    def wordIndexes: Seq[Int] = getNlpValue[JList[Int]]("wordIndexes").asScala.toSeq
     def pos: String = getNlpValue[String]("pos")
     def posDesc: String = getNlpValue[String]( "posDesc")
     def lemma: String = getNlpValue[String]("lemma")

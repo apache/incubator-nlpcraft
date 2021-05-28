@@ -19,6 +19,8 @@ package org.apache.nlpcraft.model.impl
 
 import java.text.SimpleDateFormat
 import java.util
+import java.util.{List => JList}
+
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.ascii._
@@ -167,7 +169,7 @@ object NCTokenLogger extends LazyLogging {
                 case None => None
             }
             def mkString(name: String): String = getValue(name).toString
-            def mkJListString(name: String): String = getValue(name).asInstanceOf[java.util.List[String]].asScala.mkString(",")
+            def mkJListString(name: String): String = getValue(name).asInstanceOf[JList[String]].asScala.mkString(",")
             def mkDate(name: String): String = format(getValue(name).asInstanceOf[Long])
 
             def getValueOpt(name: String): Option[java.io.Serializable] =
@@ -283,9 +285,9 @@ object NCTokenLogger extends LazyLogging {
                             asScala.map(p => s"${p._1}=${p._2}").mkString(",")
 
                     // Mentions.
-                    val beginOffsets = getValue("mentionsBeginOffsets").asInstanceOf[java.util.List[Int]]
-                    val contents = getValue("mentionsContents").asInstanceOf[java.util.List[String]]
-                    val types = getValue("mentionsTypes").asInstanceOf[java.util.List[String]]
+                    val beginOffsets = getValue("mentionsBeginOffsets").asInstanceOf[JList[Int]]
+                    val contents = getValue("mentionsContents").asInstanceOf[JList[String]]
+                    val types = getValue("mentionsTypes").asInstanceOf[JList[String]]
 
                     require(beginOffsets.size() == contents.size())
                     require(types.size() == contents.size())
@@ -416,7 +418,7 @@ object NCTokenLogger extends LazyLogging {
             }).mkString("|")
 
             def getIndexes(name: String): String = {
-                val idxs: java.util.List[String] = get(name)
+                val idxs: JList[String] = get(name)
 
                 idxs.asScala.mkString(", ")
             }
@@ -465,7 +467,7 @@ object NCTokenLogger extends LazyLogging {
                         case "nlpcraft:date" =>
                             val from = format(get("from"))
                             val to = format(get("to"))
-                            val ps: java.util.List[String] = get("periods")
+                            val ps: JList[String] = get("periods")
 
                             val r = s"$from:$to"
 
@@ -478,10 +480,10 @@ object NCTokenLogger extends LazyLogging {
                             s"type=$t, indexes=[${getIndexes("indexes")}], note=$note"
 
                         case "nlpcraft:sort" =>
-                            def x(l: java.util.List[String]): String = l.asScala.mkString(", ")
+                            def x(l: JList[String]): String = l.asScala.mkString(", ")
 
                             def getList(notesName: String, indexesName: String): String = {
-                                val notesOpt: Option[java.util.List[String]] = getOpt(notesName)
+                                val notesOpt: Option[JList[String]] = getOpt(notesName)
 
                                 notesOpt match {
                                     case Some(notes) =>
@@ -559,9 +561,9 @@ object NCTokenLogger extends LazyLogging {
                             val metaS = meta.asScala.map(p => s"${p._1}=${p._2}").mkString(",")
 
                             // Mentions.
-                            val beginOffsets: java.util.List[Int] = get("mentionsbeginoffsets")
-                            val contents: java.util.List[String] = get("mentionscontents")
-                            val types: java.util.List[String] = get("mentionstypes")
+                            val beginOffsets: JList[Int] = get("mentionsbeginoffsets")
+                            val contents: JList[String] = get("mentionscontents")
+                            val types: JList[String] = get("mentionstypes")
 
                             require(beginOffsets.size() == contents.size())
                             require(types.size() == contents.size())

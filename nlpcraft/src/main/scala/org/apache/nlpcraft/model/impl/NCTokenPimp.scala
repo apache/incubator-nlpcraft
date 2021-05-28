@@ -19,6 +19,8 @@ package org.apache.nlpcraft.model.impl
 
 import org.apache.nlpcraft.model.NCToken
 
+import java.util.{List => JList}
+
 import scala.jdk.CollectionConverters.CollectionHasAsScala
 import scala.language.implicitConversions
 
@@ -43,7 +45,7 @@ class NCTokenPimp(impl: NCToken) {
     def isDirect: Boolean = impl.meta("nlpcraft:nlp:direct")
     def isPermutated: Boolean = !isDirect
     def isBracketed: Boolean = impl.meta("nlpcraft:nlp:bracketed")
-    def wordIndexes: List[Int] = impl.meta[java.util.List[Int]]("nlpcraft:nlp:wordindexes").asScala.toList
+    def wordIndexes: List[Int] = impl.meta[JList[Int]]("nlpcraft:nlp:wordindexes").asScala.toList
     def origText: String = impl.meta("nlpcraft:nlp:origtext")
     def normText: String = impl.meta("nlpcraft:nlp:normtext")
     def stem: String = impl.meta("nlpcraft:nlp:stem")

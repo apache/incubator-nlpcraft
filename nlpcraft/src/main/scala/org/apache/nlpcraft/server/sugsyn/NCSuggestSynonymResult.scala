@@ -17,6 +17,8 @@
 
 package org.apache.nlpcraft.server.sugsyn
 
+import java.util.{List => JList}
+
 /**
  * Result of the model synonym suggestion tool.
  *
@@ -34,6 +36,6 @@ case class NCSuggestSynonymResult(
     durationMs: Long,
     timestamp: Long,
     error: String,
-    suggestions: java.util.List[AnyRef],
-    warnings: java.util.List[String]
+    suggestions: JList[AnyRef],
+    warnings: JList[String]
 )

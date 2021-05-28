@@ -21,6 +21,8 @@ import org.apache.nlpcraft.NCTestEnvironment
 import org.junit.jupiter.api.Assertions._
 import org.junit.jupiter.api.Test
 
+import java.util.{List => JList}
+
 import scala.jdk.CollectionConverters.ListHasAsScala
 
 /**
@@ -30,13 +32,13 @@ import scala.jdk.CollectionConverters.ListHasAsScala
 class NCRestModelSpec extends NCRestSpec {
     @Test
     def test(): Unit = {
-        def extract(data: java.util.List[java.util.Map[String, Object]]): Seq[Double] =
+        def extract(data: JList[java.util.Map[String, Object]]): Seq[Double] =
             data.asScala.map(_.get("score").asInstanceOf[Number].doubleValue()).toSeq
 
         // Note that checked values are valid for current configuration of `RestTestModel` model.
         post("model/sugsyn", "mdlId" -> "rest.test.model")(
             ("$.status", (status: String) => assertEquals("API_OK", status)),
-            ("$.result.suggestions[:1].a.*", (data: java.util.List[java.util.Map[String, Object]]) => {
+            ("$.result.suggestions[:1].a.*", (data: JList[java.util.Map[String, Object]]) => {
                 val scores = extract(data)
 
                 assertTrue(scores.nonEmpty)
@@ -47,7 +49,7 @@ class NCRestModelSpec extends NCRestSpec {
         )
         post("model/sugsyn", "mdlId" -> "rest.test.model", "minScore" -> 0.5)(
             ("$.status", (status: String) => assertEquals("API_OK", status)),
-            ("$.result.suggestions[:1].a.*", (data: java.util.List[java.util.Map[String, Object]]) => {
+            ("$.result.suggestions[:1].a.*", (data: JList[java.util.Map[String, Object]]) => {
                 val scores = extract(data)
 
                 assertTrue(scores.nonEmpty)

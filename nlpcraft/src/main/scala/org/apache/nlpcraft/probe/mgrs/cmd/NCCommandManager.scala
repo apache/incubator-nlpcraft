@@ -31,6 +31,8 @@ import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnrichmentManager
 
 import java.util
+import java.util.{List => JList}
+
 import scala.jdk.CollectionConverters.{ListHasAsScala, MapHasAsJava, MapHasAsScala, SeqHasAsJava, SetHasAsScala}
 
 /**
@@ -97,7 +99,7 @@ object NCCommandManager extends NCService {
                         NCProbeEnrichmentManager.ask(
                             srvReqId = msg.data[String]("srvReqId"),
                             txt = msg.data[String]("txt"),
-                            nlpSens = msg.data[java.util.List[NCNlpSentence]]("nlpSens").asScala,
+                            nlpSens = msg.data[JList[NCNlpSentence]]("nlpSens").asScala,
                             usrId = msg.data[Long]("userId"),
                             senMeta = msg.data[java.util.Map[String, JSerializable]]("senMeta").asScala,
                             mdlId = msg.data[String]("mdlId"),

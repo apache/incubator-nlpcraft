@@ -67,7 +67,7 @@ object NCSentenceManager extends NCService {
         val noteLinks = mutable.ArrayBuffer.empty[NoteLink]
 
         for (n <- notes.filter(n => n.noteType == "nlpcraft:limit" || n.noteType == "nlpcraft:references"))
-            noteLinks += NoteLink(n("note").asInstanceOf[String], n("indexes").asInstanceOf[JList[Int]].asScala.sorted)
+            noteLinks += NoteLink(n("note").asInstanceOf[String], n("indexes").asInstanceOf[JList[Int]].asScala.toSeq.sorted)
 
         for (n <- notes.filter(_.noteType == "nlpcraft:sort")) {
             def add(noteName: String, idxsName: String): Unit = {
@@ -192,7 +192,7 @@ object NCSentenceManager extends NCService {
       */
     private def fixNoteIndexes(note: String, idxsField: String, noteField: String, ns: NCNlpSentence): Unit =
         ns.flatMap(_.getNotes(note)).foreach(
-            n => checkRelation(ns, n.data[JList[Int]](idxsField).asScala, n.data[String](noteField), n)
+            n => checkRelation(ns, n.data[JList[Int]](idxsField).asScala.toSeq, n.data[String](noteField), n)
         )
 
     /**
@@ -211,7 +211,7 @@ object NCSentenceManager extends NCService {
                     require(idxsList.size() == notesTypes.size())
 
                     idxsList.asScala.zip(notesTypes.asScala).foreach {
-                        case (idxs, notesType) => checkRelation(ns, idxs.asScala, notesType, rel)
+                        case (idxs, notesType) => checkRelation(ns, idxs.asScala.toSeq, notesType, rel)
                     }
                 case None => // No-op.
             }
@@ -464,7 +464,7 @@ object NCSentenceManager extends NCService {
             tok.getNoteOpt(noteType, idxsField) match {
                 case Some(n) =>
                     val idxs: Seq[Seq[Int]] =
-                        n.data[JList[JList[Int]]](idxsField).asScala.map(_.asScala)
+                        n.data[JList[JList[Int]]](idxsField).asScala.map(_.asScala.toSeq).toSeq
                     var fixed = idxs
 
                     history.foreach {

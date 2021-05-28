@@ -26,6 +26,8 @@ import org.apache.nlpcraft.common.{NCE, NCService}
 import org.apache.nlpcraft.probe.mgrs.NCProbeModel
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
 
+import java.util.{List => JList}
+
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.{MapHasAsScala, SeqHasAsJava, SetHasAsScala}
 
@@ -39,7 +41,7 @@ object NCRelationEnricher extends NCProbeEnricher {
         matched: Seq[NCNlpSentenceToken],
         matchedHead: NCNlpSentenceToken,
         refNotes: Set[String],
-        refIndexes: java.util.List[Int]
+        refIndexes: JList[Int]
     )
     case class Reference(tokens: Seq[NCNlpSentenceToken], types: Set[String]) {
         require(tokens.nonEmpty)

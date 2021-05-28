@@ -29,6 +29,8 @@ import org.apache.nlpcraft.model.{NCContext, NCDialogFlowItem, NCIntentMatch, NC
 import org.apache.nlpcraft.probe.mgrs.dialogflow.NCDialogFlowManager
 
 import java.util.function.Function
+import java.util.{List => JList}
+
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.{CollectionHasAsScala, MapHasAsScala, SeqHasAsJava}
 
@@ -449,11 +451,11 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
 
             val fqn =
                 s"${if (clsName == null) ctx.getModel.getClass.getName else clsName}." +
-                s"$mtdName(java.util.List[NCDialogFlowItem])"
+                s"$mtdName(JList[NCDialogFlowItem])"
 
             val res =
                 try
-                    U.callMethod[java.util.List[NCDialogFlowItem], java.lang.Boolean](
+                    U.callMethod[JList[NCDialogFlowItem], java.lang.Boolean](
                         () => if (clsName == null) ctx.getModel else U.mkObject(clsName),
                         mtdName,
                         flow.toList.asJava

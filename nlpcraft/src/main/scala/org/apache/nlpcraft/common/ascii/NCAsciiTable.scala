@@ -18,6 +18,7 @@
 package org.apache.nlpcraft.common.ascii
 
 import java.io.{IOException, PrintStream}
+import java.util.{List => JList}
 import com.typesafe.scalalogging.Logger
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.ascii.NCAsciiTable._
@@ -235,7 +236,7 @@ class NCAsciiTable {
      *
      * @param cells Row cells.
      */
-    def addRow(cells: java.util.List[Any]): NCAsciiTable = {
+    def addRow(cells: JList[Any]): NCAsciiTable = {
         startRow()
 
         cells.asScala.foreach(p => addRowCell(p))
@@ -286,7 +287,7 @@ class NCAsciiTable {
      *
      * @param cells Header cells.
      */
-    def addHeaders(cells: java.util.List[Any]): NCAsciiTable = {
+    def addHeaders(cells: JList[Any]): NCAsciiTable = {
         cells.asScala.foreach(addHeaderCell(_))
 
         this
@@ -298,7 +299,7 @@ class NCAsciiTable {
      * @param style Style top use.
      * @param cells Header cells.
      */
-    def addStyledHeaders(style: String, cells: java.util.List[Any]): NCAsciiTable = {
+    def addStyledHeaders(style: String, cells: JList[Any]): NCAsciiTable = {
         cells.asScala.foreach(addHeaderCell(style, _))
 
         this

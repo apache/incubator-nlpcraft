@@ -19,6 +19,8 @@ package org.apache.nlpcraft.model.impl
 
 import java.io.{Serializable => JSerializable}
 import java.util.Collections
+import java.util.{List => JList}
+
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.nlp.NCNlpSentenceToken
 import org.apache.nlpcraft.model._
@@ -64,15 +66,15 @@ private[nlpcraft] class NCTokenImpl(
     override lazy val getModel: NCModelView = mdl
     override lazy val getServerRequestId: String = srvReqId
     override lazy val getId: String = id
-    override lazy val getGroups: java.util.List[String] = grps.asJava
+    override lazy val getGroups: JList[String] = grps.asJava
     override lazy val getParentId: String = parentId
-    override lazy val getAncestors: java.util.List[String] = ancestors.asJava
+    override lazy val getAncestors: JList[String] = ancestors.asJava
     override lazy val getValue: String = value
     override lazy val getStartCharIndex: Int = startCharIndex
     override lazy val getEndCharIndex: Int = endCharIndex
     override lazy val getAliases: java.util.Set[String] = meta(TOK_META_ALIASES_KEY, Collections.emptySet())
     override lazy val isAbstract: Boolean = isAbstractProp
-    override def getPartTokens: java.util.List[NCToken] = parts.asJava
+    override def getPartTokens: JList[NCToken] = parts.asJava
 
     def setParts(parts: Seq[NCToken]): Unit = this.parts = parts
 

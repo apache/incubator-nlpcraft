@@ -26,6 +26,8 @@ import org.apache.nlpcraft.common.{NCE, NCService}
 import org.apache.nlpcraft.server.ignite.NCIgniteInstance
 import org.apache.nlpcraft.server.nlp.core.{NCNlpParser, NCNlpWord}
 
+import java.util.{List => JList}
+
 import scala.jdk.CollectionConverters.ListHasAsScala
 
 /**
@@ -63,13 +65,13 @@ object NCStanfordParser extends NCService with NCNlpParser with NCIgniteInstance
 
     override def parse(normTxt: String, parent: Span = null): Seq[NCNlpWord] =
         startScopedSpan("enrich", parent, "normTxt" -> normTxt) { _ =>
-            val a: java.util.List[CoreMap] = NCStanfordCoreManager.annotate(normTxt).annotation().get(classOf[SentencesAnnotation])
+            val a: JList[CoreMap] = NCStanfordCoreManager.annotate(normTxt).annotation().get(classOf[SentencesAnnotation])
     
             if (a == null)
                 throw new NCE("Sentence annotation not found.")
     
             a.asScala.flatMap(p => {
-                val value: java.util.List[CoreLabel] = p.asInstanceOf[ArrayCoreMap].get(classOf[TokensAnnotation])
+                val value: JList[CoreLabel] = p.asInstanceOf[ArrayCoreMap].get(classOf[TokensAnnotation])
     
                 value.asScala
             }).map(t => {

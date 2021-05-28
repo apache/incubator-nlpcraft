@@ -27,6 +27,8 @@ import org.apache.nlpcraft.probe.mgrs.NCProbeModel
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
 
 import java.io.Serializable
+import java.util.{List => JList}
+
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.{CollectionHasAsScala, MapHasAsScala, SeqHasAsJava}
 
@@ -39,7 +41,7 @@ object NCLimitEnricher extends NCProbeEnricher {
         asc: Option[Boolean],
         matched: Seq[NCNlpSentenceToken],
         refNotes: Set[String],
-        refIndexes: java.util.List[Int]
+        refIndexes: JList[Int]
     )
 
     private final val TOK_ID = "nlpcraft:limit"

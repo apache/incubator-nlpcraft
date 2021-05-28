@@ -21,6 +21,8 @@ import org.apache.nlpcraft.common.U
 import org.apache.nlpcraft.common.ascii._
 
 import java.io.{Serializable => JSerializable}
+import java.util.{List => JList}
+
 import scala.collection.mutable
 import scala.language.implicitConversions
 import scala.jdk.CollectionConverters.{CollectionHasAsScala, SeqHasAsJava}
@@ -39,8 +41,8 @@ class NCNlpSentenceNote(private val values: Map[String, JSerializable]) extends 
     lazy val noteType: String = values("noteType").asInstanceOf[String]
     lazy val tokenFrom: Int = values("tokMinIndex").asInstanceOf[Int] // First index.
     lazy val tokenTo: Int = values("tokMaxIndex").asInstanceOf[Int] // Last index.
-    lazy val tokenIndexes: Seq[Int] = values("tokWordIndexes").asInstanceOf[java.util.List[Int]].asScala.toSeq // Includes 1st and last indices too.
-    lazy val wordIndexes: Seq[Int] = values("wordIndexes").asInstanceOf[java.util.List[Int]].asScala.toSeq // Includes 1st and last indices too.
+    lazy val tokenIndexes: Seq[Int] = values("tokWordIndexes").asInstanceOf[JList[Int]].asScala.toSeq // Includes 1st and last indices too.
+    lazy val wordIndexes: Seq[Int] = values("wordIndexes").asInstanceOf[JList[Int]].asScala.toSeq // Includes 1st and last indices too.
     lazy val sparsity: Int = values("sparsity").asInstanceOf[Int]
     lazy val isDirect: Boolean = values("direct").asInstanceOf[Boolean]
     lazy val isUser: Boolean = {
@@ -221,7 +223,7 @@ object NCNlpSentenceNote {
         typ: String,
         params: (String, Any)*
     ): NCNlpSentenceNote = {
-        def calc(seq: Seq[Int]): (Int, Int, Int, java.util.List[Int], Int) =
+        def calc(seq: Seq[Int]): (Int, Int, Int, JList[Int], Int) =
             (U.calcSparsity(seq), seq.min, seq.max, seq.asJava, seq.length)
 
         val (sparsity, tokMinIndex, tokMaxIndex, tokWordIndexes, len) = calc(wordIndexesOpt.getOrElse(indexes))

@@ -21,8 +21,10 @@ import com.typesafe.config.{Config, ConfigFactory}
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.common._
 
+import java.util.{List => JList}
 import java.io.File
 import java.net.{MalformedURLException, URL}
+
 import scala.jdk.CollectionConverters.MapHasAsScala
 
 /**
@@ -107,7 +109,7 @@ trait NCConfigurable {
       *
       * @param name Full configuration property path (name).
       */
-    def getLongList(name: String): java.util.List[java.lang.Long] = {
+    def getLongList(name: String): JList[java.lang.Long] = {
         checkMandatory(name)
         
         hocon.getLongList(name)
