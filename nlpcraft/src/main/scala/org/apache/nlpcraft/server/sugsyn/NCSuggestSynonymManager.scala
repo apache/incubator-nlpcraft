@@ -342,7 +342,7 @@ object NCSuggestSynonymManager extends NCService {
                                 if (err.get() != null)
                                     throw new NCE("Error while working with 'ctxword' server.", err.get())
 
-                                val allSynsStems = elemSyns.flatMap(_._2).flatten.map(_.stem).toSet
+                                val allSynsStems = elemSyns.flatMap(_._2).toSeq.flatten.map(_.stem).toSet
 
                                 val nonEmptySgsts = allSgsts.asScala.map(p => p._1 -> p._2.asScala).filter(_._2.nonEmpty)
 
@@ -381,35 +381,36 @@ object NCSuggestSynonymManager extends NCService {
                                 }
 
                                 val resJ: util.Map[String, util.List[util.HashMap[String, Any]]] =
-                                    res.map { case (id, data) =>
-                                        val norm =
-                                            if (data.nonEmpty) {
-                                                val factors = data.map(_.score)
+                                    res.map {
+                                        case (id, data) =>
+                                            val norm =
+                                                if (data.nonEmpty) {
+                                                    val factors = data.map(_.score)
 
-                                                val min = factors.min
-                                                val max = factors.max
-                                                var delta = max - min
+                                                    val min = factors.min
+                                                    val max = factors.max
+                                                    var delta = max - min
 
-                                                if (delta == 0)
-                                                    delta = max
+                                                    if (delta == 0)
+                                                        delta = max
 
-                                                def normalize(v: Double): Double = (v - min) / delta
+                                                    def normalize(v: Double): Double = (v - min) / delta
 
-                                                data.
-                                                    map(s => SuggestionResult(s.synonym, normalize(s.score))).
-                                                    filter(_.score >= minScore)
-                                            }
-                                            else
-                                                Seq.empty
+                                                    data.
+                                                        map(s => SuggestionResult(s.synonym, normalize(s.score))).
+                                                        filter(_.score >= minScore)
+                                                }
+                                                else
+                                                    Seq.empty
 
-                                        id -> norm.map(d => {
-                                            val m = new util.HashMap[String, Any]()
+                                            id -> norm.map(d => {
+                                                val m = new util.HashMap[String, Any]()
 
-                                            m.put("synonym", d.synonym.toLowerCase)
-                                            m.put("score", d.score)
+                                                m.put("synonym", d.synonym.toLowerCase)
+                                                m.put("score", d.score)
 
-                                            m
-                                        }).asJava
+                                                m
+                                            }).asJava
                                     }.asJava
 
                                 promise.success(

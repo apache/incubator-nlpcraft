@@ -466,9 +466,12 @@ object NCSql extends LazyLogging {
         var r = List.empty[R]
 
         catching(psqlErrorCodes) {
-            for (ps <- Using.resource { prepare(sql, params) } ; rs <- Using.resource { ps.executeQuery() } )
-                while (rs.next)
-                    r :+= p(rs)
+            Using.resource(prepare(sql, params)) { ps =>
+                Using.resource(ps.executeQuery()) { rs =>
+                    while (rs.next)
+                        r :+= p(rs)
+                }
+            }
 
             r
         }
@@ -578,9 +581,12 @@ object NCSql extends LazyLogging {
     @throws[NCE]
     def select[R](sql: String, callback: R => Unit, params: Any*) (implicit p: RsParser[R]): Unit =
         catching(psqlErrorCodes) {
-            for (ps <- Using.resource { prepare(sql, params) } ; rs <- Using.resource { ps.executeQuery() } )
-                while (rs.next)
-                    callback(p(rs))
+            Using.resource(prepare(sql, params)) { ps =>
+                Using.resource(ps.executeQuery()) { rs =>
+                    while (rs.next)
+                        callback(p(rs))
+                }
+            }
         }
 
     /**
@@ -613,13 +619,14 @@ object NCSql extends LazyLogging {
         val tbls = mutable.ArrayBuffer.empty[String]
 
         catching(psqlErrorCodes) {
-            for (rs <- Using.resource { connection().getMetaData.getTables(null, null, null, null)})
+            Using.resource(connection().getMetaData.getTables(null, null, null, null)) { rs =>
                 while (rs.next) {
                     val tblSchema = rs.getString(2)
-             
+
                     if (tblSchema != null && tblSchema.toLowerCase == schemaLc)
                         tbls += rs.getString(3)
                 }
+            }
         }
 
         tbls

@@ -234,7 +234,13 @@ object NCStopWordEnricher extends NCServerEnricher {
 
         def mkEntry[T](f: WordForm, mkT: Unit => T, isExc: Boolean):((Boolean, WordForm), T) = (isExc, f) -> mkT(())
         def mkMap[T](mkT: Unit => T): Map[(Boolean, WordForm), T] =
-            WordForm.values.flatMap(f => Map(mkEntry(f, mkT, isExc = true), mkEntry(f, mkT, isExc = false))).toMap
+            WordForm
+                .values
+                .toSet
+                .flatMap(f => Map(
+                    mkEntry(f, mkT, isExc = true),
+                    mkEntry(f, mkT, isExc = false)
+                )).toMap
 
         // Prepares collections.
         val mHash = mkMap(_ => new Condition[Word]())
@@ -340,12 +346,11 @@ object NCStopWordEnricher extends NCServerEnricher {
                 m: Map[(Boolean, WordForm), Condition[T]],
                 form: WordForm,
                 mkInstance: (Set[T], Map[String, Set[T]], Map[String, Set[T]]) => R): R = {
-
                 val any = m((isExc, form)).any.toSet
                 val incl = toImmutable(m((isExc, form)).includes)
                 val excl = toImmutable(m((isExc, form)).excludes)
 
-                mkInstance(any ++ excl.values.flatten, incl, excl)
+                mkInstance(any ++ excl.values.toSet.flatten, incl, excl)
             }
 
             def mkHash(form: WordForm): HashHolder = mkHolder(mHash, form, HashHolder)
@@ -603,7 +608,8 @@ object NCStopWordEnricher extends NCServerEnricher {
             }
             
             // Capture the token mix at this point minus the initial stop words found up to this point.
-            val origToks: Seq[(Seq[NCNlpSentenceToken], String)] = (for (toks <- mix) yield toks).map(s => s -> toStemKey(s))
+            val origToks: Seq[(Seq[NCNlpSentenceToken], String)] =
+                (for (toks <- mix) yield toks.toSeq).map(s => s -> toStemKey(s)).toSeq
     
             // +--------------------------------------------+
             // | Pass #4.                                   |
