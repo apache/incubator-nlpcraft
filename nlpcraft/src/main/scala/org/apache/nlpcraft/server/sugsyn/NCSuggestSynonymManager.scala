@@ -323,7 +323,7 @@ object NCSuggestSynonymManager extends NCService {
 
                                             allSgsts.
                                                 computeIfAbsent(elemId, (_: String) => new CopyOnWriteArrayList[Suggestion]()).
-                                                addAll(resps.flatten.asJava)
+                                                addAll(resps.flatMap(x => x).asJava)
 
                                             if (i == allReqsCnt)
                                                 cdl.countDown()

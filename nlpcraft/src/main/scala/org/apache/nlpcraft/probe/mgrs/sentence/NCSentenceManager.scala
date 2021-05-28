@@ -276,7 +276,7 @@ object NCSentenceManager extends NCService {
                         if (!buf.contains(idxs.head)) {
                             buf += idxs.head
 
-                            ns += mkCompound(ns, nsCopyToks, idxs, stop = true, ns.size, None, history)
+                            ns += mkCompound(ns, nsCopyToks.toSeq, idxs.toSeq, stop = true, ns.size, None, history)
                         }
                     case None => simpleCopy(ns, history, nsCopyToks, i)
                 }
@@ -341,7 +341,7 @@ object NCSentenceManager extends NCService {
                         if (!buf.contains(n.tokenFrom)) {
                             buf += n.tokenFrom
 
-                            ns += mkCompound(ns, nsCopyToks, n.tokenIndexes, stop = false, ns.size, Some(n), history)
+                            ns += mkCompound(ns, nsCopyToks.toSeq, n.tokenIndexes, stop = false, ns.size, Some(n), history)
                         }
                     case None => simpleCopy(ns, history, nsCopyToks, i)
                 }
@@ -529,11 +529,13 @@ object NCSentenceManager extends NCService {
         notNlpTypes.foreach(typ => zipNotes(ns, typ, notNlpTypes, history))
         unionStops(ns, notNlpTypes, history)
 
+        val histSeq = history.toSeq
+
         val res =
-            fixIndexesReferences("nlpcraft:relation", "indexes", "note", ns, history) &&
-            fixIndexesReferences("nlpcraft:limit", "indexes", "note", ns, history) &&
-            fixIndexesReferencesList("nlpcraft:sort", "subjindexes", "subjnotes", ns, history) &&
-            fixIndexesReferencesList("nlpcraft:sort", "byindexes", "bynotes", ns, history)
+            fixIndexesReferences("nlpcraft:relation", "indexes", "note", ns, histSeq) &&
+            fixIndexesReferences("nlpcraft:limit", "indexes", "note", ns, histSeq) &&
+            fixIndexesReferencesList("nlpcraft:sort", "subjindexes", "subjnotes", ns, histSeq) &&
+            fixIndexesReferencesList("nlpcraft:sort", "byindexes", "bynotes", ns, histSeq)
 
         if (res) {
             // Validation (all indexes calculated well)
@@ -615,7 +617,7 @@ object NCSentenceManager extends NCService {
             if (lastPhase)
                 dropAbstract(mdl, ns)
 
-            if (collapseSentence(ns, getNotNlpNotes(ns).map(_.noteType).distinct)) Some(ns) else None
+            if (collapseSentence(ns, getNotNlpNotes(ns.toSeq).map(_.noteType).distinct)) Some(ns) else None
         }
 
         // Always deletes `similar` notes.
@@ -648,7 +650,7 @@ object NCSentenceManager extends NCService {
         redundant.foreach(sen.removeNote)
 
         var delCombs: Seq[NCNlpSentenceNote] =
-            getNotNlpNotes(sen).
+            getNotNlpNotes(sen.toSeq).
                 flatMap(note => getNotNlpNotes(note.tokenIndexes.sorted.map(i => sen(i))).filter(_ != note)).
                 distinct
 

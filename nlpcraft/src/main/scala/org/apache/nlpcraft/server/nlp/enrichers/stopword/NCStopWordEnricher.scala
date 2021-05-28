@@ -350,7 +350,7 @@ object NCStopWordEnricher extends NCServerEnricher {
                 val incl = toImmutable(m((isExc, form)).includes)
                 val excl = toImmutable(m((isExc, form)).excludes)
 
-                mkInstance(any ++ excl.values.toSet.flatten, incl, excl)
+                mkInstance(any ++ excl.values.flatMap(x => x), incl, excl)
             }
 
             def mkHash(form: WordForm): HashHolder = mkHolder(mHash, form, HashHolder)
