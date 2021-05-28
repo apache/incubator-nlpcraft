@@ -24,11 +24,11 @@ import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote, NCNlpSe
 import org.apache.nlpcraft.common.{NCE, NCService, U}
 import org.apache.nlpcraft.model.NCModel
 
-import java.io.{Serializable ⇒ JSerializable}
+import java.io.{Serializable => JSerializable}
 import java.util
-import java.util.{List ⇒ JList}
+import java.util.{List => JList}
 import scala.collection.mutable
-import scala.jdk.CollectionConverters.{ListHasAsScala, SeqHasAsJava}
+import scala.jdk.CollectionConverters.{ListHasAsScala, SeqHasAsJava, SetHasAsJava}
 import scala.language.implicitConversions
 
 /**
@@ -296,7 +296,7 @@ object NCSentenceManager extends NCService {
         for (t <- userNoteTypes :+ "nlpcraft:nlp"; note <- ns.getNotes(t)) {
             val toks = ns.filter(_.contains(note)).sortBy(_.index)
 
-            val newNote = note.clone(toks.map(_.index), toks.flatMap(_.wordIndexes).sorted)
+            val newNote = note.clone(toks.map(_.index).toSeq, toks.flatMap(_.wordIndexes).toSeq.sorted)
 
             toks.foreach(t => {
                 t.remove(note)
