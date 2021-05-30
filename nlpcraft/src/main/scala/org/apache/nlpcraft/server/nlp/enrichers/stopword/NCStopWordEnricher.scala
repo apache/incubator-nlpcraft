@@ -232,15 +232,24 @@ object NCStopWordEnricher extends NCServerEnricher {
                 }
         }
 
-        def mkEntry[T](f: WordForm, mkT: Unit => T, isExc: Boolean):((Boolean, WordForm), T) = (isExc, f) -> mkT(())
-        def mkMap[T](mkT: Unit => T): Map[(Boolean, WordForm), T] =
-            WordForm
-                .values
-                .toSet
-                .flatMap(f => Map(
-                    mkEntry(f, mkT, isExc = true),
-                    mkEntry(f, mkT, isExc = false)
-                )).toMap
+        type Key = (Boolean, WordForm)
+        def mkMap[T](mkT: Unit => T): Map[Key, T] = {
+            val m = mutable.Map.empty[Key, T]
+
+            def add(f: WordForm, mkT: Unit => T, isExc: Boolean): Unit = {
+                val tuple: (Key, T) = (isExc, f) -> mkT(())
+
+                m += tuple._1 → tuple._2
+            }
+
+            WordForm.values.foreach(f => {
+                add(f, mkT, isExc = true)
+                add(f, mkT, isExc = false)
+
+            })
+
+            m.toMap
+        }
 
         // Prepares collections.
         val mHash = mkMap(_ => new Condition[Word]())

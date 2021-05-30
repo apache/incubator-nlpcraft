@@ -17,6 +17,7 @@
 
 package org.apache.nlpcraft.common.ascii
 
+import org.apache.nlpcraft.common.U
 import org.apache.nlpcraft.common.ansi.NCAnsi._
 import org.junit.jupiter.api.Test
 

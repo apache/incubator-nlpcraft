@@ -28,6 +28,7 @@ import java.io.{Serializable => JSerializable}
 import java.util
 import java.util.{List => JList}
 import scala.collection.mutable
+import scala.collection.parallel.CollectionConverters.ImmutableIterableIsParallelizable
 import scala.jdk.CollectionConverters.{ListHasAsScala, SeqHasAsJava, SetHasAsJava}
 import scala.language.implicitConversions
 
@@ -655,7 +656,7 @@ object NCSentenceManager extends NCService {
                 distinct
 
         // Optimization. Deletes all wholly swallowed notes.
-        val links = getLinks(sen.flatten)
+        val links = getLinks(sen.tokens.flatMap(p => p))
 
         val swallowed =
             delCombs.
@@ -690,13 +691,16 @@ object NCSentenceManager extends NCService {
                         groupBy { case (idx, _) => idx }.
                         map { case (_, seq) => seq.map { case (_, note) => note }.toSet }.
                         toSeq.sortBy(-_.size)
+                        
+                def findCombinations(): Seq[Seq[NCNlpSentenceNote]] =
+                    NCSentenceHelper.findCombinations(toksByIdx.map(_.asJava).asJava, pool).asScala.map(_.asScala.toSeq)
 
                 val seqSens =
                     combCache.
                         getOrElseUpdate(sen.srvReqId, mutable.HashMap.empty[CacheKey, CacheValue]).
                         getOrElseUpdate(
                             toksByIdx,
-                            NCSentenceHelper.findCombinations(toksByIdx.map(_.asJava).asJava, pool).asScala.map(_.asScala)
+                            findCombinations()
                         ).par.
                         flatMap(delComb => {
                             val nsClone = sen.clone()
@@ -721,7 +725,7 @@ object NCSentenceManager extends NCService {
 
                     Holder(
                         // We have to delete some keys to have possibility to compare sentences.
-                        notes.map(_.clone().filter { case (name, _) => name != "direct" }),
+                        notes.map(_.clone().filter { case (name, _) => name != "direct" }).toSeq,
                         sen,
                         notes.filter(_.isNlp).map(p => if (p.isDirect) 0 else 1).sum
                     )

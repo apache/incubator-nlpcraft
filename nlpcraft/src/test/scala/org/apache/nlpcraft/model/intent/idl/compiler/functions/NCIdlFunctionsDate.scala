@@ -17,6 +17,7 @@
 
 package org.apache.nlpcraft.model.intent.idl.compiler.functions
 
+import org.apache.nlpcraft.common.U
 import org.junit.jupiter.api.Test
 
 import java.time.temporal.IsoFields

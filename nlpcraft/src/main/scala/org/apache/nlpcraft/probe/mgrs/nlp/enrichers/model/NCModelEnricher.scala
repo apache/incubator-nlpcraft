@@ -286,7 +286,7 @@ object NCModelEnricher extends NCProbeEnricher {
                                 elem = mdl.elements.getOrElse(elemId, throw new NCE(s"Custom model parser returned unknown element ID: $elemId")),
                                 toks = matchedToks,
                                 direct = true,
-                                metaOpt = Some(e.getMetadata.asScala)
+                                metaOpt = Some(e.getMetadata.asScala.toMap)
                             )
                     })
             }

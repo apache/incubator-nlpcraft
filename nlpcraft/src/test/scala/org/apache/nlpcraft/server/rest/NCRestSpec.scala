@@ -130,7 +130,7 @@ import org.apache.nlpcraft.server.rest.NCRestSpec._
 class NCRestSpec extends NCTestContext {
     type ResponseContent = java.util.Map[String, Object]
     type ResponseList = JList[ResponseContent]
-    type JList[T] = JList[T]
+    type JList[T] = java.util.List[T]
 
     protected var tkn: String = _
     /**

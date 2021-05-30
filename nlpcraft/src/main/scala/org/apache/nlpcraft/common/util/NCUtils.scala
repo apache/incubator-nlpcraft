@@ -1016,7 +1016,7 @@ object NCUtils extends LazyLogging {
       */
     def asFuture[T](
         body: Unit => T,
-        onFailure: Throwable => Unit = _ => Unit,
+        onFailure: Throwable => Unit = _ => (),
         onSuccess: T => Unit = (_: T) => ())(implicit ec: ExecutionContext): Future[T] = {
         val fut = Future {
             body(())
