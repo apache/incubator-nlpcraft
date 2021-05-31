@@ -584,7 +584,7 @@ object NCUtils extends LazyLogging {
       * @return
       */
     def decapitalize(s: String): String =
-        s.head.toLower + s.tail
+        s"${s.head.toLower}${s.tail}"
 
     /**
       * Converts given name into properly capitalized first and last name.
