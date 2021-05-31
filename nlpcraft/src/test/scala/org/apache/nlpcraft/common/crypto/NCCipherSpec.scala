@@ -29,7 +29,7 @@ class NCCipherSpec  {
     private final val IN = "abcdefghijklmnopqrstuvwxyz0123456789"
 
     @Test
-    def testEncryptDecrypt() {
+    def testEncryptDecrypt(): Unit = {
         val s1 = NCCipher.encrypt(IN)
         val s2 = NCCipher.decrypt(s1)
 
@@ -37,7 +37,7 @@ class NCCipherSpec  {
     }
 
     @Test
-    def testDifference() {
+    def testDifference(): Unit = {
         val s1 = NCCipher.encrypt(IN)
         val s2 = NCCipher.encrypt(IN)
         val s3 = NCCipher.encrypt(IN)
@@ -55,7 +55,7 @@ class NCCipherSpec  {
     }
 
     @Test
-    def testCorrectness() {
+    def testCorrectness(): Unit = {
         val buf = new StringBuilder
         
         // Max long string.

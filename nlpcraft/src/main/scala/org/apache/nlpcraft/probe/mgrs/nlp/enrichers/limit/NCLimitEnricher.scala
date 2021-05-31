@@ -349,7 +349,7 @@ object NCLimitEnricher extends NCProbeEnricher {
 
             // Reference should be last.
             if (refCands.nonEmpty && refCands.last.index == toks.last.index && cmnRefNotes.nonEmpty)
-                Stream(try0(matchCands), try0(matchCands.filter(!_.isStopWord))).flatten.headOption
+                LazyList(try0(matchCands), try0(matchCands.filter(!_.isStopWord))).flatten.headOption
             else
                 None
         }
@@ -360,7 +360,7 @@ object NCLimitEnricher extends NCProbeEnricher {
         def f(seq: => Seq[NCNlpSentenceToken]): Seq[NCNlpSentenceToken] =
             seq.filter(_.exists(n => isUserNotValue(n) && n.tokenIndexes.head >= i1 && n.tokenIndexes.last <= i2))
 
-        Stream(tryCandidates(f(toks)), tryCandidates(f(toks.dropWhile(tech.contains)))).flatten.headOption
+        LazyList(tryCandidates(f(toks)), tryCandidates(f(toks.dropWhile(tech.contains)))).flatten.headOption
     }
 
     /**

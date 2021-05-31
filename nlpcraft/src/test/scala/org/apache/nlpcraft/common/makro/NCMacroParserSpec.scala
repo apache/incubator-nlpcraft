@@ -70,7 +70,7 @@ class NCMacroParserSpec  {
     }
 
     // @Test
-    def testPerformance() {
+    def testPerformance(): Unit = {
         val start = U.now()
 
         val N = 50000
@@ -101,7 +101,7 @@ class NCMacroParserSpec  {
     }
 
     @Test
-    def testExpand() {
+    def testExpand(): Unit = {
         // Make sure we can parse these.
         parser.expand("<OF>")
         parser.expand("<QTY>")
@@ -153,7 +153,7 @@ class NCMacroParserSpec  {
     }
 
     @Test
-    def testLimit() {
+    def testLimit(): Unit = {
         checkError("<METRICS> <USER> <BY> <WEBSITE> <BY> <SES> <BY> <METRICS> <BY> <USER> <BY> <METRICS>")
     }
 }

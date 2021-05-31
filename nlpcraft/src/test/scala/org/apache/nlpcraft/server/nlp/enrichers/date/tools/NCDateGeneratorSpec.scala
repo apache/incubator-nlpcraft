@@ -17,6 +17,7 @@
 
 package org.apache.nlpcraft.server.nlp.enrichers.date.tools
 
+import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.server.nlp.enrichers.date.NCDateConstants._
 import org.apache.nlpcraft.server.nlp.enrichers.date.NCDateFormatType._
@@ -38,8 +39,8 @@ import scala.language.implicitConversions
 class NCDateGeneratorSpec  {
     private def print(
         f: LHM[String, String] => Unit, cnt: Int = 500, asc: Boolean = true, keys2Check: Option[Seq[String]] = None
-    ) {
-        val base = scala.compat.Platform.currentTime
+    ): Unit = {
+        val base = U.now()
 
         val map = new LHM[String, String]
 
@@ -70,7 +71,7 @@ class NCDateGeneratorSpec  {
         d: Date,
         fs: Seq[SimpleDateFormat],
         m: Map[String, Seq[SimpleDateFormat]],
-        withDup: Boolean) {
+        withDup: Boolean): Unit = {
         val res = fs.map(_.format(d)) ++ NCDateGenerator.format(d, m)
 
         res.foreach(println(_))
@@ -317,7 +318,7 @@ class NCDateGeneratorSpec  {
 
     @Test
     def testLastDay(): Unit = {
-        val date = scala.compat.Platform.currentTime
+        val date = U.now()
 
         def print(f: String): Unit = {
             val res = NCDateParser.calculatePart(f, date)
@@ -341,7 +342,7 @@ class NCDateGeneratorSpec  {
 
     @Test
     def testParse(): Unit = {
-        val date = scala.compat.Platform.currentTime
+        val date = U.now()
 
         val f = "m, $dm, 1dw, w1"
 

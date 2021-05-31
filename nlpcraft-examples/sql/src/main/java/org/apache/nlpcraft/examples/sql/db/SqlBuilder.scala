@@ -70,7 +70,7 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
             var found = false
 
             while (queue.nonEmpty && !found) {
-                val parent = queue.dequeue
+                val parent = queue.dequeue()
                 val children = allNeighbors(parent)
 
                 if (children.contains(to)) {

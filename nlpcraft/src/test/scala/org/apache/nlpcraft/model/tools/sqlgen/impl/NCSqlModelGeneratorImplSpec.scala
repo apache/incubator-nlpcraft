@@ -76,7 +76,7 @@ class NCSqlModelGeneratorImplSpec {
         }).mkString(" ")
 
     @Test
-    def testRemovePrefix() {
+    def testRemovePrefix(): Unit = {
         val fun1 = mkPrefixFun("tbl_, col_")
         val fun2 = mkPrefixFun("")
         val fun3 = mkPrefixFun("tbl_tbl_, col_")
@@ -90,7 +90,7 @@ class NCSqlModelGeneratorImplSpec {
     }
 
     @Test
-    def testRemoveSuffix() {
+    def testRemoveSuffix(): Unit = {
         val fun1 = mkSuffixFun("_tmp, _old")
         val fun2 = mkSuffixFun("")
         val fun3 = mkSuffixFun("_tmp_tmp")
@@ -104,14 +104,14 @@ class NCSqlModelGeneratorImplSpec {
     }
 
     @Test
-    def testSubstituteMacros() {
+    def testSubstituteMacros(): Unit = {
         assertTrue(substituteMacros("a id") == "a <ID>")
         assertTrue(substituteMacros("a     id   ") == "a <ID>")
         assertTrue(substituteMacros("id") == "<ID>")
     }
 
     @Test
-    def testRemoveSequentialDups() {
+    def testRemoveSequentialDups(): Unit = {
         assertTrue(removeSeqDups("a a b b") == "a b")
         assertTrue(removeSeqDups("aa b b") == "aa b")
         assertTrue(removeSeqDups("aa     b    b") == "aa b")

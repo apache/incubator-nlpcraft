@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test
  */
 class NCAsciiTableSpec {
     @Test
-    def test() {
+    def test(): Unit = {
         val t = NCAsciiTable()
         
         t.defaultHeaderStyle = "leftPad: 10, rightPad: 5"
@@ -56,7 +56,7 @@ class NCAsciiTableSpec {
     }
 
     @Test
-    def testWithSequenceHeader() {
+    def testWithSequenceHeader(): Unit = {
         val t = NCAsciiTable()
         
         t.defaultHeaderStyle = "leftPad: 10, rightPad: 5"
@@ -73,7 +73,7 @@ class NCAsciiTableSpec {
     }
 
     @Test
-    def testWithVeryBigTable() {
+    def testWithVeryBigTable(): Unit = {
         val NUM = 100
 
         val start = U.now()

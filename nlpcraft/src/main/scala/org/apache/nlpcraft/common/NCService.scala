@@ -22,8 +22,6 @@ import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.opencensus.NCOpenCensusTrace
 import org.apache.nlpcraft.common.ansi.NCAnsi._
 
-import scala.compat.Platform._
-
 /**
   * Basic abstract class defining internal service/manager/component lifecycle. Components that
   * extend this class are typically called 'managers'.
@@ -121,7 +119,7 @@ abstract class NCService extends LazyLogging with NCOpenCensusTrace {
             "state" -> "started"
         )
 
-        val dur = s"$ansiGreenFg[${currentTime - timeStampMs}ms]$ansiReset"
+        val dur = s"$ansiGreenFg[${U.now() - timeStampMs}ms]$ansiReset"
 
         logger.info(s"$name started $dur")
 

@@ -21,11 +21,11 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 /**
-  * Tests for Blowfish hasher.
+  * Tests for Blowfish hasLazyListher.
   */
 class NCBlowfishHasherSpec {
     @Test
-    def testWithSequenceHeader() {
+    def testWithSequenceHeader(): Unit = {
         val email = "dev@nlpcraft.org"
         val passwd = "test"
         

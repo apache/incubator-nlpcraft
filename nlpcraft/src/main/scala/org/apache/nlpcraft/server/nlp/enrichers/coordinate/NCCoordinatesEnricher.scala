@@ -130,7 +130,7 @@ object NCCoordinatesEnricher extends NCServerEnricher {
         if (toks.nonEmpty) {
             val from = toks.head.index
 
-            markers.toStream.
+            markers.to(LazyList).
                 flatMap(m => get(
                     ns,
                     from,
@@ -155,7 +155,7 @@ object NCCoordinatesEnricher extends NCServerEnricher {
         if (toks.nonEmpty) {
             val to = toks.last.index + 1
 
-            markers.toStream.
+            markers.to(LazyList).
                 flatMap(m => get(
                     ns,
                     m.last.index + 1,

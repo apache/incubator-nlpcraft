@@ -239,7 +239,7 @@ object NCStopWordEnricher extends NCServerEnricher {
             def add(f: WordForm, mkT: Unit => T, isExc: Boolean): Unit = {
                 val tuple: (Key, T) = (isExc, f) -> mkT(())
 
-                m += tuple._1 → tuple._2
+                m += tuple._1 -> tuple._2
             }
 
             WordForm.values.foreach(f => {

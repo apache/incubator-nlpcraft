@@ -24,7 +24,6 @@ import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.h2.jdbc.JdbcSQLException
 import org.h2.jdbcx.JdbcDataSource
-import resource.managed
 
 /**
   * Ad-hoc querying for H2 Database. This is a simple, single thread implementation.

@@ -41,7 +41,7 @@ trait NCIdlStackType extends (() => NCIdlStackItem)
 /**
   *
   */
-class NCIdlStack extends mutable.ArrayStack[NCIdlStackType] {
+class NCIdlStack extends mutable.Stack[NCIdlStackType] {
     /**
       * Special marker for stack frames.
       */
