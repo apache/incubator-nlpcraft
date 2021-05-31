@@ -132,7 +132,7 @@ object NCAnnotatedMdo {
                         else if(zeroArgMtd.isLeft && oneArgMtd.isLeft)
                             throw NCMdoJsonConverterException("No converter found", cls, mtdName)
 
-                        Some(zeroArgMtd.right.getOrElse(oneArgMtd.right.get))
+                        Some(zeroArgMtd.toOption.getOrElse(oneArgMtd.toOption.get))
                 }
 
                 MdoParameter(fldAnn, jsonConverter, getter.getName)

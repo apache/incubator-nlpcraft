@@ -150,7 +150,7 @@ class NCProbeSynonym(
       */
     private def isMatch(tow: NCIdlContent, chunk: NCProbeSynonymChunk, req: NCRequest): Boolean = {
         def get0[T](fromToken: NCToken => T, fromWord: NCNlpSentenceToken => T): T =
-            if (tow.isLeft) fromToken(tow.left.get) else fromWord(tow.right.get)
+            if (tow.isLeft) fromToken(tow.swap.toOption.get) else fromWord(tow.toOption.get)
 
         chunk.kind match {
             case TEXT => chunk.wordStem == get0(_.stem, _.stem)
@@ -223,7 +223,7 @@ class NCProbeSynonym(
         sparseMatch0(
             tows,
             (t: NCIdlContent, chunk: NCProbeSynonymChunk) => isMatch(t, chunk, req),
-            (t: NCIdlContent) => if (t.isLeft) t.left.get.getStartCharIndex else t.right.get.startCharIndex,
+            (t: NCIdlContent) => if (t.isLeft) t.swap.toOption.get.getStartCharIndex else t.toOption.get.startCharIndex,
             shouldBeNeighbors = !sparse
         )
     }

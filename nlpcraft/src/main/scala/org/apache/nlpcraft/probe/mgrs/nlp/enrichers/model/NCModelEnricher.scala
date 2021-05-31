@@ -324,7 +324,7 @@ object NCModelEnricher extends NCProbeEnricher {
       */
     private def toParts(seq: Seq[NCIdlContent], s: Synonym): Seq[TokType] =
         seq.zip(s.map(_.kind)).flatMap {
-            case (complex, kind) => if (complex.isLeft) Some(complex.left.get -> kind) else None
+            case (complex, kind) => if (complex.isLeft) Some(complex.swap.toOption.get -> kind) else None
         }
 
     /**
@@ -334,8 +334,8 @@ object NCModelEnricher extends NCProbeEnricher {
       */
     private def toTokens(tows: Seq[NCIdlContent], ns: Sentence): Seq[NlpToken] =
         (
-            tows.filter(_.isRight).map(_.right.get) ++
-                tows.filter(_.isLeft).map(_.left.get).
+            tows.filter(_.isRight).map(_.toOption.get) ++
+                tows.filter(_.isLeft).map(_.swap.toOption.get).
                     flatMap(w => ns.filter(t => t.wordIndexes.intersect(w.wordIndexes).nonEmpty))
         ).sortBy(_.startCharIndex)
 
