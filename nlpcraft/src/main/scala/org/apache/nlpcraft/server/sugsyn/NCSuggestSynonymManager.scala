@@ -232,7 +232,7 @@ object NCSuggestSynonymManager extends NCService {
 
                                         val reqs =
                                             exs.flatMap { case (exWords, exampleStems) =>
-                                                val exIdxs = synsStems.flatMap(synStems => getAllSlices(exampleStems, synStems))
+                                                val exIdxs = synsStems.flatMap(synStems => getAllSlices(exampleStems.toIndexedSeq, synStems))
 
                                                 def mkRequestData(idx: Int, synStems: Seq[String], synStemsIdx: Int): RequestData = {
                                                     val fromIncl = idx
@@ -323,7 +323,7 @@ object NCSuggestSynonymManager extends NCService {
 
                                             allSgsts.
                                                 computeIfAbsent(elemId, (_: String) => new CopyOnWriteArrayList[Suggestion]()).
-                                                addAll(resps.flatMap(x => x).asJava)
+                                                addAll(resps.flatten.asJava)
 
                                             if (i == allReqsCnt)
                                                 cdl.countDown()
@@ -342,7 +342,7 @@ object NCSuggestSynonymManager extends NCService {
                                 if (err.get() != null)
                                     throw new NCE("Error while working with 'ctxword' server.", err.get())
 
-                                val allSynsStems = elemSyns.flatMap(_._2).toSeq.flatMap(x => x).map(_.stem).toSet
+                                val allSynsStems = elemSyns.flatMap(_._2).toSeq.flatten.map(_.stem).toSet
 
                                 val nonEmptySgsts = allSgsts.asScala.map(p => p._1 -> p._2.asScala).filter(_._2.nonEmpty)
 

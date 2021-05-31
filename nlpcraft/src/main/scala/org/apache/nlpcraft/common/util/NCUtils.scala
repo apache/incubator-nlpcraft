@@ -177,7 +177,7 @@ object NCUtils extends LazyLogging {
      * @return
      */
     def splitTrimFilter(s: String, sep: String): Seq[String] =
-        trimFilter(s.split(sep))
+        trimFilter(s.split(sep).toIndexedSeq)
 
     /**
      * Recursively removes quotes from given string.
@@ -1814,7 +1814,7 @@ object NCUtils extends LazyLogging {
       *
       * @param s String for tokenization.
       */
-    def tokenizeSpace(s: String): Seq[String] = s.split(" ")
+    def tokenizeSpace(s: String): Seq[String] = s.split(" ").toIndexedSeq
 
     /**
       * Makes SHA256 hash.

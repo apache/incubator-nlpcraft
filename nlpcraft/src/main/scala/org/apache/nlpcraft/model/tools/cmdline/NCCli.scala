@@ -88,7 +88,7 @@ object NCCli extends NCCliBase {
 
                     IOUtils.copy(zis, buf, StandardCharsets.UTF_8)
 
-                    m += entry.getName -> buf.toString.split("\n")
+                    m += entry.getName -> buf.toString.split("\n").toIndexedSeq
 
                     entry = zis.getNextEntry
                 }

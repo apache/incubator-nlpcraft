@@ -1107,7 +1107,7 @@ object NCDeployManager extends NCService {
                 data
 
         val allAnns = mtd.getParameterAnnotations
-        val tokParamAnns = getTokensSeq(allAnns).filter(_ != null)
+        val tokParamAnns = getTokensSeq(allAnns.toIndexedSeq).filter(_ != null)
         val tokParamTypes = getTokensSeq(allParamTypes)
 
         // Checks tokens parameters annotations count.
@@ -1171,7 +1171,7 @@ object NCDeployManager extends NCService {
             s"]")
         }
 
-        val paramGenTypes = getTokensSeq(mtd.getGenericParameterTypes)
+        val paramGenTypes = getTokensSeq(mtd.getGenericParameterTypes.toIndexedSeq)
 
         require(tokParamTypes.length == paramGenTypes.length)
 
@@ -1660,7 +1660,7 @@ object NCDeployManager extends NCService {
                 foreach {
                     case (s, sNorm) =>
                         if (processed.add(Case(mdlId, s))) {
-                            val seq: Seq[String] = sNorm.split(" ").map(NCNlpPorterStemmer.stem)
+                            val seq: Seq[String] = sNorm.split(" ").toIndexedSeq.map(NCNlpPorterStemmer.stem)
 
                             if (!allSyns.exists(_.intersect(seq).nonEmpty))
                                 logger.warn(s"@NCIntentSample sample doesn't contain any direct synonyms [" +

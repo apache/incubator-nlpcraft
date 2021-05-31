@@ -143,7 +143,7 @@ object NCOpenNlpParser extends NCService with NCNlpParser with NCIgniteInstance 
     
             cache += normTxt -> words
     
-            toks.zip(poses).zip(lemmas).map { case ((tok, pos), lemma) =>
+            toks.zip(poses).zip(lemmas).toIndexedSeq.map { case ((tok, pos), lemma) =>
                 val normalWord = tok.token.toLowerCase
     
                 NCNlpWord(

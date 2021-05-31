@@ -153,6 +153,7 @@ object NCWordNetManager extends NCService {
                             synsOffs.
                                 map(dic.getSynsetAt(wnPos, _)).
                                 filter(_.getPOS == wnPos).
+                                toIndexedSeq.
                                 map(
                                     _.getWords.asScala.
                                         map(_.getLemma.toLowerCase).
