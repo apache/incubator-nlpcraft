@@ -25,7 +25,7 @@ import java.util.*;
  * of this interface is passed into a custom user-defined dialog flow match method.
  * <p>
  * Read full documentation in <a target=_ href="https://nlpcraft.apache.org/intent-matching.html">Intent Matching</a> section and review
- * <a target=_ href="https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft/src/main/scala/org/apache/nlpcraft/examples/">examples</a>.
+ * <a target=_ href="https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft-examples">examples</a>.
  */
 public interface NCDialogFlowItem extends NCMetadata {
     /**

@@ -26,7 +26,7 @@ import java.util.*;
  * presentation when used with {@link NCModelFileAdapter} adapter.
  * <p>
  * Read full documentation in <a target=_ href="https://nlpcraft.apache.org/data-model.html">Data Model</a> section and review
- * <a target=_ href="https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft/src/main/scala/org/apache/nlpcraft/examples/">examples</a>.
+ * <a target=_ href="https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft-examples">examples</a>.
  *
  * @see NCModel
  * @see NCModelAdapter
