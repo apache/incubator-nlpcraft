@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.examples.weather.darksky;
+package org.apache.nlpcraft.examples.weather.openweathermap;
 
 /**
  * OpenWeatherMapException exception.
