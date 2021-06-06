@@ -2586,7 +2586,7 @@ object NCCli extends NCCliBase {
         exitStatus = 1
 
         if (msg != null && msg.nonEmpty)
-            logln(s"${r("X")} ${if (msg.head.isLower) msg.head.toUpper + msg.tail else msg}")
+            logln(s"${r("X")} ${U.capitalize(msg)}")
     }
 
     /**
@@ -2595,7 +2595,7 @@ object NCCli extends NCCliBase {
      */
     private def warn(msg: String = ""): Unit =
         if (msg != null && msg.nonEmpty)
-            logln(s"${y("!")} ${if (msg.head.isLower) msg.head.toUpper + msg.tail else msg}")
+            logln(s"${y("!")} ${U.capitalize(msg)}")
 
     /**
      *
@@ -2932,7 +2932,7 @@ object NCCli extends NCCliBase {
             .build()
 
         // Process 'no-ansi' and 'ansi' commands first (before ASCII title is shown).
-        processAnsi(args, repl = false)
+        processAnsi(args.toSeq, repl = false)
 
         if (!args.contains(NO_LOGO_CMD.name))
             title() // Show logo unless we have 'no-logo' command.

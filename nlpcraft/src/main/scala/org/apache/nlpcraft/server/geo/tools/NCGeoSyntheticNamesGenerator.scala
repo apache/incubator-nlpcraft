@@ -48,7 +48,9 @@ object NCGeoSyntheticNamesGenerator extends App {
         println(s"Synonyms count: ${NCGeoManager.getModel.synonyms.size}")
 
         for ((synonym, entries) <- NCGeoManager.getModel.synonyms) {
-            val strs2Process = mutable.Set.empty[String] + synonym
+            val strs2Process = mutable.Set.empty[String]
+
+            strs2Process.add(synonym)
 
             def add(s: String, base: String) =
                 if (!NCGeoManager.getModel.synonyms.contains(s) && !hs.contains(s)) {

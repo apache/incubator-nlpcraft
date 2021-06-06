@@ -279,7 +279,12 @@ object NCJson {
     @tailrec
     def processExpNumbers(s: String): String =
         EXP_REGEX.findFirstMatchIn(s) match {
-            case Some(m) => processExpNumbers(m.before + m.group(0).replaceAll("\\+", "") + m.after)
+            case Some(m) => processExpNumbers(
+                m.before.toString +
+                m.group(0).replaceAll("\\+", "") +
+                m.after.toString
+            )
+            
             case None => s
         }
 
