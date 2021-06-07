@@ -76,7 +76,7 @@ class NCProbeMessage(val typ: String) extends mutable.HashMap[String/*Name*/, Se
     def data[T](key: String): T =
         dataOpt[T](key) match {
             case None => throw new AssertionError(s"Probe message missing key [key=$key, data=$this]")
-            case Some(x) => x.asInstanceOf[T]
+            case Some(x) => x
         }
     
     /**
