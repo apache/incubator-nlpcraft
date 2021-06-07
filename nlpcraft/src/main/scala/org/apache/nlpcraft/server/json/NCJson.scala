@@ -284,7 +284,7 @@ object NCJson {
                 m.group(0).replaceAll("\\+", "") +
                 m.after.toString
             )
-            
+
             case None => s
         }
 
