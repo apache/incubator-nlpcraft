@@ -30,6 +30,7 @@ import java.time.temporal.IsoFields
 import java.time.{LocalDate, LocalTime}
 import java.util
 import java.util.{Calendar, Collections, Collection => JColl, List => JList, Map => JMap}
+
 import scala.jdk.CollectionConverters.{CollectionHasAsScala, IterableHasAsJava}
 
 trait NCIdlCompilerBase {
@@ -684,7 +685,7 @@ trait NCIdlCompilerBase {
                 val jl = new util.ArrayList[Object]()
                 var z = 0
 
-                dump.foreach { x =>
+                dump.toSeq.reverse.foreach { x =>
                     val Z(v, n) = x()
 
                     z += n
@@ -870,7 +871,10 @@ trait NCIdlCompilerBase {
             stack.push(() => {
                 val Z(v, n) = x()
 
-                val jl = toList(v).asScala.toSeq.distinct.asJava
+                val jl = new util.ArrayList[Object]()
+
+                for (d <- toList(v).asScala.toSeq.distinct)
+                    jl.add(d.asInstanceOf[Object])
 
                 Z(jl, n)
             })
@@ -882,7 +886,12 @@ trait NCIdlCompilerBase {
             stack.push(() => {
                 val (lst1, lst2, n) = extract2(x1, x2)
 
-                Z((toList(lst1).asScala ++ toList(lst2).asScala).asJava, n)
+                val jl = new util.ArrayList[Object]()
+
+                for (d <- toList(lst1).asScala ++ toList(lst2).asScala)
+                    jl.add(d.asInstanceOf[Object])
+
+                Z(jl, n)
             })
         }
 
