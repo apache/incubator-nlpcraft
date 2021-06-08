@@ -153,8 +153,7 @@ private[functions] trait NCIdlFunctions {
             override def getPartTokens: util.List[NCToken] = partTokens.asJava
             override def getAliases: util.Set[String] = aliases.asJava
             override def getValue: String = value
-            override def getGroups: util.List[String] =
-                if (groups.isEmpty && id != null) Collections.singletonList(id) else groups.asJava
+            override def getGroups: util.List[String] = if (groups.isEmpty && id != null) Collections.singletonList(id) else groups.asJava
             override def getStartCharIndex: Int = start
             override def getEndCharIndex: Int = end
             override def isAbstract: Boolean = isAbstr
