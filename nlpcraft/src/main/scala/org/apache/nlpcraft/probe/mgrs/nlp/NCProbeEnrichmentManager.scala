@@ -296,17 +296,17 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
 
             val msg = NCProbeMessage(msgName)
 
-            msg += "srvReqId" -> srvReqId
-            msg += "mdlId" -> mdlId
-            msg += "txt" -> txt
+            msg.addData("srvReqId", srvReqId)
+            msg.addData("mdlId", mdlId)
+            msg.addData("txt", txt)
 
             def addOptional(name: String, vOpt: Option[Serializable]): Unit =
                 if (vOpt.isDefined)
-                    msg += name -> vOpt.get
+                    msg.addData(name, vOpt.get)
 
             def addMeta(name: String, vOpt: Option[JavaMeta]): Unit =
                 if (vOpt.isDefined)
-                    msg += name -> vOpt.get.asInstanceOf[Serializable]
+                    msg.addData(name, vOpt.get.asInstanceOf[Serializable])
 
             if (resBody.isDefined && resBody.get.length > Config.resultMaxSize) {
                 addOptional("error", Some("Result is too big. Model result must be corrected."))

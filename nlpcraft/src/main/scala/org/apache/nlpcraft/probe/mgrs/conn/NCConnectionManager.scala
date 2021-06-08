@@ -175,10 +175,8 @@ object NCConnectionManager extends NCService {
                 val tmz = TimeZone.getDefault
     
                 val srvNlpEng: String =
-                    hashResp.getOrElse(
-                        "NLP_ENGINE",
-                        throw new HandshakeError("NLP engine parameter missed in response.")
-                    ).asInstanceOf[String]
+                    hashResp.dataOpt[String]("NLP_ENGINE").
+                        getOrElse(throw new HandshakeError("NLP engine parameter missed in response."))
 
                 val probeNlpEng = NCNlpCoreManager.getEngine
 

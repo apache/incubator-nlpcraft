@@ -407,8 +407,8 @@ class SqlModel extends NCModelFileAdapter("sql_model.yaml") with LazyLogging {
       *  conversation context between this and previous questions will not be cleared.
       */
     override def onMatchedIntent(m: NCIntentMatch): Boolean = {
-        val toks = m.getVariant.getMatchedTokens.asScala
-        val intentConvToks = m.getIntentTokens.asScala.flatMap(_.asScala) -- toks
+        val toks = m.getVariant.getMatchedTokens.asScala.toSet
+        val intentConvToks = m.getIntentTokens.asScala.flatMap(_.asScala).filterNot(toks.contains)
 
         // Variant doesn't use tokens from the conversation context (STM).
         if (intentConvToks.isEmpty)
