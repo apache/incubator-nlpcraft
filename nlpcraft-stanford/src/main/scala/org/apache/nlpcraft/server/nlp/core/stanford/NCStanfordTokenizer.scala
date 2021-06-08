@@ -27,7 +27,7 @@ import NCStanfordTokenizer._
   * Custom tokenizer.
   */
 case class NCStanfordTokenizer(sen: String) extends AbstractTokenizer[CoreLabel] {
-    private val iter = NCNlpCoreManager.tokenize(sen).map(p => factory.makeToken(p.token, p.from, p.length)).toIterator
+    private val iter = NCNlpCoreManager.tokenize(sen).map(p => factory.makeToken(p.token, p.from, p.length)).iterator
 
     override def getNext: CoreLabel = if (iter.hasNext) iter.next() else null
 }

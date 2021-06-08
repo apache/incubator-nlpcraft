@@ -173,7 +173,7 @@ class NCSqlExampleSpec extends NCTestContext {
     }
 
     @Test
-    def test() {
+    def test(): Unit = {
         check(
             Case(
                 Seq(

@@ -62,12 +62,12 @@ class NCIdlFunctionsCollections extends NCIdlFunctions {
             "count(list()) == 0",
             s"keys(json('$js')) == list('k1')",
             s"values(json('$js')) == list('v1')",
-            s"distinct(list(1, 2, 3, 3, 2)) == list(1, 2, 3)",
-            s"distinct(list(1.0, 2.0, 3.0, 3.0, 2.0)) == list(1.0, 2.0, 3.0)",
-            s"distinct(list('1', '2', '3', '3', '2')) == list('1', '2', '3')",
-            s"concat(list(1, 2, 3), list(1, 2, 3)) == list(1, 2, 3, 1, 2, 3)",
-            s"concat(list(1, 2, 3), list()) == list(1, 2, 3)",
-            s"concat(list(), list()) == list()",
-            s"concat(list(1, 2), list(3.0)) == list(1, 2, 3.0)"
+            "distinct(list(1, 2, 3, 3, 2)) == list(1, 2, 3)",
+            "distinct(list(1.0, 2.0, 3.0, 3.0, 2.0)) == list(1.0, 2.0, 3.0)",
+            "distinct(list('1', '2', '3', '3', '2')) == list('1', '2', '3')",
+            "concat(list(1, 2, 3), list(1, 2, 3)) == list(1, 2, 3, 1, 2, 3)",
+            "concat(list(1, 2, 3), list()) == list(1, 2, 3)",
+            "concat(list(), list()) == list()",
+            "concat(list(1, 2), list(3.0)) == list(1, 2, 3.0)"
         )
 }
