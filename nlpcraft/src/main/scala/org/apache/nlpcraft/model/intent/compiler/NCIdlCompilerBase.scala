@@ -783,8 +783,14 @@ trait NCIdlCompilerBase {
             stack.push(() => {
                 val Z(v, n) = x()
 
-                if (isList(v))
-                    Z(toList(v).asScala.map(_.toString).asJava, n)
+                if (isList(v)) {
+                    val jl = new util.ArrayList[Object]()
+
+                    for (d <- toList(v).asScala.map(_.toString))
+                        jl.add(d)
+
+                    Z(jl, n)
+                }
                 else
                     Z(v.toString, n)
             })
