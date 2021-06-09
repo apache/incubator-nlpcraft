@@ -21,8 +21,6 @@ import org.apache.nlpcraft.NCTestEnvironment
 import org.junit.jupiter.api.Assertions._
 import org.junit.jupiter.api.Test
 
-import java.util.{List => JList}
-
 import scala.jdk.CollectionConverters.ListHasAsScala
 
 /**
