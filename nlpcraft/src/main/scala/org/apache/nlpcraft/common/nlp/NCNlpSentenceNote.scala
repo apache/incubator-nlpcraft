@@ -167,7 +167,6 @@ class NCNlpSentenceNote(private val values: Map[String, JSerializable]) extends 
         seq1 ++ seq2
     }
 
-
     /**
       *
       * @return

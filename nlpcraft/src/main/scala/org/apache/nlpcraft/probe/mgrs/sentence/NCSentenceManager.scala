@@ -656,7 +656,7 @@ object NCSentenceManager extends NCService {
                 distinct
 
         // Optimization. Deletes all wholly swallowed notes.
-        val links = getLinks(sen.tokens.flatMap(p => p))
+        val links = getLinks(sen.tokens.toSeq.flatten)
 
         val swallowed =
             delCombs.
