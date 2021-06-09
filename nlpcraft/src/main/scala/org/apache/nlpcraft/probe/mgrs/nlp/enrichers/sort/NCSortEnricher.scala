@@ -26,8 +26,9 @@ import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote, NCNlpSe
 import org.apache.nlpcraft.probe.mgrs.NCProbeModel
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
 
+import java.util.{List => JList}
 import scala.collection.mutable
-import scala.jdk.CollectionConverters.{CollectionHasAsScala, IterableHasAsJava, MapHasAsScala}
+import scala.jdk.CollectionConverters._
 
 /**
   * Sort enricher.
@@ -461,8 +462,11 @@ object NCSortEnricher extends NCProbeEnricher {
                                 notesName: String,
                                 idxsName: String
                             ): mutable.ArrayBuffer[(String, Any)] = {
-                                params += notesName -> seq.map(_.note).asJava
-                                params += idxsName -> seq.map(_.indexes.asJava).asJava
+                                val notesNameList: JList[String] = seq.map(_.note).toList.asJava
+                                val idxsNameList: JList[JList[Int]] = seq.map(_.indexes.asJava).asJava
+
+                                params += notesName -> notesNameList
+                                params += idxsName -> idxsNameList
 
                                 params
                             }
