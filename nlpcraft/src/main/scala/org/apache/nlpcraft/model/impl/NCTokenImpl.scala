@@ -51,7 +51,7 @@ private[nlpcraft] class NCTokenImpl(
     endCharIndex: Int,
     meta: Map[String, Object],
     isAbstractProp: Boolean
-) extends NCMetadataAdapter(mutable.HashMap(meta.toSeq:_ *).asJava) with NCToken with JSerializable {
+) extends NCMetadataAdapter(new java.util.HashMap(mutable.HashMap(meta.toSeq:_ *).asJava)) with NCToken with JSerializable {
     require(mdl != null)
     require(srvReqId != null)
     require(id != null)
