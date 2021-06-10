@@ -79,8 +79,8 @@
         <timestamp>${maven.build.timestamp}</timestamp>
 
         <!-- Versions. -->
-        <ignite.ver>2.9.1</ignite.ver>
-        <gridgain.agent.ver>2.8.1.2</gridgain.agent.ver>
+        <ignite.ver>2.10.0</ignite.ver>
+        <gridgain.agent.ver>2.10.0.0</gridgain.agent.ver>
         <scala.plugin.ver>4.3.1</scala.plugin.ver>
         <log4j.ver>2.12.0</log4j.ver>
         <scala.ver>${scala.base}.6</scala.ver>
