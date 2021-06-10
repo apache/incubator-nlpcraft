@@ -426,6 +426,7 @@ object NCDeployManager extends NCService {
             .groupBy(_.origText)
             .map(x => (x._1, x._2.map(_.alias).filter(_ != null)))
             .values
+            .toSeq
             .flatten
             .toList
 
@@ -1290,9 +1291,9 @@ object NCDeployManager extends NCService {
             // Array of tokens.
             else if (paramCls.isArray)
                 argList.asScala.toArray
-            // Scala and java list of tokens.
+            // Scala and Java list of tokens.
             else if (paramCls == CLS_SCALA_SEQ)
-                argList.asScala
+                argList.asScala.toSeq
             else if (paramCls == CLS_SCALA_LST)
                 argList.asScala.toList
             else if (paramCls == CLS_JAVA_LST)
