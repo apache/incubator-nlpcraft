@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,8 +22,7 @@ import org.apache.nlpcraft.model.NCMacroProcessor
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
-import scala.compat.Platform._
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.CollectionHasAsScala
 
 /**
   * Tests for text parser.
@@ -71,15 +70,15 @@ class NCMacroParserSpec  {
     }
 
     // @Test
-    def testPerformance() {
-        val start = currentTime
+    def testPerformance(): Unit = {
+        val start = U.now()
 
         val N = 50000
 
         for (_ <- 0 to N)
             parser.expand("a {{{<C>}}} {c|d|e|f|g|h|j|k|l|n|m|p|r}")
 
-        val duration = currentTime - start
+        val duration = U.now() - start
 
         println(s"${N * 1000 / duration} expansions/sec.")
     }
@@ -102,7 +101,7 @@ class NCMacroParserSpec  {
     }
 
     @Test
-    def testExpand() {
+    def testExpand(): Unit = {
         // Make sure we can parse these.
         parser.expand("<OF>")
         parser.expand("<QTY>")
@@ -154,7 +153,7 @@ class NCMacroParserSpec  {
     }
 
     @Test
-    def testLimit() {
+    def testLimit(): Unit = {
         checkError("<METRICS> <USER> <BY> <WEBSITE> <BY> <SES> <BY> <METRICS> <BY> <USER> <BY> <METRICS>")
     }
 }

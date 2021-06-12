@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -38,19 +38,17 @@ import org.apache.nlpcraft.model.intent.solver.NCIntentSolver
 import org.apache.nlpcraft.model.intent._
 import org.apache.nlpcraft.probe.mgrs.NCProbeSynonymChunkKind.{IDL, REGEX, TEXT}
 import org.apache.nlpcraft.probe.mgrs.{NCProbeModel, NCProbeSynonym, NCProbeSynonymChunk, NCProbeSynonymsWrapper}
-import resource.managed
 
-import scala.collection.JavaConverters._
+import scala.util.Using
 import scala.compat.java8.OptionConverters._
-import scala.collection.convert.DecorateAsScala
 import scala.collection.mutable
-import scala.collection.mutable.{ArrayBuffer, ListBuffer}
+import scala.jdk.CollectionConverters.{ListHasAsScala, MapHasAsJava, MapHasAsScala, SetHasAsScala}
 import scala.util.control.Exception._
 
 /**
   * Model deployment manager.
   */
-object NCDeployManager extends NCService with DecorateAsScala {
+object NCDeployManager extends NCService {
     private final val TOKENS_PROVIDERS_PREFIXES = Set("nlpcraft:", "google:", "stanford:", "opennlp:", "spacy:")
     private final val ID_REGEX = "^[_a-zA-Z]+[a-zA-Z0-9:\\-_]*$"
 
@@ -85,7 +83,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
     private final val SUSP_SYNS_CHARS = Seq("?", "*", "+")
 
-    @volatile private var data: ArrayBuffer[NCProbeModel] = _
+    @volatile private var data: mutable.ArrayBuffer[NCProbeModel] = _
     @volatile private var mdlFactory: NCModelFactory = _
 
     object Config extends NCConfigurable {
@@ -286,7 +284,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
             def chunkSplit(s: String): Seq[NCProbeSynonymChunk] = {
                 val x = s.trim()
 
-                val chunks = ListBuffer.empty[String]
+                val chunks = mutable.ArrayBuffer.empty[String]
 
                 var start = 0
                 var curr = 0
@@ -428,6 +426,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
             .groupBy(_.origText)
             .map(x => (x._1, x._2.map(_.alias).filter(_ != null)))
             .values
+            .toSeq
             .flatten
             .toList
 
@@ -612,7 +611,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
         val classes = mutable.ArrayBuffer.empty[Class[_ <: NCModel]]
 
-        managed(new JarInputStream(new BufferedInputStream(new FileInputStream(jarFile)))) acquireAndGet { in =>
+        Using.resource(new JarInputStream(new BufferedInputStream(new FileInputStream(jarFile)))) { in =>
             var entry = in.getNextJarEntry
 
             while (entry != null) {
@@ -654,7 +653,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ =>
         ackStarting()
 
-        data = ArrayBuffer.empty[NCProbeModel]
+        data = mutable.ArrayBuffer.empty[NCProbeModel]
 
         mdlFactory = Config.modelFactoryType match {
             case Some(mft) =>
@@ -1109,7 +1108,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 data
 
         val allAnns = mtd.getParameterAnnotations
-        val tokParamAnns = getTokensSeq(allAnns).filter(_ != null)
+        val tokParamAnns = getTokensSeq(allAnns.toIndexedSeq).filter(_ != null)
         val tokParamTypes = getTokensSeq(allParamTypes)
 
         // Checks tokens parameters annotations count.
@@ -1173,7 +1172,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
             s"]")
         }
 
-        val paramGenTypes = getTokensSeq(mtd.getGenericParameterTypes)
+        val paramGenTypes = getTokensSeq(mtd.getGenericParameterTypes.toIndexedSeq)
 
         require(tokParamTypes.length == paramGenTypes.length)
 
@@ -1292,9 +1291,9 @@ object NCDeployManager extends NCService with DecorateAsScala {
             // Array of tokens.
             else if (paramCls.isArray)
                 argList.asScala.toArray
-            // Scala and java list of tokens.
+            // Scala and Java list of tokens.
             else if (paramCls == CLS_SCALA_SEQ)
-                argList.asScala
+                argList.asScala.toSeq
             else if (paramCls == CLS_SCALA_LST)
                 argList.asScala.toList
             else if (paramCls == CLS_JAVA_LST)
@@ -1662,7 +1661,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 foreach {
                     case (s, sNorm) =>
                         if (processed.add(Case(mdlId, s))) {
-                            val seq: Seq[String] = sNorm.split(" ").map(NCNlpPorterStemmer.stem)
+                            val seq: Seq[String] = sNorm.split(" ").toIndexedSeq.map(NCNlpPorterStemmer.stem)
 
                             if (!allSyns.exists(_.intersect(seq).nonEmpty))
                                 logger.warn(s"@NCIntentSample sample doesn't contain any direct synonyms [" +

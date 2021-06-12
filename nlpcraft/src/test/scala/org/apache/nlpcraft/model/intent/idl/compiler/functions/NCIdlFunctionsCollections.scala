@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -44,7 +44,10 @@ class NCIdlFunctionsCollections extends NCIdlFunctions {
             "has_any(list('1', '2', '3'), list('10', '20', '30')) == false",
             "has_all(list('1', '2', '3'), list('1', '20', '30')) == false",
             "has_all(list('1', '2', '3'), list('1', '2', '3')) == true",
+            "size(list()) == 0",
+            "list(1, 2, 3) == list(1, 2, 3)",
             "first(list(1, 2, 3)) == 1",
+            "get(list(1, 2, 3), 0) == 1",
             "@lst = list(1, 2, 3) first(reverse(@lst)) == last(@lst)",
             "last(list(1, 2, 3)) == 3",
             "is_empty(list()) == true",
@@ -62,12 +65,12 @@ class NCIdlFunctionsCollections extends NCIdlFunctions {
             "count(list()) == 0",
             s"keys(json('$js')) == list('k1')",
             s"values(json('$js')) == list('v1')",
-            s"distinct(list(1, 2, 3, 3, 2)) == list(1, 2, 3)",
-            s"distinct(list(1.0, 2.0, 3.0, 3.0, 2.0)) == list(1.0, 2.0, 3.0)",
-            s"distinct(list('1', '2', '3', '3', '2')) == list('1', '2', '3')",
-            s"concat(list(1, 2, 3), list(1, 2, 3)) == list(1, 2, 3, 1, 2, 3)",
-            s"concat(list(1, 2, 3), list()) == list(1, 2, 3)",
-            s"concat(list(), list()) == list()",
-            s"concat(list(1, 2), list(3.0)) == list(1, 2, 3.0)"
+            "sort(distinct(list(1, 2, 3, 3, 2))) == sort(list(1, 2, 3))",
+            "distinct(list(1.0, 2.0, 3.0, 3.0, 2.0)) == list(1.0, 2.0, 3.0)",
+            "distinct(list('1', '2', '3', '3', '2')) == list('1', '2', '3')",
+            "sort(concat(list(1, 2, 3), list(1, 2, 3))) == sort(list(1, 2, 3, 1, 2, 3))",
+            "concat(list(1, 2, 3), list()) == list(1, 2, 3)",
+            "concat(list(), list()) == list()",
+            "concat(list(1, 2), list(3.0)) == list(1, 2, 3.0)"
         )
 }

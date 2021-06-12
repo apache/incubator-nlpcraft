@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,7 +36,6 @@ import org.apache.nlpcraft.server.nlp.enrichers.quote.NCQuoteEnricher
 import org.apache.nlpcraft.server.nlp.enrichers.stopword.NCStopWordEnricher
 import org.apache.nlpcraft.server.nlp.preproc.NCPreProcessManager
 
-import scala.collection.Seq
 import scala.concurrent.ExecutionContext
 import scala.util.control.Exception.catching
 
@@ -207,7 +206,7 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
             (x._1 * 100) + x._2.indexOf(hdr.noteName)
         })
 
-        val tbl = NCAsciiTable(headers.map(_.header): _*)
+        val tbl = NCAsciiTable(headers.map(_.header))
 
         /**
          *

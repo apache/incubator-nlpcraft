@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,8 +27,10 @@ import org.apache.nlpcraft.probe.mgrs.NCProbeModel
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
 
 import java.io.Serializable
-import scala.collection.JavaConverters._
-import scala.collection.{Map, Seq, mutable}
+import java.util.{List => JList}
+
+import scala.collection.mutable
+import scala.jdk.CollectionConverters.{CollectionHasAsScala, MapHasAsScala, SeqHasAsJava}
 
 /**
   * Limit enricher.
@@ -39,7 +41,7 @@ object NCLimitEnricher extends NCProbeEnricher {
         asc: Option[Boolean],
         matched: Seq[NCNlpSentenceToken],
         refNotes: Set[String],
-        refIndexes: java.util.List[Int]
+        refIndexes: JList[Int]
     )
 
     private final val TOK_ID = "nlpcraft:limit"
@@ -347,7 +349,7 @@ object NCLimitEnricher extends NCProbeEnricher {
 
             // Reference should be last.
             if (refCands.nonEmpty && refCands.last.index == toks.last.index && cmnRefNotes.nonEmpty)
-                Stream(try0(matchCands), try0(matchCands.filter(!_.isStopWord))).flatten.headOption
+                LazyList(try0(matchCands), try0(matchCands.filter(!_.isStopWord))).flatten.headOption
             else
                 None
         }
@@ -358,7 +360,7 @@ object NCLimitEnricher extends NCProbeEnricher {
         def f(seq: => Seq[NCNlpSentenceToken]): Seq[NCNlpSentenceToken] =
             seq.filter(_.exists(n => isUserNotValue(n) && n.tokenIndexes.head >= i1 && n.tokenIndexes.last <= i2))
 
-        Stream(tryCandidates(f(toks)), tryCandidates(f(toks.dropWhile(tech.contains)))).flatten.headOption
+        LazyList(tryCandidates(f(toks)), tryCandidates(f(toks.dropWhile(tech.contains)))).flatten.headOption
     }
 
     /**

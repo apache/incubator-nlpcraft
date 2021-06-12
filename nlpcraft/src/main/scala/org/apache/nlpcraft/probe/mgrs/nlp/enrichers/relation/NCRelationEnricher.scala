@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 package org.apache.nlpcraft.probe.mgrs.nlp.enrichers.relation
 
 import java.io.Serializable
-
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.makro.NCMacroParser
 import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
@@ -27,8 +26,10 @@ import org.apache.nlpcraft.common.{NCE, NCService}
 import org.apache.nlpcraft.probe.mgrs.NCProbeModel
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
 
-import scala.collection.JavaConverters._
-import scala.collection.{Map, Seq, mutable}
+import java.util.{List => JList}
+
+import scala.collection.mutable
+import scala.jdk.CollectionConverters.{MapHasAsScala, SeqHasAsJava, SetHasAsScala}
 
 /**
   * Relation enricher.
@@ -40,7 +41,7 @@ object NCRelationEnricher extends NCProbeEnricher {
         matched: Seq[NCNlpSentenceToken],
         matchedHead: NCNlpSentenceToken,
         refNotes: Set[String],
-        refIndexes: java.util.List[Int]
+        refIndexes: JList[Int]
     )
     case class Reference(tokens: Seq[NCNlpSentenceToken], types: Set[String]) {
         require(tokens.nonEmpty)

@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 package org.apache.nlpcraft.probe.mgrs.nlp.enrichers.sort
 
 import java.io.Serializable
-
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.NCService
 import org.apache.nlpcraft.common.makro.NCMacroParser
@@ -27,9 +26,9 @@ import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote, NCNlpSe
 import org.apache.nlpcraft.probe.mgrs.NCProbeModel
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
 
-import scala.collection.JavaConverters._
-import scala.collection.mutable.ArrayBuffer
-import scala.collection.{Map, Seq, mutable}
+import java.util.{List => JList}
+import scala.collection.mutable
+import scala.jdk.CollectionConverters._
 
 /**
   * Sort enricher.
@@ -132,7 +131,7 @@ object NCSortEnricher extends NCProbeEnricher {
     /**
       *
       */
-    private def validate() {
+    private def validate(): Unit = {
         // Not duplicated.
         require(sort.size + by.size + order.size == (sort ++ by ++ order.map(_._1)).distinct.size)
 
@@ -239,7 +238,7 @@ object NCSortEnricher extends NCProbeEnricher {
                 s"]"
             )
 
-        res
+        res.toSeq
     }
 
     /**
@@ -279,8 +278,8 @@ object NCSortEnricher extends NCProbeEnricher {
                     map(toks => toks.map(_.stem).mkString(" ") -> toks).toMap.
                     flatMap { case (stem, stemToks) =>
                         if (keyStems.contains(stem)) Some(KeyWord(stemToks, keyStems.indexOf(stem))) else None
-                    }.toStream.headOption
-            ).toStream.headOption
+                    }.to(LazyList).headOption
+            ).to(LazyList).headOption
         }
 
         var res: Option[Match] = None
@@ -458,19 +457,26 @@ object NCSortEnricher extends NCProbeEnricher {
                     case Some(m)  =>
                         if (!matches.exists(_.isSubCase(m)) && !m.intersect(restricted)) {
                             def addNotes(
-                                params: ArrayBuffer[(String, Any)],
+                                params: mutable.ArrayBuffer[(String, Any)],
                                 seq: Seq[NoteData],
                                 notesName: String,
                                 idxsName: String
-                            ): ArrayBuffer[(String, Any)] = {
-                                params += notesName -> seq.map(_.note).asJava
-                                params += idxsName -> seq.map(_.indexes.asJava).asJava
+                            ): mutable.ArrayBuffer[(String, Any)] = {
+                                val notesNameList: JList[String] = seq.map(_.note).toList.asJava
+                                val idxsNameList: JList[JList[Int]] = seq.map(_.indexes.asJava).asJava
+
+                                params += notesName -> notesNameList
+                                params += idxsName -> idxsNameList
 
                                 params
                             }
 
-                            def mkNote(params: ArrayBuffer[(String, Any)]): Unit = {
-                                val note = NCNlpSentenceNote(m.main.map(_.index), TOK_ID, params: _*)
+                            def mkNote(params: mutable.ArrayBuffer[(String, Any)]): Unit = {
+                                val note = NCNlpSentenceNote(
+                                    m.main.map(_.index),
+                                    TOK_ID,
+                                    params.toSeq: _*
+                                )
 
                                 if (!notes.exists(n => ns.notesEqualOrSimilar(n, note))) {
                                     notes += note
@@ -493,7 +499,7 @@ object NCSortEnricher extends NCProbeEnricher {
 
                             if (m.subjSeq.nonEmpty)
                                 for (subj <- m.subjSeq) {
-                                    def addSubj(): ArrayBuffer[(String, Any)] =
+                                    def addSubj(): mutable.ArrayBuffer[(String, Any)] =
                                         addNotes(mkParams(), subj, "subjnotes", "subjindexes")
 
                                     if (m.bySeq.nonEmpty)

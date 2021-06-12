@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,9 +36,9 @@ import org.apache.nlpcraft.server.probe.NCProbeManager
 import java.util
 import java.util.concurrent._
 import java.util.concurrent.atomic.{AtomicInteger, AtomicReference}
-import scala.collection.JavaConverters._
-import scala.collection.{Seq, mutable}
+import scala.collection.mutable
 import scala.concurrent.{ExecutionContext, Future, Promise}
+import scala.jdk.CollectionConverters._
 import scala.util.{Failure, Success}
 
 /**
@@ -78,7 +78,7 @@ object NCSuggestSynonymManager extends NCService {
                 case 200 =>
                     val data: util.List[util.List[Suggestion]] = GSON.fromJson(js, TYPE_RESP)
 
-                    data.asScala.map(p => if (p.isEmpty) Seq.empty else p.asScala.tail)
+                    data.asScala.map(p => if (p.isEmpty) Seq.empty else p.asScala.tail.toSeq).toSeq
 
                 case _ =>
                     throw new NCE(
@@ -139,7 +139,7 @@ object NCSuggestSynonymManager extends NCService {
      */
     def suggest(mdlId: String, minScoreOpt: Option[Double], parent: Span = null): Future[NCSuggestSynonymResult] =
         startScopedSpan("inspect", parent, "mdlId" -> mdlId) { _ =>
-            val now = System.currentTimeMillis()
+            val now = U.now()
 
             val promise = Promise[NCSuggestSynonymResult]()
 
@@ -167,7 +167,7 @@ object NCSuggestSynonymManager extends NCService {
                                 NCSuggestSynonymResult(
                                     modelId = mdlId,
                                     minScore = minScore,
-                                    durationMs = System.currentTimeMillis() - now,
+                                    durationMs = U.now() - now,
                                     timestamp = now,
                                     error = err,
                                     suggestions = Seq.empty.asJava,
@@ -232,7 +232,7 @@ object NCSuggestSynonymManager extends NCService {
 
                                         val reqs =
                                             exs.flatMap { case (exWords, exampleStems) =>
-                                                val exIdxs = synsStems.flatMap(synStems => getAllSlices(exampleStems, synStems))
+                                                val exIdxs = synsStems.flatMap(synStems => getAllSlices(exampleStems.toIndexedSeq, synStems))
 
                                                 def mkRequestData(idx: Int, synStems: Seq[String], synStemsIdx: Int): RequestData = {
                                                     val fromIncl = idx
@@ -342,7 +342,7 @@ object NCSuggestSynonymManager extends NCService {
                                 if (err.get() != null)
                                     throw new NCE("Error while working with 'ctxword' server.", err.get())
 
-                                val allSynsStems = elemSyns.flatMap(_._2).flatten.map(_.stem).toSet
+                                val allSynsStems = elemSyns.flatMap(_._2).toSeq.flatten.map(_.stem).toSet
 
                                 val nonEmptySgsts = allSgsts.asScala.map(p => p._1 -> p._2.asScala).filter(_._2.nonEmpty)
 
@@ -381,42 +381,43 @@ object NCSuggestSynonymManager extends NCService {
                                 }
 
                                 val resJ: util.Map[String, util.List[util.HashMap[String, Any]]] =
-                                    res.map { case (id, data) =>
-                                        val norm =
-                                            if (data.nonEmpty) {
-                                                val factors = data.map(_.score)
+                                    res.map {
+                                        case (id, data) =>
+                                            val norm =
+                                                if (data.nonEmpty) {
+                                                    val factors = data.map(_.score)
 
-                                                val min = factors.min
-                                                val max = factors.max
-                                                var delta = max - min
+                                                    val min = factors.min
+                                                    val max = factors.max
+                                                    var delta = max - min
 
-                                                if (delta == 0)
-                                                    delta = max
+                                                    if (delta == 0)
+                                                        delta = max
 
-                                                def normalize(v: Double): Double = (v - min) / delta
+                                                    def normalize(v: Double): Double = (v - min) / delta
 
-                                                data.
-                                                    map(s => SuggestionResult(s.synonym, normalize(s.score))).
-                                                    filter(_.score >= minScore)
-                                            }
-                                            else
-                                                Seq.empty
+                                                    data.
+                                                        map(s => SuggestionResult(s.synonym, normalize(s.score))).
+                                                        filter(_.score >= minScore)
+                                                }
+                                                else
+                                                    Seq.empty
 
-                                        id -> norm.map(d => {
-                                            val m = new util.HashMap[String, Any]()
+                                            id -> norm.map(d => {
+                                                val m = new util.HashMap[String, Any]()
 
-                                            m.put("synonym", d.synonym.toLowerCase)
-                                            m.put("score", d.score)
+                                                m.put("synonym", d.synonym.toLowerCase)
+                                                m.put("score", d.score)
 
-                                            m
-                                        }).asJava
-                                    }.asJava
+                                                m
+                                            }).asJava
+                                    }.toMap.asJava
 
                                 promise.success(
                                     NCSuggestSynonymResult(
                                         modelId = mdlId,
                                         minScore = minScore,
-                                        durationMs = System.currentTimeMillis() - now,
+                                        durationMs = U.now() - now,
                                         timestamp = now,
                                         error = null,
                                         suggestions = Seq(resJ.asInstanceOf[AnyRef]).asJava,

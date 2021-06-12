@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,7 +34,7 @@ object NCGeoSyntheticNamesGenerator extends App {
     // Base synonym should be saved for console debug message.
     case class Holder(base: String, var entries: Set[NCGeoEntry])
 
-    private def process(outFile: String) {
+    private def process(outFile: String): Unit = {
         val file = new File(outFile)
 
         if (file.exists() && !file.delete())
@@ -48,7 +48,9 @@ object NCGeoSyntheticNamesGenerator extends App {
         println(s"Synonyms count: ${NCGeoManager.getModel.synonyms.size}")
 
         for ((synonym, entries) <- NCGeoManager.getModel.synonyms) {
-            val strs2Process = mutable.Set.empty[String] + synonym
+            val strs2Process = mutable.Set.empty[String]
+
+            strs2Process.add(synonym)
 
             def add(s: String, base: String) =
                 if (!NCGeoManager.getModel.synonyms.contains(s) && !hs.contains(s)) {
@@ -60,7 +62,7 @@ object NCGeoSyntheticNamesGenerator extends App {
                     }
                 }
 
-            def generateDash(str: String) {
+            def generateDash(str: String): Unit = {
                 def generate(a: String, b: String): Unit =
                     if (str.contains(a))
                         add(str.replaceAll(a, b), str)
@@ -69,7 +71,7 @@ object NCGeoSyntheticNamesGenerator extends App {
                 generate("-", " ")
             }
 
-            def generateSaints(str: String) {
+            def generateSaints(str: String): Unit = {
                 def generate(str: String, beginStr: String, replacements: String*): Unit =
                     if (str.startsWith(beginStr))
                         replacements.foreach(r => add(str.replaceFirst(beginStr, r), str))
@@ -102,7 +104,7 @@ object NCGeoSyntheticNamesGenerator extends App {
             println("All synthetic names already generated. Nothing to add.")
     }
 
-    private def writeJson(buf: Map[String, Holder], outFile: String) {
+    private def writeJson(buf: Map[String, Holder], outFile: String): Unit = {
         val syns = mutable.Map.empty[NCGeoEntry, NCGeoSynonym]
 
         buf.foreach(p => {
@@ -159,7 +161,7 @@ object NCGeoSyntheticNamesGenerator extends App {
         U.getYamlMapper.writeValue(new File(outFile), (syns.values ++ exists).toSet)
     }
 
-    private def printResults(buf: Map[String, Holder]) {
+    private def printResults(buf: Map[String, Holder]): Unit = {
         val map = mutable.Map.empty[String, Seq[String]]
 
         buf.map(p => {

@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,6 @@ package org.apache.nlpcraft.server.sql
 
 import java.sql.Types._
 import java.sql.{Connection, PreparedStatement, ResultSet, SQLException, Timestamp}
-
 import com.mchange.v2.c3p0.ComboPooledDataSource
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.ignite.{Ignite, IgniteAtomicSequence, IgniteJdbcThinDriver}
@@ -27,9 +26,9 @@ import org.apache.ignite.transactions.Transaction
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.server.tx.NCTxManager
-import resource._
 
 import scala.collection._
+import scala.util.Using
 import scala.util.control.Exception._
 
 /**
@@ -467,9 +466,12 @@ object NCSql extends LazyLogging {
         var r = List.empty[R]
 
         catching(psqlErrorCodes) {
-            for (ps <- managed { prepare(sql, params) } ; rs <- managed { ps.executeQuery() } )
-                while (rs.next)
-                    r :+= p(rs)
+            Using.resource(prepare(sql, params)) { ps =>
+                Using.resource(ps.executeQuery()) { rs =>
+                    while (rs.next)
+                        r :+= p(rs)
+                }
+            }
 
             r
         }
@@ -520,7 +522,7 @@ object NCSql extends LazyLogging {
     @throws[NCE]
     def insert(sql: String, params: Any*): Unit =
         catching(psqlErrorCodes) {
-            managed { prepare(sql, params) } acquireAndGet { _.executeUpdate }
+            Using.resource { prepare(sql, params) } { _.executeUpdate }
         }
 
     /**
@@ -531,7 +533,7 @@ object NCSql extends LazyLogging {
      */
     private def exec(sql: String, params: Any*): Int =
         catching[Int](psqlErrorCodes) {
-            managed { prepare(sql, params) } acquireAndGet { _.executeUpdate }
+            Using.resource { prepare(sql, params) } { _.executeUpdate }
         }
 
     /**
@@ -579,9 +581,12 @@ object NCSql extends LazyLogging {
     @throws[NCE]
     def select[R](sql: String, callback: R => Unit, params: Any*) (implicit p: RsParser[R]): Unit =
         catching(psqlErrorCodes) {
-            for (ps <- managed { prepare(sql, params) } ; rs <- managed { ps.executeQuery() } )
-                while (rs.next)
-                    callback(p(rs))
+            Using.resource(prepare(sql, params)) { ps =>
+                Using.resource(ps.executeQuery()) { rs =>
+                    while (rs.next)
+                        callback(p(rs))
+                }
+            }
         }
 
     /**
@@ -614,13 +619,14 @@ object NCSql extends LazyLogging {
         val tbls = mutable.ArrayBuffer.empty[String]
 
         catching(psqlErrorCodes) {
-            for (rs <- managed { connection().getMetaData.getTables(null, null, null, null)})
+            Using.resource(connection().getMetaData.getTables(null, null, null, null)) { rs =>
                 while (rs.next) {
                     val tblSchema = rs.getString(2)
-             
+
                     if (tblSchema != null && tblSchema.toLowerCase == schemaLc)
                         tbls += rs.getString(3)
                 }
+            }
         }
 
         tbls

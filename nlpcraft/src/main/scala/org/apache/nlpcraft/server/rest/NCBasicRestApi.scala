@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -48,8 +48,8 @@ import org.apache.nlpcraft.server.user.NCUserManager
 import spray.json.DefaultJsonProtocol._
 import spray.json.{JsObject, JsValue, RootJsonFormat}
 
-import scala.collection.JavaConverters._
 import scala.concurrent.{ExecutionContext, Future}
+import scala.jdk.CollectionConverters._
 
 /**
   * REST API default implementation.
@@ -138,7 +138,6 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
     /**
       *
       * @param o
-      * @throws
       * @return
       */
     @throws[NCE]
@@ -146,7 +145,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
         try
             JS_MAPPER.writeValueAsString(o)
         catch {
-            case e: JsonProcessingException => throw new NCE(s"JSON serialization error for: $o", e)
+            case e: JsonProcessingException => throw new NCE(s"JSON serialization error.", e)
         }
 
     /**
@@ -245,7 +244,6 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             "logHolder" -> (if (s.logJson.isDefined) U.jsonToObject(s.logJson.get) else null),
             "intentId" -> s.intentId.orNull
         ).filter(_._2 != null).asJava
-
 
     /**
       * Extracts and checks JSON.
@@ -846,7 +844,12 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                 "mdlId" -> req.mdlId,
                 "usrExtId" -> req.usrExtId.orNull,
                 "usrId" -> req.usrId.getOrElse(-1)) { span =>
-                checkLength("acsTok" -> req.acsTok, "mdlId" -> req.mdlId, "usrExtId" -> req.usrExtId)
+                //noinspection DuplicatedCode
+                checkLength(
+                    "acsTok" -> req.acsTok,
+                    "mdlId" -> req.mdlId,
+                    "usrExtId" -> req.usrExtId
+                )
 
                 val acsUsr = authenticate(req.acsTok)
 
@@ -886,7 +889,12 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                 "usrExtId" -> req.usrExtId.orNull,
                 "mdlId" -> req.mdlId,
                 "usrId" -> req.usrId.getOrElse(-1)) { span =>
-                checkLength("acsTok" -> req.acsTok, "mdlId" -> req.mdlId, "usrExtId" -> req.usrExtId)
+                //noinspection DuplicatedCode
+                checkLength(
+                    "acsTok" -> req.acsTok,
+                    "mdlId" -> req.mdlId,
+                    "usrExtId" -> req.usrExtId
+                )
 
                 val acsUsr = authenticate(req.acsTok)
 
@@ -1900,7 +1908,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
 
                 // Common case.
                 case _: Rejection => complete(s"Bad request.")
-            }.result
+            }.result()
     }
 
     /**
@@ -1910,12 +1918,12 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       * @return
       */
     private def withMetric(m: Measure, f: () => Route): Route = {
-        val start = System.currentTimeMillis()
+        val start = U.now()
 
         try
             f()
         finally {
-            recordStats(m -> (System.currentTimeMillis() - start))
+            recordStats(m -> (U.now() - start))
         }
     }
 

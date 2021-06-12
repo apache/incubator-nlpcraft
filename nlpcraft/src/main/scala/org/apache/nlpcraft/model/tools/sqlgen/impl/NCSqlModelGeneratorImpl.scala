@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,6 @@ import java.time.format.DateTimeFormatter
 import java.time.{Instant, LocalDateTime}
 import java.util
 import java.util.regex.{Pattern, PatternSyntaxException}
-
 import com.fasterxml.jackson.annotation.JsonInclude.Include
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
@@ -34,11 +33,11 @@ import org.apache.nlpcraft.common.version.NCVersion
 import org.apache.nlpcraft.model.impl.json.{NCElementJson, NCMacroJson, NCModelJson}
 import org.apache.nlpcraft.model.tools.sqlgen.NCSqlJoinType
 import org.apache.nlpcraft.common._
-import resource.managed
 
-import scala.collection.JavaConverters._
+import scala.util.Using
 import scala.collection.immutable.HashMap
 import scala.collection.{Seq, mutable}
+import scala.jdk.CollectionConverters.{SeqHasAsJava, SetHasAsJava, MapHasAsJava}
 import scala.util.Try
 
 /**
@@ -57,7 +56,7 @@ object NCSqlModelGeneratorImpl {
 
         private lazy val nameWs = U.normalize(elmNameLc.replaceAll("_"," ")," ")
 
-        lazy val synonym =
+        lazy val synonym: String =
             if (elmNameLc == nameWs)
                 substituteMacros(elmNameLc)
             else
@@ -72,10 +71,9 @@ object NCSqlModelGeneratorImpl {
         isNullable: String,
         isPk: Boolean
     ) extends NamedEntity {
-        val nameLc = name.toLowerCase()
-        val elmNameLc = elmName.toLowerCase()
-
-        lazy val isNull = isNullable == "YES"
+        val nameLc: String = name.toLowerCase()
+        val elmNameLc: String = elmName.toLowerCase()
+        lazy val isNull: Boolean = isNullable == "YES"
     }
 
     case class Table(
@@ -84,8 +82,8 @@ object NCSqlModelGeneratorImpl {
         joins: Seq[Join],
         columns: mutable.ArrayBuffer[Column] = mutable.ArrayBuffer.empty[Column]
     ) extends NamedEntity {
-        val nameLc = name.toLowerCase()
-        val elmNameLc = elmName.toLowerCase()
+        val nameLc: String = name.toLowerCase()
+        val elmNameLc: String = elmName.toLowerCase()
     }
     
     case class ParametersHolder(
@@ -322,52 +320,54 @@ object NCSqlModelGeneratorImpl {
         mdl.setEnabledBuiltInTokens(Array())
         mdl.setIntents(Array())
 
-        mdl.setMetadata(HashMap[String, Object](
-            "sql:timestamp" -> s"${Instant.now}",
-            "sql:url" -> params.url,
-            "sql:driver" -> params.driver,
-            "sql:user" -> params.user,
-            "sql:output" -> params.output,
-            "sql:schema" -> params.schema,
-            "sql:cmdline" -> params.cmdLine,
-            "sql:joins" ->
-                tables.flatMap(t => t.joins.map(j => {
-                    val fromTable = t.name.toLowerCase
-                    val toTable = j.toTable.toLowerCase
-                    val fromCols = j.fromColumns.map(_.toLowerCase)
-                    val toCols = j.toColumns.map(_.toLowerCase)
+        mdl.setMetadata(
+            HashMap[String, AnyRef](
+                "sql:timestamp" -> s"${Instant.now}",
+                "sql:url" -> params.url,
+                "sql:driver" -> params.driver,
+                "sql:user" -> params.user,
+                "sql:output" -> params.output,
+                "sql:schema" -> params.schema,
+                "sql:cmdline" -> params.cmdLine,
+                "sql:joins" ->
+                    tables.flatMap(t => t.joins.map(j => {
+                        val fromTable = t.name.toLowerCase
+                        val toTable = j.toTable.toLowerCase
+                        val fromCols = j.fromColumns.map(_.toLowerCase)
+                        val toCols = j.toColumns.map(_.toLowerCase)
 
-                    def mkNullables(t: String, cols: Seq[String]): Seq[Boolean] = {
-                        val tabCols = tablesMap(t).columns
+                        def mkNullables(t: String, cols: Seq[String]): Seq[Boolean] = {
+                            val tabCols = tablesMap(t).columns
 
-                        cols.map(col => tabCols.find(_.name == col).get.isNull)
-                    }
+                            cols.map(col => tabCols.find(_.name == col).get.isNull)
+                        }
 
-                    val fromColsNulls = mkNullables(fromTable, fromCols)
-                    val toColsNulls =mkNullables(toTable, toCols)
+                        val fromColsNulls = mkNullables(fromTable, fromCols)
+                        val toColsNulls =mkNullables(toTable, toCols)
 
-                    def forall(seq: Seq[Boolean], v: Boolean): Boolean = seq.forall(_ == v)
+                        def forall(seq: Seq[Boolean], v: Boolean): Boolean = seq.forall(_ == v)
 
-                    val typ =
-                        if (forall(fromColsNulls, v = true) && forall(toColsNulls, v = false))
-                            NCSqlJoinType.LEFT
-                        else if (forall(fromColsNulls, v = false) && forall(toColsNulls, v = true))
-                            NCSqlJoinType.RIGHT
-                        else
-                            // Default value.
-                            NCSqlJoinType.INNER
+                        val typ =
+                            if (forall(fromColsNulls, v = true) && forall(toColsNulls, v = false))
+                                NCSqlJoinType.LEFT
+                            else if (forall(fromColsNulls, v = false) && forall(toColsNulls, v = true))
+                                NCSqlJoinType.RIGHT
+                            else
+                                // Default value.
+                                NCSqlJoinType.INNER
 
-                    val m = new util.LinkedHashMap[String, Object]()
+                        val m = new util.LinkedHashMap[String, Object]()
 
-                    m.put("fromtable", fromTable)
-                    m.put("fromcolumns", fromCols.asJava)
-                    m.put("totable", toTable)
-                    m.put("tocolumns", toCols.asJava)
-                    m.put("jointype", typ.toString.toLowerCase)
+                        m.put("fromtable", fromTable)
+                        m.put("fromcolumns", fromCols.asJava)
+                        m.put("totable", toTable)
+                        m.put("tocolumns", toCols.asJava)
+                        m.put("jointype", typ.toString.toLowerCase)
 
-                    m
-                })).asJava
-        ).asJava)
+                        m
+                    })).asJava
+            ).asJava
+        )
         
         mdl.setElements(elems.toArray)
 
@@ -405,7 +405,7 @@ object NCSqlModelGeneratorImpl {
         }
 
         try {
-            managed(new FileOutputStream(file)) acquireAndGet { stream =>
+            Using.resource(new FileOutputStream(file)) { stream =>
                 mapper.writerWithDefaultPrettyPrinter().writeValue(stream, mdl)
 
                 stream.flush()
@@ -481,12 +481,12 @@ object NCSqlModelGeneratorImpl {
 
             val pks = mutable.HashSet.empty[String]
 
-            managed { getConnection } acquireAndGet { conn =>
+            Using.resource { getConnection } { conn =>
                 val md = conn.getMetaData
 
-                managed {
+                Using.resource {
                     md.getColumns(null, params.schema, null, null)
-                } acquireAndGet { rs =>
+                } { rs =>
                     while (rs.next()) {
                         val schNameOrigin = rs.getString("TABLE_SCHEM")
                         val tblNameOrigin = rs.getString("TABLE_NAME")
@@ -512,7 +512,7 @@ object NCSqlModelGeneratorImpl {
                             case None if isAllowed(tblName) =>
                                 pks.clear()
                               
-                                managed { md.getPrimaryKeys(null, schNameOrigin, tblNameOrigin) } acquireAndGet { rs =>
+                                Using.resource { md.getPrimaryKeys(null, schNameOrigin, tblNameOrigin) } { rs =>
                                     while (rs.next())
                                         pks += rs.getString("COLUMN_NAME").toLowerCase
                                 }
@@ -529,7 +529,7 @@ object NCSqlModelGeneratorImpl {
 
                                 val fks = mutable.ArrayBuffer.empty[Fk]
 
-                                managed { md.getImportedKeys(null, schNameOrigin, tblNameOrigin) } acquireAndGet { rs =>
+                                Using.resource { md.getImportedKeys(null, schNameOrigin, tblNameOrigin) } { rs =>
                                     while (rs.next())
                                         fks += Fk(
                                             name = rs.getString("FK_NAME"),

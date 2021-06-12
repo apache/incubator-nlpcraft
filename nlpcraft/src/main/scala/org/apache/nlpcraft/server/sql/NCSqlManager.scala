@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,6 +29,7 @@ import org.apache.nlpcraft.server.mdo._
 import org.apache.nlpcraft.server.sql.NCSql.Implicits._
 
 import java.sql.Timestamp
+import scala.collection.mutable
 
 /**
   * Provides basic CRUD and often used operations on RDBMS.
@@ -82,7 +83,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
         try
             if (m != null) U.compress(JS_MAPPER.writeValueAsString(m)) else null
         catch {
-            case e: JsonProcessingException => throw new NCE(s"JSON serialization error for: $m", e)
+            case e: JsonProcessingException => throw new NCE(s"JSON serialization error.", e)
         }
     }
 
@@ -270,7 +271,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
         propsOpt: Option[String],
         parent: Span
     ): Int =
-        startScopedSpan("updateUser", parent, "usrId" -> id) { span =>
+        startScopedSpan("updateUser", parent, "usrId" -> id) { _ =>
             NCSql.update(
                 s"""
                    |UPDATE nc_user
@@ -642,7 +643,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
             "usrId" -> id,
             "compId" -> compId,
             "email" -> email.orNull,
-            "usrExtId" -> usrExtId.orNull) { span =>
+            "usrExtId" -> usrExtId.orNull) { _ =>
             val now = U.nowUtcTs()
 
             // Insert user.
@@ -966,7 +967,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
             "userId" -> userId.getOrElse(() => null)
         ) { _ =>
             var sql = "SELECT * FROM feedback WHERE user_id IN (SELECT id from nc_user WHERE company_id = ?)"
-            val params = collection.mutable.Buffer.empty[Any]
+            val params = mutable.Buffer.empty[Any]
 
             params += companyId
 
@@ -981,7 +982,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
             add("srv_req_id", srvReqId)
             add("user_id", userId)
 
-            NCSql.select[NCFeedbackMdo](sql, params :_*)
+            NCSql.select[NCFeedbackMdo](sql, params.toSeq :_*)
         }
     }
 

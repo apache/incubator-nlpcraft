@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,7 +20,6 @@ package org.apache.nlpcraft.probe.mgrs.conversation
 import java.util
 import java.util.concurrent.ConcurrentHashMap
 import java.util.function.Predicate
-
 import com.typesafe.scalalogging.LazyLogging
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common._
@@ -28,8 +27,8 @@ import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.opencensus.NCOpenCensusTrace
 import org.apache.nlpcraft.model._
 
-import scala.collection.JavaConverters._
 import scala.collection.mutable
+import scala.jdk.CollectionConverters.{BufferHasAsJava, ListHasAsScala, SeqHasAsJava}
 
 /**
   * An active conversation is an ordered set of utterances for the specific user and data model.

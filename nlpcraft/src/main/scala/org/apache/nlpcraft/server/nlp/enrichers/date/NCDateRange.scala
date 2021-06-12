@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,6 +19,7 @@ package org.apache.nlpcraft.server.nlp.enrichers.date
 
 import java.text.SimpleDateFormat
 import java.time._
+import java.util.{List => JList}
 
 object NCDateRange {
     private final val UTC = ZoneId.of("UTC")
@@ -36,7 +37,7 @@ object NCDateRange {
       * @param periods
       * @return
       */
-    def apply(from: Long, to: Long, text: String, periods: java.util.List[String]) =
+    def apply(from: Long, to: Long, text: String, periods: JList[String]) =
         new NCDateRange(from, to, text, periods)
     
     /**
@@ -63,7 +64,7 @@ import org.apache.nlpcraft.server.nlp.enrichers.date.NCDateRange._
 /**
   * Date range data holder.
   */
-class NCDateRange(val from: Long, val to: Long, val text: String, val periods: java.util.List[String]) {
+class NCDateRange(val from: Long, val to: Long, val text: String, val periods: JList[String]) {
     private val hash = 31 * from.hashCode() + to.hashCode()
     
     /**

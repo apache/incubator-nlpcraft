@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,9 +21,11 @@ import com.typesafe.config.{Config, ConfigFactory}
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.common._
 
+import java.util.{List => JList}
 import java.io.File
 import java.net.{MalformedURLException, URL}
-import scala.collection.JavaConverters._
+
+import scala.jdk.CollectionConverters.MapHasAsScala
 
 /**
   * Mixin for configuration factory based on https://github.com/lightbend/config.
@@ -107,7 +109,7 @@ trait NCConfigurable {
       *
       * @param name Full configuration property path (name).
       */
-    def getLongList(name: String): java.util.List[java.lang.Long] = {
+    def getLongList(name: String): JList[java.lang.Long] = {
         checkMandatory(name)
         
         hocon.getLongList(name)

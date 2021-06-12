@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,19 +19,20 @@ package org.apache.nlpcraft.server.nlp.enrichers.date.tools
 
 import java.text.{DateFormat, SimpleDateFormat}
 import java.util.{Date, Locale, Calendar => C}
-
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.nlp.numeric.NCNumericGenerator
 import org.apache.nlpcraft.server.nlp.enrichers.date.NCDateConstants._
 import org.apache.nlpcraft.server.nlp.enrichers.date.NCDateFormatType._
 
-import scala.collection._
 import scala.collection.mutable.{LinkedHashMap => LHM}
 import NCDateGenerator._
+
+import scala.collection.mutable
 
 /**
  * Pre-built date ranges generator.
  */
+//noinspection DuplicatedCode
 object NCDateGenerator {
     // For english names generation.
     Locale.setDefault(Locale.forLanguageTag("EN"))
@@ -253,7 +254,7 @@ object NCDateGenerator {
         def mkLastNToNow(n: Int): String = toNow(s"$periodShort-$n")
 
         def make(plural: String, isMisspelling: Boolean): Map[String, String] = {
-            var p1 = LHM(
+            val p1 = LHM(
                 s"couple of $plural" -> mkLastNToNow(2),
                 s"couple of last $plural" -> mkLastNToNow(2),
                 s"couple last $plural" -> mkLastNToNow(2),
@@ -293,7 +294,7 @@ object NCDateGenerator {
             )
 
             p1 ++ p2 ++ p3
-        }
+        }.toMap
 
         val ph = mkPlural(period)
 
@@ -352,6 +353,7 @@ object NCDateGenerator {
 
             p1 ++ p2 ++ p3
         }
+        .toMap
 
         val ph = mkPlural(period)
 
@@ -617,7 +619,7 @@ object NCDateGenerator {
     // case "m" | "q" | "s" => "y"
     // case "dw" => "w"
     // case _ => period //d, w, y, e, c
-    private[date] def relativeDuration(df: LHM_SS, n: Int, period: String, parent: String) {
+    private[date] def relativeDuration(df: LHM_SS, n: Int, period: String, parent: String): Unit = {
         case class PeriodHolder(text: String, count: Int)
 
         val hs = (1 to n).flatMap {

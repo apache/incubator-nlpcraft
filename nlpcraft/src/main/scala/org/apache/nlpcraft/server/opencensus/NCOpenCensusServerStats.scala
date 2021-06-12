@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,18 +17,16 @@
 
 package org.apache.nlpcraft.server.opencensus
 
-import java.util
 import java.util.Collections
-
-import io.opencensus.stats.Aggregation.Distribution
-import io.opencensus.stats.Measure.{MeasureDouble, MeasureLong}
+import io.opencensus.stats.Measure._
 import io.opencensus.stats.View.Name
 import io.opencensus.stats._
+import org.apache.nlpcraft.common.opencensus.NCOpenCensusStats
 
 /**
   * OpenCensus stats instrumentation.
   */
-trait NCOpenCensusServerStats {
+trait NCOpenCensusServerStats extends NCOpenCensusStats {
     val M_HEALTH_MS: MeasureLong = MeasureLong.create("health_latency", "The latency of '/health' REST call", "ms")
     val M_ASK_LATENCY_MS: MeasureLong = MeasureLong.create("ask_latency", "The latency of '/ask' REST call", "ms")
     val M_CHECK_LATENCY_MS: MeasureLong = MeasureLong.create("check_latency", "The latency of '/check' REST call", "ms")
@@ -55,27 +53,7 @@ trait NCOpenCensusServerStats {
     val M_USER_PASSWD_RESET_LATENCY_MS: MeasureLong = MeasureLong.create("user_passwd_reset_latency", "The latency of '/user/passwd/reset' REST call", "ms")
     val M_USER_ALL_LATENCY_MS: MeasureLong = MeasureLong.create("user_all_latency", "The latency of '/user/all' REST call", "ms")
     val M_PROBE_ALL_LATENCY_MS: MeasureLong = MeasureLong.create("probe_all_latency", "The latency of '/probe/all' REST call", "ms")
-    
     val M_ROUND_TRIP_LATENCY_MS: MeasureLong = MeasureLong.create("round_trip_latency", "The latency of a full server<->probe round trip", "ms")
-    
-    /**
-      * Records OpenCensus metrics.
-      *
-      * @param pairs Pairs of OC measure and its value. Values must be `Long` or `Double` only.
-      */
-    def recordStats(pairs: (Measure, AnyVal)*): Unit = {
-        val map = Stats.getStatsRecorder.newMeasureMap()
-        
-        for ((m, v) <- pairs) {
-            m match {
-                case d: MeasureDouble => map.put(d, v.asInstanceOf[Double])
-                case l: MeasureLong => map.put(l, v.asInstanceOf[Long])
-                case _ => throw new AssertionError()
-            }
-        }
-        
-        map.record()
-    }
 
     init()
     
@@ -83,22 +61,6 @@ trait NCOpenCensusServerStats {
       *
       */
     private def init(): Unit = {
-        val restLatDist = Distribution.create(BucketBoundaries.create(util.Arrays.asList(
-                0.0, 25.0, 100.0, 200.0, 400.0, 800.0, 10000.0
-        )))
-        
-        def mkViews(m: Measure, rest: String): List[View] = {
-            List(
-                View.create(
-                    Name.create(s"$rest/latdist"),
-                    s"The distribution of the '$rest' REST call latencies",
-                    m,
-                    restLatDist,
-                    Collections.emptyList()
-                )
-            )
-        }
-        
         val views = List(
             mkViews(M_HEALTH_MS, "health"),
             mkViews(M_ASK_LATENCY_MS, "ask"),
@@ -127,17 +89,7 @@ trait NCOpenCensusServerStats {
             mkViews(M_FEEDBACK_GET_LATENCY_MS, "feedback/get"),
             mkViews(M_MODEL_SUGSYN_LATENCY_MS, "model/sugsyn"),
             mkViews(M_PROBE_ALL_LATENCY_MS, "probe/all"),
-            
-            // Special views for round trip metrics. 
-            List(
-                View.create(
-                    Name.create("roundTrip/latdist"),
-                    s"The distribution of the full server-probe-server round trip latencies",
-                    M_ROUND_TRIP_LATENCY_MS,
-                    restLatDist,
-                    Collections.emptyList()
-                )
-            )
+            mkViews(M_ROUND_TRIP_LATENCY_MS, "roundTrip/latdist"),
         ).flatten
         
         val viewMgr = Stats.getViewManager

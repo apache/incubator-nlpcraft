@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,8 +22,9 @@ import java.util.function.{BiPredicate, Consumer, Supplier, Function => JFunctio
 import org.apache.nlpcraft.common.ansi.NCAnsi._
 import org.apache.nlpcraft.common.util._
 
+import scala.collection.mutable
+import scala.jdk.CollectionConverters.MapHasAsScala
 import scala.language.implicitConversions
-import scala.collection.JavaConverters._
 
 /**
   * Package scope.
@@ -180,6 +181,9 @@ package object common {
     implicit class OptionEq2[T](private val opt: T) {
         def === (x: Option[T]): Boolean = x.isDefined && opt == x.get
     }
+
+    implicit def mutableToImmutableSeq[T](opt: mutable.Iterable[T]): Seq[T] = opt.toSeq
+    implicit def iterableToImmutableSeq[T](opt: Iterable[T]): Seq[T] = opt.toSeq
 
     /**
      * 

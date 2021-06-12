@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,14 +19,15 @@ package org.apache.nlpcraft.model.impl
 
 import java.io.{Serializable => JSerializable}
 import java.util.Collections
+import java.util.{List => JList}
 
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.nlp.NCNlpSentenceToken
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.probe.mgrs.NCProbeModel
 
-import scala.collection.JavaConverters._
-import scala.collection.{Seq, mutable}
+import scala.collection.mutable
+import scala.jdk.CollectionConverters.{CollectionHasAsScala, MapHasAsJava, MapHasAsScala, SeqHasAsJava}
 
 /**
   *
@@ -50,7 +51,7 @@ private[nlpcraft] class NCTokenImpl(
     endCharIndex: Int,
     meta: Map[String, Object],
     isAbstractProp: Boolean
-) extends NCMetadataAdapter(mutable.HashMap(meta.toSeq:_ *).asJava) with NCToken with JSerializable {
+) extends NCMetadataAdapter(new java.util.HashMap(mutable.HashMap(meta.toSeq:_ *).asJava)) with NCToken with JSerializable {
     require(mdl != null)
     require(srvReqId != null)
     require(id != null)
@@ -65,15 +66,15 @@ private[nlpcraft] class NCTokenImpl(
     override lazy val getModel: NCModelView = mdl
     override lazy val getServerRequestId: String = srvReqId
     override lazy val getId: String = id
-    override lazy val getGroups: java.util.List[String] = grps.asJava
+    override lazy val getGroups: JList[String] = grps.asJava
     override lazy val getParentId: String = parentId
-    override lazy val getAncestors: java.util.List[String] = ancestors.asJava
+    override lazy val getAncestors: JList[String] = ancestors.asJava
     override lazy val getValue: String = value
     override lazy val getStartCharIndex: Int = startCharIndex
     override lazy val getEndCharIndex: Int = endCharIndex
     override lazy val getAliases: java.util.Set[String] = meta(TOK_META_ALIASES_KEY, Collections.emptySet())
     override lazy val isAbstract: Boolean = isAbstractProp
-    override def getPartTokens: java.util.List[NCToken] = parts.asJava
+    override def getPartTokens: JList[NCToken] = parts.asJava
 
     def setParts(parts: Seq[NCToken]): Unit = this.parts = parts
 
@@ -146,9 +147,9 @@ private[nlpcraft] object NCTokenImpl {
                     mdl.model,
                     srvReqId = srvReqId,
                     id = elm.getId,
-                    grps = elm.getGroups.asScala,
+                    grps = elm.getGroups.asScala.toSeq,
                     parentId = elm.getParentId,
-                    ancestors = ancestors,
+                    ancestors = ancestors.toSeq,
                     value = usrNote.dataOpt("value").orNull,
                     startCharIndex = tok.startCharIndex,
                     endCharIndex = tok.endCharIndex,

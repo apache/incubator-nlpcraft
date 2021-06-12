@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,7 @@ package org.apache.nlpcraft.probe.mgrs.nlp.enrichers.model
 
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common._
-import org.apache.nlpcraft.common.nlp.{NCNlpSentenceToken => NlpToken, NCNlpSentenceNote => NlpNote, NCNlpSentence => Sentence}
+import org.apache.nlpcraft.common.nlp.{NCNlpSentence => Sentence, NCNlpSentenceNote => NlpNote, NCNlpSentenceToken => NlpToken}
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.probe.mgrs.NCProbeSynonym.NCIdlContent
 import org.apache.nlpcraft.probe.mgrs.NCProbeSynonymChunkKind.{NCSynonymChunkKind, _}
@@ -31,15 +31,15 @@ import org.apache.nlpcraft.probe.mgrs.{NCProbeModel, NCProbeVariants, NCProbeSyn
 import java.io.Serializable
 import java.util
 import java.util.{List => JList}
-import scala.collection.JavaConverters._
-import scala.collection.convert.DecorateAsScala
 import scala.collection.mutable.ArrayBuffer
-import scala.collection.{Map, Seq, mutable}
+import scala.collection.mutable
+import scala.jdk.CollectionConverters.{ListHasAsScala, MapHasAsJava, MapHasAsScala, SeqHasAsJava}
+import scala.collection.parallel.CollectionConverters._
 
 /**
   * Model elements enricher.
   */
-object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
+object NCModelEnricher extends NCProbeEnricher {
     type TokType = (NCToken, NCSynonymChunkKind)
     type Cache = mutable.Map[String, ArrayBuffer[Seq[Int]]]
 
@@ -286,7 +286,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                                 elem = mdl.elements.getOrElse(elemId, throw new NCE(s"Custom model parser returned unknown element ID: $elemId")),
                                 toks = matchedToks,
                                 direct = true,
-                                metaOpt = Some(e.getMetadata.asScala)
+                                metaOpt = Some(e.getMetadata.asScala.toMap)
                             )
                     })
             }
@@ -324,7 +324,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
       */
     private def toParts(seq: Seq[NCIdlContent], s: Synonym): Seq[TokType] =
         seq.zip(s.map(_.kind)).flatMap {
-            case (complex, kind) => if (complex.isLeft) Some(complex.left.get -> kind) else None
+            case (complex, kind) => if (complex.isLeft) Some(complex.swap.toOption.get -> kind) else None
         }
 
     /**
@@ -334,8 +334,8 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
       */
     private def toTokens(tows: Seq[NCIdlContent], ns: Sentence): Seq[NlpToken] =
         (
-            tows.filter(_.isRight).map(_.right.get) ++
-                tows.filter(_.isLeft).map(_.left.get).
+            tows.filter(_.isRight).map(_.toOption.get) ++
+                tows.filter(_.isLeft).map(_.swap.toOption.get).
                     flatMap(w => ns.filter(t => t.wordIndexes.intersect(w.wordIndexes).nonEmpty))
         ).sortBy(_.startCharIndex)
 
@@ -462,7 +462,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
             "enrich", parent, "srvReqId" -> ns.srvReqId, "mdlId" -> mdl.model.getId, "txt" -> ns.text
         ) { span =>
             val req = NCRequestImpl(senMeta, ns.srvReqId)
-            val combToks = combos(ns)
+            val combToks = combos(ns.toSeq)
             lazy val ch = mkComplexes(mdl, ns)
 
             def execute(simpleEnabled: Boolean, idlEnabled: Boolean): Unit =

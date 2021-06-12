@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -50,14 +50,13 @@ import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.stopword.NCStopWordEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.suspicious.NCSuspiciousNounsEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.validate.NCValidateManager
 import org.apache.nlpcraft.probe.mgrs.sentence.NCSentenceManager
-import resource.managed
 
 import java.io._
 import java.util.concurrent.CompletableFuture
-import scala.collection.JavaConverters._
 import scala.collection.mutable
-import scala.compat.Platform.currentTime
+import scala.jdk.CollectionConverters.CollectionHasAsScala
 import scala.util.control.Exception.{catching, ignoring}
+import scala.util.Using
 
 /**
   * Probe loader.
@@ -65,7 +64,7 @@ import scala.util.control.Exception.{catching, ignoring}
 private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
     private final val BEACON_PATH = ".nlpcraft/probe_beacon"
 
-    private final val execStart = System.currentTimeMillis()
+    private final val execStart = U.now()
 
     private val startedMgrs = mutable.Buffer.empty[NCService]
 
@@ -263,7 +262,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
          */
         def save(): Unit = {
             try {
-                managed(new ObjectOutputStream(new FileOutputStream(path))) acquireAndGet { stream =>
+                Using.resource(new ObjectOutputStream(new FileOutputStream(path))) { stream =>
                     val ver = NCVersion.getCurrent
 
                     stream.writeObject(NCCliProbeBeacon(
@@ -277,7 +276,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
                         jarsFolder = cfg.jarsFolder.orNull,
                         models = cfg.models,
                         beaconPath = path.getAbsolutePath,
-                        startMs = currentTime
+                        startMs = U.now()
                     ))
 
                     stream.flush()
@@ -293,7 +292,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
 
         if (path.exists())
             catching(classOf[IOException]) either {
-                managed(new ObjectInputStream(new FileInputStream(path))) acquireAndGet { _.readObject() }
+                U.readObject(path)
             } match {
                 case Left(e) =>
                     logger.trace(s"Failed to read existing probe beacon: ${path.getAbsolutePath}", e)
@@ -434,7 +433,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
     /**
       * Prints ASCII-logo.
       */
-    private def asciiLogo() {
+    private def asciiLogo(): Unit = {
         val ver = NCVersion.getCurrent
 
         println(
@@ -470,8 +469,8 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
     /**
       * Asks server start.
       */
-    private def ackStart() {
-        val dur = s"[${U.format((currentTime - execStart) / 1000.0, 2)} sec]"
+    private def ackStart(): Unit = {
+        val dur = s"[${U.format((U.now() - execStart) / 1000.0, 2)} sec]"
         
         val tbl = NCAsciiTable()
         

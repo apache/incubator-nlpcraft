@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,7 +29,7 @@ import org.apache.nlpcraft.common.{NCService, U}
 import org.apache.nlpcraft.server.ignite.NCIgniteHelpers._
 import org.apache.nlpcraft.server.ignite.NCIgniteInstance
 import org.apache.nlpcraft.server.nlp.core.NCNlpNerEnricher
-import resource.managed
+import scala.util.Using
 
 import scala.concurrent.ExecutionContext
 import scala.util.control.Exception.catching
@@ -57,7 +57,7 @@ object NCOpenNlpNerEnricher extends NCService with NCNlpNerEnricher with NCIgnit
 
         def add(typ: String, res: String): Unit = {
             val f =
-                managed(NCExternalConfigManager.getStream(OPENNLP, res, span)) acquireAndGet { in =>
+                Using.resource(NCExternalConfigManager.getStream(OPENNLP, res, span)) { in =>
                     new NameFinderME(new TokenNameFinderModel(in))
                 }
 
@@ -129,6 +129,7 @@ object NCOpenNlpNerEnricher extends NCService with NCNlpNerEnricher with NCIgnit
                     synchronized {
                         val res = nerFinders.
                             filter { case (_, tokName) => ebiTokens.contains(tokName)}.
+                            toSeq.
                             flatMap {
                                 case (finder, name) =>
                                     finder.find(words).map(p => Holder(p.getStart, p.getEnd - 1, name, p.getProb))

@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,12 +20,10 @@ package org.apache.nlpcraft.model.tools.sqlgen.impl
 import java.sql.Timestamp
 import java.util
 import java.util.Optional
-
 import org.apache.nlpcraft.model.tools.sqlgen._
 
-import scala.collection.JavaConverters._
-import scala.collection._
-import scala.compat.java8.OptionConverters._
+import scala.compat.java8.OptionConverters.RichOptionForJava8
+import scala.jdk.CollectionConverters.SeqHasAsJava
 
 /**
   *

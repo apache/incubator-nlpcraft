@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -232,9 +232,24 @@ object NCStopWordEnricher extends NCServerEnricher {
                 }
         }
 
-        def mkEntry[T](f: WordForm, mkT: Unit => T, isExc: Boolean):((Boolean, WordForm), T) = (isExc, f) -> mkT(())
-        def mkMap[T](mkT: Unit => T): Map[(Boolean, WordForm), T] =
-            WordForm.values.flatMap(f => Map(mkEntry(f, mkT, isExc = true), mkEntry(f, mkT, isExc = false))).toMap
+        type Key = (Boolean, WordForm)
+        def mkMap[T](mkT: Unit => T): Map[Key, T] = {
+            val m = mutable.Map.empty[Key, T]
+
+            def add(f: WordForm, mkT: Unit => T, isExc: Boolean): Unit = {
+                val tuple: (Key, T) = (isExc, f) -> mkT(())
+
+                m += tuple._1 -> tuple._2
+            }
+
+            WordForm.values.foreach(f => {
+                add(f, mkT, isExc = true)
+                add(f, mkT, isExc = false)
+
+            })
+
+            m.toMap
+        }
 
         // Prepares collections.
         val mHash = mkMap(_ => new Condition[Word]())
@@ -340,7 +355,6 @@ object NCStopWordEnricher extends NCServerEnricher {
                 m: Map[(Boolean, WordForm), Condition[T]],
                 form: WordForm,
                 mkInstance: (Set[T], Map[String, Set[T]], Map[String, Set[T]]) => R): R = {
-
                 val any = m((isExc, form)).any.toSet
                 val incl = toImmutable(m((isExc, form)).includes)
                 val excl = toImmutable(m((isExc, form)).excludes)
@@ -603,7 +617,8 @@ object NCStopWordEnricher extends NCServerEnricher {
             }
             
             // Capture the token mix at this point minus the initial stop words found up to this point.
-            val origToks: Seq[(Seq[NCNlpSentenceToken], String)] = (for (toks <- mix) yield toks).map(s => s -> toStemKey(s))
+            val origToks: Seq[(Seq[NCNlpSentenceToken], String)] =
+                (for (toks <- mix) yield toks.toSeq).map(s => s -> toStemKey(s)).toSeq
     
             // +--------------------------------------------+
             // | Pass #4.                                   |
@@ -678,7 +693,7 @@ object NCStopWordEnricher extends NCServerEnricher {
         val m =
             readStopWords(
                 U.readResource("stopwords/stop_words.txt", "UTF-8", logger).
-                    map(_.strip).filter(s => s.nonEmpty && !s.startsWith("#")).toSeq
+                    map(_.strip).filter(s => s.nonEmpty && !s.startsWith("#"))
             )
 
         stopWords = m(false)

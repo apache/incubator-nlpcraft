@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -134,8 +134,8 @@ class NCProbeSynonym(
                     state = -1
             }
 
-            if (state != -1 && all.size == res.size && (!shouldBeNeighbors || U.isIncreased(res.map(getIndex).sorted)))
-                Some(res)
+            if (state != -1 && all.size == res.size && (!shouldBeNeighbors || U.isIncreased(res.map(getIndex).toSeq.sorted)))
+                Some(res.toSeq)
             else
                 None
         }
@@ -150,7 +150,7 @@ class NCProbeSynonym(
       */
     private def isMatch(tow: NCIdlContent, chunk: NCProbeSynonymChunk, req: NCRequest): Boolean = {
         def get0[T](fromToken: NCToken => T, fromWord: NCNlpSentenceToken => T): T =
-            if (tow.isLeft) fromToken(tow.left.get) else fromWord(tow.right.get)
+            if (tow.isLeft) fromToken(tow.swap.toOption.get) else fromWord(tow.toOption.get)
 
         chunk.kind match {
             case TEXT => chunk.wordStem == get0(_.stem, _.stem)
@@ -207,7 +207,7 @@ class NCProbeSynonym(
         require(toks != null)
         require(sparse && !hasIdl)
 
-        sparseMatch0(toks, isMatch, (t: NCNlpSentenceToken) => t.startCharIndex, shouldBeNeighbors = false)
+        sparseMatch0(toks.toSeq, isMatch, (t: NCNlpSentenceToken) => t.startCharIndex, shouldBeNeighbors = false)
     }
 
     /**
@@ -223,7 +223,7 @@ class NCProbeSynonym(
         sparseMatch0(
             tows,
             (t: NCIdlContent, chunk: NCProbeSynonymChunk) => isMatch(t, chunk, req),
-            (t: NCIdlContent) => if (t.isLeft) t.left.get.getStartCharIndex else t.right.get.startCharIndex,
+            (t: NCIdlContent) => if (t.isLeft) t.swap.toOption.get.getStartCharIndex else t.toOption.get.startCharIndex,
             shouldBeNeighbors = !sparse
         )
     }

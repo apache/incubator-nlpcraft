@@ -18,13 +18,13 @@
 package org.apache.nlpcraft.examples.sql.db
 
 import java.sql.{Connection, PreparedStatement, SQLException}
-
 import com.github.vertical_blank.sqlformatter.SqlFormatter
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.h2.jdbc.JdbcSQLException
 import org.h2.jdbcx.JdbcDataSource
-import resource.managed
+
+import scala.util.Using
 
 /**
   * Ad-hoc querying for H2 Database. This is a simple, single thread implementation.
@@ -71,10 +71,10 @@ object SqlAccess extends LazyLogging {
         }
 
         try {
-            managed { getPs } acquireAndGet { ps =>
+            Using.resource { getPs } { ps =>
                 qry.parameters.zipWithIndex.foreach { case (p, idx) => ps.setObject(idx + 1, p) }
 
-                managed { ps.executeQuery() } acquireAndGet { rs =>
+                Using.resource { ps.executeQuery() } { rs =>
                     val md = rs.getMetaData
                     val cnt = md.getColumnCount
 

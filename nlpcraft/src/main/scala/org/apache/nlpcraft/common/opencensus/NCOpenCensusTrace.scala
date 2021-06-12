@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -52,7 +52,7 @@ trait NCOpenCensusTrace {
 
         // Mandatory tags.
         attrs.put("thread", AttributeValue.stringAttributeValue(Thread.currentThread().getName))
-        attrs.put("timestamp", AttributeValue.longAttributeValue(System.currentTimeMillis()))
+        attrs.put("timestamp", AttributeValue.longAttributeValue(U.now()))
     
         for ((k, v) <- tags if v != null) v match {
             case s: String => attrs.put(k, AttributeValue.stringAttributeValue(s))

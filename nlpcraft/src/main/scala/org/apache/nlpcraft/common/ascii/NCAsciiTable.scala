@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,15 +18,15 @@
 package org.apache.nlpcraft.common.ascii
 
 import java.io.{IOException, PrintStream}
-
+import java.util.{List => JList}
 import com.typesafe.scalalogging.Logger
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.ascii.NCAsciiTable._
-import resource._
 import org.apache.nlpcraft.common.ansi.NCAnsi._
 
-import scala.collection.JavaConverters._
 import scala.collection.mutable
+import scala.jdk.CollectionConverters.CollectionHasAsScala
+import scala.util.Using
 
 /**
  * `ASCII`-based table with minimal styling support.
@@ -172,14 +172,14 @@ class NCAsciiTable {
     /**
      * Starts data row.
      */
-    def startRow() {
+    def startRow(): Unit = {
         curRow = IndexedSeq.empty[Cell]
     }
 
     /**
      * Ends data row.
      */
-    def endRow() {
+    def endRow(): Unit = {
         rows :+= curRow
 
         curRow = null
@@ -202,6 +202,14 @@ class NCAsciiTable {
 
         this
     }
+
+    /**
+     * Adds row (one or more row cells).
+     *
+     * @param cells Row cells. For multi-line cells - use `Seq(...)`.
+     */
+    def +=(cells: mutable.Seq[Any]): NCAsciiTable =
+        +=(cells.toSeq: _*)
 
     /**
      * Adds row (one or more row cells) with a given style.
@@ -228,7 +236,7 @@ class NCAsciiTable {
      *
      * @param cells Row cells.
      */
-    def addRow(cells: java.util.List[Any]): NCAsciiTable = {
+    def addRow(cells: JList[Any]): NCAsciiTable = {
         startRow()
 
         cells.asScala.foreach(p => addRowCell(p))
@@ -253,6 +261,14 @@ class NCAsciiTable {
     }
 
     /**
+     * Adds header (one or more header cells).
+     *
+     * @param cells Header cells. For multi-line cells - use `Seq(...)`.
+     */
+    def #=(cells: mutable.Seq[Any]): NCAsciiTable =
+        #=(cells.toSeq: _*)
+
+    /**
      * Adds styled header (one or more header cells).
      *
      * @param cells Header cells tuples (style, text). For multi-line cells - use `Seq(...)`.
@@ -271,7 +287,7 @@ class NCAsciiTable {
      *
      * @param cells Header cells.
      */
-    def addHeaders(cells: java.util.List[Any]): NCAsciiTable = {
+    def addHeaders(cells: JList[Any]): NCAsciiTable = {
         cells.asScala.foreach(addHeaderCell(_))
 
         this
@@ -283,7 +299,7 @@ class NCAsciiTable {
      * @param style Style top use.
      * @param cells Header cells.
      */
-    def addStyledHeaders(style: String, cells: java.util.List[Any]): NCAsciiTable = {
+    def addStyledHeaders(style: String, cells: JList[Any]): NCAsciiTable = {
         cells.asScala.foreach(addHeaderCell(style, _))
 
         this
@@ -672,11 +688,11 @@ class NCAsciiTable {
 
     private def renderPrintStream(f: => PrintStream, file: String): Unit =
         try
-            managed(f) acquireAndGet { ps =>
+            Using.resource(f) { ps =>
                 ps.print(mkString)
             }
         catch {
-            case e: IOException => throw new NCE(s"Error writing file: $file", e)
+            case e: IOException => throw new NCE(s"Error outputting table into file: $file", e)
         }
 }
 
@@ -702,6 +718,14 @@ object NCAsciiTable {
      * @return Newly created ASCII table.
      */
     def apply(hdrs: Any*): NCAsciiTable = new NCAsciiTable #= (hdrs: _*)
+
+    /**
+     * Creates new ASCII table with given header cells.
+     *
+     * @param hdrs Header.
+     * @return Newly created ASCII table.
+     */
+    def apply(hdrs: mutable.Seq[_]): NCAsciiTable = new NCAsciiTable #= (hdrs.toSeq: _*)
 
     /**
      * Creates new ASCII table with given headers and data.

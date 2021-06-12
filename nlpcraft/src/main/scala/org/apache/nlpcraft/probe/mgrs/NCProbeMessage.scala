@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,13 +29,14 @@ import scala.collection.mutable
   *
   * @param typ Type (name) of the message.
   */
-class NCProbeMessage(val typ: String) extends mutable.HashMap[String/*Name*/, Serializable/*Value*/]
-    with Serializable with NCAsciiLike {
+class NCProbeMessage(val typ: String) extends Serializable with NCAsciiLike {
+    private val data = mutable.HashMap.empty[String/*Name*/, Serializable/*Value*/]
+
     private val guid = U.genGuid()
     private val hash = guid.hashCode()
-    
-    put("TYPE", typ)
-    put("GUID", guid)
+
+    data += "TYPE" -> typ
+    data += "GUID" -> guid
     
     override def equals(obj: Any): Boolean = obj match {
         case msg: NCProbeMessage => msg.guid == guid
@@ -52,17 +53,17 @@ class NCProbeMessage(val typ: String) extends mutable.HashMap[String/*Name*/, Se
     def getProbeGuid: String = data[String]("PROBE_GUID") // Probe GUID.
     
     def setProbeToken(tkn: String): NCProbeMessage = {
-        put("PROBE_TOKEN", tkn)
+        data += "PROBE_TOKEN" -> tkn
         
         this
     }
     def setProbeId(id: String): NCProbeMessage = {
-        put("PROBE_ID", id)
+        data += "PROBE_ID" -> id
         
         this
     }
     def setProbeGuid(guid: String): NCProbeMessage = {
-        put("PROBE_GUID", guid)
+        data += "PROBE_GUID"-> guid
         
         this
     }
@@ -76,7 +77,7 @@ class NCProbeMessage(val typ: String) extends mutable.HashMap[String/*Name*/, Se
     def data[T](key: String): T =
         dataOpt[T](key) match {
             case None => throw new AssertionError(s"Probe message missing key [key=$key, data=$this]")
-            case Some(x) => x.asInstanceOf[T]
+            case Some(x) => x
         }
     
     /**
@@ -86,7 +87,7 @@ class NCProbeMessage(val typ: String) extends mutable.HashMap[String/*Name*/, Se
       * @return `None` or `Some` map value (including `null` values).
       */
     def dataOpt[T](key: String): Option[T] =
-        get(key) match {
+        data.get(key) match {
             case None => None
             case Some(x) => x match {
                 case None | null => None
@@ -95,10 +96,12 @@ class NCProbeMessage(val typ: String) extends mutable.HashMap[String/*Name*/, Se
         }
     
     override def toAscii: String =
-        iterator.toSeq.sortBy(_._1).foldLeft(NCAsciiTable("Key", "Value"))((t, p) => t += p).toString
-    
-    override def toString(): String =
-        iterator.toSeq.sortWith((t1, t2) => {
+        data.iterator.toSeq.sortBy(_._1).foldLeft(NCAsciiTable("Key", "Value"))((t, p) => t += p).toString
+
+    def addData(key: String, value: => Serializable): Unit = data += key -> value
+
+    override def toString: String =
+        data.iterator.toSeq.sortWith((t1, t2) => {
             if (t1._1 == "TYPE")
                 true
             else if (t2._1 == "TYPE")
@@ -118,7 +121,7 @@ object NCProbeMessage {
         val impl = new NCProbeMessage(typ)
     
         for ((k, v) <- pairs)
-            impl.put(k, v)
+            impl.data.put(k, v)
         
         impl
     }

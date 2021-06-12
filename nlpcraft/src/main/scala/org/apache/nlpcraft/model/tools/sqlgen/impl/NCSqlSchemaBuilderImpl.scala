@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,14 +18,12 @@
 package org.apache.nlpcraft.model.tools.sqlgen.impl
 
 import java.util
-
 import org.apache.nlpcraft.common.NCException
 import org.apache.nlpcraft.model.NCModel
 import org.apache.nlpcraft.model.tools.sqlgen._
 
-import scala.collection.JavaConverters._
-import scala.collection.Seq
 import scala.compat.java8.OptionConverters._
+import scala.jdk.CollectionConverters.{CollectionHasAsScala, ListHasAsScala, MapHasAsScala, SeqHasAsJava}
 
 /**
   * 
@@ -74,7 +72,7 @@ object NCSqlSchemaBuilderImpl {
         var tables =
             elems.filter(_.getGroups.contains("table")).
                 map(p => {
-                    def x(l: util.List[String]): Seq[String] = if (l == null) Seq.empty else l.asScala
+                    def x(l: util.List[String]): Seq[String] = if (l == null) Seq.empty else l.asScala.toSeq
 
                     val tab: String = p.metax("sql:name")
                     val dfltSelect = x(p.metax("sql:defaultselect"))
@@ -86,7 +84,7 @@ object NCSqlSchemaBuilderImpl {
                     
                     val table: NCSqlTableImpl = NCSqlTableImpl(
                         table = tab,
-                        columns = cols.asScala,
+                        columns = cols.asScala.toSeq,
                         sorts = Seq.empty,
                         selects = dfltSelect,
                         extraTables = extra,
@@ -172,14 +170,14 @@ object NCSqlSchemaBuilderImpl {
             val join: NCSqlJoin = NCSqlJoinImpl(
                 mget("fromtable").asInstanceOf[String],
                 mget("totable").asInstanceOf[String],
-                mget("fromcolumns").asInstanceOf[util.List[String]].asScala,
-                mget("tocolumns").asInstanceOf[util.List[String]].asScala,
+                mget("fromcolumns").asInstanceOf[util.List[String]].asScala.toSeq,
+                mget("tocolumns").asInstanceOf[util.List[String]].asScala.toSeq,
                 NCSqlJoinType.valueOf(mget("jointype").asInstanceOf[String].toUpperCase())
             )
             
             join
         })
         
-        NCSqlSchemaImpl(tables, joins)
+        NCSqlSchemaImpl(tables, joins.toSeq)
     }
 }

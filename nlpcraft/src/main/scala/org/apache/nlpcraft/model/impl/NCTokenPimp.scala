@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,8 +18,11 @@
 package org.apache.nlpcraft.model.impl
 
 import org.apache.nlpcraft.model.NCToken
+
+import java.util.{List => JList}
+
+import scala.jdk.CollectionConverters.CollectionHasAsScala
 import scala.language.implicitConversions
-import scala.collection.JavaConverters._
 
 /**
   *
@@ -42,7 +45,7 @@ class NCTokenPimp(impl: NCToken) {
     def isDirect: Boolean = impl.meta("nlpcraft:nlp:direct")
     def isPermutated: Boolean = !isDirect
     def isBracketed: Boolean = impl.meta("nlpcraft:nlp:bracketed")
-    def wordIndexes: List[Int] = impl.meta[java.util.List[Int]]("nlpcraft:nlp:wordindexes").asScala.toList
+    def wordIndexes: List[Int] = impl.meta[JList[Int]]("nlpcraft:nlp:wordindexes").asScala.toList
     def origText: String = impl.meta("nlpcraft:nlp:origtext")
     def normText: String = impl.meta("nlpcraft:nlp:normtext")
     def stem: String = impl.meta("nlpcraft:nlp:stem")

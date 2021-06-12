@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -130,7 +130,7 @@ object NCCoordinatesEnricher extends NCServerEnricher {
         if (toks.nonEmpty) {
             val from = toks.head.index
 
-            markers.toStream.
+            markers.to(LazyList).
                 flatMap(m => get(
                     ns,
                     from,
@@ -155,7 +155,7 @@ object NCCoordinatesEnricher extends NCServerEnricher {
         if (toks.nonEmpty) {
             val to = toks.last.index + 1
 
-            markers.toStream.
+            markers.to(LazyList).
                 flatMap(m => get(
                     ns,
                     m.last.index + 1,

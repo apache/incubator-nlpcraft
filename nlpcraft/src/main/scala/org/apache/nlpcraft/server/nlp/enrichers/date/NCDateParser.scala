@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,12 +18,14 @@
 package org.apache.nlpcraft.server.nlp.enrichers.date
 
 import java.util.{Locale, Calendar => C}
-import scala.collection.JavaConverters._
 import org.apache.nlpcraft.common._
+
+import scala.jdk.CollectionConverters.SeqHasAsJava
 
 /**
   * Date parser.
   */
+//noinspection DuplicatedCode
 object NCDateParser {
     // For english calendar settings.
     Locale.setDefault(Locale.forLanguageTag("EN"))

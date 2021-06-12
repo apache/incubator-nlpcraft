@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -342,7 +342,7 @@ object NCGeoNamesGenerator extends App {
     }
 
     // Go over all countries and serialize to files.
-    private def writeCountries(mapper: ObjectMapper, countries: Set[Country]) {
+    private def writeCountries(mapper: ObjectMapper, countries: Set[Country]): Unit = {
         val dirPath = s"$outDir/countries"
 
         val dir = new File(dirPath)
@@ -444,7 +444,7 @@ object NCGeoNamesGenerator extends App {
         isoToNames: Map[String, String],
         regCodes: Map[String, String],
         worldTop: Set[CityInfo],
-        usTop: Set[CityInfo]) {
+        usTop: Set[CityInfo]): Unit = {
 
         def write(cities: Set[CityInfo], file: String, qty: Int): Unit = {
             val topCities = cities.map(p => {
@@ -500,7 +500,7 @@ object NCGeoNamesGenerator extends App {
         mapper.writeValue(new File(outContinents), hs)
     }
 
-    private def generate() {
+    private def generate(): Unit = {
         val mapper = U.getYamlMapper
 
         val continents = NCUnsdStatsService.mkContinents()

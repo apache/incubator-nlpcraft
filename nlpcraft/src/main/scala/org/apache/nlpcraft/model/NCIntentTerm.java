@@ -34,7 +34,7 @@ import static java.lang.annotation.RetentionPolicy.*;
  * terms specified by this annotation.
  * <p>
  * Read full documentation in <a target=_ href="https://nlpcraft.apache.org/intent-matching.html">Intent Matching</a> section and review
- * <a target=_ href="https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft/src/main/scala/org/apache/nlpcraft/examples/">examples</a>.
+ * <a target=_ href="https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft-examples">examples</a>.
  *
  * @see NCIntent
  * @see NCIntentRef

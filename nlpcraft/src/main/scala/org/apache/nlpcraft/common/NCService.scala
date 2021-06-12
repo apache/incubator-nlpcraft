@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,8 +21,6 @@ import com.typesafe.scalalogging.LazyLogging
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.opencensus.NCOpenCensusTrace
 import org.apache.nlpcraft.common.ansi.NCAnsi._
-
-import scala.compat.Platform._
 
 /**
   * Basic abstract class defining internal service/manager/component lifecycle. Components that
@@ -76,7 +74,7 @@ abstract class NCService extends LazyLogging with NCOpenCensusTrace {
      */
     protected def ackStarting(): NCService = {
         starting = true
-        timeStampMs = currentTime
+        timeStampMs = U.now()
 
         logger.trace(s"$name staring...")
 
@@ -94,7 +92,7 @@ abstract class NCService extends LazyLogging with NCOpenCensusTrace {
      */
     protected def ackStopping(): NCService = {
         stopping = true
-        timeStampMs = currentTime
+        timeStampMs = U.now()
 
         logger.trace(s"$name stopping...")
 
@@ -117,11 +115,11 @@ abstract class NCService extends LazyLogging with NCOpenCensusTrace {
 
         addTags(
             currentSpan(),
-            "startDurationMs" -> (currentTime - timeStampMs),
+            "startDurationMs" -> (U.now() - timeStampMs),
             "state" -> "started"
         )
 
-        val dur = s"$ansiGreenFg[${currentTime - timeStampMs}ms]$ansiReset"
+        val dur = s"$ansiGreenFg[${U.now() - timeStampMs}ms]$ansiReset"
 
         logger.info(s"$name started $dur")
 
@@ -140,7 +138,7 @@ abstract class NCService extends LazyLogging with NCOpenCensusTrace {
         started = false
 
         addTags(currentSpan(),
-            "stopDurationMs" -> (currentTime - timeStampMs),
+            "stopDurationMs" -> (U.now() - timeStampMs),
             "state" -> "stopped"
         )
 

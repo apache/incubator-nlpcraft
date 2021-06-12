@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,10 +20,12 @@ package org.apache.nlpcraft.common.nlp
 import org.apache.nlpcraft.common.U
 import org.apache.nlpcraft.common.ascii._
 
-import scala.collection.JavaConverters._
-import scala.collection.{Seq, Set, mutable}
-import scala.language.implicitConversions
 import java.io.{Serializable => JSerializable}
+import java.util.{List => JList}
+
+import scala.collection.mutable
+import scala.language.implicitConversions
+import scala.jdk.CollectionConverters.{CollectionHasAsScala, SeqHasAsJava}
 
 /**
   * Sentence token note is a typed map of KV pairs.
@@ -39,8 +41,8 @@ class NCNlpSentenceNote(private val values: Map[String, JSerializable]) extends 
     lazy val noteType: String = values("noteType").asInstanceOf[String]
     lazy val tokenFrom: Int = values("tokMinIndex").asInstanceOf[Int] // First index.
     lazy val tokenTo: Int = values("tokMaxIndex").asInstanceOf[Int] // Last index.
-    lazy val tokenIndexes: Seq[Int] = values("tokWordIndexes").asInstanceOf[java.util.List[Int]].asScala // Includes 1st and last indices too.
-    lazy val wordIndexes: Seq[Int] = values("wordIndexes").asInstanceOf[java.util.List[Int]].asScala // Includes 1st and last indices too.
+    lazy val tokenIndexes: Seq[Int] = values("tokWordIndexes").asInstanceOf[JList[Int]].asScala.toSeq // Includes 1st and last indices too.
+    lazy val wordIndexes: Seq[Int] = values("wordIndexes").asInstanceOf[JList[Int]].asScala.toSeq // Includes 1st and last indices too.
     lazy val sparsity: Int = values("sparsity").asInstanceOf[Int]
     lazy val isDirect: Boolean = values("direct").asInstanceOf[Boolean]
     lazy val isUser: Boolean = {
@@ -165,7 +167,6 @@ class NCNlpSentenceNote(private val values: Map[String, JSerializable]) extends 
         seq1 ++ seq2
     }
 
-
     /**
       *
       * @return
@@ -221,7 +222,7 @@ object NCNlpSentenceNote {
         typ: String,
         params: (String, Any)*
     ): NCNlpSentenceNote = {
-        def calc(seq: Seq[Int]): (Int, Int, Int, java.util.List[Int], Int) =
+        def calc(seq: Seq[Int]): (Int, Int, Int, JList[Int], Int) =
             (U.calcSparsity(seq), seq.min, seq.max, seq.asJava, seq.length)
 
         val (sparsity, tokMinIndex, tokMaxIndex, tokWordIndexes, len) = calc(wordIndexesOpt.getOrElse(indexes))
@@ -253,6 +254,16 @@ object NCNlpSentenceNote {
         apply(indexes, None, typ, params: _*)
 
     /**
+     * Creates new note with given parameters.
+     *
+     * @param indexes Indexes in the sentence.
+     * @param typ Type of the node.
+     * @param params Parameters.
+     */
+    def apply(indexes: mutable.Seq[Int], typ: String, params: (String, Any)*): NCNlpSentenceNote =
+        apply(indexes.toSeq, None, typ, params: _*)
+
+    /**
       * Creates new note with given parameters.
       *
       * @param indexes Indexes in the sentence.
@@ -262,4 +273,15 @@ object NCNlpSentenceNote {
       */
     def apply(indexes: Seq[Int], wordIndexes: Seq[Int], typ: String, params: (String, Any)*): NCNlpSentenceNote =
         apply(indexes, Some(wordIndexes), typ, params: _*)
+
+    /**
+     * Creates new note with given parameters.
+     *
+     * @param indexes Indexes in the sentence.
+     * @param wordIndexes Word indexes in the sentence.
+     * @param typ Type of the node.
+     * @param params Parameters.
+     */
+    def apply(indexes: mutable.Seq[Int], wordIndexes: mutable.Seq[Int], typ: String, params: (String, Any)*): NCNlpSentenceNote =
+        apply(indexes.toSeq, Some(wordIndexes.toSeq), typ, params: _*)
 }

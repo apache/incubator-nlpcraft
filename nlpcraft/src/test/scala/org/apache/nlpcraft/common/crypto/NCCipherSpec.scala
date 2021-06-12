@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,7 +29,7 @@ class NCCipherSpec  {
     private final val IN = "abcdefghijklmnopqrstuvwxyz0123456789"
 
     @Test
-    def testEncryptDecrypt() {
+    def testEncryptDecrypt(): Unit = {
         val s1 = NCCipher.encrypt(IN)
         val s2 = NCCipher.decrypt(s1)
 
@@ -37,7 +37,7 @@ class NCCipherSpec  {
     }
 
     @Test
-    def testDifference() {
+    def testDifference(): Unit = {
         val s1 = NCCipher.encrypt(IN)
         val s2 = NCCipher.encrypt(IN)
         val s3 = NCCipher.encrypt(IN)
@@ -55,7 +55,7 @@ class NCCipherSpec  {
     }
 
     @Test
-    def testCorrectness() {
+    def testCorrectness(): Unit = {
         val buf = new StringBuilder
         
         // Max long string.
@@ -67,11 +67,11 @@ class NCCipherSpec  {
         
         val key = NCCipher.makeTokenKey(U.genGuid())
         
-        val now = System.currentTimeMillis()
+        val now = U.now()
         
         val sec = NCCipher.encrypt(Base64.getEncoder.encodeToString(bytes), key)
         
-        val dur = System.currentTimeMillis() - now
+        val dur = U.now() - now
         
         println(s"Input length: ${str.length}")
         println(s"Output length: ${sec.length}")

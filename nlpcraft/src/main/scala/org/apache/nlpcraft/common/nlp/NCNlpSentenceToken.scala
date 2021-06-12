@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,8 +19,9 @@ package org.apache.nlpcraft.common.nlp
 
 import org.apache.nlpcraft.common.nlp.pos._
 
-import scala.collection.JavaConverters._
+import java.util.{List => JList}
 import scala.collection.mutable
+import scala.jdk.CollectionConverters.ListHasAsScala
 import scala.language.implicitConversions
 
 /**
@@ -41,7 +42,7 @@ case class NCNlpSentenceToken(
     def origText: String = getNlpValue[String]("origText")
     def words: Int = origText.split(" ").length
     def wordLength: Int = getNlpValue[Int]("wordLength").intValue()
-    def wordIndexes: Seq[Int] = getNlpValue[java.util.List[Int]]("wordIndexes").asScala
+    def wordIndexes: Seq[Int] = getNlpValue[JList[Int]]("wordIndexes").asScala.toSeq
     def pos: String = getNlpValue[String]("pos")
     def posDesc: String = getNlpValue[String]( "posDesc")
     def lemma: String = getNlpValue[String]("lemma")

@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,9 +22,10 @@ import opennlp.tools.tokenize.{Tokenizer, TokenizerME, TokenizerModel}
 import org.apache.nlpcraft.common.NCService
 import org.apache.nlpcraft.common.nlp.core.{NCNlpCoreToken, NCNlpTokenizer}
 import org.apache.nlpcraft.common.extcfg.NCExternalConfigManager
-import resource.managed
 import org.apache.nlpcraft.common.extcfg.NCExternalConfigType.OPENNLP
+
 import scala.language.{implicitConversions, postfixOps}
+import scala.util.Using
 
 /**
   * OpenNLP tokenizer implementation.
@@ -42,7 +43,7 @@ object NCOpenNlpTokenizer extends NCNlpTokenizer {
     override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ =>
         ackStarting()
 
-        tokenizer = managed(NCExternalConfigManager.getStream(OPENNLP, RESOURCE)) acquireAndGet { in =>
+        tokenizer = Using.resource(NCExternalConfigManager.getStream(OPENNLP, RESOURCE)) { in =>
             new TokenizerME(new TokenizerModel(in))
         }
 

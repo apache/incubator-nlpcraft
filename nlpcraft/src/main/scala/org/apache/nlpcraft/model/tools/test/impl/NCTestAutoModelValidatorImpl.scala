@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@ import org.apache.nlpcraft.model.tools.embedded.NCEmbeddedProbe
 import org.apache.nlpcraft.model.tools.test.{NCTestAutoModelValidator, NCTestClientBuilder}
 import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.SeqHasAsJava
 
 /**
   * Implementation for `NCTestAutoModelValidator` class.
@@ -82,11 +82,11 @@ private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
                     cli.open(mdlId)
 
                     txts.map (txt => {
-                        var t = System.currentTimeMillis()
+                        var t = U.now()
 
                         val res = cli.ask(txt)
 
-                        t = System.currentTimeMillis() - t
+                        t = U.now() - t
 
                         if (res.isFailed)
                             Result(mdlId, intentId, txt, pass = false, Some(res.getResultError.get()), t)

@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -350,7 +350,7 @@ object NCGeoEnricher extends NCServerEnricher {
     }
 
     @throws[NCE]
-    private def collapse(ns: NCNlpSentence) {
+    private def collapse(ns: NCNlpSentence): Unit = {
         // Candidates for excluding.
         // GEO names matched with common words. (Single words only)
         val excls = new mutable.HashSet[NCNlpSentenceNote]() ++ getGeoNotes(ns).filter(note => {
@@ -379,7 +379,7 @@ object NCGeoEnricher extends NCServerEnricher {
         // Check that city is inside country or region.
         // When true - remove larger location note and replace with
         // enlarged more detailed location note.
-        def checkExtendNote(first: NCNlpSentenceNote, second: NCNlpSentenceNote, small: NCNlpSentenceNote, big: NCNlpSentenceNote) {
+        def checkExtendNote(first: NCNlpSentenceNote, second: NCNlpSentenceNote, small: NCNlpSentenceNote, big: NCNlpSentenceNote): Unit = {
             if (isChild(small, big) || small == big) {
                 logger.debug(s"Extending $small and swallow $big.")
 
@@ -402,7 +402,7 @@ object NCGeoEnricher extends NCServerEnricher {
         // Finds two collapsible neighboring location entities, takes more detailed one,
         // removes less detailed one, and enlarges the remaining (more detailed) one to
         // "cover" the tokens originally occupied by both entities.
-        def enlarge(withOverlap: Boolean) {
+        def enlarge(withOverlap: Boolean): Unit = {
             val locs = getGeoNotes(ns)
 
             locs.foreach(p => {

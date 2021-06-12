@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -50,9 +50,9 @@ import java.io.Serializable
 import java.util
 import java.util.function.Predicate
 import java.util.{Date, Objects}
-import scala.collection.JavaConverters._
-import scala.collection.{Seq, _}
+import scala.collection.mutable
 import scala.concurrent.ExecutionContext
+import scala.jdk.CollectionConverters.{CollectionHasAsScala, ListHasAsScala, SeqHasAsJava}
 
 /**
   * Probe enrichment manager.
@@ -165,7 +165,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
             "mdlId" -> mdlId
         )
 
-        startMs.set(System.currentTimeMillis())
+        startMs.set(U.now())
 
         try
             ask0(
@@ -228,7 +228,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
     ): Unit = {
         require(nlpSens.nonEmpty)
 
-        var start = System.currentTimeMillis()
+        var start = U.now()
 
         val tbl = NCAsciiTable()
 
@@ -296,17 +296,17 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
 
             val msg = NCProbeMessage(msgName)
 
-            msg += "srvReqId" -> srvReqId
-            msg += "mdlId" -> mdlId
-            msg += "txt" -> txt
+            msg.addData("srvReqId", srvReqId)
+            msg.addData("mdlId", mdlId)
+            msg.addData("txt", txt)
 
             def addOptional(name: String, vOpt: Option[Serializable]): Unit =
                 if (vOpt.isDefined)
-                    msg += name -> vOpt.get
+                    msg.addData(name, vOpt.get)
 
             def addMeta(name: String, vOpt: Option[JavaMeta]): Unit =
                 if (vOpt.isDefined)
-                    msg += name -> vOpt.get.asInstanceOf[Serializable]
+                    msg.addData(name, vOpt.get.asInstanceOf[Serializable])
 
             if (resBody.isDefined && resBody.get.length > Config.resultMaxSize) {
                 addOptional("error", Some("Result is too big. Model result must be corrected."))
@@ -344,7 +344,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
 
             NCConnectionManager.send(msg, span)
 
-            val durMs = System.currentTimeMillis() - startMs.get
+            val durMs = U.now() - startMs.get
 
             if (errMsg.isEmpty)
                 logger.info(s"" +
@@ -552,7 +552,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
         }
 
         val meta = mutable.HashMap.empty[String, Any] ++ senMeta
-        val req = NCRequestImpl(meta, srvReqId)
+        val req = NCRequestImpl(meta.toMap, srvReqId)
 
         var senVars = NCProbeVariants.convert(srvReqId, mdl, sensSeq, lastPhase = true)
 
@@ -621,7 +621,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
             }
         }
         
-        recordStats(M_SYS_LATENCY_MS -> (System.currentTimeMillis() - start))
+        recordStats(M_SYS_LATENCY_MS -> (U.now() - start))
     
         /**
          *
@@ -658,7 +658,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
 
                 var res = mdl.model.onContext(ctx)
     
-                start = System.currentTimeMillis()
+                start = U.now()
     
                 if (res == null && mdl.solver != null)
                     startScopedSpan("intentMatching", span) { _ =>
@@ -668,7 +668,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                 if (res == null && mdl.solver == null)
                     throw new IllegalStateException("No intents and no results from model callbacks.")
     
-                recordStats(M_USER_LATENCY_MS -> (System.currentTimeMillis() - start))
+                recordStats(M_USER_LATENCY_MS -> (U.now() - start))
 
                 if (res == null)
                     throw new IllegalStateException("Result cannot be null.")

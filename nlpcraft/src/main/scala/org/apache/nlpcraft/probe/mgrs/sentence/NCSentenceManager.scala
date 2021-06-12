@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,8 +27,9 @@ import org.apache.nlpcraft.model.NCModel
 import java.io.{Serializable => JSerializable}
 import java.util
 import java.util.{List => JList}
-import scala.collection.JavaConverters.{asScalaBufferConverter, _}
-import scala.collection.{Map, Seq, mutable}
+import scala.collection.mutable
+import scala.collection.parallel.CollectionConverters.ImmutableIterableIsParallelizable
+import scala.jdk.CollectionConverters.{ListHasAsScala, SeqHasAsJava, SetHasAsJava}
 import scala.language.implicitConversions
 
 /**
@@ -67,7 +68,7 @@ object NCSentenceManager extends NCService {
         val noteLinks = mutable.ArrayBuffer.empty[NoteLink]
 
         for (n <- notes.filter(n => n.noteType == "nlpcraft:limit" || n.noteType == "nlpcraft:references"))
-            noteLinks += NoteLink(n("note").asInstanceOf[String], n("indexes").asInstanceOf[JList[Int]].asScala.sorted)
+            noteLinks += NoteLink(n("note").asInstanceOf[String], n("indexes").asInstanceOf[JList[Int]].asScala.toSeq.sorted)
 
         for (n <- notes.filter(_.noteType == "nlpcraft:sort")) {
             def add(noteName: String, idxsName: String): Unit = {
@@ -77,9 +78,10 @@ object NCSentenceManager extends NCService {
                 require(names.size() == idxsSeq.size())
 
                 noteLinks ++=
-                    (for ((name, idxs) <- names.asScala.zip(idxsSeq.asScala.map(_.asScala)))
-                        yield NoteLink(name, idxs.sorted)
-                        )
+                    (
+                        for ((name, idxs) <- names.asScala.zip(idxsSeq.asScala.map(_.asScala)))
+                            yield NoteLink(name, idxs.sorted.toSeq)
+                    )
             }
 
             if (n.contains("subjnotes")) add("subjnotes", "subjindexes")
@@ -164,7 +166,7 @@ object NCSentenceManager extends NCService {
         ns.filter(_.isTypeOf(noteType)).foreach(tok =>
             tok.getNoteOpt(noteType, idxsField) match {
                 case Some(n) =>
-                    val idxs: Seq[Int] = n.data[JList[Int]](idxsField).asScala
+                    val idxs: Seq[Int] = n.data[JList[Int]](idxsField).asScala.toSeq
                     var fixed = idxs
 
                     history.foreach { case (idxOld, idxNew) => fixed = fixed.map(i => if (i == idxOld) idxNew else i) }
@@ -178,7 +180,7 @@ object NCSentenceManager extends NCService {
         )
 
         ns.flatMap(_.getNotes(noteType)).forall(
-            n => checkRelation(ns, n.data[JList[Int]]("indexes").asScala, n.data[String](noteField), n)
+            n => checkRelation(ns, n.data[JList[Int]]("indexes").asScala.toSeq, n.data[String](noteField), n)
         )
     }
 
@@ -191,7 +193,7 @@ object NCSentenceManager extends NCService {
       */
     private def fixNoteIndexes(note: String, idxsField: String, noteField: String, ns: NCNlpSentence): Unit =
         ns.flatMap(_.getNotes(note)).foreach(
-            n => checkRelation(ns, n.data[JList[Int]](idxsField).asScala, n.data[String](noteField), n)
+            n => checkRelation(ns, n.data[JList[Int]](idxsField).asScala.toSeq, n.data[String](noteField), n)
         )
 
     /**
@@ -210,7 +212,7 @@ object NCSentenceManager extends NCService {
                     require(idxsList.size() == notesTypes.size())
 
                     idxsList.asScala.zip(notesTypes.asScala).foreach {
-                        case (idxs, notesType) => checkRelation(ns, idxs.asScala, notesType, rel)
+                        case (idxs, notesType) => checkRelation(ns, idxs.asScala.toSeq, notesType, rel)
                     }
                 case None => // No-op.
             }
@@ -275,7 +277,7 @@ object NCSentenceManager extends NCService {
                         if (!buf.contains(idxs.head)) {
                             buf += idxs.head
 
-                            ns += mkCompound(ns, nsCopyToks, idxs, stop = true, ns.size, None, history)
+                            ns += mkCompound(ns, nsCopyToks.toSeq, idxs.toSeq, stop = true, ns.size, None, history)
                         }
                     case None => simpleCopy(ns, history, nsCopyToks, i)
                 }
@@ -290,12 +292,12 @@ object NCSentenceManager extends NCService {
       * @param ns Sentence.
       * @param userNoteTypes Notes types.
       */
-    private def fixIndexes(ns: NCNlpSentence, userNoteTypes: Seq[String]) {
+    private def fixIndexes(ns: NCNlpSentence, userNoteTypes: Seq[String]): Unit = {
         // Replaces other notes indexes.
         for (t <- userNoteTypes :+ "nlpcraft:nlp"; note <- ns.getNotes(t)) {
             val toks = ns.filter(_.contains(note)).sortBy(_.index)
 
-            val newNote = note.clone(toks.map(_.index), toks.flatMap(_.wordIndexes).sorted)
+            val newNote = note.clone(toks.map(_.index).toSeq, toks.flatMap(_.wordIndexes).toSeq.sorted)
 
             toks.foreach(t => {
                 t.remove(note)
@@ -340,7 +342,7 @@ object NCSentenceManager extends NCService {
                         if (!buf.contains(n.tokenFrom)) {
                             buf += n.tokenFrom
 
-                            ns += mkCompound(ns, nsCopyToks, n.tokenIndexes, stop = false, ns.size, Some(n), history)
+                            ns += mkCompound(ns, nsCopyToks.toSeq, n.tokenIndexes, stop = false, ns.size, Some(n), history)
                         }
                     case None => simpleCopy(ns, history, nsCopyToks, i)
                 }
@@ -463,7 +465,7 @@ object NCSentenceManager extends NCService {
             tok.getNoteOpt(noteType, idxsField) match {
                 case Some(n) =>
                     val idxs: Seq[Seq[Int]] =
-                        n.data[JList[JList[Int]]](idxsField).asScala.map(_.asScala)
+                        n.data[JList[JList[Int]]](idxsField).asScala.map(_.asScala.toSeq).toSeq
                     var fixed = idxs
 
                     history.foreach {
@@ -528,11 +530,13 @@ object NCSentenceManager extends NCService {
         notNlpTypes.foreach(typ => zipNotes(ns, typ, notNlpTypes, history))
         unionStops(ns, notNlpTypes, history)
 
+        val histSeq = history.toSeq
+
         val res =
-            fixIndexesReferences("nlpcraft:relation", "indexes", "note", ns, history) &&
-            fixIndexesReferences("nlpcraft:limit", "indexes", "note", ns, history) &&
-            fixIndexesReferencesList("nlpcraft:sort", "subjindexes", "subjnotes", ns, history) &&
-            fixIndexesReferencesList("nlpcraft:sort", "byindexes", "bynotes", ns, history)
+            fixIndexesReferences("nlpcraft:relation", "indexes", "note", ns, histSeq) &&
+            fixIndexesReferences("nlpcraft:limit", "indexes", "note", ns, histSeq) &&
+            fixIndexesReferencesList("nlpcraft:sort", "subjindexes", "subjnotes", ns, histSeq) &&
+            fixIndexesReferencesList("nlpcraft:sort", "byindexes", "bynotes", ns, histSeq)
 
         if (res) {
             // Validation (all indexes calculated well)
@@ -614,7 +618,7 @@ object NCSentenceManager extends NCService {
             if (lastPhase)
                 dropAbstract(mdl, ns)
 
-            if (collapseSentence(ns, getNotNlpNotes(ns).map(_.noteType).distinct)) Some(ns) else None
+            if (collapseSentence(ns, getNotNlpNotes(ns.toSeq).map(_.noteType).distinct)) Some(ns) else None
         }
 
         // Always deletes `similar` notes.
@@ -647,12 +651,12 @@ object NCSentenceManager extends NCService {
         redundant.foreach(sen.removeNote)
 
         var delCombs: Seq[NCNlpSentenceNote] =
-            getNotNlpNotes(sen).
+            getNotNlpNotes(sen.toSeq).
                 flatMap(note => getNotNlpNotes(note.tokenIndexes.sorted.map(i => sen(i))).filter(_ != note)).
                 distinct
 
         // Optimization. Deletes all wholly swallowed notes.
-        val links = getLinks(sen.flatten)
+        val links = getLinks(sen.tokens.toSeq.flatten)
 
         val swallowed =
             delCombs.
@@ -687,13 +691,16 @@ object NCSentenceManager extends NCService {
                         groupBy { case (idx, _) => idx }.
                         map { case (_, seq) => seq.map { case (_, note) => note }.toSet }.
                         toSeq.sortBy(-_.size)
+                        
+                def findCombinations(): Seq[Seq[NCNlpSentenceNote]] =
+                    NCSentenceHelper.findCombinations(toksByIdx.map(_.asJava).asJava, pool).asScala.map(_.asScala.toSeq)
 
                 val seqSens =
                     combCache.
                         getOrElseUpdate(sen.srvReqId, mutable.HashMap.empty[CacheKey, CacheValue]).
                         getOrElseUpdate(
                             toksByIdx,
-                            NCSentenceHelper.findCombinations(toksByIdx.map(_.asJava).asJava, pool).asScala.map(_.asScala)
+                            findCombinations()
                         ).par.
                         flatMap(delComb => {
                             val nsClone = sen.clone()
@@ -718,7 +725,7 @@ object NCSentenceManager extends NCService {
 
                     Holder(
                         // We have to delete some keys to have possibility to compare sentences.
-                        notes.map(_.clone().filter { case (name, _) => name != "direct" }),
+                        notes.map(_.clone().filter { case (name, _) => name != "direct" }).toSeq,
                         sen,
                         notes.filter(_.isNlp).map(p => if (p.isDirect) 0 else 1).sum
                     )

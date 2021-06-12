@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,7 +22,7 @@ import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
 import org.junit.jupiter.api.Test
 
 import java.util
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.CollectionHasAsScala
 
 class NCAbstractTokensModelVariants extends NCAbstractTokensModel {
     private def checkId(t: NCToken, id: String): Unit =
@@ -95,7 +95,7 @@ class NCAbstractTokensModelVariants extends NCAbstractTokensModel {
                 checkToken(toks.head, "nlpcraft:nlp", "10")
                 checkToken(toks.last,"wrapNum", "w1 10 w2")
 
-                val t2Parts = toks.last.getPartTokens.asScala
+                val t2Parts = toks.last.getPartTokens.asScala.toSeq
 
                 require(t2Parts.size == 3)
 
@@ -130,7 +130,7 @@ class NCAbstractTokensModelVariants extends NCAbstractTokensModel {
                 require(variants.nonEmpty)
 
                 val vars = variants.
-                    map(p => p.asScala).
+                    map(p => p.asScala.toSeq).
                     filter(v => v.size == 3 && v(1).getId == "wrapWrapLimit" && v.last.getId == "wrapAnyWord")
 
                 require(vars.size == 1)

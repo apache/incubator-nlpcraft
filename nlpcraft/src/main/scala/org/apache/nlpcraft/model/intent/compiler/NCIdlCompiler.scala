@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,15 +25,14 @@ import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.model.intent.compiler.antlr4.{NCIdlBaseListener, NCIdlLexer, NCIdlParser => IDP}
 import org.apache.nlpcraft.model.intent.compiler.{NCIdlCompilerGlobal => Global}
 import org.apache.nlpcraft.model._
-import org.apache.nlpcraft.model.intent.{NCIdlContext, NCIdlFunction, NCIdlIntent, NCIdlStack, NCIdlStackItem => Z, NCIdlSynonym, NCIdlTerm}
+import org.apache.nlpcraft.model.intent.{NCIdlContext, NCIdlFunction, NCIdlIntent, NCIdlStack, NCIdlSynonym, NCIdlTerm, NCIdlStackItem => Z}
 
 import java.io._
 import java.net._
-import scala.collection.JavaConverters._
 import java.util.Optional
 import java.util.regex.{Pattern, PatternSyntaxException}
 import scala.collection.mutable
-import scala.collection.mutable.ArrayBuffer
+import scala.jdk.CollectionConverters.MapHasAsJava
 
 object NCIdlCompiler extends LazyLogging {
     // Compiler caches.
@@ -51,7 +50,7 @@ object NCIdlCompiler extends LazyLogging {
         final private val MINMAX_MAX = 100
 
         // Accumulators for parsed objects.
-        private val intents = ArrayBuffer.empty[NCIdlIntent]
+        private val intents = mutable.ArrayBuffer.empty[NCIdlIntent]
         private var synonym: NCIdlSynonym = _
 
         // Synonym.
@@ -68,10 +67,10 @@ object NCIdlCompiler extends LazyLogging {
         private var intentMeta: ScalaMeta = _
 
         // Accumulator for parsed terms.
-        private val terms = ArrayBuffer.empty[NCIdlTerm]
+        private val terms = mutable.ArrayBuffer.empty[NCIdlTerm]
 
         // Currently term.
-        private var vars = mutable.HashMap.empty[String, NCIdlFunction]
+        private val vars = mutable.HashMap.empty[String, NCIdlFunction]
         private var termId: String = _
         private var termConv: Boolean = _
         private var min = 1
@@ -84,7 +83,7 @@ object NCIdlCompiler extends LazyLogging {
         private var flowMtdName: Option[String] = None
 
         // List of instructions for the current expression.
-        private var expr = mutable.Buffer.empty[SI]
+        private val expr = mutable.Buffer.empty[SI]
 
         /**
          *

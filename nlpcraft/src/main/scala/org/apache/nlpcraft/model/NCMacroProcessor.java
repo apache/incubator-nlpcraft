@@ -30,7 +30,7 @@ import java.util.Set;
  * developing NERs, visualizing synonyms in toolchains, etc.
  * <p>
  * Read full documentation on synonym macro DSL in <a target=_ href="https://nlpcraft.apache.org/data-model.html">Data Model</a> section and review
- * <a target=_ href="https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft/src/main/scala/org/apache/nlpcraft/examples/">examples</a>.
+ * <a target=_ href="https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft-examples">examples</a>.
  */
 public class NCMacroProcessor {
     private final NCMacroJavaParserTrait impl = mkImpl();
@@ -50,7 +50,7 @@ public class NCMacroProcessor {
      * Expands given macro DSL string.
      * <p>
      * Read full documentation on synonym macro DSL in <a target=_ href="https://nlpcraft.apache.org/data-model.html">Data Model</a> section and review
-     * <a target=_ href="https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft/src/main/scala/org/apache/nlpcraft/examples/">examples</a>.
+     * <a target=_ href="https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft-examples">examples</a>.
      *
      * @param s Macro DSL string to expand.
      * @return Set of macro expansions for a given macro DSL string.

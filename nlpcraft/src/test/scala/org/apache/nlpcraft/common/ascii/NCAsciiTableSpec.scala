@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,7 @@
 
 package org.apache.nlpcraft.common.ascii
 
+import org.apache.nlpcraft.common.U
 import org.apache.nlpcraft.common.ansi.NCAnsi._
 import org.junit.jupiter.api.Test
 
@@ -25,7 +26,7 @@ import org.junit.jupiter.api.Test
  */
 class NCAsciiTableSpec {
     @Test
-    def test() {
+    def test(): Unit = {
         val t = NCAsciiTable()
         
         t.defaultHeaderStyle = "leftPad: 10, rightPad: 5"
@@ -55,7 +56,7 @@ class NCAsciiTableSpec {
     }
 
     @Test
-    def testWithSequenceHeader() {
+    def testWithSequenceHeader(): Unit = {
         val t = NCAsciiTable()
         
         t.defaultHeaderStyle = "leftPad: 10, rightPad: 5"
@@ -72,10 +73,10 @@ class NCAsciiTableSpec {
     }
 
     @Test
-    def testWithVeryBigTable() {
+    def testWithVeryBigTable(): Unit = {
         val NUM = 100
 
-        val start = System.currentTimeMillis()
+        val start = U.now()
 
         val t = NCAsciiTable()
         
@@ -88,7 +89,7 @@ class NCAsciiTableSpec {
 
         t.render()
 
-        val dur = System.currentTimeMillis() - start
+        val dur = U.now() - start
 
         println(s"Rendered in ${dur}ms.")
     }

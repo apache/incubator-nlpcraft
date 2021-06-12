@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@ import org.junit.jupiter.api.BeforeEach
 
 import java.util
 import java.util.{Collections, Optional}
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.{MapHasAsJava, SeqHasAsJava, SetHasAsJava}
 import scala.language.implicitConversions
 
 /**
@@ -35,7 +35,7 @@ import scala.language.implicitConversions
 private[functions] trait NCIdlFunctions {
     private final val MODEL_ID = "test.mdl.id"
 
-    // It shouldn't be anonimous class because we need access to 'trueAlwaysCustomToken' method via reflection.
+    // It shouldn't be anonymous class because we need access to 'trueAlwaysCustomToken' method via reflection.
     class TestModel extends NCModel {
         override val getId: String = MODEL_ID
         override val getName: String = MODEL_ID
@@ -153,8 +153,7 @@ private[functions] trait NCIdlFunctions {
             override def getPartTokens: util.List[NCToken] = partTokens.asJava
             override def getAliases: util.Set[String] = aliases.asJava
             override def getValue: String = value
-            override def getGroups: util.List[String] =
-                if (groups.isEmpty && id != null) Collections.singletonList(id) else groups.asJava
+            override def getGroups: util.List[String] = if (groups.isEmpty && id != null) Collections.singletonList(id) else groups.asJava
             override def getStartCharIndex: Int = start
             override def getEndCharIndex: Int = end
             override def isAbstract: Boolean = isAbstr

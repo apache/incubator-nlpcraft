@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -54,12 +54,11 @@ import org.jline.utils.AttributedString
 import org.jline.utils.InfoCmp.Capability
 import org.apache.nlpcraft.model.tools.cmdline.NCCliRestSpec._
 import org.apache.nlpcraft.model.tools.cmdline.NCCliCommands._
-import resource.managed
 
-import scala.collection.JavaConverters._
+import scala.util.Using
 import scala.collection.mutable
-import scala.compat.Platform.currentTime
 import scala.compat.java8.OptionConverters._
+import scala.jdk.CollectionConverters.{BufferHasAsJava, CollectionHasAsScala, SeqHasAsJava}
 import scala.util.Try
 import scala.util.control.Breaks.{break, breakable}
 import scala.util.control.Exception.ignoring
@@ -81,7 +80,7 @@ object NCCli extends NCCliBase {
         val m = mutable.HashMap.empty[String, Seq[String]]
 
         try
-            managed(new ZipInputStream(U.getStream("cli/templates.zip"))) acquireAndGet { zis =>
+            Using.resource(new ZipInputStream(U.getStream("cli/templates.zip"))) { zis =>
                 var entry = zis.getNextEntry
 
                 while (entry != null) {
@@ -89,7 +88,7 @@ object NCCli extends NCCliBase {
 
                     IOUtils.copy(zis, buf, StandardCharsets.UTF_8)
 
-                    m += entry.getName -> buf.toString.split("\n")
+                    m += entry.getName -> buf.toString.split("\n").toIndexedSeq
 
                     entry = zis.getNextEntry
                 }
@@ -338,7 +337,7 @@ object NCCli extends NCCliBase {
      *
      */
     private def cleanUpTempFiles(): Unit = {
-        val tstamp = currentTime - 1000 * 60 * 60 * 24 * 2 // 2 days ago.
+        val tstamp = U.now() - 1000 * 60 * 60 * 24 * 2 // 2 days ago.
 
         val files = new File(SystemUtils.getUserHome, NLPCRAFT_LOC_DIR).listFiles()
         
@@ -397,7 +396,7 @@ object NCCli extends NCCliBase {
             case None => ()
         }
 
-        val logTstamp = currentTime
+        val logTstamp = U.now()
 
         // Server log redirect.
         val output = new File(SystemUtils.getUserHome, s".nlpcraft/server_log_$logTstamp.txt")
@@ -510,9 +509,9 @@ object NCCli extends NCCliBase {
 
                 var beacon: NCCliServerBeacon = null
                 var online = false
-                val endOfWait = currentTime + timeoutMins.mins
+                val endOfWait = U.now() + timeoutMins.mins
 
-                while (currentTime < endOfWait && !online && ProcessHandle.of(srvPid).isPresent) {
+                while (U.now() < endOfWait && !online && ProcessHandle.of(srvPid).isPresent) {
                     if (progressBar.completed) {
                         // First, load the beacon, if any.
                         if (beacon == null)
@@ -530,7 +529,7 @@ object NCCli extends NCCliBase {
                 tailer.stop()
                 progressBar.stop()
 
-                if (!online && currentTime >= endOfWait) // Timed out - attempt to kill the timed out process...
+                if (!online && U.now() >= endOfWait) // Timed out - attempt to kill the timed out process...
                     ProcessHandle.of(srvPid).asScala match {
                         case Some(ph) =>
                             if (ph.destroy())
@@ -654,7 +653,7 @@ object NCCli extends NCCliBase {
             case None => Seq("-ea", "-Xms1024m")
         }
 
-        val logTstamp = currentTime
+        val logTstamp = U.now()
 
         // Server log redirect.
         val output = new File(SystemUtils.getUserHome, s".nlpcraft/probe_log_$logTstamp.txt")
@@ -769,9 +768,9 @@ object NCCli extends NCCliBase {
                 )
 
                 var beacon: NCCliProbeBeacon = null
-                val endOfWait = currentTime + timeoutMins.mins
+                val endOfWait = U.now() + timeoutMins.mins
 
-                while (currentTime < endOfWait && beacon == null && ProcessHandle.of(prbPid).isPresent) {
+                while (U.now() < endOfWait && beacon == null && ProcessHandle.of(prbPid).isPresent) {
                     if (progressBar.completed) {
                         // Load the beacon, if any.
                         if (beacon == null)
@@ -785,7 +784,7 @@ object NCCli extends NCCliBase {
                 tailer.stop()
                 progressBar.stop()
 
-                if (currentTime >= endOfWait)
+                if (U.now() >= endOfWait)
                     ProcessHandle.of(prbPid).asScala match {
                         case Some(ph) =>
                             if (ph.destroy())
@@ -841,13 +840,13 @@ object NCCli extends NCCliBase {
      */
     private def tailFile(path: String, lines: Int): Unit =
         try
-            managed(new ReversedLinesFileReader(new File(path), StandardCharsets.UTF_8)) acquireAndGet { in =>
+            Using.resource(new ReversedLinesFileReader(new File(path), StandardCharsets.UTF_8)) { in =>
                 var tail = List.empty[String]
 
                 breakable {
                     for (_ <- 0 until lines)
                         in.readLine() match {
-                            case null => break
+                            case null => break()
                             case line => tail ::= line
                         }
                 }
@@ -919,14 +918,14 @@ object NCCli extends NCCliBase {
 
             spinner.start()
 
-            val startMs = currentTime
+            val startMs = U.now()
 
             try
                 restHealth(endpoint) match {
                     case 200 =>
                         spinner.stop()
 
-                        logln(g("OK") + " " + c(s"[${currentTime - startMs}ms]"))
+                        logln(g("OK") + " " + c(s"[${U.now() - startMs}ms]"))
 
                     case code: Int =>
                         spinner.stop()
@@ -961,17 +960,15 @@ object NCCli extends NCCliBase {
      */
     private def loadServerBeacon(autoSignIn: Boolean = false): Option[NCCliServerBeacon] = {
         val beaconOpt = try {
-            val beacon = (
-                managed(
-                    new ObjectInputStream(
-                        new FileInputStream(
-                            new File(SystemUtils.getUserHome, SRV_BEACON_PATH)
-                        )
+            val beacon = Using.resource(
+                new ObjectInputStream(
+                    new FileInputStream(
+                        new File(SystemUtils.getUserHome, SRV_BEACON_PATH)
                     )
-                ) acquireAndGet {
-                    _.readObject()
-                }
-            )
+                )
+            ) {
+                _.readObject()
+            }
             .asInstanceOf[NCCliServerBeacon]
 
             ProcessHandle.of(beacon.pid).asScala match {
@@ -1065,17 +1062,15 @@ object NCCli extends NCCliBase {
      */
     private def loadProbeBeacon(): Option[NCCliProbeBeacon] = {
         val beaconOpt = try {
-            val beacon = (
-                managed(
-                    new ObjectInputStream(
-                        new FileInputStream(
-                            new File(SystemUtils.getUserHome, PRB_BEACON_PATH)
-                        )
+            val beacon =  Using.resource(
+                new ObjectInputStream(
+                    new FileInputStream(
+                        new File(SystemUtils.getUserHome, PRB_BEACON_PATH)
                     )
-                ) acquireAndGet {
-                    _.readObject()
-                }
-            )
+                )
+            ) {
+                _.readObject()
+            }
             .asInstanceOf[NCCliProbeBeacon]
 
             ProcessHandle.of(beacon.pid).asScala match {
@@ -1267,7 +1262,7 @@ object NCCli extends NCCliBase {
                 for (param <- cmd.params) {
                     val line =
                         if (param.value.isDefined)
-                            T___ + param.names.zip(Stream.continually(param.value.get)).map(t => s"${t._1}=${t._2}").mkString(", ")
+                            T___ + param.names.zip(LazyList.continually(param.value.get)).map(t => s"${t._1}=${t._2}").mkString(", ")
                         else
                             s"$T___${param.names.mkString(", ")}"
 
@@ -1293,7 +1288,7 @@ object NCCli extends NCCliBase {
                 }
             }
 
-            lines
+            lines.toSeq
         }
 
         def helpHelp(): Unit =
@@ -1483,7 +1478,7 @@ object NCCli extends NCCliBase {
                     s"  ${c("guid")}: ${probe.probeGuid}",
                     s"  ${c("tok")}: ${probe.probeToken}"
                 ),
-                DurationFormatUtils.formatDurationHMS(currentTime - probe.startTstamp),
+                DurationFormatUtils.formatDurationHMS(U.now() - probe.startTstamp),
                 Seq(
                     s"${probe.hostName} (${probe.hostAddr})",
                     s"${probe.osName} ver. ${probe.osVersion}"
@@ -1887,7 +1882,7 @@ object NCCli extends NCCliBase {
         outEntry: String,
         extractHeader: Option[Seq[String] => (Int, Int)],
         repls: (String, String)*
-    ) {
+    ): Unit = {
         val key = s"$zipInDir/$inEntry"
 
         require(PRJ_TEMPLATES.contains(key), s"Unexpected template entry for: $key")
@@ -1929,8 +1924,8 @@ object NCCli extends NCCliBase {
         cont = repls.foldLeft(cont)((s, repl) => s.replaceAll(repl._1, repl._2))
 
         try
-            managed(new FileWriter(outFile)) acquireAndGet { w =>
-                managed(new BufferedWriter(w)) acquireAndGet { bw =>
+            Using.resource(new FileWriter(outFile)) { w =>
+                Using.resource(new BufferedWriter(w)) { bw =>
                     bw.write(cont)
                 }
             }
@@ -2591,7 +2586,7 @@ object NCCli extends NCCliBase {
         exitStatus = 1
 
         if (msg != null && msg.nonEmpty)
-            logln(s"${r("X")} ${if (msg.head.isLower) msg.head.toUpper + msg.tail else msg}")
+            logln(s"${r("X")} ${U.capitalize(msg)}")
     }
 
     /**
@@ -2600,7 +2595,7 @@ object NCCli extends NCCliBase {
      */
     private def warn(msg: String = ""): Unit =
         if (msg != null && msg.nonEmpty)
-            logln(s"${y("!")} ${if (msg.head.isLower) msg.head.toUpper + msg.tail else msg}")
+            logln(s"${y("!")} ${U.capitalize(msg)}")
 
     /**
      *
@@ -2795,7 +2790,7 @@ object NCCli extends NCCliBase {
         if (buf.nonEmpty)
             lines += buf.toString()
 
-        lines.map(_.strip)
+        lines.map(_.strip).toSeq
     }
 
     /**
@@ -2937,7 +2932,7 @@ object NCCli extends NCCliBase {
             .build()
 
         // Process 'no-ansi' and 'ansi' commands first (before ASCII title is shown).
-        processAnsi(args, repl = false)
+        processAnsi(args.toSeq, repl = false)
 
         if (!args.contains(NO_LOGO_CMD.name))
             title() // Show logo unless we have 'no-logo' command.

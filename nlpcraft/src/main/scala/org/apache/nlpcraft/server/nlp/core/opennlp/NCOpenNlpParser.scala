@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,7 +30,7 @@ import org.apache.nlpcraft.common.{NCService, U}
 import org.apache.nlpcraft.server.ignite.NCIgniteHelpers._
 import org.apache.nlpcraft.server.ignite.NCIgniteInstance
 import org.apache.nlpcraft.server.nlp.core.{NCNlpParser, NCNlpWord}
-import resource.managed
+import scala.util.Using
 
 import scala.concurrent.ExecutionContext
 import scala.util.control.Exception.catching
@@ -58,13 +58,13 @@ object NCOpenNlpParser extends NCService with NCNlpParser with NCIgniteInstance 
         U.executeParallel(
             () => {
                 tagger =
-                    managed(NCExternalConfigManager.getStream(OPENNLP, "en-pos-maxent.bin", span)) acquireAndGet { in =>
+                    Using.resource(NCExternalConfigManager.getStream(OPENNLP, "en-pos-maxent.bin", span)) { in =>
                         new POSTaggerME(new POSModel(in))
                     }
             },
             () => {
                 lemmatizer =
-                    managed(NCExternalConfigManager.getStream(OPENNLP, "en-lemmatizer.dict", span)) acquireAndGet { in =>
+                    Using.resource(NCExternalConfigManager.getStream(OPENNLP, "en-lemmatizer.dict", span)) { in =>
                         new DictionaryLemmatizer(in)
                     }
             }
@@ -143,7 +143,7 @@ object NCOpenNlpParser extends NCService with NCNlpParser with NCIgniteInstance 
     
             cache += normTxt -> words
     
-            toks.zip(poses).zip(lemmas).map { case ((tok, pos), lemma) =>
+            toks.zip(poses).zip(lemmas).toIndexedSeq.map { case ((tok, pos), lemma) =>
                 val normalWord = tok.token.toLowerCase
     
                 NCNlpWord(

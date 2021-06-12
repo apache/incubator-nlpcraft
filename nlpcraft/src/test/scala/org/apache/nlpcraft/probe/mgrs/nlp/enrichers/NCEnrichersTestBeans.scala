@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,19 +18,21 @@
 package org.apache.nlpcraft.probe.mgrs.nlp.enrichers
 
 import org.apache.nlpcraft.model.NCToken
-import resource.managed
 
+import scala.util.Using
+
+import java.util.{List => JList}
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream, ObjectInputStream, ObjectOutputStream}
 import java.nio.charset.StandardCharsets.UTF_8
 import java.util
 import java.util.{Base64, Optional}
-import scala.collection.JavaConverters._
+
 import scala.compat.java8.OptionConverters._
+import scala.jdk.CollectionConverters.ListHasAsScala
 
 /**
   * Tests infrastructure beans.
   */
-
 sealed trait NCTestToken {
     def id: String
     def text: String // Case-sensitive
@@ -316,37 +318,37 @@ object NCTestToken {
             case "nlpcraft:continent" => NCTestContinentToken(txt, continent = t.meta("nlpcraft:continent:continent"))
             case "nlpcraft:metro" => NCTestMetroToken(txt, metro = t.meta("nlpcraft:metro:metro"))
             case "nlpcraft:sort" =>
-                val subjNotes: Optional[java.util.List[String]] = t.metaOpt("nlpcraft:sort:subjnotes")
-                val subjIndexes: Optional[java.util.List[Int]] = t.metaOpt("nlpcraft:sort:subjindexes")
-                val byNotes: Optional[java.util.List[String]] = t.metaOpt("nlpcraft:sort:bynotes")
-                val byIndexes: Optional[java.util.List[Int]] = t.metaOpt("nlpcraft:sort:byindexes")
+                val subjNotes: Optional[JList[String]] = t.metaOpt("nlpcraft:sort:subjnotes")
+                val subjIndexes: Optional[JList[Int]] = t.metaOpt("nlpcraft:sort:subjindexes")
+                val byNotes: Optional[JList[String]] = t.metaOpt("nlpcraft:sort:bynotes")
+                val byIndexes: Optional[JList[Int]] = t.metaOpt("nlpcraft:sort:byindexes")
                 val asc: Optional[Boolean] = t.metaOpt("nlpcraft:sort:asc")
 
                 def get[T](opt: Optional[util.List[T]]) =
                     opt.asScala match {
-                        case Some(list) => list.asScala
+                        case Some(list) => list.asScala.toSeq
                         case None => Seq.empty
                     }
 
                 NCTestSortToken(txt, get(subjNotes), get(subjIndexes), get(byNotes), get(byIndexes), asc.asScala)
             case "nlpcraft:relation" =>
-                val indexes: java.util.List[Int] = t.meta("nlpcraft:relation:indexes")
+                val indexes: JList[Int] = t.meta("nlpcraft:relation:indexes")
 
                 NCTestRelationToken(
                     txt,
                     `type` = t.meta("nlpcraft:relation:type"),
-                    indexes = indexes.asScala,
+                    indexes = indexes.asScala.toSeq,
                     note = t.meta("nlpcraft:relation:note")
                 )
 
             case "nlpcraft:limit" =>
-                val indexes: java.util.List[Int] = t.meta("nlpcraft:limit:indexes")
+                val indexes: JList[Int] = t.meta("nlpcraft:limit:indexes")
                 val asc: Optional[Boolean] = t.metaOpt("nlpcraft:limit:asc")
 
                 NCTestLimitToken(
                     txt,
                     limit = t.meta("nlpcraft:limit:limit"),
-                    indexes = indexes.asScala,
+                    indexes = indexes.asScala.toSeq,
                     note = t.meta("nlpcraft:limit:note"),
                     asc.asScala
                 )
@@ -368,8 +370,8 @@ case class NCTestSentence(tokens: Seq[NCTestToken]) {
 
 object NCTestSentence {
     def serialize(sens: Iterable[NCTestSentence]): String =
-        managed(new ByteArrayOutputStream()) acquireAndGet { bos =>
-            managed(new ObjectOutputStream(bos)) acquireAndGet { os =>
+        Using.resource(new ByteArrayOutputStream()) { bos =>
+            Using.resource(new ObjectOutputStream(bos)) { os =>
                 os.writeObject(sens)
 
                 os.flush()
@@ -379,9 +381,9 @@ object NCTestSentence {
         }
 
     def deserialize(s: String): Iterable[NCTestSentence] =
-        managed(new ObjectInputStream(
+        Using.resource(new ObjectInputStream(
             new ByteArrayInputStream(Base64.getDecoder.decode(s.getBytes(UTF_8))))
-        ) acquireAndGet { is =>
+        ) { is =>
             is.readObject.asInstanceOf[Iterable[NCTestSentence]]
         }
 }

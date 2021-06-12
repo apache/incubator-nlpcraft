@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,9 +29,10 @@ import org.apache.nlpcraft.model.{NCContext, NCDialogFlowItem, NCIntentMatch, NC
 import org.apache.nlpcraft.probe.mgrs.dialogflow.NCDialogFlowManager
 
 import java.util.function.Function
-import scala.collection.JavaConverters._
-import scala.collection.convert.ImplicitConversions._
+import java.util.{List => JList}
+
 import scala.collection.mutable
+import scala.jdk.CollectionConverters.{CollectionHasAsScala, MapHasAsScala, SeqHasAsJava}
 
 /**
  * Intent solver that finds the best matching intent given user sentence.
@@ -119,12 +120,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
             res
         }
 
-        /**
-         *
-         * @return
-         */
-        def toSeq: Seq[Int] = buf
-
+        def toSeq: Seq[Int] = buf.toSeq
         def toAnsiString: String = buf.mkString(y(bo("[")), ", ", y(bo("]")))
     }
 
@@ -207,8 +203,8 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
             val matches = mutable.ArrayBuffer.empty[MatchHolder]
 
             // Find all matches across all intents and sentence variants.
-            for ((vrn, vrnIdx) <- ctx.getVariants.zipWithIndex) {
-                val availToks = vrn.filter(t => !t.isStopWord)
+            for ((vrn, vrnIdx) <- ctx.getVariants.asScala.zipWithIndex) {
+                val availToks = vrn.asScala.filter(t => !t.isStopWord)
 
                 matches.appendAll(
                     intents.flatMap(pair => {
@@ -217,7 +213,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
 
                         // Isolated sentence tokens.
                         val senToks = Seq.empty[UsedToken] ++ availToks.map(UsedToken(false, false, _))
-                        val senTokGroups = availToks.map(t => if (t.getGroups != null) t.getGroups.sorted else Seq.empty)
+                        val senTokGroups = availToks.map(t => if (t.getGroups != null) t.getGroups.asScala.sorted else Seq.empty)
 
                         // Isolated conversation tokens.
                         val convToks =
@@ -225,9 +221,9 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                                 Seq.empty[UsedToken] ++
                                     // We shouldn't mix tokens with same group from conversation
                                     // history and processed sentence.
-                                    ctx.getConversation.getTokens.
+                                    ctx.getConversation.getTokens.asScala.
                                         filter(t => {
-                                            val convTokGroups = t.getGroups.sorted
+                                            val convTokGroups = t.getGroups.asScala.sorted
 
                                             !senTokGroups.exists(convTokGroups.containsSlice)
                                         }).
@@ -299,6 +295,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                                     val variantPart =
                                         m.variant.
                                             tokens.
+                                            asScala.
                                             map(t => s"${t.getId}${t.getGroups}${t.getValue}${t.normText}").
                                             mkString("")
 
@@ -454,11 +451,11 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
 
             val fqn =
                 s"${if (clsName == null) ctx.getModel.getClass.getName else clsName}." +
-                s"$mtdName(java.util.List[NCDialogFlowItem])"
+                s"$mtdName(JList[NCDialogFlowItem])"
 
             val res =
                 try
-                    U.callMethod[java.util.List[NCDialogFlowItem], java.lang.Boolean](
+                    U.callMethod[JList[NCDialogFlowItem], java.lang.Boolean](
                         () => if (clsName == null) ctx.getModel else U.mkObject(clsName),
                         mtdName,
                         flow.toList.asJava

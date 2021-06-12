@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,8 +26,8 @@ import org.apache.nlpcraft.model.{NCToken, NCVariant}
 import java.io.{Serializable => JSerializable}
 import java.util
 import java.util.Collections.singletonList
-import scala.collection.JavaConverters._
-import scala.collection.{Seq, mutable}
+import scala.collection.mutable
+import scala.jdk.CollectionConverters.{BufferHasAsJava, ListHasAsScala, MapHasAsJava}
 
 /**
   * Sentence to variants converter.
@@ -85,7 +85,7 @@ object NCProbeVariants {
         delNotes: Map[NlpNote, Seq[NlpToken]],
         noteTypePred: String => Boolean
     ): Option[NlpToken] =
-        delNotes.toStream.
+        delNotes.to(LazyList).
             flatMap { case (delNote, delNoteToks) =>
                 if (noteTypePred(delNote.noteType)) {
                     val toks =
@@ -107,11 +107,11 @@ object NCProbeVariants {
 
                                 delNote.noteType match {
                                     case "nlpcraft:relation" | "nlpcraft:limit" => ps += "indexes" -> IDXS
-                                    case "nlpcraft:sort" => ps += "subjindexes" -> IDXS2; ps += "byindexes" ->  IDXS2
+                                    case "nlpcraft:sort" => ps += "subjindexes" -> IDXS2; ps += "byindexes" -> IDXS2
                                     case _ => // No-op.
                                 }
 
-                                artTok.add(delNote.clone(ps :_*))
+                                artTok.add(delNote.clone(ps.toSeq :_*))
                             }
 
                             Some(artTok)
@@ -234,7 +234,7 @@ object NCProbeVariants {
                                                     case Some(nlpNote) =>
                                                         val artTok = NlpToken(IDX)
 
-                                                        artTok.add(nlpNote.clone(mkNlpNoteParams(): _*))
+                                                        artTok.add(nlpNote.clone(mkNlpNoteParams().toSeq: _*))
 
                                                         mkToken(artTok)
                                                     case None =>
@@ -256,7 +256,7 @@ object NCProbeVariants {
                                 }
                             }
 
-                            tok.setParts(parts)
+                            tok.setParts(parts.toSeq)
 
                             require(parts.nonEmpty)
 
@@ -307,7 +307,7 @@ object NCProbeVariants {
 
             if (bestVars.size != vars.size)
                 // Reverts orders.
-                vars = bestVars.sortBy(sortedVars.indexOf)
+                vars = bestVars.sortBy(sortedVars.indexOf).toSeq
         }
 
         for (v <- vars; t <- v.asScala)
@@ -315,7 +315,7 @@ object NCProbeVariants {
                 t.getIndex >= 0,
                 s"Invalid token: $t with index: ${t.getIndex}, " +
                     s"lastPhase: $lastPhase, " +
-                    s"sentence:\n${NCTokenLogger.prepareTable(v.asScala)}" +
+                    s"sentence:\n${NCTokenLogger.prepareTable(v.asScala.toSeq)}" +
                     s""
             )
 

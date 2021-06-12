@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,8 +32,10 @@ import org.junit.jupiter.api.Assertions._
 import org.junit.jupiter.api.{AfterEach, BeforeEach}
 
 import java.util
+import java.util.{List => JList}
 import java.util.UUID
-import scala.collection.JavaConverters._
+
+import scala.jdk.CollectionConverters.{ListHasAsScala, MapHasAsJava, MapHasAsScala, SeqHasAsJava}
 
 object NCRestSpec {
     private final val DFLT_BASEURL = "http://localhost:8081/api/v1/"
@@ -127,7 +129,7 @@ import org.apache.nlpcraft.server.rest.NCRestSpec._
 
 class NCRestSpec extends NCTestContext {
     type ResponseContent = java.util.Map[String, Object]
-    type ResponseList = java.util.List[ResponseContent]
+    type ResponseList = JList[ResponseContent]
     type JList[T] = java.util.List[T]
 
     protected var tkn: String = _

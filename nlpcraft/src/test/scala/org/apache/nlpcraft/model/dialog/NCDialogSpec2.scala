@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,6 +22,7 @@ import org.apache.nlpcraft.{NCTestContext, NCTestElement, NCTestEnvironment}
 import org.junit.jupiter.api.Test
 
 import java.util
+import java.util.{List => JList}
 
 object NCDialogSpecModelFlow2  {
     var error = false
@@ -33,11 +34,11 @@ import NCDialogSpecModelFlow2._
   * Test model.
   */
 class NCDialogSpecModelFlow2  {
-    def invalidDef1(flow: java.util.List[NCDialogFlowItem]): String = "string"
+    def invalidDef1(flow: JList[NCDialogFlowItem]): String = "string"
     def invalidDef2(): Boolean = true
-    def invalidDef3(flow: java.util.List[NCDialogFlowItem]): Boolean = throw new IllegalStateException()
-    def invalidDef4(flow: java.util.List[NCDialogFlowItem]): java.lang.Boolean = null
-    def validDef(flow: java.util.List[NCDialogFlowItem]): Boolean = {
+    def invalidDef3(flow: JList[NCDialogFlowItem]): Boolean = throw new IllegalStateException()
+    def invalidDef4(flow: JList[NCDialogFlowItem]): java.lang.Boolean = null
+    def validDef(flow: JList[NCDialogFlowItem]): Boolean = {
         if (error)
             throw new IllegalStateException()
 

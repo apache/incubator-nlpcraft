@@ -18,10 +18,10 @@
 package org.apache.nlpcraft.common.nlp.core.stanford
 
 import java.io.StringReader
-
 import edu.stanford.nlp.process.PTBTokenizer
 import org.apache.nlpcraft.common.nlp.core.{NCNlpCoreToken, NCNlpTokenizer}
-import scala.collection.JavaConverters._
+
+import scala.jdk.CollectionConverters.ListHasAsScala
 
 /**
   * Stanford tokenizer implementation.
