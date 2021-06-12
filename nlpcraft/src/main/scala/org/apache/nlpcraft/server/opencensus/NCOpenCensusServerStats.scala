@@ -53,7 +53,6 @@ trait NCOpenCensusServerStats extends NCOpenCensusStats {
     val M_USER_PASSWD_RESET_LATENCY_MS: MeasureLong = MeasureLong.create("user_passwd_reset_latency", "The latency of '/user/passwd/reset' REST call", "ms")
     val M_USER_ALL_LATENCY_MS: MeasureLong = MeasureLong.create("user_all_latency", "The latency of '/user/all' REST call", "ms")
     val M_PROBE_ALL_LATENCY_MS: MeasureLong = MeasureLong.create("probe_all_latency", "The latency of '/probe/all' REST call", "ms")
-    
     val M_ROUND_TRIP_LATENCY_MS: MeasureLong = MeasureLong.create("round_trip_latency", "The latency of a full server<->probe round trip", "ms")
 
     init()
