@@ -680,6 +680,7 @@
                                 <exclude>nlpcraft-examples/minecraft-mod/.gradle/**/*</exclude>
                                 <exclude>nlpcraft-examples/minecraft-mod/gradle/wrapper/gradle-wrapper.jar</exclude>
                                 <exclude>nlpcraft-examples/minecraft-mod/assets/nlpcraft-example-minecraft-mod-1.0.jar</exclude>
+                                <exclude>DISCLAIMER-WIP</exclude>
                             </excludes>
                             <numUnapprovedLicenses>0</numUnapprovedLicenses>
                         </configuration>
