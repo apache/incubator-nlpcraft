@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.examples.weather.darksky;
+package org.apache.nlpcraft.examples.weather.openweathermap;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -48,17 +48,20 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 /**
- * Dark Sky API weather provider. See https://darksky.net/dev/docs#overview for details.
+ * OpenWeather API weather provider. See https://openweathermap.org/api for details.
  */
-public class DarkSkyService {
+public class OpenWeatherService {
     // GSON response type.
     private static final Type TYPE_RESP = new TypeToken<HashMap<String, Object>>() {}.getType();
 
     // Access key.
     private final String key;
 
-    // Maximum days in seconds.
-    private final int maxDaysSecs;
+    // Maximum days (looking backwards) in seconds.
+    private final int maxDaysBackSecs;
+
+    // Maximum days (looking forwards) in seconds.
+    private final int maxDaysForwardSecs;
 
     // HTTP client instance.
     private final CloseableHttpClient httpClient;
@@ -68,18 +71,18 @@ public class DarkSkyService {
 
     // Date formatter.
     private static final DateTimeFormatter FMT =
-        DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss").withZone(ZoneId.systemDefault());
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss").withZone(ZoneId.systemDefault());
 
     // Can be configured.
     private final ExecutorService pool = NCUtils.mkThreadPool(
-        "darksky",
-        Runtime.getRuntime().availableProcessors() * 8
+            "openweather",
+            Runtime.getRuntime().availableProcessors() * 8
     );
 
     /**
      *
      */
-    private static final Logger log = LoggerFactory.getLogger(DarkSkyService.class);
+    private static final Logger log = LoggerFactory.getLogger(OpenWeatherService.class);
 
     /**
      *
@@ -88,12 +91,12 @@ public class DarkSkyService {
         int code = resp.getStatusLine().getStatusCode();
 
         if (resp.getEntity() == null)
-            throw new DarkSkyException(String.format("Unexpected empty response [code=%d]", code));
+            throw new OpenWeatherMapException(String.format("Unexpected empty response [code=%d]", code));
 
         String js = EntityUtils.toString(resp.getEntity());
 
         if (code != 200)
-            throw new DarkSkyException(String.format("Unexpected response [code=%d, text=%s]", code, js));
+            throw new OpenWeatherMapException(String.format("Unexpected response [code=%d, text=%s]", code, js));
 
         return js;
     };
@@ -102,11 +105,13 @@ public class DarkSkyService {
      * Constructor.
      *
      * @param key  Service key.
-     * @param maxDays Max days configuration value.
+     * @param maxDaysBack Max days (looking back) configuration value.
+     * @param maxDaysForward Max days (looking forward) configuration value.
      */
-    public DarkSkyService(String key, int maxDays) {
+    public OpenWeatherService(String key, int maxDaysBack, int maxDaysForward) {
         this.key = key;
-        this.maxDaysSecs = maxDays * 24 * 60 * 60;
+        this.maxDaysBackSecs = maxDaysBack * 24 * 60 * 60;
+        this.maxDaysForwardSecs = maxDaysForward * 24 * 60 * 60;
         this.httpClient = HttpClients.createDefault();
     }
 
@@ -131,10 +136,11 @@ public class DarkSkyService {
      * @param d Date.
      * @return
      */
-    private Map<String, Object> get(double lat, double lon, Instant d) {
+    private Map<String, Object> get(double lat, double lon, long d) {
+
         return get(
-            "https://api.darksky.net/forecast/" + key + '/' + lat + ',' + lon + ',' + FMT.format(d) +
-                "?exclude=currently,minutely,hourly,alerts,flags?lang=en"
+                "https://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + lon + "&dt=" + d +
+                        "&exclude=current,minutely,hourly,daily,alerts&appid=" + key
         );
     }
 
@@ -155,7 +161,7 @@ public class DarkSkyService {
         catch (Exception e) {
             e.printStackTrace(System.err);
 
-            throw new DarkSkyException("Unable to answer due to weather data provider error.");
+            throw new OpenWeatherMapException("Unable to answer due to weather data provider error.");
         }
         finally {
             get.releaseConnection();
@@ -163,53 +169,72 @@ public class DarkSkyService {
     }
 
     /**
-     * See https://darksky.net/dev/docs#response-format to extract fields.
+     * See https://openweathermap.org/api/one-call-api#hist_parameter to extract fields.
      *
      * @param lat Latitude.
      * @param lon Longitude.
      * @param from From date.
      * @param to To date.
      * @return List of REST call results.
-     * @throws DarkSkyException Thrown in case of any provider errors.
+     * @throws OpenWeatherMapException Thrown in case of any provider errors.
      */
-    public List<Map<String, Object>> getTimeMachine(double lat, double lon, Instant from, Instant to) throws DarkSkyException {
+    public List<Map<String, Object>> getTimeMachine(double lat, double lon, Instant from, Instant to) throws OpenWeatherMapException {
         assert from != null;
         assert to != null;
 
-        log.debug("DarkSky time machine API call [lat={}, lon={}, from={}, to={}]", lat, lon, from, to);
+        log.debug("OpenWeather time machine API call [lat={}, lon={}, from={}, to={}]", lat, lon, from, to);
 
-        if (Duration.between(from, to).get(SECONDS) > maxDaysSecs)
-            throw new DarkSkyException(String.format("Request period is too long [from=%s, to=%s]", from, to));
+        Instant now = Instant.now();
+        Long forwardSeconds = to.getEpochSecond() - now.getEpochSecond();
+        Long backSeconds = now.getEpochSecond() - from.getEpochSecond();
+
+        if (Duration.between(from, to).get(SECONDS) > maxDaysForwardSecs && forwardSeconds > 0)
+            throw new OpenWeatherMapException(String.format("Forward Request period is too long [from=%s, to=%s]", from, to));
+
+        if (Duration.between(from, to).get(SECONDS) > maxDaysBackSecs && backSeconds > 0 && to.getEpochSecond() <= now.getEpochSecond())
+            throw new OpenWeatherMapException(String.format("Backward Request period is too long [from=%s, to=%s]", from, to));
 
         long durMs = to.toEpochMilli() - from.toEpochMilli();
 
         int n = (int) (durMs / 86400000 + (durMs % 86400000 == 0 ? 0 : 1));
 
         return IntStream.range(0, n).
-            mapToObj(shift -> pool.submit(() -> Pair.of(shift, get(lat, lon, from.plus(shift, DAYS))))).
-            map(p -> {
-                try {
-                    return p.get();
-                }
-                catch (ExecutionException | InterruptedException e) {
-                    throw new DarkSkyException("Error executing weather request.", e);
-                }
-            }).
-            sorted(Comparator.comparing(Pair::getLeft)).
-            map(Pair::getRight).
-            collect(Collectors.toList());
+                mapToObj(shift -> pool.submit(() -> Pair.of(shift, get(lat, lon, from.plus(shift, DAYS).getEpochSecond())))).
+                map(p -> {
+                    try {
+                        return p.get();
+                    }
+                    catch (ExecutionException | InterruptedException e) {
+                        throw new OpenWeatherMapException("Error executing weather request.", e);
+                    }
+                }).
+                sorted(Comparator.comparing(Pair::getLeft)).
+                map(Pair::getRight).
+                collect(Collectors.toList());
     }
 
     /**
-     * See https://darksky.net/dev/docs#response-format to extract fields.
+     * See https://openweathermap.org/api/one-call-api#hist_parameter to extract fields.
      *
      * @param lat Latitude.
      * @param lon Longitude.
      * @return REST call result.
-     * @throws DarkSkyException Thrown in case of any provider errors.
+     * @throws OpenWeatherMapException Thrown in case of any provider errors.
      */
-    public Map<String, Object> getCurrent(double lat, double lon) throws DarkSkyException {
-        return get("https://api.darksky.net/forecast/" + key + '/' + lat + ',' + lon +
-            "?exclude=minutely,hourly,daily,alerts,flags?lang=en");
+    public Map<String, Object> getCurrent(double lat, double lon) throws OpenWeatherMapException {
+        return get("https://api.openweathermap.org/data/2.5/forecast?lat=" + lat + "&lon=" + lon +"&appid="+ key);
+    }
+
+    /**
+     * See https://openweathermap.org/api/one-call-api to extract fields.
+     *
+     * @param lat Latitude.
+     * @param lon Longitude.
+     * @param  dt Datetime
+     * @return REST call result.
+     * @throws OpenWeatherMapException Thrown in case of any provider errors.
+     */
+    public Map<String, Object> getCurrent(double lat, double lon, Instant dt) throws OpenWeatherMapException {
+        return get("https://api.openweathermap.org/data/2.5/forecast?lat=" + lat + "&lon=" + lon + "&dt=" + dt.getEpochSecond() + "&appid="+ key);
     }
 }
