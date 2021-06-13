@@ -46,8 +46,8 @@ import static java.time.temporal.ChronoUnit.DAYS;
  * Weather example data model.
  * <p>
  * This is a relatively complete weather service with JSON output and a non-trivial
- * intent matching logic. It uses Apple's Dark Sky API weather provider REST service for the actual
- * weather information (https://darksky.net/dev/docs#overview)
+ * intent matching logic. It uses OpenWeather API weather provider REST service for the actual
+ * weather information (https://openweathermap.org/api/one-call-api)
  * <p>
  * See 'README.md' file in the same folder for running and testing instructions.
  */
