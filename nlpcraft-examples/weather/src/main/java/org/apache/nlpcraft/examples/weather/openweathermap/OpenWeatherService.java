@@ -199,18 +199,18 @@ public class OpenWeatherService {
         int n = (int) (durMs / 86400000 + (durMs % 86400000 == 0 ? 0 : 1));
 
         return IntStream.range(0, n).
-                mapToObj(shift -> pool.submit(() -> Pair.of(shift, get(lat, lon, from.plus(shift, DAYS).getEpochSecond())))).
-                map(p -> {
-                    try {
-                        return p.get();
-                    }
-                    catch (ExecutionException | InterruptedException e) {
-                        throw new OpenWeatherMapException("Error executing weather request.", e);
-                    }
-                }).
-                sorted(Comparator.comparing(Pair::getLeft)).
-                map(Pair::getRight).
-                collect(Collectors.toList());
+            mapToObj(shift -> pool.submit(() -> Pair.of(shift, get(lat, lon, from.plus(shift, DAYS).getEpochSecond())))).
+            map(p -> {
+                try {
+                    return p.get();
+                }
+                catch (ExecutionException | InterruptedException e) {
+                    throw new OpenWeatherMapException("Error executing weather request.", e);
+                }
+            }).
+            sorted(Comparator.comparing(Pair::getLeft)).
+            map(Pair::getRight).
+            collect(Collectors.toList());
     }
 
     /**
