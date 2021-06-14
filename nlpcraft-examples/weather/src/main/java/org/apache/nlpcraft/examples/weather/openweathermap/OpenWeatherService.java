@@ -32,8 +32,6 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Type;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -69,14 +67,10 @@ public class OpenWeatherService {
     // GSON instance.
     private static final Gson GSON = new Gson();
 
-    // Date formatter.
-    private static final DateTimeFormatter FMT =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss").withZone(ZoneId.systemDefault());
-
     // Can be configured.
     private final ExecutorService pool = NCUtils.mkThreadPool(
-            "openweather",
-            Runtime.getRuntime().availableProcessors() * 8
+    "openweather",
+    Runtime.getRuntime().availableProcessors() * 8
     );
 
     /**
@@ -122,7 +116,7 @@ public class OpenWeatherService {
         pool.shutdown();
 
         try {
-            pool.awaitTermination(Long.MAX_VALUE, MILLISECONDS);
+            while (!pool.awaitTermination(Long.MAX_VALUE, MILLISECONDS)) {}
         }
         catch (InterruptedException e) {
             log.error("Error stopping pool.", e);
@@ -134,13 +128,14 @@ public class OpenWeatherService {
      * @param lat Latitude.
      * @param lon Longitude.
      * @param d Date.
-     * @return
+     * @return REST call result.
      */
     private Map<String, Object> get(double lat, double lon, long d) {
-
-        return get(
-                "https://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + lon + "&dt=" + d +
-                        "&exclude=current,minutely,hourly,daily,alerts&appid=" + key
+        return get("https://api.openweathermap.org/data/2.5/onecall?" +
+            "lat=" + lat +
+            "&lon=" + lon +
+            "&dt=" + d +
+            "&exclude=current,minutely,hourly,daily,alerts&appid=" + key
         );
     }
 
@@ -185,8 +180,8 @@ public class OpenWeatherService {
         log.debug("OpenWeather time machine API call [lat={}, lon={}, from={}, to={}]", lat, lon, from, to);
 
         Instant now = Instant.now();
-        Long forwardSeconds = to.getEpochSecond() - now.getEpochSecond();
-        Long backSeconds = now.getEpochSecond() - from.getEpochSecond();
+        long forwardSeconds = to.getEpochSecond() - now.getEpochSecond();
+        long backSeconds = now.getEpochSecond() - from.getEpochSecond();
 
         if (Duration.between(from, to).get(SECONDS) > maxDaysForwardSecs && forwardSeconds > 0)
             throw new OpenWeatherMapException(String.format("Forward Request period is too long [from=%s, to=%s]", from, to));
@@ -223,18 +218,5 @@ public class OpenWeatherService {
      */
     public Map<String, Object> getCurrent(double lat, double lon) throws OpenWeatherMapException {
         return get("https://api.openweathermap.org/data/2.5/forecast?lat=" + lat + "&lon=" + lon +"&appid="+ key);
-    }
-
-    /**
-     * See https://openweathermap.org/api/one-call-api to extract fields.
-     *
-     * @param lat Latitude.
-     * @param lon Longitude.
-     * @param  dt Datetime
-     * @return REST call result.
-     * @throws OpenWeatherMapException Thrown in case of any provider errors.
-     */
-    public Map<String, Object> getCurrent(double lat, double lon, Instant dt) throws OpenWeatherMapException {
-        return get("https://api.openweathermap.org/data/2.5/forecast?lat=" + lat + "&lon=" + lon + "&dt=" + dt.getEpochSecond() + "&appid="+ key);
     }
 }
