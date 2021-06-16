@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.examples.weather
+package org.apache.nlpcraft.examples.helloworld
 
 import org.apache.nlpcraft.model.tools.test.NCTestAutoModelValidator
 import org.junit.jupiter.api.{Assertions, Test}
@@ -23,11 +23,11 @@ import org.junit.jupiter.api.{Assertions, Test}
 /**
   * JUnit model validation.
   */
-class NCModelsValidationSpec {
+class NCModelValidationSpec {
     @Test
     def test(): Unit = {
         // Instruct auto-validator what models to test.
-        System.setProperty("NLPCRAFT_TEST_MODELS", "org.apache.nlpcraft.examples.weather.WeatherModel")
+        System.setProperty("NLPCRAFT_TEST_MODELS", "org.apache.nlpcraft.examples.helloworld.HelloWorldModel")
 
         // Start model auto-validator.
         Assertions.assertTrue(NCTestAutoModelValidator.isValid(),"See error logs above.")

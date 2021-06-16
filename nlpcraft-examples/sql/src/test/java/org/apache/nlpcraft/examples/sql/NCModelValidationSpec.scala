@@ -15,19 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.examples.echo
+package org.apache.nlpcraft.examples.sql
 
+import org.apache.nlpcraft.examples.sql.db.SqlServer
 import org.apache.nlpcraft.model.tools.test.NCTestAutoModelValidator
-import org.junit.jupiter.api.{Assertions, Test}
+import org.junit.jupiter.api.{AfterEach, Assertions, BeforeEach, Test}
 
 /**
   * JUnit model validation.
   */
-class NCModelsValidationSpec {
+class NCModelValidationSpec {
+    @BeforeEach
+    def before(): Unit = SqlServer.start()
+
+    @AfterEach
+    def after(): Unit = SqlServer.stop()
+
     @Test
     def test(): Unit = {
         // Instruct auto-validator what models to test.
-        System.setProperty("NLPCRAFT_TEST_MODELS", "org.apache.nlpcraft.examples.echo.EchoModel")
+        System.setProperty("NLPCRAFT_TEST_MODELS", "org.apache.nlpcraft.examples.sql.SqlModel")
 
         // Start model auto-validator.
         Assertions.assertTrue(NCTestAutoModelValidator.isValid(),"See error logs above.")
