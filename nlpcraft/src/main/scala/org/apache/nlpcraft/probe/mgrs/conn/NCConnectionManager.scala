@@ -32,8 +32,9 @@ import java.io.{EOFException, IOException, InterruptedIOException}
 import java.net.{InetAddress, NetworkInterface}
 import java.util
 import java.util.concurrent.CountDownLatch
-import java.util.{Properties, TimeZone}
+import java.util.{Collections, Properties, TimeZone}
 import scala.collection.mutable
+import scala.jdk.CollectionConverters.{ListHasAsScala, MapHasAsJava, SeqHasAsJava, SetHasAsScala}
 
 /**
   * Probe down/up link connection manager.
@@ -213,6 +214,28 @@ object NCConnectionManager extends NCService {
                         NCModelManager.getAllModels().map(wrapper => {
                             val mdl = wrapper.model
 
+                            val ctxWordElems = mdl.getElements.asScala.filter(_.isContextWordSupport)
+
+                            // TODO: validate: too many values, examples. missed them.
+                            val (
+                                values,
+                                samples
+                            ): (
+                                java.util.Map[String, java.util.Map[String, java.util.List[String]]],
+                                java.util.Map[String, java.util.List[String]]
+                            ) =
+                                if (ctxWordElems.isEmpty)
+                                    (Collections.emptyMap(), Collections.emptyMap())
+                                else {
+                                    (
+                                        ctxWordElems.map(e =>
+                                            e.getId ->
+                                                e.getValues.asScala.map(p => p.getName -> p.getSynonyms).toMap.asJava
+                                        ).toMap.asJava,
+                                        wrapper.samples.map(p => p._1 -> p._2.flatMap(p => p).asJava).toMap.asJava
+                                    )
+                                }
+
                             // Model already validated.
 
                             // util.HashSet created to avoid scala collections serialization error.
@@ -221,7 +244,9 @@ object NCConnectionManager extends NCService {
                                 mdl.getId,
                                 mdl.getName,
                                 mdl.getVersion,
-                                new util.HashSet[String](mdl.getEnabledBuiltInTokens)
+                                new util.HashSet[String](mdl.getEnabledBuiltInTokens),
+                                values,
+                                samples
                             )
                         })
                 ), cryptoKey)

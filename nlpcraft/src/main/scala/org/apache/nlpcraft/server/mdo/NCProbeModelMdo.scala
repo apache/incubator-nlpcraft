@@ -19,6 +19,12 @@ package org.apache.nlpcraft.server.mdo
 
 import org.apache.nlpcraft.server.mdo.impl._
 
+
+@NCMdoEntity(sql = false)
+case class NCModelMLConfigMdo(
+    @NCMdoField values: Map[String /*Element ID*/, Map[/*Value*/String, /*Synonym*/Seq[String]]],
+    @NCMdoField samples: Map[String /*Element ID*/, Seq[String]/*Samples*/]
+)
 /**
   * Probe model MDO.
   */
@@ -27,7 +33,8 @@ case class NCProbeModelMdo(
     @NCMdoField id: String,
     @NCMdoField name: String,
     @NCMdoField version: String,
-    @NCMdoField enabledBuiltInTokens: Set[String]
+    @NCMdoField enabledBuiltInTokens: Set[String],
+    @NCMdoField mlConfig: Option[NCModelMLConfigMdo]
 ) extends NCAnnotatedMdo[NCProbeModelMdo] {
     override def hashCode(): Int = s"$id$name".hashCode()
     

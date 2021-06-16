@@ -31,7 +31,7 @@ import org.apache.nlpcraft.common.version.NCVersion
 import org.apache.nlpcraft.common.{NCService, _}
 import org.apache.nlpcraft.probe.mgrs.NCProbeMessage
 import org.apache.nlpcraft.server.company.NCCompanyManager
-import org.apache.nlpcraft.server.mdo.{NCCompanyMdo, NCProbeMdo, NCProbeModelMdo, NCUserMdo}
+import org.apache.nlpcraft.server.mdo.{NCCompanyMdo, NCModelMLConfigMdo, NCProbeMdo, NCProbeModelMdo, NCUserMdo}
 import org.apache.nlpcraft.server.nlp.enrichers.NCServerEnrichmentManager
 import org.apache.nlpcraft.server.proclog.NCProcessLogManager
 import org.apache.nlpcraft.server.query.NCQueryManager
@@ -45,7 +45,7 @@ import java.util.Collections
 import java.util.concurrent.ConcurrentHashMap
 import scala.collection.mutable
 import scala.concurrent.{ExecutionContext, Future, Promise}
-import scala.jdk.CollectionConverters.SetHasAsScala
+import scala.jdk.CollectionConverters.{ListHasAsScala, MapHasAsScala, SetHasAsScala}
 import scala.util.{Failure, Success}
 
 /**
@@ -613,25 +613,40 @@ object NCProbeManager extends NCService {
                             String,
                             String,
                             String,
-                            java.util.Set[String]
+                            java.util.Set[String],
+                            java.util.Map[String, java.util.Map[String, java.util.List[String]]],
+                            java.util.Map[String, java.util.List[String]]
                         )]]("PROBE_MODELS").
                         map {
                             case (
                                 mdlId,
                                 mdlName,
                                 mdlVer,
-                                enabledBuiltInToks
+                                enabledBuiltInToks,
+                                values,
+                                samples
                             ) =>
                                 require(mdlId != null)
                                 require(mdlName != null)
                                 require(mdlVer != null)
                                 require(enabledBuiltInToks != null)
+                                require(values.isEmpty ^ samples.isEmpty)
 
                                 NCProbeModelMdo(
                                     id = mdlId,
                                     name = mdlName,
                                     version = mdlVer,
-                                    enabledBuiltInTokens = enabledBuiltInToks.asScala.toSet
+                                    enabledBuiltInTokens = enabledBuiltInToks.asScala.toSet,
+                                    mlConfig =
+                                        if (!values.isEmpty)
+                                            Some(
+                                                NCModelMLConfigMdo(
+                                                    values = values.asScala.map(p => p._1 -> p._2.asScala.map(p => p._1 -> p._2.asScala.toSeq).toMap).toMap,
+                                                    samples = samples.asScala.map(p => p._1 -> p._2.asScala.toSeq).toMap
+                                                )
+                                            )
+                                        else
+                                            None
                                 )
                         }.toSet
 

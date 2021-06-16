@@ -272,7 +272,7 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
 
                 logger.info(s"New request received:\n$tbl")
 
-                val enabledBuiltInToks = NCProbeManager.getModel(mdlId, span).enabledBuiltInTokens
+                val mdl = NCProbeManager.getModel(mdlId, span)
 
                 @throws[NCE]
                 def unzipProperties(gzipOpt: Option[String]): Option[JavaMeta] =
@@ -288,7 +288,7 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
                     company,
                     mdlId,
                     txt0,
-                    NCServerEnrichmentManager.enrichPipeline(srvReqId, txt0, enabledBuiltInToks),
+                    NCServerEnrichmentManager.enrichPipeline(srvReqId, txt0, mdl.enabledBuiltInTokens, mdl.mlConfig),
                     usrAgent,
                     rmtAddr,
                     data,

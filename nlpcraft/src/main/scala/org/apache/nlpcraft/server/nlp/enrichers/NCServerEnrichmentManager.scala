@@ -26,6 +26,7 @@ import org.apache.nlpcraft.common.pool.NCThreadPoolManager
 import org.apache.nlpcraft.common.{NCService, _}
 import org.apache.nlpcraft.server.ignite.NCIgniteHelpers._
 import org.apache.nlpcraft.server.ignite.NCIgniteInstance
+import org.apache.nlpcraft.server.mdo.NCModelMLConfigMdo
 import org.apache.nlpcraft.server.nlp.core.{NCNlpNerEnricher, NCNlpServerManager}
 import org.apache.nlpcraft.server.nlp.enrichers.basenlp.NCBaseNlpEnricher
 import org.apache.nlpcraft.server.nlp.enrichers.coordinate.NCCoordinatesEnricher
@@ -90,6 +91,7 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
       * @param srvReqId Server request ID.
       * @param normTxt Normalized text.
       * @param enabledBuiltInToks Enabled built-in tokens.
+      * @param mlConf  Machine learning configuration.
       * @param parent Optional parent span.
       * @return
       */
@@ -97,9 +99,11 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
         srvReqId: String,
         normTxt: String,
         enabledBuiltInToks: Set[String],
-        parent: Span = null): NCNlpSentence =
+        mlConf: Option[NCModelMLConfigMdo],
+        parent: Span = null
+    ): NCNlpSentence =
         startScopedSpan("process", parent, "srvReqId" -> srvReqId, "txt" -> normTxt) { span =>
-            val s = new NCNlpSentence(srvReqId, normTxt, enabledBuiltInToks)
+            val s = new NCNlpSentence(srvReqId, normTxt, enabledBuiltInToks, mlConf)
 
             // Server-side enrichment pipeline.
             // NOTE: order of enrichers is IMPORTANT.
@@ -134,6 +138,7 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
       * @param srvReqId Server request ID.
       * @param txt Input text.
       * @param enabledBuiltInToks Set of enabled built-in token IDs.
+      * @param mlConf Machine learning configuration.
       * @param parent Optional parent span.
       */
     @throws[NCE]
@@ -141,7 +146,9 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
         srvReqId: String,
         txt: String,
         enabledBuiltInToks: Set[String],
-        parent: Span = null): NCNlpSentence = {
+        mlConf: Option[NCModelMLConfigMdo],
+        parent: Span = null
+    ): NCNlpSentence = {
         startScopedSpan("enrichPipeline", parent, "srvReqId" -> srvReqId, "txt" -> txt) { span =>
             val normTxt = NCPreProcessManager.normalize(txt, spellCheck = true, span)
 
@@ -159,9 +166,9 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
                             h.sentence
                         }
                         else
-                            process(srvReqId, normTxt, enabledBuiltInToks, span)
+                            process(srvReqId, normTxt, enabledBuiltInToks, mlConf, span)
                     case None =>
-                        process(srvReqId, normTxt, enabledBuiltInToks, span)
+                        process(srvReqId, normTxt, enabledBuiltInToks, mlConf, span)
                 }
             }
         }
