@@ -349,16 +349,25 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
 
                         @Override
                         public Optional<Boolean> isPermutateSynonyms() {
-                            return nvl(js.isPermutateSynonyms(), proxy.isPermutateSynonyms());
+                            return nvlOpt(js.isPermutateSynonyms(), proxy.isPermutateSynonyms());
                         }
 
                         @Override
                         public Optional<Boolean> isSparse() {
-                            return nvl(js.isSparse(), proxy.isSparse());
+                            return nvlOpt(js.isSparse(), proxy.isSparse());
                         }
 
-                        private<T> Optional<T> nvl(T t, T dflt) {
+                        @Override
+                        public boolean isContextWordSupport() {
+                            return nvlMandatory(js.isContextWordSupport(), NCElement.super.isContextWordSupport());
+                        }
+
+                        private<T> Optional<T> nvlOpt(T t, T dflt) {
                             return Optional.of(t != null ? t : dflt);
+                        }
+
+                        private<T> T nvlMandatory(T t, T dflt) {
+                            return t != null ? t : dflt;
                         }
                     };
             }).collect(Collectors.toSet());
