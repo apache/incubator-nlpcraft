@@ -46,7 +46,7 @@
             <name>Aaron Radzinski</name>
             <email>aradzinski@apache.org</email>
             <organization>apache</organization>
-            <organizationUrl>http://apache.org</organizationUrl>
+            <organizationUrl>https://apache.org</organizationUrl>
             <roles>
                 <role>architect</role>
             </roles>
@@ -114,8 +114,8 @@
         <maven.surefire.plugin.ver>2.22.1</maven.surefire.plugin.ver>
         <stringmetric.ver>0.27.4</stringmetric.ver>
         <gson.ver>2.8.5</gson.ver>
-        <jackson.ver>2.11.2</jackson.ver>
-        <jackson.yaml.ver>2.11.2</jackson.yaml.ver>
+        <jackson.ver>2.11.3</jackson.ver>
+        <jackson.yaml.ver>2.11.3</jackson.yaml.ver>
         <apache.math.ver>3.6.1</apache.math.ver>
         <apache.common.lang.ver>3.8.1</apache.common.lang.ver>
         <apache.httpcomponents.ver>4.5.7</apache.httpcomponents.ver>
@@ -615,7 +615,7 @@
             <repositories>
                 <repository>
                     <id>GridGain External Repository</id>
-                    <url>http://www.gridgainsystems.com/nexus/content/repositories/external</url>
+                    <url>https://www.gridgainsystems.com/nexus/content/repositories/external</url>
                 </repository>
             </repositories>
 

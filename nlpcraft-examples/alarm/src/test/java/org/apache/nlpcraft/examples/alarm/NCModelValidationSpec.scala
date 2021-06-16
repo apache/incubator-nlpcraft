@@ -23,7 +23,7 @@ import org.junit.jupiter.api.{Assertions, Test}
 /**
   * JUnit model validation.
   */
-class NCModelsValidationSpec {
+class NCModelValidationSpec {
     @Test
     def test(): Unit = {
         // Instruct auto-validator what models to test.
