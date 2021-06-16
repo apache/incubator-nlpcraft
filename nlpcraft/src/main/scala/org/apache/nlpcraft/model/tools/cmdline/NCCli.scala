@@ -407,9 +407,10 @@ object NCCli extends NCCliBase {
         val srvArgs = mutable.ArrayBuffer.empty[String]
 
         srvArgs += JAVA
-        srvArgs ++= jvmOpts
 
         JVM_OPTS_RT_WARNS.foreach(srvArgs += _)
+
+        srvArgs ++= jvmOpts
 
         srvArgs += "-DNLPCRAFT_ANSI_COLOR_DISABLED=true" // No ANSI colors for text log output to the file.
         srvArgs += "-Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2" // Fix for https://bugs.openjdk.java.net/browse/JDK-8213202
@@ -582,9 +583,10 @@ object NCCli extends NCCliBase {
         val jvmArgs = mutable.ArrayBuffer.empty[String]
 
         jvmArgs += JAVA
-        jvmArgs ++= jvmOpts
 
         JVM_OPTS_RT_WARNS.foreach(jvmArgs += _)
+
+        jvmArgs ++= jvmOpts
 
         jvmArgs += "-Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2" // Fix for https://bugs.openjdk.java.net/browse/JDK-8213202
 
@@ -664,9 +666,10 @@ object NCCli extends NCCliBase {
         val prbArgs = mutable.ArrayBuffer.empty[String]
 
         prbArgs += JAVA
-        prbArgs ++= jvmOpts
 
         JVM_OPTS_RT_WARNS.foreach(prbArgs += _)
+
+        prbArgs ++= jvmOpts
 
         prbArgs += "-DNLPCRAFT_ANSI_COLOR_DISABLED=true" // No ANSI colors for text log output to the file.
         prbArgs += "-Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2" // Fix for https://bugs.openjdk.java.net/browse/JDK-8213202
@@ -1643,9 +1646,10 @@ object NCCli extends NCCliBase {
         val jvmArgs = mutable.ArrayBuffer.empty[String]
 
         jvmArgs += JAVA
-        jvmArgs ++= jvmOpts
 
         JVM_OPTS_RT_WARNS.foreach(jvmArgs += _)
+
+        jvmArgs ++= jvmOpts
 
         if (!NCAnsi.isEnabled)
             jvmArgs += "-DNLPCRAFT_ANSI_COLOR_DISABLED=true"
@@ -2801,7 +2805,7 @@ object NCCli extends NCCliBase {
      */
     private def processParameters(cmd: Command, args: Seq[String]): Seq[Argument] =
         args.map { arg =>
-            val parts = arg.split("=")
+            val parts = arg.split("=", 2)
 
             def mkError() = new IllegalArgumentException(s"Invalid parameter: ${c(arg)}, type $C'help --cmd=${cmd.name}'$RST to get help.")
 

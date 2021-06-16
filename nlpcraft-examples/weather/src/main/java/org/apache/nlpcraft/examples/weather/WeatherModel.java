@@ -59,7 +59,7 @@ public class WeatherModel extends NCModelFileAdapter {
     // Please register your own account at https://openweathermap.org/api and
     // replace this demo token with your own.
     // We are using the One Call API (https://openweathermap.org/api/one-call-api) in this example
-    private OpenWeatherMapService openWeather;
+    private final OpenWeatherMapService openWeather;
 
     // Geo manager.
     private final GeoManager geoMrg = new GeoManager();
@@ -230,7 +230,12 @@ public class WeatherModel extends NCModelFileAdapter {
         // Load model from external JSON file on classpath.
         super("weather_model.json");
 
+        // Try system variable first.
         String apiKey = System.getProperty(OWM_API_KEY);
+
+        if (apiKey == null)
+            // Try environment variable next.
+            apiKey = System.getenv(OWM_API_KEY);
 
         if (apiKey == null)
             throw new OpenWeatherMapException(String.format("Provide OpenWeatherMap API key using '-D%s=<your-key-here>' system property.", OWM_API_KEY));
