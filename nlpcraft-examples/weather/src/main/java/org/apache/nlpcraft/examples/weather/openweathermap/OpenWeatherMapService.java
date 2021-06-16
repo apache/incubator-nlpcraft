@@ -48,7 +48,7 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 /**
  * OpenWeather API weather provider. See https://openweathermap.org/api for details.
  */
-public class OpenWeatherService {
+public class OpenWeatherMapService {
     // GSON response type.
     private static final Type TYPE_RESP = new TypeToken<HashMap<String, Object>>() {}.getType();
 
@@ -76,7 +76,7 @@ public class OpenWeatherService {
     /**
      *
      */
-    private static final Logger log = LoggerFactory.getLogger(OpenWeatherService.class);
+    private static final Logger log = LoggerFactory.getLogger(OpenWeatherMapService.class);
 
     /**
      *
@@ -102,7 +102,7 @@ public class OpenWeatherService {
      * @param maxDaysBack Max days (looking back) configuration value.
      * @param maxDaysForward Max days (looking forward) configuration value.
      */
-    public OpenWeatherService(String key, int maxDaysBack, int maxDaysForward) {
+    public OpenWeatherMapService(String key, int maxDaysBack, int maxDaysForward) {
         this.key = key;
         this.maxDaysBackSecs = maxDaysBack * 24 * 60 * 60;
         this.maxDaysForwardSecs = maxDaysForward * 24 * 60 * 60;

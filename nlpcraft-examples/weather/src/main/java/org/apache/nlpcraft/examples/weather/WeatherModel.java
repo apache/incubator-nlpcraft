@@ -20,7 +20,7 @@ package org.apache.nlpcraft.examples.weather;
 import com.google.gson.Gson;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.nlpcraft.examples.weather.openweathermap.OpenWeatherMapException;
-import org.apache.nlpcraft.examples.weather.openweathermap.OpenWeatherService;
+import org.apache.nlpcraft.examples.weather.openweathermap.OpenWeatherMapService;
 import org.apache.nlpcraft.utils.keycdn.GeoManager;
 import org.apache.nlpcraft.utils.keycdn.beans.GeoDataBean;
 import org.apache.nlpcraft.model.NCIntent;
@@ -53,10 +53,13 @@ import static java.time.temporal.ChronoUnit.DAYS;
  */
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class WeatherModel extends NCModelFileAdapter {
+    /* System property for OpenWeatherMap API key. */
+    public final String OWM_API_KEY = "OWM_API_KEY";
+
     // Please register your own account at https://openweathermap.org/api and
     // replace this demo token with your own.
     // We are using the One Call API (https://openweathermap.org/api/one-call-api) in this example
-    private final OpenWeatherService openWeather = new OpenWeatherService("<enter-your-key-here>", 5, 7);
+    private OpenWeatherMapService openWeather;
 
     // Geo manager.
     private final GeoManager geoMrg = new GeoManager();
@@ -226,6 +229,13 @@ public class WeatherModel extends NCModelFileAdapter {
     public WeatherModel() {
         // Load model from external JSON file on classpath.
         super("weather_model.json");
+
+        String apiKey = System.getProperty(OWM_API_KEY);
+
+        if (apiKey == null)
+            throw new OpenWeatherMapException(String.format("Provide OpenWeatherMap API key using '-D%s=<your-key-here>' system property.", OWM_API_KEY));
+
+        openWeather = new OpenWeatherMapService(apiKey, 5, 7);
     }
 
     @Override
