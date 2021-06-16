@@ -116,7 +116,8 @@ public class OpenWeatherService {
         pool.shutdown();
 
         try {
-            while (!pool.awaitTermination(Long.MAX_VALUE, MILLISECONDS)) {}
+            //noinspection ResultOfMethodCallIgnored
+            pool.awaitTermination(Long.MAX_VALUE, MILLISECONDS);
         }
         catch (InterruptedException e) {
             log.error("Error stopping pool.", e);

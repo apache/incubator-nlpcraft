@@ -51,6 +51,7 @@ import static java.time.temporal.ChronoUnit.DAYS;
  * <p>
  * See 'README.md' file in the same folder for running and testing instructions.
  */
+@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class WeatherModel extends NCModelFileAdapter {
     // Please register your own account at https://openweathermap.org/api and
     // replace this demo token with your own.

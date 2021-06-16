@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.examples.weather.openweathermap;
 
 /**
- * OpenWeatherMapException exception.
+ * Open Weather Map exception.
  */
 public class OpenWeatherMapException extends RuntimeException {
     /**
