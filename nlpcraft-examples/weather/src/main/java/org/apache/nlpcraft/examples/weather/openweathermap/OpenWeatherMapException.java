@@ -15,28 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.examples.weather.darksky;
+package org.apache.nlpcraft.examples.weather.openweathermap;
 
 /**
- * DarkSkyException exception.
+ * Open Weather Map exception.
  */
-public class DarkSkyException extends RuntimeException {
+public class OpenWeatherMapException extends RuntimeException {
     /**
      * Creates new exception.
      *
      * @param msg Error message.
      */
-    public DarkSkyException(String msg) {
+    public OpenWeatherMapException(String msg) {
         super(msg);
     }
 
     /**
      * Creates new exceptions.
-     * 
+     *
      * @param msg Error message.
      * @param cause Optional cause.
      */
-    public DarkSkyException(String msg, Throwable cause) {
+    public OpenWeatherMapException(String msg, Throwable cause) {
         super(msg, cause);
     }
 }

@@ -19,8 +19,8 @@ package org.apache.nlpcraft.examples.weather;
 
 import com.google.gson.Gson;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.nlpcraft.examples.weather.darksky.DarkSkyException;
-import org.apache.nlpcraft.examples.weather.darksky.DarkSkyService;
+import org.apache.nlpcraft.examples.weather.openweathermap.OpenWeatherMapException;
+import org.apache.nlpcraft.examples.weather.openweathermap.OpenWeatherMapService;
 import org.apache.nlpcraft.utils.keycdn.GeoManager;
 import org.apache.nlpcraft.utils.keycdn.beans.GeoDataBean;
 import org.apache.nlpcraft.model.NCIntent;
@@ -46,21 +46,27 @@ import static java.time.temporal.ChronoUnit.DAYS;
  * Weather example data model.
  * <p>
  * This is a relatively complete weather service with JSON output and a non-trivial
- * intent matching logic. It uses Apple's Dark Sky API weather provider REST service for the actual
- * weather information (https://darksky.net/dev/docs#overview)
+ * intent matching logic. It uses OpenWeather API weather provider REST service for the actual
+ * weather information (https://openweathermap.org/api/one-call-api)
  * <p>
  * See 'README.md' file in the same folder for running and testing instructions.
  */
+@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class WeatherModel extends NCModelFileAdapter {
-    // Please register your own account at https://darksky.net/dev/docs/libraries and
+    /* System property for OpenWeatherMap API key. */
+    public final String OWM_API_KEY = "OWM_API_KEY";
+
+    // Please register your own account at https://openweathermap.org/api and
     // replace this demo token with your own.
-    private final DarkSkyService darkSky = new DarkSkyService("097e1aad75b22b88f494cf49211975aa", 31);
+    // We are using the One Call API (https://openweathermap.org/api/one-call-api) in this example
+    private final OpenWeatherMapService openWeather;
 
     // Geo manager.
     private final GeoManager geoMrg = new GeoManager();
 
     // Default shift in days for history and forecast.
-    private static final int DAYS_SHIFT = 5;
+    private static final int DAYS_SHIFT_BACK = 5;
+    private static final int DAYS_SHIFT_FORWARD = 7;
 
     // GSON instance.
     private static final Gson GSON = new Gson();
@@ -168,7 +174,7 @@ public class WeatherModel extends NCModelFileAdapter {
         "Is there any possibility of rain in Delhi?",
         "Is it raining now?",
         "Is there any chance of rain today?",
-        "Was it raining in Beirut last week?",
+        "Was it raining in Beirut three days ago?",
         "How about yesterday?"
     })
     public NCResult onMatch(
@@ -188,9 +194,9 @@ public class WeatherModel extends NCModelFileAdapter {
             Instant to = now;
 
             if (indToksOpt.stream().anyMatch(tok -> tok.getId().equals("wt:hist")))
-                from = from.minus(DAYS_SHIFT, DAYS);
+                from = from.minus(DAYS_SHIFT_BACK, DAYS);
             else if (indToksOpt.stream().anyMatch(tok -> tok.getId().equals("wt:fcast")))
-                to = from.plus(DAYS_SHIFT, DAYS);
+                to = from.plus(DAYS_SHIFT_FORWARD, DAYS);
 
             if (dateTokOpt.isPresent()) { // Date token overrides any indicators.
                 NCToken dateTok = dateTokOpt.get();
@@ -204,9 +210,9 @@ public class WeatherModel extends NCModelFileAdapter {
             double lat = latLon.getLeft();
             double lon = latLon.getRight();
 
-            return NCResult.json(GSON.toJson(from == to ? darkSky.getCurrent(lat, lon) : darkSky.getTimeMachine(lat, lon, from, to)));
+            return NCResult.json(GSON.toJson(from == to ? openWeather.getCurrent(lat, lon) : openWeather.getTimeMachine(lat, lon, from, to)));
         }
-        catch (DarkSkyException e) {
+        catch (OpenWeatherMapException e) {
             throw new NCRejection(e.getLocalizedMessage());
         }
         catch (NCRejection e) {
@@ -223,10 +229,22 @@ public class WeatherModel extends NCModelFileAdapter {
     public WeatherModel() {
         // Load model from external JSON file on classpath.
         super("weather_model.json");
+
+        // Try system variable first.
+        String apiKey = System.getProperty(OWM_API_KEY);
+
+        if (apiKey == null)
+            // Try environment variable next.
+            apiKey = System.getenv(OWM_API_KEY);
+
+        if (apiKey == null)
+            throw new OpenWeatherMapException(String.format("Provide OpenWeatherMap API key using '-D%s=<your-key-here>' system property.", OWM_API_KEY));
+
+        openWeather = new OpenWeatherMapService(apiKey, 5, 7);
     }
 
     @Override
     public void onDiscard() {
-        darkSky.stop();
+        openWeather.stop();
     }
 }

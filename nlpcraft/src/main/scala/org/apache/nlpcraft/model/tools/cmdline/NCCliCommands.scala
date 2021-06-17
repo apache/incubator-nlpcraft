@@ -53,7 +53,7 @@ private [cmdline] case class Command(
      * @return
      */
     def findParameterByNameOpt(name: String): Option[Parameter] =
-        params.find(_.names.contains(name))
+        params.find(_.expandedNames.contains(name))
 
     /**
      *
@@ -86,7 +86,9 @@ private [cmdline] case class Parameter(
     optional: Boolean = false, // Mandatory by default.
     synthetic: Boolean = false,
     desc: String
-)
+) {
+    lazy val expandedNames: Seq[String] = (names ++ names.map(_.toLowerCase)).distinct
+}
 
 private [cmdline] object NCCliCommands {
     private final lazy val SCRIPT_NAME = U.sysEnv("NLPCRAFT_CLI_SCRIPT").getOrElse(s"nlpcraft.${if (SystemUtils.IS_OS_UNIX) "sh" else "cmd"}")
