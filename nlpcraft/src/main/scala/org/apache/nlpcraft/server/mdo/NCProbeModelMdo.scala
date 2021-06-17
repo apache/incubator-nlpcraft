@@ -22,8 +22,10 @@ import org.apache.nlpcraft.server.mdo.impl._
 
 @NCMdoEntity(sql = false)
 case class NCModelMLConfigMdo(
-    @NCMdoField values: Map[String /*Element ID*/, Map[/*Value*/String, /*Synonym*/Seq[String]]],
-    @NCMdoField samples: Map[String /*Element ID*/, Seq[String]/*Samples*/]
+    @NCMdoField probeId: String,
+    @NCMdoField modelId: String,
+    @NCMdoField values: Map[String /*Element ID*/, Map[/*Value*/String, /*Synonym*/Set[String]]],
+    @NCMdoField samples: Set[String]
 )
 /**
   * Probe model MDO.

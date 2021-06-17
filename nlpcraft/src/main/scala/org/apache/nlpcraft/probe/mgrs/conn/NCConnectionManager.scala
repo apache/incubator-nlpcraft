@@ -34,7 +34,7 @@ import java.util
 import java.util.concurrent.CountDownLatch
 import java.util.{Collections, Properties, TimeZone}
 import scala.collection.mutable
-import scala.jdk.CollectionConverters.{ListHasAsScala, MapHasAsJava, SeqHasAsJava, SetHasAsScala}
+import scala.jdk.CollectionConverters.{ListHasAsScala, MapHasAsJava, SetHasAsJava, SetHasAsScala}
 
 /**
   * Probe down/up link connection manager.
@@ -221,18 +221,22 @@ object NCConnectionManager extends NCService {
                                 values,
                                 samples
                             ): (
-                                java.util.Map[String, java.util.Map[String, java.util.List[String]]],
-                                java.util.Map[String, java.util.List[String]]
+                                java.util.Map[String, java.util.Map[String, java.util.Set[String]]],
+                                java.util.Set[String]
                             ) =
                                 if (ctxWordElems.isEmpty)
-                                    (Collections.emptyMap(), Collections.emptyMap())
+                                    (Collections.emptyMap(), Collections.emptySet())
                                 else {
                                     (
                                         ctxWordElems.map(e =>
                                             e.getId ->
-                                                e.getValues.asScala.map(p => p.getName -> p.getSynonyms).toMap.asJava
+                                                e.getValues.asScala.map(p => p.getName -> {
+                                                    val set: util.Set[String] = new util.HashSet(p.getSynonyms)
+
+                                                    set
+                                                }).toMap.asJava
                                         ).toMap.asJava,
-                                        wrapper.samples.map(p => p._1 -> p._2.flatMap(p => p).asJava).toMap.asJava
+                                        wrapper.samples.flatMap(_._2.flatMap(p => p)).asJava
                                     )
                                 }
 

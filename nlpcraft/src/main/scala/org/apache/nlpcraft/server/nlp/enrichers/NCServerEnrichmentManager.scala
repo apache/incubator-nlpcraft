@@ -30,6 +30,7 @@ import org.apache.nlpcraft.server.mdo.NCModelMLConfigMdo
 import org.apache.nlpcraft.server.nlp.core.{NCNlpNerEnricher, NCNlpServerManager}
 import org.apache.nlpcraft.server.nlp.enrichers.basenlp.NCBaseNlpEnricher
 import org.apache.nlpcraft.server.nlp.enrichers.coordinate.NCCoordinatesEnricher
+import org.apache.nlpcraft.server.nlp.enrichers.ctxword.NCContextWordEnricher
 import org.apache.nlpcraft.server.nlp.enrichers.date.NCDateEnricher
 import org.apache.nlpcraft.server.nlp.enrichers.geo.NCGeoEnricher
 import org.apache.nlpcraft.server.nlp.enrichers.numeric.NCNumericEnricher
@@ -125,6 +126,8 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
                     NCCoordinatesEnricher.enrich(s, span)
             }
 
+            NCContextWordEnricher.enrich(s, span)
+
             ner(s, enabledBuiltInToks)
 
             prepareAsciiTable(s).info(logger, Some(s"Sentence enriched: '$normTxt'"))
@@ -160,12 +163,13 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
             catching(wrapIE) {
                 cache(normTxt) match {
                     case Some(h) =>
-                        if (h.enabledBuiltInTokens == normEnabledBuiltInToks) {
-                            prepareAsciiTable(h.sentence).info(logger, Some(s"Sentence enriched (from cache): '$normTxt'"))
-
-                            h.sentence
-                        }
-                        else
+                        // TODO: remove
+//                        if (h.enabledBuiltInTokens == normEnabledBuiltInToks) {
+//                            prepareAsciiTable(h.sentence).info(logger, Some(s"Sentence enriched (from cache): '$normTxt'"))
+//
+//                            h.sentence
+//                        }
+//                        else
                             process(srvReqId, normTxt, enabledBuiltInToks, mlConf, span)
                     case None =>
                         process(srvReqId, normTxt, enabledBuiltInToks, mlConf, span)
@@ -280,7 +284,8 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
                 () => NCDateEnricher.start(span),
                 () => NCNumericEnricher.start(span),
                 () => NCGeoEnricher.start(span),
-                () => NCCoordinatesEnricher.start(span)
+                () => NCCoordinatesEnricher.start(span),
+                () => NCContextWordEnricher.start(span)
             )
         }
 
@@ -298,6 +303,7 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
         ackStopping()
 
         if (Config.isBuiltInEnrichers) {
+            NCContextWordEnricher.stop(span)
             NCCoordinatesEnricher.stop(span)
             NCGeoEnricher.stop(span)
             NCNumericEnricher.stop(span)

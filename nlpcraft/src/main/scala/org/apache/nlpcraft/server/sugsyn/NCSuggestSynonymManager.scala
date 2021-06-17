@@ -24,7 +24,7 @@ import org.apache.http.HttpResponse
 import org.apache.http.client.ResponseHandler
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.entity.StringEntity
-import org.apache.http.impl.client.HttpClients
+import org.apache.http.impl.client.{CloseableHttpClient, HttpClients}
 import org.apache.http.util.EntityUtils
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.config.NCConfigurable
@@ -55,7 +55,7 @@ object NCSuggestSynonymManager extends NCService {
     private final val MIN_CNT_MODEL = 20
 
     private final val GSON = new Gson
-    private final val TYPE_RESP = new TypeToken[util.List[util.List[Suggestion]]]() {}.getType
+    private final val TYPE_RESP = new TypeToken[util.List[util.List[NCWordSuggestion]]]() {}.getType
     private final val SEPARATORS = Seq('?', ',', '.', '-', '!')
 
     private implicit final val ec: ExecutionContext = NCThreadPoolManager.getSystemContext
@@ -64,7 +64,7 @@ object NCSuggestSynonymManager extends NCService {
         val urlOpt: Option[String] = getStringOpt("nlpcraft.server.ctxword.url")
     }
 
-    private final val HANDLER: ResponseHandler[Seq[Seq[Suggestion]]] =
+    private final val HANDLER: ResponseHandler[Seq[Seq[NCWordSuggestion]]] =
         (resp: HttpResponse) => {
             val code = resp.getStatusLine.getStatusCode
             val e = resp.getEntity
@@ -76,7 +76,7 @@ object NCSuggestSynonymManager extends NCService {
 
             code match {
                 case 200 =>
-                    val data: util.List[util.List[Suggestion]] = GSON.fromJson(js, TYPE_RESP)
+                    val data: util.List[util.List[NCWordSuggestion]] = GSON.fromJson(js, TYPE_RESP)
 
                     data.asScala.map(p => if (p.isEmpty) Seq.empty else p.asScala.tail.toSeq).toSeq
 
@@ -90,7 +90,7 @@ object NCSuggestSynonymManager extends NCService {
             }
         }
 
-    case class Suggestion(word: String, score: Double)
+
     case class RequestData(sentence: String, ex: String, elmId: String, index: Int)
     case class RestRequestSentence(text: String, indexes: util.List[Int])
     case class RestRequest(sentences: util.List[RestRequestSentence], limit: Int, minScore: Double)
@@ -110,6 +110,19 @@ object NCSuggestSynonymManager extends NCService {
     private def split(s: String): Seq[String] = U.splitTrimFilter(s, " ")
     private def toStem(s: String): String = split(s).map(NCNlpPorterStemmer.stem).mkString(" ")
     private def toStemWord(s: String): String = NCNlpPorterStemmer.stem(s)
+
+    @throws[NCE]
+    private def mkUrl = s"${Config.urlOpt.getOrElse(throw new NCE("Context word server is not configured."))}/suggestions"
+
+    private def request(cli: CloseableHttpClient, post: HttpPost): Seq[Seq[NCWordSuggestion]] = {
+        val resps: Seq[Seq[NCWordSuggestion]] =
+            try
+                cli.execute(post, HANDLER)
+            finally
+                post.releaseConnection()
+
+        resps
+    }
 
     /**
      *
@@ -131,14 +144,14 @@ object NCSuggestSynonymManager extends NCService {
     }
 
     /**
-     *
+     * TODO: refactor async call (waiting should be dropped.)
      * @param mdlId
      * @param minScoreOpt
      * @param parent
      * @return
      */
-    def suggest(mdlId: String, minScoreOpt: Option[Double], parent: Span = null): Future[NCSuggestSynonymResult] =
-        startScopedSpan("inspect", parent, "mdlId" -> mdlId) { _ =>
+    def suggestModel(mdlId: String, minScoreOpt: Option[Double], parent: Span = null): Future[NCSuggestSynonymResult] =
+        startScopedSpan("suggest", parent, "mdlId" -> mdlId) { _ =>
             val now = U.now()
 
             val promise = Promise[NCSuggestSynonymResult]()
@@ -178,7 +191,7 @@ object NCSuggestSynonymManager extends NCService {
                         if (mdlExs.isEmpty)
                             onError(s"Missed intents samples for: `$mdlId``")
                         else {
-                            val url = s"${Config.urlOpt.getOrElse(throw new NCE("Context word server is not configured."))}/suggestions"
+                            val url = mkUrl
 
                             val allSamplesCnt = mdlExs.map { case (_, samples) => samples.size }.sum
 
@@ -281,9 +294,9 @@ object NCSuggestSynonymManager extends NCService {
                             if (allReqsCnt == 0)
                                 onError(s"Suggestions cannot be generated for model: '$mdlId'")
                             else {
-                                val allSgsts = new ConcurrentHashMap[String, util.List[Suggestion]]()
+                                val allSgsts = new ConcurrentHashMap[String, util.List[NCWordSuggestion]]()
                                 val cdl = new CountDownLatch(1)
-                                val debugs = mutable.HashMap.empty[RequestData, Seq[Suggestion]]
+                                val debugs = mutable.HashMap.empty[RequestData, Seq[NCWordSuggestion]]
                                 val cnt = new AtomicInteger(0)
 
                                 val cli = HttpClients.createDefault
@@ -308,10 +321,7 @@ object NCSuggestSynonymManager extends NCService {
                                                 )
                                             )
 
-                                            val resps: Seq[Seq[Suggestion]] = try
-                                                cli.execute(post, HANDLER)
-                                            finally
-                                                post.releaseConnection()
+                                            val resps = request(cli, post)
 
                                             require(batch.size == resps.size, s"Batch: ${batch.size}, responses: ${resps.size}")
 
@@ -322,7 +332,7 @@ object NCSuggestSynonymManager extends NCService {
                                             logger.debug(s"Executed: $i requests...")
 
                                             allSgsts.
-                                                computeIfAbsent(elemId, (_: String) => new CopyOnWriteArrayList[Suggestion]()).
+                                                computeIfAbsent(elemId, (_: String) => new CopyOnWriteArrayList[NCWordSuggestion]()).
                                                 addAll(resps.flatten.asJava)
 
                                             if (i == allReqsCnt)
@@ -436,6 +446,86 @@ object NCSuggestSynonymManager extends NCService {
                     }
                 case Failure(e) => promise.failure(e)
             }
+
+            promise.future
+        }
+
+    /**
+      *
+      * @param sens
+      * @param minScoreOpt
+      * @param parent
+      * @return
+      */
+    def suggestWords(sens: Seq[NCSuggestionElement], minScoreOpt: Option[Double] = None, parent: Span = null):
+        Future[Map[String, Seq[NCWordSuggestion]]] =
+        startScopedSpan("suggest", parent) { _ =>
+            val promise = Promise[Map[String, Seq[NCWordSuggestion]]]()
+
+            case class Result(elementId: String, suggestions :Seq[NCWordSuggestion])
+
+            val data = new CopyOnWriteArrayList[Result]()
+            val cli = HttpClients.createDefault
+            val batches = sens.sliding(BATCH_SIZE, BATCH_SIZE).map(_.toSeq).toSeq
+            val cnt = new AtomicInteger(0)
+
+            for (batch <- batches)
+                U.asFuture(
+                    _ => {
+                        val post = new HttpPost(mkUrl)
+
+                        post.setHeader("Content-Type", "application/json")
+                        post.setEntity(
+                            new StringEntity(
+                                GSON.toJson(
+                                    RestRequest(
+                                        sentences = batch.map(p => RestRequestSentence(p.sample, p.indexes.asJava)).asJava,
+                                        minScore = 0,
+                                        limit = MAX_LIMIT
+                                    )
+                                ),
+                                "UTF-8"
+                            )
+                        )
+
+                        val resps = request(cli, post)
+
+                        require(batch.size == resps.size, s"Batch: ${batch.size}, responses: ${resps.size}")
+
+                        data.addAll(batch.zip(resps).map { case (req, resp) => Result(req.elementId, resp) }.asJava )
+
+                        if (cnt.incrementAndGet() == batches.size) {
+                            val min = minScoreOpt.getOrElse(DFLT_MIN_SCORE)
+
+                            val map = data.asScala.groupBy(_.elementId).map(p =>
+                                p._1 ->
+                                p._2.
+                                    map(_.suggestions.map(p => (toStem(p.word), p.score))).
+                                    map(_.groupBy(_._1)).
+                                    flatMap(p =>
+                                        p.map(p => p._1 ->
+                                            p._1 -> {
+                                            val scores = p._2.map(_._2)
+
+                                            scores.sum / scores.size
+                                        }
+                                    ).
+                                        filter(_._2 >= min).
+                                        map(p => NCWordSuggestion(p._1._2, p._2)).toSeq
+                                ).toSeq)
+
+                            promise.success(map)
+                        }
+                        ()
+                    },
+                    (e: Throwable) => {
+                        U.prettyError(logger, "Unexpected error:", e)
+
+                        promise.failure(e)
+
+                    },
+                    (_: Unit) => ()
+                )
 
             promise.future
         }

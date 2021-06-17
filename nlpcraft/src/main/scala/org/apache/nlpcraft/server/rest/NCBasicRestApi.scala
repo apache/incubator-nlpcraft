@@ -807,7 +807,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
 
                 checkModelId(req.mdlId, admUsr.companyId)
 
-                val fut = NCSuggestSynonymManager.suggest(req.mdlId, req.minScore, span)
+                val fut = NCSuggestSynonymManager.suggestModel(req.mdlId, req.minScore, span)
 
                 successWithJs(
                     fut.collect {

@@ -31,7 +31,7 @@ import org.apache.nlpcraft.common.version.NCVersion
 import org.apache.nlpcraft.common.{NCService, _}
 import org.apache.nlpcraft.probe.mgrs.NCProbeMessage
 import org.apache.nlpcraft.server.company.NCCompanyManager
-import org.apache.nlpcraft.server.mdo.{NCCompanyMdo, NCModelMLConfigMdo, NCProbeMdo, NCProbeModelMdo, NCUserMdo}
+import org.apache.nlpcraft.server.mdo._
 import org.apache.nlpcraft.server.nlp.enrichers.NCServerEnrichmentManager
 import org.apache.nlpcraft.server.proclog.NCProcessLogManager
 import org.apache.nlpcraft.server.query.NCQueryManager
@@ -45,7 +45,7 @@ import java.util.Collections
 import java.util.concurrent.ConcurrentHashMap
 import scala.collection.mutable
 import scala.concurrent.{ExecutionContext, Future, Promise}
-import scala.jdk.CollectionConverters.{ListHasAsScala, MapHasAsScala, SetHasAsScala}
+import scala.jdk.CollectionConverters.{MapHasAsScala, SetHasAsScala}
 import scala.util.{Failure, Success}
 
 /**
@@ -614,8 +614,8 @@ object NCProbeManager extends NCService {
                             String,
                             String,
                             java.util.Set[String],
-                            java.util.Map[String, java.util.Map[String, java.util.List[String]]],
-                            java.util.Map[String, java.util.List[String]]
+                            java.util.Map[String, java.util.Map[String, java.util.Set[String]]],
+                            java.util.Set[String]
                         )]]("PROBE_MODELS").
                         map {
                             case (
@@ -630,7 +630,7 @@ object NCProbeManager extends NCService {
                                 require(mdlName != null)
                                 require(mdlVer != null)
                                 require(enabledBuiltInToks != null)
-                                require(values.isEmpty ^ samples.isEmpty)
+                                require(values.isEmpty && samples.isEmpty || !values.isEmpty && !samples.isEmpty)
 
                                 NCProbeModelMdo(
                                     id = mdlId,
@@ -641,8 +641,10 @@ object NCProbeManager extends NCService {
                                         if (!values.isEmpty)
                                             Some(
                                                 NCModelMLConfigMdo(
-                                                    values = values.asScala.map(p => p._1 -> p._2.asScala.map(p => p._1 -> p._2.asScala.toSeq).toMap).toMap,
-                                                    samples = samples.asScala.map(p => p._1 -> p._2.asScala.toSeq).toMap
+                                                    probeId = probeId,
+                                                    modelId = mdlId,
+                                                    values = values.asScala.map(p => p._1 -> p._2.asScala.map(p => p._1 -> p._2.asScala.toSet).toMap).toMap,
+                                                    samples = samples.asScala.toSet
                                                 )
                                             )
                                         else
