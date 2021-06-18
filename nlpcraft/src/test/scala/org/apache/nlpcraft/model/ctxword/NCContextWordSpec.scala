@@ -63,8 +63,9 @@ class NCContextWordSpecModel extends NCModel {
             "A wild cat is very dangerous",
             "A fox eats hens",
             "The fox was already in your chicken house",
-            "What is the local temperature",
-            "This is the first day of heavy rain"
+            "What is the local temperature ?",
+            "This is the first day of heavy rain",
+            "The beautiful day, the sun is shining ",
         )
     )
     @NCIntent(
@@ -96,8 +97,8 @@ class NCContextWordSpec extends NCTestContext {
     private[ctxword] def test(): Unit = {
         val cli = getClient
 
-        cli.ask("I want to have a dog and fox")
-        cli.ask("I like to drive my Porsche and Volkswagen")
+//        cli.ask("I want to have a dog and fox")
+//        cli.ask("I like to drive my Porsche and Volkswagen")
         cli.ask("The frost is possible today")
     }
 }
