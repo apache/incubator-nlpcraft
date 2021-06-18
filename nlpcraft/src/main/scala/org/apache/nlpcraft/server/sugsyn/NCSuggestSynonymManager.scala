@@ -507,17 +507,9 @@ object NCSuggestSynonymManager extends NCService {
                                 p._2.
                                     map(_.suggestions.map(p => (toStem(p.word), p.score))).
                                     map(_.groupBy(_._1)).
-                                    flatMap(p =>
-                                        p.map(p => p._1 ->
-                                            p._1 -> {
-                                            val scores = p._2.map(_._2)
-
-                                            scores.sum / scores.size
-                                        }
-                                    ).
-                                        filter(_._2 >= min).
-                                        map(p => NCWordSuggestion(p._1._2, p._2)).toSeq
-                                ).toSeq)
+                                    flatMap(p => p.map(p => p._1 -> p._1 -> p._2.map(_._2).sum / p._2.size).
+                                    filter(_._2 >= min).
+                                    map(p => NCWordSuggestion(p._1._2, p._2)).toSeq).toSeq)
 
                             promise.success(map)
                         }
