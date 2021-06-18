@@ -35,11 +35,12 @@ import scala.concurrent.duration.Duration
 object NCContextWordEnricher extends NCServerEnricher {
     case class ModelProbeKey(probeId: String, modelId: String)
     case class WordIndex(word: String, index: Int)
-    case class ValueScore(sourceValue: String, score: Double)
     case class ElementValue(elementId: String, value: String)
     case class ElementScore(elementId: String, score: Double)
 
-    @volatile private var samples: mutable.HashMap[ModelProbeKey, Map[/** Element ID */ String, Map[/** Stem */ String, /** Value */ ValueScore]]] = _
+    type ElementStemScore = Map[/** Element ID */ String, Map[/** Stem */ String, /** Score */ Double]]
+
+    @volatile private var samples: mutable.HashMap[ModelProbeKey, ElementStemScore] = _
 
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ =>
         ackStarting()
@@ -81,7 +82,7 @@ object NCContextWordEnricher extends NCServerEnricher {
         )
     }
 
-    private def getSamples(cfg: NCModelMLConfigMdo, key: ModelProbeKey): Map[String, Map[String, ValueScore]] =
+    private def getSamples(cfg: NCModelMLConfigMdo, key: ModelProbeKey): ElementStemScore =
         samples.synchronized { samples.get(key) } match {
             case Some(cache) => cache
             case None =>
@@ -93,8 +94,8 @@ object NCContextWordEnricher extends NCServerEnricher {
         }
 
     @throws[NCE]
-    private def askSamples(cfg: NCModelMLConfigMdo): Map[/** Element ID */String, Map[/** Stem */String, ValueScore]] = {
-        case class Record(sentence: NCSuggestionRequest, value: String)
+    private def askSamples(cfg: NCModelMLConfigMdo): ElementStemScore = {
+        case class Record(request: NCSuggestionRequest, value: String)
 
         val recs: Map[String, Seq[Record]] =
             (for (
@@ -109,12 +110,12 @@ object NCContextWordEnricher extends NCServerEnricher {
                 yield (elemId, Record(sugg, value))).groupBy { case (elemId, _) => elemId }.
                 map { case (elemId, map) => elemId -> map.values.toSeq }
 
-        val data = recs.flatMap { case (elemId, recs) => recs.map(p => p.sentence -> ElementValue(elemId, p.value)) }
+        val data = recs.flatMap { case (elemId, recs) => recs.map(p => p.request -> ElementValue(elemId, p.value)) }
 
         // TODO:
         val res: Map[NCSuggestionRequest, Seq[NCWordSuggestion]] =
             if (recs.nonEmpty)
-                Await.result(NCSuggestSynonymManager.suggestWords(recs.flatMap(_._2.map(_.sentence)).toSeq), Duration.Inf)
+                Await.result(NCSuggestSynonymManager.suggestWords(recs.flatMap(_._2.map(_.request)).toSeq), Duration.Inf)
             else
                 Map.empty
 
@@ -122,33 +123,44 @@ object NCContextWordEnricher extends NCServerEnricher {
             case (req, suggs) =>
                 val d = data(req)
 
-                d.elementId -> suggs.map(p => stem(p.word) -> ValueScore(d.value, p.score)).toMap
+                d.elementId -> suggs.groupBy(p =>stem(p.word)).map { case (stem, map) => stem -> map.map(_.score).max }
         }
     }
 
     @throws[NCE]
     private def askSentence(
         ns: NCNlpSentence,
-        samples: Map[/** Element ID */String, Map[/** Stem */String, ValueScore]]
+        samples: ElementStemScore
     ): Map[Int, Set[ElementScore]] = {
         val idxs = ns.tokens.flatMap(p => if (p.pos.startsWith("N")) Some(p.index) else None).toSeq
-        val senStems = ns.tokens.map(_.stem)
 
         if (idxs.nonEmpty) {
+            val reqs = idxs.map(idx => NCSuggestionRequest(ns.text, idx))
+
+            //println("suggsReq=" + reqs.mkString("|"))
+
             // TODO: tokenization.
             // TODO: sync.
-            val suggs: Iterable[NCWordSuggestion] =
+            val suggs: Map[NCWordSuggestion, NCSuggestionRequest] =
                 Await.result(
-                    NCSuggestSynonymManager.suggestWords(idxs.map(idx => NCSuggestionRequest(ns.text, idx))),
+                    NCSuggestSynonymManager.suggestWords(reqs),
                     Duration.Inf
-                ).flatMap { case (_, suggs) => suggs }
+                ).flatMap { case (req, suggs) => suggs.map(_ -> req) }
 
-            suggs.map(sugg => (stem(sugg.word), sugg)).
-                flatMap { case (stem, sugg) =>
+
+//            println("suggs="+suggs.keys.mkString("\n"))
+//            println("suggs")
+
+            suggs.map { case(sugg, req) => (stem(sugg.word), sugg.score, req) }.
+                flatMap { case (stem, suggScore, req) =>
                     samples.map { case (elemId, map) =>
                         // TODO:  contains ? check key (and use score)
-                        if (map.contains(stem))
-                            map.map(p => (ElementScore(elemId, p._2.score), senStems.indexOf(stem)))
+
+                        if (map.contains(stem)) {
+                            //println(s"!!!FOUND BY stem=$stem, elem=$elemId, map=$map")
+
+                            map.map { case (_, score) => (ElementScore(elemId, score), req.index) }
+                        }
                         else
                             Seq.empty
                     }
@@ -172,21 +184,21 @@ object NCContextWordEnricher extends NCServerEnricher {
                 val nouns = ns.tokens.filter(_.pos.startsWith("N"))
 
                 if (nouns.nonEmpty) {
-                    println("nouns=" + nouns.map(_.stem).mkString("|"))
+                    //println("nouns=" + nouns.map(_.stem).mkString("|"))
 
                     val key = ModelProbeKey(cfg.probeId, cfg.modelId)
                     val samples = getSamples(cfg, key)
 
-                    println("!!!samples")
-                    samples.foreach(s =>  {
-                        println(s"elemID=${s._1}")
-
-                        println(s._2.mkString("\n") + "\n")
-
-                    })
+//                    println("!!!samples")
+//                    samples.foreach(s =>  {
+//                        println(s"elemID=${s._1}")
+//
+//                        println(s._2.mkString("\n") + "\n")
+//
+//                    })
 
                     for (n <- nouns; (elemId, stems) <- getSamples(cfg, key) if stems.contains(n.stem))
-                        println("EX FOUND elemId=" + elemId + ", n=" + n.stem + ", stem=" + stems.toSeq.sortBy(-_._2.score))
+                        println("EX FOUND elemId=" + elemId + ", n=" + n.stem + ", stem=" + stems.toSeq.sortBy(-_._2))
 
                     val sens = askSentence(ns, samples)
 

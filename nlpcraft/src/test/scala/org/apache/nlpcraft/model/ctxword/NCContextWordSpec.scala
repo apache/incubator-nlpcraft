@@ -18,8 +18,7 @@
 package org.apache.nlpcraft.model.ctxword
 
 import org.apache.nlpcraft.model.{NCElement, NCIntent, NCIntentSample, NCIntentTerm, NCModel, NCResult, NCToken, NCValue}
-import org.apache.nlpcraft.{NCTestContext, NCTestElement, NCTestEnvironment}
-import org.junit.jupiter.api.Assertions.{assertFalse, assertTrue}
+import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
 import org.junit.jupiter.api.Test
 
 import java.util
@@ -97,7 +96,8 @@ class NCContextWordSpec extends NCTestContext {
     private[ctxword] def test(): Unit = {
         val cli = getClient
 
-        //cli.ask("I want to have a dog and fox")
-        cli.ask("I like to drive my Porsche")
+        cli.ask("I want to have a dog and fox")
+        cli.ask("I like to drive my Porsche and Volkswagen")
+        cli.ask("The frost is possible today")
     }
 }

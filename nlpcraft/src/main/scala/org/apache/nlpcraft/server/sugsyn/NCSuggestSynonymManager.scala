@@ -93,6 +93,11 @@ object NCSuggestSynonymManager extends NCService {
 
     case class RequestData(sentence: String, ex: String, elmId: String, index: Int)
     case class RestRequestSentence(text: String, indexes: util.List[Int])
+    object RestRequestSentence {
+        def apply(text: String, index: Int): RestRequestSentence = new RestRequestSentence(text, Seq(index).asJava)
+
+
+    }
     case class RestRequest(sentences: util.List[RestRequestSentence], limit: Int, minScore: Double)
     case class Word(word: String, stem: String) {
         require(!word.contains(" "), s"Word cannot contains spaces: $word")
@@ -312,7 +317,7 @@ object NCSuggestSynonymManager extends NCService {
                                                 new StringEntity(
                                                     GSON.toJson(
                                                         RestRequest(
-                                                            sentences = batch.map(p => RestRequestSentence(p.sentence, Seq(p.index).asJava)).asJava,
+                                                            sentences = batch.map(p => RestRequestSentence(p.sentence, p.index)).asJava,
                                                             minScore = 0,
                                                             limit = MAX_LIMIT
                                                         )
@@ -479,7 +484,7 @@ object NCSuggestSynonymManager extends NCService {
                             new StringEntity(
                                 GSON.toJson(
                                     RestRequest(
-                                        sentences = batch.map(p => RestRequestSentence(p.sample, Seq(p.index).asJava)).asJava,
+                                        sentences = batch.map(p => RestRequestSentence(p.sample, p.index)).asJava,
                                         minScore = 0,
                                         limit = MAX_LIMIT
                                     )
