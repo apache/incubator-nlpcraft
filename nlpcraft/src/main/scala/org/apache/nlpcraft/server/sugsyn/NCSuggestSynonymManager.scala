@@ -457,12 +457,12 @@ object NCSuggestSynonymManager extends NCService {
       * @param parent
       * @return
       */
-    def suggestWords(sens: Seq[NCSuggestionElement], minScoreOpt: Option[Double] = None, parent: Span = null):
-        Future[Map[String, Seq[NCWordSuggestion]]] =
+    def suggestWords(sens: Seq[NCSuggestionRequest], minScoreOpt: Option[Double] = None, parent: Span = null):
+        Future[Map[NCSuggestionRequest, Seq[NCWordSuggestion]]] =
         startScopedSpan("suggest", parent) { _ =>
-            val promise = Promise[Map[String, Seq[NCWordSuggestion]]]()
+            val promise = Promise[Map[NCSuggestionRequest, Seq[NCWordSuggestion]]]()
 
-            case class Result(elementId: String, suggestions :Seq[NCWordSuggestion])
+            case class Result(request: NCSuggestionRequest, suggestions: Seq[NCWordSuggestion])
 
             val data = new CopyOnWriteArrayList[Result]()
             val cli = HttpClients.createDefault
@@ -479,7 +479,7 @@ object NCSuggestSynonymManager extends NCService {
                             new StringEntity(
                                 GSON.toJson(
                                     RestRequest(
-                                        sentences = batch.map(p => RestRequestSentence(p.sample, p.indexes.asJava)).asJava,
+                                        sentences = batch.map(p => RestRequestSentence(p.sample, Seq(p.index).asJava)).asJava,
                                         minScore = 0,
                                         limit = MAX_LIMIT
                                     )
@@ -492,12 +492,12 @@ object NCSuggestSynonymManager extends NCService {
 
                         require(batch.size == resps.size, s"Batch: ${batch.size}, responses: ${resps.size}")
 
-                        data.addAll(batch.zip(resps).map { case (req, resp) => Result(req.elementId, resp) }.asJava )
+                        data.addAll(batch.zip(resps).map { case (req, resp) => Result(req, resp) }.asJava )
 
                         if (cnt.incrementAndGet() == batches.size) {
                             val min = minScoreOpt.getOrElse(DFLT_MIN_SCORE)
 
-                            val map = data.asScala.groupBy(_.elementId).map(p =>
+                            val map = data.asScala.groupBy(_.request).map(p =>
                                 p._1 ->
                                 p._2.
                                     map(_.suggestions.map(p => (toStem(p.word), p.score))).

@@ -19,8 +19,7 @@ package org.apache.nlpcraft.server.sugsyn
 
 /**
   *
-  * @param elementId
   * @param sample
   * @param indexes
   */
-case class NCSuggestionElement(elementId: String, sample: String, indexes: Seq[Int])
+case class NCSuggestionRequest(sample: String, index: Int)

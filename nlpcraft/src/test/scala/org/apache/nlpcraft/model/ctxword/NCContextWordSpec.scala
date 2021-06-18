@@ -97,6 +97,7 @@ class NCContextWordSpec extends NCTestContext {
     private[ctxword] def test(): Unit = {
         val cli = getClient
 
-        cli.ask("I want have a dog, fox, Mercedes, reno, winter, Porsche")
+        //cli.ask("I want to have a dog and fox")
+        cli.ask("I like to drive my Porsche")
     }
 }
