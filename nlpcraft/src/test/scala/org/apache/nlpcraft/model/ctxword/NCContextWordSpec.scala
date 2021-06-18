@@ -65,7 +65,7 @@ class NCContextWordSpecModel extends NCModel {
             "The fox was already in your chicken house",
             "What is the local temperature ?",
             "This is the first day of heavy rain",
-            "The beautiful day, the sun is shining ",
+            "It is the beautiful day, the sun is shining ",
         )
     )
     @NCIntent(

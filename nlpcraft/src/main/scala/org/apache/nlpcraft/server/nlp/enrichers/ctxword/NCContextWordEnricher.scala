@@ -154,8 +154,7 @@ object NCContextWordEnricher extends NCServerEnricher {
                 flatMap { case (req, suggs) => suggs.map(_ -> req) }
 
         // TODO:
-        println("suggsReq=" + reqs.mkString("|"))
-        println("suggs="+suggs.keys.mkString("\n"))
+        println("suggs="+suggs.mkString("\n"))
 
 
         suggs.map { case(sugg, req) => (stem(sugg.word), sugg.score, req) }.
@@ -165,7 +164,7 @@ object NCContextWordEnricher extends NCServerEnricher {
 
                     if (map.contains(stem)) {
                         // TODO:
-                        println(s"!!!FOUND BY stem=$stem, elem=$elemId, map=$map")
+                        println(s"!!!FOUND BY suggStem=$stem, index=${req.index}, suggScore=${suggScore}, elem=$elemId, map=$map")
 
                         map.map { case (_, score) => (ElementScore(elemId, score), req.index) }
                     }
