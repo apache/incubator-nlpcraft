@@ -306,7 +306,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
 
                 val ver = NCVersion.getCurrent
 
-                tbl += (s"${bo(b("PID"))}", Config.pid)
+                tbl += (s"${bo(b("PID"))}", s"$BO${Config.pid}$RST")
                 tbl += (s"${bo(b("Version"))}", s"${ver.version} released on ${ver.date.toString}")
                 tbl += (s"${bo(b("Database:"))}", "")
                 tbl += (s"${b("  JDBC URL")}", Config.dbUrl)
@@ -317,7 +317,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
                 tbl += (s"${b("  Pool increment")}", Config.dbPoolInc)
                 tbl += (s"${b("  Reset on start")}", Config.dbInit)
                 tbl += (s"${bo(b("REST:"))}", "")
-                tbl += (s"${b("  Endpoint")}", Config.restEndpoint)
+                tbl += (s"${b("  Endpoint")}", s"$BO${Config.restEndpoint}$RST")
                 tbl += (s"${b("  API provider")}", Config.restApi)
                 tbl += (s"${bo(b("Probe:"))}", "")
                 tbl += (s"${b("  Uplink")}", Config.upLink)
