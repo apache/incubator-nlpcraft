@@ -105,6 +105,8 @@ set JVM_OPTS= ^
     -server ^
     -XX:+UseG1GC ^
     -XX:MaxMetaspaceSize=256m ^
+    -Dsun.stdout.encoding=UTF-8 ^
+    -Dsun.stderr.encoding=UTF-8 ^
     -DNLPCRAFT_CLI= ^
     -DNLPCRAFT_CLI_CP="%CP%" ^
     -DNLPCRAFT_CLI_JAVA="%JAVA_HOME%\bin\java.exe" ^
