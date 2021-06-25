@@ -22,19 +22,18 @@ import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.nlp.{NCNlpSentence => Sentence, NCNlpSentenceNote => NlpNote, NCNlpSentenceToken => NlpToken}
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.probe.mgrs.NCProbeSynonym.NCIdlContent
-import org.apache.nlpcraft.probe.mgrs.NCProbeSynonymChunkKind.{NCSynonymChunkKind, _}
+import org.apache.nlpcraft.probe.mgrs.NCProbeSynonymChunkKind.NCSynonymChunkKind
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.impl.NCRequestImpl
 import org.apache.nlpcraft.probe.mgrs.sentence.NCSentenceManager
-import org.apache.nlpcraft.probe.mgrs.{NCProbeModel, NCProbeVariants, NCProbeSynonym => Synonym}
+import org.apache.nlpcraft.probe.mgrs.{NCProbeModel, NCProbeVariants, NCTokenPartKey, NCProbeSynonym => Synonym}
 
 import java.io.Serializable
-import java.util
 import java.util.{List => JList}
-import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable
-import scala.jdk.CollectionConverters.{ListHasAsScala, MapHasAsJava, MapHasAsScala, SeqHasAsJava}
+import scala.collection.mutable.ArrayBuffer
 import scala.collection.parallel.CollectionConverters._
+import scala.jdk.CollectionConverters.{ListHasAsScala, MapHasAsJava, MapHasAsScala, SeqHasAsJava}
 
 /**
   * Model elements enricher.
@@ -185,21 +184,8 @@ object NCModelEnricher extends NCProbeEnricher {
             case None => // No-op.
         }
 
-        if (parts.nonEmpty) {
-            val partsData: Seq[util.HashMap[String, Any]] =
-                parts.map { case (part, kind) =>
-                    val m = new util.HashMap[String, Any]()
-
-                    m.put("id", if (kind == TEXT) "nlpcraft:nlp" else part.getId)
-                    m.put("startcharindex", part.getStartCharIndex)
-                    m.put("endcharindex", part.getEndCharIndex)
-                    m.put(TOK_META_ALIASES_KEY, part.getMetadata.get(TOK_META_ALIASES_KEY))
-
-                    m
-                }
-
-            params += "parts" -> partsData.asJava
-        }
+        if (parts.nonEmpty)
+            params += "parts" -> parts.map { case (p, kind) => NCTokenPartKey(p, kind) }.asJava
 
         val idxs = toks.map(_.index).sorted
 

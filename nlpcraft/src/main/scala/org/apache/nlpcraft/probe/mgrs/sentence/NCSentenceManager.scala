@@ -21,14 +21,15 @@ import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.nlp.NCNlpSentence.NoteLink
 import org.apache.nlpcraft.common.nlp.pos.NCPennTreebank
 import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote, NCNlpSentenceToken}
-import org.apache.nlpcraft.common.{NCE, NCService, U}
+import org.apache.nlpcraft.common.{NCE, NCService, U, _}
 import org.apache.nlpcraft.model.NCModel
+import org.apache.nlpcraft.probe.mgrs.NCTokenPartKey
 
 import java.io.{Serializable => JSerializable}
 import java.util
 import java.util.{List => JList}
 import scala.collection.mutable
-import scala.collection.parallel.CollectionConverters.ImmutableIterableIsParallelizable
+import scala.collection.parallel.CollectionConverters._
 import scala.jdk.CollectionConverters.{ListHasAsScala, SeqHasAsJava, SetHasAsJava}
 import scala.language.implicitConversions
 
@@ -42,23 +43,6 @@ object NCSentenceManager extends NCService {
     type CacheValue = Seq[Seq[NCNlpSentenceNote]]
     private val combCache = mutable.HashMap.empty[String, mutable.HashMap[CacheKey, CacheValue]]
 
-    case class PartKey(id: String, start: Int, end: Int) {
-        require(start <= end)
-
-        private def in(i: Int): Boolean = i >= start && i <= end
-        def intersect(id: String, start: Int, end: Int): Boolean = id == this.id && (in(start) || in(end))
-    }
-
-    object PartKey {
-        def apply(m: util.HashMap[String, JSerializable]): PartKey = {
-            def get[T](name: String): T = m.get(name).asInstanceOf[T]
-
-            PartKey(get("id"), get("startcharindex"), get("endcharindex"))
-        }
-
-        def apply(t: NCNlpSentenceNote, sen: NCNlpSentence): PartKey =
-            PartKey(t.noteType, sen(t.tokenFrom).startCharIndex, sen(t.tokenTo).endCharIndex)
-    }
 
     /**
       *
@@ -95,14 +79,14 @@ object NCSentenceManager extends NCService {
       *
       * @param notes
       */
-    private def getPartKeys(notes: NCNlpSentenceNote*): Seq[PartKey] =
+    private def getPartKeys(notes: NCNlpSentenceNote*): Seq[NCTokenPartKey] =
         notes.
             filter(_.isUser).
             flatMap(n => {
-                val optList: Option[JList[util.HashMap[String, JSerializable]]] = n.dataOpt("parts")
+                val optList: Option[JList[NCTokenPartKey]] = n.dataOpt("parts")
 
                 optList
-            }).flatMap(_.asScala).map(m => PartKey(m)).distinct
+            }).flatMap(_.asScala).distinct
 
     /**
       *
@@ -666,7 +650,7 @@ object NCSentenceManager extends NCService {
                 filter(getPartKeys(_).isEmpty).
                 flatMap(note => {
                     val noteWordsIdxs = note.wordIndexes.toSet
-                    val key = PartKey(note, sen)
+                    val key = NCTokenPartKey(note, sen)
 
                     val delCombOthers =
                         delCombs.filter(_ != note).flatMap(n => if (getPartKeys(n).contains(key)) Some(n) else None)
