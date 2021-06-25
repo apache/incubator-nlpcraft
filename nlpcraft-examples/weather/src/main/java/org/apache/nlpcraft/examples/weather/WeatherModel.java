@@ -47,13 +47,16 @@ import static java.time.temporal.ChronoUnit.DAYS;
  * <p>
  * This is a relatively complete weather service with JSON output and a non-trivial
  * intent matching logic. It uses OpenWeather API weather provider REST service for the actual
- * weather information (https://openweathermap.org/api/one-call-api)
+ * weather information (https://openweathermap.org/api/one-call-api).
+ * <p>
+ * NOTE: you must provide OpenWorldMap API key in 'OWM_API_KEY' system property.
+ * See  https://openweathermap.org/api for more information.
  * <p>
  * See 'README.md' file in the same folder for running and testing instructions.
  */
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class WeatherModel extends NCModelFileAdapter {
-    /* System property for OpenWeatherMap API key. */
+    // System property for OpenWeatherMap API key.
     public final String OWM_API_KEY = "OWM_API_KEY";
 
     // Please register your own account at https://openweathermap.org/api and

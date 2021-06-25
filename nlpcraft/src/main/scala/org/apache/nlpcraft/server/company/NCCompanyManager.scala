@@ -103,7 +103,8 @@ object NCCompanyManager extends NCService with NCIgniteInstance {
                         parent = span
                     )
 
-                    logger.info(s"Default admin user ($adminEmail/$adminPwd) created for default company: $compName")
+                    logger.info(s"Default admin user ($C$adminEmail/$adminPwd$RST) created for default company: $compName")
+                    logger.info(s"  +-- Make sure to $R${BO}delete this account$RST when in production.")
                 }
                 catch {
                     case e: NCE => U.prettyError(

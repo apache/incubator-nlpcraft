@@ -24,8 +24,20 @@ import org.junit.jupiter.api.{Assertions, Test}
   * JUnit model validation.
   */
 class NCModelValidationSpec {
+    private final val propName = "OWM_API_KEY"
+
     @Test
     def test(): Unit = {
+        // Set your own API key here.
+        var apiKey: String = System.getProperty(propName)
+
+        if (apiKey == null)
+            apiKey = System.getenv(propName)
+
+        // Default value, used for tests.
+        if (apiKey == null)
+            System.setProperty(propName, "8a51a2eb343bf87dc55ffd352f5641ea")
+
         // Instruct auto-validator what models to test.
         System.setProperty("NLPCRAFT_TEST_MODELS", "org.apache.nlpcraft.examples.weather.WeatherModel")
 

@@ -38,6 +38,9 @@ class NCCliBase extends App {
      * Disable warnings from Ignite on JDK 11.
      */
     final val JVM_OPTS_RT_WARNS = Seq (
+        "-Dsun.stdout.encoding=UTF-8", // Fix for NLPCRAFT-343.
+        "-Dsun.stderr.encoding=UTF-8", // Fix for NLPCRAFT-343.
+        "-Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2", // Fix for https://bugs.openjdk.java.net/browse/JDK-8213202
         "--add-opens=java.base/jdk.internal.misc=ALL-UNNAMED",
         "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED",
         "--add-opens=java.base/java.nio=ALL-UNNAMED",
