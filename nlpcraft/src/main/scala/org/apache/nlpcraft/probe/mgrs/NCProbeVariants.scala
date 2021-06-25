@@ -20,8 +20,8 @@ package org.apache.nlpcraft.probe.mgrs
 import org.apache.nlpcraft.common.nlp.pos.NCPennTreebank
 import org.apache.nlpcraft.common.nlp.{NCNlpSentence => NlpSentence, NCNlpSentenceNote => NlpNote, NCNlpSentenceToken => NlpToken}
 import org.apache.nlpcraft.common.{NCE, TOK_META_ALIASES_KEY}
+import org.apache.nlpcraft.model.NCVariant
 import org.apache.nlpcraft.model.impl.{NCTokenImpl, NCTokenLogger, NCVariantImpl}
-import org.apache.nlpcraft.model.{NCToken, NCVariant}
 
 import java.io.{Serializable => JSerializable}
 import java.util
@@ -36,18 +36,6 @@ object NCProbeVariants {
     private final val IDX: java.lang.Integer = -1
     private final val IDXS: JSerializable = singletonList(IDX).asInstanceOf[JSerializable]
     private final val IDXS2: JSerializable = singletonList(singletonList(IDX)).asInstanceOf[JSerializable]
-
-    case class Key(id: String, from: Int, to: Int)
-
-    object Key {
-        def apply(m: util.HashMap[String, JSerializable]): Key = {
-            def get[T](name: String): T = m.get(name).asInstanceOf[T]
-
-            Key(get("id"), get("startcharindex"), get("endcharindex"))
-        }
-
-        def apply(t: NCToken): Key = Key(t.getId, t.getStartCharIndex, t.getEndCharIndex)
-    }
 
     /**
       *
@@ -77,17 +65,17 @@ object NCProbeVariants {
       *
       * @param key
       * @param delNotes
-      * @param noteTypePred
+      * @param delNoteTypePred
       * @return
       */
     private def findDeletedToken(
-        key: Key,
+        key: NCTokenPartKey,
         delNotes: Map[NlpNote, Seq[NlpToken]],
-        noteTypePred: String => Boolean
+        delNoteTypePred: NlpNote => Boolean
     ): Option[NlpToken] =
         delNotes.to(LazyList).
             flatMap { case (delNote, delNoteToks) =>
-                if (noteTypePred(delNote.noteType)) {
+                if (delNoteTypePred(delNote)) {
                     val toks =
                         delNoteToks.
                             dropWhile(_.startCharIndex != key.from).
@@ -111,7 +99,7 @@ object NCProbeVariants {
                                     case _ => // No-op.
                                 }
 
-                                artTok.add(delNote.clone(ps.toSeq :_*))
+                                artTok.add(delNote.clone(ps.toSeq: _*))
                             }
 
                             Some(artTok)
@@ -200,18 +188,18 @@ object NCProbeVariants {
                 }
 
                 val toks = nlpSen.map(mkToken)
-                val keys2Toks = toks.map(t => Key(t) -> t).toMap
+                val keys2Toks = toks.map(t => NCTokenPartKey(t) -> t).toMap
 
                 def process(tok: NCTokenImpl, tokNlp: NlpToken): Unit = {
-                    val optList: Option[util.List[util.HashMap[String, JSerializable]]] =
+                    val optList: Option[util.List[NCTokenPartKey]] =
                         tokNlp.find(_.isUser) match {
                             case Some(u) => u.dataOpt("parts")
                             case None => None
                         }
 
                     optList match {
-                        case Some(list) =>
-                            val keys = list.asScala.map(Key(_))
+                        case Some(keysJava) =>
+                            val keys = keysJava.asScala
 
                             val parts = keys.map(key =>
                                 keys2Toks.get(key) match {
@@ -221,7 +209,11 @@ object NCProbeVariants {
                                         val delNotes = nlpSen.getDeletedNotes
 
                                         // Tries to find with same key.
-                                        var nlpTokOpt = findDeletedToken(key, delNotes, _ == key.id)
+                                        var nlpTokOpt = findDeletedToken(
+                                            key,
+                                            delNotes,
+                                            (delNote: NlpNote) => key.similar(delNote)
+                                        )
 
                                         // If couldn't find nlp note, we can try to find any note on the same position.
                                         if (nlpTokOpt.isEmpty && key.id == "nlpcraft:nlp")
@@ -249,10 +241,10 @@ object NCProbeVariants {
                                 }
                             )
 
-                            parts.zip(list.asScala).foreach { case (part, map) =>
-                                map.get(TOK_META_ALIASES_KEY) match {
+                            parts.zip(keys).foreach { case (part, key) =>
+                                key.aliases match {
                                     case null => // No-op.
-                                    case aliases => part.getMetadata.put(TOK_META_ALIASES_KEY, aliases.asInstanceOf[Object])
+                                    case aliases => part.getMetadata.put(TOK_META_ALIASES_KEY, aliases)
                                 }
                             }
 
@@ -267,7 +259,7 @@ object NCProbeVariants {
                                         getOrElse(throw new NCE(s"Token not found for $tok"))
                                 )
 
-                            ok = ok && !toks.exists(t => t.getId != "nlpcraft:nlp" && keys.contains(Key(t)))
+                            ok = ok && !toks.exists(t => t.getId != "nlpcraft:nlp" && keys.contains(NCTokenPartKey(t)))
                         case None => // No-op.
                     }
                 }

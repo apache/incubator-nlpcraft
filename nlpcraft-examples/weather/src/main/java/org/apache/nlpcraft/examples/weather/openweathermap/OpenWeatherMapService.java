@@ -50,7 +50,8 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
  */
 public class OpenWeatherMapService {
     // GSON response type.
-    private static final Type TYPE_RESP = new TypeToken<HashMap<String, Object>>() {}.getType();
+    private static final Type TYPE_RESP = new TypeToken<HashMap<String, Object>>() {
+    }.getType();
 
     // Access key.
     private final String key;
@@ -69,8 +70,8 @@ public class OpenWeatherMapService {
 
     // Can be configured.
     private final ExecutorService pool = NCUtils.mkThreadPool(
-    "openweather",
-    Runtime.getRuntime().availableProcessors() * 8
+        "openweather",
+        Runtime.getRuntime().availableProcessors() * 8
     );
 
     /**
@@ -98,8 +99,8 @@ public class OpenWeatherMapService {
     /**
      * Constructor.
      *
-     * @param key  Service key.
-     * @param maxDaysBack Max days (looking back) configuration value.
+     * @param key            Service key.
+     * @param maxDaysBack    Max days (looking back) configuration value.
      * @param maxDaysForward Max days (looking forward) configuration value.
      */
     public OpenWeatherMapService(String key, int maxDaysBack, int maxDaysForward) {
@@ -125,10 +126,9 @@ public class OpenWeatherMapService {
     }
 
     /**
-     *
      * @param lat Latitude.
      * @param lon Longitude.
-     * @param d Date.
+     * @param d   Date.
      * @return REST call result.
      */
     private Map<String, Object> get(double lat, double lon, long d) {
@@ -141,7 +141,6 @@ public class OpenWeatherMapService {
     }
 
     /**
-     *
      * @param url REST endpoint URL.
      * @return REST call result.
      */
@@ -167,10 +166,10 @@ public class OpenWeatherMapService {
     /**
      * See https://openweathermap.org/api/one-call-api#hist_parameter to extract fields.
      *
-     * @param lat Latitude.
-     * @param lon Longitude.
+     * @param lat  Latitude.
+     * @param lon  Longitude.
      * @param from From date.
-     * @param to To date.
+     * @param to   To date.
      * @return List of REST call results.
      * @throws OpenWeatherMapException Thrown in case of any provider errors.
      */
@@ -218,6 +217,6 @@ public class OpenWeatherMapService {
      * @throws OpenWeatherMapException Thrown in case of any provider errors.
      */
     public Map<String, Object> getCurrent(double lat, double lon) throws OpenWeatherMapException {
-        return get("https://api.openweathermap.org/data/2.5/forecast?lat=" + lat + "&lon=" + lon +"&appid="+ key);
+        return get("https://api.openweathermap.org/data/2.5/forecast?lat=" + lat + "&lon=" + lon + "&appid=" + key);
     }
 }

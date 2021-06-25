@@ -44,8 +44,7 @@ class NCAbstractTokensModelVariants extends NCAbstractTokensModel {
 
             val limNote = limitPart.getMetadata.get("nlpcraft:limit:note").asInstanceOf[String]
 
-            // TODO: wrapAnyWord? - check it (ticket NLPCRAFT-337)
-            require(limNote == "anyWord", s"Unexpected limit token note: '$limNote', token: $limitPart, meta: ${limitPart.getMetadata}")
+            require(limNote == "wrapAnyWord", s"Unexpected limit token note: '$limNote', token: $limitPart, meta: ${limitPart.getMetadata}")
 
             val limIdxs = limitPart.getMetadata.get("nlpcraft:limit:indexes").asInstanceOf[util.List[Integer]].asScala
 
