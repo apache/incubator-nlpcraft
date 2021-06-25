@@ -1692,7 +1692,14 @@ object NCCli extends NCCliBase {
     private [cmdline] def cmdSugSyn(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
         state.accessToken match {
             case Some(acsTok) =>
-                val mdlId = getParam(cmd, args, "mdlId")
+                val mdlId = getParamOpt(cmd, args, "mdlId") match {
+                    case Some(id) => id
+                    case None =>
+                        if (state.probes.size == 1 && state.probes.head.models.length == 1)
+                            state.probes.head.models.head.id
+                        else
+                            throw MissingOptionalParameter(cmd, "mdlId")
+                }
                 val minScore = getDoubleParam(cmd, args, "minScore", 0.5)
 
                 httpRest(
@@ -2211,6 +2218,8 @@ object NCCli extends NCCliBase {
 
         spinner.start()
 
+        val start = U.now()
+
         // Make the REST call.
         val resp =
             try
@@ -2218,8 +2227,10 @@ object NCCli extends NCCliBase {
             finally
                 spinner.stop()
 
+        val durMs = U.now() - start
+
         // Ack HTTP response code.
-        logln(s"HTTP ${if (resp.code == 200) g("200") else r(resp.code)}")
+        logln(s"HTTP ${if (resp.code == 200) g("200") else r(resp.code)} [${durMs}ms]")
 
         if (U.isValidJson(resp.data))
             logln(U.colorJson(U.prettyJson(resp.data)))

@@ -328,12 +328,20 @@ private [cmdline] object NCCliCommands {
             examples = Seq(
                 Example(
                     usage = Seq(
-                        s"""> ask --txt="User request" --mdlId=my.model.id""",
-                        s"""> ask --txt="User text""""
+                        s"""> ask --txt="User request" --mdlId=my.model.id"""
                     ),
                     desc =
                         s"Issues ${y("'ask/sync'")} REST call with given text and model ID."
+                ),
+                Example(
+                    usage = Seq(
+                        s"""> ask --txt="User text""""
+                    ),
+                    desc =
+                        s"Issues ${y("'ask/sync'")} REST call with given text and default model ID " +
+                        s"(single connected probe that has a single model deployed)."
                 )
+
             )
         ),
         Command(
@@ -581,6 +589,14 @@ private [cmdline] object NCCliCommands {
                     ),
                     desc =
                         s"Issues ${y("'model/sugsyn'")} REST call with default min score and given model ID."
+                ),
+                Example(
+                    usage = Seq(
+                        s"""> sugsyn"""
+                    ),
+                    desc =
+                        s"Issues ${y("'model/sugsyn'")} REST call with default min score and default model ID " +
+                        s"(single connected probe that has a single deployed model)."
                 )
             )
         ),

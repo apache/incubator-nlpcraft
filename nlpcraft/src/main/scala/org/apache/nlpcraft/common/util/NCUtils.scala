@@ -147,7 +147,7 @@ object NCUtils extends LazyLogging {
     def nowUtcTs(): Timestamp = new Timestamp(Instant.now().toEpochMilli)
 
     /**
-     * Shortcut.
+     * Shortcut - current timestamp in milliseconds.
      */
     def now(): Long = System.currentTimeMillis()
 
