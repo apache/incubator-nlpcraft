@@ -17,6 +17,8 @@
 
 package org.apache.nlpcraft.model.tools.cmdline
 
+import org.apache.nlpcraft.common._
+
 /**
  *
  * @param pid
@@ -47,4 +49,6 @@ case class NCCliProbeBeacon (
     startMs: Long,
     @transient var logPath: String = null,
     @transient var ph: ProcessHandle = null
-)
+) {
+    lazy val modelsSeq: Seq[String] = U.splitTrimFilter(models, ",")
+}

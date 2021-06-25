@@ -1384,7 +1384,7 @@ object NCCli extends NCCliBase {
 
         val logPath = if (beacon.logPath != null) g(beacon.logPath) else y("<not available>")
         val jarsFolder = if (beacon.jarsFolder != null) g(beacon.jarsFolder) else y("<not set>")
-        val mdlSeq = beacon.models.split(",").map(s => g(s.strip)).toSeq
+        val mdlSeq = beacon.modelsSeq.map(s => g(s.strip))
 
         tbl += ("PID", s"${g(beacon.pid)}")
         tbl += ("Version", s"${g(beacon.ver)} released on ${g(beacon.relDate)}")

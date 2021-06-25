@@ -738,7 +738,7 @@ private [cmdline] object NCCliCommands {
                         s"Comma separated list of fully qualified class names for models to deploy. This will override " +
                         s"${y("'nlpcraft.probe.models'")} configuration property from either default configuration file " +
                         s"or the one provided by ${c("--cfg")} parameter. Note that you also must provide the additional " +
-                        s"classpath via ${c("--cp")} parameter."
+                        s"classpath in this case via ${c("--cp")} parameter."
                 ),
                 Parameter(
                     id = "jvmopts",
@@ -826,8 +826,9 @@ private [cmdline] object NCCliCommands {
                     value = Some("<model list>"),
                     optional = true,
                     desc =
-                        s"Comma separated list of fully qualified class names for models to test. Note that you also " +
-                        s"must provide the additional classpath via ${c("--cp")} parameter."
+                        s"Comma separated list of fully qualified class names for models to deploy and test. Note that you also " +
+                        s"must provide the additional classpath via ${c("--cp")} parameter. If not provided, the models " +
+                        s"specified in configuration file (${c("--cfg")} parameter) will be used instead."
                 ),
                 Parameter(
                     id = "jvmopts",
