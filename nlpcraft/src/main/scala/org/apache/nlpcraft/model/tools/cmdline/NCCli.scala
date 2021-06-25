@@ -1719,7 +1719,14 @@ object NCCli extends NCCliBase {
     private [cmdline] def cmdAsk(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
         state.accessToken match {
             case Some(acsTok) =>
-                val mdlId = getParam(cmd, args, "mdlId")
+                val mdlId = getParamOpt(cmd, args, "mdlId") match {
+                    case Some(id) => id
+                    case None =>
+                        if (state.probes.size == 1 && state.probes.head.models.length == 1)
+                            state.probes.head.models.head.id
+                        else
+                            throw MissingOptionalParameter(cmd, "mdlId")
+                }
                 val txt = getParam(cmd, args, "txt")
                 val data = getParamOrNull(cmd, args, "data")
                 val enableLog = getFlagParam(cmd, args, "enableLog", dflt = false)

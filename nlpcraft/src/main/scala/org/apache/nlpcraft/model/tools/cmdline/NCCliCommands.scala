@@ -299,9 +299,9 @@ private [cmdline] object NCCliCommands {
                     value = Some("model.id"),
                     optional = true,
                     desc =
-                        s"ID of the data model to send the request to. Note that this is optional ONLY if the connected " +
-                        s"probe has only one model deployed - which will be used by default. If the probe has more " +
-                        s"than one model deployed - this parameter is mandatory." +
+                        s"ID of the data model to send the request to. Note that this is optional ONLY if there is only one " +
+                        s"connected probe and it has only one model deployed - which will be used by default. In all other " +
+                        s"cases - this parameter is mandatory." +
                         s"In REPL mode, hit ${rv(" Tab ")} to see auto-suggestion for possible model IDs."
                 ),
                 Parameter(
@@ -563,8 +563,8 @@ private [cmdline] object NCCliCommands {
                     desc =
                         s"ID of the model to run synonym suggestion on. " +
                         s"In REPL mode, hit ${rv(" Tab ")} to see auto-suggestion for possible model IDs. Note that " +
-                        s"this is optional ONLY if the connected probe has only one model deployed - which will be " +
-                        s"used by default. If the probe has more than one model deployed - this parameter is mandatory." 
+                        s"this is optional ONLY if there is only one connected probe and it has only one model deployed - which will be " +
+                        s"used by default. In all other cases - this parameter is mandatory."
                 ),
                 Parameter(
                     id = "minScore",
