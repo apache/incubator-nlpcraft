@@ -34,7 +34,7 @@ import scala.concurrent.duration.Duration
   */
 object NCContextWordEnricher extends NCServerEnricher {
     private final val MAX_CTXWORD_SCORE = 2
-    private final val UNEXISTS_LOW_SCORE = -1.0
+    private final val NOT_SCORE = -1.0
 
     private case class ModelProbeKey(probeId: String, modelId: String)
     private case class WordIndex(word: String, index: Int)
@@ -99,8 +99,7 @@ object NCContextWordEnricher extends NCServerEnricher {
                             syn.index
                         )
                     )
-                case None =>
-                    None
+                case None => None
             }
         )
     }
@@ -155,31 +154,17 @@ object NCContextWordEnricher extends NCServerEnricher {
 
         val map = recs.flatMap { case (elemId, recs) => recs.map(p => p.request -> ElementValue(elemId, p.value)) }
 
-        val res =
-            if (recs.nonEmpty)
-                Await.result(
-                    NCSuggestSynonymManager.suggestWords(recs.flatMap(_._2.map(_.request)).toSeq), Duration.Inf
-                ).
-                map { case (req, suggs) =>
-                    val d = map(req)
-
-                    d.elementId -> suggs.groupBy(p => stem(p.word)).map { case (stem, suggs) =>
-                        stem -> normalizeScore(suggs.map(_.score).max)
-                    }
+        if (recs.nonEmpty)
+            Await.result(
+                NCSuggestSynonymManager.suggestWords(recs.flatMap(_._2.map(_.request)).toSeq), Duration.Inf
+            ).
+            map { case (req, suggs) =>
+                map(req).elementId -> suggs.groupBy(p => stem(p.word)).map { case (stem, suggs) =>
+                    stem -> normalizeScore(suggs.map(_.score).max)
                 }
-            else
-                Map.empty[String, Map[String, Double]]
-
-        //        // TODO:
-//        println("!!!samples")
-//        res.foreach(s => {
-//            println(s"elemID=${s._1}")
-//
-//            println(s._2.toSeq.sortBy(-_._2).mkString("\n") + "\n")
-//
-//        })
-
-        res
+            }
+        else
+            Map.empty[String, Map[String, Double]]
     }
 
     override def enrich(ns: NCNlpSentence, parent: Span): Unit =
@@ -209,12 +194,10 @@ object NCContextWordEnricher extends NCServerEnricher {
                     for (
                         nounTok <- nounToks;
                         (elemId, suggs) <- mdlSamples;
-                        score = suggs.getOrElse(nounTok.stem, UNEXISTS_LOW_SCORE)
+                        score = suggs.getOrElse(nounTok.stem, NOT_SCORE)
                         if score >= cfg.levels(elemId)
                     )
                         add(nounTok, elemId, score)
-
-                    println("detected1="+detected.map(p => p._1.origText -> p._2))
 
                     val idxs = ns.tokens.flatMap(p => if (p.pos.startsWith("N")) Some(p.index) else None).toSeq
 
@@ -232,15 +215,10 @@ object NCContextWordEnricher extends NCServerEnricher {
                         sampleScore = mdlSamplesSuggs(suggStem);
                         avg = (sampleScore + suggScore) / 2
                         if avg >= elemScore
-                    ) {
-                        println(s"elemId=$elemId, word=${ns.tokens(tokIdx).origText}, sampleScore=$sampleScore, suggScore=$suggScore, avg=$avg, suggStem=$suggStem, ")
-
+                    )
+                        //println(s"elemId=$elemId, word=${ns.tokens(tokIdx).origText}, sampleScore=$sampleScore, suggScore=$suggScore, avg=$avg, suggStem=$suggStem, ")
                         add(ns.tokens(tokIdx), elemId, avg)
-                    }
                 }
-
-                println("detected2="+detected.map(p => p._1.origText -> p._2))
-
             case None => // No-op.
         }
 }
