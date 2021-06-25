@@ -297,8 +297,11 @@ private [cmdline] object NCCliCommands {
                     id = "mdlId",
                     names = Seq("--mdlId", "-m"),
                     value = Some("model.id"),
+                    optional = true,
                     desc =
-                        s"ID of the data model to send the request to. " +
+                        s"ID of the data model to send the request to. Note that this is optional ONLY if the connected " +
+                        s"probe has only one model deployed - which will be used by default. If the probe has more " +
+                        s"than one model deployed - this parameter is mandatory." +
                         s"In REPL mode, hit ${rv(" Tab ")} to see auto-suggestion for possible model IDs."
                 ),
                 Parameter(
@@ -325,7 +328,8 @@ private [cmdline] object NCCliCommands {
             examples = Seq(
                 Example(
                     usage = Seq(
-                        s"""> ask --txt="User request" --mdlId=my.model.id"""
+                        s"""> ask --txt="User request" --mdlId=my.model.id""",
+                        s"""> ask --txt="User text""""
                     ),
                     desc =
                         s"Issues ${y("'ask/sync'")} REST call with given text and model ID."
@@ -555,10 +559,12 @@ private [cmdline] object NCCliCommands {
                     id = "mdlId",
                     names = Seq("--mdlId", "-m"),
                     value = Some("model.id"),
+                    optional = true,
                     desc =
                         s"ID of the model to run synonym suggestion on. " +
-                        s"In REPL mode, hit ${rv(" Tab ")} to see auto-suggestion for possible model IDs. " +
-                        s"Note that the probe hosting this model must be connected to the server."
+                        s"In REPL mode, hit ${rv(" Tab ")} to see auto-suggestion for possible model IDs. Note that " +
+                        s"this is optional ONLY if the connected probe has only one model deployed - which will be " +
+                        s"used by default. If the probe has more than one model deployed - this parameter is mandatory." 
                 ),
                 Parameter(
                     id = "minScore",
