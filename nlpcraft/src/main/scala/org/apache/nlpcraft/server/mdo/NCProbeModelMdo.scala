@@ -25,7 +25,8 @@ case class NCModelMLConfigMdo(
     @NCMdoField probeId: String,
     @NCMdoField modelId: String,
     @NCMdoField values: Map[String /*Element ID*/, Map[/*Value*/String, /*Synonym*/Set[String]]],
-    @NCMdoField samples: Set[String]
+    @NCMdoField samples: Set[String],
+    @NCMdoField levels: Map[String /*Element ID*/, Double]
 )
 /**
   * Probe model MDO.

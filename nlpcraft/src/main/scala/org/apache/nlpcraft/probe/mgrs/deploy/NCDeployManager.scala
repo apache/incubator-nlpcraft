@@ -83,6 +83,8 @@ object NCDeployManager extends NCService {
 
     private final val SUSP_SYNS_CHARS = Seq("?", "*", "+")
 
+    private final val MAX_CTXWORD_VALS_CNT = 1000
+
     @volatile private var data: mutable.ArrayBuffer[NCProbeModel] = _
     @volatile private var mdlFactory: NCModelFactory = _
 
@@ -417,6 +419,23 @@ object NCDeployManager extends NCService {
                   s"max=$maxCnt" +
               s"]")
 
+        // Validates context words parameters.
+        val ctxWordElems = mdl.getElements.asScala.filter(_.getContextWordStrictLevel.isPresent)
+
+        if (ctxWordElems.nonEmpty) {
+            val valsSynsCnt = ctxWordElems.toSeq.map(_.getValues.asScala.map(_.getSynonyms.size()).sum).sum
+
+            if (valsSynsCnt > MAX_CTXWORD_VALS_CNT) {
+                // TODO: do we need print recommended value.?
+                logger.warn(
+                    s"Too many values synonyms detected for context words elements [" +
+                        s"mdlId=$mdlId, " +
+                        s"cnt=$valsSynsCnt," +
+                        s"recommended=$MAX_CTXWORD_VALS_CNT" +
+                        s"]")
+            }
+        }
+
         // Discard value loaders.
         for (elm <- mdl.getElements.asScala)
             elm.getValueLoader.ifPresent(_.onDiscard())
@@ -519,7 +538,7 @@ object NCDeployManager extends NCService {
             exclStopWordsStems = exclStopWords,
             suspWordsStems = suspWords,
             elements = mdl.getElements.asScala.map(elm => (elm.getId, elm)).toMap,
-            samples = scanSamples(mdl)
+            samples = scanSamples(mdl, hasCtxWordElems = ctxWordElems.nonEmpty)
         )
     }
 
@@ -848,6 +867,19 @@ object NCDeployManager extends NCService {
                     s"mdlId=${mdl.getId}, " +
                     s"elmId=$elmId" +
                 s"]")
+
+            if (elm.getContextWordStrictLevel.isPresent) {
+                val level = elm.getContextWordStrictLevel.get()
+
+                if (level < 0 || level > 1) {
+                    // TODO:
+                    throw new NCE(s"Model element context word strict level is out of range [" +
+                        s"mdlId=${mdl.getId}, " +
+                        s"elmId=$elmId, " +
+                        s"level=$level" +
+                        s"]")
+                }
+            }
         }
 
     /**
@@ -1600,9 +1632,10 @@ object NCDeployManager extends NCService {
       * Scans given model for intent samples.
       *
       * @param mdl Model to scan.
+      * @param hasCtxWordElems Flag.
       */
     @throws[NCE]
-    private def scanSamples(mdl: NCModel): Set[Sample] = {
+    private def scanSamples(mdl: NCModel, hasCtxWordElems: Boolean): Set[Sample] = {
         val mdlId = mdl.getId
 
         val samples = mutable.Buffer.empty[Sample]
@@ -1672,6 +1705,12 @@ object NCDeployManager extends NCService {
                         }
 
                 }
+        }
+
+        if (hasCtxWordElems && samples.isEmpty) {
+            // TODO:
+            // TODO: we don't check samples count, and their validity (provided samples can for another elements.)
+            throw new NCE(s"Model with context word elements should contains samples [id=${mdl.getId}]")
         }
 
         samples.toSet

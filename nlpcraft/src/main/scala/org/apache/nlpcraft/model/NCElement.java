@@ -383,8 +383,9 @@ public interface NCElement extends NCMetadata, Serializable {
         return Optional.empty();
     }
 
-    // TODO:
-    default boolean isContextWordSupport() {
-        return false;
+    // TODO: 0 .. 1
+    // Empty - means disabled.
+    default Optional<Double> getContextWordStrictLevel() {
+        return Optional.empty();
     }
 }

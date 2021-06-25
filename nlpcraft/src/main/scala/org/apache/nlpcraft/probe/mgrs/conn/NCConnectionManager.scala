@@ -30,7 +30,7 @@ import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 
 import java.io.{EOFException, IOException, InterruptedIOException}
 import java.net.{InetAddress, NetworkInterface}
-import java.util
+import java.{lang, util}
 import java.util.concurrent.CountDownLatch
 import java.util.{Collections, Properties, TimeZone}
 import scala.collection.mutable
@@ -214,18 +214,19 @@ object NCConnectionManager extends NCService {
                         NCModelManager.getAllModels().map(wrapper => {
                             val mdl = wrapper.model
 
-                            val ctxWordElems = mdl.getElements.asScala.filter(_.isContextWordSupport)
+                            val ctxWordElems = mdl.getElements.asScala.filter(_.getContextWordStrictLevel.isPresent)
 
-                            // TODO: validate: too many values, examples. missed them.
                             val (
                                 values,
-                                samples
+                                samples,
+                                levels
                             ): (
                                 java.util.Map[String, java.util.Map[String, java.util.Set[String]]],
-                                java.util.Set[String]
+                                java.util.Set[String],
+                                java.util.Map[String, lang.Double]
                             ) =
                                 if (ctxWordElems.isEmpty)
-                                    (Collections.emptyMap(), Collections.emptySet())
+                                    (Collections.emptyMap(), Collections.emptySet(), Collections.emptyMap())
                                 else {
                                     (
                                         ctxWordElems.map(e =>
@@ -236,7 +237,8 @@ object NCConnectionManager extends NCService {
                                                     set
                                                 }).toMap.asJava
                                         ).toMap.asJava,
-                                        wrapper.samples.flatMap(_._2.flatMap(p => p)).asJava
+                                        wrapper.samples.flatMap(_._2.flatMap(p => p)).asJava,
+                                        ctxWordElems.map(e => e.getId -> e.getContextWordStrictLevel.get()).toMap.asJava
                                     )
                                 }
 
@@ -250,7 +252,8 @@ object NCConnectionManager extends NCService {
                                 mdl.getVersion,
                                 new util.HashSet[String](mdl.getEnabledBuiltInTokens),
                                 values,
-                                samples
+                                samples,
+                                levels
                             )
                         })
                 ), cryptoKey)

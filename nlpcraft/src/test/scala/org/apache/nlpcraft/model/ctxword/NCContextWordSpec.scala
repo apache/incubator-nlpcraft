@@ -21,7 +21,8 @@ import org.apache.nlpcraft.model.{NCElement, NCIntent, NCIntentSample, NCIntentT
 import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
 import org.junit.jupiter.api.Test
 
-import java.util
+import java.{lang, util}
+import java.util.Optional
 import scala.jdk.CollectionConverters.{SeqHasAsJava, SetHasAsJava}
 
 /**
@@ -33,10 +34,14 @@ class NCContextWordSpecModel extends NCModel {
         override def getSynonyms: util.List[String] = (Seq(name) ++ syns).asJava
     }
 
-    case class Elem(id: String, values: NCValue*) extends NCElement {
+    case class Elem(id: String, level: Double, values: NCValue*) extends NCElement {
         override def getId: String = id
         override def getValues: util.List[NCValue] = values.asJava
-        override def isContextWordSupport: Boolean = true
+        override def getContextWordStrictLevel: Optional[lang.Double] = Optional.of(level)
+    }
+
+    object Elem {
+        def apply(id: String, values: NCValue*): Elem = new Elem(id, 0.4, values: _*)
     }
 
     override def getId: String = this.getClass.getSimpleName
@@ -60,9 +65,11 @@ class NCContextWordSpecModel extends NCModel {
             "BMW has the best engine",
             "Luxury cars like Mercedes and BMW  are prime targets",
             "BMW will install side air bags up front",
+
             "A wild cat is very dangerous",
             "A fox eats hens",
             "The fox was already in your chicken house",
+
             "What is the local temperature ?",
             "This is the first day of heavy rain",
             "It is the beautiful day, the sun is shining ",
@@ -70,9 +77,9 @@ class NCContextWordSpecModel extends NCModel {
     )
     @NCIntent(
         "intent=classification " +
-        "term(carBrands)~{tok_id() == 'class:carBrand'}* " +
-        "term(animals)~{tok_id() == 'class:animal'}* " +
-        "term(weathers)~{tok_id() == 'class:weather'}* "
+            "term(carBrands)~{tok_id() == 'class:carBrand'}* " +
+            "term(animals)~{tok_id() == 'class:animal'}* " +
+            "term(weathers)~{tok_id() == 'class:weather'}* "
     )
     def onMatch(
         @NCIntentTerm("carBrands") carBrands: List[NCToken],
@@ -97,8 +104,13 @@ class NCContextWordSpec extends NCTestContext {
     private[ctxword] def test(): Unit = {
         val cli = getClient
 
-//        cli.ask("I want to have a dog and fox")
-//        cli.ask("I like to drive my Porsche and Volkswagen")
+        cli.ask("I want to have a dog and fox")
+        cli.ask("I fed your fish")
+
+        cli.ask("I like to drive my Porsche and Volkswagen")
+        cli.ask("Peugeot added motorcycles to its range in 1901")
+
         cli.ask("The frost is possible today")
+        cli.ask("There's a very strong wind from the east now")
     }
 }

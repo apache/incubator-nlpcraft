@@ -1218,4 +1218,10 @@ public interface NCModelView extends NCMetadata {
     default Map<String, Set<String>> getRestrictedCombinations() {
         return Collections.emptyMap();
     }
+
+    // TODO: 0 .. 1
+    // Empty - means disabled.  default. Can be overridden by each elements.
+    default Optional<Double> getContextWordStrictLevel() {
+        return Optional.empty();
+    }
 }

@@ -358,16 +358,14 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
                         }
 
                         @Override
-                        public boolean isContextWordSupport() {
-                            return nvlMandatory(js.isContextWordSupport(), NCElement.super.isContextWordSupport());
+                        public Optional<Double> getContextWordStrictLevel() {
+                            return js.getContextWordStrictLevel() != null ?
+                                Optional.of(js.getContextWordStrictLevel()) :
+                                Optional.ofNullable(proxy.getContextWordStrictLevel());
                         }
 
                         private<T> Optional<T> nvlOpt(T t, T dflt) {
                             return Optional.of(t != null ? t : dflt);
-                        }
-
-                        private<T> T nvlMandatory(T t, T dflt) {
-                            return t != null ? t : dflt;
                         }
                     };
             }).collect(Collectors.toSet());

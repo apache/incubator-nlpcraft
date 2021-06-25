@@ -615,7 +615,8 @@ object NCProbeManager extends NCService {
                             String,
                             java.util.Set[String],
                             java.util.Map[String, java.util.Map[String, java.util.Set[String]]],
-                            java.util.Set[String]
+                            java.util.Set[String],
+                            java.util.Map[String, Double]
                         )]]("PROBE_MODELS").
                         map {
                             case (
@@ -624,13 +625,17 @@ object NCProbeManager extends NCService {
                                 mdlVer,
                                 enabledBuiltInToks,
                                 values,
-                                samples
+                                samples,
+                                levels
                             ) =>
                                 require(mdlId != null)
                                 require(mdlName != null)
                                 require(mdlVer != null)
                                 require(enabledBuiltInToks != null)
-                                require(values.isEmpty && samples.isEmpty || !values.isEmpty && !samples.isEmpty)
+                                require(
+                                    values.isEmpty && samples.isEmpty && levels.isEmpty ||
+                                    !values.isEmpty && !samples.isEmpty && !levels.isEmpty
+                                )
 
                                 NCProbeModelMdo(
                                     id = mdlId,
@@ -643,8 +648,15 @@ object NCProbeManager extends NCService {
                                                 NCModelMLConfigMdo(
                                                     probeId = probeId,
                                                     modelId = mdlId,
-                                                    values = values.asScala.map(p => p._1 -> p._2.asScala.map(p => p._1 -> p._2.asScala.toSet).toMap).toMap,
-                                                    samples = samples.asScala.toSet
+                                                    values = values.asScala.map {
+                                                        case (elemId, map) =>
+                                                            elemId ->
+                                                                map.asScala.map {
+                                                                    case (value, syns) => value -> syns.asScala.toSet
+                                                                }.toMap
+                                                    }.toMap,
+                                                    samples = samples.asScala.toSet,
+                                                    levels.asScala.toMap
                                                 )
                                             )
                                         else

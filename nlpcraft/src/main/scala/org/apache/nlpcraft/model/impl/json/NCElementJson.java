@@ -37,7 +37,7 @@ public class NCElementJson {
     // Can be null.
     private Boolean isSparse;
     // Can be null.
-    private Boolean contextWordSupport;
+    private Double contextWordStrictLevel;
 
     public String getParentId() {
         return parentId;
@@ -99,10 +99,10 @@ public class NCElementJson {
     public void setSparse(Boolean sparse) {
         isSparse = sparse;
     }
-    public Boolean isContextWordSupport() {
-        return contextWordSupport;
+    public Double getContextWordStrictLevel() {
+        return contextWordStrictLevel;
     }
-    public void setContextWordSupport(Boolean contextWordSupport) {
-        this.contextWordSupport = contextWordSupport;
+    public void setContextWordStrictLevel(Double contextWordStrictLevel) {
+        this.contextWordStrictLevel = contextWordStrictLevel;
     }
 }
