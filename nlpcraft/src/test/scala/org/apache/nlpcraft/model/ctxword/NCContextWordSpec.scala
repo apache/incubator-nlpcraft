@@ -22,13 +22,15 @@ import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
 import org.junit.jupiter.api.Test
 
 import java.{lang, util}
-import java.util.Optional
-import scala.jdk.CollectionConverters.{SeqHasAsJava, SetHasAsJava}
+import java.util.{Collections, Optional}
+import scala.jdk.CollectionConverters.{ListHasAsScala, SeqHasAsJava, SetHasAsJava}
 
 /**
   * Test model.
   */
 class NCContextWordSpecModel extends NCModel {
+    private final val LEVEL = 0.4
+
     case class Value(name: String, syns: String*) extends NCValue {
         override def getName: String = name
         override def getSynonyms: util.List[String] = (Seq(name) ++ syns).asJava
@@ -38,10 +40,11 @@ class NCContextWordSpecModel extends NCModel {
         override def getId: String = id
         override def getValues: util.List[NCValue] = values.asJava
         override def getContextWordStrictLevel: Optional[lang.Double] = Optional.of(level)
+        override def getGroups: util.List[String] = Collections.singletonList("testGroup")
     }
 
     object Elem {
-        def apply(id: String, values: NCValue*): Elem = new Elem(id, 0.4, values: _*)
+        def apply(id: String, values: NCValue*): Elem = new Elem(id, LEVEL, values: _*)
     }
 
     override def getId: String = this.getClass.getSimpleName
@@ -50,7 +53,7 @@ class NCContextWordSpecModel extends NCModel {
 
     override def getElements: util.Set[NCElement] =
         Set(
-            Elem("class:carBrand", Value("BMW")),
+            Elem("class:cars", Value("BMW")),
             Elem("class:animal", Value("fox"), Value("cat", "tomcat")),
             Elem("class:weather", Value("temperature"), Value("rain"), Value("sun"))
         ).map(p => {
@@ -75,22 +78,12 @@ class NCContextWordSpecModel extends NCModel {
             "It is the beautiful day, the sun is shining ",
         )
     )
-    @NCIntent(
-        "intent=classification " +
-            "term(carBrands)~{tok_id() == 'class:carBrand'}* " +
-            "term(animals)~{tok_id() == 'class:animal'}* " +
-            "term(weathers)~{tok_id() == 'class:weather'}* "
-    )
-    def onMatch(
-        @NCIntentTerm("carBrands") carBrands: List[NCToken],
-        @NCIntentTerm("animals") animals: List[NCToken],
-        @NCIntentTerm("weathers") weathers: List[NCToken]
-    ): NCResult = {
-        println("carBrands=" + carBrands)
-        println("animals=" + animals)
-        println("weathers=" + weathers)
+    @NCIntent("intent=classification term(cars)~{has(tok_groups(), 'testGroup')}*")
+    def onMatch(@NCIntentTerm("classification") toks: List[NCToken]): NCResult = {
+        val groups = toks.flatMap(_.getGroups.asScala).mkString(" ")
+        val texts = toks.map(_.getOriginalText).mkString(" ")
 
-        NCResult.text("ok")
+        NCResult.text(toks.map(_.getOriginalText).mkString(" "))
     }
 }
 
@@ -99,18 +92,19 @@ class NCContextWordSpecModel extends NCModel {
   */
 @NCTestEnvironment(model = classOf[NCContextWordSpecModel], startClient = true)
 class NCContextWordSpec extends NCTestContext {
+    private def check(txt: String, group: String, words: String*): Unit =
+        require(s"$group ${words.mkString(" ")}" == getClient.ask(txt).getText)
+
     @Test
     @throws[Exception]
     private[ctxword] def test(): Unit = {
-        val cli = getClient
+        check("I want to have a dog and fox", "class:animal", "dog", "fox")
+        check("I fed your fish", "class:animal", "fish")
 
-        cli.ask("I want to have a dog and fox")
-        cli.ask("I fed your fish")
+        check("I like to drive my Porsche and Volkswagen", "class:cars", "Porsche", "Volkswagen")
+        check("Peugeot added motorcycles to its range in 1901", "class:cars", "Peugeot", "motorcycles")
 
-        cli.ask("I like to drive my Porsche and Volkswagen")
-        cli.ask("Peugeot added motorcycles to its range in 1901")
-
-        cli.ask("The frost is possible today")
-        cli.ask("There's a very strong wind from the east now")
+        check("The frost is possible today", "class:weather", "frost")
+        check("There's a very strong wind from the east now", "class:weather", "wind")
     }
 }
