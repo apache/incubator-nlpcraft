@@ -36,15 +36,15 @@ class NCContextWordSpecModel extends NCModel {
         override def getSynonyms: util.List[String] = (Seq(name) ++ syns).asJava
     }
 
-    case class Elem(id: String, level: Double, values: NCValue*) extends NCElement {
+    case class Element(id: String, level: Double, values: NCValue*) extends NCElement {
         override def getId: String = id
         override def getValues: util.List[NCValue] = values.asJava
         override def getContextWordStrictLevel: Optional[lang.Double] = Optional.of(level)
         override def getGroups: util.List[String] = Collections.singletonList("testGroup")
     }
 
-    object Elem {
-        def apply(id: String, values: NCValue*): Elem = new Elem(id, LEVEL, values: _*)
+    object Element {
+        def apply(id: String, values: NCValue*): Element = new Element(id, LEVEL, values: _*)
     }
 
     override def getId: String = this.getClass.getSimpleName
@@ -53,9 +53,9 @@ class NCContextWordSpecModel extends NCModel {
 
     override def getElements: util.Set[NCElement] =
         Set(
-            Elem("class:cars", Value("BMW")),
-            Elem("class:animal", Value("fox"), Value("cat", "tomcat")),
-            Elem("class:weather", Value("temperature"), Value("rain"), Value("sun"))
+            Element("class:cars", Value("BMW")),
+            Element("class:animal", Value("fox"), Value("cat", "tomcat")),
+            Element("class:weather", Value("temperature"), Value("rain"), Value("sun"))
         ).map(p => {
             val e: NCElement = p
 
@@ -73,7 +73,7 @@ class NCContextWordSpecModel extends NCModel {
             "A fox eats hens",
             "The fox was already in your chicken house",
 
-            "What is the local temperature ?",
+            "What is the local temperature?",
             "This is the first day of heavy rain",
             "It is the beautiful day, the sun is shining ",
         )

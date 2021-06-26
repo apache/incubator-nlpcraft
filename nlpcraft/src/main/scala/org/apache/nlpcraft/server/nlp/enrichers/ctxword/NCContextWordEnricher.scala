@@ -70,12 +70,19 @@ object NCContextWordEnricher extends NCServerEnricher {
 
     /**
       *
+      * @param awaitable
+      * @tparam T
+      * @return
+      */
+    private def syncExec[T](awaitable : scala.concurrent.Awaitable[T]): T = Await.result(awaitable, Duration.Inf)
+
+    /**
+      *
       * @param reqs
       * @return
       */
     private def getSentenceData(reqs: Seq[NCSuggestionRequest]): Map[NCWordSuggestion, Int] =
-        Await.result(NCSuggestSynonymManager.suggestWords(reqs), Duration.Inf).
-            flatMap { case (req, suggs) => suggs.map(_ -> req.index) }
+        syncExec(NCSuggestSynonymManager.suggestWords(reqs)).flatMap { case (req, suggs) => suggs.map(_ -> req.index) }
 
     /**
       *
@@ -154,9 +161,7 @@ object NCContextWordEnricher extends NCServerEnricher {
         val map = recs.flatMap { case (elemId, recs) => recs.map(p => p.request -> ElementValue(elemId, p.value)) }
 
         if (recs.nonEmpty)
-            Await.result(
-                NCSuggestSynonymManager.suggestWords(recs.flatMap(_._2.map(_.request)).toSeq), Duration.Inf
-            ).
+            syncExec(NCSuggestSynonymManager.suggestWords(recs.flatMap(_._2.map(_.request)).toSeq)).
             map { case (req, suggs) =>
                 map(req).elementId -> suggs.groupBy(p => stem(p.word)).map { case (stem, suggs) =>
                     stem -> normalizeScore(suggs.map(_.score).max)
