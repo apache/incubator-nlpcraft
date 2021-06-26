@@ -21,6 +21,7 @@ import com.typesafe.scalalogging.LazyLogging
 import org.antlr.v4.runtime.tree.ParseTreeWalker
 import org.antlr.v4.runtime._
 import org.apache.nlpcraft.common._
+import org.apache.nlpcraft.common.antlr4._
 import org.apache.nlpcraft.common.makro.antlr4._
 import org.apache.nlpcraft.common.makro.antlr4.{NCMacroDslParser => P}
 import scala.collection.mutable
@@ -47,7 +48,7 @@ object NCMacroCompiler extends LazyLogging {
       * @param in
       */
     class FiniteStateMachine(parser: P, in: String) extends NCMacroDslBaseListener {
-        private val stack = new mutable.ArrayStack[StackItem]
+        private val stack = new mutable.Stack[StackItem]
 
         private var expandedSyns: Set[String] = _
 
@@ -227,14 +228,11 @@ object NCMacroCompiler extends LazyLogging {
         charPos: Int, // 0, 1, 2, ...
         in: String
     ): String = {
-        val dash = "-" * in.length
-        val pos = Math.max(0, charPos)
-        val posPtr = dash.substring(0, pos) + r("^") + y(dash.substring(pos + 1))
-        val inPtr = in.substring(0, pos) + r(in.charAt(pos)) + y(in.substring(pos + 1))
-    
-        s"Macro compiler error at line $line:${charPos + 1} - $msg\n" +
-        s"  |-- ${c("Macro:")}    $inPtr\n" +
-        s"  +-- ${c("Location:")} $posPtr"
+        val hold = NCCompilerUtils.mkErrorHolder(in, charPos)
+
+        s"Macro compiler error at line $line - $msg\n" +
+        s"  |-- ${c("Macro:")} ${hold.origStr}\n" +
+        s"  +-- ${c("Error:")} ${hold.ptrStr}"
     }
     
     /**

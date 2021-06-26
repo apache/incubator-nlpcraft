@@ -31,7 +31,7 @@ import java.time.{LocalDate, LocalTime}
 import java.util
 import java.util.{Calendar, Collections, Collection => JColl, List => JList, Map => JMap}
 
-import scala.jdk.CollectionConverters.{CollectionHasAsScala, IterableHasAsJava}
+import scala.jdk.CollectionConverters.CollectionHasAsScala
 
 trait NCIdlCompilerBase {
     type S = NCIdlStack
@@ -152,7 +152,7 @@ trait NCIdlCompilerBase {
     def rtMissingParamError(argNum: Int, fun: String)(implicit ctx: PRC): NCE =
         newRuntimeError(s"Missing parameters for IDL function ($argNum is required): $fun()")
     def rtTooManyParamsError(argNum: Int, fun: String)(implicit ctx: PRC): NCE =
-        newRuntimeError(s"Too many parameters for IDL function (only $argNum is required): $fun()")
+        newRuntimeError(s"Too many parameters for IDL function ($argNum is required): $fun()")
     def rtParamTypeError(fun: String, invalid: Object, expectType: String)(implicit ctx: PRC): NCE =
         newRuntimeError(s"Expected '$expectType' type of parameter for IDL function '$fun()', found: $invalid")
     def rtParamNullError(fun: String)(implicit ctx: PRC): NCE =
