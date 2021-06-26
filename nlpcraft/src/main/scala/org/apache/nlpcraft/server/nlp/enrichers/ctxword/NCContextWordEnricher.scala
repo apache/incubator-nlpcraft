@@ -154,21 +154,21 @@ object NCContextWordEnricher extends NCServerEnricher {
                     sample <- cfg.samples;
                     sampleWords = spaceTokenize(sample);
                     samplesMap = sampleWords.zipWithIndex.map { case (w, idx) => stem(w) -> WordIndex(w, idx) }.toMap;
-                    sugg <- parseSample(sampleWords, samplesMap, synsStem
+                    suggReq <- parseSample(sampleWords, samplesMap, synsStem
                 )
             )
-            yield (elemId, Record(sugg, value))).groupBy { case (elemId, _) => elemId }.
+            yield (elemId, Record(suggReq, value))).groupBy { case (elemId, _) => elemId }.
                 map { case (elemId, map) => elemId -> map.values.toSeq }
 
         val map = recs.flatMap { case (elemId, recs) => recs.map(p => p.request -> ElementValue(elemId, p.value)) }
 
         if (recs.nonEmpty)
             syncExec(NCSuggestSynonymManager.suggestWords(recs.flatMap(_._2.map(_.request)).toSeq)).
-            map { case (req, suggs) =>
-                map(req).elementId -> suggs.groupBy(p => stem(p.word)).map { case (stem, suggs) =>
-                    stem -> normalizeScore(suggs.map(_.score).max)
+                map { case (req, suggs) =>
+                    map(req).elementId -> suggs.groupBy(p => stem(p.word)).map { case (stem, suggs) =>
+                        stem -> normalizeScore(suggs.map(_.score).max)
+                    }
                 }
-            }
         else
             Map.empty[String, Map[String, Double]]
     }

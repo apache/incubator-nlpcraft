@@ -156,7 +156,7 @@ object NCSuggestSynonymManager extends NCService {
      * @return
      */
     def suggestModel(mdlId: String, minScoreOpt: Option[Double], parent: Span = null): Future[NCSuggestSynonymResult] =
-        startScopedSpan("suggest", parent, "mdlId" -> mdlId) { _ =>
+        startScopedSpan("suggestModel", parent, "mdlId" -> mdlId) { _ =>
             val now = U.now()
 
             val promise = Promise[NCSuggestSynonymResult]()
@@ -457,21 +457,21 @@ object NCSuggestSynonymManager extends NCService {
 
     /**
       *
-      * @param sens
+      * @param reqs
       * @param minScoreOpt
       * @param parent
       * @return
       */
-    def suggestWords(sens: Seq[NCSuggestionRequest], minScoreOpt: Option[Double] = None, parent: Span = null):
+    def suggestWords(reqs: Seq[NCSuggestionRequest], minScoreOpt: Option[Double] = None, parent: Span = null):
         Future[Map[NCSuggestionRequest, Seq[NCWordSuggestion]]] =
-        startScopedSpan("suggest", parent) { _ =>
+        startScopedSpan("suggestWords", parent) { _ =>
             val promise = Promise[Map[NCSuggestionRequest, Seq[NCWordSuggestion]]]()
 
             case class Result(request: NCSuggestionRequest, suggestions: Seq[NCWordSuggestion])
 
             val data = new CopyOnWriteArrayList[Result]()
             val cli = HttpClients.createDefault
-            val batches = sens.sliding(BATCH_SIZE, BATCH_SIZE).map(_.toSeq).toSeq
+            val batches = reqs.sliding(BATCH_SIZE, BATCH_SIZE).map(_.toSeq).toSeq
             val cnt = new AtomicInteger(0)
 
             for (batch <- batches)

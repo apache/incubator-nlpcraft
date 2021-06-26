@@ -75,7 +75,7 @@ class NCContextWordSpecModel extends NCModel {
 
             "What is the local temperature?",
             "This is the first day of heavy rain",
-            "It is the beautiful day, the sun is shining ",
+            "It is the beautiful day, the sun is shining",
         )
     )
     @NCIntent("intent=classification term(toks)~{has(tok_groups(), 'testGroup')}*")
