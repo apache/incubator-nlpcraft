@@ -146,14 +146,16 @@ object NCContextWordEnricher extends NCServerEnricher {
         case class Record(request: NCSuggestionRequest, value: String)
 
         val recs: Map[String, Seq[Record]] =
-            (for (
-                (elemId, values) <- cfg.values;
-                (value, syns) <- values;
-                synsStem = syns.map(stem);
-                sample <- cfg.samples;
-                sampleWords = spaceTokenize(sample);
-                samplesMap = sampleWords.zipWithIndex.map { case (w, idx) => stem(w) -> WordIndex(w, idx) }.toMap;
-                sugg <- parseSample(sampleWords, samplesMap, synsStem)
+            (
+                for (
+                    (elemId, values) <- cfg.values;
+                    (value, syns) <- values;
+                    synsStem = syns.map(stem);
+                    sample <- cfg.samples;
+                    sampleWords = spaceTokenize(sample);
+                    samplesMap = sampleWords.zipWithIndex.map { case (w, idx) => stem(w) -> WordIndex(w, idx) }.toMap;
+                    sugg <- parseSample(sampleWords, samplesMap, synsStem
+                )
             )
             yield (elemId, Record(sugg, value))).groupBy { case (elemId, _) => elemId }.
                 map { case (elemId, map) => elemId -> map.values.toSeq }
