@@ -34,12 +34,13 @@ import scala.concurrent.duration.Duration
   */
 object NCContextWordEnricher extends NCServerEnricher {
     private final val MAX_CTXWORD_SCORE = 2
-    private final val NOT_SCORE = -1.0
+    private final val EXCLUSIVE_MIN_SCORE = -1.0
 
     private case class ModelProbeKey(probeId: String, modelId: String)
     private case class WordIndex(word: String, index: Int)
     private case class ElementValue(elementId: String, value: String)
     private case class ElementScore(elementId: String, score: Double)
+
     private type ElementStemScore = Map[/** Element ID */String, Map[/** Stem */String,/** Score */Double]]
 
     @volatile private var samples: mutable.HashMap[ModelProbeKey, ElementStemScore] = _
@@ -123,9 +124,7 @@ object NCContextWordEnricher extends NCServerEnricher {
             case None =>
                 val res = askSamples(cfg)
 
-                samples.synchronized {
-                    samples += key -> res
-                }
+                samples.synchronized { samples += key -> res }
 
                 res
         }
@@ -194,7 +193,7 @@ object NCContextWordEnricher extends NCServerEnricher {
                     for (
                         nounTok <- nounToks;
                         (elemId, suggs) <- mdlSamples;
-                        score = suggs.getOrElse(nounTok.stem, NOT_SCORE)
+                        score = suggs.getOrElse(nounTok.stem, EXCLUSIVE_MIN_SCORE)
                         if score >= cfg.levels(elemId)
                     )
                         add(nounTok, elemId, score)
@@ -208,16 +207,16 @@ object NCContextWordEnricher extends NCServerEnricher {
                         // separated by space, and Suggestion Manager uses space tokenizer.
                         (sugg, tokIdx) <- getSentenceData(reqs);
                         suggStem = stem(sugg.word);
-                        suggScore = normalizeScore(sugg.score);
+                        senSuggScore = normalizeScore(sugg.score);
                         (elemId, mdlSamplesSuggs) <- mdlSamples
                         if mdlSamplesSuggs.contains(suggStem);
                         elemScore = cfg.levels(elemId);
-                        sampleScore = mdlSamplesSuggs(suggStem);
-                        avg = (sampleScore + suggScore) / 2
-                        if avg >= elemScore
+                        sampleSuggScore = mdlSamplesSuggs(suggStem);
+                        score = (sampleSuggScore + senSuggScore) / 2
+                        if score >= elemScore
                     )
                         //println(s"elemId=$elemId, word=${ns.tokens(tokIdx).origText}, sampleScore=$sampleScore, suggScore=$suggScore, avg=$avg, suggStem=$suggStem, ")
-                        add(ns.tokens(tokIdx), elemId, avg)
+                        add(ns.tokens(tokIdx), elemId, score)
                 }
             case None => // No-op.
         }
