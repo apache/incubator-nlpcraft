@@ -19,16 +19,14 @@ package org.apache.nlpcraft.model.ctxword
 
 import org.apache.nlpcraft.model.{NCElement, NCIntent, NCIntentMatch, NCIntentSample, NCIntentTerm, NCModel, NCResult, NCToken, NCValue}
 import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.{AfterEach, BeforeEach, Test}
 
 import java.util.{Collections, Optional}
 import java.{lang, util}
+import scala.collection.mutable.ArrayBuffer
 import scala.jdk.CollectionConverters.{SeqHasAsJava, SetHasAsJava}
 
-/**
-  * Test model.
-  */
-class NCContextWordSpecModel extends NCModel {
+object NCContextWordSpecModel {
     private final val LEVEL = 0.4
 
     case class Value(name: String, syns: String*) extends NCValue {
@@ -47,6 +45,15 @@ class NCContextWordSpecModel extends NCModel {
         def apply(id: String, values: NCValue*): Element = new Element(id, LEVEL, values: _*)
     }
 
+    var testsData = ArrayBuffer.empty[String]
+}
+
+import NCContextWordSpecModel._
+
+/**
+  * Test model.
+  */
+class NCContextWordSpecModel extends NCModel {
     override def getId: String = this.getClass.getSimpleName
     override def getName: String = this.getClass.getSimpleName
     override def getVersion: String = "1.0.0"
@@ -85,7 +92,7 @@ class NCContextWordSpecModel extends NCModel {
             s"[text=${t.getOriginalText}, elementId=${t.getId}, score=${t.getMetadata.get(s"${t.getId}:score")}]"
         ).mkString(", ")
 
-        println(s"Matched [text=$txt, tokens=$toksStr")
+        testsData += s"Matched [text=$txt, tokens=$toksStr"
 
         val elemIds = toks.map(_.getId).distinct.mkString(" ")
         val words = toks.map(_.getOriginalText).mkString(" ")
@@ -102,8 +109,13 @@ class NCContextWordSpec extends NCTestContext {
     private def check(txt: String, elemId: String, words: String*): Unit =
         require(s"$elemId ${words.mkString(" ")}" == getClient.ask(txt).getResult.get())
 
+    @BeforeEach
+    private[ctxword] def before(): Unit = testsData.clear()
+
+    @AfterEach
+    private[ctxword] def after(): Unit = testsData.foreach(println)
+
     @Test
-    @throws[Exception]
     private[ctxword] def test(): Unit = {
         check("I want to have a dog and fox", "class:animal", "dog", "fox")
         check("I fed your fish", "class:animal", "fish")
