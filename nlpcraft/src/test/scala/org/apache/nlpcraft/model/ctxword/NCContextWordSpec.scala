@@ -81,9 +81,9 @@ class NCContextWordSpecModel extends NCModel {
     @NCIntent("intent=classification term(cars)~{has(tok_groups(), 'testGroup')}*")
     def onMatch(@NCIntentTerm("classification") toks: List[NCToken]): NCResult = {
         val groups = toks.flatMap(_.getGroups.asScala).mkString(" ")
-        val texts = toks.map(_.getOriginalText).mkString(" ")
+        val words = toks.map(_.getOriginalText).mkString(" ")
 
-        NCResult.text(toks.map(_.getOriginalText).mkString(" "))
+        NCResult.text(s"${groups.mkString(" ")} ${words.mkString(" ")}")
     }
 }
 
