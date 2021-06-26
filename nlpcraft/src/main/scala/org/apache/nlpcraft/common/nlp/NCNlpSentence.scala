@@ -53,6 +53,7 @@ class NCNlpSentence(
     val text: String,
     val enabledBuiltInToks: Set[String],
     val mlConfig: Option[NCModelMLConfigMdo],
+    var mlData: Map[Int, Map[String, Double]] = Map.empty,
     override val tokens: mutable.ArrayBuffer[NCNlpSentenceToken] = new mutable.ArrayBuffer[NCNlpSentenceToken](32),
     var firstProbePhase: Boolean = true,
     private val deletedNotes: mutable.HashMap[NCNlpSentenceNote, Seq[NCNlpSentenceToken]] = mutable.HashMap.empty,

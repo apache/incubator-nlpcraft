@@ -215,9 +215,12 @@ object NCContextWordEnricher extends NCServerEnricher {
                         score = (sampleSuggScore + senSuggScore) / 2
                         if score >= elemScore
                     )
-                        //println(s"elemId=$elemId, word=${ns.tokens(tokIdx).origText}, sampleScore=$sampleScore, suggScore=$suggScore, avg=$avg, suggStem=$suggStem, ")
                         add(ns.tokens(tokIdx), elemId, score)
                 }
+
+                ns.mlData = detected.map {
+                    case (tok, scores) => tok.index -> scores.map(p => p.elementId -> p.score).toMap
+                }.toMap
             case None => // No-op.
         }
 }

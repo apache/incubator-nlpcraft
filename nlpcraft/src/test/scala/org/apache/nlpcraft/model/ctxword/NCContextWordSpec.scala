@@ -17,13 +17,13 @@
 
 package org.apache.nlpcraft.model.ctxword
 
-import org.apache.nlpcraft.model.{NCElement, NCIntent, NCIntentSample, NCIntentTerm, NCModel, NCResult, NCToken, NCValue}
+import org.apache.nlpcraft.model.{NCElement, NCIntent, NCIntentMatch, NCIntentSample, NCIntentTerm, NCModel, NCResult, NCToken, NCValue}
 import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
 import org.junit.jupiter.api.Test
 
-import java.{lang, util}
 import java.util.{Collections, Optional}
-import scala.jdk.CollectionConverters.{ListHasAsScala, SeqHasAsJava, SetHasAsJava}
+import java.{lang, util}
+import scala.jdk.CollectionConverters.{SeqHasAsJava, SetHasAsJava}
 
 /**
   * Test model.
@@ -78,12 +78,19 @@ class NCContextWordSpecModel extends NCModel {
             "It is the beautiful day, the sun is shining ",
         )
     )
-    @NCIntent("intent=classification term(cars)~{has(tok_groups(), 'testGroup')}*")
-    def onMatch(@NCIntentTerm("classification") toks: List[NCToken]): NCResult = {
-        val groups = toks.flatMap(_.getGroups.asScala).mkString(" ")
+    @NCIntent("intent=classification term(toks)~{has(tok_groups(), 'testGroup')}*")
+    def onMatch(ctx: NCIntentMatch, @NCIntentTerm("toks") toks: List[NCToken]): NCResult = {
+        val txt = ctx.getContext.getRequest.getNormalizedText
+        val toksStr = toks.map(t =>
+            s"[text=${t.getOriginalText}, elementId=${t.getId}, score=${t.getMetadata.get(s"${t.getId}:score")}]"
+        ).mkString(", ")
+
+        println(s"Matched [text=$txt, tokens=$toksStr")
+
+        val elemIds = toks.map(_.getId).distinct.mkString(" ")
         val words = toks.map(_.getOriginalText).mkString(" ")
 
-        NCResult.text(s"${groups.mkString(" ")} ${words.mkString(" ")}")
+        NCResult.text(s"$elemIds $words")
     }
 }
 
@@ -92,8 +99,8 @@ class NCContextWordSpecModel extends NCModel {
   */
 @NCTestEnvironment(model = classOf[NCContextWordSpecModel], startClient = true)
 class NCContextWordSpec extends NCTestContext {
-    private def check(txt: String, group: String, words: String*): Unit =
-        require(s"$group ${words.mkString(" ")}" == getClient.ask(txt).getText)
+    private def check(txt: String, elemId: String, words: String*): Unit =
+        require(s"$elemId ${words.mkString(" ")}" == getClient.ask(txt).getResult.get())
 
     @Test
     @throws[Exception]
