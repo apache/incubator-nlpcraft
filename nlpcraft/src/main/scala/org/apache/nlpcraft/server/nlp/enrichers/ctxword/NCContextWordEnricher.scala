@@ -37,17 +37,17 @@ object NCContextWordEnricher extends NCServerEnricher {
     private final val EXCLUSIVE_MIN_SCORE = -1.0
 
     private case class ModelProbeKey(probeId: String, modelId: String)
-    private case class WordIndex(word: String, index: Int)
-    private case class ElementValue(elementId: String, value: String)
-    private case class ElementScore(elementId: String, score: Double)
+    private case class ElementScore(elementId: String, averageScore: Double, senScore: Double, sampleScore: Double)
 
     private type ElementStemScore = Map[/** Element ID */String, Map[/** Stem */String,/** Score */Double]]
 
+    @volatile private var values: mutable.HashMap[ModelProbeKey, Map[/** Stem */String, /** Element ID */Set[String]]] = _
     @volatile private var samples: mutable.HashMap[ModelProbeKey, ElementStemScore] = _
 
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ =>
         ackStarting()
 
+        values = mutable.HashMap.empty
         samples = mutable.HashMap.empty
 
         ackStarted()
@@ -57,6 +57,7 @@ object NCContextWordEnricher extends NCServerEnricher {
         ackStopping()
 
         samples = null
+        values = null
 
         ackStopped()
     }
@@ -87,29 +88,34 @@ object NCContextWordEnricher extends NCServerEnricher {
     /**
       *
       * @param sampleWords
-      * @param sampleMap
-      * @param synsStem
+      * @param sampleWordsStems
+      * @param valSyns
+      * @param valSynsStems
       * @return
       */
     private def parseSample(
-        sampleWords: Seq[String],
-        sampleMap: Map[String, WordIndex],
-        synsStem: Set[String]
+        sampleWords: Seq[Seq[String]],
+        sampleWordsStems: Seq[Seq[String]],
+        valSyns: Set[String],
+        valSynsStems: Set[String]
     ): Iterable[NCSuggestionRequest] = {
-        lazy val sampleWordsIdxs = sampleWords.zipWithIndex
+        require(sampleWords.size == sampleWordsStems.size)
+        require(valSyns.size == valSynsStems.size)
 
-        synsStem.flatMap(synStem =>
-            sampleMap.get(synStem) match {
-                case Some(syn) =>
-                    Some(
-                        NCSuggestionRequest(
-                            sampleWordsIdxs.map { case (w, i) => if (i != syn.index) w else syn.word}.mkString(" "),
-                            syn.index
-                        )
+        sampleWordsStems.zip(sampleWords).flatMap { case (sampleWordsStem, sampleWord) =>
+            val idxs = valSynsStems.flatMap(valSynsStem => {
+                val i = sampleWordsStem.indexOf(valSynsStem)
+
+                if (i >= 0) Some(i) else None
+            })
+
+            for (idx <- idxs; syn <- valSyns)
+                yield
+                    NCSuggestionRequest(
+                        sampleWord.zipWithIndex.map { case (w, i) => if (i != idx) w else syn }.mkString(" "),
+                        idx
                     )
-                case None => None
-            }
-        )
+        }
     }
 
     /**
@@ -139,36 +145,64 @@ object NCContextWordEnricher extends NCServerEnricher {
     /**
       *
       * @param cfg
+      * @param key
+      * @return
+      */
+    private def getValuesData(cfg: NCModelMLConfigMdo, key: ModelProbeKey): Map[String, Set[String]] =
+        values.synchronized { values.get(key) } match {
+            case Some(cache) => cache
+            case None =>
+                val res = cfg.values.
+                    flatMap { case (elemId, vals) => vals.map { case (_, vals) => vals.map(stem(_) -> elemId) } }.
+                    flatten.
+                    groupBy { case (stem, _) => stem }.
+                    map { case (stem, map) => stem -> map.map {case (_, elemId) => elemId }.toSet }
+
+                values.synchronized { values += key -> res }
+
+                res
+        }
+
+    /**
+      *
+      * @param cfg
       * @return
       */
     @throws[NCE]
     private def askSamples(cfg: NCModelMLConfigMdo): ElementStemScore = {
         case class Record(request: NCSuggestionRequest, value: String)
 
-        val recs: Map[String, Seq[Record]] =
+        val sampleWords = cfg.samples.map(spaceTokenize).toSeq
+        val sampleWordsStems = sampleWords.map(_.map(stem))
+
+        val recs: Map[String, Seq[NCSuggestionRequest]] =
             (
                 for (
                     (elemId, values) <- cfg.values;
-                    (value, syns) <- values;
-                    synsStem = syns.map(stem);
-                    sample <- cfg.samples;
-                    sampleWords = spaceTokenize(sample);
-                    samplesMap = sampleWords.zipWithIndex.map { case (w, idx) => stem(w) -> WordIndex(w, idx) }.toMap;
-                    suggReq <- parseSample(sampleWords, samplesMap, synsStem
+                    valueSyns = values.flatMap(_._2).toSet;
+                    valueSynsStem = valueSyns.map(stem);
+                    suggReq <- parseSample(sampleWords, sampleWordsStems, valueSyns, valueSynsStem)
                 )
-            )
-            yield (elemId, Record(suggReq, value))).groupBy { case (elemId, _) => elemId }.
-                map { case (elemId, map) => elemId -> map.values.toSeq }
+                    yield (elemId, suggReq)
+            ).
+                groupBy { case (elemId, _) => elemId }.
+                map { case (elemId, m) => elemId -> m.toSeq.map(_._2) }
 
-        val map = recs.flatMap { case (elemId, recs) => recs.map(p => p.request -> ElementValue(elemId, p.value)) }
+        if (recs.nonEmpty) {
+            val req2Elem = recs.flatMap { case (elemId, recs) => recs.map(p => p -> elemId) }
 
-        if (recs.nonEmpty)
-            syncExec(NCSuggestSynonymManager.suggestWords(recs.flatMap(_._2.map(_.request)).toSeq)).
+            syncExec(NCSuggestSynonymManager.suggestWords(recs.flatMap(_._2).toSeq)).
+                toSeq.
                 map { case (req, suggs) =>
-                    map(req).elementId -> suggs.groupBy(p => stem(p.word)).map { case (stem, suggs) =>
-                        stem -> normalizeScore(suggs.map(_.score).max)
-                    }
-                }
+                    (req2Elem(req),
+                        suggs.groupBy(sygg => stem(sygg.word)).map { case (stem, stemSuggs) =>
+                            stem -> normalizeScore(stemSuggs.map(_.score).max)
+                        }
+                    )
+                }.
+                groupBy { case (elemId, _) => elemId }.
+                map { case (elemId, data) => elemId -> data.flatMap(_._2).toMap }
+        }
         else
             Map.empty[String, Map[String, Double]]
     }
@@ -178,16 +212,20 @@ object NCContextWordEnricher extends NCServerEnricher {
             case Some(cfg) =>
                 val detected = mutable.HashMap.empty[NCNlpSentenceToken, mutable.HashSet[ElementScore]]
 
-                def add(nounTok: NCNlpSentenceToken, elemId: String, score: Double): Unit = {
+                def add(
+                    nounTok: NCNlpSentenceToken, elemId: String, averageScore: Double, senScore: Double, sampleScore: Double
+                ): Unit = {
                     val tokElems = detected.getOrElseUpdate(nounTok, mutable.HashSet.empty[ElementScore])
+
+                    def mkNew(): ElementScore = ElementScore(elemId, averageScore, senScore, sampleScore)
 
                     tokElems.find(_.elementId == elemId) match {
                         case Some(saved) =>
-                            if (score > saved.score) {
+                            if (averageScore > saved.averageScore) {
                                 tokElems -= saved
-                                tokElems += ElementScore(elemId, score)
+                                tokElems += mkNew()
                             }
-                        case None => tokElems += ElementScore(elemId, score)
+                        case None => tokElems += mkNew()
                     }
                 }
 
@@ -195,6 +233,16 @@ object NCContextWordEnricher extends NCServerEnricher {
 
                 if (nounToks.nonEmpty) {
                     val key = ModelProbeKey(cfg.probeId, cfg.modelId)
+
+
+                    val valuesData = getValuesData(cfg, key)
+
+                    for (
+                        nounTok <- nounToks;
+                        elemId <- valuesData.getOrElse(nounTok.stem, Set.empty)
+                    )
+                        add(nounTok, elemId, 1, 1, 1)
+
                     val mdlSamples = getSamplesData(cfg, key)
 
                     for (
@@ -203,10 +251,9 @@ object NCContextWordEnricher extends NCServerEnricher {
                         score = suggs.getOrElse(nounTok.stem, EXCLUSIVE_MIN_SCORE)
                         if score >= cfg.levels(elemId)
                     )
-                        add(nounTok, elemId, score)
+                        add(nounTok, elemId, score, score, score)
 
                     val idxs = ns.tokens.flatMap(p => if (p.pos.startsWith("N")) Some(p.index) else None).toSeq
-
                     val reqs = idxs.map(idx => NCSuggestionRequest(ns.tokens.map(_.origText).mkString(" "), idx))
 
                     for (
@@ -214,20 +261,22 @@ object NCContextWordEnricher extends NCServerEnricher {
                         // separated by space, and Suggestion Manager uses space tokenizer.
                         (sugg, tokIdx) <- getSentenceData(reqs);
                         suggStem = stem(sugg.word);
-                        senSuggScore = normalizeScore(sugg.score);
+                        senScore = normalizeScore(sugg.score);
                         (elemId, mdlSamplesSuggs) <- mdlSamples
                         if mdlSamplesSuggs.contains(suggStem);
                         elemScore = cfg.levels(elemId);
-                        sampleSuggScore = mdlSamplesSuggs(suggStem);
-                        score = (sampleSuggScore + senSuggScore) / 2
-                        if score >= elemScore
+                        sampleScore = mdlSamplesSuggs(suggStem);
+                        averageScore = (sampleScore + senScore) / 2
+                        if averageScore >= elemScore
                     )
-                        add(ns.tokens(tokIdx), elemId, score)
+                        add(ns.tokens(tokIdx), elemId, averageScore, senScore, sampleScore)
                 }
 
                 ns.mlData = detected.map {
-                    case (tok, scores) => tok.index -> scores.map(p => p.elementId -> p.score).toMap
+                    case (tok, scores) => tok.index -> scores.map(p => p.elementId -> p.averageScore).toMap
                 }.toMap
+
+                println("ns.mlData="+ns.mlData)
             case None => // No-op.
         }
 }

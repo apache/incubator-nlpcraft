@@ -45,7 +45,7 @@ object NCContextWordSpecModel {
         def apply(id: String, values: NCValue*): Element = new Element(id, LEVEL, values: _*)
     }
 
-    var testsData = ArrayBuffer.empty[String]
+    var testsData: ArrayBuffer[String] = ArrayBuffer.empty[String]
 }
 
 import NCContextWordSpecModel._
