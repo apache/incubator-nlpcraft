@@ -89,27 +89,27 @@ object NCContextWordEnricher extends NCServerEnricher {
       *
       * @param sampleWords
       * @param sampleWordsStems
-      * @param valSyns
-      * @param valSynsStems
+      * @param elemValuesSyns
+      * @param elemValuesSynsStems
       * @return
       */
     private def parseSample(
         sampleWords: Seq[Seq[String]],
         sampleWordsStems: Seq[Seq[String]],
-        valSyns: Set[String],
-        valSynsStems: Set[String]
+        elemValuesSyns: Set[String],
+        elemValuesSynsStems: Set[String]
     ): Iterable[NCSuggestionRequest] = {
         require(sampleWords.size == sampleWordsStems.size)
-        require(valSyns.size == valSynsStems.size)
+        require(elemValuesSyns.size == elemValuesSynsStems.size)
 
         sampleWordsStems.zip(sampleWords).flatMap { case (sampleWordsStem, sampleWord) =>
-            val idxs = valSynsStems.flatMap(valSynsStem => {
+            val idxs = elemValuesSynsStems.flatMap(valSynsStem => {
                 val i = sampleWordsStem.indexOf(valSynsStem)
 
                 if (i >= 0) Some(i) else None
             })
 
-            for (idx <- idxs; syn <- valSyns)
+            for (idx <- idxs; syn <- elemValuesSyns)
                 yield
                     NCSuggestionRequest(
                         sampleWord.zipWithIndex.map { case (w, i) => if (i != idx) w else syn }.mkString(" "),
@@ -170,18 +170,16 @@ object NCContextWordEnricher extends NCServerEnricher {
       */
     @throws[NCE]
     private def askSamples(cfg: NCModelMLConfigMdo): ElementStemScore = {
-        case class Record(request: NCSuggestionRequest, value: String)
-
         val sampleWords = cfg.samples.map(spaceTokenize).toSeq
         val sampleWordsStems = sampleWords.map(_.map(stem))
 
         val recs: Map[String, Seq[NCSuggestionRequest]] =
             (
                 for (
-                    (elemId, values) <- cfg.values;
-                    valueSyns = values.flatMap(_._2).toSet;
-                    valueSynsStem = valueSyns.map(stem);
-                    suggReq <- parseSample(sampleWords, sampleWordsStems, valueSyns, valueSynsStem)
+                    (elemId, elemValues) <- cfg.values;
+                    elemValuesSyns = elemValues.flatMap(_._2).toSet;
+                    elemValuesSynsStems = elemValuesSyns.map(stem);
+                    suggReq <- parseSample(sampleWords, sampleWordsStems, elemValuesSyns, elemValuesSynsStems)
                 )
                     yield (elemId, suggReq)
             ).
