@@ -234,15 +234,13 @@ object NCContextWordEnricher extends NCServerEnricher {
                 if (nounToks.nonEmpty) {
                     val key = ModelProbeKey(cfg.probeId, cfg.modelId)
 
-
+                    // 1. Values. Direct.
                     val valuesData = getValuesData(cfg, key)
 
-                    for (
-                        nounTok <- nounToks;
-                        elemId <- valuesData.getOrElse(nounTok.stem, Set.empty)
-                    )
+                    for (nounTok <- nounToks; elemId <- valuesData.getOrElse(nounTok.stem, Set.empty))
                         add(nounTok, elemId, 1, 1, 1)
 
+                    // 2. Via examples.
                     val mdlSamples = getSamplesData(cfg, key)
 
                     for (
@@ -253,6 +251,7 @@ object NCContextWordEnricher extends NCServerEnricher {
                     )
                         add(nounTok, elemId, score, score, score)
 
+                    // 3. Ask for sentence.
                     val idxs = ns.tokens.flatMap(p => if (p.pos.startsWith("N")) Some(p.index) else None).toSeq
                     val reqs = idxs.map(idx => NCSuggestionRequest(ns.tokens.map(_.origText).mkString(" "), idx))
 
