@@ -154,6 +154,7 @@
         <lightstep.grpc.ver>0.15.8</lightstep.grpc.ver>
         <junit.ver>5.5.1</junit.ver>
         <jsonpath.ver>2.4.0</jsonpath.ver>
+        <jibx.tools.ver>1.3.3</jibx.tools.ver>
 
         <!-- Force specific encoding on text resources. -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -471,6 +472,12 @@
                 <groupId>com.jakewharton.fliptables</groupId>
                 <artifactId>fliptables</artifactId>
                 <version>${fliptables.ver}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jibx</groupId>
+                <artifactId>jibx-tools</artifactId>
+                <version>${jibx.tools.ver}</version>
             </dependency>
 
             <dependency>

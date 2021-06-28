@@ -52,7 +52,7 @@ class NCNlpSentence(
     val srvReqId: String,
     val text: String,
     val enabledBuiltInToks: Set[String],
-    val mlConfig: Option[NCModelMLConfigMdo],
+    val mlConfig: Option[NCModelMLConfigMdo] = None,
     var mlData: Map[Int, Map[String, Double]] = Map.empty,
     override val tokens: mutable.ArrayBuffer[NCNlpSentenceToken] = new mutable.ArrayBuffer[NCNlpSentenceToken](32),
     var firstProbePhase: Boolean = true,

@@ -18,12 +18,16 @@
 package org.apache.nlpcraft.server.nlp.enrichers.ctxword
 
 import io.opencensus.trace.Span
-import org.apache.nlpcraft.common.nlp.core.NCNlpPorterStemmer.stem
+import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
+import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager.stem
+import org.apache.nlpcraft.common.nlp.pos.NCPennTreebank
 import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceToken}
 import org.apache.nlpcraft.common.{NCE, NCService, U}
 import org.apache.nlpcraft.server.mdo.NCModelMLConfigMdo
 import org.apache.nlpcraft.server.nlp.enrichers.NCServerEnricher
+import org.apache.nlpcraft.server.nlp.enrichers.basenlp.NCBaseNlpEnricher
 import org.apache.nlpcraft.server.sugsyn.{NCSuggestSynonymManager, NCSuggestionRequest, NCWordSuggestion}
+import org.jibx.schema.codegen.extend.DefaultNameConverter
 
 import scala.collection.mutable
 import scala.concurrent.Await
@@ -33,8 +37,13 @@ import scala.concurrent.duration.Duration
   * ContextWord enricher.
   */
 object NCContextWordEnricher extends NCServerEnricher {
+    private final val POS_PLURALS = Set("NNS", "NNPS")
+    private final val POS_SINGULAR = Set("NN", "NNP")
+
     private final val MAX_CTXWORD_SCORE = 2
     private final val EXCLUSIVE_MIN_SCORE = -1.0
+
+    private final val CONVERTER = new DefaultNameConverter
 
     private case class ModelProbeKey(probeId: String, modelId: String)
     private case class ElementScore(elementId: String, averageScore: Double, senScore: Double, sampleScore: Double)
@@ -171,6 +180,19 @@ object NCContextWordEnricher extends NCServerEnricher {
     @throws[NCE]
     private def askSamples(cfg: NCModelMLConfigMdo): ElementStemScore = {
         val sampleWords = cfg.samples.map(spaceTokenize).toSeq
+
+
+        sampleWords.map(s => {
+            val sampleSen = new NCNlpSentence("sampleReqId", sampleWords.mkString(" "), Set.empty)
+
+            NCBaseNlpEnricher.enrich(sampleSen)
+
+            sampleSen.
+        })
+
+
+
+
         val sampleWordsStems = sampleWords.map(_.map(stem))
 
         val recs: Map[String, Seq[NCSuggestionRequest]] =
@@ -227,7 +249,7 @@ object NCContextWordEnricher extends NCServerEnricher {
                     }
                 }
 
-                val nounToks = ns.tokens.filter(_.pos.startsWith("N"))
+                val nounToks = ns.tokens.filter(t => NCPennTreebank.NOUNS_POS.contains(t.pos))
 
                 if (nounToks.nonEmpty) {
                     val key = ModelProbeKey(cfg.probeId, cfg.modelId)
