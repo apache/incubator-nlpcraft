@@ -68,7 +68,9 @@ object NCPennTreebank {
     final val SYNTH_POS_DESC = "Synthetic tag"
 
     // Useful POS tags sets.
-    final val NOUNS_POS = Seq("NN", "NNS", "NNP", "NNPS")
+    final val NOUNS_POS_PLURALS = Seq("NNS", "NNPS")
+    final val NOUNS_POS_SINGULAR = Seq("NN", "NNP")
+    final val NOUNS_POS = NOUNS_POS_PLURALS ++ NOUNS_POS_SINGULAR
     final val VERBS_POS = Seq("VB", "VBD", "VBG", "VBN", "VBP", "VBZ")
     final val WHS_POS = Seq("WDT", "WP", "WP$", "WRB")
     final val JJS_POS = Seq("JJ", "JJR", "JJS")

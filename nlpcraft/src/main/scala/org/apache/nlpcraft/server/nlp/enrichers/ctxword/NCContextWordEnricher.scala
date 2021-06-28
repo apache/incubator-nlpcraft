@@ -18,14 +18,13 @@
 package org.apache.nlpcraft.server.nlp.enrichers.ctxword
 
 import io.opencensus.trace.Span
-import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
 import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager.stem
-import org.apache.nlpcraft.common.nlp.pos.NCPennTreebank
+import org.apache.nlpcraft.common.nlp.pos.NCPennTreebank._
 import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceToken}
 import org.apache.nlpcraft.common.{NCE, NCService, U}
 import org.apache.nlpcraft.server.mdo.NCModelMLConfigMdo
+import org.apache.nlpcraft.server.nlp.core.{NCNlpParser, NCNlpServerManager, NCNlpWord}
 import org.apache.nlpcraft.server.nlp.enrichers.NCServerEnricher
-import org.apache.nlpcraft.server.nlp.enrichers.basenlp.NCBaseNlpEnricher
 import org.apache.nlpcraft.server.sugsyn.{NCSuggestSynonymManager, NCSuggestionRequest, NCWordSuggestion}
 import org.jibx.schema.codegen.extend.DefaultNameConverter
 
@@ -37,9 +36,6 @@ import scala.concurrent.duration.Duration
   * ContextWord enricher.
   */
 object NCContextWordEnricher extends NCServerEnricher {
-    private final val POS_PLURALS = Set("NNS", "NNPS")
-    private final val POS_SINGULAR = Set("NN", "NNP")
-
     private final val MAX_CTXWORD_SCORE = 2
     private final val EXCLUSIVE_MIN_SCORE = -1.0
 
@@ -47,17 +43,24 @@ object NCContextWordEnricher extends NCServerEnricher {
 
     private case class ModelProbeKey(probeId: String, modelId: String)
     private case class ElementScore(elementId: String, averageScore: Double, senScore: Double, sampleScore: Double)
+    private case class ValuesHolder(
+        values: Map[/** Stem */String, /** Element ID */Set[String]],
+        valuesStems: Map[/** Value */String, /** Element ID */Set[String]],
+    )
 
     private type ElementStemScore = Map[/** Element ID */String, Map[/** Stem */String,/** Score */Double]]
 
-    @volatile private var values: mutable.HashMap[ModelProbeKey, Map[/** Stem */String, /** Element ID */Set[String]]] = _
+    @volatile private var valuesStems: mutable.HashMap[ModelProbeKey, ValuesHolder] = _
     @volatile private var samples: mutable.HashMap[ModelProbeKey, ElementStemScore] = _
+
+    @volatile private var parser: NCNlpParser = _
 
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ =>
         ackStarting()
 
-        values = mutable.HashMap.empty
+        valuesStems = mutable.HashMap.empty
         samples = mutable.HashMap.empty
+        parser = NCNlpServerManager.getParser
 
         ackStarted()
     }
@@ -65,8 +68,9 @@ object NCContextWordEnricher extends NCServerEnricher {
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
 
+        parser = null
         samples = null
-        values = null
+        valuesStems = null
 
         ackStopped()
     }
@@ -96,6 +100,7 @@ object NCContextWordEnricher extends NCServerEnricher {
 
     /**
       *
+      * @param nlpWords
       * @param sampleWords
       * @param sampleWordsStems
       * @param elemValuesSyns
@@ -103,27 +108,56 @@ object NCContextWordEnricher extends NCServerEnricher {
       * @return
       */
     private def parseSample(
+        nlpWords: Seq[Seq[NCNlpWord]],
         sampleWords: Seq[Seq[String]],
         sampleWordsStems: Seq[Seq[String]],
         elemValuesSyns: Set[String],
         elemValuesSynsStems: Set[String]
     ): Iterable[NCSuggestionRequest] = {
+        require(nlpWords.size == sampleWords.size)
         require(sampleWords.size == sampleWordsStems.size)
         require(elemValuesSyns.size == elemValuesSynsStems.size)
 
-        sampleWordsStems.zip(sampleWords).flatMap { case (sampleWordsStem, sampleWord) =>
+        sampleWordsStems.zip(sampleWords).zip(nlpWords).flatMap { case ((sampleWordsStem, sampleWords), nlpWords) =>
             val idxs = elemValuesSynsStems.flatMap(valSynsStem => {
                 val i = sampleWordsStem.indexOf(valSynsStem)
 
                 if (i >= 0) Some(i) else None
             })
 
+            def mkRequest(idx: Int, syn: String): NCSuggestionRequest = {
+                def mkSentence(syn: String): String =
+                    sampleWords.zipWithIndex.map { case (w, i) => if (i != idx) w else syn }.mkString(" ")
+
+                var newSen = mkSentence(syn)
+
+                val nlpWordsNew = parser.parse(newSen)
+
+                require(nlpWords.size == nlpWordsNew.size)
+
+                val pos = nlpWords(idx).pos
+                val posNew = nlpWordsNew(idx).pos
+
+                if (NOUNS_POS_SINGULAR.contains(pos) && NOUNS_POS_PLURALS.contains(posNew)) {
+                    println(s"newSen1=$newSen")
+
+                    newSen = mkSentence(CONVERTER.depluralize(syn))
+
+                    println(s"newSen2=$newSen")
+                }
+                else if (NOUNS_POS_PLURALS.contains(pos) && NOUNS_POS_SINGULAR.contains(posNew)) {
+                    println(s"newSen1=$newSen")
+
+                    newSen = mkSentence(CONVERTER.pluralize(syn))
+
+                    println(s"newSen3=$newSen")
+                }
+
+                NCSuggestionRequest(newSen, idx)
+            }
+
             for (idx <- idxs; syn <- elemValuesSyns)
-                yield
-                    NCSuggestionRequest(
-                        sampleWord.zipWithIndex.map { case (w, i) => if (i != idx) w else syn }.mkString(" "),
-                        idx
-                    )
+                yield mkRequest(idx, syn)
         }
     }
 
@@ -157,17 +191,20 @@ object NCContextWordEnricher extends NCServerEnricher {
       * @param key
       * @return
       */
-    private def getValuesData(cfg: NCModelMLConfigMdo, key: ModelProbeKey): Map[String, Set[String]] =
-        values.synchronized { values.get(key) } match {
+    private def getValuesData(cfg: NCModelMLConfigMdo, key: ModelProbeKey): ValuesHolder =
+        valuesStems.synchronized { valuesStems.get(key) } match {
             case Some(cache) => cache
             case None =>
-                val res = cfg.values.
-                    flatMap { case (elemId, vals) => vals.map { case (_, vals) => vals.map(stem(_) -> elemId) } }.
-                    flatten.
-                    groupBy { case (stem, _) => stem }.
-                    map { case (stem, map) => stem -> map.map {case (_, elemId) => elemId }.toSet }
+                def mkMap(convert: String => String): Map[String, Set[String]] =
+                    cfg.values.
+                        flatMap { case (elemId, vals) => vals.map { case (_, vals) => vals.map(convert(_) -> elemId) } }.
+                        flatten.
+                        groupBy { case (converted, _) => converted }.
+                        map { case (converted, map) => converted -> map.map {case (_, elemId) => elemId }.toSet }
 
-                values.synchronized { values += key -> res }
+                val res = ValuesHolder(mkMap(stem), mkMap(_.toLowerCase))
+
+                valuesStems.synchronized { valuesStems += key -> res }
 
                 res
         }
@@ -179,29 +216,20 @@ object NCContextWordEnricher extends NCServerEnricher {
       */
     @throws[NCE]
     private def askSamples(cfg: NCModelMLConfigMdo): ElementStemScore = {
-        val sampleWords = cfg.samples.map(spaceTokenize).toSeq
-
-
-        sampleWords.map(s => {
-            val sampleSen = new NCNlpSentence("sampleReqId", sampleWords.mkString(" "), Set.empty)
-
-            NCBaseNlpEnricher.enrich(sampleSen)
-
-            sampleSen.
-        })
-
-
-
+        val samplesSeq = cfg.samples.toSeq
+        val sampleWords = samplesSeq.map(spaceTokenize)
+        val nlpWords = samplesSeq.map(s => parser.parse(s))
 
         val sampleWordsStems = sampleWords.map(_.map(stem))
 
-        val recs: Map[String, Seq[NCSuggestionRequest]] =
+        val recs =
             (
                 for (
                     (elemId, elemValues) <- cfg.values;
-                    elemValuesSyns = elemValues.flatMap(_._2).toSet;
+                    // Uses single words synonyms only.
+                    elemValuesSyns = elemValues.flatMap(_._2).toSet.filter(!_.contains(' '));
                     elemValuesSynsStems = elemValuesSyns.map(stem);
-                    suggReq <- parseSample(sampleWords, sampleWordsStems, elemValuesSyns, elemValuesSynsStems)
+                    suggReq <- parseSample(nlpWords, sampleWords, sampleWordsStems, elemValuesSyns, elemValuesSynsStems)
                 )
                     yield (elemId, suggReq)
             ).
@@ -249,7 +277,7 @@ object NCContextWordEnricher extends NCServerEnricher {
                     }
                 }
 
-                val nounToks = ns.tokens.filter(t => NCPennTreebank.NOUNS_POS.contains(t.pos))
+                val nounToks = ns.tokens.filter(t => NOUNS_POS.contains(t.pos))
 
                 if (nounToks.nonEmpty) {
                     val key = ModelProbeKey(cfg.probeId, cfg.modelId)
@@ -257,7 +285,11 @@ object NCContextWordEnricher extends NCServerEnricher {
                     // 1. Values. Direct.
                     val valuesData = getValuesData(cfg, key)
 
-                    for (nounTok <- nounToks; elemId <- valuesData.getOrElse(nounTok.stem, Set.empty))
+                    for (nounTok <- nounToks; elemId <- valuesData.values.getOrElse(nounTok.lemma.toLowerCase, Set.empty))
+                        add(nounTok, elemId, 1, 1, 1)
+                    for (nounTok <- nounToks; elemId <- valuesData.values.getOrElse(nounTok.normText, Set.empty))
+                        add(nounTok, elemId, 1, 1, 1)
+                    for (nounTok <- nounToks; elemId <- valuesData.valuesStems.getOrElse(nounTok.stem, Set.empty))
                         add(nounTok, elemId, 1, 1, 1)
 
                     // 2. Via examples.
