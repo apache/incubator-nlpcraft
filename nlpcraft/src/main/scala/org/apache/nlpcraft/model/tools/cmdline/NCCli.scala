@@ -2360,7 +2360,7 @@ object NCCli extends NCCliBase {
                                         completed = true
                                     )
                                 })
-                                    .asJava
+                                .asJava
                             )
                     }
 
@@ -2375,7 +2375,7 @@ object NCCli extends NCCliBase {
                                     completed = true
                                 )
                             })
-                                .asJava
+                            .asJava
                         )
 
                     // For 'call' - add additional auto-completion/suggestion candidates.
@@ -2397,7 +2397,7 @@ object NCCli extends NCCliBase {
                                                     completed = false
                                                 )
                                             })
-                                                .asJava
+                                            .asJava
                                         )
 
                                         // Add 'acsTok' auto-suggestion.
