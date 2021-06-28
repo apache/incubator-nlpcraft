@@ -84,6 +84,7 @@ private [cmdline] case class Parameter(
     names: Seq[String],
     value: Option[String] = None,
     optional: Boolean = false, // Mandatory by default.
+    fsPath: Boolean = false, // Not a file system path by default.
     synthetic: Boolean = false,
     desc: String
 ) {
@@ -113,7 +114,7 @@ private [cmdline] object NCCliCommands {
                 Parameter(
                     id = "path",
                     names = Seq("--path", "-p"),
-                    value = Some("path"),
+                    value = Some("rest"),
                     desc =
                         s"REST path, e.g. ${y("'signin'")} or ${y("'ask/sync'")}. " +
                         s"Note that you don't need supply '/' at the beginning. " +
@@ -221,7 +222,7 @@ private [cmdline] object NCCliCommands {
                 Parameter(
                     id = "path",
                     names = Seq("--path", "-p"),
-                    value = Some("path"),
+                    value = Some("rest"),
                     desc =
                         s"REST path, e.g. ${y("'signin'")} or ${y("'ask/sync'")}. " +
                         s"Note that you don't need supply '/' at the beginning. " +
@@ -390,6 +391,7 @@ private [cmdline] object NCCliCommands {
                     id = "cp",
                     names = Seq("--cp", "-p"),
                     value = Some("path"),
+                    fsPath = true,
                     optional = true,
                     desc =
                         s"Additional JVM classpath that will be appended to the default NLPCraft JVM classpath. " +
@@ -662,6 +664,7 @@ private [cmdline] object NCCliCommands {
                     id = "config",
                     names = Seq("--cfg", "-c"),
                     value = Some("path"),
+                    fsPath = true,
                     optional = true,
                     desc =
                         s"Configuration file path. Server will automatically look for ${y("'server.conf'")} " +
@@ -674,6 +677,7 @@ private [cmdline] object NCCliCommands {
                     id = "igniteConfig",
                     names = Seq("--igniteCfg", "-i"),
                     value = Some("path"),
+                    fsPath = true,
                     optional = true,
                     desc =
                         s"Apache Ignite configuration file path. Note that Apache Ignite is used as a cluster " +
@@ -733,6 +737,7 @@ private [cmdline] object NCCliCommands {
                     id = "cp",
                     names = Seq("--cp", "-p"),
                     value = Some("path"),
+                    fsPath = true,
                     desc =
                         s"Additional JVM classpath that will be appended to the default NLPCraft JVM classpath. " +
                         s"When starting a probe with your own models you must " +
@@ -743,6 +748,7 @@ private [cmdline] object NCCliCommands {
                     id = "config",
                     names = Seq("--cfg", "-c"),
                     value = Some("path"),
+                    fsPath = true,
                     optional = true,
                     desc =
                         s"Configuration file path. Probe will automatically look for ${y("'probe.conf'")} " +
@@ -824,6 +830,7 @@ private [cmdline] object NCCliCommands {
                     id = "cp",
                     names = Seq("--cp", "-p"),
                     value = Some("path"),
+                    fsPath = true,
                     desc =
                         s"Additional JVM classpath that will be appended to the default NLPCraft JVM classpath. " +
                         s"Although this configuration property is optional, when testing your own models you must " +
@@ -835,6 +842,7 @@ private [cmdline] object NCCliCommands {
                     id = "config",
                     names = Seq("--cfg", "-c"),
                     value = Some("path"),
+                    fsPath = true,
                     optional = true,
                     desc =
                         s"Configuration file path. By default, the embedded probe will automatically look for ${y("'probe.conf'")} " +
@@ -1089,6 +1097,7 @@ private [cmdline] object NCCliCommands {
                     id = "outputDir",
                     names = Seq("--outputDir", "-d"),
                     value = Some("path"),
+                    fsPath = true,
                     optional = true,
                     desc =
                         s"Output directory. Default value is the current working directory. " +
@@ -1157,6 +1166,7 @@ private [cmdline] object NCCliCommands {
                     id = "filePath",
                     names = Seq("--filePath", "-f"),
                     value = Some("path"),
+                    fsPath = true,
                     desc =
                         s"File path for the model stub. File path can either be an absolute path, relative path or " +
                         s"just a file name in which case the current folder will be used. File must have one of the " +

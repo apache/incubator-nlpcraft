@@ -2286,13 +2286,20 @@ object NCCli extends NCCliBase {
             private def mkCandidate(disp: String, grp: String, desc: String, completed: Boolean): Candidate =
                 new Candidate(disp, disp, grp, desc, null, null, completed)
 
+            private def isFsPath(cmd: String, param: String): Boolean = {
+                println(s"Word: $s")
+
+                false
+            }
+
             override def complete(reader: LineReader, line: ParsedLine, candidates: util.List[Candidate]): Unit = {
                 val words = line.words().asScala
 
                 if (words.nonEmpty && words.head.nonEmpty && words.head.head == '$') { // Don't complete if the line starts with '$'.
                     // No-op.
                 }
-                else if (words.isEmpty || !cmds.map(_._1).contains(words.head))
+                else if (words.isEmpty || (words.size == 1 && !cmds.map(_._1).contains(words.head))) {
+                    // Add all commands as a candidates.
                     candidates.addAll(cmds.map(n => {
                         val name = n._1
                         val desc = n._2.substring(0, n._2.length - 1) // Remove last '.'.
@@ -2305,6 +2312,10 @@ object NCCli extends NCCliBase {
                             completed = true
                         )
                     }).asJava)
+                }
+                else if (words.size > 1 && isFsPath(words.head, words.last)) {
+
+                }
                 else {
                     val cmd = words.head
 
@@ -2326,7 +2337,7 @@ object NCCli extends NCCliBase {
                                     completed = !hasVal
                                 ))
                             })
-                                .asJava
+                            .asJava
 
                         case None => Seq.empty[Candidate].asJava
                     })
