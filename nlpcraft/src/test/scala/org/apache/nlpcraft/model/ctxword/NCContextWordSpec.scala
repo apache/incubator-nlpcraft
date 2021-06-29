@@ -17,17 +17,34 @@
 
 package org.apache.nlpcraft.model.ctxword
 
+import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.model.{NCElement, NCIntent, NCIntentMatch, NCIntentSample, NCIntentTerm, NCModel, NCResult, NCToken, NCValue}
 import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
 import org.junit.jupiter.api.{AfterEach, BeforeEach, Test}
 
+import java.text.DecimalFormat
 import java.util.{Collections, Optional}
 import java.{lang, util}
 import scala.collection.mutable.ArrayBuffer
-import scala.jdk.CollectionConverters.{SeqHasAsJava, SetHasAsJava}
+import scala.jdk.CollectionConverters.{ListHasAsScala, SeqHasAsJava, SetHasAsJava}
 
 object NCContextWordSpecModel {
-    private final val LEVEL = 0.4
+    val tables: ArrayBuffer[(String, NCAsciiTable)] = ArrayBuffer.empty[(String, NCAsciiTable)]
+}
+
+import org.apache.nlpcraft.model.ctxword.NCContextWordSpecModel._
+
+/**
+  * Test model.
+  */
+class NCContextWordSpecModel extends NCModel {
+    override def getId: String = this.getClass.getSimpleName
+    override def getName: String = this.getClass.getSimpleName
+    override def getVersion: String = "1.0.0"
+
+    private final val FMT = new DecimalFormat("#0.00000")
+
+    val level = 0.4
 
     case class Value(name: String, syns: String*) extends NCValue {
         override def getName: String = name
@@ -42,21 +59,8 @@ object NCContextWordSpecModel {
     }
 
     object Element {
-        def apply(id: String, values: NCValue*): Element = new Element(id, LEVEL, values: _*)
+        def apply(id: String, values: NCValue*): Element = new Element(id, level, values: _*)
     }
-
-    var testsData: ArrayBuffer[String] = ArrayBuffer.empty[String]
-}
-
-import NCContextWordSpecModel._
-
-/**
-  * Test model.
-  */
-class NCContextWordSpecModel extends NCModel {
-    override def getId: String = this.getClass.getSimpleName
-    override def getName: String = this.getClass.getSimpleName
-    override def getVersion: String = "1.0.0"
 
     override def getElements: util.Set[NCElement] =
         Set(
@@ -87,12 +91,24 @@ class NCContextWordSpecModel extends NCModel {
     )
     @NCIntent("intent=classification term(toks)~{has(tok_groups(), 'testGroup')}*")
     def onMatch(ctx: NCIntentMatch, @NCIntentTerm("toks") toks: List[NCToken]): NCResult = {
-        val txt = ctx.getContext.getRequest.getNormalizedText
-        val toksStr = toks.map(t =>
-            s"[text=${t.getOriginalText}, elementId=${t.getId}, score=${t.getMetadata.get(s"${t.getId}:score")}]"
-        ).mkString(", ")
+        val table = NCAsciiTable()
 
-        testsData += s"Matched [text=$txt, tokens=$toksStr"
+        table #= ("Token text", "Element ID", "Scores")
+
+        for (t <- toks)
+            table += (
+                t.getOriginalText,
+                t.getId,
+                t.getMetadata.
+                    get(s"${t.getId}:scores").
+                    asInstanceOf[java.util.List[Double]].
+                    asScala.
+                    sortBy(-_).
+                    map(FMT.format).
+                    mkString(", ")
+            )
+
+        tables += ctx.getContext.getRequest.getNormalizedText -> table
 
         val elemIds = toks.map(_.getId).distinct.mkString(" ")
         val words = toks.map(_.getOriginalText).mkString(" ")
@@ -114,26 +130,33 @@ class NCContextWordSpec extends NCTestContext {
     }
 
     @BeforeEach
-    private[ctxword] def before(): Unit = testsData.clear()
+    private[ctxword] def before(): Unit = tables.clear()
 
     @AfterEach
-    private[ctxword] def after(): Unit = testsData.foreach(println)
+    private[ctxword] def after(): Unit = {
+        println("MATCHED:")
+
+        for ((txt, table) <- tables) {
+            println(s"Text: $txt")
+            table.render()
+        }
+
+        tables.clear()
+    }
 
     @Test
     private[ctxword] def test(): Unit = {
-        //check("I want to have a dogs and foxes", "class:animal", "dogs", "foxes")
-        //check("I bought dog's meat", "class:animal", "dog meat")
-        check("I bought the meat", "class:animal", "dog meat")
+        check("I want to have dogs and foxes", "class:animal", "dogs", "foxes")
+        check("I bought dog's meat", "class:animal", "dog")
+        check("I bought meat dog's", "class:animal", "dog")
 
+        check("I want to have a dog and fox", "class:animal", "dog", "fox")
+        check("I fed your fish", "class:animal", "fish")
 
-        //check("I bought xxx dog's", "class:animal", "dog")
-//        check("I want to have a dog and fox", "class:animal", "dog", "fox")
-//        check("I fed your fish", "class:animal", "fish")
-//
-//        check("I like to drive my Porsche and Volkswagen", "class:cars", "Porsche", "Volkswagen")
-//        check("Peugeot added motorcycles to its range in 1901", "class:cars", "Peugeot", "motorcycles")
-//
-//        check("The frost is possible today", "class:weather", "frost")
-//        check("There's a very strong wind from the east now", "class:weather", "wind")
+        check("I like to drive my Porsche and Volkswagen", "class:cars", "Porsche", "Volkswagen")
+        check("Peugeot added motorcycles to its range in 1901", "class:cars", "Peugeot", "motorcycles")
+
+        check("The frost is possible today", "class:weather", "frost")
+        check("There's a very strong wind from the east now", "class:weather", "wind")
     }
 }
