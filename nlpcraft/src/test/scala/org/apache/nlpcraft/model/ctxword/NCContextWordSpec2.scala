@@ -17,9 +17,8 @@
 
 package org.apache.nlpcraft.model.ctxword
 
-import org.apache.nlpcraft.model.ctxword.NCContextWordSpecModel._
 import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
-import org.junit.jupiter.api.{AfterEach, BeforeEach, Test}
+import org.junit.jupiter.api.Test
 
 /**
   * Test model.
@@ -37,36 +36,21 @@ class NCContextWordSpec2 extends NCTestContext {
         for (txt <- txts)
             checkIntent(txt, "classification")
 
-    @BeforeEach
-    private[ctxword] def before(): Unit = tables.clear()
-
-    @AfterEach
-    private[ctxword] def after(): Unit = {
-        println("MATCHED:")
-
-        for ((txt, table) <- tables) {
-            println(s"Text: $txt")
-            table.render()
-        }
-
-        tables.clear()
-    }
-
     @Test
     private[ctxword] def test(): Unit = {
         check(
             "I want to have dogs and foxes",
-//            "I bought dog's meat",
-//            "I bought meat dog's",
-//
-//            "I want to have a dog and fox",
-//            "I fed your fish",
-//
-//            "I like to drive my Porsche and Volkswagen",
-//            "Peugeot added motorcycles to its range in 1901",
-//
-//            "The frost is possible today",
-//            "There's a very strong wind from the east now"
+            "I bought dog's meat",
+            "I bought meat dog's",
+
+            "I want to have a dog and fox",
+            "I fed your fish",
+
+            "I like to drive my Porsche and Volkswagen",
+            "Peugeot added motorcycles to its range in 1901",
+
+            "The frost is possible today",
+            "There's a very strong wind from the east now"
         )
     }
 }

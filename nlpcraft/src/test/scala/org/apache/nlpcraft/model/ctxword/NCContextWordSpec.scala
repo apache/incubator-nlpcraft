@@ -17,22 +17,13 @@
 
 package org.apache.nlpcraft.model.ctxword
 
-import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.model.{NCElement, NCIntent, NCIntentMatch, NCIntentSample, NCIntentTerm, NCModel, NCResult, NCToken, NCValue}
 import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
-import org.junit.jupiter.api.{AfterEach, BeforeEach, Test}
+import org.junit.jupiter.api.Test
 
-import java.text.DecimalFormat
 import java.util.{Collections, Optional}
 import java.{lang, util}
-import scala.collection.mutable.ArrayBuffer
-import scala.jdk.CollectionConverters.{ListHasAsScala, SeqHasAsJava, SetHasAsJava}
-
-object NCContextWordSpecModel {
-    val tables: ArrayBuffer[(String, NCAsciiTable)] = ArrayBuffer.empty[(String, NCAsciiTable)]
-}
-
-import org.apache.nlpcraft.model.ctxword.NCContextWordSpecModel._
+import scala.jdk.CollectionConverters.{SeqHasAsJava, SetHasAsJava}
 
 /**
   * Test model.
@@ -41,8 +32,6 @@ class NCContextWordSpecModel extends NCModel {
     override def getId: String = this.getClass.getSimpleName
     override def getName: String = this.getClass.getSimpleName
     override def getVersion: String = "1.0.0"
-
-    private final val FMT = new DecimalFormat("#0.00000")
 
     val level = 0.4
 
@@ -91,25 +80,6 @@ class NCContextWordSpecModel extends NCModel {
     )
     @NCIntent("intent=classification term(toks)~{has(tok_groups(), 'testGroup')}*")
     def onMatch(ctx: NCIntentMatch, @NCIntentTerm("toks") toks: List[NCToken]): NCResult = {
-        val table = NCAsciiTable()
-
-        table #= ("Token text", "Element ID", "Scores")
-
-        for (t <- toks)
-            table += (
-                t.getOriginalText,
-                t.getId,
-                t.getMetadata.
-                    get(s"${t.getId}:scores").
-                    asInstanceOf[java.util.List[Double]].
-                    asScala.
-                    sortBy(-_).
-                    map(FMT.format).
-                    mkString(", ")
-            )
-
-        tables += ctx.getContext.getRequest.getNormalizedText -> table
-
         val elemIds = toks.map(_.getId).distinct.mkString(" ")
         val words = toks.map(_.getOriginalText).mkString(" ")
 
@@ -127,21 +97,6 @@ class NCContextWordSpec extends NCTestContext {
         val exp = s"$elemId ${words.mkString(" ")}"
 
         require(exp == res, s"Expected: $exp, result: $res")
-    }
-
-    @BeforeEach
-    private[ctxword] def before(): Unit = tables.clear()
-
-    @AfterEach
-    private[ctxword] def after(): Unit = {
-        println("MATCHED:")
-
-        for ((txt, table) <- tables) {
-            println(s"Text: $txt")
-            table.render()
-        }
-
-        tables.clear()
     }
 
     @Test

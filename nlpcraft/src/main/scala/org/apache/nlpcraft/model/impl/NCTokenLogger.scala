@@ -17,10 +17,9 @@
 
 package org.apache.nlpcraft.model.impl
 
-import java.text.SimpleDateFormat
+import java.text.{DecimalFormat, SimpleDateFormat}
 import java.util
 import java.util.{List => JList}
-
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.ascii._
@@ -38,6 +37,8 @@ import scala.jdk.CollectionConverters.{CollectionHasAsScala, MapHasAsScala}
 //noinspection DuplicatedCode
 object NCTokenLogger extends LazyLogging {
     case class NoteMetadata(noteType: String, filtered: Seq[String], isFull: Boolean)
+
+    private final val FMT_NUM = new DecimalFormat("#0.00000")
     
     // Order and sorting of notes for ASCII output.
     private final val NOTE_TYPES = Seq[String](
@@ -616,6 +617,11 @@ object NCTokenLogger extends LazyLogging {
 
                                 if (parts.nonEmpty)
                                     s = s"$s, parts=[$parts]"
+
+                                t.meta(s"${t.getId}:scores").asInstanceOf[java.util.List[Double]] match {
+                                    case null => // No-op.
+                                    case scores => s = s"$s, scores='${scores.asScala.map(FMT_NUM.format).mkString(",")}'"
+                                }
 
                                 s
                             }
