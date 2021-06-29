@@ -19,7 +19,9 @@ package org.apache.nlpcraft.server.sugsyn
 
 /**
   *
-  * @param sample
-  * @param indexes
+  * @param words
+  * @param index
   */
-case class NCSuggestionRequest(sample: String, index: Int)
+case class NCSuggestionRequest(words: Seq[String], index: Int) {
+    require(index >= 0 && index < words.length)
+}

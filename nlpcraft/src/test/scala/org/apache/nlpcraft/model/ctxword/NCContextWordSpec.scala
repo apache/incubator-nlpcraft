@@ -121,8 +121,13 @@ class NCContextWordSpec extends NCTestContext {
 
     @Test
     private[ctxword] def test(): Unit = {
-        check("I want to have a dogs and foxes", "class:animal", "dogs", "foxes")
-        //check("I want to have a dog and fox", "class:animal", "dog", "fox")
+        //check("I want to have a dogs and foxes", "class:animal", "dogs", "foxes")
+        //check("I bought dog's meat", "class:animal", "dog meat")
+        check("I bought the meat", "class:animal", "dog meat")
+
+
+        //check("I bought xxx dog's", "class:animal", "dog")
+//        check("I want to have a dog and fox", "class:animal", "dog", "fox")
 //        check("I fed your fish", "class:animal", "fish")
 //
 //        check("I like to drive my Porsche and Volkswagen", "class:cars", "Porsche", "Volkswagen")

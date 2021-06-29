@@ -484,7 +484,7 @@ object NCSuggestSynonymManager extends NCService {
                             new StringEntity(
                                 GSON.toJson(
                                     RestRequest(
-                                        sentences = batch.map(p => RestRequestSentence(p.sample, p.index)).asJava,
+                                        sentences = batch.map(p => RestRequestSentence(p.words.mkString(" "), p.index)).asJava,
                                         minScore = 0,
                                         limit = MAX_LIMIT
                                     )
