@@ -21,7 +21,7 @@ import java.io._
 import java.lang.ProcessBuilder.Redirect
 import java.nio.charset.StandardCharsets
 import java.text.DateFormat
-import java.util
+import java.{io, util}
 import java.util.Date
 import java.util.regex.Pattern
 import java.util.zip.ZipInputStream
@@ -281,7 +281,7 @@ object NCCli extends NCCliBase {
      */
     private def getPathParam(cmd: Command, args: Seq[Argument], id: String, dflt: String = null): String = {
         def makePath(p: String): String = {
-            val normPath = refinePath(U.trimQuotes(p))
+            val normPath = replacePathTilda(U.trimQuotes(p))
 
             checkFilePath(normPath)
 
@@ -298,7 +298,7 @@ object NCCli extends NCCliBase {
      *
      * @param path
      */
-    private def refinePath(path: String): String = {
+    private def replacePathTilda(path: String): String = {
         require(path != null)
 
         if (path.nonEmpty && path.head == '~') new File(SystemUtils.getUserHome, path.tail).getAbsolutePath else path
@@ -323,8 +323,8 @@ object NCCli extends NCCliBase {
      * @return
      */
     private def normalizeCp(cp: String): String =
-        U.splitTrimFilter(cp, CP_WIN_NIX_SEPS_REGEX).map(refinePath).map(path => {
-            val normPath = refinePath(path)
+        U.splitTrimFilter(cp, CP_WIN_NIX_SEPS_REGEX).map(replacePathTilda).map(path => {
+            val normPath = replacePathTilda(path)
 
             if (!normPath.contains("*") && !new File(normPath).exists())
                 throw new IllegalStateException(s"Classpath not found: ${c(path)}")
@@ -1955,7 +1955,7 @@ object NCCli extends NCCliBase {
       * @param repl Whether or not executing from REPL.
       */
     private [cmdline] def cmdGenModel(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        val filePath = refinePath(getParam(cmd, args, "filePath"))
+        val filePath = replacePathTilda(getParam(cmd, args, "filePath"))
         val overrideFlag = getFlagParam(cmd, args, "override", dflt = false)
         val mdlId = getParam(cmd, args, "modelId")
 
@@ -2003,7 +2003,7 @@ object NCCli extends NCCliBase {
       * @param repl Whether or not executing from REPL.
       */
     private [cmdline] def cmdGenProject(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        val outputDir = refinePath(getParam(cmd, args, "outputDir", USR_WORK_DIR))
+        val outputDir = replacePathTilda(getParam(cmd, args, "outputDir", USR_WORK_DIR))
         val baseName = getParam(cmd, args, "baseName")
         val lang = getParam(cmd, args, "lang", "java").toLowerCase
         val buildTool = getParam(cmd, args, "buildTool", "mvn").toLowerCase
@@ -2279,6 +2279,7 @@ object NCCli extends NCCliBase {
             /**
              *
              * @param disp
+             * @param grp
              * @param desc
              * @param completed
              * @return
@@ -2286,11 +2287,54 @@ object NCCli extends NCCliBase {
             private def mkCandidate(disp: String, grp: String, desc: String, completed: Boolean): Candidate =
                 new Candidate(disp, disp, grp, desc, null, null, completed)
 
-            private def isFsPath(cmd: String, param: String): Boolean = {
-                println(s"Word: $s")
+            /**
+             *
+             * @param paramName
+             * @param absPath
+             * @param name
+             * @param isDir
+             * @return
+             */
+            private def mkPathCandidate(paramName: String, absPath: String, name: String, isDir: Boolean): Candidate =
+                new Candidate(s"$paramName=$absPath", name, if (isDir) "Directory" else "File", null, null, null, false)
 
-                false
+            /**
+             *
+             * @param param
+             * @return
+             */
+            private def splitEqParam(param: String): Option[(String/*Name*/, String/*Value*/)] = {
+                val eqIdx = param.indexOf('=')
+
+                if (eqIdx != -1) {
+                    val paramName = param.substring(0, eqIdx)
+                    val paramVal = param.substring(eqIdx + 1)
+
+                    Some((paramName, paramVal))
+                }
+                else
+                    None
             }
+
+            /**
+             *
+             * @param cmdName
+             * @param param
+             * @return
+             */
+            private def isFsPath(cmdName: String, param: String): Boolean =
+                CMDS.find(_.name == cmdName) match {
+                    case Some(cmd) =>
+                        splitEqParam(param) match {
+                            case Some((name, _)) =>
+                                cmd.params.find(_.names.contains(name)) match {
+                                    case Some(p) => p.fsPath
+                                    case None => false
+                                }
+                            case None => false
+                        }
+                    case None => false
+                }
 
             override def complete(reader: LineReader, line: ParsedLine, candidates: util.List[Candidate]): Unit = {
                 val words = line.words().asScala
@@ -2314,7 +2358,30 @@ object NCCli extends NCCliBase {
                     }).asJava)
                 }
                 else if (words.size > 1 && isFsPath(words.head, words.last)) {
+                    val param = words.last
 
+                    // At this point we know that command and parameter are valid.
+                    splitEqParam(param) match {
+                        case Some((paramName, pathValue)) =>
+                            val path = replacePathTilda(pathValue).strip()
+
+                            var p = if (path.isEmpty) USR_WORK_DIR else path
+
+                            while (!new File(p).exists)
+                                p = p.split(PATH_SEP_CH).toSeq.dropRight(1).mkString(PATH_SEP_STR)
+
+                            val dirs = new File(p).listFiles(new io.FileFilter() {
+                                override def accept(file: File): Boolean = file.isDirectory
+                            }).toSeq
+                            val files = new File(p).listFiles(new io.FileFilter() {
+                                override def accept(file: File): Boolean = file.isFile
+                            }).toSeq
+
+                            dirs.foreach(dir => candidates.add(mkPathCandidate(paramName, p, dir.getName, isDir = true)))
+                            files.foreach(file => candidates.add(mkPathCandidate(paramName, p, file.getName, isDir = false)))
+
+                        case None => ()
+                    }
                 }
                 else {
                     val cmd = words.head
