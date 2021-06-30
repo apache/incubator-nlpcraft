@@ -269,7 +269,7 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
      * @param js
      * @return
      */
-    private static NCContextWordElementConfig convert(NCContextWordElementScoreJson js) {
+    private static NCContextWordElementConfig convert(NCContextWordElementConfigJson js) {
         return new NCContextWordElementConfig() {
             @Override
             public NCContextWordElementPolicy getPolicy() {
@@ -317,7 +317,7 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
 
                 @Override
                 public Map<String, NCContextWordElementConfig> getSupportedElements() {
-                    Map<String, NCContextWordElementScoreJson> m = js.getSupportedElements();
+                    Map<String, NCContextWordElementConfigJson> m = js.getSupportedElements();
 
                     return m != null ?
                         m.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, p -> convert(p.getValue()))) :

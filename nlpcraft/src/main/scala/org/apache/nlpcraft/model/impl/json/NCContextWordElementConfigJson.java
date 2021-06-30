@@ -20,7 +20,7 @@ package org.apache.nlpcraft.model.impl.json;
 /**
  * TODO:
  */
-public class NCContextWordElementScoreJson {
+public class NCContextWordElementConfigJson {
     private String policy;
     private double score;
 

@@ -22,7 +22,7 @@ import java.io.Serializable;
 // TODO:
 public interface NCContextWordElementConfig extends Serializable {
     enum NCContextWordElementPolicy {
-        MAX, MIN, AVERAGE, ANY
+        ALL, ANY, AVERAGE, MEDIAN
     }
 
     NCContextWordElementPolicy getPolicy();

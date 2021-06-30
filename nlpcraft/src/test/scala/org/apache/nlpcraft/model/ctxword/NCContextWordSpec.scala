@@ -50,7 +50,7 @@ class NCContextWordSpecModel extends NCModel {
     override def getVersion: String = "1.0.0"
 
     val MDL_LEVEL = 0.4
-    val MDL_POLICY = MIN
+    val MDL_POLICY = ALL
 
     override def getContextWordModelConfig: Optional[NCContextWordModelConfig] = {
         Optional.of(

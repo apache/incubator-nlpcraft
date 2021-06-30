@@ -47,7 +47,6 @@ object NCContextWordEnricher extends NCServerEnricher {
 
     private case class ModelProbeKey(probeId: String, modelId: String)
     private case class ElementScore(elementId: String, scores: Double*) {
-        lazy val maxScore: Double = scores.max // TODO" logic
         override def toString: String = s"Element [id=$elementId, scores=${scores.sortBy(p => -p).mkString(",", "[", "]")}]"
     }
     private case class ValuesHolder(
@@ -332,8 +331,13 @@ object NCContextWordEnricher extends NCServerEnricher {
         val elemScoreVal = elemScore.getScore
 
         policy match {
-            case MAX => scores.max >= elemScoreVal
-            case MIN => scores.min >= elemScoreVal
+            case MEDIAN =>
+                val sorted = scores.sorted
+                val len2 = sorted.length / 2
+                val median = if (sorted.length % 2 == 0) (sorted(len2) + sorted(len2 - 1)) / 2 else sorted(len2)
+
+                median >= elemScoreVal
+            case ALL => scores.forall(_ >= elemScoreVal)
             case AVERAGE => scores.sum / scores.size >= elemScoreVal
             case ANY => scores.exists(_ >= elemScoreVal)
 
@@ -347,21 +351,18 @@ object NCContextWordEnricher extends NCServerEnricher {
                 val detected = mutable.HashMap.empty[NCNlpSentenceToken, mutable.HashSet[ElementScore]]
 
                 def add(
-                    nounTok: NCNlpSentenceToken, elemId: String, senScore: Double, sampleScore: Double
+                    nounTok: NCNlpSentenceToken, elemId: String, scores : Double*
                 ): Unit = {
-                    val maxScore = Math.max(senScore, sampleScore)
                     val tokElems = detected.getOrElseUpdate(nounTok, mutable.HashSet.empty[ElementScore])
 
-                    def mkNew(): ElementScore = ElementScore(elemId, senScore, sampleScore)
+                    def mkElem(seq: Seq[Double]): ElementScore = ElementScore(elemId, seq.filter(_ > EXCL_MIN_SCORE):_*)
 
-                    tokElems.find(_.elementId == elemId) match {
-                        case Some(saved) =>
-                            if (maxScore > saved.maxScore) {
-                                tokElems -= saved
-                                tokElems += mkNew()
-                            }
-                        case None => tokElems += mkNew()
-                    }
+                    tokElems += (
+                        tokElems.find(_.elementId == elemId) match {
+                            case Some(ex) => mkElem(scores ++ ex.scores)
+                            case None => mkElem(scores)
+                        }
+                    )
                 }
 
                 val nounToks = ns.tokens.filter(t => NOUNS_POS.contains(t.pos))
