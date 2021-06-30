@@ -671,7 +671,7 @@ private [cmdline] object NCCliCommands {
                         s"configuration file in ${y("'resources'")} folder or on the classpath. If the configuration file has " +
                         s"different name or in different location use this parameter to provide an alternative path. " +
                         s"Note that the server and the probe can use the same file for their configuration. " +
-                        s"Note also that you can use ${y("'~'")} at the beginning of the path to specify user home directory."
+                        s"Note also that you can use ${y("'~'")} at the beginning of the path to indicate user home directory."
                 ),
                 Parameter(
                     id = "igniteConfig",
@@ -685,7 +685,7 @@ private [cmdline] object NCCliCommands {
                         s"${y("'ignite.xml'")} configuration file in the same directory as NLPCraft JAR file. If the " +
                         s"configuration file has different name or in different location use this parameter to " +
                         s"provide an alternative path. " +
-                        s"Note also that you can use ${y("'~'")} at the beginning of the path to specify user home directory."
+                        s"Note also that you can use ${y("'~'")} at the beginning of the path to indicate user home directory."
                 ),
                 Parameter(
                     id = "jvmopts",

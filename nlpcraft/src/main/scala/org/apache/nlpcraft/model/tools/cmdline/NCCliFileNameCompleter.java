@@ -38,10 +38,11 @@ class NCCliFileNameCompleter
     /**
      *
      * @param reader Line reader for JLine.
+     * @param paramName Name of the parameter.
      * @param pathBuf Current path string.
      * @param candidates List of completion candidates to fill.
      */
-    void fillCandidates(LineReader reader, String pathBuf, final List<Candidate> candidates) {
+    void fillCandidates(LineReader reader, String paramName, String pathBuf, final List<Candidate> candidates) {
         Path curPath;
         String curBuf;
 
@@ -74,7 +75,7 @@ class NCCliFileNameCompleter
                     if (Files.isDirectory(path)) {
                         candidates.add(
                             new Candidate(
-                                value + (reader.isSet(LineReader.Option.AUTO_PARAM_SLASH) ? sep : ""),
+                                paramName + "=" + value + (reader.isSet(LineReader.Option.AUTO_PARAM_SLASH) ? sep : ""),
                                 getDisplay(reader.getTerminal(), path, resolver, sep),
                                 null,
                                 null,
@@ -86,7 +87,7 @@ class NCCliFileNameCompleter
                     } else {
                         candidates.add(
                             new Candidate(
-                                value,
+                                paramName + "=" + value,
                                 getDisplay(reader.getTerminal(), path, resolver, sep),
                                 null,
                                 null,

@@ -2350,7 +2350,7 @@ object NCCli extends NCCliBase {
                 }
                 else if (words.size > 1 && isFsPath(words.head, words.last))
                     splitEqParam(words.last) match {
-                        case Some((_, path)) => fsCompleter.fillCandidates(reader, path, candidates)
+                        case Some((name, path)) => fsCompleter.fillCandidates(reader, name, path, candidates)
                         case None => ()
                     }
                 else {
