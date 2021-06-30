@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.common.nlp
 
 import org.apache.nlpcraft.common._
-import org.apache.nlpcraft.server.mdo.NCModelMLConfigMdo
+import org.apache.nlpcraft.server.mdo.NCCtxWordConfigMdo
 
 import java.io.{Serializable => JSerializable}
 import java.util.{Collections, List => JList}
@@ -41,7 +41,7 @@ import org.apache.nlpcraft.common.nlp.NCNlpSentence._
   * @param srvReqId Server request ID.
   * @param text Normalized text.
   * @param enabledBuiltInToks Enabled built-in tokens.
-  * @param mlConfig Machine learning configuration. Optional.
+  * @param ctxWordConfig Machine learning configuration. Optional.
   * @param tokens Initial buffer.
   * @param firstProbePhase Processing phase flag.
   * @param deletedNotes Deleted overridden notes with their tokens.
@@ -52,8 +52,8 @@ class NCNlpSentence(
     val srvReqId: String,
     val text: String,
     val enabledBuiltInToks: Set[String],
-    val mlConfig: Option[NCModelMLConfigMdo] = None,
-    var mlData: Map[Int, Map[String, java.util.List[Double]]] = Map.empty,
+    val ctxWordConfig: Option[NCCtxWordConfigMdo] = None,
+    var ctxWordData: Map[Int, Map[String, java.util.List[Double]]] = Map.empty,
     override val tokens: mutable.ArrayBuffer[NCNlpSentenceToken] = new mutable.ArrayBuffer[NCNlpSentenceToken](32),
     var firstProbePhase: Boolean = true,
     private val deletedNotes: mutable.HashMap[NCNlpSentenceNote, Seq[NCNlpSentenceToken]] = mutable.HashMap.empty,
@@ -71,7 +71,7 @@ class NCNlpSentence(
             srvReqId = srvReqId,
             text = text,
             enabledBuiltInToks = enabledBuiltInToks,
-            mlConfig = mlConfig,
+            ctxWordConfig = ctxWordConfig,
             tokens = tokens.map(_.clone()),
             deletedNotes = deletedNotes.map(p => p._1.clone() -> p._2.map(_.clone())),
             initNlpNotes = initNlpNotes,

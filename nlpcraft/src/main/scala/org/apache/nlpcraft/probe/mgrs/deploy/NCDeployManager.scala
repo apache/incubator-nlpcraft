@@ -563,13 +563,13 @@ object NCDeployManager extends NCService {
 
         if (ctxCfgOpt.isPresent) {
             if (samples.isEmpty) {
-                if (ctxCfgOpt.get.getSamples.isEmpty)
+                if (ctxCfgOpt.get.getCorpus.isEmpty)
                     // TODO:
                     throw new NCE("Model should contains samples for intents or in context word config.")
 
             }
             else {
-                val cnt = samples.size + ctxCfgOpt.get.getSamples.size()
+                val cnt = samples.size + ctxCfgOpt.get.getCorpus.size()
 
                 if (cnt > MAX_CTXWORD_SAMPLES_CNT)
                 // TODO: do we need print recommended value.?

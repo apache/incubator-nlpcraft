@@ -217,7 +217,7 @@ object NCConnectionManager extends NCService {
 
                             val (
                                 values,
-                                samples,
+                                corpus,
                                 policies,
                                 scores
                             ): (
@@ -231,10 +231,10 @@ object NCConnectionManager extends NCService {
                                 else {
                                     val cfg = mdl.getContextWordModelConfig.get()
 
-                                    var samples = if (cfg.getSamples == null) Seq.empty else cfg.getSamples.asScala
+                                    var corpus = if (cfg.getCorpus == null) Seq.empty else cfg.getCorpus.asScala
 
                                     if (cfg.useIntentsSamples)
-                                        samples = samples ++ wrapper.samples.flatMap(_._2.flatMap(p => p))
+                                        corpus = corpus ++ wrapper.samples.flatMap(_._2.flatMap(p => p))
 
                                     val values =
                                         mdl.getElements.
@@ -256,7 +256,7 @@ object NCConnectionManager extends NCService {
 
                                     (
                                         values.asJava,
-                                        samples.toSet.asJava,
+                                        corpus.toSet.asJava,
                                         getData(_.getPolicy.toString),
                                         getData(_.getScore)
                                     )
@@ -272,7 +272,7 @@ object NCConnectionManager extends NCService {
                                 mdl.getVersion,
                                 new util.HashSet[String](mdl.getEnabledBuiltInTokens),
                                 values,
-                                samples,
+                                corpus,
                                 policies,
                                 scores
                             )

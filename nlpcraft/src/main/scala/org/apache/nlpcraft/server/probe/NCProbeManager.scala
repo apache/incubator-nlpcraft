@@ -632,7 +632,7 @@ object NCProbeManager extends NCService {
                                 mdlVer,
                                 enabledBuiltInToks,
                                 values,
-                                samples,
+                                corpus,
                                 policies,
                                 scores
                             ) =>
@@ -641,8 +641,8 @@ object NCProbeManager extends NCService {
                                 require(mdlVer != null)
                                 require(enabledBuiltInToks != null)
                                 require(
-                                    values.isEmpty && samples.isEmpty && policies.isEmpty ||
-                                    !values.isEmpty && !samples.isEmpty && !policies.isEmpty
+                                    values.isEmpty && corpus.isEmpty && policies.isEmpty ||
+                                    !values.isEmpty && !corpus.isEmpty && !policies.isEmpty
                                 )
                                 require(policies.size() == scores.size())
 
@@ -651,12 +651,12 @@ object NCProbeManager extends NCService {
                                     name = mdlName,
                                     version = mdlVer,
                                     enabledBuiltInTokens = enabledBuiltInToks.asScala.toSet,
-                                    mlConfig =
+                                    ctxWordConfig =
                                         if (!values.isEmpty) {
                                             val scoresMap = scores.asScala
 
                                             Some(
-                                                NCModelMLConfigMdo(
+                                                NCCtxWordConfigMdo(
                                                     probeId = probeId,
                                                     modelId = mdlId,
                                                     values = values.asScala.map {
@@ -666,7 +666,7 @@ object NCProbeManager extends NCService {
                                                                     case (value, syns) => value -> syns.asScala.toSet
                                                                 }.toMap
                                                     }.toMap,
-                                                    samples = samples.asScala.toSet,
+                                                    corpus = corpus.asScala.toSet,
                                                     policies.asScala.map { case (elemId, policy) =>
                                                         elemId -> new NCContextWordElementConfig() {
                                                             override def getPolicy: NCContextWordElementPolicy =

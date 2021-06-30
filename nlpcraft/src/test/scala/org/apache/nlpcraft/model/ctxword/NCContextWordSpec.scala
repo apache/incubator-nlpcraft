@@ -66,7 +66,7 @@ class NCContextWordSpecModel extends NCModel {
 
                 override def useIntentsSamples(): Boolean = false
 
-                override def getSamples: util.List[String] =
+                override def getCorpus: util.List[String] =
                     Seq(
                         "I like drive my new BMW",
                         "BMW has the best engine",

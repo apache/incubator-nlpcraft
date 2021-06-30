@@ -448,10 +448,12 @@ object NCModelEnricher extends NCProbeEnricher {
             "enrich", parent, "srvReqId" -> ns.srvReqId, "mdlId" -> mdl.model.getId, "txt" -> ns.text
         ) { span =>
             if (ns.firstProbePhase)
-                for ((tokIdx, map) <- ns.mlData; (elemId, score) <- map)
+                for ((tokIdx, map) <- ns.ctxWordData; (elemId, score) <- map)
                     mark(
                         ns = ns,
-                        elem = mdl.elements.find(_._1 == elemId).getOrElse(throw new NCE(s"Element not found: $elemId"))._2,
+                        elem =
+                            mdl.elements.find(_._1 == elemId).
+                            getOrElse(throw new NCE(s"Element not found: $elemId"))._2,
                         toks = Seq(ns.tokens(tokIdx)),
                         direct = true,
                         metaOpt = Some(Map("scores" -> score))

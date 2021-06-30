@@ -306,7 +306,7 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
         return js != null?
             new NCContextWordModelConfig() {
                 @Override
-                public List<String> getSamples() {
+                public List<String> getCorpus() {
                     return js.getSamples() != null ? Arrays.asList(js.getSamples()) : null;
                 }
 

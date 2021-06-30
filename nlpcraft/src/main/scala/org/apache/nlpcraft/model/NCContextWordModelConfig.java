@@ -24,7 +24,7 @@ import java.util.Map;
 
 // TODO:
 public interface NCContextWordModelConfig extends Serializable {
-    default List<String> getSamples() {
+    default List<String> getCorpus() {
         return Collections.emptyList();
     }
 
