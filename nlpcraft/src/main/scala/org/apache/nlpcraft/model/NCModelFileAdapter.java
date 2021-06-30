@@ -66,6 +66,7 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
     private final Set<NCElement> elems;
     private final List<NCCustomParser> parsers;
     private final Map<String, Set<String>> restrictedCombinations;
+    private final NCContextWordModelConfig ctxWordMdlCfg;
 
     private final String origin;
 
@@ -122,6 +123,7 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
         this.intents = convertToList(proxy.getIntents(), null);
         this.parsers = convertParsers(proxy.getParsers());
         this.restrictedCombinations = convertRestrictedCombinations(proxy.getRestrictedCombinations());
+        this.ctxWordMdlCfg = convert(proxy.getContextWordModelConfigJson());
 
         // NOTE: we can only test/check this at this point. Downstream - this information is lost.
         if (proxy.getIntents() != null && intents.size() != proxy.getIntents().length)
@@ -264,6 +266,69 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
 
     /**
      *
+     * @param js
+     * @return
+     */
+    private static NCContextWordElementConfig convert(NCContextWordElementScoreJson js) {
+        return new NCContextWordElementConfig() {
+            @Override
+            public NCContextWordElementPolicy getPolicy() {
+                String policy = js.getPolicy();
+
+                if (policy == null) {
+                    // TODO:
+                    throw new NCException("Element score policy cannot be null.");
+                }
+
+                try {
+                    return NCContextWordElementPolicy.valueOf(js.getPolicy());
+                }
+                catch (IllegalArgumentException e) {
+                    // TODO:
+                    throw new NCException("Element score policy invalid value:" + policy, e);
+                }
+            }
+
+            @Override
+            public double getScore() {
+                // TODO: check here ?
+                return js.getScore();
+            }
+        };
+    }
+
+    /**
+     *
+     * @param js
+     * @return
+     */
+    private static NCContextWordModelConfig convert(NCContextWordModelConfigJson js) {
+        return js != null?
+            new NCContextWordModelConfig() {
+                @Override
+                public List<String> getSamples() {
+                    return js.getSamples() != null ? Arrays.asList(js.getSamples()) : null;
+                }
+
+                @Override
+                public boolean useIntentsSamples() {
+                    return js.isUseIntentsSamples();
+                }
+
+                @Override
+                public Map<String, NCContextWordElementConfig> getSupportedElements() {
+                    Map<String, NCContextWordElementScoreJson> m = js.getSupportedElements();
+
+                    return m != null ?
+                        m.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, p -> convert(p.getValue()))) :
+                        null;
+                }
+            }:
+            null;
+    }
+
+    /**
+     *
      * @param proxy
      * @param arr
      * @return
@@ -355,13 +420,6 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
                         @Override
                         public Optional<Boolean> isSparse() {
                             return nvlOpt(js.isSparse(), proxy.isSparse());
-                        }
-
-                        @Override
-                        public Optional<Double> getContextWordStrictLevel() {
-                            return js.getContextWordStrictLevel() != null ?
-                                Optional.of(js.getContextWordStrictLevel()) :
-                                Optional.ofNullable(proxy.getContextWordStrictLevel());
                         }
 
                         private<T> Optional<T> nvlOpt(T t, T dflt) {
@@ -558,5 +616,10 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
     @Override
     public Map<String, Set<String>> getRestrictedCombinations() {
         return restrictedCombinations;
+    }
+
+    @Override
+    public Optional<NCContextWordModelConfig> getContextWordModelConfig() {
+        return Optional.ofNullable(ctxWordMdlCfg);
     }
 }

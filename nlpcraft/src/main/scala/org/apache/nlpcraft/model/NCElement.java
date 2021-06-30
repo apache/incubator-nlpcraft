@@ -382,10 +382,4 @@ public interface NCElement extends NCMetadata, Serializable {
     default Optional<Boolean> isSparse() {
         return Optional.empty();
     }
-
-    // TODO: 0 .. 1
-    // Empty - means disabled.
-    default Optional<Double> getContextWordStrictLevel() {
-        return Optional.empty();
-    }
 }

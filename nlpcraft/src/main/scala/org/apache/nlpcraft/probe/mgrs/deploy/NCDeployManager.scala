@@ -83,7 +83,8 @@ object NCDeployManager extends NCService {
 
     private final val SUSP_SYNS_CHARS = Seq("?", "*", "+")
 
-    private final val MAX_CTXWORD_VALS_CNT = 1000
+    private final val MAX_CTXWORD_VALS_CNT = 10000
+    private final val MAX_CTXWORD_SAMPLES_CNT = 1000
 
     @volatile private var data: mutable.ArrayBuffer[NCProbeModel] = _
     @volatile private var mdlFactory: NCModelFactory = _
@@ -420,20 +421,51 @@ object NCDeployManager extends NCService {
               s"]")
 
         // Validates context words parameters.
-        val ctxWordElems = mdl.getElements.asScala.filter(_.getContextWordStrictLevel.isPresent)
+        // TODO:
+        val ctxCfgOpt = mdl.getContextWordModelConfig;
 
-        if (ctxWordElems.nonEmpty) {
-            val valsSynsCnt = ctxWordElems.toSeq.map(_.getValues.asScala.map(_.getSynonyms.size()).sum).sum
+        if (ctxCfgOpt.isPresent) {
+            val cnt = mdl.getElements.asScala.map(_.getValues.asScala.map(_.getSynonyms.size()).sum).sum
 
-            if (valsSynsCnt > MAX_CTXWORD_VALS_CNT) {
+            if (cnt > MAX_CTXWORD_VALS_CNT)
                 // TODO: do we need print recommended value.?
                 logger.warn(
                     s"Too many values synonyms detected for context words elements [" +
                         s"mdlId=$mdlId, " +
-                        s"cnt=$valsSynsCnt," +
+                        s"cnt=$cnt," +
                         s"recommended=$MAX_CTXWORD_VALS_CNT" +
-                        s"]")
+                        s"]"
+                )
+
+
+            val ctxCfg = ctxCfgOpt.get()
+
+            if (ctxCfg.getSupportedElements == null || ctxCfg.getSupportedElements.isEmpty)
+                // TODO:
+                throw new NCE(s"Model doesn't contain supported context word elements.")
+
+            val supportedElems = ctxCfg.getSupportedElements.asScala
+            val valsElems = mdl.getElements.asScala.filter(p => p.getValues != null && !p.getValues.isEmpty).
+                map(p => p.getId -> p.getValues.size()).toMap
+
+            var ids = supportedElems.filter { case (elemId, _) => !valsElems.keySet.contains(elemId) }.keys
+
+            if (ids.nonEmpty) {
+                // TODO:
+                throw new NCE(s"Model doesn't contain values elements with following identifiers: ${ids.mkString(", ")}")
             }
+
+            ids = supportedElems.filter { case (_, score) => score.getPolicy == null }.keys
+
+            if (ids.nonEmpty)
+                // TODO:
+                throw new NCE(s"Context word policies are null for elements : ${ids.mkString(", ")}")
+
+            ids = supportedElems.filter { case (_, score) => score.getScore < 0 || score.getScore > 1  }.keys
+
+            if (ids.nonEmpty)
+                // TODO:
+                throw new NCE(s"Context word score are out of range (0..1) for elements : ${ids.mkString(", ")}")
         }
 
         // Discard value loaders.
@@ -527,6 +559,30 @@ object NCDeployManager extends NCService {
 
         val simple = idl(syns.toSet, idl = false)
 
+        val samples = scanSamples(mdl)
+
+        if (ctxCfgOpt.isPresent) {
+            if (samples.isEmpty) {
+                if (ctxCfgOpt.get.getSamples.isEmpty)
+                    // TODO:
+                    throw new NCE("Model should contains samples for intents or in context word config.")
+
+            }
+            else {
+                val cnt = samples.size + ctxCfgOpt.get.getSamples.size()
+
+                if (cnt > MAX_CTXWORD_SAMPLES_CNT)
+                // TODO: do we need print recommended value.?
+                    logger.warn(
+                        s"Too many samples detected for context words elements [" +
+                            s"mdlId=$mdlId, " +
+                            s"cnt=$cnt," +
+                            s"recommended=$MAX_CTXWORD_SAMPLES_CNT" +
+                            s"]"
+                    )
+            }
+        }
+
         NCProbeModel(
             model = mdl,
             solver = solver,
@@ -538,7 +594,7 @@ object NCDeployManager extends NCService {
             exclStopWordsStems = exclStopWords,
             suspWordsStems = suspWords,
             elements = mdl.getElements.asScala.map(elm => (elm.getId, elm)).toMap,
-            samples = scanSamples(mdl, hasCtxWordElems = ctxWordElems.nonEmpty)
+            samples = samples
         )
     }
 
@@ -679,7 +735,7 @@ object NCDeployManager extends NCService {
                 val mf = makeModelFactory(mft)
 
                 mf.initialize(Config.modelFactoryProps.getOrElse(Map.empty[String, String]).asJava)
-                
+
                 mf
 
             case None => new NCBasicModelFactory
@@ -868,18 +924,6 @@ object NCDeployManager extends NCService {
                     s"elmId=$elmId" +
                 s"]")
 
-            if (elm.getContextWordStrictLevel.isPresent) {
-                val level = elm.getContextWordStrictLevel.get()
-
-                if (level < 0 || level > 1) {
-                    // TODO:
-                    throw new NCE(s"Model element context word strict level is out of range [" +
-                        s"mdlId=${mdl.getId}, " +
-                        s"elmId=$elmId, " +
-                        s"level=$level" +
-                        s"]")
-                }
-            }
         }
 
     /**
@@ -1009,7 +1053,7 @@ object NCDeployManager extends NCService {
     @throws[NCE]
     private def mkChunk(mdl: NCModel, chunk: String): NCProbeSynonymChunk = {
         def stripSuffix(fix: String, s: String): String = s.slice(fix.length, s.length - fix.length)
-        
+
         val mdlId = mdl.getId
 
         // Regex synonym.
@@ -1524,7 +1568,7 @@ object NCDeployManager extends NCService {
 
         (claxx.getDeclaredMethods ++ claxx.getMethods).toSet
     }
-    
+
     /**
       *
       * @param mdl
@@ -1624,7 +1668,7 @@ object NCDeployManager extends NCService {
                 s"mdlOrigin=${mdl.getOrigin}, " +
                 s"intentIds=${unusedIntents.map(_.id).mkString("(", ", ", ")")}]"
             )
-        
+
         intents.toSet
     }
 
@@ -1632,10 +1676,9 @@ object NCDeployManager extends NCService {
       * Scans given model for intent samples.
       *
       * @param mdl Model to scan.
-      * @param hasCtxWordElems Flag.
       */
     @throws[NCE]
-    private def scanSamples(mdl: NCModel, hasCtxWordElems: Boolean): Set[Sample] = {
+    private def scanSamples(mdl: NCModel): Set[Sample] = {
         val mdlId = mdl.getId
 
         val samples = mutable.Buffer.empty[Sample]
@@ -1705,12 +1748,6 @@ object NCDeployManager extends NCService {
                         }
 
                 }
-        }
-
-        if (hasCtxWordElems && samples.isEmpty) {
-            // TODO:
-            // TODO: we don't check samples count, and their validity (provided samples can for another elements.)
-            throw new NCE(s"Model with context word elements should contains samples [id=${mdl.getId}]")
         }
 
         samples.toSet

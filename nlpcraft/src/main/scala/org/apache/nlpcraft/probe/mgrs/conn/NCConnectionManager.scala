@@ -24,17 +24,18 @@ import org.apache.nlpcraft.common.crypto._
 import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
 import org.apache.nlpcraft.common.socket._
 import org.apache.nlpcraft.common.version.NCVersion
+import org.apache.nlpcraft.model.NCContextWordElementConfig
 import org.apache.nlpcraft.probe.mgrs.NCProbeMessage
 import org.apache.nlpcraft.probe.mgrs.cmd.NCCommandManager
 import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 
 import java.io.{EOFException, IOException, InterruptedIOException}
 import java.net.{InetAddress, NetworkInterface}
-import java.{lang, util}
+import java.util
 import java.util.concurrent.CountDownLatch
 import java.util.{Collections, Properties, TimeZone}
 import scala.collection.mutable
-import scala.jdk.CollectionConverters.{ListHasAsScala, MapHasAsJava, SetHasAsJava, SetHasAsScala}
+import scala.jdk.CollectionConverters.{ListHasAsScala, MapHasAsJava, MapHasAsScala, SetHasAsJava, SetHasAsScala}
 
 /**
   * Probe down/up link connection manager.
@@ -214,31 +215,50 @@ object NCConnectionManager extends NCService {
                         NCModelManager.getAllModels().map(wrapper => {
                             val mdl = wrapper.model
 
-                            val ctxWordElems = mdl.getElements.asScala.filter(_.getContextWordStrictLevel.isPresent)
-
                             val (
                                 values,
                                 samples,
-                                levels
+                                policies,
+                                scores
                             ): (
                                 java.util.Map[String, java.util.Map[String, java.util.Set[String]]],
                                 java.util.Set[String],
-                                java.util.Map[String, lang.Double]
+                                java.util.Map[String, String],
+                                java.util.Map[String, Double]
                             ) =
-                                if (ctxWordElems.isEmpty)
-                                    (Collections.emptyMap(), Collections.emptySet(), Collections.emptyMap())
+                                if (mdl.getContextWordModelConfig.isEmpty)
+                                    (Collections.emptyMap(), Collections.emptySet(), Collections.emptyMap(), Collections.emptyMap())
                                 else {
-                                    (
-                                        ctxWordElems.map(e =>
-                                            e.getId ->
-                                                e.getValues.asScala.map(p => p.getName -> {
-                                                    val set: util.Set[String] = new util.HashSet(p.getSynonyms)
+                                    val cfg = mdl.getContextWordModelConfig.get()
 
-                                                    set
-                                                }).toMap.asJava
-                                        ).toMap.asJava,
-                                        wrapper.samples.flatMap(_._2.flatMap(p => p)).asJava,
-                                        ctxWordElems.map(e => e.getId -> e.getContextWordStrictLevel.get()).toMap.asJava
+                                    var samples = if (cfg.getSamples == null) Seq.empty else cfg.getSamples.asScala
+
+                                    if (cfg.useIntentsSamples)
+                                        samples = samples ++ wrapper.samples.flatMap(_._2.flatMap(p => p))
+
+                                    val values =
+                                        mdl.getElements.
+                                            asScala.
+                                            filter(p => cfg.getSupportedElements.containsKey(p.getId)).
+                                            map(e =>
+                                        e.getId ->
+                                            e.getValues.asScala.map(p => p.getName -> {
+                                                val set: util.Set[String] = new util.HashSet(p.getSynonyms)
+
+                                                set
+                                            }).toMap.asJava
+                                    ).toMap
+
+                                    val supported = cfg.getSupportedElements.asScala
+
+                                    def getData[T](exract: NCContextWordElementConfig => T): util.Map[String, T] =
+                                        supported.map(p => p._1 -> exract(p._2)).asJava
+
+                                    (
+                                        values.asJava,
+                                        samples.toSet.asJava,
+                                        getData(_.getPolicy.toString),
+                                        getData(_.getScore)
                                     )
                                 }
 
@@ -253,7 +273,8 @@ object NCConnectionManager extends NCService {
                                 new util.HashSet[String](mdl.getEnabledBuiltInTokens),
                                 values,
                                 samples,
-                                levels
+                                policies,
+                                scores
                             )
                         })
                 ), cryptoKey)

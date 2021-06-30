@@ -17,17 +17,15 @@
 
 package org.apache.nlpcraft.model.ctxword
 
-import org.apache.nlpcraft.model.{NCElement, NCIntent, NCIntentMatch, NCIntentSample, NCIntentTerm, NCModel, NCResult, NCToken, NCValue}
+import org.apache.nlpcraft.model.NCContextWordElementConfig.NCContextWordElementPolicy
+import org.apache.nlpcraft.model.{NCContextWordElementConfig, NCContextWordModelConfig, NCElement, NCIntent, NCIntentMatch, NCIntentSample, NCIntentTerm, NCModel, NCResult, NCToken, NCValue}
 import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
 import org.junit.jupiter.api.Test
 
+import java.util
 import java.util.{Collections, Optional}
-import java.{lang, util}
-import scala.jdk.CollectionConverters.{SeqHasAsJava, SetHasAsJava}
+import scala.jdk.CollectionConverters.{CollectionHasAsScala, MapHasAsJava, SeqHasAsJava, SetHasAsJava}
 
-/**
-  * Test model.
-  */
 class NCContextWordSpecModel extends NCModel {
     override def getId: String = this.getClass.getSimpleName
     override def getName: String = this.getClass.getSimpleName
@@ -40,15 +38,34 @@ class NCContextWordSpecModel extends NCModel {
         override def getSynonyms: util.List[String] = (Seq(name) ++ syns).asJava
     }
 
+    case class CtxModelConfig(getSupportedElements: util.Map[String, NCContextWordElementConfig]) extends NCContextWordModelConfig {
+        override def useIntentsSamples(): Boolean = true
+    }
+
+    case class CtxElementConfig(override val getScore: Double, getPolicy: NCContextWordElementPolicy) extends NCContextWordElementConfig
+
     case class Element(id: String, level: Double, values: NCValue*) extends NCElement {
         override def getId: String = id
         override def getValues: util.List[NCValue] = values.asJava
-        override def getContextWordStrictLevel: Optional[lang.Double] = Optional.of(level)
         override def getGroups: util.List[String] = Collections.singletonList("testGroup")
     }
 
     object Element {
         def apply(id: String, values: NCValue*): Element = new Element(id, level, values: _*)
+    }
+
+    override def getContextWordModelConfig: Optional[NCContextWordModelConfig] = {
+        Optional.of(
+            CtxModelConfig(
+                getElements.asScala.map(e =>
+                    e.getId -> {
+                        val score: NCContextWordElementConfig = CtxElementConfig(level, NCContextWordElementPolicy.MIN)
+
+                        score
+                    }
+                ).toMap.asJava
+            )
+        )
     }
 
     override def getElements: util.Set[NCElement] =

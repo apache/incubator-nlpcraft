@@ -29,6 +29,8 @@ import org.apache.nlpcraft.common.pool.NCThreadPoolManager
 import org.apache.nlpcraft.common.socket.NCSocket
 import org.apache.nlpcraft.common.version.NCVersion
 import org.apache.nlpcraft.common.{NCService, _}
+import org.apache.nlpcraft.model.NCContextWordElementConfig
+import NCContextWordElementConfig.NCContextWordElementPolicy
 import org.apache.nlpcraft.probe.mgrs.NCProbeMessage
 import org.apache.nlpcraft.server.company.NCCompanyManager
 import org.apache.nlpcraft.server.mdo._
@@ -596,7 +598,8 @@ object NCProbeManager extends NCService {
             s"probeToken=$probeTkn, " +
             s"probeId=$probeId, " +
             s"proveGuid=$probeGuid" +
-            s"]")
+            s"]"
+        )
     
         if (isMultipleProbeRegistrations(probeKey))
             respond("S2P_PROBE_MULTIPLE_INSTANCES")
@@ -616,6 +619,7 @@ object NCProbeManager extends NCService {
                             java.util.Set[String],
                             java.util.Map[String, java.util.Map[String, java.util.Set[String]]],
                             java.util.Set[String],
+                            java.util.Map[String, String],
                             java.util.Map[String, Double]
                         )]]("PROBE_MODELS").
                         map {
@@ -626,16 +630,18 @@ object NCProbeManager extends NCService {
                                 enabledBuiltInToks,
                                 values,
                                 samples,
-                                levels
+                                policies,
+                                scores
                             ) =>
                                 require(mdlId != null)
                                 require(mdlName != null)
                                 require(mdlVer != null)
                                 require(enabledBuiltInToks != null)
                                 require(
-                                    values.isEmpty && samples.isEmpty && levels.isEmpty ||
-                                    !values.isEmpty && !samples.isEmpty && !levels.isEmpty
+                                    values.isEmpty && samples.isEmpty && policies.isEmpty ||
+                                    !values.isEmpty && !samples.isEmpty && !policies.isEmpty
                                 )
+                                require(policies.size() == scores.size())
 
                                 NCProbeModelMdo(
                                     id = mdlId,
@@ -643,7 +649,9 @@ object NCProbeManager extends NCService {
                                     version = mdlVer,
                                     enabledBuiltInTokens = enabledBuiltInToks.asScala.toSet,
                                     mlConfig =
-                                        if (!values.isEmpty)
+                                        if (!values.isEmpty) {
+                                            val scoresMap = scores.asScala
+
                                             Some(
                                                 NCModelMLConfigMdo(
                                                     probeId = probeId,
@@ -656,9 +664,16 @@ object NCProbeManager extends NCService {
                                                                 }.toMap
                                                     }.toMap,
                                                     samples = samples.asScala.toSet,
-                                                    levels.asScala.toMap
+                                                    policies.asScala.map { case (elemId, policy) =>
+                                                        elemId -> new NCContextWordElementConfig() {
+                                                            override def getPolicy: NCContextWordElementPolicy =
+                                                                NCContextWordElementPolicy.valueOf(policy)
+                                                            override def getScore: Double = scoresMap(elemId)
+                                                        }
+                                                    }.toMap
                                                 )
                                             )
+                                        }
                                         else
                                             None
                                 )

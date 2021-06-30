@@ -36,8 +36,6 @@ public class NCElementJson {
     private Boolean isPermutateSynonyms;
     // Can be null.
     private Boolean isSparse;
-    // Can be null.
-    private Double contextWordStrictLevel;
 
     public String getParentId() {
         return parentId;
@@ -98,11 +96,5 @@ public class NCElementJson {
     }
     public void setSparse(Boolean sparse) {
         isSparse = sparse;
-    }
-    public Double getContextWordStrictLevel() {
-        return contextWordStrictLevel;
-    }
-    public void setContextWordStrictLevel(Double contextWordStrictLevel) {
-        this.contextWordStrictLevel = contextWordStrictLevel;
     }
 }

@@ -17,6 +17,7 @@
 
 package org.apache.nlpcraft.server.mdo
 
+import org.apache.nlpcraft.model.NCContextWordElementConfig
 import org.apache.nlpcraft.server.mdo.impl._
 
 
@@ -26,7 +27,7 @@ case class NCModelMLConfigMdo(
     @NCMdoField modelId: String,
     @NCMdoField values: Map[String /*Element ID*/, Map[/*Value*/String, /*Synonym*/Set[String]]],
     @NCMdoField samples: Set[String],
-    @NCMdoField levels: Map[String /*Element ID*/, Double]
+    @NCMdoField elements: Map[String /*Element ID*/, NCContextWordElementConfig]
 )
 /**
   * Probe model MDO.

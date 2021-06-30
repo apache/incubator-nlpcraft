@@ -1219,9 +1219,8 @@ public interface NCModelView extends NCMetadata {
         return Collections.emptyMap();
     }
 
-    // TODO: 0 .. 1
-    // Empty - means disabled.  default. Can be overridden by each elements.
-    default Optional<Double> getContextWordStrictLevel() {
+    // TODO:
+    default Optional<NCContextWordModelConfig> getContextWordModelConfig() {
         return Optional.empty();
     }
 }

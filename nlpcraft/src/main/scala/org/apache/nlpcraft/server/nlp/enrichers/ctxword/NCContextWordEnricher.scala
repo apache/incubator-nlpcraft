@@ -22,6 +22,7 @@ import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager.stem
 import org.apache.nlpcraft.common.nlp.pos.NCPennTreebank._
 import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceToken}
 import org.apache.nlpcraft.common.{NCE, NCService}
+import org.apache.nlpcraft.model.NCContextWordElementConfig
 import org.apache.nlpcraft.server.mdo.NCModelMLConfigMdo
 import org.apache.nlpcraft.server.nlp.core.{NCNlpParser, NCNlpServerManager, NCNlpWord}
 import org.apache.nlpcraft.server.nlp.enrichers.NCServerEnricher
@@ -315,6 +316,30 @@ object NCContextWordEnricher extends NCServerEnricher {
             Map.empty[String, ScoreHolder]
     }
 
+    /**
+      *
+      * @param elemScore
+      * @param scores
+      * @return
+      */
+    private def isMatched(elemScore: NCContextWordElementConfig, scores: Double*): Boolean = {
+        require(scores.nonEmpty)
+
+        import NCContextWordElementConfig.NCContextWordElementPolicy._
+
+        val policy = elemScore.getPolicy
+        val elemScoreVal = elemScore.getScore
+
+        policy match {
+            case MAX => scores.max >= elemScoreVal
+            case MIN => scores.min >= elemScoreVal
+            case AVERAGE => scores.sum / scores.size >= elemScoreVal
+            case ANY => scores.exists(_ >= elemScoreVal)
+
+            case _ => throw new AssertionError(s"Unexpected policy: $policy")
+        }
+    }
+
     override def enrich(ns: NCNlpSentence, parent: Span): Unit =
         ns.mlConfig match {
             case Some(cfg) =>
@@ -370,7 +395,7 @@ object NCContextWordEnricher extends NCServerEnricher {
                             suggs.lemma.getOrElse(nounTok.lemma, EXCL_MIN_SCORE),
                             suggs.normal.getOrElse(nounTok.normText, EXCL_MIN_SCORE)
                         ).max
-                        if score >= cfg.levels(elemId)
+                        if isMatched(cfg.elements(elemId), score)
                     )
                         add(nounTok, elemId, score, score)
 
@@ -399,14 +424,14 @@ object NCContextWordEnricher extends NCServerEnricher {
                         (sugg, req) <- resps;
                         senScore = normalizeScore(sugg.score);
                         (elemId, mdlSamplesSuggs) <- mdlSamples;
-                        elemScore = cfg.levels(elemId);
+                        elemScore = cfg.elements(elemId);
                         sampleScore =
                             Seq(
                                 mdlSamplesSuggs.stems.getOrElse(stem(sugg.word), EXCL_MIN_SCORE),
                                 mdlSamplesSuggs.normal.getOrElse(sugg.word.toLowerCase, EXCL_MIN_SCORE),
                                 mdlSamplesSuggs.lemma.getOrElse(getSuggestionLemma(req, sugg), EXCL_MIN_SCORE)
                             ).max
-                        if sampleScore >= elemScore && senScore >= elemScore // TODO: logic
+                        if isMatched(elemScore, sampleScore, senScore)
                     )
                         add(ns.tokens(req.index), elemId, senScore, sampleScore)
                 }
