@@ -17,6 +17,7 @@
 
 package org.apache.nlpcraft.model.ctxword
 
+import org.apache.nlpcraft.model.{NCContext, NCResult}
 import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
 import org.junit.jupiter.api.Test
 
@@ -25,6 +26,8 @@ import org.junit.jupiter.api.Test
   */
 class NCContextWordSpecModel2 extends NCContextWordSpecModel {
     override val level: Double = 0
+
+    override def onContext(ctx: NCContext): NCResult = NCResult.text("OK")
 }
 
 /**
@@ -34,7 +37,7 @@ class NCContextWordSpecModel2 extends NCContextWordSpecModel {
 class NCContextWordSpec2 extends NCTestContext {
     private def check(txts: String*): Unit =
         for (txt <- txts)
-            checkIntent(txt, "classification")
+            getClient.ask(txt)
 
     @Test
     private[ctxword] def test(): Unit = {
