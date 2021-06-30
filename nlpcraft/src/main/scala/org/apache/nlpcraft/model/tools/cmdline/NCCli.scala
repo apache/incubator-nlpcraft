@@ -21,7 +21,7 @@ import java.io._
 import java.lang.ProcessBuilder.Redirect
 import java.nio.charset.StandardCharsets
 import java.text.DateFormat
-import java.{io, util}
+import java.util
 import java.util.Date
 import java.util.regex.Pattern
 import java.util.zip.ZipInputStream
@@ -441,8 +441,10 @@ object NCCli extends NCCliBase {
 
         try {
             logln(s"Server:")
-            logln(s"  ${y("|--")} log: ${c(output.getAbsolutePath)}")
-            logln(s"  ${y("+--")} cmd: \n      ${c(srvArgs.mkString("\n        "))}")
+            logln(s"  ${y("|--")} Log: ${c(output.getAbsolutePath)}")
+            logln(s"  ${y("|--")} Server config: ${if (cfgPath == null) y("<default>") else c(cfgPath)}")
+            logln(s"  ${y("|--")} Ignite config: ${if (igniteCfgPath == null) y("<default>") else c(igniteCfgPath)}")
+            logln(s"  ${y("+--")} Command: \n        ${c(srvArgs.mkString("\n        "))}")
 
             // Start the 'server | bleach > server log output' process pipeline.
             val procs = ProcessBuilder.startPipeline(Seq(srvPb, bleachPb).asJava)
@@ -702,8 +704,9 @@ object NCCli extends NCCliBase {
 
         try {
             logln(s"Probe:")
-            logln(s"  ${y("|--")} log: ${c(output.getAbsolutePath)}")
-            logln(s"  ${y("+--")} cmd: \n      ${c(prbArgs.mkString("\n        "))}")
+            logln(s"  ${y("|--")} Log: ${c(output.getAbsolutePath)}")
+            logln(s"  ${y("|--")} Probe config: ${if (cfgPath == null) y("<default>") else c(cfgPath)}")
+            logln(s"  ${y("+--")} Command: \n        ${c(prbArgs.mkString("\n        "))}")
 
             // Start the 'probe | bleach > probe log output' process pipeline.
             val procs = ProcessBuilder.startPipeline(Seq(prbPb, bleachPb).asJava)

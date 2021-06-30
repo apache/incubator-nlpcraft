@@ -40,8 +40,8 @@ class NCCliFileNameCompleter
      * @param reader Line reader for JLine.
      * @param paramName Name of the parameter.
      * @param pathBuf Current path string.
-     * @param prefix
-     * @param suffix
+     * @param prefix Path prefix (like a quote).
+     * @param suffix Path suffix (like a quote).
      * @param candidates List of completion candidates to fill.
      */
     void fillCandidates(
