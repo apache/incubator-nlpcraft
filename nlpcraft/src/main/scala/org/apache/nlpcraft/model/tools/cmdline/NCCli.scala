@@ -2276,6 +2276,8 @@ object NCCli extends NCCliBase {
         val completer: Completer = new Completer {
             private val cmds = CMDS.map(c => (c.name, c.synopsis, c.group))
 
+            private val fsCompleter = new NCCliFileNameCompleter()
+
             /**
              *
              * @param disp
@@ -2286,16 +2288,6 @@ object NCCli extends NCCliBase {
              */
             private def mkCandidate(disp: String, grp: String, desc: String, completed: Boolean): Candidate =
                 new Candidate(disp, disp, grp, desc, null, null, completed)
-
-            /**
-             *
-             * @param paramName
-             * @param path
-             * @param isDir
-             * @return
-             */
-            def mkPathCandidate(paramName: String, path: File, isDir: Boolean): Candidate =
-                new Candidate(s"$paramName=${path.getAbsolutePath}", path.getName, if (isDir) "Directories:" else "Files:", null, null, null, false)
 
             /**
              *
@@ -2356,42 +2348,11 @@ object NCCli extends NCCliBase {
                         )
                     }).asJava)
                 }
-                else if (words.size > 1 && isFsPath(words.head, words.last)) {
-                    val param = words.last
-
-                    splitEqParam(param) match {
-                        case Some((paramName, pathValue)) =>
-                            var path = if (pathValue.isEmpty) USR_WORK_DIR else replacePathTilda(pathValue).strip()
-
-                            var ok = !new File(path).exists
-
-                            while (ok) {
-                                val pathElms = path.split(PATH_SEP_CH).toSeq
-
-                                if (pathElms.size > 1) {
-                                    path = pathElms.dropRight(1).mkString(PATH_SEP_STR)
-
-                                    if (path.endsWith(":"))
-                                        path += PATH_SEP_STR
-
-                                    ok = !new File(path).exists
-                                } else
-                                    ok = false
-                            }
-
-                            val dirs = new File(path).listFiles(new io.FileFilter() {
-                                override def accept(file: File): Boolean = file.isDirectory && file.canRead
-                            }).toSeq
-                            val files = new File(path).listFiles(new io.FileFilter() {
-                                override def accept(file: File): Boolean = file.isFile && file.canRead
-                            }).toSeq
-
-                            dirs.foreach(dir => candidates.add(mkPathCandidate(paramName, dir, isDir = true)))
-                            files.foreach(file => candidates.add(mkPathCandidate(paramName, file, isDir = false)))
-
+                else if (words.size > 1 && isFsPath(words.head, words.last))
+                    splitEqParam(words.last) match {
+                        case Some((_, path)) => fsCompleter.fillCandidates(reader, path, candidates)
                         case None => ()
                     }
-                }
                 else {
                     val cmd = words.head
 
@@ -3057,56 +3018,8 @@ object NCCli extends NCCliBase {
         sys.exit(exitStatus)
     }
 
-    private def testBoot(): Unit = {
-        /**
-         *
-         * @param paramName
-         * @param path
-         * @param isDir
-         * @return
-         */
-        def mkPathCandidate(paramName: String, path: File, isDir: Boolean): Candidate =
-            new Candidate(s"$paramName=${path.getAbsolutePath}", path.getName, if (isDir) "Directories:" else "Files:", null, null, null, false)
-
-        val paramName = "--cp"
-        val pathValue = ""
-
-        var path = if (pathValue.isEmpty) USR_WORK_DIR else replacePathTilda(pathValue).strip()
-
-        var ok = !new File(path).exists
-
-        while (ok) {
-            val pathElms = path.split(PATH_SEP_CH).toSeq
-
-            if (pathElms.size > 1) {
-                path = pathElms.dropRight(1).mkString(PATH_SEP_STR)
-
-                if (path.endsWith(":"))
-                    path += PATH_SEP_STR
-
-                ok = !new File(path).exists
-            } else
-                ok = false
-        }
-
-        val dirs = new File(path).listFiles(new io.FileFilter() {
-            override def accept(file: File): Boolean = file.isDirectory && file.canRead
-        }).toSeq
-        val files = new File(path).listFiles(new io.FileFilter() {
-            override def accept(file: File): Boolean = file.isFile && file.canRead
-        }).toSeq
-
-        val candidates = mutable.ListBuffer.empty[Candidate]
-
-        dirs.foreach(dir => candidates.append(mkPathCandidate(paramName, dir, isDir = true)))
-        files.foreach(file => candidates.append(mkPathCandidate(paramName, file, isDir = false)))
-
-        println(candidates)
-    }
-
     cleanUpTempFiles()
 
     // Boot up.
     boot(args)
-    //testBoot()
 }

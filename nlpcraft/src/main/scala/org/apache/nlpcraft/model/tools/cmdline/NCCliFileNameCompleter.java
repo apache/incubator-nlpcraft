@@ -136,7 +136,7 @@ class NCCliFileNameCompleter
 
     /**
      *
-     * @param useForwardSlash
+     * @param useForwardSlash Terminal configuration property.
      */
     private String getSeparator(boolean useForwardSlash) {
         return useForwardSlash ? "/" : getUserDir().getFileSystem().getSeparator();
