@@ -152,6 +152,15 @@ object NCUtils extends LazyLogging {
     def now(): Long = System.currentTimeMillis()
 
     /**
+     *
+     * @param v
+     * @param dflt
+     * @tparam T
+     * @return
+     */
+    def notNull[T <: AnyRef](v: T, dflt: T): T = if (v == null) dflt else v
+
+    /**
      * Strips ANSI escape sequences from the given string.
      *
      * @param s

@@ -2290,20 +2290,19 @@ object NCCli extends NCCliBase {
             /**
              *
              * @param paramName
-             * @param absPath
-             * @param name
+             * @param path
              * @param isDir
              * @return
              */
-            private def mkPathCandidate(paramName: String, absPath: String, name: String, isDir: Boolean): Candidate =
-                new Candidate(s"$paramName=$absPath", name, if (isDir) "Directory" else "File", null, null, null, false)
+            def mkPathCandidate(paramName: String, path: File, isDir: Boolean): Candidate =
+                new Candidate(s"$paramName=${path.getAbsolutePath}", path.getName, if (isDir) "Directories:" else "Files:", null, null, null, false)
 
             /**
              *
              * @param param
              * @return
              */
-            private def splitEqParam(param: String): Option[(String/*Name*/, String/*Value*/)] = {
+            def splitEqParam(param: String): Option[(String/*Name*/, String/*Value*/)] = {
                 val eqIdx = param.indexOf('=')
 
                 if (eqIdx != -1) {
@@ -2360,25 +2359,35 @@ object NCCli extends NCCliBase {
                 else if (words.size > 1 && isFsPath(words.head, words.last)) {
                     val param = words.last
 
-                    // At this point we know that command and parameter are valid.
                     splitEqParam(param) match {
                         case Some((paramName, pathValue)) =>
-                            val path = replacePathTilda(pathValue).strip()
+                            var path = if (pathValue.isEmpty) USR_WORK_DIR else replacePathTilda(pathValue).strip()
 
-                            var p = if (path.isEmpty) USR_WORK_DIR else path
+                            var ok = !new File(path).exists
 
-                            while (!new File(p).exists)
-                                p = p.split(PATH_SEP_CH).toSeq.dropRight(1).mkString(PATH_SEP_STR)
+                            while (ok) {
+                                val pathElms = path.split(PATH_SEP_CH).toSeq
 
-                            val dirs = new File(p).listFiles(new io.FileFilter() {
-                                override def accept(file: File): Boolean = file.isDirectory
+                                if (pathElms.size > 1) {
+                                    path = pathElms.dropRight(1).mkString(PATH_SEP_STR)
+
+                                    if (path.endsWith(":"))
+                                        path += PATH_SEP_STR
+
+                                    ok = !new File(path).exists
+                                } else
+                                    ok = false
+                            }
+
+                            val dirs = new File(path).listFiles(new io.FileFilter() {
+                                override def accept(file: File): Boolean = file.isDirectory && file.canRead
                             }).toSeq
-                            val files = new File(p).listFiles(new io.FileFilter() {
-                                override def accept(file: File): Boolean = file.isFile
+                            val files = new File(path).listFiles(new io.FileFilter() {
+                                override def accept(file: File): Boolean = file.isFile && file.canRead
                             }).toSeq
 
-                            dirs.foreach(dir => candidates.add(mkPathCandidate(paramName, p, dir.getName, isDir = true)))
-                            files.foreach(file => candidates.add(mkPathCandidate(paramName, p, file.getName, isDir = false)))
+                            dirs.foreach(dir => candidates.add(mkPathCandidate(paramName, dir, isDir = true)))
+                            files.foreach(file => candidates.add(mkPathCandidate(paramName, file, isDir = false)))
 
                         case None => ()
                     }
@@ -3048,8 +3057,56 @@ object NCCli extends NCCliBase {
         sys.exit(exitStatus)
     }
 
+    private def testBoot(): Unit = {
+        /**
+         *
+         * @param paramName
+         * @param path
+         * @param isDir
+         * @return
+         */
+        def mkPathCandidate(paramName: String, path: File, isDir: Boolean): Candidate =
+            new Candidate(s"$paramName=${path.getAbsolutePath}", path.getName, if (isDir) "Directories:" else "Files:", null, null, null, false)
+
+        val paramName = "--cp"
+        val pathValue = ""
+
+        var path = if (pathValue.isEmpty) USR_WORK_DIR else replacePathTilda(pathValue).strip()
+
+        var ok = !new File(path).exists
+
+        while (ok) {
+            val pathElms = path.split(PATH_SEP_CH).toSeq
+
+            if (pathElms.size > 1) {
+                path = pathElms.dropRight(1).mkString(PATH_SEP_STR)
+
+                if (path.endsWith(":"))
+                    path += PATH_SEP_STR
+
+                ok = !new File(path).exists
+            } else
+                ok = false
+        }
+
+        val dirs = new File(path).listFiles(new io.FileFilter() {
+            override def accept(file: File): Boolean = file.isDirectory && file.canRead
+        }).toSeq
+        val files = new File(path).listFiles(new io.FileFilter() {
+            override def accept(file: File): Boolean = file.isFile && file.canRead
+        }).toSeq
+
+        val candidates = mutable.ListBuffer.empty[Candidate]
+
+        dirs.foreach(dir => candidates.append(mkPathCandidate(paramName, dir, isDir = true)))
+        files.foreach(file => candidates.append(mkPathCandidate(paramName, file, isDir = false)))
+
+        println(candidates)
+    }
+
     cleanUpTempFiles()
 
     // Boot up.
     boot(args)
+    //testBoot()
 }

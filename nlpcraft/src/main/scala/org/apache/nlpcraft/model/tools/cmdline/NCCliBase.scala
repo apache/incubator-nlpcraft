@@ -83,8 +83,8 @@ class NCCliBase extends App {
     final val PATH_SEP_CH = File.separatorChar
     final val PATH_SEP_STR = File.separator
     final val JAVA = U.sysEnv("NLPCRAFT_CLI_JAVA").getOrElse(new File(SystemUtils.getJavaHome, s"bin/java${if (SystemUtils.IS_OS_UNIX) "" else ".exe"}").getAbsolutePath)
-    final val USR_WORK_DIR = SystemUtils.USER_DIR
-    final val USR_HOME_DIR = SystemUtils.USER_HOME
+    final val USR_WORK_DIR = U.notNull(SystemUtils.USER_DIR, "")
+    final val USR_HOME_DIR = U.notNull(SystemUtils.USER_HOME, "")
     final val INSTALL_HOME = U.sysEnv("NLPCRAFT_CLI_INSTALL_HOME").getOrElse(USR_WORK_DIR)
     final val JAVA_CP = U.sysEnv("NLPCRAFT_CLI_CP").getOrElse(ManagementFactory.getRuntimeMXBean.getClassPath)
     final val SCRIPT_NAME = U.sysEnv("NLPCRAFT_CLI_SCRIPT").getOrElse(s"nlpcraft.${if (SystemUtils.IS_OS_UNIX) "sh" else "cmd"}")
