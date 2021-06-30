@@ -2350,7 +2350,35 @@ object NCCli extends NCCliBase {
                 }
                 else if (words.size > 1 && isFsPath(words.head, words.last))
                     splitEqParam(words.last) match {
-                        case Some((name, path)) => fsCompleter.fillCandidates(reader, name, path, candidates)
+                        case Some((name, p)) =>
+                            var path = p
+
+                            var prefix = ""
+                            var suffix = ""
+
+                            if (path.nonEmpty) {
+                                val first = path.head
+                                val last = path.last
+
+                                if (first == '"' || first == '\'') {
+                                    prefix = first.toString
+                                    path = path.drop(1)
+                                }
+                                if (last == '"' || last == '\'') {
+                                    suffix = last.toString
+                                    path = path.dropRight(1)
+                                }
+                            }
+
+                            fsCompleter.fillCandidates(
+                                reader,
+                                name,
+                                path,
+                                prefix,
+                                suffix,
+                                candidates
+                            )
+
                         case None => ()
                     }
                 else {
@@ -2541,7 +2569,7 @@ object NCCli extends NCCliBase {
         )
 
         logln()
-        logln(s"${y("Tip:")} Hit ${rv(bo(" Tab "))} for auto suggestions and completion.")
+        logln(s"${y("Tip:")} Hit ${rv(bo(" Tab "))} for commands, parameters and paths suggestions and completion.")
         logln(s"     Type '${c("help")}' to get help and ${rv(bo(" ↑ "))} or ${rv(bo(" ↓ "))} to scroll through history.")
         logln(s"     Type '${c("quit")}' to exit.")
 
