@@ -17,6 +17,7 @@
 
 package org.apache.nlpcraft.model.ctxword
 
+import org.apache.nlpcraft.model.NCContextWordElementConfig.NCContextWordElementPolicy.ANY
 import org.apache.nlpcraft.model.{NCContext, NCResult}
 import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
 import org.junit.jupiter.api.Test
@@ -25,8 +26,8 @@ import org.junit.jupiter.api.Test
   * Test model.
   */
 class NCContextWordSpecModel2 extends NCContextWordSpecModel {
-    override val level: Double = 0
-
+    override val MDL_LEVEL: Double = 0
+    override val MDL_POLICY = ANY
     override def onContext(ctx: NCContext): NCResult = NCResult.text("OK")
 }
 

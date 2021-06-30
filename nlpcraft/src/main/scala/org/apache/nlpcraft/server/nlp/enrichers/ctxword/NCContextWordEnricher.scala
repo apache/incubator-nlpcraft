@@ -36,6 +36,7 @@ import scala.jdk.CollectionConverters.SeqHasAsJava
 
 /**
   * ContextWord enricher.
+  * TODO: add metrics usage.
   */
 object NCContextWordEnricher extends NCServerEnricher {
     private final val MAX_CTXWORD_SCORE = 2
@@ -443,4 +444,9 @@ object NCContextWordEnricher extends NCServerEnricher {
                 println("detected="+detected.map(p => p._1.lemma -> p._2))
             case None => // No-op.
         }
+
+    def onDisconnectProbe(probeId: String): Unit = {
+        valuesStems.synchronized { valuesStems --= valuesStems.keySet.filter(_.probeId == probeId) }
+        samples.synchronized { samples --= samples.keySet.filter(_.probeId == probeId) }
+    }
 }

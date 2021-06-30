@@ -35,6 +35,7 @@ import org.apache.nlpcraft.probe.mgrs.NCProbeMessage
 import org.apache.nlpcraft.server.company.NCCompanyManager
 import org.apache.nlpcraft.server.mdo._
 import org.apache.nlpcraft.server.nlp.enrichers.NCServerEnrichmentManager
+import org.apache.nlpcraft.server.nlp.enrichers.ctxword.NCContextWordEnricher
 import org.apache.nlpcraft.server.proclog.NCProcessLogManager
 import org.apache.nlpcraft.server.query.NCQueryManager
 import org.apache.nlpcraft.server.sql.NCSql
@@ -67,7 +68,6 @@ object NCProbeManager extends NCService {
         def reconnectTimeoutMs: Long = getLong(s"$pre.reconnectTimeoutMs")
         def pingTimeoutMs: Long = getLong(s"$pre.pingTimeoutMs")
         def soTimeoutMs: Int = getInt(s"$pre.soTimeoutMs")
-    
         /**
           *
           */
@@ -259,6 +259,9 @@ object NCProbeManager extends NCService {
 
                         // Clears unused models.
                         mdls --= mdls.keys.filter(id => !probes.exists { case (_, p) => p.probe.models.exists(_.id == id) })
+
+                        // TODO: add new interface for server enrichers? (services)
+                        NCContextWordEnricher.onDisconnectProbe(probeKey.probeId)
                 }
 
             case Some(hld) =>

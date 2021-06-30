@@ -49,7 +49,8 @@ class NCContextWordSpecModel extends NCModel {
     override def getName: String = this.getClass.getSimpleName
     override def getVersion: String = "1.0.0"
 
-    val level = 0.4
+    val MDL_LEVEL = 0.4
+    val MDL_POLICY = MIN
 
     override def getContextWordModelConfig: Optional[NCContextWordModelConfig] = {
         Optional.of(
@@ -58,8 +59,8 @@ class NCContextWordSpecModel extends NCModel {
                     getElements.asScala.map(e =>
                         e.getId ->
                         new NCContextWordElementConfig() {
-                            override def getPolicy: NCContextWordElementPolicy = MIN
-                            override def getScore: Double = level
+                            override def getPolicy: NCContextWordElementPolicy = MDL_POLICY
+                            override def getScore: Double = MDL_LEVEL
                         }
                     ).toMap.asJava
 
@@ -86,9 +87,9 @@ class NCContextWordSpecModel extends NCModel {
 
     override def getElements: util.Set[NCElement] =
         Set(
-            Element("class:cars", level, Value("BMW")),
-            Element("class:animal", level, Value("fox"), Value("cat", "tomcat")),
-            Element("class:weather", level, Value("temperature"), Value("rain"), Value("sun"))
+            Element("class:cars", MDL_LEVEL, Value("BMW")),
+            Element("class:animal", MDL_LEVEL, Value("fox"), Value("cat", "tomcat")),
+            Element("class:weather", MDL_LEVEL, Value("temperature"), Value("rain"), Value("sun"))
         ).map(p => {
             val e: NCElement = p
 
