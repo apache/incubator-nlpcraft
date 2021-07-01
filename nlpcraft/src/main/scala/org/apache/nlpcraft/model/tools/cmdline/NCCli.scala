@@ -2566,6 +2566,7 @@ object NCCli extends NCCliBase {
         reader.unsetOpt(LineReader.Option.INSERT_TAB)
         reader.unsetOpt(LineReader.Option.BRACKETED_PASTE)
         reader.setOpt(LineReader.Option.DISABLE_EVENT_EXPANSION)
+        reader.setOpt(LineReader.Option.AUTO_REMOVE_SLASH)
         reader.setVariable(
             LineReader.HISTORY_FILE,
             new File(SystemUtils.getUserHome, HIST_PATH).getAbsolutePath
