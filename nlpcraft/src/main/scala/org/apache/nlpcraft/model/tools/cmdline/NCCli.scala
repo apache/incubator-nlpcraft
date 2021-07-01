@@ -628,11 +628,13 @@ object NCCli extends NCCliBase {
      */
     private [cmdline] def cmdRestartProbe(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         if (!repl)
-            error(s"This command only works in REPL mode - use ${c("'stop-probe'")} and ${c("'start-probe'")} commands instead.")
+            error(s"The ${y("'restart-probe'")} command only works in REPL mode - use ${c("'stop-probe'")} and ${c("'start-probe'")} commands instead.")
         else if (state.lastArgs.isEmpty)
             error(s"Probe has not been previously started - see ${c("'start-probe'")} command.")
         else {
-            cmdStopProbe(CMDS.find(_.name == "stop-probe").get, Seq.empty[Argument], repl)
+            if (loadProbeBeacon().isDefined)
+                cmdStopProbe(CMDS.find(_.name == "stop-probe").get, Seq.empty[Argument], repl)
+
             cmdStartProbe(CMDS.find(_.name == "start-probe").get, state.lastArgs.get, repl)
         }
     }
@@ -719,6 +721,10 @@ object NCCli extends NCCliBase {
             logln(s"Probe:")
             logln(s"  ${y("|--")} Log: ${c(output.getAbsolutePath)}")
             logln(s"  ${y("|--")} Probe config: ${if (cfgPath == null) y("<default>") else c(cfgPath)}")
+
+            if (mdls != null)
+                logln(s"  ${y("|--")} Environment variables: \n        ${c("CONFIG_FORCE_nlpcraft_probe_models=")}${c(mdls)}")
+
             logln(s"  ${y("+--")} Command: \n        ${c(prbArgs.mkString("\n        "))}")
 
             // Start the 'probe | bleach > probe log output' process pipeline.
@@ -1544,13 +1550,7 @@ object NCCli extends NCCliBase {
      */
     private [cmdline] def cmdInfoProbe(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         loadProbeBeacon() match {
-            case Some(beacon) =>
-                // Log local probe.
-                logProbeInfo(beacon)
-
-                // Log all probes connected to the server.
-                logConnectedProbes()
-
+            case Some(beacon) => logProbeInfo(beacon)
             case None => throw NoLocalProbe()
         }
     }
