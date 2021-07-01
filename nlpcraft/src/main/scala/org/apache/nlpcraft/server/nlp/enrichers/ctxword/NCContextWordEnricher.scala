@@ -18,6 +18,7 @@
 package org.apache.nlpcraft.server.nlp.enrichers.ctxword
 
 import io.opencensus.trace.Span
+import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager.stem
 import org.apache.nlpcraft.common.nlp.pos.NCPennTreebank._
 import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceToken}
@@ -29,6 +30,7 @@ import org.apache.nlpcraft.server.nlp.enrichers.NCServerEnricher
 import org.apache.nlpcraft.server.sugsyn.{NCSuggestSynonymManager, NCSuggestionRequest, NCWordSuggestion}
 import org.jibx.schema.codegen.extend.DefaultNameConverter
 
+import java.text.DecimalFormat
 import scala.collection.mutable
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
@@ -36,33 +38,83 @@ import scala.jdk.CollectionConverters.SeqHasAsJava
 
 /**
   * ContextWord enricher.
-  * TODO: add metrics usage.
+  * TODO: check plurals
+  * TODO: check empty lemma
   */
 object NCContextWordEnricher extends NCServerEnricher {
     private final val MAX_CTXWORD_SCORE = 2
-    private final val EXCL_MIN_SCORE = -1.0
     private final val INCL_MAX_SCORE = 1.0
+
+    private final val DEBUG_MODE = true
 
     private final val CONVERTER = new DefaultNameConverter
 
+    private final val FN = new DecimalFormat("#0.00000")
+
     private case class ModelProbeKey(probeId: String, modelId: String)
     private case class ElementScore(elementId: String, scores: Double*) {
-        override def toString: String = s"Element [id=$elementId, scores=${scores.sortBy(p => -p).mkString(",", "[", "]")}]"
-    }
-    private case class ValuesHolder(
-        values: Map[/**  Value as is */ String, /** Element ID */ Set[String]],
-        valuesStems: Map[/** Value's stem */ String, /** Element ID */ Set[String]]
-    ) {
-        override def toString: String = s"Values [values=$values, stems=$valuesStems]"
+        override def toString: String =
+            s"Element [id=$elementId, scores=${scores.sortBy(p => -p).map(FN.format).mkString("{ ", ", ", " }")}]"
     }
 
-    case class ScoreHolder(
-        normal: Map[/** Normal value */ String, /** Score */ Double],
-        stems: Map[/** Stem */ String, /** Score */ Double],
-        lemma: Map[/** Lemma */ String, /** Score */ Double]
+    object ValuesHolder {
+        def apply(
+            normal: Map[/**  Normal value */ String, /** Element ID */ Set[String]],
+            stems: Map[/** Value's stem */ String, /** Element ID */ Set[String]]
+        ): ValuesHolder = new ValuesHolder(
+            normal,
+            stems.filter(p => !normal.keySet.contains(p._1))
+        )
+    }
+
+    class ValuesHolder(
+        val normal: Map[/**  Normal value */ String, /** Element ID */ Set[String]],
+        val stems: Map[/** Value's stem */ String, /** Element ID */ Set[String]]
     ) {
-        private def sort(m: Map[String, Double]): String = m.toSeq.sortBy(-_._2).map({ case (k, v) => s"$k=$v" }).mkString(",")
-        override def toString: String = s"Score [normal=${sort(normal)}, stems=${sort(stems)}, lemma=${sort(lemma)}]"
+        private def map2Str(m: Map[String, Set[String]]): String =
+            m.toSeq.flatMap(p => p._2.toSeq.map(x => x -> p._1)).
+                groupBy(_._1).map(p => p._1 -> p._2.map(_._2).
+                mkString("{ ", ", ", " }")).mkString(", ")
+
+        override def toString: String = s"Values [normal=${map2Str(normal)}, stems=${map2Str(stems)}]"
+    }
+
+    object ScoreHolder {
+        private final val EXCL_MIN_SCORE = -1.0
+
+        def apply(
+            normals: Map[/** Normal value */ String, /** Score */ Double],
+            stems: Map[/** Stem */ String, /** Score */ Double],
+            lemmas: Map[/** Lemma */ String, /** Score */ Double]
+        ): ScoreHolder =
+            new ScoreHolder(
+                normals,
+                stems.filter(p => !normals.keySet.contains(p._1)),
+                lemmas.filter(p => !normals.keySet.contains(p._1) && !stems.keySet.contains(p._1))
+            )
+    }
+
+    import ScoreHolder._
+
+    class ScoreHolder(
+        normals: Map[/** Normal value */ String, /** Score */ Double],
+        stems: Map[/** Stem */ String, /** Score */ Double],
+        lemmas: Map[/** Lemma */ String, /** Score */ Double]
+    ) {
+        def get(norm: String, stem: String, lemma: String): Option[Double] = {
+            val max =
+                Seq(
+                    normals.getOrElse(norm, EXCL_MIN_SCORE),
+                    stems.getOrElse(stem, EXCL_MIN_SCORE),
+                    lemmas.getOrElse(lemma, EXCL_MIN_SCORE)
+                ).max
+
+            if (max == EXCL_MIN_SCORE) None else Some(max)
+        }
+
+        private def sort(m: Map[String, Double]): String =
+            m.toSeq.sortBy(-_._2).map({ case (k, v) => s"$k=${FN.format(v)}" }).mkString(", ")
+        override def toString: String = s"Score [normal: ${sort(normals)}, stems: ${sort(stems)}, lemma: ${sort(lemmas)}]"
     }
 
     @volatile private var valuesStems: mutable.HashMap[ModelProbeKey, ValuesHolder] = _
@@ -84,7 +136,6 @@ object NCContextWordEnricher extends NCServerEnricher {
         startScopedSpan("stop", parent) { _ =>
             ackStopping()
 
-            // TODO: clear model cache
             parser = null
             corpuses = null
             valuesStems = null
@@ -111,7 +162,7 @@ object NCContextWordEnricher extends NCServerEnricher {
       * @param elemValuesSynsNorm
       * @return
       */
-    private def parseCorpus(
+    private def mkRequests(
         nlpWords: Seq[Seq[NCNlpWord]],
         corpusWords: Seq[Seq[String]],
         corpusWordsStems: Seq[Seq[String]],
@@ -139,7 +190,8 @@ object NCContextWordEnricher extends NCServerEnricher {
                         if (i >= 0) Some(i) else None
                     })
 
-                val idxs = getIndexes(elemValuesSynsStems, corpusWordsStem) ++ getIndexes(elemValuesSynsNorm, corpusWordsNorm)
+                val idxs =
+                    getIndexes(elemValuesSynsStems, corpusWordsStem) ++ getIndexes(elemValuesSynsNorm, corpusWordsNorm)
 
                 def mkRequest(idx: Int, syn: String): NCSuggestionRequest = {
                     var newSen = substitute(corpusWords, syn, idx)
@@ -166,7 +218,6 @@ object NCContextWordEnricher extends NCServerEnricher {
                         println(s"newSen3=$newSen")
                     }
 
-                    // TODO: check newSen
                     NCSuggestionRequest(newSen, idx)
                 }
 
@@ -177,10 +228,10 @@ object NCContextWordEnricher extends NCServerEnricher {
 
     /**
       *
-      * @param d
+      * @param score
       * @return
       */
-    private def normalizeScore(d: Double): Double = d / MAX_CTXWORD_SCORE
+    private def normalize(score: Double): Double = score / MAX_CTXWORD_SCORE
 
     /**
       *
@@ -188,11 +239,12 @@ object NCContextWordEnricher extends NCServerEnricher {
       * @param key
       * @return
       */
-    private def getSamplesData(cfg: NCCtxWordConfigMdo, key: ModelProbeKey): Map[/** Element ID */String, ScoreHolder] =
+    private def getCorpusData(cfg: NCCtxWordConfigMdo, key: ModelProbeKey, parent: Span = null):
+        Map[/** Element ID */String, ScoreHolder] =
         corpuses.synchronized { corpuses.get(key) } match {
             case Some(cache) => cache
             case None =>
-                val res = askSamples(cfg)
+                val res = askSamples(cfg, parent)
 
                 corpuses.synchronized { corpuses += key -> res }
 
@@ -216,7 +268,7 @@ object NCContextWordEnricher extends NCServerEnricher {
                         groupBy { case (converted, _) => converted }.
                         map { case (converted, map) => converted -> map.map {case (_, elemId) => elemId }.toSet }
 
-                val res = ValuesHolder(mkMap(stem), mkMap(_.toLowerCase))
+                val res = ValuesHolder(normal = mkMap(_.toLowerCase), stems = mkMap(stem))
 
                 valuesStems.synchronized { valuesStems += key -> res }
 
@@ -251,7 +303,7 @@ object NCContextWordEnricher extends NCServerEnricher {
       * @return
       */
     @throws[NCE]
-    private def askSamples(cfg: NCCtxWordConfigMdo): Map[/** Element ID */String, ScoreHolder] = {
+    private def askSamples(cfg: NCCtxWordConfigMdo, parent: Span = null): Map[/** Element ID */String, ScoreHolder] = {
         val corpusSeq = cfg.corpus.toSeq
         val corpusWords = corpusSeq.map(parser.parse(_).map(_.word))
         val nlpWords = corpusSeq.map(s => parser.parse(s))
@@ -265,7 +317,7 @@ object NCContextWordEnricher extends NCServerEnricher {
                     (elemId, elemValues) <- cfg.values.toSeq;
                     // Uses single words synonyms only.
                     elemValuesSyns = elemValues.flatMap(_._2).toSet.filter(!_.contains(' '));
-                    suggReq <- parseCorpus(
+                    suggReq <- mkRequests(
                         nlpWords = nlpWords,
                         corpusWords = corpusWords,
                         corpusWordsStems = corpusWordsStems,
@@ -281,7 +333,23 @@ object NCContextWordEnricher extends NCServerEnricher {
                 map { case (elemId, m) => elemId -> m.map(_._2) }
 
         if (recs.nonEmpty) {
-            val resps = syncExec(NCSuggestSynonymManager.suggestWords(recs.flatMap(_._2).toSeq))
+            val resps = syncExec(NCSuggestSynonymManager.suggestWords(recs.flatMap(_._2).toSeq, parent = parent))
+
+            if (DEBUG_MODE) {
+                val t = NCAsciiTable()
+
+                t #= ("Request", "Responses")
+
+                for ((req, resp) <- resps) {
+                    t += (
+                        req,
+                        s"${resp.sortBy(-_.score).map(p => s"${p.word}=${FN.format(normalize(p.score))}").mkString(", ")}"
+                    )
+                }
+
+                t.info(logger, Some("Corpus requests:"))
+            }
+
             val respsSeq = resps.toSeq
 
             val req2Elem = recs.flatMap { case (elemId, recs) => recs.map(p => p -> elemId) }
@@ -291,8 +359,8 @@ object NCContextWordEnricher extends NCServerEnricher {
                     map { case (req, suggs) =>
                         (req2Elem(req),
                             suggs.groupBy(sygg => convert(req, sygg)).
-                                map { case (converted, stemSuggs) =>
-                                converted -> normalizeScore(stemSuggs.map(_.score).max)
+                                map { case (conv, suggs) =>
+                                conv -> normalize(suggs.map(_.score).max)
                             }
                         )
                     }.
@@ -306,9 +374,9 @@ object NCContextWordEnricher extends NCServerEnricher {
             (normalMap.keySet ++ stemMap.keySet ++ lemmaMap.keySet).map(elemId =>
                 elemId ->
                     ScoreHolder(
-                        normal = normalMap.getOrElse(elemId, Map.empty),
+                        normals = normalMap.getOrElse(elemId, Map.empty),
                         stems = stemMap.getOrElse(elemId, Map.empty),
-                        lemma = lemmaMap.getOrElse(elemId, Map.empty)
+                        lemmas = lemmaMap.getOrElse(elemId, Map.empty)
                     )
             ).toMap
         }
@@ -333,8 +401,8 @@ object NCContextWordEnricher extends NCServerEnricher {
         policy match {
             case MEDIAN =>
                 val sorted = scores.sorted
-                val len2 = sorted.length / 2
-                val median = if (sorted.length % 2 == 0) (sorted(len2) + sorted(len2 - 1)) / 2 else sorted(len2)
+                val mid = sorted.length / 2
+                val median = if (sorted.length % 2 == 0) (sorted(mid) + sorted(mid - 1)) / 2 else sorted(mid)
 
                 median >= elemScoreVal
             case ALL => scores.forall(_ >= elemScoreVal)
@@ -346,108 +414,133 @@ object NCContextWordEnricher extends NCServerEnricher {
     }
 
     override def enrich(ns: NCNlpSentence, parent: Span): Unit =
-        ns.ctxWordConfig match {
-            case Some(cfg) =>
-                val detected = mutable.HashMap.empty[NCNlpSentenceToken, mutable.HashSet[ElementScore]]
+        startScopedSpan("stop", parent) { _ =>
+            ns.ctxWordConfig match {
+                case Some(cfg) =>
+                    val detected = mutable.HashMap.empty[NCNlpSentenceToken, mutable.HashSet[ElementScore]]
 
-                def add(
-                    nounTok: NCNlpSentenceToken, elemId: String, scores : Double*
-                ): Unit = {
-                    val tokElems = detected.getOrElseUpdate(nounTok, mutable.HashSet.empty[ElementScore])
+                    def add(
+                        nounTok: NCNlpSentenceToken, elemId: String, scores: Double*
+                    ): Unit = {
+                        val tokElems = detected.getOrElseUpdate(nounTok, mutable.HashSet.empty[ElementScore])
 
-                    def mkElem(seq: Seq[Double]): ElementScore = ElementScore(elemId, seq.filter(_ > EXCL_MIN_SCORE):_*)
+                        tokElems += (
+                            tokElems.find(_.elementId == elemId) match {
+                                case Some(ex) => ElementScore(elemId, scores ++ ex.scores:_*)
+                                case None => ElementScore(elemId, scores:_*)
+                            }
+                        )
+                    }
 
-                    tokElems += (
-                        tokElems.find(_.elementId == elemId) match {
-                            case Some(ex) => mkElem(scores ++ ex.scores)
-                            case None => mkElem(scores)
-                        }
-                    )
-                }
+                    val nounToks = ns.tokens.filter(t => NOUNS_POS.contains(t.pos))
 
-                val nounToks = ns.tokens.filter(t => NOUNS_POS.contains(t.pos))
+                    if (nounToks.nonEmpty) {
+                        val key = ModelProbeKey(cfg.probeId, cfg.modelId)
 
-                if (nounToks.nonEmpty) {
-                    val key = ModelProbeKey(cfg.probeId, cfg.modelId)
+                        // 1. Values. Direct.
+                        val valuesData = getValuesData(cfg, key)
 
-                    // 1. Values. Direct.
-                    val valuesData = getValuesData(cfg, key)
+                        if (DEBUG_MODE)
+                            logger.info(s"Values loaded [probeKey=$key, data=$valuesData]")
 
-                    //println("valuesData="+valuesData)
+                        for (
+                            nounTok <- nounToks;
+                                elemId <-
+                                    valuesData.normal.getOrElse(nounTok.normText, Set.empty) ++
+                                    valuesData.normal.getOrElse(nounTok.lemma.toLowerCase, Set.empty) ++
+                                    valuesData.stems.getOrElse(nounTok.stem, Set.empty)
+                        )
+                            add(nounTok, elemId, INCL_MAX_SCORE)
 
-                    for (
-                        nounTok <- nounToks;
-                        elemId <-
-                            valuesData.values.getOrElse(nounTok.lemma.toLowerCase, Set.empty) ++
-                            valuesData.values.getOrElse(nounTok.normText, Set.empty) ++
-                            valuesData.valuesStems.getOrElse(nounTok.stem, Set.empty)
-                    )
-                        add(nounTok, elemId, INCL_MAX_SCORE, INCL_MAX_SCORE)
+                        // 2. Via examples.
+                        val mdlCorpusData = getCorpusData(cfg, key, parent)
 
-                    // 2. Via examples.
-                    val mdlSamples = getSamplesData(cfg, key)
+                        if (DEBUG_MODE) {
+                            val t = NCAsciiTable()
 
-                    //println("mdlSamples="+mdlSamples.mkString("\n"))
+                            t #= ("Element", "Scores")
 
-                    for (
-                        nounTok <- nounToks;
-                        (elemId, suggs) <- mdlSamples;
-                        score = Seq(
-                            suggs.stems.getOrElse(nounTok.stem, EXCL_MIN_SCORE),
-                            suggs.lemma.getOrElse(nounTok.lemma, EXCL_MIN_SCORE),
-                            suggs.normal.getOrElse(nounTok.normText, EXCL_MIN_SCORE)
-                        ).max
-                        if isMatched(cfg.elements(elemId), score)
-                    )
-                        add(nounTok, elemId, score, score)
+                            for (entry <- mdlCorpusData)
+                                t += (entry._1, entry._2)
 
-                    // 3. Ask for sentence.
-                    val idxs = ns.tokens.flatMap(p => if (p.pos.startsWith("N")) Some(p.index) else None).toSeq
-                    val reqs = idxs.map(idx => NCSuggestionRequest(ns.tokens.map(_.origText).toSeq, idx))
-
-                    val resps =
-                        syncExec(
-                            NCSuggestSynonymManager.suggestWords(reqs)).flatMap { case (req, suggs) => suggs.map(_ -> req)
+                            t.info(logger, Some(s"Model corpus processed [probeKey=$key]"))
                         }
 
-//                    resps.toSeq.groupBy(_._2.index).foreach { case (_, seq) =>
-//                        val sorted = seq.sortBy(-_._1.score)
-//
-//                        println("REQ=" + sorted.head._2)
-//                        println("Resps=" + sorted.map(_._1))
-//                        println()
-//                    }
+                        for (
+                            nounTok <- nounToks;
+                            (elemId, suggs) <- mdlCorpusData;
+                            scoreOpt = suggs.get(nounTok.normText, nounTok.stem, nounTok.lemma)
+                            if scoreOpt.isDefined && isMatched(cfg.elements(elemId), scoreOpt.get)
+                        )
+                            add(nounTok, elemId, scoreOpt.get)
 
+                        // 3. Ask for sentence.
+                        val idxs = ns.tokens.flatMap(p => if (p.pos.startsWith("N")) Some(p.index)
+                        else None).toSeq
+                        val reqs = idxs.map(idx => NCSuggestionRequest(ns.tokens.map(_.origText).toSeq, idx))
 
+                        val resps =
+                            syncExec(
+                                NCSuggestSynonymManager.suggestWords(reqs, parent = parent)).
+                                flatMap { case (req, suggs) => suggs.map(_ -> req)
+                            }
 
-                    for (
-                        // Token index (tokIdx) should be correct because request created from original words,
-                        // separated by space, and Suggestion Manager uses space tokenizer.
-                        (sugg, req) <- resps;
-                        senScore = normalizeScore(sugg.score);
-                        (elemId, mdlCorpusSuggs) <- mdlSamples;
-                        elemScore = cfg.elements(elemId);
-                        corpusScore =
-                            Seq(
-                                mdlCorpusSuggs.stems.getOrElse(stem(sugg.word), EXCL_MIN_SCORE),
-                                mdlCorpusSuggs.normal.getOrElse(sugg.word.toLowerCase, EXCL_MIN_SCORE),
-                                mdlCorpusSuggs.lemma.getOrElse(getSuggestionLemma(req, sugg), EXCL_MIN_SCORE)
-                            ).max
-                        if isMatched(elemScore, corpusScore, senScore)
-                    )
-                        add(ns.tokens(req.index), elemId, senScore, corpusScore)
-                }
+                        if (DEBUG_MODE) {
+                            val t = NCAsciiTable()
 
-                ns.ctxWordData = detected.map {
-                    case (tok, scores) => tok.index -> scores.map(p => p.elementId -> p.scores.asJava).toMap
-                }.toMap
+                            t #= ("Request", "Responses")
 
-                println("detected="+detected.map(p => p._1.lemma -> p._2))
-            case None => // No-op.
+                            resps.toSeq.groupBy(_._2.index).foreach { case (_, seq) =>
+                                val sorted = seq.sortBy(-_._1.score)
+
+                                t += (
+                                    sorted.head._2,
+                                    s"${sorted.map(_._1).
+                                        map(p => s"${p.word}=${FN.format(normalize(p.score))}").
+                                        mkString(", ")}"
+                                )
+                            }
+
+                            t.info(logger, Some(s"Sentence requests processing [probeKey=$key, sentence=${ns.text}]"))
+                        }
+
+                        for (
+                            // Token index (tokIdx) should be correct because request created from original words,
+                            // separated by space, and Suggestion Manager uses space tokenizer.
+                            (sugg, req) <- resps;
+                                senScore = normalize(sugg.score);
+                                (elemId, mdlCorpusSuggs) <- mdlCorpusData;
+                                elemScore = cfg.elements(elemId);
+                                corpusScoreOpt =
+                                    mdlCorpusSuggs.get(
+                                        sugg.word.toLowerCase, stem(sugg.word), getSuggestionLemma(req, sugg)
+                                    )
+                                if corpusScoreOpt.isDefined && isMatched(elemScore, corpusScoreOpt.get, senScore)
+                        )
+                            add(ns.tokens(req.index), elemId, senScore, corpusScoreOpt.get)
+                    }
+
+                    ns.ctxWordData = detected.map {
+                        case (tok, scores) => tok.index -> scores.map(p => p.elementId -> p.scores.asJava).toMap
+                    }.toMap
+
+                    if (DEBUG_MODE)
+                        logger.info(
+                            s"Sentence detected elements: " +
+                            s"${detected.map { case (tok, scores)  => tok.origText -> scores.mkString(", ") }}"
+                        )
+                case None => // No-op.
+            }
         }
 
-    def onDisconnectProbe(probeId: String): Unit = {
-        valuesStems.synchronized { valuesStems --= valuesStems.keySet.filter(_.probeId == probeId) }
-        corpuses.synchronized { corpuses --= corpuses.keySet.filter(_.probeId == probeId) }
-    }
+    /**
+      *
+      * @param probeId
+      * @param parent
+      */
+    def onDisconnectProbe(probeId: String, parent: Span = null): Unit =
+        startScopedSpan("onDisconnectProbe", parent) { _ =>
+            valuesStems.synchronized { valuesStems --= valuesStems.keySet.filter(_.probeId == probeId) }
+            corpuses.synchronized { corpuses --= corpuses.keySet.filter(_.probeId == probeId) }
+        }
 }

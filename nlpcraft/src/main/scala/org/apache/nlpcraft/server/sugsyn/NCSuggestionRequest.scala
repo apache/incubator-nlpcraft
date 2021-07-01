@@ -24,4 +24,7 @@ package org.apache.nlpcraft.server.sugsyn
   */
 case class NCSuggestionRequest(words: Seq[String], index: Int) {
     require(index >= 0 && index < words.length)
+
+    override def toString: String = s"Request: ${words.zipWithIndex.map { case (w, i) => if (i != index) w else s"<$w>" }.mkString(" ")}"
 }
+

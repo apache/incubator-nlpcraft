@@ -502,14 +502,19 @@ object NCSuggestSynonymManager extends NCService {
                         if (cnt.incrementAndGet() == batches.size) {
                             val min = minScoreOpt.getOrElse(DFLT_MIN_SCORE)
 
-                            val map = data.asScala.groupBy(_.request).map(p =>
-                                p._1 ->
-                                p._2.
-                                    map(_.suggestions.map(p => (toStem(p.word), p.score))).
-                                    map(_.groupBy(_._1)).
-                                    flatMap(p => p.map(p => p._1 -> p._1 -> p._2.map(_._2).sum / p._2.size).
-                                    filter(_._2 >= min).
-                                    map(p => NCWordSuggestion(p._1._2, p._2)).toSeq).toSeq)
+                            val map: Map[NCSuggestionRequest, Seq[NCWordSuggestion]] = data.asScala.groupBy(_.request).map { case (req, map) =>
+                                req -> map.flatMap(_.suggestions.filter(_.score >= min).toSeq)
+                            }
+
+                            // TODO ? logic?
+//                            val map: Map[NCSuggestionRequest, Seq[NCWordSuggestion]] = data.asScala.groupBy(_.request).map(p =>
+//                                p._1 ->
+//                                p._2.
+//                                    map(_.suggestions.map(p => (toStem(p.word), p.score))).
+//                                    map(_.groupBy(_._1)).
+//                                    flatMap(p => p.map(p => p._1 -> p._1 -> p._2.map(_._2).sum / p._2.size).
+//                                    filter(_._2 >= min).
+//                                    map(p => NCWordSuggestion(p._1._2, p._2)).toSeq).toSeq)
 
                             promise.success(map)
                         }
