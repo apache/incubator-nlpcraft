@@ -112,7 +112,8 @@ object NCCli extends NCCliBase {
         var userEmail: Option[String] = None, // Email of the user with 'accessToken'.
         var serverLog: Option[File] = None,
         var probeLog: Option[File] = None,
-        var probes: List[Probe] = Nil // List of connected probes.
+        var probes: List[Probe] = Nil, // List of connected probes.
+        var lastArgs: Option[Seq[Argument]] = None
     ) {
         /**
          * Resets server sub-state.
@@ -145,10 +146,6 @@ object NCCli extends NCCliBase {
     private final val CALL_CMD = CMDS.find(_.name == "call").get
     private final val ASK_CMD = CMDS.find(_.name == "ask").get
     private final val SUGSYN_CMD = CMDS.find(_.name == "sugsyn").get
-    private final val STOP_SRV_CMD = CMDS.find(_.name == "stop-server").get
-    private final val SRV_INFO_CMD = CMDS.find(_.name == "info-server").get
-    private final val PRB_INFO_CMD = CMDS.find(_.name == "info-probe").get
-    private final val STOP_PRB_CMD = CMDS.find(_.name == "stop-probe").get
 
     /**
      * @param cmd
@@ -629,6 +626,22 @@ object NCCli extends NCCliBase {
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not running from REPL.
      */
+    private [cmdline] def cmdRestartProbe(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+        if (!repl)
+            error(s"This command only works in REPL mode - use ${c("'stop-probe'")} and ${c("'start-probe'")} commands instead.")
+        else if (state.lastArgs.isEmpty)
+            error(s"Probe has not been previously started - see ${c("'start-probe'")} command.")
+        else {
+            cmdStopProbe(CMDS.find(_.name == "stop-probe").get, Seq.empty[Argument], repl)
+            cmdStartProbe(CMDS.find(_.name == "start-probe").get, state.lastArgs.get, repl)
+        }
+    }
+
+    /**
+     * @param cmd Command descriptor.
+     * @param args Arguments, if any, for this command.
+     * @param repl Whether or not running from REPL.
+     */
     private [cmdline] def cmdStartProbe(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         // Ensure that there is a local server running since probe
         // cannot finish its start unless there's a server to connect to.
@@ -815,6 +828,9 @@ object NCCli extends NCCliBase {
 
                     // Log all connected probes (including this one).
                     logConnectedProbes()
+
+                    // Capture this probe start arguments (used in restart command).
+                    state.lastArgs = Some(args)
 
                     showTip()
                 }
@@ -1141,8 +1157,8 @@ object NCCli extends NCCliBase {
      * @param repl Whether or not executing from REPL.
      */
     private [cmdline] def cmdStop(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        doCommand(Seq(STOP_SRV_CMD.name), repl)
-        doCommand(Seq(STOP_PRB_CMD.name), repl)
+        cmdStopServer(CMDS.find(_.name == "stop-server").get, Seq.empty[Argument], repl)
+        cmdStopProbe(CMDS.find(_.name == "stop-probe").get, Seq.empty[Argument], repl)
     }
 
     /**
@@ -1503,8 +1519,8 @@ object NCCli extends NCCliBase {
      * @param repl Whether or not executing from REPL.
      */
     private [cmdline] def cmdInfo(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        doCommand(Seq(SRV_INFO_CMD.name), repl)
-        doCommand(Seq(PRB_INFO_CMD.name), repl)
+        cmdInfoServer(CMDS.find(_.name == "info-server").get, Seq.empty[Argument], repl)
+        cmdInfoProbe(CMDS.find(_.name == "info-probe").get, Seq.empty[Argument], repl)
     }
 
     /**
@@ -2573,7 +2589,7 @@ object NCCli extends NCCliBase {
         )
 
         logln()
-        logln(s"${y("Tip:")} Hit ${rv(bo(" Tab "))} for commands, parameters and paths suggestions and completion.")
+        logln(s"${y("Tip:")} Hit ${rv(bo(" Tab "))} for commands, parameters and paths completion.")
         logln(s"     Type '${c("help")}' to get help and ${rv(bo(" ↑ "))} or ${rv(bo(" ↓ "))} to scroll through history.")
         logln(s"     Type '${c("quit")}' to exit.")
 

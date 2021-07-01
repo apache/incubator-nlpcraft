@@ -814,6 +814,24 @@ private [cmdline] object NCCliCommands {
             )
         ),
         Command(
+            name = "restart-probe",
+            group = "1. Server & Probe Commands",
+            synopsis = s"Restarts local probe (REPL mode only).",
+            desc = Some(
+                s"Restart local probe with same parameters as the last start. Works only in REPL mode and only if local " +
+                s"probe was previously started using ${c("'start-probe")} command. This command provides a " +
+                s"convenient way to quickly restart the probe to reload the model during model development and testing."
+            ),
+            body = NCCli.cmdRestartProbe,
+            params = Seq(),
+            examples = Seq(
+                Example(
+                    usage = Seq(s"> restart-probe"),
+                    desc = "Restarts local probe with the same parameters as the previous start."
+                )
+            )
+        ),
+        Command(
             name = "test-model",
             group = "3. Miscellaneous",
             synopsis = s"Runs ${y("'NCTestAutoModelValidator'")} model auto-validator.",
