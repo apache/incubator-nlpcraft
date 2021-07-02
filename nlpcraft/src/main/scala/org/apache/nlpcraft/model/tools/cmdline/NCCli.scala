@@ -25,6 +25,7 @@ import java.util.Date
 import java.util.regex.Pattern
 import java.util.zip.ZipInputStream
 import com.google.common.base.CaseFormat
+import com.google.common.io.Files
 
 import javax.lang.model.SourceVersion
 import javax.net.ssl.SSLException
@@ -2343,7 +2344,7 @@ object NCCli extends NCCliBase {
             import java.util.jar.JarFile
 
             @throws[IOException]
-            private def getClassNamesFromJarFile(jarPath: String): Set[String] = {
+            private def getClassNamesFromJar(jarPath: String): Set[String] = {
                 val classNames = mutable.ArrayBuffer.empty[String]
 
                 val jarFile = new JarFile(jarPath)
@@ -2370,19 +2371,20 @@ object NCCli extends NCCliBase {
 
             @throws[IOException]
             @throws[ClassNotFoundException]
-            private def getModelClassesFromJarFile(jarPaths: Seq[String]): Set[String] = {
+            private def getModelClassNamesFromClasspath(jarPaths: Seq[String]): Set[String] = {
                 val classNames = mutable.HashSet.empty[String]
 
                 for (jarPath <- jarPaths)
-                    classNames.addAll(getClassNamesFromJarFile(jarPath))
+                    classNames.addAll(getClassNamesFromJar(jarPath))
 
                 val classes = mutable.ArrayBuffer.empty[String]
 
-                val clsLdr = URLClassLoader.newInstance(
-                    jarPaths.map(p => new URL("jar:file:" + p + "!/"))
-                    .asJava
-                    .toArray().asInstanceOf[Array[URL]]
-                )
+                val x = jarPaths.map(p => new URL("jar:file:" + p + "!/"))
+                val x1 = x.asJava
+                val x2 = x1.asInstanceOf[java.util.List[URL]]
+                var x3 = x2.toArray
+
+                val clsLdr = URLClassLoader.newInstance(x3)
 
                 try
                     for (name <- classNames) {
@@ -2518,10 +2520,45 @@ object NCCli extends NCCliBase {
                         case None => Seq.empty[Candidate].asJava
                     })
 
-                    // For 'start-probe' and 'test-model' provide model class name completion
+                    // For 'start-probe' and 'test-model' provide model class name completion for '--mdls'
                     // if '--cp' parameter with JAR file(s) is provided.
                     if (cmd == START_PRB_CMD.name || cmd == TEST_MDL_CMD.name) {
+                        val cpParamNames = (
+                            START_PRB_CMD.findParameterById("cp").names ++
+                            TEST_MDL_CMD.findParameterById("cp").names
+                        ).toSet
 
+                        words.find(w => cpParamNames.exists(x => w.startsWith(x))) match {
+                            case Some(word) => splitEqParam(word) match {
+                                case Some((_, paramVal)) =>
+                                    var cp = paramVal.strip()
+
+                                    if (cp.head == '"' || cp.head == '\'')
+                                        cp = cp.drop(1)
+                                    if (cp.last == '"' || cp.last == '\'')
+                                        cp = cp.dropRight(1)
+
+                                    try {
+                                        for (cls <- getModelClassNamesFromClasspath(cp.split(CP_SEP_CHAR).toSeq))
+                                            candidates.add(
+                                                mkCandidate(
+                                                    disp = "--mdls=" + cls,
+                                                    grp = OPTIONAL_GRP,
+                                                    desc = null,
+                                                    completed = true
+                                                )
+                                            )
+                                    }
+                                    catch {
+                                        // Just ignore.
+                                        case e: Exception => e.printStackTrace()
+                                    }
+
+                                case None => ()
+                            }
+
+                            case None => ()
+                        }
                     }
 
                     // For 'help' - add additional auto-completion/suggestion candidates.

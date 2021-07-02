@@ -395,6 +395,7 @@ private [cmdline] object NCCliCommands {
                     optional = true,
                     desc =
                         s"Additional JVM classpath that will be appended to the default NLPCraft JVM classpath. " +
+                        s"Parameter should include one or more classpath entry (JAR or directory) separated by the OS specific classpath separator. " +
                         s"Although this configuration property is optional, in most cases you will need to provide an " +
                         s"additional classpath for JDBC driver that you use (see ${c("'--driver'")} parameter) unless " +
                         s"it is available in NLPCraft by default, i.e. Apache Ignite and H2. " +
@@ -742,6 +743,7 @@ private [cmdline] object NCCliCommands {
                         s"Additional JVM classpath that will be appended to the default NLPCraft JVM classpath. " +
                         s"When starting a probe with your models you must " +
                         s"provide this additional classpath for the models and their dependencies this probe will be hosting. " +
+                        s"Parameter should include one or more classpath entry (JAR or directory) separated by the OS specific classpath separator. " +
                         s"Note that you can use ${y("'~'")} at the beginning of the classpath component to specify user home directory."
                 ),
                 Parameter(
@@ -852,6 +854,7 @@ private [cmdline] object NCCliCommands {
                     desc =
                         s"Additional JVM classpath that will be appended to the default NLPCraft JVM classpath. " +
                         s"When testing your models you must provide this additional classpath for the models and their dependencies. " +
+                        s"Parameter should include one or more classpath entry (JAR or directory) separated by the OS specific classpath separator. " +
                         s"Note that you can use ${y("'~'")} at the beginning of the classpath component to specify user home directory."
                 ),
                 Parameter(

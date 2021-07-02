@@ -80,6 +80,7 @@ class NCCliBase extends App {
     final val VER = NCVersion.getCurrent
     final val CP_WIN_NIX_SEPS_REGEX = "[:;]"
     final val CP_SEP = File.pathSeparator
+    final val CP_SEP_CHAR = File.pathSeparatorChar
     final val PATH_SEP_CH = File.separatorChar
     final val PATH_SEP_STR = File.separator
     final val JAVA = U.sysEnv("NLPCRAFT_CLI_JAVA").getOrElse(new File(SystemUtils.getJavaHome, s"bin/java${if (SystemUtils.IS_OS_UNIX) "" else ".exe"}").getAbsolutePath)
