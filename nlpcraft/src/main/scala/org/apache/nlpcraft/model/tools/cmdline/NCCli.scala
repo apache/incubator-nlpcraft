@@ -21,7 +21,6 @@ import java.io._
 import java.lang.ProcessBuilder.Redirect
 import java.nio.charset.StandardCharsets
 import java.text.DateFormat
-import java.util
 import java.util.Date
 import java.util.regex.Pattern
 import java.util.zip.ZipInputStream
@@ -45,6 +44,7 @@ import org.apache.nlpcraft.common.ansi.NCAnsi._
 import org.apache.nlpcraft.common.ansi.{NCAnsi, NCAnsiProgressBar, NCAnsiSpinner}
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.module.NCModule
+import org.apache.nlpcraft.model.NCModel
 import org.jline.reader._
 import org.jline.reader.impl.DefaultParser
 import org.jline.reader.impl.DefaultParser.Bracket
@@ -55,6 +55,7 @@ import org.jline.utils.InfoCmp.Capability
 import org.apache.nlpcraft.model.tools.cmdline.NCCliRestSpec._
 import org.apache.nlpcraft.model.tools.cmdline.NCCliCommands._
 
+import java.net.{URL, URLClassLoader}
 import scala.util.Using
 import scala.collection.mutable
 import scala.compat.java8.OptionConverters._
@@ -140,6 +141,10 @@ object NCCli extends NCCliBase {
 
     private final val NO_LOGO_CMD = CMDS.find(_.name == "no-logo").get
     private final val NO_ANSI_CMD = CMDS.find(_.name == "no-ansi").get
+    private final val START_PRB_CMD = CMDS.find(_.name == "start-probe").get
+    private final val STOP_PRB_CMD = CMDS.find(_.name == "stop-probe").get
+    private final val STOP_SRV_CMD = CMDS.find(_.name == "stop-server").get
+    private final val TEST_MDL_CMD = CMDS.find(_.name == "test-model").get
     private final val ANSI_CMD = CMDS.find(_.name == "ansi").get
     private final val QUIT_CMD = CMDS.find(_.name == "quit").get
     private final val HELP_CMD = CMDS.find(_.name == "help").get
@@ -640,9 +645,9 @@ object NCCli extends NCCliBase {
             error(s"Probe has not been previously started - see ${c("'start-probe'")} command.")
         else {
             if (loadProbeBeacon().isDefined)
-                cmdStopProbe(CMDS.find(_.name == "stop-probe").get, Seq.empty[Argument], repl)
+                cmdStopProbe(CMDS.find(_.name == STOP_PRB_CMD.name).get, Seq.empty[Argument], repl)
 
-            cmdStartProbe(CMDS.find(_.name == "start-probe").get, state.lastStartProbeArgs.get, repl)
+            cmdStartProbe(CMDS.find(_.name == START_PRB_CMD.name).get, state.lastStartProbeArgs.get, repl)
         }
     }
 
@@ -657,7 +662,7 @@ object NCCli extends NCCliBase {
         else if (state.lastTestModelArgs.isEmpty)
             error(s"Model has not been previously tested - see ${c("'test-model'")} command.")
         else
-            cmdTestModel(CMDS.find(_.name == "test-model").get, state.lastTestModelArgs.get, repl)
+            cmdTestModel(CMDS.find(_.name == TEST_MDL_CMD.name).get, state.lastTestModelArgs.get, repl)
     }
 
     /**
@@ -765,7 +770,7 @@ object NCCli extends NCCliBase {
             def showTip(): Unit = {
                 val tbl = new NCAsciiTable()
 
-                tbl += (s"${g("stop-probe")}", "Stop the probe.")
+                tbl += (s"${g(STOP_PRB_CMD.name)}", "Stop the probe.")
                 tbl += (s"${g("info")}", "Get server & probe information.")
 
                 logln(s"Handy commands:\n${tbl.toString}")
@@ -1187,8 +1192,8 @@ object NCCli extends NCCliBase {
      * @param repl Whether or not executing from REPL.
      */
     private [cmdline] def cmdStop(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        cmdStopServer(CMDS.find(_.name == "stop-server").get, Seq.empty[Argument], repl)
-        cmdStopProbe(CMDS.find(_.name == "stop-probe").get, Seq.empty[Argument], repl)
+        cmdStopServer(CMDS.find(_.name == STOP_SRV_CMD.name).get, Seq.empty[Argument], repl)
+        cmdStopProbe(CMDS.find(_.name == STOP_PRB_CMD.name).get, Seq.empty[Argument], repl)
     }
 
     /**
@@ -2333,6 +2338,65 @@ object NCCli extends NCCliBase {
             private def mkCandidate(disp: String, grp: String, desc: String, completed: Boolean): Candidate =
                 new Candidate(disp, disp, grp, desc, null, null, completed)
 
+            import java.io.IOException
+            import java.util
+            import java.util.jar.JarFile
+
+            @throws[IOException]
+            private def getClassNamesFromJarFile(jarPath: String): Set[String] = {
+                val classNames = mutable.ArrayBuffer.empty[String]
+
+                val jarFile = new JarFile(jarPath)
+
+                try {
+                    val entries = jarFile.entries
+
+                    while (entries.hasMoreElements) {
+                        val jarEntry = entries.nextElement
+
+                        if (jarEntry.getName.endsWith(".class")) {
+                            val className = jarEntry.getName.replace("/", ".").replace(".class", "")
+
+                            classNames.append(className)
+                        }
+                    }
+
+                    classNames.toSet
+                }
+                finally
+                    if (jarFile != null)
+                        jarFile.close()
+            }
+
+            @throws[IOException]
+            @throws[ClassNotFoundException]
+            private def getModelClassesFromJarFile(jarPaths: Seq[String]): Set[String] = {
+                val classNames = mutable.HashSet.empty[String]
+
+                for (jarPath <- jarPaths)
+                    classNames.addAll(getClassNamesFromJarFile(jarPath))
+
+                val classes = mutable.ArrayBuffer.empty[String]
+
+                val clsLdr = URLClassLoader.newInstance(
+                    jarPaths.map(p => new URL("jar:file:" + p + "!/"))
+                    .asJava
+                    .toArray().asInstanceOf[Array[URL]]
+                )
+
+                try
+                    for (name <- classNames) {
+                        val cls = clsLdr.loadClass(name)
+
+                        if (classOf[NCModel].isAssignableFrom(cls))
+                            classes.append(cls.getName)
+                    }
+                finally
+                    if (clsLdr!= null) clsLdr.close()
+
+                classes.toSet
+            }
+
             /**
              *
              * @param param
@@ -2374,9 +2438,11 @@ object NCCli extends NCCliBase {
             override def complete(reader: LineReader, line: ParsedLine, candidates: util.List[Candidate]): Unit = {
                 val words = line.words().asScala
 
-                if (words.nonEmpty && words.head.nonEmpty && words.head.head == '$') { // Don't complete if the line starts with '$'.
+                // Don't complete if the line starts with '$'.
+                if (words.nonEmpty && words.head.nonEmpty && words.head.head == '$') {
                     // No-op.
                 }
+                // Complete command names.
                 else if (words.isEmpty || (words.size == 1 && !cmds.map(_._1).contains(words.head))) {
                     // Add all commands as a candidates.
                     candidates.addAll(cmds.map(n => {
@@ -2392,6 +2458,7 @@ object NCCli extends NCCliBase {
                         )
                     }).asJava)
                 }
+                // Complete paths.
                 else if (words.size > 1 && isFsPath(words.head, words.last))
                     splitEqParam(words.last) match {
                         case Some((name, p)) =>
@@ -2450,6 +2517,12 @@ object NCCli extends NCCliBase {
 
                         case None => Seq.empty[Candidate].asJava
                     })
+
+                    // For 'start-probe' and 'test-model' provide model class name completion
+                    // if '--cp' parameter with JAR file(s) is provided.
+                    if (cmd == START_PRB_CMD.name || cmd == TEST_MDL_CMD.name) {
+
+                    }
 
                     // For 'help' - add additional auto-completion/suggestion candidates.
                     if (cmd == HELP_CMD.name)
