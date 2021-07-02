@@ -113,7 +113,8 @@ object NCCli extends NCCliBase {
         var serverLog: Option[File] = None,
         var probeLog: Option[File] = None,
         var probes: List[Probe] = Nil, // List of connected probes.
-        var lastArgs: Option[Seq[Argument]] = None
+        var lastStartProbeArgs: Option[Seq[Argument]] = None,
+        var lastTestModelArgs: Option[Seq[Argument]] = None
     ) {
         /**
          * Resets server sub-state.
@@ -337,12 +338,12 @@ object NCCli extends NCCliBase {
         val tstamp = U.now() - 1000 * 60 * 60 * 24 * 2 // 2 days ago.
 
         val files = new File(SystemUtils.getUserHome, NLPCRAFT_LOC_DIR).listFiles()
-        
+
         if (files != null)
             for (file <- files)
                 if (file.lastModified() < tstamp) {
                     val name = file.getName
-    
+
                     if (name.startsWith("server_log") || name.startsWith("server_log") || name.startsWith(".pid_"))
                         file.delete()
                 }
@@ -609,6 +610,9 @@ object NCCli extends NCCliBase {
         validatorPb.directory(new File(USR_WORK_DIR))
         validatorPb.inheritIO()
 
+        // Capture this mode test arguments (used in restart command).
+        state.lastTestModelArgs = Some(args)
+
         logln(s"Validator:")
         logln(s"  ${y("+--")} cmd: \n      ${c(jvmArgs.mkString("\n        "))}")
 
@@ -617,7 +621,10 @@ object NCCli extends NCCliBase {
         }
         catch {
             case _: InterruptedException => () // Ignore.
-            case e: Exception => error(s"Failed to run model validator: ${y(e.getLocalizedMessage)}")
+            case e: Exception =>
+                error(s"Failed to run model validator: ${y(e.getLocalizedMessage)}")
+
+                state.lastTestModelArgs = None
         }
     }
 
@@ -629,14 +636,28 @@ object NCCli extends NCCliBase {
     private [cmdline] def cmdRestartProbe(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         if (!repl)
             error(s"The ${y("'restart-probe'")} command only works in REPL mode - use ${c("'stop-probe'")} and ${c("'start-probe'")} commands instead.")
-        else if (state.lastArgs.isEmpty)
+        else if (state.lastStartProbeArgs.isEmpty)
             error(s"Probe has not been previously started - see ${c("'start-probe'")} command.")
         else {
             if (loadProbeBeacon().isDefined)
                 cmdStopProbe(CMDS.find(_.name == "stop-probe").get, Seq.empty[Argument], repl)
 
-            cmdStartProbe(CMDS.find(_.name == "start-probe").get, state.lastArgs.get, repl)
+            cmdStartProbe(CMDS.find(_.name == "start-probe").get, state.lastStartProbeArgs.get, repl)
         }
+    }
+
+    /**
+     * @param cmd Command descriptor.
+     * @param args Arguments, if any, for this command.
+     * @param repl Whether or not running from REPL.
+     */
+    private [cmdline] def cmdRetestModel(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+        if (!repl)
+            error(s"The ${y("'retest-model'")} command only works in REPL mode - use ${c("'test-model'")} commands instead.")
+        else if (state.lastTestModelArgs.isEmpty)
+            error(s"Model has not been previously tested - see ${c("'test-model'")} command.")
+        else
+            cmdTestModel(CMDS.find(_.name == "test-model").get, state.lastTestModelArgs.get, repl)
     }
 
     /**
@@ -836,14 +857,17 @@ object NCCli extends NCCliBase {
                     logConnectedProbes()
 
                     // Capture this probe start arguments (used in restart command).
-                    state.lastArgs = Some(args)
+                    state.lastStartProbeArgs = Some(args)
 
                     showTip()
                 }
             }
         }
         catch {
-            case e: Exception => error(s"Probe failed to start: ${y(e.getLocalizedMessage)}")
+            case e: Exception =>
+                error(s"Probe failed to start: ${y(e.getLocalizedMessage)}")
+
+                state.lastStartProbeArgs = None
         }
     }
 

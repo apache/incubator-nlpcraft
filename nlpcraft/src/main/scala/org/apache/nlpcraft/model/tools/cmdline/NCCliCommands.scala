@@ -740,7 +740,7 @@ private [cmdline] object NCCliCommands {
                     fsPath = true,
                     desc =
                         s"Additional JVM classpath that will be appended to the default NLPCraft JVM classpath. " +
-                        s"When starting a probe with your own models you must " +
+                        s"When starting a probe with your models you must " +
                         s"provide this additional classpath for the models and their dependencies this probe will be hosting. " +
                         s"Note that you can use ${y("'~'")} at the beginning of the classpath component to specify user home directory."
                 ),
@@ -836,7 +836,7 @@ private [cmdline] object NCCliCommands {
             group = "3. Miscellaneous",
             synopsis = s"Runs ${y("'NCTestAutoModelValidator'")} model auto-validator.",
             desc = Some(
-                s"Validation consists " +
+                s"Auto-validation consists " +
                 s"of starting an embedded probe, scanning all deployed models for ${y("'NCIntentSample'")} annotations and their corresponding " +
                 s"callback methods, submitting each sample input sentences from ${y("'NCIntentSample'")} annotation and " +
                 s"checking that resulting intent matches the intent the sample was attached to. " +
@@ -851,10 +851,8 @@ private [cmdline] object NCCliCommands {
                     fsPath = true,
                     desc =
                         s"Additional JVM classpath that will be appended to the default NLPCraft JVM classpath. " +
-                        s"Although this configuration property is optional, when testing your own models you must " +
-                        s"provide this additional classpath for the models and their dependencies. " +
-                        s"Note that this is only optional if you are testing example models shipped with NLPCraft. " +
-                        s"Note also that you can use ${y("'~'")} at the beginning of the classpath component to specify user home directory."
+                        s"When testing your models you must provide this additional classpath for the models and their dependencies. " +
+                        s"Note that you can use ${y("'~'")} at the beginning of the classpath component to specify user home directory."
                 ),
                 Parameter(
                     id = "config",
@@ -898,6 +896,30 @@ private [cmdline] object NCCliCommands {
                     ),
                     desc =
                         s"Runs model auto-validator for ${y("'my.package.Model'")} model."
+                )
+            )
+        ),
+        Command(
+            name = "retest-model",
+            group = "3. Miscellaneous",
+            synopsis = s"Re-runs ${y("'NCTestAutoModelValidator'")} model auto-validator (REPL mode only).",
+            desc = Some(
+                s"Re-runs mode auto-validator with the same parameters as the last run. Works only in REPL mode. " +
+                s"Auto-validation consists " +
+                s"of starting an embedded probe, scanning all deployed models for ${y("'NCIntentSample'")} annotations and their corresponding " +
+                s"callback methods, submitting each sample input sentences from ${y("'NCIntentSample'")} annotation and " +
+                s"checking that resulting intent matches the intent the sample was attached to. " +
+                s"See more details at https://nlpcraft.apache.org/tools/test_framework.html"
+            ),
+            body = NCCli.cmdRetestModel,
+            params = Seq(),
+            examples = Seq(
+                Example(
+                    usage = Seq(
+                        s"> retest-model"
+                    ),
+                    desc =
+                        s"Re-runs model auto-validator with the same parameters as the last run."
                 )
             )
         ),
