@@ -17,6 +17,8 @@
 
 package org.apache.nlpcraft.model.tools.cmdline;
 
+import org.apache.nlpcraft.model.NCModel;
+
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -28,14 +30,14 @@ import java.util.stream.Collectors;
 /**
  * Completer for model classes from classpath. Currently only JAR files are supported.
  */
-class NCModelClassCompleter {
+class NCCliModelClassCompleter {
     /**
      *
      * @param jarPath Path of the JAR file.
      * @return Set of class names from the given JAR file.
      * @throws IOException Thrown in case of any I/O errors.
      */
-    public Set<String> getClassNamesFromJar(String jarPath) throws IOException {
+    private Set<String> getClassNamesFromJar(String jarPath) throws IOException {
         assert jarPath != null && jarPath.toLowerCase().endsWith(".jar");
 
         Set<String> classNames = new HashSet<>();
@@ -63,19 +65,40 @@ class NCModelClassCompleter {
      * @return Set of model class name for the given classpath.
      * @throws IOException Thrown in case of any I/O errors.
      */
-    public Set<String> getModelClassNamesFromClasspath(List<String> cp) throws MalformedURLException, IOException, ClassNotFoundException {
-        URL[] urls = cp.stream().map(entry -> new URL("jar:file" + entry + "!/")).distinct().toArray();
+    public Set<String> getModelClassNamesFromClasspath(List<String> cp) throws IOException, ClassNotFoundException {
+        Set<URL> urls = cp.stream().map(entry -> {
+            try {
+                return new URL("jar:file" + entry + "!/");
+            }
+            catch (MalformedURLException e) {
+                return null;
+            }
+        }).filter(Objects::nonNull).collect(Collectors.toSet());
+
+        URL[] urlsArr = new URL[urls.size()];
+
+        urls.toArray(urlsArr);
 
         Set<String> mdlClasses = new HashSet<>();
 
+        try (URLClassLoader clsLdr = URLClassLoader.newInstance(urlsArr)) {
+            for (String cpEntry : cp) {
+                try {
+                    Set<String> classNames = getClassNamesFromJar(cpEntry);
 
-        Set<String> classNames = getClassNamesFromJarFile(jarFile);
+                    for (String name : classNames) {
+                        Class<?> clazz = clsLdr.loadClass(name);
 
-        try (URLClassLoader cl = URLClassLoader.newInstance(urls)) {
-            for (String name : classNames) {
-                classes.add(clazz);
+                        if (NCModel.class.isAssignableFrom(clazz))
+                            mdlClasses.add(clazz.getName());
+                    }
+                }
+                catch (Exception e) {
+                    // Ignore.
+                }
             }
         }
-        return classes;
+
+        return mdlClasses;
     }
 }

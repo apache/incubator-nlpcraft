@@ -25,7 +25,6 @@ import java.util.Date
 import java.util.regex.Pattern
 import java.util.zip.ZipInputStream
 import com.google.common.base.CaseFormat
-import com.google.common.io.Files
 
 import javax.lang.model.SourceVersion
 import javax.net.ssl.SSLException
@@ -45,7 +44,6 @@ import org.apache.nlpcraft.common.ansi.NCAnsi._
 import org.apache.nlpcraft.common.ansi.{NCAnsi, NCAnsiProgressBar, NCAnsiSpinner}
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.module.NCModule
-import org.apache.nlpcraft.model.NCModel
 import org.jline.reader._
 import org.jline.reader.impl.DefaultParser
 import org.jline.reader.impl.DefaultParser.Bracket
@@ -56,7 +54,6 @@ import org.jline.utils.InfoCmp.Capability
 import org.apache.nlpcraft.model.tools.cmdline.NCCliRestSpec._
 import org.apache.nlpcraft.model.tools.cmdline.NCCliCommands._
 
-import java.net.{URL, URLClassLoader}
 import scala.util.Using
 import scala.collection.mutable
 import scala.compat.java8.OptionConverters._
@@ -2327,6 +2324,7 @@ object NCCli extends NCCliBase {
             private val cmds = CMDS.map(c => (c.name, c.synopsis, c.group))
 
             private val fsCompleter = new NCCliFileNameCompleter()
+            private val cpCompleter = new NCCliModelClassCompleter()
 
             /**
              *
@@ -2338,66 +2336,6 @@ object NCCli extends NCCliBase {
              */
             private def mkCandidate(disp: String, grp: String, desc: String, completed: Boolean): Candidate =
                 new Candidate(disp, disp, grp, desc, null, null, completed)
-
-            import java.io.IOException
-            import java.util
-            import java.util.jar.JarFile
-
-            @throws[IOException]
-            private def getClassNamesFromJar(jarPath: String): Set[String] = {
-                val classNames = mutable.ArrayBuffer.empty[String]
-
-                val jarFile = new JarFile(jarPath)
-
-                try {
-                    val entries = jarFile.entries
-
-                    while (entries.hasMoreElements) {
-                        val jarEntry = entries.nextElement
-
-                        if (jarEntry.getName.endsWith(".class")) {
-                            val className = jarEntry.getName.replace("/", ".").replace(".class", "")
-
-                            classNames.append(className)
-                        }
-                    }
-
-                    classNames.toSet
-                }
-                finally
-                    if (jarFile != null)
-                        jarFile.close()
-            }
-
-            @throws[IOException]
-            @throws[ClassNotFoundException]
-            private def getModelClassNamesFromClasspath(jarPaths: Seq[String]): Set[String] = {
-                val classNames = mutable.HashSet.empty[String]
-
-                for (jarPath <- jarPaths)
-                    classNames.addAll(getClassNamesFromJar(jarPath))
-
-                val classes = mutable.ArrayBuffer.empty[String]
-
-                val x = jarPaths.map(p => new URL("jar:file:" + p + "!/"))
-                val x1 = x.asJava
-                val x2 = x1.asInstanceOf[java.util.List[URL]]
-                var x3 = x2.toArray
-
-                val clsLdr = URLClassLoader.newInstance(x3)
-
-                try
-                    for (name <- classNames) {
-                        val cls = clsLdr.loadClass(name)
-
-                        if (classOf[NCModel].isAssignableFrom(cls))
-                            classes.append(cls.getName)
-                    }
-                finally
-                    if (clsLdr!= null) clsLdr.close()
-
-                classes.toSet
-            }
 
             /**
              *
@@ -2437,7 +2375,7 @@ object NCCli extends NCCliBase {
                     case None => false
                 }
 
-            override def complete(reader: LineReader, line: ParsedLine, candidates: util.List[Candidate]): Unit = {
+            override def complete(reader: LineReader, line: ParsedLine, candidates: java.util.List[Candidate]): Unit = {
                 val words = line.words().asScala
 
                 // Don't complete if the line starts with '$'.
@@ -2539,7 +2477,7 @@ object NCCli extends NCCliBase {
                                         cp = cp.dropRight(1)
 
                                     try {
-                                        for (cls <- getModelClassNamesFromClasspath(cp.split(CP_SEP_CHAR).toSeq))
+                                        for (cls <- cpCompleter.getModelClassNamesFromClasspath(cp.split(CP_SEP_CHAR).toSeq.asJava).asScala)
                                             candidates.add(
                                                 mkCandidate(
                                                     disp = "--mdls=" + cls,
