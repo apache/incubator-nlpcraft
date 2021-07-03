@@ -178,7 +178,7 @@ object NCCli extends NCCliBase {
      */
     @throws[InvalidParameter]
     private def getIntParam(cmd: Command, args: Seq[Argument], id: String, dflt: Int): Int = {
-        getParamOpt(cmd, args, id) match {
+        getParamOpt(args, id) match {
             case Some(num) =>
                 try
                     Integer.parseInt(num)
@@ -200,7 +200,7 @@ object NCCli extends NCCliBase {
      */
     @throws[InvalidParameter]
     private def getDoubleParam(cmd: Command, args: Seq[Argument], id: String, dflt: Double): Double = {
-        getParamOpt(cmd, args, id) match {
+        getParamOpt(args, id) match {
             case Some(num) =>
                 try
                     java.lang.Double.parseDouble(num)
@@ -213,11 +213,10 @@ object NCCli extends NCCliBase {
     }
 
     /**
-     * @param cmd
      * @param args
      * @param id
      */
-    private def getParamOpt(cmd: Command, args: Seq[Argument], id: String): Option[String] =
+    private def getParamOpt(args: Seq[Argument], id: String): Option[String] =
         args.find(_.parameter.id == id).flatMap(_.value)
 
     /**
@@ -229,24 +228,45 @@ object NCCli extends NCCliBase {
         args.exists(_.parameter.id == id)
 
     /**
-     * @param cmd
      * @param args
      * @param id
      */
-    private def getParamOrNull(cmd: Command, args: Seq[Argument], id: String): String =
+    private def getParamOrNull(args: Seq[Argument], id: String): String =
         args.find(_.parameter.id == id) match {
             case Some(arg) => U.trimQuotes(arg.value.get)
             case None => null
         }
 
     /**
+     * @param args
+     * @param id
+     */
+    private def getParams(args: Seq[Argument], id: String): Seq[String] =
+        args.filter(_.parameter.id == id).map(arg => U.trimQuotes(arg.value.getOrElse("")))
+
+    /**
      *
-     * @param cmd
+     * @param args
+     * @return
+     */
+    private def getModelsParams(args: Seq[Argument]): String =
+        U.splitTrimFilter(getParams( args, "models").mkString(","), ",").mkString(",")
+
+    /**
+     *
+     * @param args
+     * @return
+     */
+    private def getCpParams(args: Seq[Argument]): String =
+        U.splitTrimFilter(getParams( args, "cp").mkString(CP_SEP), CP_SEP).mkString(CP_SEP)
+
+    /**
+     *
      * @param args
      * @param id
      * @return
      */
-    private def getFlagParam(cmd: Command, args: Seq[Argument], id: String, dflt: Boolean): Boolean =
+    private def getFlagParam(args: Seq[Argument], id: String, dflt: Boolean): Boolean =
         args.find(_.parameter.id == id) match {
             case Some(_) => true
             case None => dflt
@@ -268,7 +288,7 @@ object NCCli extends NCCliBase {
      * @return
      */
     private def getCpParamOpt(cmd: Command, args: Seq[Argument]): String =
-        getParamOpt(cmd, args, "cp") match {
+        getParamOpt(args, "cp") match {
             case Some(path) => normalizeCp(U.trimQuotes(path))
             case None => null
         }
@@ -289,7 +309,7 @@ object NCCli extends NCCliBase {
             normPath
         }
 
-        getParamOpt(cmd, args, id) match {
+        getParamOpt(args, id) match {
             case Some(path) => makePath(path)
             case None => if (dflt == null) null else makePath(dflt)
         }
@@ -381,9 +401,9 @@ object NCCli extends NCCliBase {
     private [cmdline] def cmdStartServer(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         val cfgPath = getPathParam(cmd, args, "config")
         val igniteCfgPath = getPathParam(cmd, args, "igniteConfig")
-        val noWait = getFlagParam(cmd, args, "noWait", dflt = false)
+        val noWait = getFlagParam(args, "noWait", dflt = false)
         val timeoutMins = getIntParam(cmd, args, "timeoutMins", 2)
-        val jvmOpts = getParamOpt(cmd, args, "jvmopts") match {
+        val jvmOpts = getParamOpt(args, "jvmopts") match {
             case Some(opts) => U.splitTrimFilter(U.trimQuotes(opts), " ")
             case None => Seq("-ea", "-Xms2048m", "-XX:+UseG1GC")
         }
@@ -576,8 +596,8 @@ object NCCli extends NCCliBase {
 
         val cfgPath = getPathParam(cmd, args, "config")
         val addCp = getCpParam(cmd, args)
-        val mdls = getParamOrNull(cmd, args, "models")
-        val jvmOpts = getParamOpt(cmd, args, "jvmopts") match {
+        val mdls = getModelsParams(args)
+        val jvmOpts = getParamOpt(args, "jvmopts") match {
             case Some(opts) => U.splitTrimFilter(U.trimQuotes(opts), " ")
             case None => Seq("-ea", "-Xms1024m")
         }
@@ -593,7 +613,7 @@ object NCCli extends NCCliBase {
         if (cfgPath != null)
             jvmArgs += s"-DNLPCRAFT_PROBE_CONFIG=$cfgPath"
 
-        if (mdls != null)
+        if (mdls.nonEmpty)
             jvmArgs += s"-DNLPCRAFT_TEST_MODELS=$mdls"
 
         if (!NCAnsi.isEnabled)
@@ -684,11 +704,11 @@ object NCCli extends NCCliBase {
         }
 
         val cfgPath = getPathParam(cmd, args, "config")
-        val noWait = getFlagParam(cmd, args, "noWait", dflt = false)
+        val noWait = getFlagParam(args, "noWait", dflt = false)
         val addCp = getCpParam(cmd, args)
         val timeoutMins = getIntParam(cmd, args, "timeoutMins", 1)
-        val mdls = getParamOrNull(cmd, args, "models")
-        val jvmOpts = getParamOpt(cmd, args, "jvmopts") match {
+        val mdls = getModelsParams(args)
+        val jvmOpts = getParamOpt(args, "jvmopts") match {
             case Some(opts) => U.splitTrimFilter(U.trimQuotes(opts), " ")
             case None => Seq("-ea", "-Xms1024m")
         }
@@ -711,7 +731,7 @@ object NCCli extends NCCliBase {
 
         prbArgs += "-DNLPCRAFT_ANSI_COLOR_DISABLED=true" // No ANSI colors for text log output to the file.
 
-        if (mdls != null)
+        if (mdls.nonEmpty)
             prbArgs += "-Dconfig.override_with_env_vars=true"
 
         prbArgs += "-cp"
@@ -724,7 +744,8 @@ object NCCli extends NCCliBase {
 
         val prbPb = new ProcessBuilder(prbArgs.asJava)
 
-        if (mdls != null)
+        if (mdls.nonEmpty)
+            // Combine multiple '--mdls' parameter into one comma-separate string.
             prbPb.environment().put("CONFIG_FORCE_nlpcraft_probe_models", mdls)
 
         prbPb.directory(new File(USR_WORK_DIR))
@@ -746,7 +767,7 @@ object NCCli extends NCCliBase {
             logln(s"  ${y("|--")} Log: ${c(output.getAbsolutePath)}")
             logln(s"  ${y("|--")} Probe config: ${if (cfgPath == null) y("<default>") else c(cfgPath)}")
 
-            if (mdls != null)
+            if (mdls.nonEmpty)
                 logln(s"  ${y("|--")} Environment variables: \n        ${c("CONFIG_FORCE_nlpcraft_probe_models=")}${c(mdls)}")
 
             logln(s"  ${y("+--")} Command: \n        ${c(prbArgs.mkString("\n        "))}")
@@ -1680,7 +1701,7 @@ object NCCli extends NCCliBase {
         }
 
         val addCp = getCpParamOpt(cmd, args)
-        val jvmOpts = getParamOpt(cmd, args, "jvmopts") match {
+        val jvmOpts = getParamOpt(args, "jvmopts") match {
             case Some(opts) => U.splitTrimFilter(U.trimQuotes(opts), " ")
             case None => Seq("-ea", "-Xms1024m")
         }
@@ -1738,7 +1759,7 @@ object NCCli extends NCCliBase {
     private [cmdline] def cmdSugSyn(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
         state.accessToken match {
             case Some(acsTok) =>
-                val mdlId = getParamOpt(cmd, args, "mdlId") match {
+                val mdlId = getParamOpt(args, "mdlId") match {
                     case Some(id) => id
                     case None =>
                         if (state.probes.size == 1 && state.probes.head.models.length == 1)
@@ -1772,7 +1793,7 @@ object NCCli extends NCCliBase {
     private [cmdline] def cmdAsk(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
         state.accessToken match {
             case Some(acsTok) =>
-                val mdlId = getParamOpt(cmd, args, "mdlId") match {
+                val mdlId = getParamOpt(args, "mdlId") match {
                     case Some(id) => id
                     case None =>
                         if (state.probes.size == 1 && state.probes.head.models.length == 1)
@@ -1781,8 +1802,8 @@ object NCCli extends NCCliBase {
                             throw MissingOptionalParameter(cmd, "mdlId")
                 }
                 val txt = getParam(cmd, args, "txt")
-                val data = getParamOrNull(cmd, args, "data")
-                val enableLog = getFlagParam(cmd, args, "enableLog", dflt = false)
+                val data = getParamOrNull(args, "data")
+                val enableLog = getFlagParam(args, "enableLog", dflt = false)
 
                 httpRest(
                     cmd,
@@ -2002,7 +2023,7 @@ object NCCli extends NCCliBase {
       */
     private [cmdline] def cmdGenModel(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         val filePath = replacePathTilda(getParam(cmd, args, "filePath"))
-        val overrideFlag = getFlagParam(cmd, args, "override", dflt = false)
+        val overrideFlag = getFlagParam(args, "override", dflt = false)
         val mdlId = getParam(cmd, args, "modelId")
 
         val out = new File(filePath)
@@ -2055,7 +2076,7 @@ object NCCli extends NCCliBase {
         val buildTool = getParam(cmd, args, "buildTool", "mvn").toLowerCase
         val pkgName = getParam(cmd, args, "packageName", "org.apache.nlpcraft.demo").toLowerCase
         val fileType = getParam(cmd, args, "modelType", "yaml").toLowerCase
-        val overrideFlag = getFlagParam(cmd, args, "override", dflt = false)
+        val overrideFlag = getFlagParam(args, "override", dflt = false)
 
         val dst = new File(outputDir, baseName)
         val pkgDir = pkgName.replaceAll("\\.", "/")
@@ -2747,8 +2768,8 @@ object NCCli extends NCCliBase {
      * @param repl Whether or not executing from REPL.
      */
     private [cmdline] def cmdVersion(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        val isS = getFlagParam(cmd, args, "semver", dflt = false)
-        val isD = getFlagParam(cmd, args, "reldate", dflt = false)
+        val isS = getFlagParam(args, "semver", dflt = false)
+        val isD = getFlagParam(args, "reldate", dflt = false)
 
         if (!isS && !isD)
             logln((

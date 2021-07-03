@@ -762,13 +762,14 @@ private [cmdline] object NCCliCommands {
                 Parameter(
                     id = "models",
                     names = Seq("--mdls", "-m"),
-                    value = Some("<model list>"),
+                    value = Some("my.Model1,my.Model2"),
                     optional = true,
                     desc =
                         s"Comma separated list of fully qualified class names for models to deploy. This will override " +
                         s"${y("'nlpcraft.probe.models'")} configuration property from either default configuration file " +
                         s"or the one provided by ${c("--cfg")} parameter. Note that you also must provide the additional " +
-                        s"classpath in this case via ${c("--cp")} parameter."
+                        s"classpath in this case via ${c("--cp")} parameter. Note also that you can have multiple '${c("--mdls")} " +
+                        s"parameters - each specifying one or more model class names - and they will be automatically combined together."
                 ),
                 Parameter(
                     id = "jvmopts",
@@ -872,12 +873,14 @@ private [cmdline] object NCCliCommands {
                 Parameter(
                     id = "models",
                     names = Seq("--mdls", "-m"),
-                    value = Some("<model list>"),
+                    value = Some("my.Model1,my.Model2"),
                     optional = true,
                     desc =
                         s"Comma separated list of fully qualified class names for models to deploy and test. Note that you also " +
                         s"must provide the additional classpath via ${c("--cp")} parameter. If not provided, the models " +
-                        s"specified in configuration file (${c("--cfg")} parameter) will be used instead."
+                        s"specified in configuration file (${c("--cfg")} parameter) will be used instead. Note that " +
+                        s"you can have multiple '${c("--mdls")} parameters - each specifying one or more model class " +
+                        s"names - and they will be automatically combined together."
                 ),
                 Parameter(
                     id = "jvmopts",

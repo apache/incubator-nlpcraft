@@ -37,8 +37,8 @@ class NCCliModelClassCompleter {
      * @return Set of class names from the given JAR file.
      * @throws IOException Thrown in case of any I/O errors.
      */
-    private Set<String> getClassNamesFromJar(String jarPath) throws IOException {
-        assert jarPath != null && jarPath.toLowerCase().endsWith(".jar");
+    private Set<String> getClassNamesFromJar(File jarPath) throws IOException {
+        assert jarPath != null && jarPath.getAbsolutePath().toLowerCase().endsWith(".jar");
 
         Set<String> classNames = new HashSet<>();
 
@@ -65,10 +65,10 @@ class NCCliModelClassCompleter {
      * @return Set of model class name for the given classpath.
      * @throws IOException Thrown in case of any I/O errors.
      */
-    public Set<String> getModelClassNamesFromClasspath(List<String> cp) throws IOException, ClassNotFoundException {
+    public Set<String> getModelClassNamesFromClasspath(List<String> cp) throws IOException {
         Set<URL> urls = cp.stream().map(entry -> {
             try {
-                return new URL("jar:file" + entry + "!/");
+                return new URL("jar:file:" + entry + "!/");
             }
             catch (MalformedURLException e) {
                 return null;
@@ -84,13 +84,18 @@ class NCCliModelClassCompleter {
         try (URLClassLoader clsLdr = URLClassLoader.newInstance(urlsArr)) {
             for (String cpEntry : cp) {
                 try {
-                    Set<String> classNames = getClassNamesFromJar(cpEntry);
+                    Set<String> classNames = getClassNamesFromJar(new File(cpEntry));
 
                     for (String name : classNames) {
-                        Class<?> clazz = clsLdr.loadClass(name);
+                        try {
+                            Class<?> clazz = clsLdr.loadClass(name);
 
-                        if (NCModel.class.isAssignableFrom(clazz))
-                            mdlClasses.add(clazz.getName());
+                            if (NCModel.class.isAssignableFrom(clazz))
+                                mdlClasses.add(clazz.getName());
+                        }
+                        catch (Throwable e) {
+                            // Ignoring.
+                        }
                     }
                 }
                 catch (Exception e) {
