@@ -258,7 +258,11 @@ object NCCli extends NCCliBase {
      * @return
      */
     private def getCpParams(args: Seq[Argument]): String =
-        U.splitTrimFilter(getParams( args, "cp").mkString(CP_SEP), CP_SEP).mkString(CP_SEP)
+        U.splitTrimFilter(
+            getParams( args, "cp").map(cp => normalizeCp(U.trimQuotes(cp))).mkString(CP_SEP),
+            CP_SEP
+        )
+        .mkString(CP_SEP)
 
     /**
      *
@@ -270,27 +274,6 @@ object NCCli extends NCCliBase {
         args.find(_.parameter.id == id) match {
             case Some(_) => true
             case None => dflt
-        }
-
-    /**
-     *
-     * @param cmd
-     * @param args
-     * @return
-     */
-    private def getCpParam(cmd: Command, args: Seq[Argument]): String =
-        normalizeCp(U.trimQuotes(getParam(cmd, args, "cp")))
-
-    /**
-     *
-     * @param cmd
-     * @param args
-     * @return
-     */
-    private def getCpParamOpt(cmd: Command, args: Seq[Argument]): String =
-        getParamOpt(args, "cp") match {
-            case Some(path) => normalizeCp(U.trimQuotes(path))
-            case None => null
         }
 
     /**
@@ -595,7 +578,7 @@ object NCCli extends NCCliBase {
             throw NoLocalServer()
 
         val cfgPath = getPathParam(cmd, args, "config")
-        val addCp = getCpParam(cmd, args)
+        val addCp = getCpParams(args)
         val mdls = getModelsParams(args)
         val jvmOpts = getParamOpt(args, "jvmopts") match {
             case Some(opts) => U.splitTrimFilter(U.trimQuotes(opts), " ")
@@ -621,7 +604,7 @@ object NCCli extends NCCliBase {
 
         jvmArgs += "-cp"
 
-        if (addCp != null)
+        if (addCp.nonEmpty)
             jvmArgs += s"$JAVA_CP$CP_SEP$addCp".replace(s"$CP_SEP$CP_SEP", CP_SEP)
         else
             jvmArgs += JAVA_CP
@@ -705,7 +688,7 @@ object NCCli extends NCCliBase {
 
         val cfgPath = getPathParam(cmd, args, "config")
         val noWait = getFlagParam(args, "noWait", dflt = false)
-        val addCp = getCpParam(cmd, args)
+        val addCp = getCpParams(args)
         val timeoutMins = getIntParam(cmd, args, "timeoutMins", 1)
         val mdls = getModelsParams(args)
         val jvmOpts = getParamOpt(args, "jvmopts") match {
@@ -735,7 +718,7 @@ object NCCli extends NCCliBase {
             prbArgs += "-Dconfig.override_with_env_vars=true"
 
         prbArgs += "-cp"
-        prbArgs += (if (addCp == null) JAVA_CP else s"$JAVA_CP$CP_SEP$addCp".replace(s"$CP_SEP$CP_SEP", CP_SEP))
+        prbArgs += (if (addCp.isEmpty) JAVA_CP else s"$JAVA_CP$CP_SEP$addCp".replace(s"$CP_SEP$CP_SEP", CP_SEP))
         prbArgs += "org.apache.nlpcraft.NCStart"
         prbArgs += "-probe"
 
@@ -1700,7 +1683,7 @@ object NCCli extends NCCliBase {
             getParam(cmd, args, "url")
         }
 
-        val addCp = getCpParamOpt(cmd, args)
+        val addCp = getCpParams(args)
         val jvmOpts = getParamOpt(args, "jvmopts") match {
             case Some(opts) => U.splitTrimFilter(U.trimQuotes(opts), " ")
             case None => Seq("-ea", "-Xms1024m")
@@ -1719,7 +1702,7 @@ object NCCli extends NCCliBase {
 
         jvmArgs += "-cp"
 
-        if (addCp != null)
+        if (addCp.nonEmpty)
             jvmArgs += s"$JAVA_CP$CP_SEP$addCp".replace(s"$CP_SEP$CP_SEP", CP_SEP)
         else
             jvmArgs += JAVA_CP
@@ -2347,6 +2330,12 @@ object NCCli extends NCCliBase {
             private val fsCompleter = new NCCliFileNameCompleter()
             private val cpCompleter = new NCCliModelClassCompleter()
 
+            // All '--cp' names.
+            private val CP_PARAM_NAMES = (
+                START_PRB_CMD.findParameterById("cp").names ++
+                TEST_MDL_CMD.findParameterById("cp").names
+            ).toSet
+
             /**
              *
              * @param disp
@@ -2480,43 +2469,28 @@ object NCCli extends NCCliBase {
                     })
 
                     // For 'start-probe' and 'test-model' provide model class name completion for '--mdls'
-                    // if '--cp' parameter with JAR file(s) is provided.
+                    // if '--cp' parameter(s) with JAR file(s) is provided.
                     if (cmd == START_PRB_CMD.name || cmd == TEST_MDL_CMD.name) {
-                        val cpParamNames = (
-                            START_PRB_CMD.findParameterById("cp").names ++
-                            TEST_MDL_CMD.findParameterById("cp").names
-                        ).toSet
+                        val cp = words.filter(w => CP_PARAM_NAMES.exists(x => w.startsWith(x))).flatMap(w => splitEqParam(w) match {
+                            case Some((_, paramVal)) => Some(U.trimQuotes(paramVal.strip()))
+                            case None => None
+                        })
+                        .mkString(CP_SEP)
 
-                        words.find(w => cpParamNames.exists(x => w.startsWith(x))) match {
-                            case Some(word) => splitEqParam(word) match {
-                                case Some((_, paramVal)) =>
-                                    var cp = paramVal.strip()
-
-                                    if (cp.head == '"' || cp.head == '\'')
-                                        cp = cp.drop(1)
-                                    if (cp.last == '"' || cp.last == '\'')
-                                        cp = cp.dropRight(1)
-
-                                    try {
-                                        for (cls <- cpCompleter.getModelClassNamesFromClasspath(cp.split(CP_SEP_CHAR).toSeq.asJava).asScala)
-                                            candidates.add(
-                                                mkCandidate(
-                                                    disp = "--mdls=" + cls,
-                                                    grp = OPTIONAL_GRP,
-                                                    desc = null,
-                                                    completed = true
-                                                )
-                                            )
-                                    }
-                                    catch {
-                                        // Just ignore.
-                                        case e: Exception => e.printStackTrace()
-                                    }
-
-                                case None => ()
-                            }
-
-                            case None => ()
+                        try {
+                            for (cls <- cpCompleter.getModelClassNamesFromClasspath(cp.split(CP_SEP_CHAR).toSeq.asJava).asScala)
+                                candidates.add(
+                                    mkCandidate(
+                                        disp = "--mdls=" + cls,
+                                        grp = OPTIONAL_GRP,
+                                        desc = null,
+                                        completed = true
+                                    )
+                                )
+                        }
+                        catch {
+                            // Just ignore.
+                            case e: Exception => ()
                         }
                     }
 

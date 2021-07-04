@@ -399,6 +399,8 @@ private [cmdline] object NCCliCommands {
                         s"Although this configuration property is optional, in most cases you will need to provide an " +
                         s"additional classpath for JDBC driver that you use (see ${c("'--driver'")} parameter) unless " +
                         s"it is available in NLPCraft by default, i.e. Apache Ignite and H2. " +
+                        s"Note that you can have multiple ${c("'--cp'")} parameters and their values will be " +
+                        s"automatically combined into one final additional classpath. " +
                         s"Note also that you can use ${y("'~'")} at the beginning of the classpath component to specify user home directory."
                 ),
                 Parameter(
@@ -452,7 +454,7 @@ private [cmdline] object NCCliCommands {
                     optional = true,
                     desc =
                         s"Semicolon-separate list of tables and/or columns to exclude. By default, none of the " +
-                        s"tables and columns in the schema are excluded. See ${c("--help")} parameter to get more details."
+                        s"tables and columns in the schema are excluded. See ${c("'--help'")} parameter to get more details."
                 ),
                 Parameter(
                     id = "include",
@@ -461,7 +463,7 @@ private [cmdline] object NCCliCommands {
                     optional = true,
                     desc =
                         s"Semicolon-separate list of tables and/or columns to include. By default, all of the " +
-                        s"tables and columns in the schema are included. See ${c("--help")} parameter to get more details."
+                        s"tables and columns in the schema are included. See ${c("'--help'")} parameter to get more details."
                 ),
                 Parameter(
                     id = "prefix",
@@ -744,7 +746,9 @@ private [cmdline] object NCCliCommands {
                         s"When starting a probe with your models you must " +
                         s"provide this additional classpath for the models and their dependencies this probe will be hosting. " +
                         s"Parameter should include one or more classpath entry (JAR or directory) separated by the OS specific classpath separator. " +
-                        s"Note that you can use ${y("'~'")} at the beginning of the classpath component to specify user home directory."
+                        s"Note that you can have multiple ${c("'--cp'")} parameters and their values will be " +
+                        s"automatically combined into one final additional classpath. " +
+                        s"Note also that you can use ${y("'~'")} at the beginning of the classpath component to specify user home directory."
                 ),
                 Parameter(
                     id = "config",
@@ -767,8 +771,8 @@ private [cmdline] object NCCliCommands {
                     desc =
                         s"Comma separated list of fully qualified class names for models to deploy. This will override " +
                         s"${y("'nlpcraft.probe.models'")} configuration property from either default configuration file " +
-                        s"or the one provided by ${c("--cfg")} parameter. Note that you also must provide the additional " +
-                        s"classpath in this case via ${c("--cp")} parameter. Note also that you can have multiple '${c("--mdls")} " +
+                        s"or the one provided by ${c("'--cfg'")} parameter. Note that you also must provide the additional " +
+                        s"classpath in this case via ${c("'--cp'")} parameter. Note also that you can have multiple '${c("'--mdls'")} " +
                         s"parameters - each specifying one or more model class names - and they will be automatically combined together."
                 ),
                 Parameter(
@@ -856,7 +860,9 @@ private [cmdline] object NCCliCommands {
                         s"Additional JVM classpath that will be appended to the default NLPCraft JVM classpath. " +
                         s"When testing your models you must provide this additional classpath for the models and their dependencies. " +
                         s"Parameter should include one or more classpath entry (JAR or directory) separated by the OS specific classpath separator. " +
-                        s"Note that you can use ${y("'~'")} at the beginning of the classpath component to specify user home directory."
+                        s"Note that you can have multiple ${c("'--cp'")} parameters and their values will be " +
+                        s"automatically combined into one final additional classpath. " +
+                        s"Note also that you can use ${y("'~'")} at the beginning of the classpath component to specify user home directory."
                 ),
                 Parameter(
                     id = "config",
@@ -877,9 +883,9 @@ private [cmdline] object NCCliCommands {
                     optional = true,
                     desc =
                         s"Comma separated list of fully qualified class names for models to deploy and test. Note that you also " +
-                        s"must provide the additional classpath via ${c("--cp")} parameter. If not provided, the models " +
-                        s"specified in configuration file (${c("--cfg")} parameter) will be used instead. Note that " +
-                        s"you can have multiple '${c("--mdls")} parameters - each specifying one or more model class " +
+                        s"must provide the additional classpath via ${c("'--cp'")} parameter. If not provided, the models " +
+                        s"specified in configuration file (${c("'--cfg'")} parameter) will be used instead. Note that " +
+                        s"you can have multiple '${c("'--mdls'")} parameters - each specifying one or more model class " +
                         s"names - and they will be automatically combined together."
                 ),
                 Parameter(
