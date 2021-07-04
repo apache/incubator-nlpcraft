@@ -38,25 +38,26 @@ class NCCliModelClassCompleter {
      * @throws IOException Thrown in case of any I/O errors.
      */
     private Set<String> getClassNamesFromJar(File jarPath) throws IOException {
-        assert jarPath != null && jarPath.getAbsolutePath().toLowerCase().endsWith(".jar");
+        assert jarPath != null;
 
         Set<String> classNames = new HashSet<>();
 
-        try (JarFile jarFile = new JarFile(jarPath)) {
-            Enumeration<JarEntry> entries = jarFile.entries();
+        if (jarPath.getAbsolutePath().toLowerCase().endsWith(".jar"))
+            try (JarFile jarFile = new JarFile(jarPath)) {
+                Enumeration<JarEntry> entries = jarFile.entries();
 
-            while (entries.hasMoreElements()) {
-                JarEntry entry = entries.nextElement();
+                while (entries.hasMoreElements()) {
+                    JarEntry entry = entries.nextElement();
 
-                if (entry.getName().endsWith(".class"))
-                    classNames.add(entry.getName()
-                        .replace("/", ".")
-                        .replace(".class", "")
-                    );
+                    if (entry.getName().endsWith(".class"))
+                        classNames.add(entry.getName()
+                            .replace("/", ".")
+                            .replace(".class", "")
+                        );
+                }
             }
 
-            return classNames;
-        }
+        return classNames;
     }
 
     /**
