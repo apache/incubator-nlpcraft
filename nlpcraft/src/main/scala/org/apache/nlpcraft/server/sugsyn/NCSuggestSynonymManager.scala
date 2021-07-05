@@ -78,7 +78,7 @@ object NCSuggestSynonymManager extends NCService {
                 case 200 =>
                     val data: util.List[util.List[NCWordSuggestion]] = GSON.fromJson(js, TYPE_RESP)
 
-                    data.asScala.map(p => if (p.isEmpty) Seq.empty else p.asScala.tail.toSeq).toSeq
+                    data.asScala.map(p => if (p.isEmpty) Seq.empty else p.asScala.toSeq).toSeq
 
                 case _ =>
                     throw new NCE(
@@ -502,8 +502,10 @@ object NCSuggestSynonymManager extends NCService {
                         if (cnt.incrementAndGet() == batches.size) {
                             val min = minScoreOpt.getOrElse(DFLT_MIN_SCORE)
 
-                            val map: Map[NCSuggestionRequest, Seq[NCWordSuggestion]] = data.asScala.groupBy(_.request).map { case (req, map) =>
-                                req -> map.flatMap(_.suggestions.filter(_.score >= min).toSeq)
+                            val map: Map[NCSuggestionRequest, Seq[NCWordSuggestion]] =
+                                data.asScala.groupBy(_.request).map {
+                                    case (req, ress) =>
+                                        req -> ress.flatMap(_.suggestions.filter(_.score >= min).toSeq).sortBy(-_.score)
                             }
 
                             // TODO ? logic?

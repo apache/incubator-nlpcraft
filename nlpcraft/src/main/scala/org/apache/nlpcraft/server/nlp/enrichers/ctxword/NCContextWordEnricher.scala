@@ -51,8 +51,12 @@ object NCContextWordEnricher extends NCServerEnricher {
 
     private final val FN = new DecimalFormat("#0.00000")
 
-    private case class Score(score: Double, reason: String) {
-        override def toString: String = s"${FN.format(score)}($reason)}"
+    private case class Score(score: Double, reason: Option[String] = None) {
+        override def toString: String =
+            reason match {
+                case Some(v) => s"${FN.format(score)}(via: '$v')}"
+                case None => s"${FN.format(score)}(direct)}"
+            }
     }
     private case class ModelProbeKey(probeId: String, modelId: String)
     private case class ElementScore(elementId: String, scores: Score*) {
@@ -60,20 +64,16 @@ object NCContextWordEnricher extends NCServerEnricher {
             s"Element [id=$elementId, scores=${scores.sortBy(p => -p.score).mkString("{ ", ", ", " }")}]"
     }
 
+    // Key - word form (origin, stem). Value - Element IDs set.
+    type ElementsByKey = Map[/** Key */ String, /** Element ID */ Set[String]]
+
     object ValuesHolder {
-        def apply(
-            normal: Map[/**  Normal value */ String, /** Element ID */ Set[String]],
-            stems: Map[/** Value's stem */ String, /** Element ID */ Set[String]]
-        ): ValuesHolder = new ValuesHolder(
-            normal,
-            stems.filter(p => !normal.keySet.contains(p._1))
+        def apply(normal: ElementsByKey, stems: ElementsByKey): ValuesHolder = new ValuesHolder(
+            normal, stems.filter(p => !normal.keySet.contains(p._1))
         )
     }
 
-    class ValuesHolder(
-        val normal: Map[/**  Normal value */ String, /** Element ID */ Set[String]],
-        val stems: Map[/** Value's stem */ String, /** Element ID */ Set[String]]
-    ) {
+    class ValuesHolder(val normal: ElementsByKey, val stems: ElementsByKey) {
         private def map2Str(m: Map[String, Set[String]]): String =
             m.toSeq.flatMap(p => p._2.toSeq.map(x => x -> p._1)).
                 groupBy(_._1).map(p => p._1 -> p._2.map(_._2).
@@ -82,31 +82,28 @@ object NCContextWordEnricher extends NCServerEnricher {
         override def toString: String = s"Values [normal=${map2Str(normal)}, stems=${map2Str(stems)}]"
     }
 
-    object ScoreHolder {
-        private final val EXCL_MIN_SCORE = -1.0
+    // Key - word form (origin, stem, lemma).
+    // Scores list which extracted from suggestions for each example (direct or artificial)
+    type ScoreFactors = Map[String, Seq[Double]]
 
-        def apply(normals: Map[String, Double], stems: Map[String, Double], lemmas: Map[String, Double]): ScoreHolder =
+    object ScoreHolder {
+        def apply(normals: ScoreFactors, stems: ScoreFactors, lemmas: ScoreFactors): ScoreHolder =
             new ScoreHolder(normals, stems -- normals.keySet, lemmas -- normals.keySet -- stems.keySet)
     }
 
-    import ScoreHolder._
+    class ScoreHolder(normals: ScoreFactors, stems: ScoreFactors, lemmas: ScoreFactors) {
+        def get(m: ScoreFactors, key: String): Seq[Double] = m.getOrElse(key, Seq.empty)
 
-    class ScoreHolder(
-        normals: Map[/** Normal value */ String, /** Score */ Double],
-        stems: Map[/** Stem */ String, /** Score */ Double],
-        lemmas: Map[/** Lemma */ String, /** Score */ Double]
-    ) {
-        def get(m: Map[String, Double], key: String): Double = m.getOrElse(key, EXCL_MIN_SCORE)
+        def get(norm: String, stem: String, lemma: String): Seq[Double] =
+            get(normals, norm) ++ get(stems, stem) ++ get(lemmas, lemma)
 
-        def get(norm: String, stem: String, lemma: String): Option[Double] =
-            Seq(get(normals, norm), get(stems, stem), get(lemmas, lemma)).max match {
-                case EXCL_MIN_SCORE => None
-                case max => Some(max)
-            }
+        private def sort(m: ScoreFactors): String =
+            m.toSeq.
+                sortBy(p => -p._2.max).map(
+                    { case (k, factors) => s"$k=${factors.sortBy(-_).map(p => FN.format(p)).mkString("{ ", ", ", " }")}" }
+                ).mkString("{ ", ", ", " }")
 
-        private def sort(m: Map[String, Double]): String =
-            m.toSeq.sortBy(-_._2).map({ case (k, v) => s"$k=${FN.format(v)}" }).mkString(", ")
-        override def toString: String = s"Score [normal: ${sort(normals)}, stems: ${sort(stems)}, lemma: ${sort(lemmas)}]"
+        override def toString: String = s"Score: ${sort(normals)}"
     }
 
     @volatile private var valuesStems: mutable.HashMap[ModelProbeKey, ValuesHolder] = _
@@ -335,7 +332,7 @@ object NCContextWordEnricher extends NCServerEnricher {
                 for ((req, resp) <- resps) {
                     t += (
                         req,
-                        s"${resp.sortBy(-_.score).map(p => s"${p.word}=${FN.format(normalize(p.score))}").mkString(", ")}"
+                        s"${resp.map(p => s"${p.word}=${FN.format(normalize(p.score))}").mkString(", ")}"
                     )
                 }
 
@@ -346,19 +343,28 @@ object NCContextWordEnricher extends NCServerEnricher {
 
             val req2Elem = recs.flatMap { case (elemId, recs) => recs.map(p => p -> elemId) }
 
-            def mkMap(convert: (NCSuggestionRequest, NCWordSuggestion) => String): Map[String, Map[String, Double]] =
-                respsSeq.
+            def mkMap(convert: (NCSuggestionRequest, NCWordSuggestion) => String) = {
+                val seq: Seq[(String, Map[String, Seq[Double]])] = respsSeq.
                     map { case (req, suggs) =>
                         (
                             req2Elem(req),
                             suggs.groupBy(sygg => convert(req, sygg)).
-                                map { case (conv, suggs) => conv -> normalize(suggs.map(_.score).max) }
-                       )
-                    }.
-                    groupBy { case (elemId, _) => elemId }.
-                    map { case (elemId, data) => elemId -> data.flatMap(_._2).toMap }
+                                map { case (key, suggs) => key -> suggs.map(p => normalize(p.score)) }
+                        )
+                    }
 
-            val normalMap = mkMap { (_, sugg ) => sugg.word.toLowerCase }
+                seq.
+                    groupBy { case (elemId, _) => elemId }.
+                    map { case (elemId, data) => elemId -> {
+                        val factors: Seq[(String, Seq[Double])] = data.flatMap(_._2)
+
+                        factors.
+                            groupBy{ case (word, _) => word }.
+                            map { case (word, factors) => word -> factors.flatMap { case (_, factor) => factor } }
+                    } }
+            }
+
+            val normalMap: Map[String, Map[String, Seq[Double]]] = mkMap { (_, sugg ) => sugg.word.toLowerCase }
             val stemMap = mkMap { (_, sugg ) => stem(sugg.word) }
             val lemmaMap = mkMap { (req, sugg ) => getSuggestionLemma(req, sugg) }
 
@@ -381,28 +387,30 @@ object NCContextWordEnricher extends NCServerEnricher {
       * @param scores
       * @return
       */
-    private def isMatched(elemScore: NCContextWordElementConfig, scores: Double*): Boolean = {
-        require(scores.nonEmpty)
+    private def isMatched(elemScore: NCContextWordElementConfig, scores: Double*): Boolean =
+        if (scores.nonEmpty) {
+            import NCContextWordElementConfig.NCContextWordElementPolicy._
 
-        import NCContextWordElementConfig.NCContextWordElementPolicy._
+            val policy = elemScore.getPolicy
+            val elemScoreVal = elemScore.getScore
 
-        val policy = elemScore.getPolicy
-        val elemScoreVal = elemScore.getScore
+            policy match {
+                case MEDIAN =>
+                    val sorted = scores.sorted
+                    val mid = sorted.length / 2
+                    val median = if (sorted.length % 2 == 0) (sorted(mid) + sorted(mid - 1)) / 2
+                    else sorted(mid)
 
-        policy match {
-            case MEDIAN =>
-                val sorted = scores.sorted
-                val mid = sorted.length / 2
-                val median = if (sorted.length % 2 == 0) (sorted(mid) + sorted(mid - 1)) / 2 else sorted(mid)
+                    median >= elemScoreVal
+                case ALL => scores.forall(_ >= elemScoreVal)
+                case AVERAGE => scores.sum / scores.size >= elemScoreVal
+                case ANY => scores.exists(_ >= elemScoreVal)
 
-                median >= elemScoreVal
-            case ALL => scores.forall(_ >= elemScoreVal)
-            case AVERAGE => scores.sum / scores.size >= elemScoreVal
-            case ANY => scores.exists(_ >= elemScoreVal)
-
-            case _ => throw new AssertionError(s"Unexpected policy: $policy")
+                case _ => throw new AssertionError(s"Unexpected policy: $policy")
+            }
         }
-    }
+        else
+            false
 
     override def enrich(ns: NCNlpSentence, parent: Span): Unit =
         startScopedSpan("stop", parent) { _ =>
@@ -430,19 +438,21 @@ object NCContextWordEnricher extends NCServerEnricher {
                         val key = ModelProbeKey(cfg.probeId, cfg.modelId)
 
                         // 1. Values. Direct.
-                        val valuesData = getValuesData(cfg, key)
+                        val valsData = getValuesData(cfg, key)
 
                         if (DEBUG_MODE)
-                            logger.info(s"Values loaded [key=$key, data=$valuesData]")
+                            logger.info(s"Values loaded [key=$key, data=$valsData]")
+
+                        def get(m: Map[String, Set[String]], key: String): Set[String] = m.getOrElse(key, Set.empty)
 
                         for (
                             nounTok <- nounToks;
                                 elemId <-
-                                    valuesData.normal.getOrElse(nounTok.normText, Set.empty) ++
-                                    valuesData.normal.getOrElse(nounTok.lemma.toLowerCase, Set.empty) ++
-                                    valuesData.stems.getOrElse(nounTok.stem, Set.empty)
+                                get(valsData.normal, nounTok.normText) ++
+                                get(valsData.normal, nounTok.lemma.toLowerCase) ++
+                                get(valsData.stems, nounTok.stem)
                         )
-                            add(nounTok, elemId, Score(INCL_MAX_SCORE, nounTok.normText))
+                            add(nounTok, elemId, Score(INCL_MAX_SCORE))
 
                         // 2. Via examples.
                         val mdlCorpusData: Map[String, ScoreHolder] = getCorpusData(cfg, key, parent)
@@ -450,10 +460,10 @@ object NCContextWordEnricher extends NCServerEnricher {
                         if (DEBUG_MODE) {
                             val t = NCAsciiTable()
 
-                            t #= ("Element", "Scores")
+                            t #= ("Element", "Detailed")
 
-                            for ((elemId, scoreHolder) <- mdlCorpusData)
-                                t += (elemId, scoreHolder)
+                            for ((elemId, sh) <- mdlCorpusData)
+                                t += (elemId, sh)
 
                             t.info(logger, Some(s"Model corpus processed [key=$key]"))
                         }
@@ -461,17 +471,17 @@ object NCContextWordEnricher extends NCServerEnricher {
                         for (
                             nounTok <- nounToks;
                             (elemId, suggs) <- mdlCorpusData;
-                            scoreOpt = suggs.get(nounTok.normText, nounTok.stem, nounTok.lemma)
-                            if scoreOpt.isDefined && isMatched(cfg.elements(elemId), scoreOpt.get)
+                            scores = suggs.get(nounTok.normText, nounTok.stem, nounTok.lemma)
+                            if isMatched(cfg.elements(elemId), scores :_*);
+                            score <- scores
                         )
-                            add(nounTok, elemId, Score(scoreOpt.get, nounTok.normText))
+                            add(nounTok, elemId, Score(score))
 
                         // 3. Ask for sentence.
-                        val idxs = ns.tokens.flatMap(p => if (p.pos.startsWith("N")) Some(p.index)
-                        else None).toSeq
+                        val idxs = ns.tokens.flatMap(p => if (p.pos.startsWith("N")) Some(p.index)else None).toSeq
                         val reqs = idxs.map(idx => NCSuggestionRequest(ns.tokens.map(_.origText).toSeq, idx))
 
-                        val resps =
+                        val resps: Map[NCWordSuggestion, NCSuggestionRequest] =
                             syncExec(
                                 NCSuggestSynonymManager.suggestWords(reqs, parent = parent)).
                                 flatMap { case (req, suggs) => suggs.map(_ -> req)
@@ -502,14 +512,19 @@ object NCContextWordEnricher extends NCServerEnricher {
                             (sugg, req) <- resps;
                                 senScore = normalize(sugg.score);
                                 (elemId, mdlCorpusSuggs) <- mdlCorpusData;
-                                elemScore = cfg.elements(elemId);
-                                corpusScoreOpt =
+                                elemCfg = cfg.elements(elemId);
+                                corpusScores =
                                     mdlCorpusSuggs.get(
                                         sugg.word.toLowerCase, stem(sugg.word), getSuggestionLemma(req, sugg)
                                     )
-                                if corpusScoreOpt.isDefined && isMatched(elemScore, corpusScoreOpt.get, senScore)
-                        )
-                            add(ns.tokens(req.index), elemId, Score(senScore, sugg.word), Score(corpusScoreOpt.get, sugg.word))
+                                // TODO:
+                                if isMatched(elemCfg, senScore) && isMatched(elemCfg, corpusScores :_*)
+                        ) {
+                            add(ns.tokens(req.index), elemId, Score(senScore, Some(sugg.word)))
+//
+//                            for (corpusScore <- corpusScores)
+//                                add(ns.tokens(req.index), elemId, Score(corpusScore, Some(sugg.word)))
+                        }
                     }
 
                     ns.ctxWordData = detected.map {
@@ -520,7 +535,7 @@ object NCContextWordEnricher extends NCServerEnricher {
                         logger.info("Sentence detected elements:")
 
                         for ((tok, elems) <- detected)
-                            logger.info(s"${tok.origText}: ${elems.mkString(", ")}")
+                            logger.info(s"${tok.origText}: ${elems.sortBy(-_.scores.map(_.score).max).mkString(", ")}")
                     }
                 case None => // No-op.
             }

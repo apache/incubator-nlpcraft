@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test
 
 import java.util
 import java.util.{Collections, Optional}
+import scala.collection.mutable.ArrayBuffer
 import scala.jdk.CollectionConverters.{CollectionHasAsScala, MapHasAsJava, SeqHasAsJava, SetHasAsJava}
 
 object NCContextWordSpecModel {
@@ -49,8 +50,8 @@ class NCContextWordSpecModel extends NCModel {
     override def getName: String = this.getClass.getSimpleName
     override def getVersion: String = "1.0.0"
 
-    val MDL_LEVEL = 0.0
-    val MDL_POLICY = ALL
+    val MDL_LEVEL = 0.4
+    val MDL_POLICY = AVERAGE
 
     override def getContextWordModelConfig: Optional[NCContextWordModelConfig] = {
         Optional.of(
@@ -68,18 +69,18 @@ class NCContextWordSpecModel extends NCModel {
 
                 override def getCorpus: util.List[String] =
                     Seq(
-//                        "I like drive my new BMW",
-//                        "BMW has the best engine",
-//                        "Luxury cars like Mercedes and BMW  are prime targets",
-//                        "BMW will install side air bags up front",
+                        "I like drive my new BMW",
+                        "BMW has the best engine",
+                        "Luxury cars like Mercedes and BMW  are prime targets",
+                        "BMW will install side air bags up front",
 
                         "A wild cat is very dangerous",
                         "A fox eats hens",
                         "The fox was already in your chicken house",
 
-//                        "What is the local temperature?",
-//                        "This is the first day of heavy rain",
-//                        "It is the beautiful day, the sun is shining"
+                        "What is the local temperature?",
+                        "This is the first day of heavy rain",
+                        "It is the beautiful day, the sun is shining"
                     ).asJava
             }
         )
@@ -87,9 +88,9 @@ class NCContextWordSpecModel extends NCModel {
 
     override def getElements: util.Set[NCElement] =
         Set(
-            //Element("class:cars", MDL_LEVEL, Value("BMW")),
+            Element("class:cars", MDL_LEVEL, Value("BMW")),
             Element("class:animal", MDL_LEVEL, Value("fox"), Value("cat", "tomcat")),
-            //Element("class:weather", MDL_LEVEL, Value("temperature"), Value("rain"), Value("sun"))
+            Element("class:weather", MDL_LEVEL, Value("temperature"), Value("rain"), Value("sun"))
         ).map(p => {
             val e: NCElement = p
 
@@ -97,6 +98,8 @@ class NCContextWordSpecModel extends NCModel {
         }).asJava
 
     override def onContext(ctx: NCContext): NCResult = {
+        val varRes = ArrayBuffer.empty[String]
+
         val ok =
             ctx.getVariants.asScala.exists(v => {
                 val testGroupToks = v.asScala.toSeq.filter(_.getGroups.contains("testGroup"))
@@ -104,10 +107,19 @@ class NCContextWordSpecModel extends NCModel {
                 val elemIds = testGroupToks.map(_.getId).distinct.mkString(" ")
                 val words = testGroupToks.map(_.getOriginalText).mkString(" ")
 
+                val res = s"$elemIds $words"
+
+                varRes += res
+
                 NCContextWordSpecModel.expected == s"$elemIds $words"
             })
 
-        NCResult.text(if (ok) "OK" else "ERROR")
+        NCResult.text(
+            if (ok)
+                "OK"
+            else
+                s"ERROR: variant '${NCContextWordSpecModel.expected}' not found. Found: ${varRes.mkString(", ")}"
+        )
     }
 }
 
@@ -119,22 +131,24 @@ class NCContextWordSpec extends NCTestContext {
     private def check(txt: String, elemId: String, words: String*): Unit = {
         NCContextWordSpecModel.expected = s"$elemId ${words.mkString(" ")}"
 
-        require(getClient.ask(txt).getResult.get() == "OK")
+        val res = getClient.ask(txt).getResult.get()
+
+        require(res == "OK", s"Unexpected: $res")
     }
 
     @Test
     private[ctxword] def test(): Unit = {
-        //check("I want to have dogs and foxes", "class:animal", "dogs", "foxes")
+        check("I want to have dogs and foxes", "class:animal", "dogs", "foxes")
         check("I bought dog's meat", "class:animal", "dog")
-//        check("I bought meat dog's", "class:animal", "dog")
-//
-//        check("I want to have a dog and fox", "class:animal", "dog", "fox")
-//        check("I fed your fish", "class:animal", "fish")
-//
-//        check("I like to drive my Porsche and Volkswagen", "class:cars", "Porsche", "Volkswagen")
-//        check("Peugeot added motorcycles to its range in 1901", "class:cars", "Peugeot", "motorcycles")
-//
-//        check("The frost is possible today", "class:weather", "frost")
-//        check("There's a very strong wind from the east now", "class:weather", "wind")
+        check("I bought meat dog's", "class:animal", "dog")
+
+        check("I want to have a dog and fox", "class:animal", "dog", "fox")
+        check("I fed your fish", "class:animal", "fish")
+
+        check("I like to drive my Porsche and Volkswagen", "class:cars", "Porsche", "Volkswagen")
+        check("Peugeot added motorcycles to its range in 1901", "class:cars", "Peugeot", "motorcycles")
+
+        check("The frost is possible today", "class:weather", "frost")
+        check("There's a very strong wind from the east now", "class:weather", "wind")
     }
 }
