@@ -48,15 +48,18 @@ object NCContextWordEnricher extends NCServerEnricher {
     private final val DEBUG_MODE = true
 
     private final val CONVERTER = new DefaultNameConverter
-
-    private final val FN = new DecimalFormat("#0.00000")
+    private final val FMT = new DecimalFormat("#0.00000")
 
     private case class Score(score: Double, reason: Option[String] = None) {
-        override def toString: String =
-            reason match {
-                case Some(v) => s"${FN.format(score)}(via: '$v')}"
-                case None => s"${FN.format(score)}(direct)}"
-            }
+        override def toString: String = {
+            val s =
+                reason match {
+                    case Some(v) => s"via:'$v'"
+                    case None => "direct"
+                }
+
+            s"${FMT.format(score)}($s)}"
+        }
     }
     private case class ModelProbeKey(probeId: String, modelId: String)
     private case class ElementScore(elementId: String, scores: Score*) {
@@ -99,8 +102,8 @@ object NCContextWordEnricher extends NCServerEnricher {
 
         private def sort(m: ScoreFactors): String =
             m.toSeq.
-                sortBy(p => -p._2.max).map(
-                    { case (k, factors) => s"$k=${factors.sortBy(-_).map(p => FN.format(p)).mkString("{ ", ", ", " }")}" }
+                sortBy(p => (-p._2.max, -p._2.size)).map(
+                    { case (k, factors) => s"$k=${factors.sortBy(-_).map(p => FMT.format(p)).mkString("{ ", ", ", " }")}" }
                 ).mkString("{ ", ", ", " }")
 
         override def toString: String = s"Score: ${sort(normals)}"
@@ -332,7 +335,7 @@ object NCContextWordEnricher extends NCServerEnricher {
                 for ((req, resp) <- resps) {
                     t += (
                         req,
-                        s"${resp.map(p => s"${p.word}=${FN.format(normalize(p.score))}").mkString(", ")}"
+                        s"${resp.map(p => s"${p.word}=${FMT.format(normalize(p.score))}").mkString(", ")}"
                     )
                 }
 
@@ -498,7 +501,7 @@ object NCContextWordEnricher extends NCServerEnricher {
                                 t += (
                                     sorted.head._2,
                                     s"${sorted.map(_._1).
-                                    map(p => s"${p.word}=${FN.format(normalize(p.score))}").
+                                    map(p => s"${p.word}=${FMT.format(normalize(p.score))}").
                                     mkString(", ")}"
                                 )
                             }

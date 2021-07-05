@@ -50,7 +50,7 @@ class NCContextWordSpecModel extends NCModel {
     override def getName: String = this.getClass.getSimpleName
     override def getVersion: String = "1.0.0"
 
-    val MDL_LEVEL = 0.4
+    val MDL_LEVEL = 0.8
     val MDL_POLICY = AVERAGE
 
     override def getContextWordModelConfig: Optional[NCContextWordModelConfig] = {
@@ -73,6 +73,11 @@ class NCContextWordSpecModel extends NCModel {
                         "BMW has the best engine",
                         "Luxury cars like Mercedes and BMW  are prime targets",
                         "BMW will install side air bags up front",
+                        "I want to change BMW engine",
+                        "I want to try BMW driver dynamics",
+                        "BMW has excellent driver protection",
+                        "BMW pricing are going up",
+                        "BMW drivers have the highest loyalty",
 
                         "A wild cat is very dangerous",
                         "A fox eats hens",
@@ -138,17 +143,18 @@ class NCContextWordSpec extends NCTestContext {
 
     @Test
     private[ctxword] def test(): Unit = {
-        check("I want to have dogs and foxes", "class:animal", "dogs", "foxes")
-        check("I bought dog's meat", "class:animal", "dog")
-        check("I bought meat dog's", "class:animal", "dog")
+//        check("I want to have dogs and foxes", "class:animal", "dogs", "foxes")
+//        check("I bought dog's meat", "class:animal", "dog")
+//        check("I bought meat dog's", "class:animal", "dog")
+//
+//        check("I want to have a dog and fox", "class:animal", "dog", "fox")
+//        check("I fed your fish", "class:animal", "fish")
 
-        check("I want to have a dog and fox", "class:animal", "dog", "fox")
-        check("I fed your fish", "class:animal", "fish")
-
-        check("I like to drive my Porsche and Volkswagen", "class:cars", "Porsche", "Volkswagen")
-        check("Peugeot added motorcycles to its range in 1901", "class:cars", "Peugeot", "motorcycles")
-
-        check("The frost is possible today", "class:weather", "frost")
-        check("There's a very strong wind from the east now", "class:weather", "wind")
+        // check("I like to drive my Porsche and Volkswagen", "class:cars", "Porsche", "Volkswagen")
+//        check("Peugeot added motorcycles to its range in 1901", "class:cars", "Peugeot", "motorcycles")
+//
+        //check("The frost is possible today", "class:weather", "frost")
+        check("Is vehicle a reliable car ?", "class:weather", "frost")
+        //check("There's a very strong wind from the east now", "class:weather", "wind")
     }
 }
