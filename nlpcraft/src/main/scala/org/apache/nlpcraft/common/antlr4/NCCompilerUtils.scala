@@ -15,40 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.model.tools.cmdline
+package org.apache.nlpcraft.common.antlr4
 
 import org.apache.nlpcraft.common._
 
-/**
- *
- * @param pid
- * @param ver
- * @param relDate
- * @param id
- * @param token
- * @param upLink
- * @param downLink
- * @param jarsFolder
- * @param models
- * @param beaconPath
- * @param startMs
- * @param logPath
- * @param ph
- */
-case class NCCliProbeBeacon (
-    pid: Long,
-    ver: String,
-    relDate: String,
-    id: String,
-    token: String,
-    upLink: String,
-    downLink: String,
-    jarsFolder: String,
-    models: String,
-    beaconPath: String,
-    startMs: Long,
-    @transient var logPath: String = null,
-    @transient var ph: ProcessHandle = null
-) {
-    lazy val modelsSeq: Seq[String] = U.splitTrimFilter(models, ",")
+case class CompilerErrorHolder(
+    ptrStr: String,
+    origStr: String
+)
+
+object NCCompilerUtils {
+    /**
+     *
+     * @param in
+     * @param charPos
+     * @return
+     */
+    def mkErrorHolder(in: String, charPos: Int): CompilerErrorHolder = {
+        val charPos0 = charPos - (in.length - in.stripLeading().length)
+        val in0 = in.strip()
+
+        val pos = Math.max(0, charPos0)
+        val dash = "-" * in0.length
+
+        var ptrStr = dash.substring(0, pos) + r("^")
+
+        if (pos < dash.length - 1)
+            ptrStr = ptrStr + y("~") + y(dash.substring(pos + 2))
+        else
+            ptrStr = ptrStr + y(dash.substring(pos + 1))
+
+        val origStr = in0.substring(0, pos) + r(in0.charAt(pos)) + y(in0.substring(pos + 1))
+
+        CompilerErrorHolder(ptrStr, origStr)
+    }
 }

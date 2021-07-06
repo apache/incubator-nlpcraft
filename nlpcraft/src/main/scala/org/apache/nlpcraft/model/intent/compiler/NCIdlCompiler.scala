@@ -22,6 +22,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker
 import org.antlr.v4.runtime._
 import org.antlr.v4.runtime.{ParserRuleContext => PRC}
 import org.apache.nlpcraft.common._
+import org.apache.nlpcraft.common.antlr4.NCCompilerUtils
 import org.apache.nlpcraft.model.intent.compiler.antlr4.{NCIdlBaseListener, NCIdlLexer, NCIdlParser => IDP}
 import org.apache.nlpcraft.model.intent.compiler.{NCIdlCompilerGlobal => Global}
 import org.apache.nlpcraft.model._
@@ -172,7 +173,7 @@ object NCIdlCompiler extends LazyLogging {
                 if (min < 0)
                     throw newSyntaxError(s"Min value cannot be negative: $min")(ctx)
                 if (min > max)
-                    throw newSyntaxError(s"Min value '$min' cannot be greater than max value '$min'.")(ctx)
+                    throw newSyntaxError(s"Min value '$min' cannot be greater than max value '$max'.")(ctx)
                 if (max > MINMAX_MAX)
                     throw newSyntaxError(s"Max value '$max' cannot be greater than '$MINMAX_MAX'.")(ctx)
 
@@ -540,22 +541,21 @@ object NCIdlCompiler extends LazyLogging {
         origin: String,
         mdl: NCModel): String = {
         val idlLine = idl.split("\n")(line - 1)
-        val dash = "-" * idlLine.length
-        val pos = Math.max(0, charPos)
-        val posPtr = dash.substring(0, pos) + r("^") + y(dash.substring(pos + 1))
-        val idlPtr = idlLine.substring(0, pos) + r(idlLine.charAt(pos)) + y(idlLine.substring(pos + 1))
+
+        val hold = NCCompilerUtils.mkErrorHolder(idlLine, charPos)
+
         val aMsg = U.decapitalize(msg) match {
             case s: String if s.last == '.' => s
             case s: String => s + '.'
         }
 
-        s"IDL $kind error in '$srcName' at line $line:${charPos + 1} - $aMsg\n" +
+        s"IDL $kind error in '$srcName' at line $line - $aMsg\n" +
             s"  |-- ${c("Model ID:")} ${mdl.getId}\n" +
             s"  |-- ${c("Model origin:")} ${mdl.getOrigin}\n" +
             s"  |-- ${c("Intent origin:")} $origin\n" +
-            s"  |-- $RST$W--------------$RST\n" +
-            s"  |-- ${c("Line:")}     $idlPtr\n" +
-            s"  +-- ${c("Position:")} $posPtr"
+            s"  |--<\n" +
+            s"  |-- ${c("Line:")}  ${hold.origStr}\n" +
+            s"  +-- ${c("Error:")} ${hold.ptrStr}"
     }
 
     /**
