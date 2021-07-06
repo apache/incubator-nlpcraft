@@ -21,12 +21,12 @@ import org.apache.nlpcraft.server.mdo.impl._
 
 
 @NCMdoEntity(sql = false)
-case class NCCtxWordConfigMdo(
+case class NCCtxWordCategoriesConfigMdo(
     @NCMdoField probeId: String,
     @NCMdoField modelId: String,
     @NCMdoField values: Map[String /*Element ID*/, Map[/*Value*/String, /*Synonym*/Set[String]]],
     @NCMdoField corpus: Set[String],
-    @NCMdoField supportedElements: Map[String /*Element ID*/, /*Confidence*/ Double]
+    @NCMdoField elements: Map[String /*Element ID*/, /*Confidence*/ Double]
 )
 /**
   * Probe model MDO.
@@ -37,7 +37,7 @@ case class NCProbeModelMdo(
     @NCMdoField name: String,
     @NCMdoField version: String,
     @NCMdoField enabledBuiltInTokens: Set[String],
-    @NCMdoField ctxWordConfig: Option[NCCtxWordConfigMdo]
+    @NCMdoField ctxWordConfig: Option[NCCtxWordCategoriesConfigMdo]
 ) extends NCAnnotatedMdo[NCProbeModelMdo] {
     override def hashCode(): Int = s"$id$name".hashCode()
     

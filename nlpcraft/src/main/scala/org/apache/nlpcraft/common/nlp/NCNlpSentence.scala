@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.common.nlp
 
 import org.apache.nlpcraft.common._
-import org.apache.nlpcraft.server.mdo.NCCtxWordConfigMdo
+import org.apache.nlpcraft.server.mdo.NCCtxWordCategoriesConfigMdo
 
 import java.io.{Serializable => JSerializable}
 import java.util.{Collections, List => JList}
@@ -52,7 +52,7 @@ class NCNlpSentence(
     val srvReqId: String,
     val text: String,
     val enabledBuiltInToks: Set[String],
-    val ctxWordConfig: Option[NCCtxWordConfigMdo] = None,
+    val ctxWordConfig: Option[NCCtxWordCategoriesConfigMdo] = None,
     var ctxWordCategories: Map[/** Token index*/Int, Map[/** Elements ID*/String, /** Confidence*/Double]] = Map.empty,
     override val tokens: mutable.ArrayBuffer[NCNlpSentenceToken] = new mutable.ArrayBuffer[NCNlpSentenceToken](32),
     var firstProbePhase: Boolean = true,

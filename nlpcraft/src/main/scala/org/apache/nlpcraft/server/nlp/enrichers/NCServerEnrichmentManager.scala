@@ -26,7 +26,7 @@ import org.apache.nlpcraft.common.pool.NCThreadPoolManager
 import org.apache.nlpcraft.common.{NCService, _}
 import org.apache.nlpcraft.server.ignite.NCIgniteHelpers._
 import org.apache.nlpcraft.server.ignite.NCIgniteInstance
-import org.apache.nlpcraft.server.mdo.NCCtxWordConfigMdo
+import org.apache.nlpcraft.server.mdo.NCCtxWordCategoriesConfigMdo
 import org.apache.nlpcraft.server.nlp.core.{NCNlpNerEnricher, NCNlpServerManager}
 import org.apache.nlpcraft.server.nlp.enrichers.basenlp.NCBaseNlpEnricher
 import org.apache.nlpcraft.server.nlp.enrichers.coordinate.NCCoordinatesEnricher
@@ -100,7 +100,7 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
         srvReqId: String,
         normTxt: String,
         enabledBuiltInToks: Set[String],
-        mlConf: Option[NCCtxWordConfigMdo],
+        mlConf: Option[NCCtxWordCategoriesConfigMdo],
         parent: Span = null
     ): NCNlpSentence =
         startScopedSpan("process", parent, "srvReqId" -> srvReqId, "txt" -> normTxt) { span =>
@@ -149,7 +149,7 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
         srvReqId: String,
         txt: String,
         enabledBuiltInToks: Set[String],
-        mlConf: Option[NCCtxWordConfigMdo],
+        mlConf: Option[NCCtxWordCategoriesConfigMdo],
         parent: Span = null
     ): NCNlpSentence = {
         startScopedSpan("enrichPipeline", parent, "srvReqId" -> srvReqId, "txt" -> txt) { span =>

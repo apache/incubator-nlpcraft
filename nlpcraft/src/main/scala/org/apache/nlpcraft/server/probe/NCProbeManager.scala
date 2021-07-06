@@ -646,7 +646,7 @@ object NCProbeManager extends NCService {
                                     ctxWordConfig =
                                         if (!values.isEmpty) {
                                             Some(
-                                                NCCtxWordConfigMdo(
+                                                NCCtxWordCategoriesConfigMdo(
                                                     probeId = probeId,
                                                     modelId = mdlId,
                                                     values = values.asScala.map {
@@ -657,7 +657,7 @@ object NCProbeManager extends NCService {
                                                                 }.toMap
                                                     }.toMap,
                                                     corpus = corpus.asScala.toSet,
-                                                    supportedElements = supported.asScala.toMap
+                                                    elements = supported.asScala.toMap
                                                 )
                                             )
                                         }

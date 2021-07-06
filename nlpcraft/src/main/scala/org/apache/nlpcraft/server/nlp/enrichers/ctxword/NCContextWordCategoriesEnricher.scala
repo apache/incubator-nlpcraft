@@ -23,7 +23,7 @@ import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager.stem
 import org.apache.nlpcraft.common.nlp.pos.NCPennTreebank._
 import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceToken}
 import org.apache.nlpcraft.common.{NCE, NCService}
-import org.apache.nlpcraft.server.mdo.NCCtxWordConfigMdo
+import org.apache.nlpcraft.server.mdo.NCCtxWordCategoriesConfigMdo
 import org.apache.nlpcraft.server.nlp.core.{NCNlpParser, NCNlpServerManager, NCNlpWord}
 import org.apache.nlpcraft.server.nlp.enrichers.NCServerEnricher
 import org.apache.nlpcraft.server.sugsyn.{NCSuggestSynonymManager, NCSuggestionRequest, NCWordSuggestion}
@@ -258,7 +258,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
       * @param key
       * @return
       */
-    private def getCorpusData(cfg: NCCtxWordConfigMdo, key: ModelProbeKey, parent: Span = null):
+    private def getCorpusData(cfg: NCCtxWordCategoriesConfigMdo, key: ModelProbeKey, parent: Span = null):
     Map[
 
         /** Element ID */
@@ -283,7 +283,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
       * @param key
       * @return
       */
-    private def getValuesData(cfg: NCCtxWordConfigMdo, key: ModelProbeKey): ValuesHolder =
+    private def getValuesData(cfg: NCCtxWordCategoriesConfigMdo, key: ModelProbeKey): ValuesHolder =
         valuesStems.synchronized {
             valuesStems.get(key)
         } match {
@@ -338,7 +338,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
       * @return
       */
     @throws[NCE]
-    private def askSamples(cfg: NCCtxWordConfigMdo, parent: Span = null): Map[
+    private def askSamples(cfg: NCCtxWordCategoriesConfigMdo, parent: Span = null): Map[
 
         /** Element ID */
         String, ElementData] = {
@@ -531,7 +531,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
                             logger.info(
                                 s"Model loaded [" +
                                     s"key=$key, elements: " +
-                                    s"${cfg.supportedElements.mkString(" ,")}, " +
+                                    s"${cfg.elements.mkString(" ,")}, " +
                                     s"values data=$vd]"
                             )
 
@@ -550,7 +550,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
                             nounTok <- nouns;
                                 (elemId, elemData) <- mdlCorpusData;
                                 confOpt = elemData.get(nounTok.normText, nounTok.stem, nounTok.lemma)
-                                if confOpt.isDefined && confOpt.get >= cfg.supportedElements(elemId)
+                                if confOpt.isDefined && confOpt.get >= cfg.elements(elemId)
                         )
                             add(nounTok, elemId, Confidence(confOpt.get))
 
@@ -597,7 +597,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
                             (sugg, req) <- resps.toSeq.sortBy(_._2.index);
                                 suggConf = normalizeConfidence(sugg.score);
                                 (elemId, elemData) <- mdlCorpusData;
-                                elemConf = cfg.supportedElements(elemId);
+                                elemConf = cfg.elements(elemId);
                                 corpConfOpt = elemData.get(normCase(sugg.word), stem(sugg.word), getLemma(req, sugg))
                                 if corpConfOpt.isDefined;
                                 corpConf = corpConfOpt.get;
