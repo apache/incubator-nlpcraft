@@ -67,9 +67,12 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
 
     private case class ValuesHolder(normal: Map[String, Set[String]], stems: Map[String, Set[String]]) {
         private def map2Str(m: Map[String, Set[String]]): String =
-            m.toSeq.flatMap(p => p._2.toSeq.map(x => x -> p._1)).
-                groupBy(_._1).map(p => p._1 -> p._2.map(_._2).
-                mkString("{ ", ", ", " }")).mkString(", ")
+            m.toSeq.flatMap { case (v, elems) =>
+                elems.
+                    toSeq.map(_ -> v) }.
+                    groupBy { case (v, _) => v }.
+                    map { case (v, seq) => v -> seq.map(_._2).mkString("{ ", ", ", " }")
+            }.mkString(", ")
 
         override def toString: String = s"Values [normal=${map2Str(normal)}, stems=${map2Str(stems)}]"
     }
@@ -108,8 +111,8 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
 
         /**
           *
-          * @param suggConf
-          * @param corpusConf
+          * @param suggConf Suggestion confidence for noun of given sentence.
+          * @param corpusConf Corpus confidence which found via suggestion, co-reference.
           * @return
           */
         def calculate(suggConf: Double, corpusConf: Double): Double =
@@ -117,9 +120,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
             calcWeightedGeoMean(Map(suggConf -> 1, corpusConf -> 3))
 
         private def calcWeightedGeoMean(vals2Weights: Map[Double, Double]): Double =
-            Math.pow(
-                vals2Weights.map { case (value, weight) => Math.pow(value, weight) }.product, 1.0 / vals2Weights.values.sum
-            )
+            Math.pow(vals2Weights.map { case (v, weight) => Math.pow(v, weight) }.product, 1.0 / vals2Weights.values.sum)
     }
 
     @volatile private var valuesStems: mutable.HashMap[ModelProbeKey, ValuesHolder] = _
@@ -556,19 +557,19 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
 
                         case class Key(elementId: String, token: NCNlpSentenceToken)
 
-                        val miss = if (DEBUG_MODE) mutable.HashMap.empty[Key, ArrayBuffer[Confidence]] else null
+                        val missed = if (DEBUG_MODE) mutable.HashMap.empty[Key, ArrayBuffer[Confidence]] else null
 
                         for (
                             // Token index (tokIdx) should be correct because request created from original words,
                             // separated by space, and Suggestion Manager uses space tokenizer.
                             (sugg, req) <- resps.toSeq.sortBy(_._2.index);
-                                suggConf = normalizeConf(sugg.score);
-                                (elemId, elemData) <- corpusData;
-                                elemConf = cfg.elements(elemId);
-                                corpConfOpt = elemData.get(normCase(sugg.word), stem(sugg.word), getLemma(req, sugg))
-                                if corpConfOpt.isDefined;
-                                corpConf = corpConfOpt.get;
-                                normConf = ConfMath.calculate(suggConf, corpConf)
+                            suggConf = normalizeConf(sugg.score);
+                            (elemId, elemData) <- corpusData;
+                            elemConf = cfg.elements(elemId);
+                            corpConfOpt = elemData.get(normCase(sugg.word), stem(sugg.word), getLemma(req, sugg))
+                            if corpConfOpt.isDefined;
+                            corpConf = corpConfOpt.get;
+                            normConf = ConfMath.calculate(suggConf, corpConf)
                         ) {
                             def mkConf(): Confidence = Confidence(normConf, Some(Reason(sugg.word, suggConf, corpConf)))
                             def getToken: NCNlpSentenceToken = ns.tokens(req.index)
@@ -576,8 +577,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
                             if (normConf >= elemConf)
                                 add(getToken, elemId, mkConf())
                             else if (DEBUG_MODE)
-                                miss.getOrElseUpdate(Key(elemId, getToken), mutable.ArrayBuffer.empty[Confidence]) +=
-                                    mkConf()
+                                missed.getOrElseUpdate(Key(elemId, getToken), mutable.ArrayBuffer.empty) += mkConf()
                         }
 
                         ns.ctxWordCategories = detected.map {
@@ -585,13 +585,13 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
                         }.toMap
 
                         if (DEBUG_MODE) {
-                            require(miss != null)
+                            require(missed != null)
 
-                            miss.filter { case (key, _) =>
+                            missed.filter { case (key, _) =>
                                 !detected.exists {
                                     case (tok, confs) => confs.exists(conf => Key(conf.elementId, tok) == key)
                                 }
-                            }.sortBy(p => (p._1.token.index, p._1.elementId)).
+                            }.sortBy { case (key, _) => (key.token.index, key.elementId) }.
                                 foreach { case (key, confs) =>
                                     logger.info(
                                         s"Unsuccessful attempt [" +
@@ -620,12 +620,8 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
       */
     def onDisconnectProbe(probeId: String, parent: Span = null): Unit =
         startScopedSpan("onDisconnectProbe", parent) { _ =>
-            valuesStems.synchronized {
-                valuesStems --= valuesStems.keySet.filter(_.probeId == probeId)
-            }
-            elemsCorpuses.synchronized {
-                elemsCorpuses --= elemsCorpuses.keySet.filter(_.probeId == probeId)
-            }
+            valuesStems.synchronized { valuesStems --= valuesStems.keySet.filter(_.probeId == probeId) }
+            elemsCorpuses.synchronized { elemsCorpuses --= elemsCorpuses.keySet.filter(_.probeId == probeId) }
         }
 }
 //
