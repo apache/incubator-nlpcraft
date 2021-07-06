@@ -48,7 +48,7 @@ class NCContextWordSpecModel extends NCModel {
     override def getName: String = this.getClass.getSimpleName
     override def getVersion: String = "1.0.0"
 
-    val MDL_LEVEL: java.lang.Double = 0.7
+    val MDL_LEVEL: java.lang.Double = 0.68
 
     override def getContextWordCategoriesConfig: Optional[NCContextWordCategoriesConfig] = {
         Optional.of(
@@ -96,26 +96,22 @@ class NCContextWordSpecModel extends NCModel {
     override def onContext(ctx: NCContext): NCResult = {
         val varRes = ArrayBuffer.empty[String]
 
-        val ok =
-            ctx.getVariants.asScala.exists(v => {
-                val testGroupToks = v.asScala.toSeq.filter(_.getGroups.contains("testGroup"))
+        require(ctx.getVariants.size() == 1)
 
-                val elemIds = testGroupToks.map(_.getId).distinct.mkString(" ")
-                val words = testGroupToks.map(_.getOriginalText).mkString(" ")
+        val v = ctx.getVariants.asScala.head
 
-                val res = s"$elemIds $words"
+        val testGroupToks = v.asScala.toSeq.filter(_.getGroups.contains("testGroup"))
 
-                varRes += res
+        val elemIds = testGroupToks.map(_.getId).distinct.mkString(" ")
+        val words = testGroupToks.map(_.getOriginalText).mkString(" ")
 
-                NCContextWordSpecModel.expected == s"$elemIds $words"
-            })
-
-        NCResult.text(
-            if (ok)
+        val res =
+            if (NCContextWordSpecModel.expected == s"$elemIds $words")
                 "OK"
             else
                 s"ERROR: variant '${NCContextWordSpecModel.expected}' not found. Found: ${varRes.mkString(", ")}"
-        )
+
+        NCResult.text(res)
     }
 }
 
@@ -124,7 +120,7 @@ class NCContextWordSpecModel extends NCModel {
   */
 @NCTestEnvironment(model = classOf[NCContextWordSpecModel], startClient = true)
 class NCContextWordSpec extends NCTestContext {
-    private def check(txt: String, elemId: String, words: String*): Unit = {
+    private def checkSingleVariant(txt: String, elemId: String, words: String*): Unit = {
         NCContextWordSpecModel.expected = s"$elemId ${words.mkString(" ")}"
 
         val res = getClient.ask(txt).getResult.get()
@@ -134,17 +130,17 @@ class NCContextWordSpec extends NCTestContext {
 
     @Test
     private[ctxword] def test(): Unit = {
-//        check("I want to have dogs and foxes", "class:animal", "dogs", "foxes")
-//        check("I bought dog's meat", "class:animal", "dog")
-//        check("I bought meat dog's", "class:animal", "dog")
-//
-//        check("I want to have a dog and fox", "class:animal", "dog", "fox")
-//        check("I fed your fish", "class:animal", "fish")
-//
-//        check("I like to drive my Porsche and Volkswagen", "class:cars", "Porsche", "Volkswagen")
-        check("Peugeot added motorcycles to its range in 1901", "class:cars", "Peugeot")
+        checkSingleVariant("I want to have dogs and foxes", "class:animal", "dogs", "foxes")
+        checkSingleVariant("I bought dog's meat", "class:animal", "dog")
+        checkSingleVariant("I bought meat dog's", "class:animal", "dog")
 
-//        check("The frost is possible today", "class:weather", "frost")
-//        check("There's a very strong wind from the east now", "class:weather", "wind")
+        checkSingleVariant("I want to have a dog and fox", "class:animal", "dog", "fox")
+        checkSingleVariant("I fed your fish", "class:animal", "fish")
+
+        checkSingleVariant("I like to drive my Porsche and Volkswagen", "class:cars", "Porsche", "Volkswagen")
+        checkSingleVariant("Peugeot added motorcycles to its range year ago", "class:cars", "Peugeot")
+
+        checkSingleVariant("The frost is possible today", "class:weather", "frost")
+        checkSingleVariant("There's a very strong wind from the east now", "class:weather", "wind")
     }
 }

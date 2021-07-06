@@ -34,13 +34,9 @@ class NCContextWordSpecModel2 extends NCContextWordSpecModel {
   */
 @NCTestEnvironment(model = classOf[NCContextWordSpecModel2], startClient = true)
 class NCContextWordSpec2 extends NCTestContext {
-    private def check(txts: String*): Unit =
-        for (txt <- txts)
-            getClient.ask(txt)
-
     @Test
-    private[ctxword] def test(): Unit = {
-        check(
+    private[ctxword] def test(): Unit =
+        Seq(
             "I want to have dogs and foxes",
             "I bought dog's meat",
             "I bought meat dog's",
@@ -49,10 +45,9 @@ class NCContextWordSpec2 extends NCTestContext {
             "I fed your fish",
 
             "I like to drive my Porsche and Volkswagen",
-            "Peugeot added motorcycles to its range in 1901",
+            "Peugeot added motorcycles to its range year ago",
 
             "The frost is possible today",
             "There's a very strong wind from the east now"
-        )
-    }
+        ).foreach(getClient.ask)
 }

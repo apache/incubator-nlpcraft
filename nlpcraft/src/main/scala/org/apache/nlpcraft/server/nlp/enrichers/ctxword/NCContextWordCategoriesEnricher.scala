@@ -101,16 +101,16 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
           * @return
           */
         def calculate(confs: Seq[Double]): Option[Double] =
-        // Drops if there is not enough data.
+             // Drops if there is not enough data.
             if (confs.length < 3)
                 None
             else {
-                def avg(seq: Seq[Double]): Double = seq.sum / seq.length
-
                 // Takes 50% of most important (or first 2 at least) and calculates average value.
                 val n = Math.max((confs.length * 0.5).intValue(), 2)
 
-                Some(avg(confs.sortBy(-_).take(n)))
+                val maxN = confs.sortBy(-_).take(n)
+
+                Some(maxN.sum / maxN.length)
             }
 
         private def calcWeightedGeoMean(vals2Weights: Map[Double, Double]): Double =
@@ -125,8 +125,8 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
           * @return
           */
         def calculate(suggConf: Double, corpusConf: Double): Double =
-            // Corpus data is more important. 1:4 is empirical factor.
-            calcWeightedGeoMean(Map(suggConf -> 1, corpusConf -> 5))
+            // Corpus data is more important. Empirical factors configured.
+            calcWeightedGeoMean(Map(suggConf -> 1, corpusConf -> 3))
     }
 
     @volatile private var valuesStems: mutable.HashMap[ModelProbeKey, ValuesHolder] = _
