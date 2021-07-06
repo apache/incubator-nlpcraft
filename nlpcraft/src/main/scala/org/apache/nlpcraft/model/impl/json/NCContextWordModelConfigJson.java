@@ -25,7 +25,7 @@ import java.util.Map;
 public class NCContextWordModelConfigJson {
     private String[] samples = new String[0];
     private boolean useIntentsSamples;
-    private Map<String, NCContextWordElementConfigJson> supportedElements;
+    private Map<String, Double> supportedElements;
 
     public String[] getSamples() {
         return samples;
@@ -39,10 +39,10 @@ public class NCContextWordModelConfigJson {
     public void setUseIntentsSamples(boolean useIntentsSamples) {
         this.useIntentsSamples = useIntentsSamples;
     }
-    public Map<String, NCContextWordElementConfigJson> getSupportedElements() {
+    public Map<String, Double> getSupportedElements() {
         return supportedElements;
     }
-    public void setSupportedElements(Map<String, NCContextWordElementConfigJson> supportedElements) {
+    public void setSupportedElements(Map<String, Double> supportedElements) {
         this.supportedElements = supportedElements;
     }
 }

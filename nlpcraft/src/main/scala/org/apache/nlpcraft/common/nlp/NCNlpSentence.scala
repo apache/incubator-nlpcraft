@@ -53,7 +53,7 @@ class NCNlpSentence(
     val text: String,
     val enabledBuiltInToks: Set[String],
     val ctxWordConfig: Option[NCCtxWordConfigMdo] = None,
-    var ctxWordData: Map[Int, Map[String, java.util.List[Double]]] = Map.empty,
+    var ctxWordCategories: Map[/** Token index*/Int, Map[/** Elements ID*/String, /** Confidence*/Double]] = Map.empty,
     override val tokens: mutable.ArrayBuffer[NCNlpSentenceToken] = new mutable.ArrayBuffer[NCNlpSentenceToken](32),
     var firstProbePhase: Boolean = true,
     private val deletedNotes: mutable.HashMap[NCNlpSentenceNote, Seq[NCNlpSentenceToken]] = mutable.HashMap.empty,

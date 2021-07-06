@@ -1220,7 +1220,7 @@ public interface NCModelView extends NCMetadata {
     }
 
     // TODO:
-    default Optional<NCContextWordModelConfig> getContextWordModelConfig() {
+    default Optional<NCContextWordCategoriesConfig> getContextWordCategoriesConfig() {
         return Optional.empty();
     }
 }

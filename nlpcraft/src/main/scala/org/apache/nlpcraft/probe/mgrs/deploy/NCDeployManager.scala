@@ -422,7 +422,7 @@ object NCDeployManager extends NCService {
 
         // Validates context words parameters.
         // TODO:
-        val ctxCfgOpt = mdl.getContextWordModelConfig;
+        val ctxCfgOpt = mdl.getContextWordCategoriesConfig;
 
         if (ctxCfgOpt.isPresent) {
             val cnt = mdl.getElements.asScala.map(_.getValues.asScala.map(_.getSynonyms.size()).sum).sum
@@ -455,17 +455,12 @@ object NCDeployManager extends NCService {
                 throw new NCE(s"Model doesn't contain values elements with following identifiers: ${ids.mkString(", ")}")
             }
 
-            ids = supportedElems.filter { case (_, score) => score.getPolicy == null }.keys
+
+            ids = supportedElems.filter { case (_, conf) => conf < 0 || conf > 1  }.keys
 
             if (ids.nonEmpty)
                 // TODO:
-                throw new NCE(s"Context word policies are null for elements : ${ids.mkString(", ")}")
-
-            ids = supportedElems.filter { case (_, score) => score.getScore < 0 || score.getScore > 1  }.keys
-
-            if (ids.nonEmpty)
-                // TODO:
-                throw new NCE(s"Context word score are out of range (0..1) for elements : ${ids.mkString(", ")}")
+                throw new NCE(s"Context word confidences are out of range (0..1) for elements : ${ids.mkString(", ")}")
         }
 
         // Discard value loaders.

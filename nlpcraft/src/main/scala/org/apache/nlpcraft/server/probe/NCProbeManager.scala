@@ -29,13 +29,11 @@ import org.apache.nlpcraft.common.pool.NCThreadPoolManager
 import org.apache.nlpcraft.common.socket.NCSocket
 import org.apache.nlpcraft.common.version.NCVersion
 import org.apache.nlpcraft.common.{NCService, _}
-import org.apache.nlpcraft.model.NCContextWordElementConfig
-import NCContextWordElementConfig.NCContextWordElementPolicy
 import org.apache.nlpcraft.probe.mgrs.NCProbeMessage
 import org.apache.nlpcraft.server.company.NCCompanyManager
 import org.apache.nlpcraft.server.mdo._
 import org.apache.nlpcraft.server.nlp.enrichers.NCServerEnrichmentManager
-import org.apache.nlpcraft.server.nlp.enrichers.ctxword.NCContextWordEnricher
+import org.apache.nlpcraft.server.nlp.enrichers.ctxword.NCContextWordCategoriesEnricher
 import org.apache.nlpcraft.server.proclog.NCProcessLogManager
 import org.apache.nlpcraft.server.query.NCQueryManager
 import org.apache.nlpcraft.server.sql.NCSql
@@ -261,7 +259,7 @@ object NCProbeManager extends NCService {
                         mdls --= mdls.keys.filter(id => !probes.exists { case (_, p) => p.probe.models.exists(_.id == id) })
 
                         // TODO: add new interface for server enrichers? (services)
-                        NCContextWordEnricher.onDisconnectProbe(probeKey.probeId)
+                        NCContextWordCategoriesEnricher.onDisconnectProbe(probeKey.probeId)
                 }
 
             case Some(hld) =>
@@ -622,7 +620,6 @@ object NCProbeManager extends NCService {
                             java.util.Set[String],
                             java.util.Map[String, java.util.Map[String, java.util.Set[String]]],
                             java.util.Set[String],
-                            java.util.Map[String, String],
                             java.util.Map[String, Double]
                         )]]("PROBE_MODELS").
                         map {
@@ -633,18 +630,13 @@ object NCProbeManager extends NCService {
                                 enabledBuiltInToks,
                                 values,
                                 corpus,
-                                policies,
-                                scores
+                                supported
                             ) =>
                                 require(mdlId != null)
                                 require(mdlName != null)
                                 require(mdlVer != null)
                                 require(enabledBuiltInToks != null)
-                                require(
-                                    values.isEmpty && corpus.isEmpty && policies.isEmpty ||
-                                    !values.isEmpty && !corpus.isEmpty && !policies.isEmpty
-                                )
-                                require(policies.size() == scores.size())
+                                require(values.isEmpty && corpus.isEmpty || !values.isEmpty && !corpus.isEmpty)
 
                                 NCProbeModelMdo(
                                     id = mdlId,
@@ -653,8 +645,6 @@ object NCProbeManager extends NCService {
                                     enabledBuiltInTokens = enabledBuiltInToks.asScala.toSet,
                                     ctxWordConfig =
                                         if (!values.isEmpty) {
-                                            val scoresMap = scores.asScala
-
                                             Some(
                                                 NCCtxWordConfigMdo(
                                                     probeId = probeId,
@@ -667,13 +657,7 @@ object NCProbeManager extends NCService {
                                                                 }.toMap
                                                     }.toMap,
                                                     corpus = corpus.asScala.toSet,
-                                                    policies.asScala.map { case (elemId, policy) =>
-                                                        elemId -> new NCContextWordElementConfig() {
-                                                            override def getPolicy: NCContextWordElementPolicy =
-                                                                NCContextWordElementPolicy.valueOf(policy)
-                                                            override def getScore: Double = scoresMap(elemId)
-                                                        }
-                                                    }.toMap
+                                                    supportedElements = supported.asScala.toMap
                                                 )
                                             )
                                         }

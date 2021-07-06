@@ -618,9 +618,9 @@ object NCTokenLogger extends LazyLogging {
                                 if (parts.nonEmpty)
                                     s = s"$s, parts=[$parts]"
 
-                                t.meta(s"${t.getId}:scores").asInstanceOf[java.util.List[Double]] match {
+                                t.meta(s"${t.getId}:confidence").asInstanceOf[java.lang.Double] match {
                                     case null => // No-op.
-                                    case scores => s = s"$s, scores='${scores.asScala.map(FMT_NUM.format).mkString(",")}'"
+                                    case conf => s = s"$s, confidence=${FMT_NUM.format(conf)}"
                                 }
 
                                 s

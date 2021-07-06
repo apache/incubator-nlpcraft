@@ -17,9 +17,7 @@
 
 package org.apache.nlpcraft.model.ctxword
 
-import org.apache.nlpcraft.model.NCContextWordElementConfig.NCContextWordElementPolicy
-import org.apache.nlpcraft.model.NCContextWordElementConfig.NCContextWordElementPolicy._
-import org.apache.nlpcraft.model.{NCContext, NCContextWordElementConfig, NCContextWordModelConfig, NCElement, NCModel, NCResult, NCValue}
+import org.apache.nlpcraft.model.{NCContext, NCContextWordCategoriesConfig, NCElement, NCModel, NCResult, NCValue}
 import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
 import org.junit.jupiter.api.Test
 
@@ -50,20 +48,13 @@ class NCContextWordSpecModel extends NCModel {
     override def getName: String = this.getClass.getSimpleName
     override def getVersion: String = "1.0.0"
 
-    val MDL_LEVEL = 0.8
-    val MDL_POLICY = AVERAGE
+    val MDL_LEVEL: java.lang.Double = 0.7
 
-    override def getContextWordModelConfig: Optional[NCContextWordModelConfig] = {
+    override def getContextWordCategoriesConfig: Optional[NCContextWordCategoriesConfig] = {
         Optional.of(
-            new NCContextWordModelConfig() {
-                override def getSupportedElements: util.Map[String, NCContextWordElementConfig] =
-                    getElements.asScala.map(e =>
-                        e.getId ->
-                        new NCContextWordElementConfig() {
-                            override def getPolicy: NCContextWordElementPolicy = MDL_POLICY
-                            override def getScore: Double = MDL_LEVEL
-                        }
-                    ).toMap.asJava
+            new NCContextWordCategoriesConfig() {
+                override def getSupportedElements: util.Map[String, java.lang.Double] =
+                    getElements.asScala.map(e => e.getId -> MDL_LEVEL).toMap.asJava
 
                 override def useIntentsSamples(): Boolean = false
 
@@ -149,12 +140,11 @@ class NCContextWordSpec extends NCTestContext {
 //
 //        check("I want to have a dog and fox", "class:animal", "dog", "fox")
 //        check("I fed your fish", "class:animal", "fish")
-
-        // check("I like to drive my Porsche and Volkswagen", "class:cars", "Porsche", "Volkswagen")
-//        check("Peugeot added motorcycles to its range in 1901", "class:cars", "Peugeot", "motorcycles")
 //
-        //check("The frost is possible today", "class:weather", "frost")
-        check("Is vehicle a reliable car ?", "class:weather", "frost")
-        //check("There's a very strong wind from the east now", "class:weather", "wind")
+//        check("I like to drive my Porsche and Volkswagen", "class:cars", "Porsche", "Volkswagen")
+        check("Peugeot added motorcycles to its range in 1901", "class:cars", "Peugeot")
+
+//        check("The frost is possible today", "class:weather", "frost")
+//        check("There's a very strong wind from the east now", "class:weather", "wind")
     }
 }

@@ -29,6 +29,7 @@ import org.apache.nlpcraft.probe.mgrs.sentence.NCSentenceManager
 import org.apache.nlpcraft.probe.mgrs.{NCProbeModel, NCProbeVariants, NCTokenPartKey, NCProbeSynonym => Synonym}
 
 import java.io.Serializable
+import java.lang
 import java.util.{List => JList}
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
@@ -448,7 +449,7 @@ object NCModelEnricher extends NCProbeEnricher {
             "enrich", parent, "srvReqId" -> ns.srvReqId, "mdlId" -> mdl.model.getId, "txt" -> ns.text
         ) { span =>
             if (ns.firstProbePhase)
-                for ((tokIdx, map) <- ns.ctxWordData; (elemId, score) <- map)
+                for ((tokIdx, map) <- ns.ctxWordCategories; (elemId, conf) <- map)
                     mark(
                         ns = ns,
                         elem =
@@ -456,7 +457,7 @@ object NCModelEnricher extends NCProbeEnricher {
                             getOrElse(throw new NCE(s"Element not found: $elemId"))._2,
                         toks = Seq(ns.tokens(tokIdx)),
                         direct = true,
-                        metaOpt = Some(Map("scores" -> score))
+                        metaOpt = Some(Map("confidence" -> lang.Double.valueOf(conf)))
                     )
 
             val req = NCRequestImpl(senMeta, ns.srvReqId)

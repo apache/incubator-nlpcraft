@@ -66,7 +66,7 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
     private final Set<NCElement> elems;
     private final List<NCCustomParser> parsers;
     private final Map<String, Set<String>> restrictedCombinations;
-    private final NCContextWordModelConfig ctxWordMdlCfg;
+    private final NCContextWordCategoriesConfig ctxWordMdlCfg;
 
     private final String origin;
 
@@ -269,42 +269,9 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
      * @param js
      * @return
      */
-    private static NCContextWordElementConfig convert(NCContextWordElementConfigJson js) {
-        return new NCContextWordElementConfig() {
-            @Override
-            public NCContextWordElementPolicy getPolicy() {
-                String policy = js.getPolicy();
-
-                if (policy == null) {
-                    // TODO:
-                    throw new NCException("Element score policy cannot be null.");
-                }
-
-                try {
-                    return NCContextWordElementPolicy.valueOf(js.getPolicy());
-                }
-                catch (IllegalArgumentException e) {
-                    // TODO:
-                    throw new NCException("Element score policy invalid value:" + policy, e);
-                }
-            }
-
-            @Override
-            public double getScore() {
-                // TODO: check here ?
-                return js.getScore();
-            }
-        };
-    }
-
-    /**
-     *
-     * @param js
-     * @return
-     */
-    private static NCContextWordModelConfig convert(NCContextWordModelConfigJson js) {
+    private static NCContextWordCategoriesConfig convert(NCContextWordModelConfigJson js) {
         return js != null?
-            new NCContextWordModelConfig() {
+            new NCContextWordCategoriesConfig() {
                 @Override
                 public List<String> getCorpus() {
                     return js.getSamples() != null ? Arrays.asList(js.getSamples()) : null;
@@ -316,12 +283,8 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
                 }
 
                 @Override
-                public Map<String, NCContextWordElementConfig> getSupportedElements() {
-                    Map<String, NCContextWordElementConfigJson> m = js.getSupportedElements();
-
-                    return m != null ?
-                        m.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, p -> convert(p.getValue()))) :
-                        null;
+                public Map<String, Double> getSupportedElements() {
+                    return js.getSupportedElements();
                 }
             }:
             null;
@@ -619,7 +582,7 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
     }
 
     @Override
-    public Optional<NCContextWordModelConfig> getContextWordModelConfig() {
+    public Optional<NCContextWordCategoriesConfig> getContextWordCategoriesConfig() {
         return Optional.ofNullable(ctxWordMdlCfg);
     }
 }

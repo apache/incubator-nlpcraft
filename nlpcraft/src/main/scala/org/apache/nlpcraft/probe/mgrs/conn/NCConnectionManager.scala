@@ -24,18 +24,17 @@ import org.apache.nlpcraft.common.crypto._
 import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
 import org.apache.nlpcraft.common.socket._
 import org.apache.nlpcraft.common.version.NCVersion
-import org.apache.nlpcraft.model.NCContextWordElementConfig
 import org.apache.nlpcraft.probe.mgrs.NCProbeMessage
 import org.apache.nlpcraft.probe.mgrs.cmd.NCCommandManager
 import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 
 import java.io.{EOFException, IOException, InterruptedIOException}
 import java.net.{InetAddress, NetworkInterface}
-import java.util
+import java.{lang, util}
 import java.util.concurrent.CountDownLatch
 import java.util.{Collections, Properties, TimeZone}
 import scala.collection.mutable
-import scala.jdk.CollectionConverters.{ListHasAsScala, MapHasAsJava, MapHasAsScala, SetHasAsJava, SetHasAsScala}
+import scala.jdk.CollectionConverters.{ListHasAsScala, MapHasAsJava, SetHasAsJava, SetHasAsScala}
 
 /**
   * Probe down/up link connection manager.
@@ -218,18 +217,16 @@ object NCConnectionManager extends NCService {
                             val (
                                 values,
                                 corpus,
-                                policies,
-                                scores
+                                supported
                             ): (
                                 java.util.Map[String, java.util.Map[String, java.util.Set[String]]],
                                 java.util.Set[String],
-                                java.util.Map[String, String],
-                                java.util.Map[String, Double]
+                                java.util.Map[String, lang.Double]
                             ) =
-                                if (mdl.getContextWordModelConfig.isEmpty)
-                                    (Collections.emptyMap(), Collections.emptySet(), Collections.emptyMap(), Collections.emptyMap())
+                                if (mdl.getContextWordCategoriesConfig.isEmpty)
+                                    (Collections.emptyMap(), Collections.emptySet(), Collections.emptyMap())
                                 else {
-                                    val cfg = mdl.getContextWordModelConfig.get()
+                                    val cfg = mdl.getContextWordCategoriesConfig.get()
 
                                     var corpus = if (cfg.getCorpus == null) Seq.empty else cfg.getCorpus.asScala
 
@@ -249,16 +246,10 @@ object NCConnectionManager extends NCService {
                                             }).toMap.asJava
                                     ).toMap
 
-                                    val supported = cfg.getSupportedElements.asScala
-
-                                    def getData[T](exract: NCContextWordElementConfig => T): util.Map[String, T] =
-                                        supported.map(p => p._1 -> exract(p._2)).asJava
-
                                     (
                                         values.asJava,
                                         corpus.toSet.asJava,
-                                        getData(_.getPolicy.toString),
-                                        getData(_.getScore)
+                                        cfg.getSupportedElements
                                     )
                                 }
 
@@ -273,8 +264,7 @@ object NCConnectionManager extends NCService {
                                 new util.HashSet[String](mdl.getEnabledBuiltInTokens),
                                 values,
                                 corpus,
-                                policies,
-                                scores
+                                supported
                             )
                         })
                 ), cryptoKey)

@@ -18,13 +18,19 @@
 package org.apache.nlpcraft.model;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 // TODO:
-public interface NCContextWordElementConfig extends Serializable {
-    enum NCContextWordElementPolicy {
-        ALL, ANY, AVERAGE, MEDIAN
+public interface NCContextWordCategoriesConfig extends Serializable {
+    default List<String> getCorpus() {
+        return Collections.emptyList();
     }
 
-    NCContextWordElementPolicy getPolicy();
-    double getScore();
+    default boolean useIntentsSamples() {
+        return true;
+    }
+
+    Map<String, Double> getSupportedElements();
 }
