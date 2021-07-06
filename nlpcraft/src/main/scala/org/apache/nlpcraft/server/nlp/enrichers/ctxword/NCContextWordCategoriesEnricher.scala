@@ -92,11 +92,11 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
     // Service which responsible for all confidences calculations.
     private object ConfMath {
         /**
+          * Squeeze confidences values of some words to one value.
           *
-          * @param confs
-          * @return
+          * @param confs Confidences values for some word. It is result of corpus processing.
           */
-        def calculate(confs: Seq[Double]): Option[Double] =
+        def squeeze(confs: Seq[Double]): Option[Double] =
              // Drops if there is not enough data.
             if (confs.length < 3)
                 None
@@ -110,10 +110,10 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
             }
 
         /**
+          * Calculates confidence values based on suggested confidence and corpus confidence.
           *
           * @param suggConf Suggestion confidence for noun of given sentence.
           * @param corpusConf Corpus confidence which found via suggestion, co-reference.
-          * @return
           */
         def calculate(suggConf: Double, corpusConf: Double): Double =
             // Corpus data is more important. Empirical factors configured.
@@ -437,7 +437,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
 
                         def squeeze(map: Map[String, Seq[Double]]): Map[String, Double] =
                             map.flatMap { case (wordKey, confs) =>
-                                ConfMath.calculate(confs) match {
+                                ConfMath.squeeze(confs) match {
                                     case Some(conf) => Some(wordKey -> conf)
                                     case None => None
                                 }
