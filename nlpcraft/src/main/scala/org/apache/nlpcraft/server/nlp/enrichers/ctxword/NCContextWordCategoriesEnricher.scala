@@ -328,10 +328,10 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
       */
     @throws[NCE]
     private def askSamples(cfg: NCCtxWordCategoriesConfigMdo, parent: Span = null):
-    Map[/** Element ID */String, ElementData] = {
+        Map[/** Element ID */String, ElementData] = {
         val corpusSeq = cfg.corpus.toSeq
-        val corpusWords = corpusSeq.map(parser.parse(_).map(_.word))
         val nlpWords = corpusSeq.map(s => parser.parse(s))
+        val corpusWords = nlpWords.map(_.map(_.word))
 
         val corpusWordsStems = corpusWords.map(_.map(stem))
         val corpusWordsNorm = corpusWords.map(_.map(normCase))
@@ -358,14 +358,16 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
                 map { case (elemId, m) => elemId -> m.map(_._2) }
 
         if (recs.nonEmpty) {
-            val resps = syncExec(NCSuggestSynonymManager.suggestWords(recs.flatMap(_._2).toSeq, parent = parent))
+            val respsSeq: Seq[(NCSuggestionRequest, Seq[NCWordSuggestion])] =
+                syncExec(NCSuggestSynonymManager.suggestWords(recs.flatMap(_._2).toSeq, parent = parent)).
+                    toSeq.sortBy(p => (p._1.words.mkString, p._1.index))
 
             if (DEBUG_MODE) {
                 val t = NCAsciiTable()
 
                 t #= ("Request", "Responses")
 
-                for ((req, resp) <- resps) {
+                for ((req, resp) <- respsSeq) {
                     t += (
                         req,
                         s"${resp.map(p => s"${p.word}=${FMT.format(normalizeConfidence(p.score))}").mkString(", ")}"
@@ -376,7 +378,6 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
             }
 
             val req2Elem = recs.flatMap { case (elemId, recs) => recs.map(p => p -> elemId) }
-            val respsSeq: Seq[(NCSuggestionRequest, Seq[NCWordSuggestion])] = resps.toSeq
 
             def mkMap(convert: (NCSuggestionRequest, NCWordSuggestion) => String):
                 Map[/** Element ID */ String, /** Word key */ Map[String, /** Confidences */ Seq[Double]]] = {
@@ -508,40 +509,38 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
                         if (DEBUG_MODE)
                             logger.info(
                                 s"Model loaded [" +
-                                    s"key=$key, elements: " +
-                                    s"${cfg.elements.mkString(" ,")}, " +
-                                    s"values data=$vd]"
+                                s"key=$key, elements: " +
+                                s"${cfg.elements.mkString(", ")}, " +
+                                s"values data=$vd]"
                             )
 
                         def get(m: Map[String, Set[String]], key: String): Set[String] = m.getOrElse(key, Set.empty)
 
                         for (
                             n <- nouns;
-                                elemId <- get(vNorms, n.normText) ++ get(vNorms, normCase(n.lemma)) ++ get(vStems, n.stem)
+                            elemId <- get(vNorms, n.normText) ++ get(vNorms, normCase(n.lemma)) ++ get(vStems, n.stem)
                         )
                             add(n, elemId, Confidence(INCL_MAX_CONFIDENCE))
 
-                        // 2. Via examples.
-                        val mdlCorpusData: Map[String, ElementData] = getCorpusData(cfg, key, parent)
+                        // 2. Via corpus.
+                        val corpusData = getCorpusData(cfg, key, parent)
 
                         for (
                             nounTok <- nouns;
-                                (elemId, elemData) <- mdlCorpusData;
-                                confOpt = elemData.get(nounTok.normText, nounTok.stem, nounTok.lemma)
-                                if confOpt.isDefined && confOpt.get >= cfg.elements(elemId)
+                            (elemId, elemData) <- corpusData;
+                            confOpt = elemData.get(nounTok.normText, nounTok.stem, nounTok.lemma)
+                            if confOpt.isDefined && confOpt.get >= cfg.elements(elemId)
                         )
                             add(nounTok, elemId, Confidence(confOpt.get))
 
-                        // 3. Ask for sentence.
-                        val idxs = ns.tokens.flatMap(p => if (p.pos.startsWith("N")) Some(p.index)
-                        else None).toSeq
+                        // 3. Ask for sentence (via co-references)
+                        val idxs = ns.tokens.flatMap(p => if (p.pos.startsWith("N")) Some(p.index) else None).toSeq
                         val reqs = idxs.map(idx => NCSuggestionRequest(ns.tokens.map(_.origText).toSeq, idx))
 
                         val resps: Map[NCWordSuggestion, NCSuggestionRequest] =
                             syncExec(
                                 NCSuggestSynonymManager.suggestWords(reqs, parent = parent)).
-                                flatMap { case (req, suggs) => suggs.map(_ -> req)
-                                }
+                                flatMap { case (req, suggs) => suggs.map(_ -> req) }
 
                         if (DEBUG_MODE) {
                             val t = NCAsciiTable()
@@ -574,7 +573,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
                             // separated by space, and Suggestion Manager uses space tokenizer.
                             (sugg, req) <- resps.toSeq.sortBy(_._2.index);
                                 suggConf = normalizeConfidence(sugg.score);
-                                (elemId, elemData) <- mdlCorpusData;
+                                (elemId, elemData) <- corpusData;
                                 elemConf = cfg.elements(elemId);
                                 corpConfOpt = elemData.get(normCase(sugg.word), stem(sugg.word), getLemma(req, sugg))
                                 if corpConfOpt.isDefined;

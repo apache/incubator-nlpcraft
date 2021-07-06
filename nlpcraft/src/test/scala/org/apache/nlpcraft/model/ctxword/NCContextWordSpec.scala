@@ -71,7 +71,7 @@ class NCContextWordSpecModel extends NCModel {
                         "BMW drivers have the highest loyalty",
 
                         "A wild cat is very dangerous",
-                        "A fox eats hens",
+                        "A fox eat hens",
                         "The fox was already in your chicken house",
 
                         "What is the local temperature?",
