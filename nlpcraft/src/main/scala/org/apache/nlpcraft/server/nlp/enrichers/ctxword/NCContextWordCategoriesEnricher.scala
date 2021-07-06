@@ -259,20 +259,13 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
       * @return
       */
     private def getCorpusData(cfg: NCCtxWordCategoriesConfigMdo, key: ModelProbeKey, parent: Span = null):
-    Map[
-
-        /** Element ID */
-        String, ElementData] =
-        elemsCorpuses.synchronized {
-            elemsCorpuses.get(key)
-        } match {
+        Map[/** Element ID */String, ElementData] =
+        elemsCorpuses.synchronized { elemsCorpuses.get(key) } match {
             case Some(cache) => cache
             case None =>
                 val res = askSamples(cfg, parent)
 
-                elemsCorpuses.synchronized {
-                    elemsCorpuses += key -> res
-                }
+                elemsCorpuses.synchronized { elemsCorpuses += key -> res }
 
                 res
         }
@@ -284,9 +277,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
       * @return
       */
     private def getValuesData(cfg: NCCtxWordCategoriesConfigMdo, key: ModelProbeKey): ValuesHolder =
-        valuesStems.synchronized {
-            valuesStems.get(key)
-        } match {
+        valuesStems.synchronized { valuesStems.get(key) } match {
             case Some(cache) => cache
             case None =>
                 def mkMap(convert: String => String): Map[String, Set[String]] =
@@ -301,9 +292,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
 
                 val h = ValuesHolder(normal = normsMap, stems = stemsMap.filter(p => !normsMap.keySet.contains(p._1)))
 
-                valuesStems.synchronized {
-                    valuesStems += key -> h
-                }
+                valuesStems.synchronized { valuesStems += key -> h }
 
                 h
         }
@@ -338,10 +327,8 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
       * @return
       */
     @throws[NCE]
-    private def askSamples(cfg: NCCtxWordCategoriesConfigMdo, parent: Span = null): Map[
-
-        /** Element ID */
-        String, ElementData] = {
+    private def askSamples(cfg: NCCtxWordCategoriesConfigMdo, parent: Span = null):
+    Map[/** Element ID */String, ElementData] = {
         val corpusSeq = cfg.corpus.toSeq
         val corpusWords = corpusSeq.map(parser.parse(_).map(_.word))
         val nlpWords = corpusSeq.map(s => parser.parse(s))
@@ -392,16 +379,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
             val respsSeq: Seq[(NCSuggestionRequest, Seq[NCWordSuggestion])] = resps.toSeq
 
             def mkMap(convert: (NCSuggestionRequest, NCWordSuggestion) => String):
-            Map[
-
-                /** Element ID */
-                String,
-
-                /** Word key */
-                Map[String,
-
-                    /** Confidences */
-                    Seq[Double]]] = {
+                Map[/** Element ID */ String, /** Word key */ Map[String, /** Confidences */ Seq[Double]]] = {
                 val seq: Seq[(String, Map[String, Double])] =
                     respsSeq.
                         map { case (req, suggs) =>

@@ -19,7 +19,6 @@ package org.apache.nlpcraft.server.mdo
 
 import org.apache.nlpcraft.server.mdo.impl._
 
-
 @NCMdoEntity(sql = false)
 case class NCCtxWordCategoriesConfigMdo(
     @NCMdoField probeId: String,
