@@ -55,15 +55,8 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
     }
 
     private case class Confidence(value: Double, reason: Option[Reason] = None) {
-        override def toString: String = {
-            val s =
-                reason match {
-                    case Some(r) => s"via:'$r'"
-                    case None => "direct"
-                }
-
-            s"${FMT.format(value)}($s)}"
-        }
+        override def toString: String =
+            s"${FMT.format(value)}(${if (reason.isDefined) s"via:'${reason.get}'" else "direct"})}"
     }
 
     private case class ModelProbeKey(probeId: String, modelId: String)
@@ -72,7 +65,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
         override def toString: String = s"Element [id=$elementId, confidence=$confidence]]"
     }
 
-    case class ValuesHolder(normal: Map[String, Set[String]], stems: Map[String, Set[String]]) {
+    private case class ValuesHolder(normal: Map[String, Set[String]], stems: Map[String, Set[String]]) {
         private def map2Str(m: Map[String, Set[String]]): String =
             m.toSeq.flatMap(p => p._2.toSeq.map(x => x -> p._1)).
                 groupBy(_._1).map(p => p._1 -> p._2.map(_._2).
@@ -81,7 +74,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
         override def toString: String = s"Values [normal=${map2Str(normal)}, stems=${map2Str(stems)}]"
     }
 
-    case class ElementData(normals: Map[String, Double], stems: Map[String, Double], lemmas: Map[String, Double]) {
+    private case class ElementData(normals: Map[String, Double], stems: Map[String, Double], lemmas: Map[String, Double]) {
         def get(norm: String, stem: String, lemma: String): Option[Double] =
             normals.get(norm) match {
                 case Some(v) => Some(v)
@@ -94,7 +87,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
     }
 
     // Service which responsible for all confidences calculations.
-    object ConfMath {
+    private object ConfMath {
         /**
           *
           * @param confs
@@ -113,11 +106,6 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
                 Some(maxN.sum / maxN.length)
             }
 
-        private def calcWeightedGeoMean(vals2Weights: Map[Double, Double]): Double =
-            Math.pow(
-                vals2Weights.map { case (value, weight) => Math.pow(value, weight) }.product, 1.0 / vals2Weights.values.sum
-            )
-
         /**
           *
           * @param suggConf
@@ -127,6 +115,11 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
         def calculate(suggConf: Double, corpusConf: Double): Double =
             // Corpus data is more important. Empirical factors configured.
             calcWeightedGeoMean(Map(suggConf -> 1, corpusConf -> 3))
+
+        private def calcWeightedGeoMean(vals2Weights: Map[Double, Double]): Double =
+            Math.pow(
+                vals2Weights.map { case (value, weight) => Math.pow(value, weight) }.product, 1.0 / vals2Weights.values.sum
+            )
     }
 
     @volatile private var valuesStems: mutable.HashMap[ModelProbeKey, ValuesHolder] = _
@@ -205,8 +198,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
                         elemValuesData.flatMap(vd => {
                             val i = corpusData.indexOf(vd)
 
-                            if (i >= 0) Some(i)
-                            else None
+                            if (i >= 0) Some(i) else None
                         })
 
                     val idxs =
@@ -247,10 +239,10 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
 
     /**
       *
-      * @param confValue
+      * @param conf
       * @return
       */
-    private def normalizeConfidence(confValue: Double): Double = confValue / MAX_CTXWORD_SCORE
+    private def normalizeConf(conf: Double): Double = conf / MAX_CTXWORD_SCORE
 
     /**
       *
@@ -340,20 +332,19 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
             (
                 for (
                     (elemId, elemValues) <- cfg.values.toSeq;
-                        // Uses single words synonyms only.
-                        elemValuesSyns = elemValues.flatMap(_._2).toSet.filter(!_.contains(' '));
-                        suggReq <- mkRequests(
-                            nlpWords = nlpWords,
-                            corpusWords = corpusWords,
-                            corpusWordsStems = corpusWordsStems,
-                            corpusWordsNorm = corpusWordsNorm,
-                            elemValsSyns = elemValuesSyns,
-                            elemValuesSynsStems = elemValuesSyns.map(stem),
-                            elemValuesSynsNorm = elemValuesSyns.map(normCase)
-                        )
-                )
-                yield (elemId, suggReq)
-                ).
+                    // Uses single words synonyms only.
+                    elemValuesSyns = elemValues.flatMap(_._2).toSet.filter(!_.contains(' '));
+                    suggReq <- mkRequests(
+                        nlpWords = nlpWords,
+                        corpusWords = corpusWords,
+                        corpusWordsStems = corpusWordsStems,
+                        corpusWordsNorm = corpusWordsNorm,
+                        elemValsSyns = elemValuesSyns,
+                        elemValuesSynsStems = elemValuesSyns.map(stem),
+                        elemValuesSynsNorm = elemValuesSyns.map(normCase)
+                    )
+                ) yield (elemId, suggReq)
+            ).
                 groupBy { case (elemId, _) => elemId }.
                 map { case (elemId, m) => elemId -> m.map(_._2) }
 
@@ -370,7 +361,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
                 for ((req, resp) <- respsSeq) {
                     t += (
                         req,
-                        s"${resp.map(p => s"${p.word}=${FMT.format(normalizeConfidence(p.score))}").mkString(", ")}"
+                        s"${resp.map(p => s"${p.word}=${FMT.format(normalizeConf(p.score))}").mkString(", ")}"
                     )
                 }
 
@@ -389,7 +380,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
                                 suggs.groupBy(sygg => convert(req, sygg)).
                                     // If different word forms have different confidence (`Abc`- 0.9, `abc`- 0.7),
                                     // we use maximum (0.9).
-                                    map { case (key, suggs) => key -> suggs.map(p => normalizeConfidence(p.score)).max }
+                                    map { case (key, suggs) => key -> suggs.map(p => normalizeConf(p.score)).max }
                             )
                         }
                 seq.
@@ -539,8 +530,8 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
 
                         val resps: Map[NCWordSuggestion, NCSuggestionRequest] =
                             syncExec(
-                                NCSuggestSynonymManager.suggestWords(reqs, parent = parent)).
-                                flatMap { case (req, suggs) => suggs.map(_ -> req) }
+                                NCSuggestSynonymManager.suggestWords(reqs, parent = parent)
+                            ).flatMap { case (req, suggs) => suggs.map(_ -> req) }
 
                         if (DEBUG_MODE) {
                             val t = NCAsciiTable()
@@ -554,7 +545,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
                                     sorted.head._2,
                                     s"${
                                         sorted.map(_._1).
-                                            map(p => s"${p.word}=${FMT.format(normalizeConfidence(p.score))}").
+                                            map(p => s"${p.word}=${FMT.format(normalizeConf(p.score))}").
                                             mkString(", ")
                                     }"
                                 )
@@ -565,14 +556,13 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
 
                         case class Key(elementId: String, token: NCNlpSentenceToken)
 
-                        val miss = if (DEBUG_MODE) mutable.HashMap.empty[Key, ArrayBuffer[Confidence]]
-                        else null
+                        val miss = if (DEBUG_MODE) mutable.HashMap.empty[Key, ArrayBuffer[Confidence]] else null
 
                         for (
                             // Token index (tokIdx) should be correct because request created from original words,
                             // separated by space, and Suggestion Manager uses space tokenizer.
                             (sugg, req) <- resps.toSeq.sortBy(_._2.index);
-                                suggConf = normalizeConfidence(sugg.score);
+                                suggConf = normalizeConf(sugg.score);
                                 (elemId, elemData) <- corpusData;
                                 elemConf = cfg.elements(elemId);
                                 corpConfOpt = elemData.get(normCase(sugg.word), stem(sugg.word), getLemma(req, sugg))
@@ -581,7 +571,6 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
                                 normConf = ConfMath.calculate(suggConf, corpConf)
                         ) {
                             def mkConf(): Confidence = Confidence(normConf, Some(Reason(sugg.word, suggConf, corpConf)))
-
                             def getToken: NCNlpSentenceToken = ns.tokens(req.index)
 
                             if (normConf >= elemConf)
@@ -606,10 +595,10 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
                                 foreach { case (key, confs) =>
                                     logger.info(
                                         s"Unsuccessful attempt [" +
-                                            s"elementId=${key.elementId}, " +
-                                            s"tokenWordIndexes=${key.token.wordIndexes.mkString(",")}, " +
-                                            s"confidences=${confs.sortBy(-_.value).mkString(", ")}" +
-                                            s"]"
+                                        s"elementId=${key.elementId}, " +
+                                        s"tokenWordIndexes=${key.token.wordIndexes.mkString(",")}, " +
+                                        s"confidences=${confs.sortBy(-_.value).mkString(", ")}" +
+                                        s"]"
                                     )
                                 }
 
