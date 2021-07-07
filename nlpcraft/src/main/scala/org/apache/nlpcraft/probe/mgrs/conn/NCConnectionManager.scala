@@ -17,6 +17,7 @@
 
 package org.apache.nlpcraft.probe.mgrs.conn
 
+import scala.compat.java8.OptionConverters._
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.config.NCConfigurable
@@ -217,26 +218,28 @@ object NCConnectionManager extends NCService {
                             val (
                                 values,
                                 corpus,
-                                supported
+                                categoriesElements
                             ): (
                                 java.util.Map[String, java.util.Map[String, java.util.Set[String]]],
                                 java.util.Set[String],
                                 java.util.Map[String, lang.Double]
-                            ) =
-                                if (mdl.getContextWordCategoriesConfig.isEmpty)
+                            ) = {
+                                val ctxCatElems = mdl.getElements.asScala.flatMap(e =>
+                                    e.getCategoryConfidence.asScala match {
+                                        case Some(v) => Some(e.getId -> v)
+                                        case None => None
+                                    }
+                                ).toMap
+
+                                if (ctxCatElems.isEmpty)
                                     (Collections.emptyMap(), Collections.emptySet(), Collections.emptyMap())
                                 else {
-                                    val cfg = mdl.getContextWordCategoriesConfig.get()
-
-                                    var corpus = if (cfg.getCorpus == null) Seq.empty else cfg.getCorpus.asScala
-
-                                    if (cfg.useIntentsSamples)
-                                        corpus = corpus ++ wrapper.samples.flatMap(_._2.flatMap(p => p))
+                                    var corpus = wrapper.samples.flatMap(_._2.flatMap(p => p))
 
                                     val values =
                                         mdl.getElements.
                                             asScala.
-                                            filter(p => cfg.getSupportedElements.containsKey(p.getId)).
+                                            filter(p => ctxCatElems.contains(p.getId)).
                                             map(e =>
                                         e.getId ->
                                             e.getValues.asScala.map(p => p.getName -> {
@@ -248,10 +251,11 @@ object NCConnectionManager extends NCService {
 
                                     (
                                         values.asJava,
-                                        corpus.toSet.asJava,
-                                        cfg.getSupportedElements
+                                        corpus.asJava,
+                                        ctxCatElems.asJava
                                     )
                                 }
+                            }
 
                             // Model already validated.
 
@@ -264,7 +268,7 @@ object NCConnectionManager extends NCService {
                                 new util.HashSet[String](mdl.getEnabledBuiltInTokens),
                                 values,
                                 corpus,
-                                supported
+                                categoriesElements
                             )
                         })
                 ), cryptoKey)

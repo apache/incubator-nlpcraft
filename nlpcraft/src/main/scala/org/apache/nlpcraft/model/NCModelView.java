@@ -1218,9 +1218,4 @@ public interface NCModelView extends NCMetadata {
     default Map<String, Set<String>> getRestrictedCombinations() {
         return Collections.emptyMap();
     }
-
-    // TODO:
-    default Optional<NCContextWordCategoriesConfig> getContextWordCategoriesConfig() {
-        return Optional.empty();
-    }
 }

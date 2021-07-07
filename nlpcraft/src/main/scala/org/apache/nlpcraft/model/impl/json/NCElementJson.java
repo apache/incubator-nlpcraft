@@ -36,6 +36,8 @@ public class NCElementJson {
     private Boolean isPermutateSynonyms;
     // Can be null.
     private Boolean isSparse;
+    // Can be null.
+    private Double categoryConfidence;
 
     public String getParentId() {
         return parentId;
@@ -96,5 +98,11 @@ public class NCElementJson {
     }
     public void setSparse(Boolean sparse) {
         isSparse = sparse;
+    }
+    public Double getCategoryConfidence() {
+        return categoryConfidence;
+    }
+    public void setCategoryConfidence(Double categoryConfidence) {
+        this.categoryConfidence = categoryConfidence;
     }
 }

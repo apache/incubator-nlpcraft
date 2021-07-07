@@ -40,7 +40,6 @@ public class NCModelJson {
     private String[] intents;
     private String[] parsers;
     private Map<String, String[]> restrictedCombinations;
-    private NCContextWordModelConfigJson contextWordModelConfigJson;
 
     private int maxUnknownWords = DFLT_MAX_UNKNOWN_WORDS;
     private int maxFreeWords = DFLT_MAX_FREE_WORDS;
@@ -272,10 +271,4 @@ public class NCModelJson {
         return restrictedCombinations;
     }
     public void setRestrictedCombinations(Map<String, String[]> restrictedCombinations) { this.restrictedCombinations = restrictedCombinations;}
-    public NCContextWordModelConfigJson getContextWordModelConfigJson() {
-        return contextWordModelConfigJson;
-    }
-    public void setContextWordModelConfigJson(NCContextWordModelConfigJson contextWordModelConfigJson) {
-        this.contextWordModelConfigJson = contextWordModelConfigJson;
-    }
 }

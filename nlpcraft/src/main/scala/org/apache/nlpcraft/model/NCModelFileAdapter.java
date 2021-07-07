@@ -66,7 +66,6 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
     private final Set<NCElement> elems;
     private final List<NCCustomParser> parsers;
     private final Map<String, Set<String>> restrictedCombinations;
-    private final NCContextWordCategoriesConfig ctxWordMdlCfg;
 
     private final String origin;
 
@@ -123,7 +122,6 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
         this.intents = convertToList(proxy.getIntents(), null);
         this.parsers = convertParsers(proxy.getParsers());
         this.restrictedCombinations = convertRestrictedCombinations(proxy.getRestrictedCombinations());
-        this.ctxWordMdlCfg = convert(proxy.getContextWordModelConfigJson());
 
         // NOTE: we can only test/check this at this point. Downstream - this information is lost.
         if (proxy.getIntents() != null && intents.size() != proxy.getIntents().length)
@@ -266,32 +264,6 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
 
     /**
      *
-     * @param js
-     * @return
-     */
-    private static NCContextWordCategoriesConfig convert(NCContextWordModelConfigJson js) {
-        return js != null?
-            new NCContextWordCategoriesConfig() {
-                @Override
-                public List<String> getCorpus() {
-                    return js.getSamples() != null ? Arrays.asList(js.getSamples()) : null;
-                }
-
-                @Override
-                public boolean useIntentsSamples() {
-                    return js.isUseIntentsSamples();
-                }
-
-                @Override
-                public Map<String, Double> getSupportedElements() {
-                    return js.getSupportedElements();
-                }
-            }:
-            null;
-    }
-
-    /**
-     *
      * @param proxy
      * @param arr
      * @return
@@ -383,6 +355,11 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
                         @Override
                         public Optional<Boolean> isSparse() {
                             return nvlOpt(js.isSparse(), proxy.isSparse());
+                        }
+
+                        @Override
+                        public Optional<Double> getCategoryConfidence() {
+                            return Optional.ofNullable(js.getCategoryConfidence());
                         }
 
                         private<T> Optional<T> nvlOpt(T t, T dflt) {
@@ -579,10 +556,5 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
     @Override
     public Map<String, Set<String>> getRestrictedCombinations() {
         return restrictedCombinations;
-    }
-
-    @Override
-    public Optional<NCContextWordCategoriesConfig> getContextWordCategoriesConfig() {
-        return Optional.ofNullable(ctxWordMdlCfg);
     }
 }

@@ -630,7 +630,7 @@ object NCProbeManager extends NCService {
                                 enabledBuiltInToks,
                                 values,
                                 corpus,
-                                supported
+                                categoriesElements
                             ) =>
                                 require(mdlId != null)
                                 require(mdlName != null)
@@ -657,7 +657,7 @@ object NCProbeManager extends NCService {
                                                                 }.toMap
                                                     }.toMap,
                                                     corpus = corpus.asScala.toSet,
-                                                    elements = supported.asScala.toMap
+                                                    elements = categoriesElements.asScala.toMap
                                                 )
                                             )
                                         }

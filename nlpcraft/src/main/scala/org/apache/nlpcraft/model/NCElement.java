@@ -382,4 +382,9 @@ public interface NCElement extends NCMetadata, Serializable {
     default Optional<Boolean> isSparse() {
         return Optional.empty();
     }
+
+    // TODO:
+    default Optional<Double> getCategoryConfidence() {
+        return Optional.empty();
+    }
 }

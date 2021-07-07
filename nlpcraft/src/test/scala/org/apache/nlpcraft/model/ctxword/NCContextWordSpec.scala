@@ -17,14 +17,14 @@
 
 package org.apache.nlpcraft.model.ctxword
 
-import org.apache.nlpcraft.model.{NCContext, NCContextWordCategoriesConfig, NCElement, NCModel, NCResult, NCValue}
+import org.apache.nlpcraft.model.{NCContext, NCElement, NCIntent, NCIntentSample, NCModel, NCResult, NCValue}
 import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
 import org.junit.jupiter.api.Test
 
-import java.util
 import java.util.{Collections, Optional}
+import java.{lang, util}
 import scala.collection.mutable.ArrayBuffer
-import scala.jdk.CollectionConverters.{CollectionHasAsScala, MapHasAsJava, SeqHasAsJava, SetHasAsJava}
+import scala.jdk.CollectionConverters.{CollectionHasAsScala, SeqHasAsJava, SetHasAsJava}
 
 object NCContextWordSpecModel {
     case class Value(name: String, syns: String*) extends NCValue {
@@ -36,6 +36,7 @@ object NCContextWordSpecModel {
         override def getId: String = id
         override def getValues: util.List[NCValue] = values.asJava
         override def getGroups: util.List[String] = Collections.singletonList("testGroup")
+        override def getCategoryConfidence: Optional[lang.Double] = Optional.of(level)
     }
 
     var expected: String = _
@@ -50,37 +51,29 @@ class NCContextWordSpecModel extends NCModel {
 
     val MDL_LEVEL: java.lang.Double = 0.68
 
-    override def getContextWordCategoriesConfig: Optional[NCContextWordCategoriesConfig] = {
-        Optional.of(
-            new NCContextWordCategoriesConfig() {
-                override def getSupportedElements: util.Map[String, java.lang.Double] =
-                    getElements.asScala.map(e => e.getId -> MDL_LEVEL).toMap.asJava
+    @NCIntentSample(
+        Array(
+            "I like drive my new BMW",
+            "BMW has the best engine",
+            "Luxury cars like Mercedes and BMW  are prime targets",
+            "BMW will install side air bags up front",
+            "I want to change BMW engine",
+            "I want to try BMW driver dynamics",
+            "BMW has excellent driver protection",
+            "BMW pricing are going up",
+            "BMW drivers have the highest loyalty",
 
-                override def useIntentsSamples(): Boolean = false
+            "A wild cat is very dangerous",
+            "A fox eat hens",
+            "The fox was already in your chicken house",
 
-                override def getCorpus: util.List[String] =
-                    Seq(
-                        "I like drive my new BMW",
-                        "BMW has the best engine",
-                        "Luxury cars like Mercedes and BMW  are prime targets",
-                        "BMW will install side air bags up front",
-                        "I want to change BMW engine",
-                        "I want to try BMW driver dynamics",
-                        "BMW has excellent driver protection",
-                        "BMW pricing are going up",
-                        "BMW drivers have the highest loyalty",
-
-                        "A wild cat is very dangerous",
-                        "A fox eat hens",
-                        "The fox was already in your chicken house",
-
-                        "What is the local temperature?",
-                        "This is the first day of heavy rain",
-                        "It is the beautiful day, the sun is shining"
-                    ).asJava
-            }
+            "What is the local temperature?",
+            "This is the first day of heavy rain",
+            "It is the beautiful day, the sun is shining"
         )
-    }
+    )
+    @NCIntent("intent=i term(t)={false}")
+    def x(): NCResult = NCResult.text("OK")
 
     override def getElements: util.Set[NCElement] =
         Set(
