@@ -49,6 +49,7 @@ class NCContextWordSpecModel extends NCModel {
     override def getName: String = this.getClass.getSimpleName
     override def getVersion: String = "1.0.0"
 
+    // Empirical detected confidence for given model and requests.
     val MDL_LEVEL: java.lang.Double = 0.68
 
     @NCIntentSample(
@@ -106,6 +107,8 @@ class NCContextWordSpecModel extends NCModel {
 
         NCResult.text(res)
     }
+
+    override def getEnabledBuiltInTokens: util.Set[String] = Collections.emptySet()
 }
 
 /**

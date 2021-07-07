@@ -37,8 +37,6 @@ import scala.concurrent.duration.Duration
 
 /**
   * ContextWord enricher.
-  * TODO: check plurals
-  * TODO: check empty lemma
   */
 object NCContextWordCategoriesEnricher extends NCServerEnricher {
     private final val MAX_CTXWORD_SCORE = 2
@@ -68,10 +66,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
     private case class ValuesHolder(normal: Map[String, Set[String]], stems: Map[String, Set[String]]) {
         private def map2Str(m: Map[String, Set[String]]): String =
             m.toSeq.flatMap { case (v, elems) =>
-                elems.
-                    toSeq.map(_ -> v) }.
-                    groupBy { case (v, _) => v }.
-                    map { case (v, seq) => v -> seq.map(_._2).mkString("{ ", ", ", " }")
+                elems.toSeq.map(_ -> v) }.groupBy { case (v, _) => v }.map { case (v, seq) => v -> toStr(seq.map(_._2))
             }.mkString(", ")
 
         override def toString: String = s"Values [normal=${map2Str(normal)}, stems=${map2Str(stems)}]"
@@ -119,6 +114,11 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
             // Corpus data is more important. Empirical factors configured.
             calcWeightedGeoMean(Map(suggConf -> 1, corpusConf -> 3))
 
+        /**
+          * Calculates weighted geometrical mean value.
+          *
+          * @param vals2Weights Values with their weights.
+          */
         private def calcWeightedGeoMean(vals2Weights: Map[Double, Double]): Double =
             Math.pow(vals2Weights.map { case (v, weight) => Math.pow(v, weight) }.product, 1.0 / vals2Weights.values.sum)
     }
@@ -150,6 +150,13 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
 
     /**
       *
+      * @param seq
+      * @return
+      */
+    private def toStr(seq: Seq[String]): String = seq.mkString("{ ", ", ", " }")
+
+    /**
+      *
       * @param s
       * @return
       */
@@ -165,78 +172,53 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
 
     /**
       *
-      * @param nlpWords
-      * @param corpusWords
-      * @param corpusWordsStems
-      * @param corpusWordsNorm
-      * @param elemValsSyns
-      * @param elemValsSynsStems
-      * @param elemValsSynsNorm
+      * @param corpusNlpSeq
+      * @param elemSingleVals
       * @return
       */
-    private def mkRequests(
-        nlpWords: Seq[Seq[NCNlpWord]],
-        corpusWords: Seq[Seq[String]],
-        corpusWordsStems: Seq[Seq[String]],
-        corpusWordsNorm: Seq[Seq[String]],
-        elemValsSyns: Set[String],
-        elemValsSynsStems: Set[String],
-        elemValsSynsNorm: Set[String]
-    ): Iterable[NCSuggestionRequest] = {
-        require(nlpWords.size == corpusWords.size)
-        require(corpusWords.size == corpusWordsStems.size)
-        require(corpusWords.size == corpusWordsNorm.size)
-        require(elemValsSyns.size == elemValsSynsStems.size)
-        require(elemValsSyns.size == elemValsSynsNorm.size)
-
-        corpusWordsStems.
-            zip(corpusWords).
-            zip(corpusWordsNorm).
-            zip(nlpWords).
+    private def mkRequests(corpusNlpSeq: Seq[Seq[NCNlpWord]], elemSingleVals: Set[String]): Iterable[NCSuggestionRequest] =
+        corpusNlpSeq.
             flatMap {
-                case (((corpusWordsStem, corpusWords), corpusWordsNorm), nlpWords) =>
-                    def getIndexes(elemValuesData: Set[String], corpusData: Seq[String]): Set[Int] =
-                        elemValuesData.flatMap(vd => {
-                            val i = corpusData.indexOf(vd)
+                corpusNlp =>
+                    lazy val corpusWords = corpusNlp.map(_.word)
+
+                    def getIndexes(corpVals: Seq[String], vals: Set[String]): Set[Int] =
+                        vals.flatMap(v => {
+                            val i = corpVals.indexOf(v)
 
                             if (i >= 0) Some(i) else None
                         })
 
+                    val elemSingleValsNorm = elemSingleVals.map(norm)
+                    val elemSingleValsStem = elemSingleVals.map(stem)
+
                     val idxs =
-                        getIndexes(elemValsSynsStems, corpusWordsStem) ++ getIndexes(elemValsSynsNorm, corpusWordsNorm)
+                        getIndexes(corpusNlp.map(_.normalWord), elemSingleValsNorm) ++
+                        getIndexes(corpusNlp.map(_.stem), elemSingleValsStem) ++
+                        // Sample can have word in plural forms. We can compare them with synonyms values.
+                        getIndexes(corpusNlp.map(p => norm(p.lemma)), elemSingleValsNorm)
 
                     def mkRequest(idx: Int, syn: String): NCSuggestionRequest = {
                         var newSen = substitute(corpusWords, syn, idx)
 
                         val nlpWordsNew = parser.parse(newSen.mkString(" "))
 
-                        require(nlpWords.size == nlpWordsNew.size)
+                        require(corpusWords.size == nlpWordsNew.size)
 
-                        val pos = nlpWords(idx).pos
+                        val pos = corpusNlp(idx).pos
                         val posNew = nlpWordsNew(idx).pos
 
-                        if (NOUNS_POS_SINGULAR.contains(pos) && NOUNS_POS_PLURALS.contains(posNew)) {
-                            println(s"newSen1=$newSen")
-
+                        if (NOUNS_POS_SINGULAR.contains(pos) && NOUNS_POS_PLURALS.contains(posNew))
                             newSen = substitute(corpusWords, CONVERTER.depluralize(syn), idx)
-
-                            println(s"newSen2=$newSen")
-                        }
-                        else if (NOUNS_POS_PLURALS.contains(pos) && NOUNS_POS_SINGULAR.contains(posNew)) {
-                            println(s"newSen1=$newSen")
-
+                        else if (NOUNS_POS_PLURALS.contains(pos) && NOUNS_POS_SINGULAR.contains(posNew))
                             newSen = substitute(corpusWords, CONVERTER.pluralize(syn), idx)
-
-                            println(s"newSen3=$newSen")
-                        }
 
                         NCSuggestionRequest(newSen, idx)
                     }
 
-                    for (idx <- idxs; syn <- elemValsSyns)
+                    for (idx <- idxs; syn <- elemSingleVals)
                         yield mkRequest(idx, syn)
             }
-    }
 
     /**
       *
@@ -322,28 +304,14 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
     @throws[NCE]
     private def askSamples(cfg: NCCtxWordCategoriesConfigMdo, parent: Span = null):
         Map[/** Element ID */String, ElementData] = {
-        val corpusSeq = cfg.corpus.toSeq
-        val nlpWords = corpusSeq.map(s => parser.parse(s))
-        val corpusWords = nlpWords.map(_.map(_.word))
-
-        val corpusWordsStems = corpusWords.map(_.map(stem))
-        val corpusWordsNorm = corpusWords.map(_.map(norm))
+        val corpusNlp = cfg.corpus.toSeq.map(s => parser.parse(s))
 
         val recs: Map[String, Seq[NCSuggestionRequest]] =
             (
                 for (
                     (elemId, elemSingleVals) <- cfg.singleValues.toSeq;
-                    // Uses single words synonyms only.
                     elemSingleValsSet = elemSingleVals.flatMap(_._2).toSet;
-                    suggReq <- mkRequests(
-                        nlpWords = nlpWords,
-                        corpusWords = corpusWords,
-                        corpusWordsStems = corpusWordsStems,
-                        corpusWordsNorm = corpusWordsNorm,
-                        elemValsSyns = elemSingleValsSet,
-                        elemValsSynsStems = elemSingleValsSet.map(stem),
-                        elemValsSynsNorm = elemSingleValsSet.map(norm)
-                    )
+                    suggReq <- mkRequests(corpusNlp, elemSingleValsSet)
                 ) yield (elemId, suggReq)
             ).
                 groupBy { case (elemId, _) => elemId }.
@@ -359,12 +327,11 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
 
                 t #= ("Request", "Responses")
 
-                for ((req, resp) <- respsSeq) {
+                for ((req, resp) <- respsSeq)
                     t += (
                         req,
                         s"${resp.map(p => s"${p.word}=${FMT.format(normalizeConf(p.score))}").mkString(", ")}"
                     )
-                }
 
                 t.info(logger, Some("Corpus requests:"))
             }
@@ -402,7 +369,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
                 if (DEBUG_MODE) {
                     val t = NCAsciiTable()
 
-                    t #= ("Element", "Confidences")
+                    t #= ("Element", "Confidences for normal forms")
 
                     t
                 }
@@ -427,13 +394,18 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
 
                         if (DEBUG_MODE)
                             tabAll += (
-                                elemId,
-                                normalsAll.toSeq.
-                                    sortBy(p => (-p._2.max, -p._2.size)).map(
-                                    { case (k, confs) =>
-                                        s"$k=${confs.sortBy(-_).map(p => FMT.format(p)).mkString("{ ", ", ", " }")}"
-                                    }
-                                ).mkString("{ ", ", ", " }"))
+                                s"Element: $elemId [" +
+                                s"normals=${normalsAll.size}, " +
+                                s"stems=${stemsAll.size}, " +
+                                s"lemmas=${lemmasAll.size}" +
+                                s"]",
+                                toStr(
+                                    normalsAll.toSeq.
+                                        sortBy(p => (-p._2.max, -p._2.size)).map(
+                                        { case (k, confs) => s"$k=${toStr(confs.sortBy(-_).map(p => FMT.format(p)))}" }
+                                    )
+                                )
+                            )
 
                         def squeeze(map: Map[String, Seq[Double]]): Map[String, Double] =
                             map.flatMap { case (wordKey, confs) =>
@@ -449,17 +421,23 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
 
                         if (DEBUG_MODE)
                             tabNorm += (
-                                elemId,
-                                normalsNorm.toSeq.sortBy(-_._2).
-                                    map({ case (k, factor) => s"$k=${FMT.format(factor)}" }).mkString("{ ", ", ", " }")
+                                s"Element: $elemId [" +
+                                s"normals=${normalsNorm.size}, " +
+                                s"stems=${stemsNorm.size}, " +
+                                s"lemmas=${lemmasNorm.size}",
+                                toStr(
+                                    normalsNorm.toSeq.sortBy(-_._2).map(
+                                        { case (k, factor) => s"$k=${FMT.format(factor)}" }
+                                    )
+                                )
                             )
 
                         elemId -> ElementData(normalsNorm, stemsNorm, lemmasNorm)
                     }
 
             if (DEBUG_MODE) {
-                tabAll.info(logger, Some("Model corpus all confidences"))
-                tabNorm.info(logger, Some("Model corpus normalized confidences"))
+                tabAll.info(logger, Some("Model corpus all confidences:"))
+                tabNorm.info(logger, Some("Model corpus normalized confidences:"))
             }
 
             res
@@ -624,39 +602,3 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
             elemsCorpuses.synchronized { elemsCorpuses --= elemsCorpuses.keySet.filter(_.probeId == probeId) }
         }
 }
-//
-//object x extends App {
-//    /**
-//      *
-//      * @param vals2Weights
-//      * @return
-//      */
-//    private def calcWeightedGeoMean(vals2Weights: Map[Double, Double]): Double =
-//        Math.pow(
-//            vals2Weights.map { case (value, weight) => Math.pow(value, weight) }.product, 1.0 / vals2Weights.values.sum
-//        )
-//
-//    lazy val V1 = 1
-//    lazy val V2 = 3
-//
-//    Seq(
-//        1.0->0.2,
-//        0.4->0.8
-////        0.29057 -> 0.82184,
-////        0.18316 -> 0.71606,
-////        0.23394 -> 0.48252,
-////        0.29362 -> 0.32973,
-////        0.23451 -> 0.65216,
-////        0.63658 -> 0.21005,
-////        0.25097 -> 0.36217,
-////        0.51310 -> 0.37854,
-////        0.40631 -> 0.81649,
-////        0.21673 -> 0.25714,
-////        1.0 -> 0.37183,
-////        0.52308 -> 0.35263,
-////        0.35516 -> 0.26770,
-//    )
-//        .foreach { case (v1, v2) =>  println(calcWeightedGeoMean(Map(v1 -> V1, v2 -> V2)))}
-//
-//
-//}

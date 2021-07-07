@@ -30,7 +30,8 @@ class NCContextWordSpecModel2 extends NCContextWordSpecModel {
 }
 
 /**
-  * @see NCConversationSpecModel
+  * Run test jus for manual review all found categories for given model.
+  * Note that initial confidence set as zero.
   */
 @NCTestEnvironment(model = classOf[NCContextWordSpecModel2], startClient = true)
 class NCContextWordSpec2 extends NCTestContext {
