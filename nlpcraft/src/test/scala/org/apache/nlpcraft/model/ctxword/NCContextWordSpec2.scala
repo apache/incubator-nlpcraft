@@ -30,7 +30,7 @@ class NCContextWordSpecModel2 extends NCContextWordSpecModel {
 }
 
 /**
-  * Run test jus for manual review all found categories for given model.
+  * Run this test just for manual review all found categories for given model.
   * Note that initial confidence set as zero.
   */
 @NCTestEnvironment(model = classOf[NCContextWordSpecModel2], startClient = true)
