@@ -153,7 +153,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
       * @param s
       * @return
       */
-    private def normCase(s: String): String = s.toLowerCase
+    private def norm(s: String): String = s.toLowerCase
 
     /**
       *
@@ -170,8 +170,8 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
       * @param corpusWordsStems
       * @param corpusWordsNorm
       * @param elemValsSyns
-      * @param elemValuesSynsStems
-      * @param elemValuesSynsNorm
+      * @param elemValsSynsStems
+      * @param elemValsSynsNorm
       * @return
       */
     private def mkRequests(
@@ -180,14 +180,14 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
         corpusWordsStems: Seq[Seq[String]],
         corpusWordsNorm: Seq[Seq[String]],
         elemValsSyns: Set[String],
-        elemValuesSynsStems: Set[String],
-        elemValuesSynsNorm: Set[String]
+        elemValsSynsStems: Set[String],
+        elemValsSynsNorm: Set[String]
     ): Iterable[NCSuggestionRequest] = {
         require(nlpWords.size == corpusWords.size)
         require(corpusWords.size == corpusWordsStems.size)
         require(corpusWords.size == corpusWordsNorm.size)
-        require(elemValsSyns.size == elemValuesSynsStems.size)
-        require(elemValsSyns.size == elemValuesSynsNorm.size)
+        require(elemValsSyns.size == elemValsSynsStems.size)
+        require(elemValsSyns.size == elemValsSynsNorm.size)
 
         corpusWordsStems.
             zip(corpusWords).
@@ -203,7 +203,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
                         })
 
                     val idxs =
-                        getIndexes(elemValuesSynsStems, corpusWordsStem) ++ getIndexes(elemValuesSynsNorm, corpusWordsNorm)
+                        getIndexes(elemValsSynsStems, corpusWordsStem) ++ getIndexes(elemValsSynsNorm, corpusWordsNorm)
 
                     def mkRequest(idx: Int, syn: String): NCSuggestionRequest = {
                         var newSen = substitute(corpusWords, syn, idx)
@@ -274,13 +274,13 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
             case Some(cache) => cache
             case None =>
                 def mkMap(convert: String => String): Map[String, Set[String]] =
-                    cfg.values.
+                    cfg.singleValues.
                         flatMap { case (elemId, vals) => vals.map { case (_, vals) => vals.map(convert(_) -> elemId) } }.
                         flatten.
                         groupBy { case (converted, _) => converted }.
                         map { case (converted, map) => converted -> map.map { case (_, elemId) => elemId }.toSet }
 
-                val normsMap = mkMap(normCase)
+                val normsMap = mkMap(norm)
                 val stemsMap = mkMap(stem)
 
                 val h = ValuesHolder(normal = normsMap, stems = stemsMap.filter(p => !normsMap.keySet.contains(p._1)))
@@ -327,22 +327,22 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
         val corpusWords = nlpWords.map(_.map(_.word))
 
         val corpusWordsStems = corpusWords.map(_.map(stem))
-        val corpusWordsNorm = corpusWords.map(_.map(normCase))
+        val corpusWordsNorm = corpusWords.map(_.map(norm))
 
         val recs: Map[String, Seq[NCSuggestionRequest]] =
             (
                 for (
-                    (elemId, elemValues) <- cfg.values.toSeq;
+                    (elemId, elemSingleVals) <- cfg.singleValues.toSeq;
                     // Uses single words synonyms only.
-                    elemValuesSyns = elemValues.flatMap(_._2).toSet.filter(!_.contains(' '));
+                    elemSingleValsSet = elemSingleVals.flatMap(_._2).toSet;
                     suggReq <- mkRequests(
                         nlpWords = nlpWords,
                         corpusWords = corpusWords,
                         corpusWordsStems = corpusWordsStems,
                         corpusWordsNorm = corpusWordsNorm,
-                        elemValsSyns = elemValuesSyns,
-                        elemValuesSynsStems = elemValuesSyns.map(stem),
-                        elemValuesSynsNorm = elemValuesSyns.map(normCase)
+                        elemValsSyns = elemSingleValsSet,
+                        elemValsSynsStems = elemSingleValsSet.map(stem),
+                        elemValsSynsNorm = elemSingleValsSet.map(norm)
                     )
                 ) yield (elemId, suggReq)
             ).
@@ -394,7 +394,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
                     }
             }
 
-            val normals = mkMap { (_, sugg) => normCase(sugg.word) }
+            val normals = mkMap { (_, sugg) => norm(sugg.word) }
             val stems = mkMap { (_, sugg) => stem(sugg.word) }
             val lemmas = mkMap { (req, sugg) => getLemma(req, sugg) }
 
@@ -510,7 +510,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
 
                         for (
                             n <- nouns;
-                            elemId <- get(vNorms, n.normText) ++ get(vNorms, normCase(n.lemma)) ++ get(vStems, n.stem)
+                            elemId <- get(vNorms, n.normText) ++ get(vNorms, norm(n.lemma)) ++ get(vStems, n.stem)
                         )
                             add(n, elemId, Confidence(INCL_MAX_CONFIDENCE))
 
@@ -566,7 +566,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
                             suggConf = normalizeConf(sugg.score);
                             (elemId, elemData) <- corpusData;
                             elemConf = cfg.elements(elemId);
-                            corpConfOpt = elemData.get(normCase(sugg.word), stem(sugg.word), getLemma(req, sugg))
+                            corpConfOpt = elemData.get(norm(sugg.word), stem(sugg.word), getLemma(req, sugg))
                             if corpConfOpt.isDefined;
                             corpConf = corpConfOpt.get;
                             normConf = ConfMath.calculate(suggConf, corpConf)

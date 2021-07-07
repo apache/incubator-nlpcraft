@@ -23,7 +23,7 @@ import org.apache.nlpcraft.server.mdo.impl._
 case class NCCtxWordCategoriesConfigMdo(
     @NCMdoField probeId: String,
     @NCMdoField modelId: String,
-    @NCMdoField values: Map[String /*Element ID*/, Map[/*Value*/String, /*Synonym*/Set[String]]],
+    @NCMdoField singleValues: Map[String /*Element ID*/, Map[/*Value*/String, /*Synonym*/Set[String]]],
     @NCMdoField corpus: Set[String],
     @NCMdoField elements: Map[String /*Element ID*/, /*Confidence*/ Double]
 )

@@ -422,6 +422,7 @@ object NCDeployManager extends NCService {
 
         // Validates context words parameters.
         val elems = mdl.getElements.asScala
+
         val ctxCatElems = elems.flatMap(e =>
             e.getCategoryConfidence.asScala match {
                 case Some(v) => Some(e.getId -> v)
@@ -430,22 +431,20 @@ object NCDeployManager extends NCService {
         ).toMap
 
         if (ctxCatElems.nonEmpty) {
-            val cnt = mdl.getElements.asScala.map(_.getValues.asScala.map(_.getSynonyms.size()).sum).sum
+            val singleValsElems: Map[String, Int] =
+                elems.flatMap(e => {
+                    val cnt =
+                        if (e.getValues != null)
+                            e.getValues.asScala.map(
+                                p => if (p.getSynonyms != null) p.getSynonyms.asScala.count(!_.contains(" ")) else 0
+                            ).sum
+                        else
+                            0
+                    if (cnt != 0) Some(e.getId -> cnt) else None
+                }).toMap
 
-            if (cnt > MAX_CTXWORD_VALS_CNT)
-                // TODO: do we need print recommended value.?
-                logger.warn(
-                    s"Too many values synonyms detected for context words elements [" +
-                        s"mdlId=$mdlId, " +
-                        s"cnt=$cnt," +
-                        s"recommended=$MAX_CTXWORD_VALS_CNT" +
-                        s"]"
-                )
 
-            val valsElems = elems.filter(p => p.getValues != null && !p.getValues.isEmpty).
-                map(p => p.getId -> p.getValues.size()).toMap
-
-            var ids = ctxCatElems.filter { case (elemId, _) => !valsElems.keySet.contains(elemId) }.keys
+            var ids = ctxCatElems.filter { case (elemId, _) => !singleValsElems.keySet.contains(elemId) }.keys
 
             if (ids.nonEmpty)
                 // TODO:
@@ -456,6 +455,18 @@ object NCDeployManager extends NCService {
             if (ids.nonEmpty)
                 // TODO:
                 throw new NCE(s"Context word confidences are out of range (0..1) for elements : ${ids.mkString(", ")}")
+
+            val cnt = singleValsElems.values.sum
+
+            if (cnt > MAX_CTXWORD_VALS_CNT)
+                // TODO: do we need print recommended value.?
+                logger.warn(
+                    s"Too many values synonyms detected for context words elements [" +
+                        s"mdlId=$mdlId, " +
+                        s"cnt=$cnt," +
+                        s"recommendedMax=$MAX_CTXWORD_VALS_CNT" +
+                        s"]"
+                )
         }
 
         // Discard value loaders.
@@ -544,11 +555,6 @@ object NCDeployManager extends NCService {
         else
             logger.warn(s"Model has no intent: $mdlId")
 
-        def toMap(set: Set[SynonymHolder]): Map[String, Seq[NCProbeSynonym]] =
-            set.groupBy(_.elmId).map(p => p._1 -> p._2.map(_.syn).toSeq.sorted.reverse)
-
-        val simple = idl(syns.toSet, idl = false)
-
         val samples = scanSamples(mdl)
 
         if (ctxCatElems.nonEmpty && samples.size > MAX_CTXWORD_SAMPLES_CNT)
@@ -560,6 +566,11 @@ object NCDeployManager extends NCService {
                     s"recommended=$MAX_CTXWORD_SAMPLES_CNT" +
                     s"]"
             )
+
+        val simple = idl(syns.toSet, idl = false)
+
+        def toMap(set: Set[SynonymHolder]): Map[String, Seq[NCProbeSynonym]] =
+            set.groupBy(_.elmId).map(p => p._1 -> p._2.map(_.syn).toSeq.sorted.reverse)
 
         NCProbeModel(
             model = mdl,

@@ -35,7 +35,7 @@ import java.{lang, util}
 import java.util.concurrent.CountDownLatch
 import java.util.{Collections, Properties, TimeZone}
 import scala.collection.mutable
-import scala.jdk.CollectionConverters.{ListHasAsScala, MapHasAsJava, SetHasAsJava, SetHasAsScala}
+import scala.jdk.CollectionConverters.{ListHasAsScala, MapHasAsJava, SeqHasAsJava, SetHasAsJava, SetHasAsScala}
 
 /**
   * Probe down/up link connection manager.
@@ -216,7 +216,7 @@ object NCConnectionManager extends NCService {
                             val mdl = wrapper.model
 
                             val (
-                                values,
+                                singleValues,
                                 corpus,
                                 categoriesElements
                             ): (
@@ -234,8 +234,6 @@ object NCConnectionManager extends NCService {
                                 if (ctxCatElems.isEmpty)
                                     (Collections.emptyMap(), Collections.emptySet(), Collections.emptyMap())
                                 else {
-                                    var corpus = wrapper.samples.flatMap(_._2.flatMap(p => p))
-
                                     val values =
                                         mdl.getElements.
                                             asScala.
@@ -243,7 +241,10 @@ object NCConnectionManager extends NCService {
                                             map(e =>
                                         e.getId ->
                                             e.getValues.asScala.map(p => p.getName -> {
-                                                val set: util.Set[String] = new util.HashSet(p.getSynonyms)
+                                                val set: util.Set[String] =
+                                                    new util.HashSet(
+                                                        p.getSynonyms.asScala.filter(p => !p.contains(" ")).asJava
+                                                    )
 
                                                 set
                                             }).toMap.asJava
@@ -251,7 +252,7 @@ object NCConnectionManager extends NCService {
 
                                     (
                                         values.asJava,
-                                        corpus.asJava,
+                                        wrapper.samples.flatMap(_._2.flatMap(p => p)).asJava,
                                         ctxCatElems.asJava
                                     )
                                 }
@@ -266,7 +267,7 @@ object NCConnectionManager extends NCService {
                                 mdl.getName,
                                 mdl.getVersion,
                                 new util.HashSet[String](mdl.getEnabledBuiltInTokens),
-                                values,
+                                singleValues,
                                 corpus,
                                 categoriesElements
                             )

@@ -628,7 +628,7 @@ object NCProbeManager extends NCService {
                                 mdlName,
                                 mdlVer,
                                 enabledBuiltInToks,
-                                values,
+                                singleValues,
                                 corpus,
                                 categoriesElements
                             ) =>
@@ -636,7 +636,7 @@ object NCProbeManager extends NCService {
                                 require(mdlName != null)
                                 require(mdlVer != null)
                                 require(enabledBuiltInToks != null)
-                                require(values.isEmpty && corpus.isEmpty || !values.isEmpty && !corpus.isEmpty)
+                                require(singleValues.isEmpty && corpus.isEmpty || !singleValues.isEmpty && !corpus.isEmpty)
 
                                 NCProbeModelMdo(
                                     id = mdlId,
@@ -644,12 +644,12 @@ object NCProbeManager extends NCService {
                                     version = mdlVer,
                                     enabledBuiltInTokens = enabledBuiltInToks.asScala.toSet,
                                     ctxWordConfig =
-                                        if (!values.isEmpty) {
+                                        if (!singleValues.isEmpty) {
                                             Some(
                                                 NCCtxWordCategoriesConfigMdo(
                                                     probeId = probeId,
                                                     modelId = mdlId,
-                                                    values = values.asScala.map {
+                                                    singleValues = singleValues.asScala.map {
                                                         case (elemId, map) =>
                                                             elemId ->
                                                                 map.asScala.map {
