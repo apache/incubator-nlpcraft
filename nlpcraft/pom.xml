@@ -232,6 +232,7 @@
             <groupId>org.jline</groupId>
             <artifactId>jline</artifactId>
         </dependency>
+        <!-- TODO: add this library licence description. -->
         <dependency>
             <groupId>org.jibx</groupId>
             <artifactId>jibx-tools</artifactId>

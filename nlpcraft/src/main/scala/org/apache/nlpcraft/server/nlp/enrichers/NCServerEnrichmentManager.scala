@@ -92,7 +92,7 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
       * @param srvReqId Server request ID.
       * @param normTxt Normalized text.
       * @param enabledBuiltInToks Enabled built-in tokens.
-      * @param mlConf  Machine learning configuration.
+      * @param ctxWordCatConf Machine learning configuration.
       * @param parent Optional parent span.
       * @return
       */
@@ -100,11 +100,11 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
         srvReqId: String,
         normTxt: String,
         enabledBuiltInToks: Set[String],
-        mlConf: Option[NCCtxWordCategoriesConfigMdo],
+        ctxWordCatConf: Option[NCCtxWordCategoriesConfigMdo],
         parent: Span = null
     ): NCNlpSentence =
         startScopedSpan("process", parent, "srvReqId" -> srvReqId, "txt" -> normTxt) { span =>
-            val s = new NCNlpSentence(srvReqId, normTxt, enabledBuiltInToks, mlConf)
+            val s = new NCNlpSentence(srvReqId, normTxt, enabledBuiltInToks, ctxWordCatConf)
 
             // Server-side enrichment pipeline.
             // NOTE: order of enrichers is IMPORTANT.
@@ -141,7 +141,7 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
       * @param srvReqId Server request ID.
       * @param txt Input text.
       * @param enabledBuiltInToks Set of enabled built-in token IDs.
-      * @param mlConf Machine learning configuration.
+      * @param ctxWordCatConf Machine learning configuration.
       * @param parent Optional parent span.
       */
     @throws[NCE]
@@ -149,7 +149,7 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
         srvReqId: String,
         txt: String,
         enabledBuiltInToks: Set[String],
-        mlConf: Option[NCCtxWordCategoriesConfigMdo],
+        ctxWordCatConf: Option[NCCtxWordCategoriesConfigMdo],
         parent: Span = null
     ): NCNlpSentence = {
         startScopedSpan("enrichPipeline", parent, "srvReqId" -> srvReqId, "txt" -> txt) { span =>
@@ -158,23 +158,25 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
             if (normTxt != txt)
                 logger.info(s"Sentence normalized: $normTxt")
 
-            val normEnabledBuiltInToks = enabledBuiltInToks.map(_.toLowerCase)
+            def execute(): NCNlpSentence = process(srvReqId, normTxt, enabledBuiltInToks, ctxWordCatConf, span)
 
-            catching(wrapIE) {
-                cache(normTxt) match {
-                    case Some(h) =>
-                        // TODO: remove
-//                        if (h.enabledBuiltInTokens == normEnabledBuiltInToks) {
-//                            prepareAsciiTable(h.sentence).info(logger, Some(s"Sentence enriched (from cache): '$normTxt'"))
-//
-//                            h.sentence
-//                        }
-//                        else
-                            process(srvReqId, normTxt, enabledBuiltInToks, mlConf, span)
-                    case None =>
-                        process(srvReqId, normTxt, enabledBuiltInToks, mlConf, span)
+            if (U.isSysEnvSet("NLPCRAFT_DISABLE_SENTENCE_CACHE"))
+                execute()
+            else
+                catching(wrapIE) {
+                    cache(normTxt) match {
+                        case Some(h) =>
+                            if (h.enabledBuiltInTokens == enabledBuiltInToks.map(_.toLowerCase)) {
+                                prepareAsciiTable(h.sentence).info(logger, Some(s"Sentence enriched (from cache): '$normTxt'"))
+
+                                h.sentence
+                            }
+                            else
+                                execute()
+                        case None =>
+                            execute()
+                    }
                 }
-            }
         }
     }
 
