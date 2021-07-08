@@ -50,7 +50,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
 
     private case class Reason(word: String, suggestionConfidence: Double, corpusConfidence: Double) {
         override def toString: String =
-            s"Word: $word, suggestionConf=${FMT.format(suggestionConfidence)}, corpusConf=${FMT.format(corpusConfidence)}"
+            s"Word: $word, confidences: suggestion=${FMT.format(suggestionConfidence)}, corpus=${FMT.format(corpusConfidence)}"
     }
 
     private case class Confidence(value: Double, reason: Option[Reason] = None) {
@@ -88,12 +88,14 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
     // Service which responsible for all confidences calculations.
     private object ConfMath {
         /**
-          * Squeeze confidences values of some words to one value.
+          * Squeeze word's confidences values list (result of corpus processing) to single value.
           *
-          * @param confs Confidences values for some word. It is result of corpus processing.
+          * @param confs Word's confidences values for some.
+          * @return Calculated single value. `None` means that this word shouldn't ne taken into account for element.
           */
-        def squeeze(confs: Seq[Double]): Option[Double] =
-             // Drops if there is not enough data.
+        def squeeze(confs: Seq[Double]): Option[Double] = {
+            // Drops if there is not enough data.
+            // For one element we have few samples. Each word should be offered few times.
             if (confs.length < 3)
                 None
             else {
@@ -104,9 +106,10 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
 
                 Some(maxN.sum / maxN.length)
             }
+        }
 
         /**
-          * Calculates confidence values based on suggested confidence and corpus confidence.
+          * Calculates confidence values based on suggested confidence for given word and corpus confidence.
           *
           * @param suggConf Suggestion confidence for noun of given sentence.
           * @param corpusConf Corpus confidence which found via suggestion, co-reference.
@@ -196,7 +199,8 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
                     val idxs =
                         getIndexes(corpusNlp.map(_.normalWord), elemSingleValsNorm) ++
                         getIndexes(corpusNlp.map(_.stem), elemSingleValsStem) ++
-                        // Sample can have word in plural forms. We can compare them with synonyms values.
+                        // Sample can have word in plural forms.
+                        // We can compare them with synonyms values (suppose that model synonyms value defined as lemma)
                         getIndexes(corpusNlp.map(p => norm(p.lemma)), elemSingleValsNorm)
 
                     def mkRequest(idx: Int, syn: String): NCSuggestionRequest = {
@@ -222,9 +226,9 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
             }
 
     /**
+      * Context word server returned values have confidence in range (0..2).
       *
-      * @param conf
-      * @return
+      * @param conf Context word server confidence value.
       */
     private def normalizeConf(conf: Double): Double = conf / MAX_CTXWORD_SCORE
 
@@ -283,9 +287,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
     private def substitute(words: Seq[String], word: String, index: Int): Seq[String] = {
         require(index < words.length)
 
-        words.zipWithIndex.map { case (w, i) => if (i != index) w
-        else word
-        }
+        words.zipWithIndex.map { case (w, i) => if (i != index) w else word }
     }
 
     /**
@@ -329,10 +331,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
                 t #= ("Request", "Responses")
 
                 for ((req, resp) <- respsSeq)
-                    t += (
-                        req,
-                        s"${resp.map(p => s"${p.word}=${FMT.format(normalizeConf(p.score))}").mkString(", ")}"
-                    )
+                    t += (req, s"${resp.map(p => s"${p.word}=${FMT.format(normalizeConf(p.score))}").mkString(", ")}")
 
                 t.info(logger, Some("Corpus requests:"))
             }
@@ -393,13 +392,12 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
                         val stemsAll = stems -- normals.keySet
                         val lemmasAll = lemmas -- normals.keySet -- stems.keySet
 
+                        def mkDebugElementCell(normsSize: Int, stemsSize: Int, lemmasSize: Int): String =
+                            s"Element: $elemId [normals=$normsSize, stems=$stemsSize, lemmas=$lemmasSize]"
+
                         if (DEBUG_MODE)
                             tabAll += (
-                                s"Element: $elemId [" +
-                                s"normals=${normalsAll.size}, " +
-                                s"stems=${stemsAll.size}, " +
-                                s"lemmas=${lemmasAll.size}" +
-                                s"]",
+                                mkDebugElementCell(normalsAll.size, stemsAll.size, lemmasAll.size),
                                 toStr(
                                     normalsAll.toSeq.
                                         sortBy(p => (-p._2.max, -p._2.size)).map(
@@ -416,24 +414,21 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
                                 }
                             }
 
-                        val normalsNorm = squeeze(normalsAll)
-                        val stemsNorm = squeeze(stemsAll)
-                        val lemmasNorm = squeeze(lemmasAll)
+                        val normalsSingle = squeeze(normalsAll)
+                        val stemsSingle = squeeze(stemsAll)
+                        val lemmasSingle = squeeze(lemmasAll)
 
                         if (DEBUG_MODE)
                             tabNorm += (
-                                s"Element: $elemId [" +
-                                s"normals=${normalsNorm.size}, " +
-                                s"stems=${stemsNorm.size}, " +
-                                s"lemmas=${lemmasNorm.size}",
+                                mkDebugElementCell(normalsSingle.size, stemsSingle.size, lemmasSingle.size),
                                 toStr(
-                                    normalsNorm.toSeq.sortBy(-_._2).map(
+                                    normalsSingle.toSeq.sortBy(-_._2).map(
                                         { case (k, factor) => s"$k=${FMT.format(factor)}" }
                                     )
                                 )
                             )
 
-                        elemId -> ElementData(normalsNorm, stemsNorm, lemmasNorm)
+                        elemId -> ElementData(normalsSingle, stemsSingle, lemmasSingle)
                     }
 
             if (DEBUG_MODE) {
@@ -509,9 +504,8 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
                         val reqs = idxs.map(idx => NCSuggestionRequest(ns.tokens.map(_.origText).toSeq, idx))
 
                         val resps: Map[NCWordSuggestion, NCSuggestionRequest] =
-                            syncExec(
-                                NCSuggestSynonymManager.suggestWords(reqs, parent = parent)
-                            ).flatMap { case (req, suggs) => suggs.map(_ -> req) }
+                            syncExec(NCSuggestSynonymManager.suggestWords(reqs, parent = parent)).
+                                flatMap { case (req, suggs) => suggs.map(_ -> req) }
 
                         if (DEBUG_MODE) {
                             val t = NCAsciiTable()
