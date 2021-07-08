@@ -17,12 +17,13 @@
 
 package org.apache.nlpcraft.model.ctxword
 
+import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
 import org.apache.nlpcraft.model.tools.test.NCTestAutoModelValidator
-import org.apache.nlpcraft.model.{NCElement, NCIntent, NCIntentSample, NCIntentTerm, NCModel, NCResult, NCToken}
+import org.apache.nlpcraft.model.{NCElement, NCIntent, NCIntentSample, NCIntentTerm, NCModel, NCResult, NCToken, NCValue}
 import org.junit.jupiter.api.{Assertions, Test}
 
-import java.util
-import java.util.Collections
+import java.util.{Collections, Optional}
+import java.{lang, util}
 import scala.jdk.CollectionConverters.{MapHasAsJava, SeqHasAsJava, SetHasAsJava}
 
 /**
@@ -36,13 +37,15 @@ class NCContextWordSpecModel3 extends NCModel {
     override def isPermutateSynonyms: Boolean = true
     override def isSparse: Boolean = true
 
+    override def getAbstractTokens: util.Set[String] = Set("ls:type1", "ls:type2", "ls:type3").asJava
+
     override def getMacros: util.Map[String, String] =
         Map(
             "<ACTION>" -> "{turn|switch|dial|let|set|get|put}",
             "<KILL>" -> "{shut|kill|stop|eliminate}",
             "<ENTIRE_OPT>" -> "{entire|full|whole|total|_}",
             "<FLOOR_OPT>" -> "{upstairs|downstairs|{1st|2nd|3rd|4th|5th|top|ground} floor|_}",
-            "<TYPE>" -> "{room|closet|attic|loft|{store|storage} {room|_}}",
+            "<TYPE>" -> "{^^{tok_id() == 'ls:type1'}^^|{store|storage} {room|_}}",
             "<LIGHT>" -> "{all|_} {it|them|light|illumination|lamp|lamplight}"
         ).asJava
 
@@ -56,14 +59,28 @@ class NCContextWordSpecModel3 extends NCModel {
                     case None => super.getGroups
                 }
         }
+    private def mkValuesElement(id: String, conf: Double, valSyns: String*): NCElement =
+        new NCElement {
+            override def getId: String = id
+            override def getCategoryConfidence: Optional[lang.Double] = Optional.of(conf)
+            override def getValues: util.List[NCValue] = valSyns.map(p => new NCValue {
+                override def getName: String = p
+                override def getSynonyms: util.List[String] = Collections.singletonList(p)
+            }).asJava
+        }
 
     override def getElements: util.Set[NCElement] =
         Set(
+            mkValuesElement("ls:type1", 0.7, "room", "closet", "attic", "loft"),
+            mkValuesElement("ls:type2", 0.7, "kitchen", "library", "closet", "garage", "office", "playroom"),
+            //mkValuesElement("ls:type3", 0.7, "bedroom", "bathroom", "washroom", "storage"),
+            mkValuesElement("ls:type3", 0.7, "bedroom", "washroom"),
+
             mkElement(
                 "ls:loc",
                 None,
-                "<ENTIRE_OPT> <FLOOR_OPT> {kitchen|library|closet|garage|office|playroom|{dinning|laundry|play} <TYPE>}",
-                "<ENTIRE_OPT> <FLOOR_OPT> {master|kid|children|child|guest|_} {bedroom|bathroom|washroom|storage} {<TYPE>|_}",
+                "<ENTIRE_OPT> <FLOOR_OPT> {^^{tok_id() == 'ls:type2'}^^|{dinning|laundry|play} <TYPE>}",
+                "<ENTIRE_OPT> <FLOOR_OPT> {master|kid|children|child|guest|_} {^^{tok_id() == 'ls:type3'}^^} {<TYPE>|_}",
                 "<ENTIRE_OPT> {house|home|building|{1st|first} floor|{2nd|second} floor}"
             ),
             mkElement(
@@ -112,21 +129,34 @@ class NCContextWordSpecModel3 extends NCModel {
             else
                 locToks.map(_.meta[String]("nlpcraft:nlp:origtext")).mkString(", ")
 
-        // Add HomeKit, Arduino or other integration here.
-
         // By default - just return a descriptive action string.
         NCResult.text(s"Lights are [$status] in [${locations.toLowerCase}].")
     }
 }
 
 /**
-  *
+  * Test for samples set.
   */
-class NCContextWordSpec3 {
+class NCContextWordSpec3Samples {
     @Test
-    private[ctxword] def test(): Unit = {
+    private[ctxword] def testSamples(): Unit = {
         System.setProperty("NLPCRAFT_TEST_MODELS", classOf[NCContextWordSpecModel3].getName)
 
         Assertions.assertTrue(NCTestAutoModelValidator.isValid(),"See error logs above.")
+    }
+}
+
+/**
+  *  Additional values set.
+  */
+@NCTestEnvironment(model = classOf[NCContextWordSpecModel3], startClient = true)
+class NCContextWordSpec3Additional extends NCTestContext {
+    @Test
+    private[ctxword] def testValues(): Unit = {
+        // Look at `ls:type3` element definition.
+        // `bedroom` is defined, but 'bathroom' and 'hallway' are not
+        // (detected as `ls:type3` by context word category enricher.)
+        checkIntent("Switch on the illumination in the master bathroom closet.", "ls")
+        checkIntent("Switch on the illumination in the master hallway closet.", "ls")
     }
 }
