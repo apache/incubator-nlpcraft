@@ -1623,7 +1623,7 @@ object NCDeployManager extends NCService {
                 }
                 else {
                     def read[T](arr: Array[T], claxx: Class[_], getValue: T => Seq[String]): Seq[Seq[String]] = {
-                        val seq = arr.toSeq.map(getValue)
+                        val seq = arr.toSeq.map(getValue).map(_.map(_.strip))
 
                         if (seq.exists(_.isEmpty))
                             logger.warn(s"@${claxx.getName} annotation is empty: $mtdStr")
