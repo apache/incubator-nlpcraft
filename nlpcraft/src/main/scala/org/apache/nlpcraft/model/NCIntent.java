@@ -52,8 +52,7 @@ public @interface NCIntent {
     String value() default "";
 
     /**
-     * Grouping annotation required for when more than one {@link NCIntent} annotation is attached to the
-     * callback or class.
+     * Grouping annotation required for when more than one {@link NCIntent} annotation is used.
      */
     @Retention(RetentionPolicy.RUNTIME)
     @Documented

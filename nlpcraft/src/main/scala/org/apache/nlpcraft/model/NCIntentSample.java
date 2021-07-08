@@ -24,7 +24,7 @@ import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.*;
 
 /**
- * Annotation to define one or more samples (a corpus) of the user input that should match a corresponding intent. This
+ * Annotation to define samples of the user input that should match an intent. This
  * annotation should be used together with {@link NCIntent} or {@link NCIntentRef} annotations on the callback
  * methods. Method can have multiple annotations of this type and each annotation can define multiple input
  * examples. See similar {@link NCIntentSampleRef} annotation that allows to load samples from external resources like
@@ -33,16 +33,23 @@ import static java.lang.annotation.RetentionPolicy.*;
  * The corpus of intent samples serve several important roles in NLPCraft:
  * <ul>
  *     <li>
- *          
+ *          It provide code level documentation on what type of user input given intent is supposed to match on.
+ *          In many cases having {@link NCIntent} and {@link NCIntentSample} annotations on the intent callback
+ *          method allows to see all the main ingredients of the language comprehension in one place.
+ *     </li>
+ *     <li>
+ *         It provides a necessary corpus for automated unit and regression testing used by
+ *         {@link NCTestAutoModelValidator} class from
+ *         <a href="https://nlpcraft.apache.org/tools/test_framework.html">built-in test framework</a>.
+ *         This class auto-validates that provided samples are matched on by their corresponding intents.
+ *     </li>
+ *     <li>
+ *         This corpus is used by various statistical tools like
+ *         <a href="https://nlpcraft.apache.org/tools/syn_tool.html">synonyms tool</a> and category value enrichment. Both
+ *         of these tools utilize Google's BERT and Facebook fasttext models and require at least minimal corpus of
+ *         samples for each intent.
  *     </li>
  * </ul>
- *
- *
- *
- *
- * Note that the samples provided by this annotation not only serve the documentation purpose but are also
- * used by {@link NCTestAutoModelValidator} class from built-in test framework for auto-validation between
- * data models and intents.
  * <p>
  * Here's an example of using this annotation (from <a target=_new href="https://nlpcraft.apache.org/examples/light_switch.html">LightSwitch</a> example):
  * <pre class="brush: java, highlight: [2]">
@@ -86,8 +93,7 @@ public @interface NCIntentSample {
     String[] value();
 
     /**
-     * Grouping annotation required for when more than one {@link NCIntentSample} annotation is attached to the
-     * callback.
+     * Grouping annotation required for when more than one {@link NCIntentSample} annotation is used.
      */
     @Retention(RetentionPolicy.RUNTIME)
     @Target(value=METHOD)
