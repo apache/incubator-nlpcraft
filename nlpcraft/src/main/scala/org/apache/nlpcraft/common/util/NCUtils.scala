@@ -2269,7 +2269,6 @@ object NCUtils extends LazyLogging {
     /**
       *
       * @param src
-      * @throws
       * @return
       */
     @throws[NCE]
@@ -2281,7 +2280,6 @@ object NCUtils extends LazyLogging {
         else if (isUrl(src))
             Using.resource(new URL(src).openStream()) { is => readStream(is) }
         else {
-            // TODO:
-            throw new NCE(s"Source is not found: $src")
+            throw new NCE(s"Source not found: $src")
         }
 }

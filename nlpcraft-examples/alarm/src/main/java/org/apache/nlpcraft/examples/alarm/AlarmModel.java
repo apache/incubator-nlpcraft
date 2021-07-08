@@ -52,11 +52,7 @@ public class AlarmModel extends NCModelFileAdapter {
      * @return Query result.
      */
     @NCIntentRef("alarm")
-    @NCIntentSample({
-        "Ping me in 3 minutes",
-        "Buzz me in an hour and 15mins",
-        "Set my alarm for 30s"
-    })
+    @NCIntentSampleRef("alarm_samples.txt")
     NCResult onMatch(
         NCIntentMatch ctx,
         @NCIntentTerm("nums") List<NCToken> numToks

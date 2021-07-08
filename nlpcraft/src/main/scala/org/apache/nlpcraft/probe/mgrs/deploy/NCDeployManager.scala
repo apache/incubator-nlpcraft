@@ -1617,31 +1617,28 @@ object NCDeployManager extends NCService {
             val refAnns = m.getAnnotationsByType(CLS_INTENT_REF)
 
             if (smpAnns.nonEmpty || smpAnnsRef.nonEmpty) {
-                if (intAnns.isEmpty && refAnns.isEmpty) {
-                    // TODO:
+                if (intAnns.isEmpty && refAnns.isEmpty)
                     throw new NCE(s"@NCIntentSample or @NCIntentSampleRef annotations without corresponding @NCIntent or @NCIntentRef annotations: $mtdStr")
-                }
                 else {
-                    def read[T](arr: Array[T], claxx: Class[_], getValue: T => Seq[String]): Seq[Seq[String]] = {
-                        val seq = arr.toSeq.map(getValue).map(_.map(_.strip))
+                    def read[T](arr: Array[T], annName: String, getValue: T => Seq[String]): Seq[Seq[String]] = {
+                        val seq = arr.toSeq.map(getValue).map(_.map(_.strip).filter(s => s.nonEmpty && s.head != '#'))
 
                         if (seq.exists(_.isEmpty))
-                            logger.warn(s"@${claxx.getName} annotation is empty: $mtdStr")
+                            logger.warn(s"$annName annotation has no samples: $mtdStr")
 
                         seq
                     }
 
                     val seqSeq =
                         read[NCIntentSample](
-                            smpAnns, classOf[NCIntentSample], _.value().toSeq
+                            smpAnns, "@NCIntentSample", _.value().toSeq
                         ) ++
                         read[NCIntentSampleRef](
-                            smpAnnsRef, classOf[NCIntentSampleRef], a => U.readAnySource(a.value())
+                            smpAnnsRef, "@NCIntentSampleRef", a => U.readAnySource(a.value())
                         )
 
-                    // TODO: text
                     if (U.containsDups(seqSeq.flatten.toList))
-                        logger.warn(s"@NCIntentSample and @NCIntentSampleRef annotations have duplicates: $mtdStr")
+                        logger.warn(s"@NCIntentSample and @NCIntentSampleRef annotations have duplicates (safely ignoring): $mtdStr")
 
                     val distinct = seqSeq.map(_.distinct).distinct
 
@@ -1652,10 +1649,8 @@ object NCDeployManager extends NCService {
                         samples += (ann.value() -> distinct)
                 }
             }
-            else if (intAnns.nonEmpty || refAnns.nonEmpty) {
-                // TODO: text
+            else if (intAnns.nonEmpty || refAnns.nonEmpty)
                 logger.warn(s"@NCIntentSample or @NCIntentSampleRef annotations are missing for: $mtdStr")
-            }
         }
 
         if (samples.nonEmpty) {
@@ -1685,7 +1680,6 @@ object NCDeployManager extends NCService {
                             if (!allSyns.exists(_.intersect(seq).nonEmpty)) {
                                 // Not a warning since the parent class can contain direct synonyms (NLPCRAFT-348).
                                 // See NLPCRAFT-349 for the additional issue.
-                                // TODO: text
                                 logger.debug(s"@NCIntentSample or @NCIntentSampleRef sample doesn't contain any direct synonyms (check if its parent class contains any) [" +
                                     s"mdlId=$mdlId, " +
                                     s"origin=${mdl.getOrigin}, " +
