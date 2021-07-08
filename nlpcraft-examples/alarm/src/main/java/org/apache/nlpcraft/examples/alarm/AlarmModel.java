@@ -41,7 +41,7 @@ public class AlarmModel extends NCModelFileAdapter {
     private final Timer timer = new Timer();
     
     public AlarmModel() {
-        // Loading the model from the file in the classpath.
+        // Loading the model from the file.
         super("alarm_model.json");
     }
 
@@ -51,8 +51,8 @@ public class AlarmModel extends NCModelFileAdapter {
      * @param ctx Intent solver context.
      * @return Query result.
      */
-    @NCIntentRef("alarm")
-    @NCIntentSampleRef("alarm_samples.txt")
+    @NCIntentRef("alarm") // Intent is defined in JSON model file (alarm_model.json and intents.idl).
+    @NCIntentSampleRef("alarm_samples.txt") // Samples supplied in an external file.
     NCResult onMatch(
         NCIntentMatch ctx,
         @NCIntentTerm("nums") List<NCToken> numToks
@@ -72,7 +72,7 @@ public class AlarmModel extends NCModelFileAdapter {
         for (NCToken num : numToks) {
             String unit = num.meta("nlpcraft:num:unit");
     
-            // Skip possible fractional to simplify.
+            // Skip possible fractionals to simplify.
             long v = ((Double)num.meta("nlpcraft:num:from")).longValue();
             
             if (v <= 0)
@@ -88,7 +88,7 @@ public class AlarmModel extends NCModelFileAdapter {
                 case "year": { dt = dt.plusYears(v); break; }
         
                 default:
-                    // It shouldn't be assert, because 'datetime' unit can be extended.
+                    // It shouldn't be an assert, because 'datetime' unit can be extended.
                     throw new NCRejection("Unsupported time unit: " + unit);
             }
         }

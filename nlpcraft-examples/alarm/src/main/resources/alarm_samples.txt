@@ -15,7 +15,11 @@
 # limitations under the License.
 #
 
+#
+# Set of samples (corpus) for automatic unit and regression testing.
+#
+
 Ping me in 3 minutes
 Buzz me in an hour and 15mins
 Set my alarm for 30s
-Wake me up in twenty five minutes
+Please, wake me up in twenty five minutes!

@@ -24,11 +24,22 @@ import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.*;
 
 /**
- * Annotation to define one or more samples of the user input that should match a corresponding intent. This
- * annotation can only be used together with {@link NCIntent} or {@link NCIntentRef} annotations on the callback
+ * Annotation to define one or more samples (a corpus) of the user input that should match a corresponding intent. This
+ * annotation should be used together with {@link NCIntent} or {@link NCIntentRef} annotations on the callback
  * methods. Method can have multiple annotations of this type and each annotation can define multiple input
- * examples.
+ * examples. See similar {@link NCIntentSampleRef} annotation that allows to load samples from external resources like
+ * file or URL.
  * <p>
+ * The corpus of intent samples serve several important roles in NLPCraft:
+ * <ul>
+ *     <li>
+ *          
+ *     </li>
+ * </ul>
+ *
+ *
+ *
+ *
  * Note that the samples provided by this annotation not only serve the documentation purpose but are also
  * used by {@link NCTestAutoModelValidator} class from built-in test framework for auto-validation between
  * data models and intents.
@@ -40,14 +51,7 @@ import static java.lang.annotation.RetentionPolicy.*;
  *     "Turn the lights off in the entire house.",
  *     "Switch on the illumination in the master bedroom closet.",
  *     "Get the lights on.",
- *     "Please, put the light out in the upstairs bedroom.",
- *     "Set the lights on in the entire house.",
- *     "Turn the lights off in the guest bedroom.",
- *     "Could you please switch off all the lights?",
- *     "Dial off illumination on the 2nd floor.",
- *     "Please, no lights!",
- *     "Kill off all the lights now!",
- *     "No lights in the bedroom, please."
+ *     "Please, put the light out in the upstairs bedroom."
  * ))
  * def onMatch(
  *     {@literal @}NCIntentTerm("act") actTok: NCToken,
@@ -60,6 +64,7 @@ import static java.lang.annotation.RetentionPolicy.*;
  * Read full documentation in <a target=_ href="https://nlpcraft.apache.org/intent-matching.html">Intent Matching</a> section and review
  * <a target=_ href="https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft-examples">examples</a>.
  *
+ * @see NCIntentSampleRef
  * @see NCIntent
  * @see NCIntentRef
  * @see NCIntentTerm
