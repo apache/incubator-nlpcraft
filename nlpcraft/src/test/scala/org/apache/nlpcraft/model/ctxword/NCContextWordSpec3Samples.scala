@@ -73,6 +73,7 @@ class NCContextWordSpecModel3 extends NCModel {
         Set(
             mkValuesElement("ls:type1", 0.7, "room", "closet", "attic", "loft"),
             mkValuesElement("ls:type2", 0.7, "kitchen", "library", "closet", "garage", "office", "playroom"),
+            // The difference from initial model definition.
             //mkValuesElement("ls:type3", 0.7, "bedroom", "bathroom", "washroom", "storage"),
             mkValuesElement("ls:type3", 0.7, "bedroom", "washroom"),
 
