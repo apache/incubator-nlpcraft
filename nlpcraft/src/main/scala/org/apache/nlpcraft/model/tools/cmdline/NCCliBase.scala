@@ -80,9 +80,12 @@ class NCCliBase extends App {
     final val VER = NCVersion.getCurrent
     final val CP_WIN_NIX_SEPS_REGEX = "[:;]"
     final val CP_SEP = File.pathSeparator
+    final val CP_SEP_CHAR = File.pathSeparatorChar
+    final val PATH_SEP_CH = File.separatorChar
+    final val PATH_SEP_STR = File.separator
     final val JAVA = U.sysEnv("NLPCRAFT_CLI_JAVA").getOrElse(new File(SystemUtils.getJavaHome, s"bin/java${if (SystemUtils.IS_OS_UNIX) "" else ".exe"}").getAbsolutePath)
-    final val USR_WORK_DIR = SystemUtils.USER_DIR
-    final val USR_HOME_DIR = SystemUtils.USER_HOME
+    final val USR_WORK_DIR = U.notNull(SystemUtils.USER_DIR, "")
+    final val USR_HOME_DIR = U.notNull(SystemUtils.USER_HOME, "")
     final val INSTALL_HOME = U.sysEnv("NLPCRAFT_CLI_INSTALL_HOME").getOrElse(USR_WORK_DIR)
     final val JAVA_CP = U.sysEnv("NLPCRAFT_CLI_CP").getOrElse(ManagementFactory.getRuntimeMXBean.getClassPath)
     final val SCRIPT_NAME = U.sysEnv("NLPCRAFT_CLI_SCRIPT").getOrElse(s"nlpcraft.${if (SystemUtils.IS_OS_UNIX) "sh" else "cmd"}")
@@ -141,6 +144,7 @@ class NCCliBase extends App {
     case class TooManyArguments(cmd: Command) extends ISE(s"Too many arguments, ${help(cmd)}")
     case class NotEnoughArguments(cmd: Command) extends ISE(s"Not enough arguments, ${help(cmd)}")
     case class MissingParameter(cmd: Command, paramId: String) extends ISE( s"Missing mandatory parameter $C${"'" + cmd.params.find(_.id == paramId).get.names.head + "'"}$RST, ${help(cmd)}")
+    case class MissingOptionalParameter(cmd: Command, paramId: String) extends ISE( s"Missing optional but required in this context parameter $C${"'" + cmd.params.find(_.id == paramId).get.names.head + "'"}$RST, ${help(cmd)}")
     case class MissingMandatoryJsonParameters(cmd: Command, missingParams: Seq[RestSpecParameter], path: String) extends ISE(s"Missing mandatory JSON parameters (${missingParams.map(s => y(s.name)).mkString(",")}) for $C${"'" + cmd.name + s" --path=$path'"}$RST, ${help(cmd)}")
     case class InvalidParameter(cmd: Command, paramId: String) extends ISE(s"Invalid parameter $C${"'" + cmd.params.find(_.id == paramId).get.names.head + "'"}$RST, ${help(cmd)}")
     case class InvalidJsonParameter(cmd: Command, param: String) extends ISE(s"Invalid JSON parameter $C${"'" + param + "'"}$RST, ${help(cmd)}")

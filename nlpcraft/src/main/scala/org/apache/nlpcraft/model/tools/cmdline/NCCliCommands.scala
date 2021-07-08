@@ -84,6 +84,7 @@ private [cmdline] case class Parameter(
     names: Seq[String],
     value: Option[String] = None,
     optional: Boolean = false, // Mandatory by default.
+    fsPath: Boolean = false, // Not a file system path by default.
     synthetic: Boolean = false,
     desc: String
 ) {
@@ -113,7 +114,7 @@ private [cmdline] object NCCliCommands {
                 Parameter(
                     id = "path",
                     names = Seq("--path", "-p"),
-                    value = Some("path"),
+                    value = Some("rest"),
                     desc =
                         s"REST path, e.g. ${y("'signin'")} or ${y("'ask/sync'")}. " +
                         s"Note that you don't need supply '/' at the beginning. " +
@@ -221,7 +222,7 @@ private [cmdline] object NCCliCommands {
                 Parameter(
                     id = "path",
                     names = Seq("--path", "-p"),
-                    value = Some("path"),
+                    value = Some("rest"),
                     desc =
                         s"REST path, e.g. ${y("'signin'")} or ${y("'ask/sync'")}. " +
                         s"Note that you don't need supply '/' at the beginning. " +
@@ -297,8 +298,11 @@ private [cmdline] object NCCliCommands {
                     id = "mdlId",
                     names = Seq("--mdlId", "-m"),
                     value = Some("model.id"),
+                    optional = true,
                     desc =
-                        s"ID of the data model to send the request to. " +
+                        s"ID of the data model to send the request to. Note that this is optional ONLY if there is only one " +
+                        s"connected probe and it has only one model deployed - which will be used by default. In all other " +
+                        s"cases - this parameter is mandatory." +
                         s"In REPL mode, hit ${rv(" Tab ")} to see auto-suggestion for possible model IDs."
                 ),
                 Parameter(
@@ -329,7 +333,16 @@ private [cmdline] object NCCliCommands {
                     ),
                     desc =
                         s"Issues ${y("'ask/sync'")} REST call with given text and model ID."
+                ),
+                Example(
+                    usage = Seq(
+                        s"""> ask --txt="User text""""
+                    ),
+                    desc =
+                        s"Issues ${y("'ask/sync'")} REST call with given text and default model ID " +
+                        s"(single connected probe that has a single model deployed)."
                 )
+
             )
         ),
         Command(
@@ -378,12 +391,16 @@ private [cmdline] object NCCliCommands {
                     id = "cp",
                     names = Seq("--cp", "-p"),
                     value = Some("path"),
+                    fsPath = true,
                     optional = true,
                     desc =
                         s"Additional JVM classpath that will be appended to the default NLPCraft JVM classpath. " +
+                        s"Parameter should include one or more classpath entry (JAR or directory) separated by the OS specific classpath separator. " +
                         s"Although this configuration property is optional, in most cases you will need to provide an " +
                         s"additional classpath for JDBC driver that you use (see ${c("'--driver'")} parameter) unless " +
                         s"it is available in NLPCraft by default, i.e. Apache Ignite and H2. " +
+                        s"Note that you can have multiple ${c("'--cp'")} parameters and their values will be " +
+                        s"automatically combined into one final additional classpath. " +
                         s"Note also that you can use ${y("'~'")} at the beginning of the classpath component to specify user home directory."
                 ),
                 Parameter(
@@ -437,7 +454,7 @@ private [cmdline] object NCCliCommands {
                     optional = true,
                     desc =
                         s"Semicolon-separate list of tables and/or columns to exclude. By default, none of the " +
-                        s"tables and columns in the schema are excluded. See ${c("--help")} parameter to get more details."
+                        s"tables and columns in the schema are excluded. See ${c("'--help'")} parameter to get more details."
                 ),
                 Parameter(
                     id = "include",
@@ -446,7 +463,7 @@ private [cmdline] object NCCliCommands {
                     optional = true,
                     desc =
                         s"Semicolon-separate list of tables and/or columns to include. By default, all of the " +
-                        s"tables and columns in the schema are included. See ${c("--help")} parameter to get more details."
+                        s"tables and columns in the schema are included. See ${c("'--help'")} parameter to get more details."
                 ),
                 Parameter(
                     id = "prefix",
@@ -555,10 +572,12 @@ private [cmdline] object NCCliCommands {
                     id = "mdlId",
                     names = Seq("--mdlId", "-m"),
                     value = Some("model.id"),
+                    optional = true,
                     desc =
                         s"ID of the model to run synonym suggestion on. " +
-                        s"In REPL mode, hit ${rv(" Tab ")} to see auto-suggestion for possible model IDs. " +
-                        s"Note that the probe hosting this model must be connected to the server."
+                        s"In REPL mode, hit ${rv(" Tab ")} to see auto-suggestion for possible model IDs. Note that " +
+                        s"this is optional ONLY if there is only one connected probe and it has only one model deployed - which will be " +
+                        s"used by default. In all other cases - this parameter is mandatory."
                 ),
                 Parameter(
                     id = "minScore",
@@ -575,6 +594,14 @@ private [cmdline] object NCCliCommands {
                     ),
                     desc =
                         s"Issues ${y("'model/sugsyn'")} REST call with default min score and given model ID."
+                ),
+                Example(
+                    usage = Seq(
+                        s"""> sugsyn"""
+                    ),
+                    desc =
+                        s"Issues ${y("'model/sugsyn'")} REST call with default min score and default model ID " +
+                        s"(single connected probe that has a single deployed model)."
                 )
             )
         ),
@@ -640,18 +667,20 @@ private [cmdline] object NCCliCommands {
                     id = "config",
                     names = Seq("--cfg", "-c"),
                     value = Some("path"),
+                    fsPath = true,
                     optional = true,
                     desc =
                         s"Configuration file path. Server will automatically look for ${y("'server.conf'")} " +
                         s"configuration file in ${y("'resources'")} folder or on the classpath. If the configuration file has " +
                         s"different name or in different location use this parameter to provide an alternative path. " +
                         s"Note that the server and the probe can use the same file for their configuration. " +
-                        s"Note also that you can use ${y("'~'")} at the beginning of the path to specify user home directory."
+                        s"Note also that you can use ${y("'~'")} at the beginning of the path to indicate user home directory."
                 ),
                 Parameter(
                     id = "igniteConfig",
                     names = Seq("--igniteCfg", "-i"),
                     value = Some("path"),
+                    fsPath = true,
                     optional = true,
                     desc =
                         s"Apache Ignite configuration file path. Note that Apache Ignite is used as a cluster " +
@@ -659,7 +688,7 @@ private [cmdline] object NCCliCommands {
                         s"${y("'ignite.xml'")} configuration file in the same directory as NLPCraft JAR file. If the " +
                         s"configuration file has different name or in different location use this parameter to " +
                         s"provide an alternative path. " +
-                        s"Note also that you can use ${y("'~'")} at the beginning of the path to specify user home directory."
+                        s"Note also that you can use ${y("'~'")} at the beginning of the path to indicate user home directory."
                 ),
                 Parameter(
                     id = "jvmopts",
@@ -711,16 +740,21 @@ private [cmdline] object NCCliCommands {
                     id = "cp",
                     names = Seq("--cp", "-p"),
                     value = Some("path"),
+                    fsPath = true,
                     desc =
                         s"Additional JVM classpath that will be appended to the default NLPCraft JVM classpath. " +
-                        s"When starting a probe with your own models you must " +
+                        s"When starting a probe with your models you must " +
                         s"provide this additional classpath for the models and their dependencies this probe will be hosting. " +
-                        s"Note that you can use ${y("'~'")} at the beginning of the classpath component to specify user home directory."
+                        s"Parameter should include one or more classpath entry (JAR or directory) separated by the OS specific classpath separator. " +
+                        s"Note that you can have multiple ${c("'--cp'")} parameters and their values will be " +
+                        s"automatically combined into one final additional classpath. " +
+                        s"Note also that you can use ${y("'~'")} at the beginning of the classpath component to specify user home directory."
                 ),
                 Parameter(
                     id = "config",
                     names = Seq("--cfg", "-c"),
                     value = Some("path"),
+                    fsPath = true,
                     optional = true,
                     desc =
                         s"Configuration file path. Probe will automatically look for ${y("'probe.conf'")} " +
@@ -732,13 +766,14 @@ private [cmdline] object NCCliCommands {
                 Parameter(
                     id = "models",
                     names = Seq("--mdls", "-m"),
-                    value = Some("<model list>"),
+                    value = Some("my.Model1,my.Model2"),
                     optional = true,
                     desc =
                         s"Comma separated list of fully qualified class names for models to deploy. This will override " +
                         s"${y("'nlpcraft.probe.models'")} configuration property from either default configuration file " +
-                        s"or the one provided by ${c("--cfg")} parameter. Note that you also must provide the additional " +
-                        s"classpath via ${c("--cp")} parameter."
+                        s"or the one provided by ${c("'--cfg'")} parameter. Note that you also must provide the additional " +
+                        s"classpath in this case via ${c("'--cp'")} parameter. Note also that you can have multiple '${c("'--mdls'")} " +
+                        s"parameters - each specifying one or more model class names - and they will be automatically combined together."
                 ),
                 Parameter(
                     id = "jvmopts",
@@ -786,11 +821,29 @@ private [cmdline] object NCCliCommands {
             )
         ),
         Command(
+            name = "restart-probe",
+            group = "1. Server & Probe Commands",
+            synopsis = s"Restarts local probe (REPL mode only).",
+            desc = Some(
+                s"Restart local probe with same parameters as the last start. Works only in REPL mode and only if local " +
+                s"probe was previously started using ${c("'start-probe")} command. This command provides a " +
+                s"convenient way to quickly restart the probe to reload the model during model development and testing."
+            ),
+            body = NCCli.cmdRestartProbe,
+            params = Seq(),
+            examples = Seq(
+                Example(
+                    usage = Seq(s"> restart-probe"),
+                    desc = "Restarts local probe with the same parameters as the previous start."
+                )
+            )
+        ),
+        Command(
             name = "test-model",
             group = "3. Miscellaneous",
             synopsis = s"Runs ${y("'NCTestAutoModelValidator'")} model auto-validator.",
             desc = Some(
-                s"Validation consists " +
+                s"Auto-validation consists " +
                 s"of starting an embedded probe, scanning all deployed models for ${y("'NCIntentSample'")} annotations and their corresponding " +
                 s"callback methods, submitting each sample input sentences from ${y("'NCIntentSample'")} annotation and " +
                 s"checking that resulting intent matches the intent the sample was attached to. " +
@@ -802,17 +855,20 @@ private [cmdline] object NCCliCommands {
                     id = "cp",
                     names = Seq("--cp", "-p"),
                     value = Some("path"),
+                    fsPath = true,
                     desc =
                         s"Additional JVM classpath that will be appended to the default NLPCraft JVM classpath. " +
-                        s"Although this configuration property is optional, when testing your own models you must " +
-                        s"provide this additional classpath for the models and their dependencies. " +
-                        s"Note that this is only optional if you are testing example models shipped with NLPCraft. " +
+                        s"When testing your models you must provide this additional classpath for the models and their dependencies. " +
+                        s"Parameter should include one or more classpath entry (JAR or directory) separated by the OS specific classpath separator. " +
+                        s"Note that you can have multiple ${c("'--cp'")} parameters and their values will be " +
+                        s"automatically combined into one final additional classpath. " +
                         s"Note also that you can use ${y("'~'")} at the beginning of the classpath component to specify user home directory."
                 ),
                 Parameter(
                     id = "config",
                     names = Seq("--cfg", "-c"),
                     value = Some("path"),
+                    fsPath = true,
                     optional = true,
                     desc =
                         s"Configuration file path. By default, the embedded probe will automatically look for ${y("'probe.conf'")} " +
@@ -823,11 +879,14 @@ private [cmdline] object NCCliCommands {
                 Parameter(
                     id = "models",
                     names = Seq("--mdls", "-m"),
-                    value = Some("<model list>"),
+                    value = Some("my.Model1,my.Model2"),
                     optional = true,
                     desc =
-                        s"Comma separated list of fully qualified class names for models to test. Note that you also " +
-                        s"must provide the additional classpath via ${c("--cp")} parameter."
+                        s"Comma separated list of fully qualified class names for models to deploy and test. Note that you also " +
+                        s"must provide the additional classpath via ${c("'--cp'")} parameter. If not provided, the models " +
+                        s"specified in configuration file (${c("'--cfg'")} parameter) will be used instead. Note that " +
+                        s"you can have multiple '${c("'--mdls'")} parameters - each specifying one or more model class " +
+                        s"names - and they will be automatically combined together."
                 ),
                 Parameter(
                     id = "jvmopts",
@@ -849,6 +908,30 @@ private [cmdline] object NCCliCommands {
                     ),
                     desc =
                         s"Runs model auto-validator for ${y("'my.package.Model'")} model."
+                )
+            )
+        ),
+        Command(
+            name = "retest-model",
+            group = "3. Miscellaneous",
+            synopsis = s"Re-runs ${y("'NCTestAutoModelValidator'")} model auto-validator (REPL mode only).",
+            desc = Some(
+                s"Re-runs mode auto-validator with the same parameters as the last run. Works only in REPL mode. " +
+                s"Auto-validation consists " +
+                s"of starting an embedded probe, scanning all deployed models for ${y("'NCIntentSample'")} annotations and their corresponding " +
+                s"callback methods, submitting each sample input sentences from ${y("'NCIntentSample'")} annotation and " +
+                s"checking that resulting intent matches the intent the sample was attached to. " +
+                s"See more details at https://nlpcraft.apache.org/tools/test_framework.html"
+            ),
+            body = NCCli.cmdRetestModel,
+            params = Seq(),
+            examples = Seq(
+                Example(
+                    usage = Seq(
+                        s"> retest-model"
+                    ),
+                    desc =
+                        s"Re-runs model auto-validator with the same parameters as the last run."
                 )
             )
         ),
@@ -1066,6 +1149,7 @@ private [cmdline] object NCCliCommands {
                     id = "outputDir",
                     names = Seq("--outputDir", "-d"),
                     value = Some("path"),
+                    fsPath = true,
                     optional = true,
                     desc =
                         s"Output directory. Default value is the current working directory. " +
@@ -1134,6 +1218,7 @@ private [cmdline] object NCCliCommands {
                     id = "filePath",
                     names = Seq("--filePath", "-f"),
                     value = Some("path"),
+                    fsPath = true,
                     desc =
                         s"File path for the model stub. File path can either be an absolute path, relative path or " +
                         s"just a file name in which case the current folder will be used. File must have one of the " +

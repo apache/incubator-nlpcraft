@@ -158,10 +158,10 @@ class NCAsciiTable {
     /**
      * Sets table's margin.
      *
-     * @param top    Top margin.
-     * @param right  Right margin.
+     * @param top Top margin.
+     * @param right Right margin.
      * @param bottom Bottom margin.
-     * @param left   Left margin.
+     * @param left Left margin.
      */
     def margin(top: Int = 0, right: Int = 0, bottom: Int = 0, left: Int = 0): NCAsciiTable = {
         margin = Margin(top, right, bottom, left)

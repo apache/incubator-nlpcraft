@@ -1656,19 +1656,22 @@ object NCDeployManager extends NCService {
             val processed = mutable.HashSet.empty[Case]
 
             samples.
-                flatMap { case (_, samples) => samples.flatten.map(_.toLowerCase) }.
+                flatMap { case (_, smp) =>smp.flatten.map(_.toLowerCase) }.
                 map(s => s -> SEPARATORS.foldLeft(s)((s, ch) => s.replaceAll(s"\\$ch", s" $ch "))).
                 foreach {
                     case (s, sNorm) =>
                         if (processed.add(Case(mdlId, s))) {
                             val seq: Seq[String] = sNorm.split(" ").toIndexedSeq.map(NCNlpPorterStemmer.stem)
 
-                            if (!allSyns.exists(_.intersect(seq).nonEmpty))
-                                logger.warn(s"@NCIntentSample sample doesn't contain any direct synonyms [" +
+                            if (!allSyns.exists(_.intersect(seq).nonEmpty)) {
+                                // Not a warning since the parent class can contain direct synonyms (NLPCRAFT-348).
+                                // See NLPCRAFT-349 for the additional issue.
+                                logger.debug(s"@NCIntentSample sample doesn't contain any direct synonyms (check if its parent class contains any) [" +
                                     s"mdlId=$mdlId, " +
                                     s"origin=${mdl.getOrigin}, " +
                                     s"""sample="$s"""" +
                                 s"]")
+                            }
                         }
 
                 }

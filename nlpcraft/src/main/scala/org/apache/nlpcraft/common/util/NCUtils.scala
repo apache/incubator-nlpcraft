@@ -147,9 +147,18 @@ object NCUtils extends LazyLogging {
     def nowUtcTs(): Timestamp = new Timestamp(Instant.now().toEpochMilli)
 
     /**
-     * Shortcut.
+     * Shortcut - current timestamp in milliseconds.
      */
     def now(): Long = System.currentTimeMillis()
+
+    /**
+     *
+     * @param v
+     * @param dflt
+     * @tparam T
+     * @return
+     */
+    def notNull[T <: AnyRef](v: T, dflt: T): T = if (v == null) dflt else v
 
     /**
      * Strips ANSI escape sequences from the given string.
