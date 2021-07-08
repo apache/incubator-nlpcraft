@@ -42,6 +42,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
     private final val MAX_CTXWORD_SCORE = 2
     private final val INCL_MAX_CONFIDENCE = 1.0
 
+    // TODO: use standard DEEP_DEBUG flag and change debug level.
     private final val DEBUG_MODE = true
 
     private final val CONVERTER = new DefaultNameConverter

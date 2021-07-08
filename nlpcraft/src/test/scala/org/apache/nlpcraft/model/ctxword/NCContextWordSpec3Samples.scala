@@ -34,21 +34,6 @@ class NCContextWordSpecModel3 extends NCModel {
     override def getName: String = this.getClass.getSimpleName
     override def getVersion: String = "1.0.0"
 
-    override def isPermutateSynonyms: Boolean = true
-    override def isSparse: Boolean = true
-
-    override def getAbstractTokens: util.Set[String] = Set("ls:type1", "ls:type2", "ls:type3").asJava
-
-    override def getMacros: util.Map[String, String] =
-        Map(
-            "<ACTION>" -> "{turn|switch|dial|let|set|get|put}",
-            "<KILL>" -> "{shut|kill|stop|eliminate}",
-            "<ENTIRE_OPT>" -> "{entire|full|whole|total|_}",
-            "<FLOOR_OPT>" -> "{upstairs|downstairs|{1st|2nd|3rd|4th|5th|top|ground} floor|_}",
-            "<TYPE>" -> "{^^{tok_id() == 'ls:type1'}^^|{store|storage} {room|_}}",
-            "<LIGHT>" -> "{all|_} {it|them|light|illumination|lamp|lamplight}"
-        ).asJava
-
     private def mkElement(id: String, group: Option[String], syns: String*): NCElement =
         new NCElement {
             override def getId: String = id
@@ -69,30 +54,41 @@ class NCContextWordSpecModel3 extends NCModel {
             }).asJava
         }
 
+
+    override def isPermutateSynonyms: Boolean = true
+    override def isSparse: Boolean = true
+    override def getAbstractTokens: util.Set[String] = Set("ls:type1", "ls:type2", "ls:type3").asJava
+
+    override def getMacros: util.Map[String, String] =
+        Map(
+            "<ACTION>" -> "{turn|switch|dial|let|set|get|put}",
+            "<KILL>" -> "{shut|kill|stop|eliminate}",
+            "<ENTIRE_OPT>" -> "{entire|full|whole|total|_}",
+            "<FLOOR_OPT>" -> "{upstairs|downstairs|{1st|2nd|3rd|4th|5th|top|ground} floor|_}",
+            "<TYPE>" -> "{^^{tok_id() == 'ls:type1'}^^|{store|storage} {room|_}}",
+            "<LIGHT>" -> "{all|_} {it|them|light|illumination|lamp|lamplight}"
+        ).asJava
+
     override def getElements: util.Set[NCElement] =
         Set(
             mkValuesElement("ls:type1", 0.7, "room", "closet", "attic", "loft"),
             mkValuesElement("ls:type2", 0.7, "kitchen", "library", "closet", "garage", "office", "playroom"),
-            // The difference from initial model definition.
-            //mkValuesElement("ls:type3", 0.7, "bedroom", "bathroom", "washroom", "storage"),
+            // The difference from initial model definition. mkValuesElement("ls:type3", 0.7, "bedroom", "bathroom", "washroom", "storage"),
             mkValuesElement("ls:type3", 0.7, "bedroom", "washroom"),
 
             mkElement(
-                "ls:loc",
-                None,
+                "ls:loc", None,
                 "<ENTIRE_OPT> <FLOOR_OPT> {^^{tok_id() == 'ls:type2'}^^|{dinning|laundry|play} <TYPE>}",
                 "<ENTIRE_OPT> <FLOOR_OPT> {master|kid|children|child|guest|_} {^^{tok_id() == 'ls:type3'}^^} {<TYPE>|_}",
                 "<ENTIRE_OPT> {house|home|building|{1st|first} floor|{2nd|second} floor}"
             ),
             mkElement(
-                "ls:on",
-                Some("act"),
+                "ls:on", Some("act"),
                 "<ACTION> {on|up|_} <LIGHT> {on|up|_}",
                 "<LIGHT> {on|up}"
             ),
             mkElement(
-                "ls:off",
-                Some("act"),
+                "ls:off", Some("act"),
                 "<ACTION> <LIGHT> {off|out}",
                 "{<ACTION>|<KILL>} {off|out} <LIGHT>",
                 "<KILL> <LIGHT>",
@@ -136,7 +132,7 @@ class NCContextWordSpecModel3 extends NCModel {
 }
 
 /**
-  * Test for samples set.
+  * Verifies samples set.
   */
 class NCContextWordSpec3Samples {
     @Test
@@ -148,10 +144,10 @@ class NCContextWordSpec3Samples {
 }
 
 /**
-  *  Additional values set.
+  *  Extra values set.
   */
 @NCTestEnvironment(model = classOf[NCContextWordSpecModel3], startClient = true)
-class NCContextWordSpec3Additional extends NCTestContext {
+class NCContextWordSpec3Extra extends NCTestContext {
     @Test
     private[ctxword] def testValues(): Unit = {
         // Look at `ls:type3` element definition.
