@@ -17,11 +17,12 @@
 
 package org.apache.nlpcraft.model;
 
-import org.apache.nlpcraft.model.tools.test.*;
+import org.apache.nlpcraft.model.tools.test.NCTestAutoModelValidator;
+
 import java.lang.annotation.*;
 
-import static java.lang.annotation.ElementType.*;
-import static java.lang.annotation.RetentionPolicy.*;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Annotation to define samples of the user input that should match an intent. This

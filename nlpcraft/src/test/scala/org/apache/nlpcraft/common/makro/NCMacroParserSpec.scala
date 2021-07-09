@@ -95,6 +95,8 @@ class NCMacroParserSpec  {
             assert(false)
         } catch {
             case e: NCE =>
+                println("Expected error below:")
+                println("^^^^^^^^^^^^^^^^^^^^^")
                 println(e.getMessage)
                 assert(true)
         }
