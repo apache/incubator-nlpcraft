@@ -33,6 +33,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * @see NCIntent
  * @see NCIntentTerm
  * @see NCIntentSample
+ * @see NCIntentSampleRef
  * @see NCIntentSkip
  * @see NCIntentMatch
  * @see NCModel#onMatchedIntent(NCIntentMatch)

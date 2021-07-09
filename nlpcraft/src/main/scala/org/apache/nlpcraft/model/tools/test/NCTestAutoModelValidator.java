@@ -21,15 +21,15 @@ import org.apache.nlpcraft.model.*;
 import org.apache.nlpcraft.model.tools.test.impl.*;
 
 /**
- * Data model auto-validator is based on {@link NCIntentSample} annotations. Validation consists of starting an embedded
- * probe, scanning all deployed models for {@link NCIntentSample} annotations and their corresponding callback methods,
- * submitting each sample input sentences from {@link NCIntentSample} annotation and checking that resulting intent
- * matches the intent the sample was attached to.
+ * Data model auto-validator is based on {@link NCIntentSample} and {@link NCIntentSampleRef} annotations. Validation
+ * consists of starting an embedded probe, scanning all deployed models for these annotations and their
+ * corresponding callback methods, submitting each sample input sentences from the annotation and checking that
+ * resulting intent matches the intent the sample was attached to.
  * <p>
- * Note that there can be more than one {@link NCIntentSample} annotation attached to the intent callback. Each such
- * annotation will trigger conversation STM reset before its samples will be submitted. This gives an opportunity
- * to test samples both with and without conversational context as well as the same sample but with multiple different
- * conversation contexts.
+ * Note that there can be more than one {@link NCIntentSample} or {@link NCIntentSampleRef} annotation attached to
+ * the intent callback. Each such  annotation will trigger conversation STM reset before its samples will be submitted.
+ * This gives an opportunity to test samples both with and without conversational context as well as the same
+ * sample but with multiple different conversation contexts.
  * <p>
  * This class can be used in two modes:
  * <ul>
@@ -50,6 +50,7 @@ import org.apache.nlpcraft.model.tools.test.impl.*;
  * for usage of model auto-validator.
  * 
  * @see NCIntentSample
+ * @see NCIntentSampleRef
  * @see NCIntent
  * @see NCIntentRef
  */
@@ -58,7 +59,7 @@ public class NCTestAutoModelValidator {
     public final static String PROP_MODELS = "NLPCRAFT_TEST_MODELS";
 
     /**
-     * Performs validation based on {@link NCIntentSample} annotations.
+     * Performs validation based on {@link NCIntentSample} and {@link NCIntentSampleRef} annotations.
      * <p>
      * This is an entry point for a standalone application that expects two system properties (both optional):
      * <ul>
@@ -84,7 +85,7 @@ public class NCTestAutoModelValidator {
     }
 
     /**
-     * Performs validation based on {@link NCIntentSample} annotations.
+     * Performs validation based on {@link NCIntentSample} and {@link NCIntentSampleRef} annotations.
      * <p>
      * This method accepts two system properties (both optional):
      * <ul>
@@ -111,7 +112,7 @@ public class NCTestAutoModelValidator {
     }
 
     /**
-     * Performs validation based on {@link NCIntentSample} annotations for given model.
+     * Performs validation based on {@link NCIntentSample} and {@link NCIntentSampleRef} annotations for given model.
      * <p>
      * This is a convenient shortcut that is equivalent to setting <code>NLPCRAFT_TEST_MODELS</code> system
      * property (overriding any existing value) with given mode class name and calling {@link #isValid()} method.

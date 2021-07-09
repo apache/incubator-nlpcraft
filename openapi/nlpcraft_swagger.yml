@@ -185,7 +185,7 @@ paths:
         - Tools
       summary: Runs model synonym suggestion tool.
       description: >-
-        Runs model synonym suggestion tool that is based on BERT models and uses @NCIntentSample annotation.
+        Runs model synonym suggestion tool that is based on BERT models and uses @NCIntentSample or @NCIntentSampleRef annotations.
         Administrative privileges required.
       operationId: sugsyn
       parameters:

@@ -844,8 +844,8 @@ private [cmdline] object NCCliCommands {
             synopsis = s"Runs ${y("'NCTestAutoModelValidator'")} model auto-validator.",
             desc = Some(
                 s"Auto-validation consists " +
-                s"of starting an embedded probe, scanning all deployed models for ${y("'NCIntentSample'")} annotations and their corresponding " +
-                s"callback methods, submitting each sample input sentences from ${y("'NCIntentSample'")} annotation and " +
+                s"of starting an embedded probe, scanning all deployed models for ${y("'NCIntentSample'")} and ${y("'NCIntentSampleRef'")} annotations and their corresponding " +
+                s"callback methods, submitting each sample input sentences from these annotation and " +
                 s"checking that resulting intent matches the intent the sample was attached to. " +
                 s"See more details at https://nlpcraft.apache.org/tools/test_framework.html"
             ),
@@ -918,8 +918,8 @@ private [cmdline] object NCCliCommands {
             desc = Some(
                 s"Re-runs mode auto-validator with the same parameters as the last run. Works only in REPL mode. " +
                 s"Auto-validation consists " +
-                s"of starting an embedded probe, scanning all deployed models for ${y("'NCIntentSample'")} annotations and their corresponding " +
-                s"callback methods, submitting each sample input sentences from ${y("'NCIntentSample'")} annotation and " +
+                s"of starting an embedded probe, scanning all deployed models for ${y("'NCIntentSample'")} or ${y("'NCIntentSampleRef'")} annotations and their corresponding " +
+                s"callback methods, submitting each sample input sentences from these annotation and " +
                 s"checking that resulting intent matches the intent the sample was attached to. " +
                 s"See more details at https://nlpcraft.apache.org/tools/test_framework.html"
             ),

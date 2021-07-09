@@ -39,9 +39,7 @@ class NCIntentSampleSpecModel extends NCModelAdapter(
     @NCIntentSample(Array("unknown", "unknown"))
     private def onX1(ctx: NCIntentMatch): NCResult = "OK"
 
-    @NCIntentSample(Array("x1", "x2", "x3"))
-    @NCIntentSample(Array("x1", "x2"))
-    @NCIntentSample(Array("x1"))
+    @NCIntentSampleRef("samples.txt")
     @NCIntent("intent=intent2 term~{tok_id()=='x2'}")
     private def onX2(ctx: NCIntentMatch): NCResult = "OK"
 }
