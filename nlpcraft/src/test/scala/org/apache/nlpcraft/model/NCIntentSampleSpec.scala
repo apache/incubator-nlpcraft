@@ -19,7 +19,7 @@ package org.apache.nlpcraft.model
 
 import org.apache.nlpcraft.NCTestElement
 import org.apache.nlpcraft.model.tools.test.NCTestAutoModelValidator
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.{Assertions, Test}
 
 import java.util
 import scala.language.implicitConversions
@@ -53,7 +53,8 @@ class NCIntentSampleSpec {
         System.setProperty("NLPCRAFT_TEST_MODELS", "org.apache.nlpcraft.model.NCIntentSampleSpecModel")
 
         // Note that this validation can print validation warnings for this 'NCIntentSampleSpecModel' model.
-        // Its is expected behaviour because not model is tested, but validation itself.
+        // Its is expected behaviour because it is not the model that is tested, but validation itself.
+        // Start model auto-validator.
         NCTestAutoModelValidator.isValid()
     }
 }
