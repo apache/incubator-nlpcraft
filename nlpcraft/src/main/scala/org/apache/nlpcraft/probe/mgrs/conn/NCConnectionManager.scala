@@ -232,7 +232,7 @@ object NCConnectionManager extends NCService {
                     case "S2P_PROBE_MULTIPLE_INSTANCES" =>  throw new HandshakeError("Duplicate probes ID detected. Each probe has to have a unique ID.")
                     case "S2P_PROBE_NOT_FOUND" =>  throw new HandshakeError("Probe failed to start due to unknown error.")
                     case "S2P_PROBE_VERSION_MISMATCH" =>  throw new HandshakeError(s"REST server does not support probe version: ${ver.version}")
-                    case "S2P_PROBE_UNSUPPORTED_TOKENS_TYPES" =>  throw new HandshakeError(s"REST server does not support required tokes types. Set 'nlpcraft.server.tokenProviders' configuration property.")
+                    case "S2P_PROBE_UNSUPPORTED_TOKENS_TYPES" =>  throw new HandshakeError(s"REST server does not support required token types. Set 'nlpcraft.server.tokenProviders' configuration property.")
                     case "S2P_PROBE_OK" => logger.trace("Uplink handshake OK.") // Bingo!
                     case _ =>  throw new HandshakeError(s"Unknown REST server message: ${resp.getType}")
                 }

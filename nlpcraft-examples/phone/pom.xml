@@ -37,9 +37,15 @@
             <artifactId>nlpcraft</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <!-- Test dependencies. -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
-    <!-- Integration and local tests skipped for this module. -->
     <build>
         <plugins>
             <plugin>
@@ -50,6 +56,29 @@
                     <source>${java.ver}</source>
                     <target>${java.ver}</target>
                 </configuration>
+            </plugin>
+            <!--Integration tests skipped for this module. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven.surefire.plugin.ver}</version>
+                <configuration>
+                    <!-- Skips all tests on phase `test`. -->
+                    <skip>true</skip>
+                </configuration>
+                <executions>
+                    <!-- All tests are defined as integration. -->
+                    <execution>
+                        <id>integration-tests</id>
+                        <phase>integration-test</phase>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

@@ -30,6 +30,11 @@ import java.util.stream.*;
  * Note that this example is using NE tokens from Google Natural Language service. 'google' provider should
  * be enabled to run this example - see 'tokenProviders' section in server configuration.
  * <p>
+ * Make sure to do the following:
+ * <ul>
+ * <li>Change config for server in 'nlpcraft.conf' file to add Google provider: tokenProviders = “nlpcraft,google”</li>
+ * <li>Set GOOGLE_APPLICATION_CREDENTIALS environment variable to point to the JSON file with Google credentials.</li>
+ * </ul>
  * See 'README.md' file in the same folder for running and testing instructions.
  */
 public class PhoneModel extends NCModelFileAdapter {
