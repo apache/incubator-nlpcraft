@@ -33,6 +33,7 @@ import java.util.*;
  * @see NCIntentTerm
  * @see NCIntentSkip
  * @see NCIntentSample
+ * @see NCIntentSampleRef
  * @see NCIntentRef
  */
 public interface NCIntentMatch extends NCMetadata, Serializable {

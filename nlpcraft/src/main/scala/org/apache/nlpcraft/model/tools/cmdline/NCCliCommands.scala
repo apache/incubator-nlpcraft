@@ -844,8 +844,8 @@ private [cmdline] object NCCliCommands {
             synopsis = s"Runs ${y("'NCTestAutoModelValidator'")} model auto-validator.",
             desc = Some(
                 s"Auto-validation consists " +
-                s"of starting an embedded probe, scanning all deployed models for ${y("'NCIntentSample'")} annotations and their corresponding " +
-                s"callback methods, submitting each sample input sentences from ${y("'NCIntentSample'")} annotation and " +
+                s"of starting an embedded probe, scanning all deployed models for ${y("'NCIntentSample'")} and ${y("'NCIntentSampleRef'")} annotations and their corresponding " +
+                s"callback methods, submitting each sample input sentences from these annotation and " +
                 s"checking that resulting intent matches the intent the sample was attached to. " +
                 s"See more details at https://nlpcraft.apache.org/tools/test_framework.html"
             ),
@@ -885,7 +885,7 @@ private [cmdline] object NCCliCommands {
                         s"Comma separated list of fully qualified class names for models to deploy and test. Note that you also " +
                         s"must provide the additional classpath via ${c("'--cp'")} parameter. If not provided, the models " +
                         s"specified in configuration file (${c("'--cfg'")} parameter) will be used instead. Note that " +
-                        s"you can have multiple '${c("'--mdls'")} parameters - each specifying one or more model class " +
+                        s"you can have multiple ${c("'--mdls'")} parameters - each specifying one or more model class " +
                         s"names - and they will be automatically combined together."
                 ),
                 Parameter(
@@ -918,8 +918,8 @@ private [cmdline] object NCCliCommands {
             desc = Some(
                 s"Re-runs mode auto-validator with the same parameters as the last run. Works only in REPL mode. " +
                 s"Auto-validation consists " +
-                s"of starting an embedded probe, scanning all deployed models for ${y("'NCIntentSample'")} annotations and their corresponding " +
-                s"callback methods, submitting each sample input sentences from ${y("'NCIntentSample'")} annotation and " +
+                s"of starting an embedded probe, scanning all deployed models for ${y("'NCIntentSample'")} or ${y("'NCIntentSampleRef'")} annotations and their corresponding " +
+                s"callback methods, submitting each sample input sentences from these annotation and " +
                 s"checking that resulting intent matches the intent the sample was attached to. " +
                 s"See more details at https://nlpcraft.apache.org/tools/test_framework.html"
             ),

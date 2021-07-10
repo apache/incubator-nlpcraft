@@ -266,7 +266,7 @@ object NCSuggestSynonymManager extends NCService {
                                     map { case (elemId, _) => elemId }
 
                             if (noExElems.nonEmpty)
-                                warns += s"Elements do not have *single word* synonyms in their @NCIntentSample - " +
+                                warns += s"Elements do not have *single word* synonyms in their @NCIntentSample or @NCIntentSampleRef annotations - " +
                                     s"no suggestion can be made: ${noExElems.mkString(", ")}"
 
                             val allReqsCnt = allReqs.map(_._2.size).sum

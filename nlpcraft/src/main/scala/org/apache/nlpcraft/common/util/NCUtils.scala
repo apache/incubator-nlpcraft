@@ -2233,29 +2233,53 @@ object NCUtils extends LazyLogging {
         }
     }
 
+    def isFile(path: String): Boolean = {
+        val f = new File(path)
+
+        f.exists() && f.isFile
+    }
+
+    /**
+      *
+      * @return
+      */
+    def isResource(res: String): Boolean = getClass.getClassLoader.getResource(res) != null
+
+    /**
+      *
+      * @param url
+      * @return
+      */
+    def isUrl(url: String): Boolean =
+        try {
+            new URL(url)
+
+            true
+        }
+        catch {
+            case _: MalformedURLException => false
+        }
+
     /**
       *
       * @param s
       */
-    def isSuitableConfig(s: String): Boolean = {
-        def isFile: Boolean = {
-            val f = new File(s)
+    def isSuitableConfig(s: String): Boolean = isFile(s) || isResource(s) || isUrl(s)
 
-            f.exists() && f.isFile
+    /**
+      *
+      * @param src
+      * @return
+      */
+    @throws[NCE]
+    def readAnySource(src: String): List[String] =
+        if (isFile(src))
+            readFile(new File(src))
+        else if (isResource(src))
+            readResource(src)
+        else if (isUrl(src))
+            Using.resource(new URL(src).openStream()) { is => readStream(is) }
+        else {
+            throw new NCE(s"Source not found: $src")
         }
-
-        def isResource: Boolean = getClass.getClassLoader.getResource(s) != null
-
-        def isUrl: Boolean =
-            try {
-                new URL(s)
-
-                true
-            }
-            catch {
-                case _: MalformedURLException => false
-            }
-
-        isFile || isResource || isUrl
-    }
 }
