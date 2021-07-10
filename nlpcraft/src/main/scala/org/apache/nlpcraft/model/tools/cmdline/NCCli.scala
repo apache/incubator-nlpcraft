@@ -54,6 +54,7 @@ import org.jline.utils.InfoCmp.Capability
 import org.apache.nlpcraft.model.tools.cmdline.NCCliRestSpec._
 import org.apache.nlpcraft.model.tools.cmdline.NCCliCommands._
 
+import java.util
 import scala.util.Using
 import scala.collection.mutable
 import scala.compat.java8.OptionConverters._
@@ -2328,7 +2329,7 @@ object NCCli extends NCCliBase {
             private val cmds = CMDS.map(c => (c.name, c.synopsis, c.group))
 
             private val fsCompleter = new NCCliFileNameCompleter()
-            private val cpCompleter = new NCCliModelClassCompleter()
+            private val mdlClsCompleter = new NCCliModelClassCompleter()
 
             // All '--cp' names.
             private val CP_PARAM_NAMES = (
@@ -2478,7 +2479,7 @@ object NCCli extends NCCliBase {
                         .mkString(CP_SEP)
 
                         try {
-                            for (cls <- cpCompleter.getModelClassNamesFromClasspath(cp.split(CP_SEP_CHAR).toSeq.asJava).asScala)
+                            for (cls <- mdlClsCompleter.getModelClassNamesFromClasspath(cp.split(CP_SEP_CHAR).toSeq.asJava).asScala)
                                 candidates.add(
                                     mkCandidate(
                                         disp = "--mdls=" + cls,
@@ -2490,7 +2491,7 @@ object NCCli extends NCCliBase {
                         }
                         catch {
                             // Just ignore.
-                            case e: Exception => ()
+                            case _: Exception => ()
                         }
                     }
 

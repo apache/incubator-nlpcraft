@@ -107,9 +107,6 @@ class NCCliFileNameCompleter
                     }
                 });
             }
-            catch (IOException e) {
-                // Ignore.
-            }
         }
         catch (Exception e) {
             // Ignore.
