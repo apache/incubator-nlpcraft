@@ -34,6 +34,6 @@ class NCModelValidationSpec {
         System.setProperty("NLPCRAFT_TEST_MODELS", "org.apache.nlpcraft.examples.phone.PhoneModel")
 
         // Start model auto-validator.
-        Assertions.assertTrue(NCTestAutoModelValidator.isValid(),"See error logs above.")
+        Assertions.assertTrue(NCTestAutoModelValidator.isValid(), "See error logs above.")
     }
 }
