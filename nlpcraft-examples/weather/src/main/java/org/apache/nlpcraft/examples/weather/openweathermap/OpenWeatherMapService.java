@@ -99,8 +99,8 @@ public class OpenWeatherMapService {
     /**
      * Constructor.
      *
-     * @param key            Service key.
-     * @param maxDaysBack    Max days (looking back) configuration value.
+     * @param key Service key.
+     * @param maxDaysBack Max days (looking back) configuration value.
      * @param maxDaysForward Max days (looking forward) configuration value.
      */
     public OpenWeatherMapService(String key, int maxDaysBack, int maxDaysForward) {
@@ -128,7 +128,7 @@ public class OpenWeatherMapService {
     /**
      * @param lat Latitude.
      * @param lon Longitude.
-     * @param d   Date.
+     * @param d Date.
      * @return REST call result.
      */
     private Map<String, Object> get(double lat, double lon, long d) {
@@ -166,10 +166,10 @@ public class OpenWeatherMapService {
     /**
      * See https://openweathermap.org/api/one-call-api#hist_parameter to extract fields.
      *
-     * @param lat  Latitude.
-     * @param lon  Longitude.
+     * @param lat Latitude.
+     * @param lon Longitude.
      * @param from From date.
-     * @param to   To date.
+     * @param to  To date.
      * @return List of REST call results.
      * @throws OpenWeatherMapException Thrown in case of any provider errors.
      */

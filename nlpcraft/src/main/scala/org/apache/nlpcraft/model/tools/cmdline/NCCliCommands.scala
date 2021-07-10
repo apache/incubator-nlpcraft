@@ -885,7 +885,7 @@ private [cmdline] object NCCliCommands {
                         s"Comma separated list of fully qualified class names for models to deploy and test. Note that you also " +
                         s"must provide the additional classpath via ${c("'--cp'")} parameter. If not provided, the models " +
                         s"specified in configuration file (${c("'--cfg'")} parameter) will be used instead. Note that " +
-                        s"you can have multiple '${c("'--mdls'")} parameters - each specifying one or more model class " +
+                        s"you can have multiple ${c("'--mdls'")} parameters - each specifying one or more model class " +
                         s"names - and they will be automatically combined together."
                 ),
                 Parameter(
