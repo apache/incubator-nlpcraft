@@ -58,10 +58,11 @@
  * </pre>
  * <p>
  * You can also automatically <b>verify</b> the same model by using {@link org.apache.nlpcraft.model.tools.test.NCTestAutoModelValidator} class without any
- * additional coding utilizing {@link org.apache.nlpcraft.model.NCIntentSample} annotation on the models' callback method.
+ * additional coding utilizing {@link org.apache.nlpcraft.model.NCIntentSample} or
+ * {@link org.apache.nlpcraft.model.NCIntentSampleRef} annotation on the models' callback method.
  * This automatic model validation consists of starting an embedded probe with a given model, scanning
- * for {@link org.apache.nlpcraft.model.NCIntentSample} annotations and their corresponding callback methods,
- * submitting each sample input sentences from {@link org.apache.nlpcraft.model.NCIntentSample} annotation and checking
+ * for these annotations and their corresponding callback methods,
+ * submitting each sample input sentences from the annotations and checking
  * that resulting intent matches the intent the sample was attached to.
  * <p>
  * Add necessary classpath and run the following command:

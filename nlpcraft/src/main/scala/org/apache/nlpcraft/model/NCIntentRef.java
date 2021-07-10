@@ -23,7 +23,7 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Annotations referencing an intent defined outside of callback method declaration. Multiple such annotations
+ * Annotation referencing an intent defined outside of callback method declaration. Multiple such annotations
  * can be applied to the callback method. Note that multiple intents can be bound to the same callback method,
  * but only one callback method can be bound with a given intent.
  * <p>
@@ -33,6 +33,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * @see NCIntent
  * @see NCIntentTerm
  * @see NCIntentSample
+ * @see NCIntentSampleRef
  * @see NCIntentSkip
  * @see NCIntentMatch
  * @see NCModel#onMatchedIntent(NCIntentMatch)
@@ -50,8 +51,7 @@ public @interface NCIntentRef {
     String value() default "";
 
     /**
-     * Grouping annotation required for when more than one {@link NCIntentRef} annotation is attached to the
-     * callback.
+     * Grouping annotation required for when more than one {@link NCIntentRef} annotation is used.
      */
     @Retention(RetentionPolicy.RUNTIME)
     @Target(value=METHOD)

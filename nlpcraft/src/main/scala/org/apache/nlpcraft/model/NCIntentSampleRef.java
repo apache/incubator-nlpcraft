@@ -19,17 +19,21 @@ package org.apache.nlpcraft.model;
 
 import org.apache.nlpcraft.model.tools.test.NCTestAutoModelValidator;
 
-import java.lang.annotation.*;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Repeatable;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Annotation to define samples of the user input that should match an intent. This
- * annotation should be used together with {@link NCIntent} or {@link NCIntentRef} annotations on the callback
+ * annotation allows to load these samples from the external sources like local file or URL and
+ * should be used together with {@link NCIntent} or {@link NCIntentRef} annotations on the callback
  * methods. Method can have multiple annotations of this type and each annotation can define multiple input
- * examples. See similar {@link NCIntentSampleRef} annotation that allows to load samples from external resources like
- * file or URL.
+ * examples. See similar {@link NCIntentSample} annotation that allows to define samples in place.
  * <p>
  * The corpus of intent samples serve several important roles in NLPCraft:
  * <ul>
@@ -52,19 +56,14 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *     </li>
  * </ul>
  * <p>
- * Here's an example of using this annotation (from <a target=_new href="https://nlpcraft.apache.org/examples/light_switch.html">LightSwitch</a> example):
+ * Here's an example of using this annotation:
  * <pre class="brush: java, highlight: [2]">
- * {@literal @}NCIntent("intent=act term(act)={has(tok_groups(), 'act')} term(loc)={trim(tok_id()) == 'ls:loc'}*")
- * {@literal @}NCIntentSample(Array(
- *     "Turn the lights off in the entire house.",
- *     "Switch on the illumination in the master bedroom closet.",
- *     "Get the lights on.",
- *     "Please, put the light out in the upstairs bedroom."
- * ))
- * def onMatch(
- *     {@literal @}NCIntentTerm("act") actTok: NCToken,
- *     {@literal @}NCIntentTerm("loc") locToks: List[NCToken]
- * ): NCResult = {
+ * {@literal @}NCIntentRef("alarm")
+ * {@literal @}NCIntentSampleRef("alarm_samples.txt")
+ * NCResult onMatch(
+ *      NCIntentMatch ctx,
+ *      {@literal @}NCIntentTerm("nums") List&lt;NCToken&gt; numToks
+ * ) {
  *     ...
  * }
  * </pre>
@@ -72,7 +71,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * Read full documentation in <a target=_ href="https://nlpcraft.apache.org/intent-matching.html">Intent Matching</a> section and review
  * <a target=_ href="https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft-examples">examples</a>.
  *
- * @see NCIntentSampleRef
+ * @see NCIntentSample
  * @see NCIntent
  * @see NCIntentRef
  * @see NCIntentTerm
@@ -83,28 +82,30 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  */
 @Retention(value=RUNTIME)
 @Target(value=METHOD)
-@Repeatable(NCIntentSample.NCIntentSampleList.class)
-public @interface NCIntentSample {
+@Repeatable(NCIntentSampleRef.NCIntentSampleList.class)
+public @interface NCIntentSampleRef {
     /**
-     * Gets a list of user input samples that should match corresponding intent. This annotation should be
-     * attached the intent callback method.
+     * Local file path, classpath resource path or URL supported by {@link java.net.URL} class. The content of the source
+     * should be a new-line separated list of string. Empty strings and strings starting with '#" (hash) symbol will
+     * be ignored. This annotation should be attached the intent callback method. Note that using this annotation is equivalent
+     * to using {@link NCIntentSample} annotation and listing all of its samples in place instead of an external source.
      *
-     * @return Set of user input examples that should match corresponding intent.
+     * @return Local file path, classpath resource path or URL supported by {@link java.net.URL} class.
      */
-    String[] value();
+    String value();
 
     /**
-     * Grouping annotation required for when more than one {@link NCIntentSample} annotation is used.
+     * Grouping annotation required for when more than one {@link NCIntentSampleRef} annotation is used.
      */
     @Retention(RetentionPolicy.RUNTIME)
     @Target(value=METHOD)
     @Documented
     @interface NCIntentSampleList {
         /**
-         * Gets the list of all {@link NCIntentSample} annotations attached to the callback.
+         * Gets the list of all {@link NCIntentSampleRef} annotations attached to the callback.
          *
-         * @return List of all {@link NCIntentSample} annotations attached to the callback.
+         * @return List of all {@link NCIntentSampleRef} annotations attached to the callback.
          */
-        NCIntentSample[] value();
+        NCIntentSampleRef[] value();
     }
 }
