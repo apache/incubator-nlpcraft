@@ -18,12 +18,16 @@
 package org.apache.nlpcraft.examples.phone
 
 import org.apache.nlpcraft.model.tools.test.NCTestAutoModelValidator
-import org.junit.jupiter.api.{Assertions, Test}
+import org.junit.jupiter.api.{Assertions, Test, Disabled}
 
 /**
   * JUnit model validation.
+  * Make sure to do the following:
+  * - change config for server in nlpcraft.conf to add google  (tokenProviders = “nlpcraft,google”)
+  * - set GOOGLE_APPLICATION_CREDENTIALS environment variable to point to the json file with Google credentials
   */
 class NCModelValidationSpec {
+    @Disabled("Test needs to be manually enabled. Please read documentation on the config and credential setup needed.")
     @Test
     def test(): Unit = {
         // Instruct auto-validator what models to test.
