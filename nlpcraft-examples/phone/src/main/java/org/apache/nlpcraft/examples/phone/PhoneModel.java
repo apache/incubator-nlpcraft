@@ -31,8 +31,10 @@ import java.util.stream.*;
  * be enabled to run this example - see 'tokenProviders' section in server configuration.
  * <p>
  * Make sure to do the following:
- * - change config for server in nlpcraft.conf to add google  (tokenProviders = “nlpcraft,google”)
- * - set GOOGLE_APPLICATION_CREDENTIALS environment variable to point to the json file with Google credentials
+ * <ul>
+ * <li>Change config for server in 'nlpcraft.conf' file to add Google provider: tokenProviders = “nlpcraft,google”</li>
+ * <li>Set GOOGLE_APPLICATION_CREDENTIALS environment variable to point to the JSON file with Google credentials.</li>
+ * </ul>
  * See 'README.md' file in the same folder for running and testing instructions.
  */
 public class PhoneModel extends NCModelFileAdapter {
