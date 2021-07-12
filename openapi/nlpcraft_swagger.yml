@@ -21,7 +21,7 @@ info:
     REST API for <a href="https://nlpcraft.apache.org">Apache NLPCraft</a> - an open source library for
     adding Natural Language Interface to any applications. For Data Model APIs see
     <a href="https://nlpcraft.apache.org/apis/latest/index.html">Javadoc</a> documentation.
-  version: 0.8.0
+  version: 0.9.0
   title: Apache NLPCraft API
 host: localhost:8081
 basePath: /api/v1
