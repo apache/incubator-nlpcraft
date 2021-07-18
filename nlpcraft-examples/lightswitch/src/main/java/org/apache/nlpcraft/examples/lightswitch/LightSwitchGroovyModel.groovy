@@ -65,7 +65,7 @@ class LightSwitchGroovyModel extends NCModelFileAdapter {
         @NCIntentTerm("act") NCToken actTok,
         @NCIntentTerm("loc") List<NCToken> locToks) {
         String status = actTok.id == "ls:on" ? "on" : "off"
-        String locations = locToks ? locToks.collect{ it.meta("nlpcraft:nlp:origtext") }.join(", ") : "entire house"
+        String locations = locToks ? locToks.collect{ it.getOriginalText() }.join(", ") : "entire house"
 
         // Add HomeKit, Arduino or other integration here.
 
