@@ -17,17 +17,7 @@
 
 package org.apache.nlpcraft.model.tools.cmdline
 
-import java.io._
-import java.lang.ProcessBuilder.Redirect
-import java.nio.charset.StandardCharsets
-import java.text.DateFormat
-import java.util.Date
-import java.util.regex.Pattern
-import java.util.zip.ZipInputStream
 import com.google.common.base.CaseFormat
-
-import javax.lang.model.SourceVersion
-import javax.net.ssl.SSLException
 import org.apache.commons.io.IOUtils
 import org.apache.commons.io.input.{ReversedLinesFileReader, Tailer, TailerListenerAdapter}
 import org.apache.commons.lang3.SystemUtils
@@ -44,6 +34,8 @@ import org.apache.nlpcraft.common.ansi.NCAnsi._
 import org.apache.nlpcraft.common.ansi.{NCAnsi, NCAnsiProgressBar, NCAnsiSpinner}
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.module.NCModule
+import org.apache.nlpcraft.model.tools.cmdline.NCCliCommands._
+import org.apache.nlpcraft.model.tools.cmdline.NCCliRestSpec._
 import org.jline.reader._
 import org.jline.reader.impl.DefaultParser
 import org.jline.reader.impl.DefaultParser.Bracket
@@ -51,15 +43,20 @@ import org.jline.reader.impl.history.DefaultHistory
 import org.jline.terminal.{Terminal, TerminalBuilder}
 import org.jline.utils.AttributedString
 import org.jline.utils.InfoCmp.Capability
-import org.apache.nlpcraft.model.tools.cmdline.NCCliRestSpec._
-import org.apache.nlpcraft.model.tools.cmdline.NCCliCommands._
 
-import java.util
-import scala.util.Using
+import java.io._
+import java.lang.ProcessBuilder.Redirect
+import java.nio.charset.StandardCharsets
+import java.text.DateFormat
+import java.util.Date
+import java.util.regex.Pattern
+import java.util.zip.ZipInputStream
+import javax.lang.model.SourceVersion
+import javax.net.ssl.SSLException
 import scala.collection.mutable
 import scala.compat.java8.OptionConverters._
 import scala.jdk.CollectionConverters.{BufferHasAsJava, CollectionHasAsScala, SeqHasAsJava}
-import scala.util.Try
+import scala.util.{Try, Using}
 import scala.util.control.Breaks.{break, breakable}
 import scala.util.control.Exception.ignoring
 
@@ -2064,7 +2061,11 @@ object NCCli extends NCCliBase {
 
         val dst = new File(outputDir, baseName)
         val pkgDir = pkgName.replaceAll("\\.", "/")
-        val clsName = s"${baseName.head.toUpper}${baseName.tail}"
+        var clsName = s"${baseName.head.toUpper}${baseName.tail}"
+
+        if (!clsName.toLowerCase.endsWith("model"))
+            clsName = s"${clsName}Model"
+
         val variant = s"$lang-$buildTool"
         val inFolder = s"nlpcraft-$variant"
         val isJson = fileType == "json" || fileType == "js"
