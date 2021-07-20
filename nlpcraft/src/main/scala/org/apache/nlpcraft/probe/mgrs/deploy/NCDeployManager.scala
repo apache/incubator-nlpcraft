@@ -432,32 +432,21 @@ object NCDeployManager extends NCService {
         ).toMap
 
         if (ctxCatElems.nonEmpty) {
-            val singleValsElems: Map[String, Int] =
-                elems.flatMap(e => {
-                    val cnt =
-                        if (e.getValues != null)
-                            e.getValues.asScala.map(
-                                p => if (p.getSynonyms != null) p.getSynonyms.asScala.count(!_.contains(" ")) else 0
-                            ).sum
-                        else
-                            0
-                    if (cnt != 0) Some(e.getId -> cnt) else None
-                }).toMap
-
-
-            var ids = ctxCatElems.filter { case (elemId, _) => !singleValsElems.keySet.contains(elemId) }.keys
-
-            if (ids.nonEmpty)
-                // TODO:
-                throw new NCE(s"Model doesn't contain values elements with following identifiers: ${ids.mkString(", ")}")
-
-            ids = ctxCatElems.filter { case (_, conf) => conf < 0 || conf > 1  }.keys
+            val ids = ctxCatElems.filter { case (_, conf) => conf < 0 || conf > 1  }.keys
 
             if (ids.nonEmpty)
                 // TODO:
                 throw new NCE(s"Context word confidences are out of range (0..1) for elements : ${ids.mkString(", ")}")
 
-            val cnt = singleValsElems.values.sum
+            val cnt =
+                elems.map(e =>
+                    if (e.getValues != null)
+                        e.getValues.asScala.map(
+                            p => if (p.getSynonyms != null) p.getSynonyms.asScala.count(!_.contains(" ")) else 0
+                        ).sum + 1 // 1 for value name.
+                    else
+                        0
+                ).sum
 
             if (cnt > MAX_CTXWORD_VALS_CNT)
                 // TODO: do we need print recommended value.?

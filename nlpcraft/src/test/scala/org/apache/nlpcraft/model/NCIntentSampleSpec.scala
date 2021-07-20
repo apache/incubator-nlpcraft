@@ -39,7 +39,8 @@ class NCIntentSampleSpecModel extends NCModelAdapter(
     @NCIntentSample(Array("unknown", "unknown"))
     private def onX1(ctx: NCIntentMatch): NCResult = "OK"
 
-    @NCIntentSampleRef("samples.txt")
+    // Look at resources folder.
+    @NCIntentSampleRef("org/apache/nlpcraft/model/samples.txt")
     @NCIntent("intent=intent2 term~{tok_id()=='x2'}")
     private def onX2(ctx: NCIntentMatch): NCResult = "OK"
 }

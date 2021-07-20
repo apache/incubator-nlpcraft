@@ -246,6 +246,8 @@ object NCConnectionManager extends NCService {
                                                         p.getSynonyms.asScala.filter(p => !p.contains(" ")).asJava
                                                     )
 
+                                                set.add(p.getName)
+
                                                 set
                                             }).toMap.asJava
                                     ).toMap

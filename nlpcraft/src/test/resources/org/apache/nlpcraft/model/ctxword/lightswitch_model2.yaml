@@ -1,0 +1,96 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+id: "nlpcraft.lightswitch.ex2"
+name: "Light Switch Example Model 2"
+version: "1.0"
+description: "NLI-powered light switch example model 2."
+macros:
+  - name: "<ACTION>"
+    macro: "{turn|switch|dial|let|set|get|put}"
+  - name: "<KILL>"
+    macro: "{shut|kill|stop|eliminate}"
+enabledBuiltInTokens: [] # This example doesn't use any built-in tokens.
+permutateSynonyms: true
+abstractTokens:
+  - "ls:part:place"
+  - "ls:part:floor"
+  - "ls:part:placeType"
+  - "ls:part:light"
+sparse: true
+elements:
+  - id: "ls:part:place"
+    description: "Abstract element. Used for top level element `ls:loc`"
+    # TODO: Value is not so big because this category is vague enough.
+    categoryConfidence: 0.4
+    values:
+      - name: "room"
+      - name: "closet"
+      - name: "kitchen"
+      - name: "bedroom"
+      - name: "washroom"
+      - name: "garage"
+
+  # For simplifying example, concrete floor type can be recognized by these synonyms words.
+  - id: "ls:part:placeFloor"
+    description: "Abstract element. Used for top level element `ls:loc`"
+    synonyms:
+       - "{upstairs|downstairs|{1st|first|2nd|second|3rd|third|4th|5th|top|ground} floor|_}"
+
+  # For simplifying example, concrete place type can be recognized by these synonyms words.
+  - id: "ls:part:placeType"
+    description: "Abstract element. Used for top level element `ls:loc`"
+    synonyms:
+      - "{dinning|laundry|play|master|kid|children|child|guest}"
+
+  - id: "ls:part:light"
+    description: "Abstract element. Used for top level elements `ls:on` and `ls:of`"
+    synonyms:
+      - "{light|illumination|lamp|lamplight}"
+
+  - id: "ls:loc"
+    description: "Top level element. Used in intents.`"
+    synonyms:
+      # Parts can be extracted from `ls:loc` to specify certain location point.
+      # Part `ls:part:place` is mandatory.
+      # Parts `ls:part:placeFloor` and `ls:part:placeType` are optional.
+      - "{^^{tok_id() == 'ls:part:placeFloor'}^^|_} ^^{tok_id() == 'ls:part:place'}^^ {^^{tok_id() == 'ls:part:placeType'}^^|_}"
+      - "{^^{tok_id() == 'ls:part:placeFloor'}^^|_} {^^{tok_id() == 'ls:part:placeType'}^^|_} ^^{tok_id() == 'ls:part:place'}^^"
+
+  - id: "ls:on"
+    groups:
+      - "act"
+    description: "Light switch ON action.`"
+    synonyms:
+      # It's parts help to catch this element, after they can be ignored.
+      - "<ACTION> {on|up|_} ^^{tok_id() == 'ls:part:light'}^^ {on|up|_}"
+      - "^^{tok_id() == 'ls:part:light'}^^ {on|up}"
+
+  - id: "ls:off"
+    groups:
+      - "act"
+    description: "Light switch OFF action.`"
+    synonyms:
+      # It's parts help to catch this element, after they can be ignored.
+      - "<ACTION> ^^{tok_id() == 'ls:part:light'}^^ {off|out}"
+      - "{<ACTION>|<KILL>} {off|out} ^^{tok_id() == 'ls:part:light'}^^"
+      - "<KILL> ^^{tok_id() == 'ls:part:light'}^^"
+      - "^^{tok_id() == 'ls:part:light'}^^ <KILL>"
+      - "no ^^{tok_id() == 'ls:part:light'}^^"
+
+intents:
+  - "intent=ls term(act)={has(tok_groups(), 'act')} term(loc)={tok_id() == 'ls:loc'}"
