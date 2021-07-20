@@ -433,8 +433,8 @@ public interface NCToken extends NCMetadata {
     default String getStem() { return meta("nlpcraft:nlp:stem"); }
 
     /**
-     * A shortcut method to get numeric value of how sparse the token is. Sparsity zero means that all
-     * individual words in the token follow each other (regardless of the order).
+     * A shortcut method to get numeric value of how sparse the token is. This makes sense only for multi-word tokens.
+     * Sparsity zero means that all individual words in the token follow each other (regardless of the order).
      * <p>
      * This method is equivalent to:
      * <pre class="brush: java">
@@ -442,7 +442,8 @@ public interface NCToken extends NCMetadata {
      * </pre>
      * See more information on token metadata <a target=_ href="https://nlpcraft.apache.org/data-model.html#meta">here</a>.
      *
-     * @return Numeric value of how sparse the token is.
+     * @return Numeric value of how sparse the token is. Zero means no gaps between words. Bigger the sparsity value
+     *      the bigger the average gap between words.
      */
     default int getSparsity() { return meta("nlpcraft:nlp:sparsity"); }
 

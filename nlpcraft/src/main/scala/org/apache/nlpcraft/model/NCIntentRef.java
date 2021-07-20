@@ -27,7 +27,19 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * can be applied to the callback method. Note that multiple intents can be bound to the same callback method,
  * but only one callback method can be bound with a given intent.
  * <p>
- * Read full documentation in <a target=_ href="https://nlpcraft.apache.org/intent-matching.html">Intent Matching</a> section and review
+ * Here's an example of using this annotation (from <a target=_new href="https://nlpcraft.apache.org/examples/alarm_clock.html">Alarm Clock</a> example):
+ * <pre class="brush: java, highlight: [1]">
+ * {@literal @}NCIntentRef("alarm")
+ * {@literal @}NCIntentSampleRef("alarm_samples.txt")
+ *      NCResult onMatch(
+ *      NCIntentMatch ctx,
+ *      {@literal @}NCIntentTerm("nums") List&lt;NCToken&gt; numToks
+ * ) {
+ *     ...
+ * }
+ * </pre>
+ * <p>
+ * Read full documentation in <a target=_ href="https://nlpcraft.apache.org/intent-matching.html#binding">Intent Matching</a> section and review
  * <a target=_ href="https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft-examples">examples</a>.
  *
  * @see NCIntent

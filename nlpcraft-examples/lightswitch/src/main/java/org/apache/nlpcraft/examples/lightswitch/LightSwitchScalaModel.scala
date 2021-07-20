@@ -66,7 +66,7 @@ class LightSwitchScalaModel extends NCModelFileAdapter("lightswitch_model.yaml")
             if (locToks.isEmpty)
                 "entire house"
             else
-                locToks.map(_.meta[String]("nlpcraft:nlp:origtext")).mkString(", ")
+                locToks.map(_.getOriginalText).mkString(", ")
 
         // Add HomeKit, Arduino or other integration here.
 

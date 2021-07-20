@@ -23,9 +23,12 @@ import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.jar.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Completer for model classes from classpath. Currently only JAR files are supported.
@@ -62,6 +65,46 @@ class NCCliModelClassCompleter {
 
     /**
      *
+     * @param dirPath Path of the directory.
+     * @return Set of class names from the given JAR file.
+     * @throws IOException Thrown in case of any I/O errors.
+     */
+    private Set<String> getClassNameFromDirectory(File dirPath) throws IOException {
+        assert dirPath != null;
+
+        int dirPathLen = dirPath.getAbsolutePath().length();
+        Set<String> classNames = new HashSet<>();
+
+        try (Stream<Path> pathTree = Files.walk(dirPath.toPath())) {
+            pathTree.forEach(path -> {
+                File file = path.toFile();
+
+                if (file.isFile() && !file.isHidden() && file.getName().toLowerCase().endsWith(".class")) {
+                    String clsName = file.getAbsolutePath().substring(dirPathLen)
+                        .replace(File.separator, ".")
+                        .replace(".class", "");
+
+                    if (clsName.startsWith("."))
+                        clsName = clsName.substring(1);
+
+                    classNames.add(clsName);
+                }
+            });
+        }
+
+        return classNames;
+    }
+
+    /**
+     *
+     * @param path Path to test.
+     */
+    private boolean isJar(String path) {
+        return path.toLowerCase().endsWith(".jar");
+    }
+
+    /**
+     *
      * @param cp List of classpath entries.
      * @return Set of model class name for the given classpath.
      * @throws IOException Thrown in case of any I/O errors.
@@ -69,9 +112,16 @@ class NCCliModelClassCompleter {
     public Set<String> getModelClassNamesFromClasspath(List<String> cp) throws IOException {
         Set<URL> urls = cp.stream().map(entry -> {
             try {
-                return new URL("jar:file:" + entry + "!/");
+                if (isJar(entry))
+                    return new URL("jar:file:" + entry + "!/");
+                else {
+                    boolean trailingSlash = entry.endsWith("/");
+
+                    return new URL("file:" + entry + (trailingSlash ? "" : "/"));
+                }
             }
             catch (MalformedURLException e) {
+                e.printStackTrace();
                 return null;
             }
         }).filter(Objects::nonNull).collect(Collectors.toSet());
@@ -85,7 +135,9 @@ class NCCliModelClassCompleter {
         try (URLClassLoader clsLdr = URLClassLoader.newInstance(urlsArr)) {
             for (String cpEntry : cp) {
                 try {
-                    Set<String> classNames = getClassNamesFromJar(new File(cpEntry));
+                    File file = new File(cpEntry);
+
+                    Set<String> classNames = isJar(cpEntry) ? getClassNamesFromJar(file) : getClassNameFromDirectory(file);
 
                     for (String name : classNames) {
                         try {

@@ -37,8 +37,35 @@ public interface NCVariant extends List<NCToken>, NCMetadata {
      * </pre>
      *
      * @return All non-freeword tokens.
+     * @see NCToken#isFreeWord()
      */
     default List<NCToken> getMatchedTokens() {
         return stream().filter(tok -> !tok.isFreeWord()).collect(Collectors.toList());
+    }
+
+    /**
+     * Utility method that returns all freeword tokens. It's equivalent to:
+     * <pre class="brush: java">
+     *     return stream().filter(NCToken::isFreeWord).collect(Collectors.toList());
+     * </pre>
+     *
+     * @return All freeword tokens.
+     * @see NCToken#isFreeWord()
+     */
+    default List<NCToken> getFreeTokens() {
+        return stream().filter(NCToken::isFreeWord).collect(Collectors.toList());
+    }
+
+    /**
+     * Utility method that returns all user-defined tokens. It's equivalent to:
+     * <pre class="brush: java">
+     *     return stream().filter(NCToken::isUserDefined).collect(Collectors.toList());
+     * </pre>
+     *
+     * @return All user-defined tokens.
+     * @see NCToken#isFreeWord()
+     */
+    default List<NCToken> getUserDefinedTokens() {
+        return stream().filter(NCToken::isUserDefined).collect(Collectors.toList());
     }
 }

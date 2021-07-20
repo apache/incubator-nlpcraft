@@ -70,7 +70,7 @@ public class LightSwitchJavaModel extends NCModelFileAdapter {
         String status = actTok.getId().equals("ls:on") ? "on" : "off";
         String locations = locToks.isEmpty() ?
             "entire house" :
-            locToks.stream().map(t -> (String)t.meta("nlpcraft:nlp:origtext")).collect(Collectors.joining(", "));
+            locToks.stream().map(NCToken::getOriginalText).collect(Collectors.joining(", "));
 
         // Add HomeKit, Arduino or other integration here.
 

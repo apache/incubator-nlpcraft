@@ -63,7 +63,7 @@ class LightSwitchKotlinModel : NCModelFileAdapter("lightswitch_model.yaml") {
     ): NCResult {
         val status = if (actTok.id == "ls:on") "on" else "off"
         val locations = if (locToks.isEmpty()) "entire house" else locToks.stream()
-            .map { t: NCToken -> t.meta("nlpcraft:nlp:origtext") as String }
+            .map { t: NCToken -> t.originalText }
             .collect(Collectors.joining(", "))
 
         // Add HomeKit, Arduino or other integration here.
