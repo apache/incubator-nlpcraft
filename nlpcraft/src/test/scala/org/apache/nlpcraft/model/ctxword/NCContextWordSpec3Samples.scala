@@ -26,14 +26,7 @@ import java.util.{Collections, Optional}
 import java.{lang, util}
 import scala.jdk.CollectionConverters.{MapHasAsJava, SeqHasAsJava, SetHasAsJava}
 
-/**
-  * Test model.
-  */
-class NCContextWordSpecModel3 extends NCModel {
-    override def getId: String = this.getClass.getSimpleName
-    override def getName: String = this.getClass.getSimpleName
-    override def getVersion: String = "1.0.0"
-
+object NCContextWordSpecModel3 {
     private def mkElement(id: String, group: Option[String], syns: String*): NCElement =
         new NCElement {
             override def getId: String = id
@@ -53,47 +46,85 @@ class NCContextWordSpecModel3 extends NCModel {
                 override def getSynonyms: util.List[String] = Collections.singletonList(p)
             }).asJava
         }
+}
 
+import NCContextWordSpecModel3._
 
+/**
+  * Test model.
+  */
+class NCContextWordSpecModel3 extends NCModel {
+    override def getId: String = this.getClass.getSimpleName
+    override def getName: String = this.getClass.getSimpleName
+    override def getVersion: String = "1.0.0"
     override def isPermutateSynonyms: Boolean = true
     override def isSparse: Boolean = true
-    override def getAbstractTokens: util.Set[String] = Set("ls:type1", "ls:type2", "ls:type3").asJava
 
     override def getMacros: util.Map[String, String] =
         Map(
             "<ACTION>" -> "{turn|switch|dial|let|set|get|put}",
             "<KILL>" -> "{shut|kill|stop|eliminate}",
-            "<ENTIRE_OPT>" -> "{entire|full|whole|total|_}",
-            "<FLOOR_OPT>" -> "{upstairs|downstairs|{1st|2nd|3rd|4th|5th|top|ground} floor|_}",
-            "<TYPE>" -> "{^^{tok_id() == 'ls:type1'}^^|{store|storage} {room|_}}",
-            "<LIGHT>" -> "{all|_} {it|them|light|illumination|lamp|lamplight}"
+            "<ENTIRE_OPT>" -> "{entire|full|whole|total|_}"
         ).asJava
+
+    override def getAbstractTokens: util.Set[String] = Set("ls:part:place", "ls:part:floor", "ls:part:placeType", "ls:part:light").asJava
 
     override def getElements: util.Set[NCElement] =
         Set(
-            mkValuesElement("ls:type1", 0.7, "room", "closet", "attic", "loft"),
-            mkValuesElement("ls:type2", 0.7, "kitchen", "library", "closet", "garage", "office", "playroom"),
-            // The difference from initial model definition. mkValuesElement("ls:type3", 0.7, "bedroom", "bathroom", "washroom", "storage"),
-            mkValuesElement("ls:type3", 0.7, "bedroom", "washroom"),
+            // Abstract element. Used for top level element `ls:loc`. Note, that this element is defined via context word categories.
+            mkValuesElement(
+                id = "ls:part:place",
+                conf = 0.7,
+                valSyns = "room", "closet", "attic", "loft", "kitchen", "library", "closet", "garage", "office", "playroom", "bedroom", "washroom"
+            ),
+            // Abstract element. Used for top level element `ls:loc`.
+            mkElement(
+                id =  "ls:part:floor",
+                group = None,
+                syns = "{house|home|building|_} {upstairs|downstairs|{1st|2nd|3rd|4th|5th|top|ground} floor|_}"
+            ),
+            // Abstract element. Used for top level element `ls:loc`.
+            mkElement(
+                id =  "ls:part:placeType",
+                group = None,
+                syns = "{dinning|laundry|play|master|kid|children|child|guest|_}"
+            ),
+            // Abstract element. Used for top level elements `ls:on` and `ls:of`.
+            mkElement(
+                id =  "ls:part:light",
+                group = None,
+                syns = "{all|_} {light|illumination|lamp|lamplight|it|them}"
+            ),
 
+            // Top level element. Used in intents.
+            // Part `ls:part:place` is mandatory.
+            // Parts `ls:part:floor` and `ls:part:placeType` are optional.
+            // Parts can be extracted from `ls:loc` to specify certain location point.
             mkElement(
-                "ls:loc", None,
-                "<ENTIRE_OPT> <FLOOR_OPT> {^^{tok_id() == 'ls:type2'}^^|{dinning|laundry|play} <TYPE>}",
-                "<ENTIRE_OPT> <FLOOR_OPT> {master|kid|children|child|guest|_} {^^{tok_id() == 'ls:type3'}^^} {<TYPE>|_}",
-                "<ENTIRE_OPT> {house|home|building|{1st|first} floor|{2nd|second} floor}"
+                id =  "ls:loc",
+                group = None,
+                syns =
+                    "<ENTIRE_OPT> ^^{tok_id() == 'ls:part:floor'}^^? ^^{tok_id() == 'ls:part:place'}^^ ^^{tok_id() == 'ls:part:placeType'}^^?",
+                    "<ENTIRE_OPT> ^^{tok_id() == 'ls:part:floor'}^^? ^^{tok_id() == 'ls:part:placeType'}^^? ^^{tok_id() == 'ls:part:place'}^^",
             ),
+            // Top level element. Used in intents. It's parts help to catch this element, after they can be ignored.
             mkElement(
-                "ls:on", Some("act"),
-                "<ACTION> {on|up|_} <LIGHT> {on|up|_}",
-                "<LIGHT> {on|up}"
+                id = "ls:on",
+                group = Some("act"),
+                syns =
+                    "<ACTION> {on|up|_} ^^{tok_id() == 'ls:part:light'}^^ {on|up|_}",
+                    "^^{tok_id() == 'ls:part:light'}^^ {on|up}"
             ),
+            // Top level element. Used in intents. It's parts help to catch this element, after they can be ignored.
             mkElement(
-                "ls:off", Some("act"),
-                "<ACTION> <LIGHT> {off|out}",
-                "{<ACTION>|<KILL>} {off|out} <LIGHT>",
-                "<KILL> <LIGHT>",
-                "<LIGHT> <KILL>",
-                "no <LIGHT>"
+                id = "ls:off",
+                group = Some("act"),
+                syns =
+                    "<ACTION> ^^{tok_id() == 'ls:part:light'}^^ {off|out}",
+                    "{<ACTION>|<KILL>} {off|out} ^^{tok_id() == 'ls:part:light'}^^",
+                    "<KILL> ^^{tok_id() == 'ls:part:light'}^^",
+                    "^^{tok_id() == 'ls:part:light'}^^ <KILL>",
+                    "no ^^{tok_id() == 'ls:part:light'}^^"
             )
         ).asJava
 
