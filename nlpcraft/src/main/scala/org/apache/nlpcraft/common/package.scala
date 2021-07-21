@@ -37,8 +37,8 @@ package object common {
     final val U = NCUtils
     
     // Internal deep debug flag (more verbose tracing).
-    final val DEEP_DEBUG = false
-    
+    final val DEEP_DEBUG = U.isSysEnvSet("NLPCRAFT_DEEP_DEBUG")
+
     // Model and token **internal** metadata keys.
     final val TOK_META_ALIASES_KEY = "__NLPCRAFT_TOK_META_ALIASES"
     final val MDL_META_MODEL_CLASS_KEY = "__NLPCRAFT_MDL_CLASS_NAME"

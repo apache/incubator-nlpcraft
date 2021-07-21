@@ -22,7 +22,7 @@ import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager.stem
 import org.apache.nlpcraft.common.nlp.pos.NCPennTreebank._
 import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceToken}
-import org.apache.nlpcraft.common.{NCE, NCService}
+import org.apache.nlpcraft.common.{DEEP_DEBUG, NCE, NCService}
 import org.apache.nlpcraft.server.mdo.NCCtxWordCategoriesConfigMdo
 import org.apache.nlpcraft.server.nlp.core.{NCNlpParser, NCNlpServerManager, NCNlpWord}
 import org.apache.nlpcraft.server.nlp.enrichers.NCServerEnricher
@@ -37,13 +37,14 @@ import scala.concurrent.duration.Duration
 
 /**
   * ContextWord enricher.
+  * Starting the server, set following environment variables for deep debugging.
+  *  - NLPCRAFT_LOG_LEVEL=TRACE
+  *  - NLPCRAFT_DEEP_DEBUG=true
+  *  - NLPCRAFT_DISABLE_SENTENCE_CACHE=true
   */
 object NCContextWordCategoriesEnricher extends NCServerEnricher {
     private final val MAX_CTXWORD_SCORE = 2
     private final val INCL_MAX_CONFIDENCE = 1.0
-
-    // TODO: use standard DEEP_DEBUG flag and change debug level.
-    private final val DEBUG_MODE = true
 
     private final val CONVERTER = new DefaultNameConverter
     private final val FMT = new DecimalFormat("#0.00000")
@@ -330,7 +331,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
                 syncExec(NCSuggestSynonymManager.suggestWords(recs.flatMap(_._2).toSeq, parent = parent)).
                     toSeq.sortBy(p => (p._1.words.mkString, p._1.index))
 
-            if (DEBUG_MODE) {
+            if (DEEP_DEBUG) {
                 val t = NCAsciiTable()
 
                 t #= ("Request", "Responses")
@@ -338,7 +339,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
                 for ((req, resp) <- respsSeq)
                     t += (req, s"${resp.map(p => s"${p.word}=${FMT.format(normalizeConf(p.score))}").mkString(", ")}")
 
-                t.info(logger, Some("Corpus requests:"))
+                t.trace(logger, Some("Corpus requests:"))
             }
 
             val req2Elem = recs.flatMap { case (elemId, recs) => recs.map(p => p -> elemId) }
@@ -371,7 +372,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
             val lemmas = mkMap { (req, sugg) => getLemma(req, sugg) }
 
             def mkTable(): NCAsciiTable =
-                if (DEBUG_MODE) {
+                if (DEEP_DEBUG) {
                     val t = NCAsciiTable()
 
                     t #= ("Element", "Confidences for normal forms")
@@ -408,7 +409,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
                         def mkDebugElementCell(normsSize: Int, stemsSize: Int, lemmasSize: Int): String =
                             s"Element: $elemId [normals=$normsSize, stems=$stemsSize, lemmas=$lemmasSize]"
 
-                        if (DEBUG_MODE)
+                        if (DEEP_DEBUG)
                             tabAll += (
                                 mkDebugElementCell(normalsAll.size, stemsAll.size, lemmasAll.size),
                                 toStr(
@@ -431,7 +432,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
                         val stemsSingle = squeeze(stemsAll)
                         val lemmasSingle = squeeze(lemmasAll)
 
-                        if (DEBUG_MODE)
+                        if (DEEP_DEBUG)
                             tabNorm += (
                                 mkDebugElementCell(normalsSingle.size, stemsSingle.size, lemmasSingle.size),
                                 toStr(
@@ -444,9 +445,9 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
                         elemId -> ElementData(normalsSingle, stemsSingle, lemmasSingle)
                     }
 
-            if (DEBUG_MODE) {
-                tabAll.info(logger, Some("Model corpus all confidences:"))
-                tabNorm.info(logger, Some("Model corpus normalized confidences:"))
+            if (DEEP_DEBUG) {
+                tabAll.trace(logger, Some("Model corpus all confidences:"))
+                tabNorm.trace(logger, Some("Model corpus normalized confidences:"))
             }
 
             res
@@ -456,7 +457,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
     }
 
     override def enrich(ns: NCNlpSentence, parent: Span): Unit =
-        startScopedSpan("stop", parent) { _ =>
+        startScopedSpan("enrich", parent) { _ =>
             ns.ctxWordConfig match {
                 case Some(cfg) =>
                     val detected = mutable.HashMap.empty[NCNlpSentenceToken, mutable.HashSet[ElementConfidence]]
@@ -485,8 +486,8 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
 
                         val (vNorms, vStems) = (vh.normal, vh.stems)
 
-                        if (DEBUG_MODE)
-                            logger.info(
+                        if (DEEP_DEBUG)
+                            logger.trace(
                                 s"Model loaded [" +
                                 s"key=$key, elements: " +
                                 s"${cfg.elements.mkString(", ")}, " +
@@ -520,7 +521,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
                             syncExec(NCSuggestSynonymManager.suggestWords(reqs, parent = parent)).
                                 flatMap { case (req, suggs) => suggs.map(_ -> req) }
 
-                        if (DEBUG_MODE) {
+                        if (DEEP_DEBUG) {
                             val t = NCAsciiTable()
 
                             t #= ("Request", "Responses")
@@ -538,12 +539,12 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
                                 )
                             }
 
-                            t.info(logger, Some(s"Sentence requests processing [key=$key, sentence=${ns.text}]"))
+                            t.trace(logger, Some(s"Sentence requests processing [key=$key, sentence=${ns.text}]"))
                         }
 
                         case class Key(elementId: String, token: NCNlpSentenceToken)
 
-                        val missed = if (DEBUG_MODE) mutable.HashMap.empty[Key, ArrayBuffer[Confidence]] else null
+                        val missed = if (DEEP_DEBUG) mutable.HashMap.empty[Key, ArrayBuffer[Confidence]] else null
 
                         def calcConf(elemId: String, data: ElementData, req: Request, s: Suggestion): Option[Double] = {
                             val suggNorm = norm(s.word)
@@ -575,7 +576,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
 
                             if (normConf >= elemConf)
                                 add(getToken, elemId, mkConf())
-                            else if (DEBUG_MODE)
+                            else if (DEEP_DEBUG)
                                 missed.getOrElseUpdate(Key(elemId, getToken), mutable.ArrayBuffer.empty) += mkConf()
                         }
 
@@ -583,7 +584,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
                             case (tok, confs) => tok.index -> confs.map(p => p.elementId -> p.confidence.value).toMap
                         }.toMap
 
-                        if (DEBUG_MODE) {
+                        if (DEEP_DEBUG) {
                             require(missed != null)
 
                             missed.filter { case (key, _) =>
@@ -592,7 +593,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
                                 }
                             }.sortBy { case (key, _) => (key.token.index, key.elementId) }.
                                 foreach { case (key, confs) =>
-                                    logger.info(
+                                    logger.trace(
                                         s"Unsuccessful attempt [" +
                                         s"elementId=${key.elementId}, " +
                                         s"tokenWordIndexes=${key.token.wordIndexes.mkString(",")}, " +
@@ -601,10 +602,10 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
                                     )
                                 }
 
-                            logger.info("Sentence detected elements:")
+                            logger.trace("Sentence detected elements:")
 
                             for ((tok, elems) <- detected)
-                                logger.info(s"${tok.origText}: ${elems.mkString(", ")}")
+                                logger.trace(s"${tok.origText}: ${elems.mkString(", ")}")
                         }
                     }
 
