@@ -26,7 +26,7 @@ import org.apache.nlpcraft.common.{NCE, NCService}
 import org.apache.nlpcraft.server.mdo.NCCtxWordCategoriesConfigMdo
 import org.apache.nlpcraft.server.nlp.core.{NCNlpParser, NCNlpServerManager, NCNlpWord}
 import org.apache.nlpcraft.server.nlp.enrichers.NCServerEnricher
-import org.apache.nlpcraft.server.sugsyn.{NCSuggestSynonymManager, NCSuggestionRequest, NCWordSuggestion}
+import org.apache.nlpcraft.server.sugsyn.{NCSuggestSynonymManager, NCSuggestionRequest => Request, NCWordSuggestion => Suggestion}
 import org.jibx.schema.codegen.extend.DefaultNameConverter
 
 import java.text.DecimalFormat
@@ -48,9 +48,9 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
     private final val CONVERTER = new DefaultNameConverter
     private final val FMT = new DecimalFormat("#0.00000")
 
-    private case class Reason(word: String, suggestionConfidence: Double, corpusConfidence: Double) {
+    private case class Reason(word: String, suggConf: Double, valOrCorpConf: Double) {
         override def toString: String =
-            s"Word: $word, confidences: suggestion=${FMT.format(suggestionConfidence)}, corpus=${FMT.format(corpusConfidence)}"
+            s"Word: $word, confidences: suggestion=${FMT.format(suggConf)}, value or corpus=${FMT.format(valOrCorpConf)}"
     }
 
     private case class Confidence(value: Double, reason: Option[Reason] = None) {
@@ -64,6 +64,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
         override def toString: String = s"Element [id=$elementId, confidence=$confidence]]"
     }
 
+    // Maps: Key is word, values are all element IDs.
     private case class ValuesHolder(normal: Map[String, Set[String]], stems: Map[String, Set[String]]) {
         private def map2Str(m: Map[String, Set[String]]): String =
             m.toSeq.flatMap { case (v, elems) =>
@@ -73,6 +74,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
         override def toString: String = s"Values [normal=${map2Str(normal)}, stems=${map2Str(stems)}]"
     }
 
+    // Maps: Key is elementID, values are all values synonyms for this element.
     private case class ElementData(normals: Map[String, Double], stems: Map[String, Double], lemmas: Map[String, Double]) {
         def get(norm: String, stem: String, lemma: String): Option[Double] =
             normals.get(norm) match {
@@ -116,7 +118,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
           */
         def calculate(suggConf: Double, corpusConf: Double): Double =
             // Corpus data is more important. Empirical factors configured.
-            calcWeightedGeoMean(Map(suggConf -> 1, corpusConf -> 3))
+            calcWeightedGeoMean(Map(suggConf -> 1, corpusConf -> 2))
 
         /**
           * Calculates weighted geometrical mean value.
@@ -180,7 +182,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
       * @param elemSingleVals
       * @return
       */
-    private def mkRequests(corpusNlpSeq: Seq[Seq[NCNlpWord]], elemSingleVals: Set[String]): Iterable[NCSuggestionRequest] =
+    private def mkRequests(corpusNlpSeq: Seq[Seq[NCNlpWord]], elemSingleVals: Set[String]): Iterable[Request] =
         corpusNlpSeq.
             flatMap {
                 corpusNlp =>
@@ -203,7 +205,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
                         // We can compare them with synonyms values (suppose that model synonyms value defined as lemma)
                         getIndexes(corpusNlp.map(p => norm(p.lemma)), elemSingleValsNorm)
 
-                    def mkRequest(idx: Int, syn: String): NCSuggestionRequest = {
+                    def mkRequest(idx: Int, syn: String): Request = {
                         var newSen = substitute(corpusWords, syn, idx)
 
                         val nlpWordsNew = parser.parse(newSen.mkString(" "))
@@ -218,7 +220,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
                         else if (NOUNS_POS_PLURALS.contains(pos) && NOUNS_POS_SINGULAR.contains(posNew))
                             newSen = substitute(corpusWords, CONVERTER.pluralize(syn), idx)
 
-                        NCSuggestionRequest(newSen, idx)
+                        Request(newSen, idx)
                     }
 
                     for (idx <- idxs; syn <- elemSingleVals)
@@ -236,14 +238,16 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
       *
       * @param cfg
       * @param key
+      * @param vh
+      * @param parent
       * @return
       */
-    private def getCorpusData(cfg: NCCtxWordCategoriesConfigMdo, key: ModelProbeKey, parent: Span = null):
+    private def getCorpusData(cfg: NCCtxWordCategoriesConfigMdo, key: ModelProbeKey, vh: ValuesHolder, parent: Span = null):
         Map[/** Element ID */String, ElementData] =
         elemsCorpuses.synchronized { elemsCorpuses.get(key) } match {
             case Some(cache) => cache
             case None =>
-                val res = askSamples(cfg, parent)
+                val res = askSamples(cfg, vh, parent)
 
                 elemsCorpuses.synchronized { elemsCorpuses += key -> res }
 
@@ -296,20 +300,21 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
       * @param sugg
       * @return
       */
-    private def getLemma(req: NCSuggestionRequest, sugg: NCWordSuggestion): String =
+    private def getLemma(req: Request, sugg: Suggestion): String =
         parser.parse(substitute(req.words, sugg.word, req.index).mkString(" "))(req.index).lemma
 
     /**
       *
       * @param cfg
-      * @return
+      * @param vh
+      * @param parent
       */
     @throws[NCE]
-    private def askSamples(cfg: NCCtxWordCategoriesConfigMdo, parent: Span = null):
+    private def askSamples(cfg: NCCtxWordCategoriesConfigMdo, vh: ValuesHolder, parent: Span = null):
         Map[/** Element ID */String, ElementData] = {
         val corpusNlp = cfg.corpus.toSeq.map(s => parser.parse(s))
 
-        val recs: Map[String, Seq[NCSuggestionRequest]] =
+        val recs: Map[String, Seq[Request]] =
             (
                 for (
                     (elemId, elemSingleVals) <- cfg.singleValues.toSeq;
@@ -321,7 +326,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
                 map { case (elemId, m) => elemId -> m.map(_._2) }
 
         if (recs.nonEmpty) {
-            val respsSeq: Seq[(NCSuggestionRequest, Seq[NCWordSuggestion])] =
+            val respsSeq: Seq[(Request, Seq[Suggestion])] =
                 syncExec(NCSuggestSynonymManager.suggestWords(recs.flatMap(_._2).toSeq, parent = parent)).
                     toSeq.sortBy(p => (p._1.words.mkString, p._1.index))
 
@@ -338,7 +343,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
 
             val req2Elem = recs.flatMap { case (elemId, recs) => recs.map(p => p -> elemId) }
 
-            def mkMap(convert: (NCSuggestionRequest, NCWordSuggestion) => String):
+            def mkMap(convert: (Request, Suggestion) => String):
                 Map[/** Element ID */ String, /** Word key */ Map[String, /** Confidences */ Seq[Double]]] = {
                 val seq: Seq[(String, Map[String, Double])] =
                     respsSeq.
@@ -388,9 +393,17 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
                 ).
                     toMap.
                     map { case (elemId, (normals, stems, lemmas)) =>
-                        val normalsAll = normals
-                        val stemsAll = stems -- normals.keySet
-                        val lemmasAll = lemmas -- normals.keySet -- stems.keySet
+                        // Skips suggestions, which already exists as values for element.
+                        def dropValues[T](words: Map[String, Seq[Double]], vals: Map[String, Set[String]]):
+                            Map[String, Seq[Double]] =
+                            words.filter { case (word, _) => vals.get(word) match {
+                                case Some(elemIds) => !elemIds.contains(elemId)
+                                case None => true
+                            }}
+
+                        val normalsAll = dropValues(normals, vh.normal)
+                        val stemsAll = dropValues(stems -- normalsAll.keySet, vh.stems)
+                        val lemmasAll = lemmas -- normals.keySet -- stemsAll.keySet
 
                         def mkDebugElementCell(normsSize: Int, stemsSize: Int, lemmasSize: Int): String =
                             s"Element: $elemId [normals=$normsSize, stems=$stemsSize, lemmas=$lemmasSize]"
@@ -468,16 +481,16 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
                         val key = ModelProbeKey(cfg.probeId, cfg.modelId)
 
                         // 1. Values. Direct.
-                        val vd = getValuesData(cfg, key)
+                        val vh = getValuesData(cfg, key)
 
-                        val (vNorms, vStems) = (vd.normal, vd.stems)
+                        val (vNorms, vStems) = (vh.normal, vh.stems)
 
                         if (DEBUG_MODE)
                             logger.info(
                                 s"Model loaded [" +
                                 s"key=$key, elements: " +
                                 s"${cfg.elements.mkString(", ")}, " +
-                                s"values data=$vd]"
+                                s"values data=$vh]"
                             )
 
                         def get(m: Map[String, Set[String]], key: String): Set[String] = m.getOrElse(key, Set.empty)
@@ -489,7 +502,7 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
                             add(n, elemId, Confidence(INCL_MAX_CONFIDENCE))
 
                         // 2. Via corpus.
-                        val corpusData = getCorpusData(cfg, key, parent)
+                        val corpusData = getCorpusData(cfg, key, vh, parent)
 
                         for (
                             nounTok <- nouns;
@@ -501,9 +514,9 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
 
                         // 3. Ask for sentence (via co-references)
                         val idxs = ns.tokens.flatMap(p => if (p.pos.startsWith("N")) Some(p.index) else None).toSeq
-                        val reqs = idxs.map(idx => NCSuggestionRequest(ns.tokens.map(_.origText).toSeq, idx))
+                        val reqs = idxs.map(idx => Request(ns.tokens.map(_.origText).toSeq, idx))
 
-                        val resps: Map[NCWordSuggestion, NCSuggestionRequest] =
+                        val resps: Map[Suggestion, Request] =
                             syncExec(NCSuggestSynonymManager.suggestWords(reqs, parent = parent)).
                                 flatMap { case (req, suggs) => suggs.map(_ -> req) }
 
@@ -532,6 +545,19 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
 
                         val missed = if (DEBUG_MODE) mutable.HashMap.empty[Key, ArrayBuffer[Confidence]] else null
 
+                        def calcConf(elemId: String, data: ElementData, req: Request, s: Suggestion): Option[Double] = {
+                            val suggNorm = norm(s.word)
+                            val suggStem = stem(s.word)
+
+                            if (
+                                vh.normal.getOrElse(suggNorm, Set.empty).contains(elemId) ||
+                                vh.stems.getOrElse(suggStem, Set.empty).contains(elemId)
+                            )
+                                Some(1.0)
+                            else
+                                data.get(norm = suggNorm, stem = suggStem, lemma = getLemma(req, s))
+                        }
+
                         for (
                             // Token index (tokIdx) should be correct because request created from original words,
                             // separated by space, and Suggestion Manager uses space tokenizer.
@@ -539,12 +565,12 @@ object NCContextWordCategoriesEnricher extends NCServerEnricher {
                             suggConf = normalizeConf(sugg.score);
                             (elemId, elemData) <- corpusData;
                             elemConf = cfg.elements(elemId);
-                            corpConfOpt = elemData.get(norm(sugg.word), stem(sugg.word), getLemma(req, sugg))
-                            if corpConfOpt.isDefined;
-                            corpConf = corpConfOpt.get;
-                            normConf = ConfMath.calculate(suggConf, corpConf)
+                            valOrCorpConfOpt = calcConf(elemId, elemData, req, sugg)
+                            if valOrCorpConfOpt.isDefined;
+                            valOrCorpConf = valOrCorpConfOpt.get;
+                            normConf = ConfMath.calculate(suggConf, valOrCorpConf)
                         ) {
-                            def mkConf(): Confidence = Confidence(normConf, Some(Reason(sugg.word, suggConf, corpConf)))
+                            def mkConf(): Confidence = Confidence(normConf, Some(Reason(sugg.word, suggConf, valOrCorpConf)))
                             def getToken: NCNlpSentenceToken = ns.tokens(req.index)
 
                             if (normConf >= elemConf)

@@ -28,22 +28,18 @@ enabledBuiltInTokens: [] # This example doesn't use any built-in tokens.
 permutateSynonyms: true
 abstractTokens:
   - "ls:part:place"
-  - "ls:part:floor"
+  - "ls:part:placeFloor"
   - "ls:part:placeType"
   - "ls:part:light"
 sparse: true
 elements:
   - id: "ls:part:place"
     description: "Abstract element. Used for top level element `ls:loc`"
-    # TODO: Value is not so big because this category is vague enough.
-    categoryConfidence: 0.4
+    # TODO: Value set for examples set.
+    categoryConfidence: 0.65
     values:
       - name: "room"
-      - name: "closet"
-      - name: "kitchen"
       - name: "bedroom"
-      - name: "washroom"
-      - name: "garage"
 
   # For simplifying example, concrete floor type can be recognized by these synonyms words.
   - id: "ls:part:placeFloor"

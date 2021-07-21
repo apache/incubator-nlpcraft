@@ -22,7 +22,6 @@ import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import org.apache.nlpcraft.model.tools.test.NCTestAutoModelValidator
 import org.apache.nlpcraft.model.{NCIntentRef, NCIntentSample, NCIntentTerm, NCModelFileAdapter, NCResult, NCToken}
 import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
-import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
 import org.junit.jupiter.api.{Assertions, Test}
 
 import scala.jdk.CollectionConverters.ListHasAsScala
@@ -37,7 +36,8 @@ case class NCContextWordSpecModel3Data(
     action: String,
     place: String,
     placeType: Option[String] = None,
-    placeFloor: Option[String] = None
+    placeFloor: Option[String] = None,
+    placeConfidence: java.lang.Double = 0
 )
 
 import org.apache.nlpcraft.model.ctxword.NCContextWordSpecModel3Data._
@@ -58,18 +58,25 @@ class NCLightSwitchScalaModel2 extends NCModelFileAdapter("org/apache/nlpcraft/m
         "Kill the illumination now second floor kid closet!"
     ))
     def onMatch(@NCIntentTerm("act") actTok: NCToken, @NCIntentTerm("loc") locTok: NCToken): NCResult = {
-        def getPart(id: String): Option[String] = locTok.getPartTokens.asScala.find(_.getId == id) match {
+        def getPart(id: String): NCToken =
+            locTok.getPartTokens.asScala.find(_.getId == id).
+            getOrElse(throw new AssertionError(s"Token not found: $id"))
+        def getPartTextOpt(id: String): Option[String] = locTok.getPartTokens.asScala.find(_.getId == id) match {
             case Some(t) => Some(t.getOriginalText.toLowerCase)
             case None => None
         }
+
+        val place = getPart("ls:part:place")
+        val conf: Double = place.meta("ls:part:place:confidence")
 
         NCResult.json(
             MAPPER.writeValueAsString(
                 NCContextWordSpecModel3Data(
                     action = if (actTok.getId == "ls:on") "on" else "off",
-                    place = getPart("ls:part:place").get,
-                    placeType = getPart("ls:part:placeType"),
-                    placeFloor = getPart("ls:part:placeFloor")
+                    place = place.getOriginalText.toLowerCase,
+                    placeConfidence = conf,
+                    placeType = getPartTextOpt("ls:part:placeType"),
+                    placeFloor = getPartTextOpt("ls:part:placeFloor")
                 )
             )
         )
@@ -95,94 +102,91 @@ class NCLightSwitchScalaModel2SpecSamples {
 class NCLightSwitchScalaModel2Spec extends NCTestContext {
     import org.apache.nlpcraft.model.ctxword.{NCContextWordSpecModel3Data => R}
 
-    private def test0(txt: String, expected: NCContextWordSpecModel3Data): Unit = {
-        val res = getClient.ask(txt)
+    private def check(testsData: (String, NCContextWordSpecModel3Data)*): Unit = {
+        val errs = collection.mutable.HashMap.empty[String, String]
+        val okMsgs = collection.mutable.ArrayBuffer.empty[String]
 
-        assertTrue(res.isOk, s"Checked: $txt")
-        assertTrue(res.getResult.isPresent, s"Checked: $txt")
+        testsData.foreach { case (txt, expected) =>
+            def addError(msg: String): Unit = errs += txt -> msg
 
-        val actual = MAPPER.readValue(res.getResult.get(), classOf[NCContextWordSpecModel3Data])
+            val res = getClient.ask(txt)
 
-        assertEquals(expected, actual, s"Expected: $expected, actual: $actual")
+            if (!res.isOk)
+                addError(res.getResultError.get())
+            else {
+                val actual = MAPPER.readValue(res.getResult.get(), classOf[R])
+
+                def getMainData(d: NCContextWordSpecModel3Data): String =
+                    s"Main [action=${d.action}, place=${d.place}, placeType=${d.placeType}, placeFloor=${d.placeFloor}]"
+
+                val actualData = getMainData(actual)
+                val expData = getMainData(expected)
+
+                if (expData != actualData)
+                    addError(s"Expected: $expData, actual: $actualData")
+                else
+                    okMsgs += s"`$txt` processed ok with detected place `${actual.place}` and confidence `${actual.placeConfidence}`."
+            }
+        }
+
+        println(s"Test passed: ${okMsgs.size}")
+        println(s"Test errors: ${errs.size}")
+
+        okMsgs.foreach(println)
+
+        if (errs.nonEmpty)
+            throw new AssertionError(errs.mkString("\n"))
     }
 
+    /**
+      * `ls:part:place` has 2 values: room and bedroom.
+      * Samples contains also: kitchen, washroom, garage, closet. These words detected with some confidence < 1.
+      */
     @Test
-    def testSamplesDetailed(): Unit = {
-        test0(
-            "Turn the lights off in the room.",
-            R(action = "off", place = "room")
+    def testSamplesDetailed(): Unit =
+        check(
+            "Turn the lights off in the room." ->
+                R(action = "off", place = "room"),
+            "Set the lights on in in the room." ->
+                R(action = "on", place = "room"),
+            "Lights up in the kitchen." ->
+                R(action = "on", place = "kitchen"),
+            "Please, put the light out in the upstairs bedroom." ->
+                R(action = "off", place = "bedroom", placeFloor = Some("upstairs")),
+            "Turn the lights off in the guest bedroom." ->
+                R(action = "off", place = "bedroom", placeType = Some("guest")),
+            "No lights in the first floor guest washroom, please." ->
+                R(action = "off", place = "washroom", placeType = Some("guest"), placeFloor = Some("first floor")),
+            "Light up the garage, please!" ->
+                R(action = "on", place = "garage"),
+            "Kill the illumination now second floor kid closet!" ->
+                R(action = "off", place = "closet",  placeType = Some("kid"), placeFloor = Some("second floor"))
         )
-        test0(
-            "Set the lights on in in the room.",
-            R(action = "on", place = "room")
-        )
-        test0(
-            "Lights up in the kitchen.",
-            R(action = "on", place = "kitchen")
-        )
-        test0(
-            "Please, put the light out in the upstairs bedroom.",
-            R(action = "off", place = "bedroom", placeFloor = Some("upstairs"))
-        )
-        test0(
-            "Turn the lights off in the guest bedroom.",
-            R(action = "off", place = "bedroom", placeType = Some("guest"))
-        )
-        test0(
-            "No lights in the first floor guest washroom, please.",
-            R(action = "off", place = "washroom", placeType = Some("guest"), placeFloor = Some("first floor"))
-        )
-        test0(
-            "Light up the garage, please!",
-            R(action = "on", place = "garage")
-        )
-        test0(
-            "Kill the illumination now second floor kid closet!",
-            R(action = "off", place = "closet",  placeType = Some("kid"), placeFloor = Some("second floor"))
-        )
-    }
 
+    /**
+      * `ls:part:place` has 2 values: room and bedroom.
+      * Samples contains also: loft, hallway, library, chamber, office.
+      * Note, that These words are not provided as in samples.
+      * These words detected with some confidence < 1.
+      */
     @Test
-    def testSynonymsSameCategory(): Unit = {
-        // Word `loft` is not defined as place.
-        test0(
-            "Turn the lights off in the loft.",
-            R(action = "off", place = "loft")
+    def testSynonymsSameCategory(): Unit =
+        check(
+            "Turn the lights off in the loft." ->
+                R(action = "off", place = "loft"),
+            "Set the lights on in in the loft." ->
+                R(action = "on", place = "loft"),
+            "Lights up in the hallway." ->
+                R(action = "on", place = "hallway"),
+            "Please, put the light out in the upstairs library." ->
+                R(action = "off", place = "library", placeFloor = Some("upstairs")),
+            "Turn the lights off in the guest office." ->
+                R(action = "off", place = "office", placeType = Some("guest")),
+            "No lights in the first floor guest chamber, please." ->
+                R(action = "off", place = "chamber", placeType = Some("guest"), placeFloor = Some("first floor")),
+            "Light up the office, please!" ->
+                R(action = "on", place = "office"),
+            "Kill the illumination now second floor kid chamber!" ->
+                R(action = "off", place = "chamber",  placeType = Some("kid"), placeFloor = Some("second floor"))
         )
-        // Word `loft` is not defined as place.
-        test0(
-            "Set the lights on in in the loft.",
-            R(action = "on", place = "loft")
-        )
-        // Word `office` is not defined as place.
-        test0(
-            "Lights up in the office.",
-            R(action = "on", place = "office")
-        )
-        // Word `library` is not defined as place.
-        test0(
-            "Please, put the light out in the upstairs library.",
-            R(action = "off", place = "library", placeFloor = Some("upstairs"))
-        )
-        // Word `office` is not defined as place.
-        test0(
-            "Turn the lights off in the guest office.",
-            R(action = "off", place = "office", placeType = Some("guest"))
-        )
-        // Word `chamber` is not defined as place.
-        test0(
-            "No lights in the first floor guest chamber, please.",
-            R(action = "off", place = "chamber", placeType = Some("guest"), placeFloor = Some("first floor"))
-        )
-        // Word `office` is not defined as place.
-        test0(
-            "Light up the office, please!",
-            R(action = "on", place = "office")
-        )
-        // Word `chamber` is not defined as place.
-        test0(
-            "Kill the illumination now second floor kid chamber!",
-            R(action = "off", place = "chamber",  placeType = Some("kid"), placeFloor = Some("second floor"))
-        )
-    }
 }
