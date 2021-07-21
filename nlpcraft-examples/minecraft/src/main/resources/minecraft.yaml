@@ -140,6 +140,10 @@ elements:
 abstractTokens:
    - mc:player
 
+#
+# Allows for multi-word synonyms in this entire model
+# to be sparse and permutate them for better detection.
+#
 permutateSynonyms: true
 sparse: true
 

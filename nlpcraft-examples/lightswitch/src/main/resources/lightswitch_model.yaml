@@ -33,8 +33,14 @@ macros:
   - name: "<LIGHT>"
     macro: "{all|_} {it|them|light|illumination|lamp|lamplight}"
 enabledBuiltInTokens: [] # This example doesn't use any built-in tokens.
+
+#
+# Allows for multi-word synonyms in this entire model
+# to be sparse and permutate them for better detection.
+#
 permutateSynonyms: true
 sparse: true
+
 elements:
   - id: "ls:loc"
     description: "Location of lights."
@@ -61,5 +67,6 @@ elements:
       - "<KILL> <LIGHT>"
       - "<LIGHT> <KILL>"
       - "no <LIGHT>"
+
 intents:
   - "intent=ls term(act)={has(tok_groups(), 'act')} term(loc)={tok_id() == 'ls:loc'}*"
