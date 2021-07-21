@@ -66,6 +66,7 @@ object NCProbeManager extends NCService {
         def reconnectTimeoutMs: Long = getLong(s"$pre.reconnectTimeoutMs")
         def pingTimeoutMs: Long = getLong(s"$pre.pingTimeoutMs")
         def soTimeoutMs: Int = getInt(s"$pre.soTimeoutMs")
+
         /**
           *
           */
