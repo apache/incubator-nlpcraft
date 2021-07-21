@@ -33,14 +33,14 @@ public interface NCVariant extends List<NCToken>, NCMetadata {
     /**
      * Utility method that returns all non-freeword tokens. It's equivalent to:
      * <pre class="brush: java">
-     *     return stream().filter(tok -&gt; !tok.isFreeWord()).collect(Collectors.toList());
+     *     return stream().filter(tok -&gt; !tok.isFreeWord() && !tok.isStopWord()).collect(Collectors.toList());
      * </pre>
      *
      * @return All non-freeword tokens.
      * @see NCToken#isFreeWord()
      */
     default List<NCToken> getMatchedTokens() {
-        return stream().filter(tok -> !tok.isFreeWord()).collect(Collectors.toList());
+        return stream().filter(tok -> !tok.isFreeWord() && !tok.isStopWord()).collect(Collectors.toList());
     }
 
     /**
@@ -57,13 +57,39 @@ public interface NCVariant extends List<NCToken>, NCMetadata {
     }
 
     /**
+     * Utility method that returns all abstract tokens. It's equivalent to:
+     * <pre class="brush: java">
+     *     return stream().filter(NCToken::isAbstract).collect(Collectors.toList());
+     * </pre>
+     *
+     * @return All abstract tokens.
+     * @see NCToken#isAbstract() ()
+     */
+    default List<NCToken> getAbstractTokens() {
+        return stream().filter(NCToken::isAbstract).collect(Collectors.toList());
+    }
+
+    /**
+     * Utility method that returns all stop word tokens. It's equivalent to:
+     * <pre class="brush: java">
+     *     return stream().filter(NCToken::isStopWord).collect(Collectors.toList());
+     * </pre>
+     *
+     * @return All stop word tokens.
+     * @see NCToken#isAbstract() ()
+     */
+    default List<NCToken> getStopWordTokens() {
+        return stream().filter(NCToken::isStopWord).collect(Collectors.toList());
+    }
+
+    /**
      * Utility method that returns all user-defined tokens. It's equivalent to:
      * <pre class="brush: java">
      *     return stream().filter(NCToken::isUserDefined).collect(Collectors.toList());
      * </pre>
      *
      * @return All user-defined tokens.
-     * @see NCToken#isFreeWord()
+     * @see NCToken#isUserDefined() ()
      */
     default List<NCToken> getUserDefinedTokens() {
         return stream().filter(NCToken::isUserDefined).collect(Collectors.toList());

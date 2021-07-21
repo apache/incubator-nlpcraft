@@ -684,10 +684,9 @@ public interface NCModelView extends NCMetadata {
      * Whether or not to permutate multi-word synonyms. Automatic multi-word synonyms permutations greatly
      * increase the total number of synonyms in the system and allows for better multi-word synonym detection.
      * For example, if permutation is allowed the synonym "a b c" will be automatically converted into a
-     * sequence of synonyms of "a b c", "b a c", "a c b".
-     * <p>
-     * Note that individual model elements can override this property using {@link NCElement#isPermutateSynonyms()}
-     * method.
+     * sequence of synonyms of "a b c", "b a c", "a c b". This property is closely related to {@link #isSparse()}
+     * which are typically changed together. Note that individual model elements can override this property using
+     * {@link NCElement#isPermutateSynonyms()} method.
      * <p>
      * <b>Default</b>
      * <br>
@@ -704,6 +703,8 @@ public interface NCModelView extends NCMetadata {
      *
      * @return Whether or not to permutate multi-word synonyms.
      * @see NCElement#isPermutateSynonyms()
+     * @see NCElement#isSparse()
+     * @see #isSparse()
      */
     default boolean isPermutateSynonyms() {
         return DFLT_IS_PERMUTATE_SYNONYMS;
@@ -786,7 +787,7 @@ public interface NCModelView extends NCMetadata {
 
     /**
      * Whether or not this model elements allows non-stop words gaps in their multi-word synonyms.
-     * <p>
+     * This property is closely related to {@link #isPermutateSynonyms()} which are typically changed together.
      * Note that individual model elements can override this property using {@link NCElement#isSparse()}
      * method.
      * <p>
@@ -805,6 +806,8 @@ public interface NCModelView extends NCMetadata {
      *
      * @return Optional multi-word synonym sparsity model property.
      * @see NCElement#isSparse()
+     * @see NCElement#isPermutateSynonyms()
+     * @see #isPermutateSynonyms()
      */
     default boolean isSparse() {
         return DFLT_IS_SPARSE;
