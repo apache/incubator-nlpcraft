@@ -17,7 +17,7 @@
 
 package org.apache.nlpcraft
 
-import org.apache.nlpcraft.model.NCElement
+import org.apache.nlpcraft.model.{NCElement, NCValue}
 
 import java.util
 import scala.jdk.CollectionConverters.{SeqHasAsJava, SetHasAsJava}
@@ -27,8 +27,11 @@ import scala.language.implicitConversions
   * Simple test element.
   */
 case class NCTestElement(id: String, syns: String*) extends NCElement {
+    private val values = new util.ArrayList[NCValue]
+
     override def getId: String = id
     override def getSynonyms: util.List[String] = (syns :+ id).asJava
+    override def getValues: util.List[NCValue] = values
 }
 
 /**
@@ -38,4 +41,19 @@ object NCTestElement {
     private def to(e: NCTestElement): NCElement = e
 
     implicit def to(set: Set[NCTestElement]): util.Set[NCElement] = set.map(to).asJava
+
+    def apply(id: String, syns: Seq[String], vals: Map[String, Seq[String]]): NCTestElement = {
+        val e = NCTestElement(id, syns :_*)
+
+        e.getValues.addAll(
+            vals.map { case (value, syns) =>
+                new NCValue {
+                    override def getName: String = value
+                    override def getSynonyms: util.List[String] = syns.asJava
+                }
+            }.toSeq.asJava
+        )
+
+        e
+    }
 }

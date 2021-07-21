@@ -36,6 +36,7 @@ import org.apache.nlpcraft.common.pool.NCThreadPoolManager
 import org.apache.nlpcraft.common.util.NCUtils.{jsonToJavaMap, uncompress}
 import org.apache.nlpcraft.common.{JavaMeta, NCE, U}
 import org.apache.nlpcraft.model.NCModelView
+import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 import org.apache.nlpcraft.server.apicodes.NCApiStatusCode.{API_OK, _}
 import org.apache.nlpcraft.server.company.NCCompanyManager
 import org.apache.nlpcraft.server.feedback.NCFeedbackManager
@@ -786,15 +787,15 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       * @return
       */
     protected def sugsyn$(): Route = {
-        case class Req$Model$Sugsyn$(
+        case class Req$Model$Sugsyn(
             acsTok: String,
             mdlId: String,
             minScore: Option[Double]
         )
 
-        implicit val reqFmt: RootJsonFormat[Req$Model$Sugsyn$] = jsonFormat3(Req$Model$Sugsyn$)
+        implicit val reqFmt: RootJsonFormat[Req$Model$Sugsyn] = jsonFormat3(Req$Model$Sugsyn)
 
-        entity(as[Req$Model$Sugsyn$]) { req =>
+        entity(as[Req$Model$Sugsyn]) { req =>
             startScopedSpan(
                 "model$sugsyn",
                 "acsTok" -> req.acsTok,
@@ -815,6 +816,66 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                         case res => toJs(Map("status" -> API_OK.toString, "result" -> res).asJava)
                     }
                 )
+            }
+        }
+    }
+
+
+    /**
+      *
+      * @return
+      */
+    protected def elementSynonyms$(): Route = {
+        case class Req$Model$Syn(
+            acsTok: String,
+            mdlId: String,
+            elemId: String
+        )
+
+        implicit val reqFmt: RootJsonFormat[Req$Model$Syn] = jsonFormat3(Req$Model$Syn)
+
+        case class Res$Model$Value(
+            name: String,
+            synonyms: Seq[String]
+        )
+
+        case class Res$Model$Element(
+            status: String,
+            synonyms: Seq[String],
+            values: Seq[Res$Model$Value]
+        )
+
+        implicit val resValFmt: RootJsonFormat[Res$Model$Value] = jsonFormat2(Res$Model$Value)
+        implicit val resFmt: RootJsonFormat[Res$Model$Element] = jsonFormat3(Res$Model$Element)
+
+        entity(as[Req$Model$Syn]) { req =>
+            startScopedSpan(
+                "model$syns",
+                "acsTok" -> req.acsTok,
+                "mdlId" -> req.mdlId,
+                "elemId" -> req.elemId) { span =>
+                checkLength("acsTok" -> req.acsTok, "mdlId" -> req.mdlId)
+
+                val admUsr = authenticateAsAdmin(req.acsTok)
+
+                checkModelId(req.mdlId, admUsr.companyId)
+
+                val elm =
+                    NCModelManager.
+                        getModel(req.mdlId, span).
+                        model.
+                        getElements.asScala.find(_.getId == req.elemId).getOrElse(throw InvalidModelId(req.elemId))
+
+                complete {
+                    Res$Model$Element(
+                        API_OK,
+                        elm.getSynonyms.asScala.toSeq,
+                        if (elm.getValues != null)
+                            elm.getValues.asScala.map(p => Res$Model$Value(p.getName, p.getSynonyms.asScala.toSeq)).toSeq
+                        else
+                            Seq.empty
+                    )
+                }
             }
         }
     }
@@ -1977,6 +2038,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                                     path(API / "feedback" / "delete") { withMetric(M_FEEDBACK_DELETE_LATENCY_MS, feedback$Delete) } ~
                                     path(API / "probe" / "all") { withMetric(M_PROBE_ALL_LATENCY_MS, probe$All) } ~
                                     path(API / "model" / "sugsyn") { withMetric(M_MODEL_SUGSYN_LATENCY_MS, sugsyn$) } ~
+                                    path(API / "model" / "syns") { withMetric(M_MODEL_SYNS_LATENCY_MS, elementSynonyms$) } ~
                                     path(API / "ask") { withMetric(M_ASK_LATENCY_MS, ask$) } ~
                                     path(API / "ask" / "sync") { withMetric(M_ASK_SYNC_LATENCY_MS, ask$Sync) }
                                 }

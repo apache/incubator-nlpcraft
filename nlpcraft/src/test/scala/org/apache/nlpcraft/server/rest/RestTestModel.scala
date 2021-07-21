@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.server.rest
 
 import org.apache.nlpcraft.NCTestElement
-import org.apache.nlpcraft.model.{NCElement, NCIntent, NCIntentSample, NCModelAdapter, NCResult}
+import org.apache.nlpcraft.model.{NCElement, NCIntent, NCIntentSample, NCModelAdapter, NCResult, NCValue}
 
 import java.util
 
@@ -49,7 +49,8 @@ class RestTestModel extends NCModelAdapter("rest.test.model", "REST test model",
             NCTestElement("a"),
             NCTestElement("b"),
             NCTestElement("x", "cat"),
-            NCTestElement("meta")
+            NCTestElement("meta"),
+            NCTestElement("valElem", Seq("valElem1"), Map("v1"->Seq("v11", "v12"), "v2" -> Seq("v21")))
         )
 
     @NCIntent("intent=onA term(t)={tok_id() == 'a'}")

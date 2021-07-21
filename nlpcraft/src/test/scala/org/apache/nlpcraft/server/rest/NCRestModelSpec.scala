@@ -29,7 +29,7 @@ import scala.jdk.CollectionConverters.ListHasAsScala
 @NCTestEnvironment(model = classOf[RestTestModel], startClient = false)
 class NCRestModelSpec extends NCRestSpec {
     @Test
-    def test(): Unit = {
+    def testSugsyn(): Unit = {
         def extract(data: JList[java.util.Map[String, Object]]): Seq[Double] =
             data.asScala.map(_.get("score").asInstanceOf[Number].doubleValue()).toSeq
 
@@ -52,6 +52,26 @@ class NCRestModelSpec extends NCRestSpec {
 
                 assertTrue(scores.nonEmpty)
                 assertTrue(scores.forall(s => s >= 0.5 && s <= 1))
+            })
+        )
+    }
+
+    @Test
+    def testSyns(): Unit = {
+        def extract(data: JList[java.util.Map[String, Object]]): Seq[Double] =
+            data.asScala.map(_.get("score").asInstanceOf[Number].doubleValue()).toSeq
+
+        // Note that checked values are valid for current configuration of `RestTestModel` model.
+        post("model/syns", "mdlId" -> "rest.test.model", "elemId" -> "x")(
+            ("$.status", (status: String) => assertEquals("API_OK", status)),
+            ("$.synonyms", (data: ResponseList) => {
+                println("data="+data)
+            })
+        )
+        post("model/syns", "mdlId" -> "rest.test.model", "elemId" -> "valElem")(
+            ("$.status", (status: String) => assertEquals("API_OK", status)),
+            ("$.synonyms", (data: ResponseList) => {
+                println("data="+data)
             })
         )
     }
