@@ -35,12 +35,13 @@ frag: fragId termDecls;
 fragId: FRAG ASSIGN id;
 fragRef: FRAG LPAR id fragMeta? RPAR;
 fragMeta: COMMA jsonObj;
-intent: intentId orderedDecl? flowDecl? metaDecl? termDecls;
+intent: intentId orderedDecl? optDecl? flowDecl? metaDecl? termDecls;
 intentId: 'intent' ASSIGN id;
 orderedDecl: 'ordered' ASSIGN BOOL;
 mtdDecl: DIV mtdRef DIV;
 flowDecl: 'flow' ASSIGN (qstring | mtdDecl);
 metaDecl: 'meta' ASSIGN jsonObj;
+optDecl: 'options' ASSIGN jsonObj;
 jsonObj
     : LBRACE jsonPair (COMMA jsonPair)* RBRACE
     | LBRACE RBRACE

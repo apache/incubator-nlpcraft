@@ -26,7 +26,7 @@ import org.apache.nlpcraft.common.antlr4.NCCompilerUtils
 import org.apache.nlpcraft.model.intent.compiler.antlr4.{NCIdlBaseListener, NCIdlLexer, NCIdlParser => IDP}
 import org.apache.nlpcraft.model.intent.compiler.{NCIdlCompilerGlobal => Global}
 import org.apache.nlpcraft.model._
-import org.apache.nlpcraft.model.intent.{NCIdlContext, NCIdlFunction, NCIdlIntent, NCIdlStack, NCIdlSynonym, NCIdlTerm, NCIdlStackItem => Z}
+import org.apache.nlpcraft.model.intent.{NCIdlContext, NCIdlFunction, NCIdlIntent, NCIdlIntentOptions, NCIdlStack, NCIdlSynonym, NCIdlTerm, NCIdlStackItem => Z}
 
 import java.io._
 import java.net._
@@ -66,6 +66,7 @@ object NCIdlCompiler extends LazyLogging {
         private var ordered: Boolean = false
         private var flowRegex: Option[String] = None
         private var intentMeta: ScalaMeta = _
+        private var intentOpts: NCIdlIntentOptions = _
 
         // Accumulator for parsed terms.
         private val terms = mutable.ArrayBuffer.empty[NCIdlTerm]
@@ -82,6 +83,13 @@ object NCIdlCompiler extends LazyLogging {
         private var mtdName: Option[String] = None
         private var flowClsName: Option[String] = None
         private var flowMtdName: Option[String] = None
+
+        // Supported intent options (JSON fields).
+        private val OPTIONS = Seq(
+            "unused_free_words",
+            "unused_sys_toks",
+            "unused_user_toks"
+        )
 
         // List of instructions for the current expression.
         private val expr = mutable.Buffer.empty[SI]
@@ -112,9 +120,16 @@ object NCIdlCompiler extends LazyLogging {
         override def exitTermEq(ctx: IDP.TermEqContext): Unit = termConv = ctx.TILDA() != null
         override def exitFragMeta(ctx: IDP.FragMetaContext): Unit = fragMeta = U.jsonToScalaMap(ctx.jsonObj().getText)
         override def exitMetaDecl(ctx: IDP.MetaDeclContext): Unit = intentMeta = U.jsonToScalaMap(ctx.jsonObj().getText)
+        override def exitOptDecl (ctx: IDP.OptDeclContext): Unit = intentOpts = convertToOptions(U.jsonToScalaMap(ctx.jsonObj().getText))
         override def exitOrderedDecl(ctx: IDP.OrderedDeclContext): Unit = ordered = ctx.BOOL().getText == "true"
         override def exitIntentId(ctx: IDP.IntentIdContext): Unit =  intentId = ctx.id().getText
         override def exitAlias(ctx: IDP.AliasContext): Unit = alias = ctx.id().getText
+
+        private def convertToOptions(json: Map[String, Object]): NCIdlIntentOptions = {
+            val opts = new NCIdlIntentOptions()
+
+
+        }
 
         override def enterCallExpr(ctx: IDP.CallExprContext): Unit =
             expr += ((_, stack: NCIdlStack, _) => stack.push(stack.PLIST_MARKER))
@@ -458,6 +473,7 @@ object NCIdlCompiler extends LazyLogging {
                     idl,
                     intentId,
                     ordered,
+                    intentOpts,
                     if (intentMeta == null) Map.empty else intentMeta,
                     flowRegex,
                     flowClsName,

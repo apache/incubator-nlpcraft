@@ -1,4 +1,4 @@
-// Generated from /Users/nivanov/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/model/intent/compiler/antlr4/NCIdl.g4 by ANTLR 4.9.1
+// Generated from C:/Users/Nikita Ivanov/Documents/GitHub/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/model/intent/compiler/antlr4\NCIdl.g4 by ANTLR 4.9.1
 package org.apache.nlpcraft.model.intent.compiler.antlr4;
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -203,6 +203,18 @@ public class NCIdlBaseListener implements NCIdlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitMetaDecl(NCIdlParser.MetaDeclContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterOptDecl(NCIdlParser.OptDeclContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitOptDecl(NCIdlParser.OptDeclContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
