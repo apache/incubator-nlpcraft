@@ -21,7 +21,23 @@ package org.apache.nlpcraft.model.intent
  * Intent options container.
  */
 class NCIdlIntentOptions {
+    /**
+     * Whether to ignore unused free words for intent match.
+     */
     var ignoreUnusedFreeWords: Boolean = true
+
+    /**
+     * Whether to ignore unused system tokens for intent match.
+     */
     var ignoreUnusedSystemTokens: Boolean = true
+
+    /**
+     * Whether to ignore unused user tokens for intent match.
+     */
     var ignoreUnusedUserTokens: Boolean = false
+
+    /**
+     * Whether or not the order of term is important for intent match.
+     */
+    var ordered: Boolean = false
 }

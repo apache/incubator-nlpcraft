@@ -160,18 +160,6 @@ public class NCIdlBaseListener implements NCIdlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterOrderedDecl(NCIdlParser.OrderedDeclContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitOrderedDecl(NCIdlParser.OrderedDeclContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterMtdDecl(NCIdlParser.MtdDeclContext ctx) { }
 	/**
 	 * {@inheritDoc}

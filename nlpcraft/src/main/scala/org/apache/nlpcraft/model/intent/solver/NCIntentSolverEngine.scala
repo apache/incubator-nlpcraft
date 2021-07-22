@@ -163,13 +163,11 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
      * @param tokenGroups
      * @param weight
      * @param intent
-     * @param exactMatch
      */
     private case class IntentMatch(
         tokenGroups: List[TermTokensGroup],
         weight: Weight,
-        intent: NCIdlIntent,
-        exactMatch: Boolean
+        intent: NCIdlIntent
     )
 
     /**
@@ -342,7 +340,6 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                     if (logHldr != null)
                         logHldr.addIntent(
                             im.intent.id,
-                            im.exactMatch,
                             im.weight.toSeq,
                             im.tokenGroups.map(g =>
                                 g.term.id.getOrElse("") -> g.usedTokens.map(t => NCLogGroupToken(t.token, t.conv, t.used))
@@ -360,7 +357,6 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                     m.intentMatch.intent.id,
                     m.callback,
                     m.intentMatch.tokenGroups.map(grp => NCIntentTokensGroup(grp.term.id, grp.usedTokens.map(_.token))),
-                    m.intentMatch.exactMatch,
                     m.variant,
                     m.variantIdx
                 )
@@ -378,7 +374,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
         
         val intent = im.intent
 
-        buf += s"intent=${intent.id} ordered=${intent.ordered}"
+        buf += s"intent=${intent.id}"
 
         var grpIdx = 0
 
@@ -483,7 +479,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
             val intentW = new Weight()
             val intentGrps = mutable.ListBuffer.empty[TermTokensGroup]
             var abort = false
-            val ordered = intent.ordered
+            val opts = intent.options
             var lastTermMatch: TermMatch = null
 
             // Conversation metadata (shared across all terms).
@@ -507,7 +503,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                     if (term.conv) convToks else Seq.empty
                 ) match {
                     case Some(termMatch) =>
-                        if (ordered && lastTermMatch != null && lastTermMatch.maxIndex > termMatch.maxIndex)
+                        if (opts.ordered && lastTermMatch != null && lastTermMatch.maxIndex > termMatch.maxIndex)
                             abort = true
                         else {
                             // Term is found.
@@ -578,8 +574,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                     res = Some(IntentMatch(
                         tokenGroups = intentGrps.toList,
                         weight = intentW,
-                        intent = intent,
-                        exactMatch = nonFreeWordNum == 0
+                        intent = intent
                     ))
                 }
 

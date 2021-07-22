@@ -28,11 +28,6 @@ import java.util.*
  * See 'README.md' file for installation, running and testing instructions.
  */
 class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
-    private fun checkAmbiguous(ctx: NCIntentMatch) {
-        if (ctx.isAmbiguous)
-            throw NCRejection("Ambiguous request")
-    }
-
     /**
      * Weather intent callback.
      */
@@ -55,9 +50,7 @@ class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
         "start a hurricane",
         "cast super squall"
     )
-    fun onWeatherMatch(ctx: NCIntentMatch, @NCIntentTerm("arg") tok: NCToken): NCResult {
-        checkAmbiguous(ctx)
-
+    fun onWeatherMatch(@Suppress("UNUSED_PARAMETER") ctx: NCIntentMatch, @NCIntentTerm("arg") tok: NCToken): NCResult {
         return NCResult.text("weather ${tok.id}")
     }
 
@@ -71,9 +64,7 @@ class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
         "night",
         "it's midnight"
     )
-    fun onTimeMatch(ctx: NCIntentMatch, @NCIntentTerm("arg") tok: NCToken): NCResult {
-        checkAmbiguous(ctx)
-
+    fun onTimeMatch(@Suppress("UNUSED_PARAMETER") ctx: NCIntentMatch, @NCIntentTerm("arg") tok: NCToken): NCResult {
         val time: Int = when (tok.id) {
             "morning" -> 23000
             "day" -> 1000
@@ -99,13 +90,11 @@ class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
         "give potion to me"
     )
     fun onGiveMatch(
-        ctx: NCIntentMatch,
+        @Suppress("UNUSED_PARAMETER") ctx: NCIntentMatch,
         @NCIntentTerm("item") item: NCToken,
         @NCIntentTerm("action") target: NCToken,
         @NCIntentTerm("quantity") quantity: Optional<NCToken>
     ): NCResult {
-        checkAmbiguous(ctx)
-
         val itemRegistry = dumps["item"]!![item.value]!!
 
         val part = target.partTokens[1]

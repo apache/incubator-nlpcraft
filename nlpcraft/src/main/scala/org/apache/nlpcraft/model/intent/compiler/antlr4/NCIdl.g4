@@ -35,9 +35,8 @@ frag: fragId termDecls;
 fragId: FRAG ASSIGN id;
 fragRef: FRAG LPAR id fragMeta? RPAR;
 fragMeta: COMMA jsonObj;
-intent: intentId orderedDecl? optDecl? flowDecl? metaDecl? termDecls;
+intent: intentId optDecl? flowDecl? metaDecl? termDecls;
 intentId: 'intent' ASSIGN id;
-orderedDecl: 'ordered' ASSIGN BOOL;
 mtdDecl: DIV mtdRef DIV;
 flowDecl: 'flow' ASSIGN (qstring | mtdDecl);
 metaDecl: 'meta' ASSIGN jsonObj;
@@ -81,7 +80,7 @@ javaClass
     // We need to include keywords to make sure they don't conflict.
     | IMPORT
     | INTENT
-    | ORDERED
+    | OPTIONS
     | FLOW
     | META
     | TERM
@@ -288,7 +287,7 @@ FUN_NAME
 
 IMPORT : 'import' ;
 INTENT : 'intent' ;
-ORDERED : 'ordered' ;
+OPTIONS : 'options' ;
 FLOW : 'flow' ;
 META : 'meta' ;
 TERM : 'term' ;

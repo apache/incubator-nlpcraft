@@ -103,19 +103,4 @@ public interface NCIntentMatch extends NCMetadata, Serializable {
      * @see #getIntentTokens() 
      */
     NCVariant getVariant();
-
-    /**
-     * Indicates whether or not the intent match was ambiguous (not exact).
-     * <p>
-     * An exact match means that for the intent to match it has to use all non-free word tokens
-     * in the user input, i.e. only free word tokens can be left after the match. An ambiguous match
-     * doesn't have this restriction. Note that an ambiguous match should be used with a great care.
-     * An ambiguous match completely ignores extra found user or system tokens (which are not part
-     * of the intent template) which could have altered the matching outcome had they been considered.
-     * <p>
-     * Intent callbacks that check this property should always provide custom rejection message.
-     *
-     * @return {@code True} if the intent match was exact, {@code false} otherwise.
-     */
-    boolean isAmbiguous();
 }

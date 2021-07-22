@@ -63,10 +63,9 @@ object NCIdlCompiler extends LazyLogging {
 
         // Intent components.
         private var intentId: String = _
-        private var ordered: Boolean = false
         private var flowRegex: Option[String] = None
         private var intentMeta: ScalaMeta = _
-        private var intentOpts: NCIdlIntentOptions = _
+        private var intentOpts: NCIdlIntentOptions = new NCIdlIntentOptions()
 
         // Accumulator for parsed terms.
         private val terms = mutable.ArrayBuffer.empty[NCIdlTerm]
@@ -83,13 +82,6 @@ object NCIdlCompiler extends LazyLogging {
         private var mtdName: Option[String] = None
         private var flowClsName: Option[String] = None
         private var flowMtdName: Option[String] = None
-
-        // Supported intent options (JSON fields).
-        private val OPTIONS = Seq(
-            "unused_free_words",
-            "unused_sys_toks",
-            "unused_user_toks"
-        )
 
         // List of instructions for the current expression.
         private val expr = mutable.Buffer.empty[SI]
@@ -120,15 +112,33 @@ object NCIdlCompiler extends LazyLogging {
         override def exitTermEq(ctx: IDP.TermEqContext): Unit = termConv = ctx.TILDA() != null
         override def exitFragMeta(ctx: IDP.FragMetaContext): Unit = fragMeta = U.jsonToScalaMap(ctx.jsonObj().getText)
         override def exitMetaDecl(ctx: IDP.MetaDeclContext): Unit = intentMeta = U.jsonToScalaMap(ctx.jsonObj().getText)
-        override def exitOptDecl (ctx: IDP.OptDeclContext): Unit = intentOpts = convertToOptions(U.jsonToScalaMap(ctx.jsonObj().getText))
-        override def exitOrderedDecl(ctx: IDP.OrderedDeclContext): Unit = ordered = ctx.BOOL().getText == "true"
+        override def exitOptDecl (ctx: IDP.OptDeclContext): Unit = intentOpts = convertToOptions(U.jsonToScalaMap(ctx.jsonObj().getText))(ctx)
         override def exitIntentId(ctx: IDP.IntentIdContext): Unit =  intentId = ctx.id().getText
         override def exitAlias(ctx: IDP.AliasContext): Unit = alias = ctx.id().getText
 
-        private def convertToOptions(json: Map[String, Object]): NCIdlIntentOptions = {
+        private def convertToOptions(json: Map[String, Object])(ctx: IDP.OptDeclContext): NCIdlIntentOptions = {
             val opts = new NCIdlIntentOptions()
 
+            def boolVal(k: String, v: Object): Boolean =
+                v match {
+                    case b: java.lang.Boolean if b != null => b
+                    case _ => throw newSyntaxError(s"Invalid intent option: $k")(ctx)
+                }
 
+            for ((k, v) <- json) {
+                if (k == "ordered")
+                    opts.ordered = boolVal(k, v)
+                if (k == "unused_free_words")
+                    opts.ignoreUnusedFreeWords = boolVal(k, v)
+                if (k == "unused_sys_toks")
+                    opts.ignoreUnusedSystemTokens = boolVal(k, v)
+                if (k == "unused_user_toks")
+                    opts.ignoreUnusedUserTokens = boolVal(k, v)
+                else
+                    throw newSyntaxError(s"Unknown intent option: $k")(ctx)
+            }
+
+            opts
         }
 
         override def enterCallExpr(ctx: IDP.CallExprContext): Unit =
@@ -472,7 +482,6 @@ object NCIdlCompiler extends LazyLogging {
                     origin,
                     idl,
                     intentId,
-                    ordered,
                     intentOpts,
                     if (intentMeta == null) Map.empty else intentMeta,
                     flowRegex,
@@ -485,6 +494,7 @@ object NCIdlCompiler extends LazyLogging {
             flowClsName = None
             flowMtdName = None
             intentMeta = null
+            intentOpts = new NCIdlIntentOptions()
             terms.clear()
         }
 

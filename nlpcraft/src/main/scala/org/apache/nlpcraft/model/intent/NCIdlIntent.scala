@@ -27,7 +27,6 @@ import java.util.regex.Pattern
  * @param origin File path, file name, method name or URL.
  * @param idl Original IDL of this intent.
  * @param id
- * @param ordered
  * @param options
  * @param meta
  * @param flow
@@ -37,7 +36,6 @@ case class NCIdlIntent(
     origin: String,
     idl: String,
     id: String,
-    ordered: Boolean,
     options: NCIdlIntentOptions,
     meta: ScalaMeta,
     flow: Option[String],

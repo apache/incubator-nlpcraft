@@ -186,10 +186,6 @@ public class WeatherModel extends NCModelFileAdapter {
         @NCIntentTerm("city") Optional<NCToken> cityTokOpt,
         @NCIntentTerm("date") Optional<NCToken> dateTokOpt
     ) {
-        // Reject if intent match is not exact (at least one "dangling" token remain).
-        if (ctx.isAmbiguous())
-            throw new NCRejection("Please clarify your request.");
-
         try {
             Instant now = Instant.now();
 
