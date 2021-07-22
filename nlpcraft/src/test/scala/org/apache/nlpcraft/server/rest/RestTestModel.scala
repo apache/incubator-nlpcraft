@@ -50,7 +50,7 @@ class RestTestModel extends NCModelAdapter("rest.test.model", "REST test model",
             NCTestElement("b"),
             NCTestElement("x", "cat"),
             NCTestElement("meta"),
-            NCTestElement("valElem", Seq("valElem1"), Map("v1"->Seq("v11", "v12"), "v2" -> Seq("v21")))
+            NCTestElement("valElem", Seq("valElem1"), Map("v1"-> Seq("v11", "v12"), "v2" -> Seq("v21")))
         )
 
     @NCIntent("intent=onA term(t)={tok_id() == 'a'}")

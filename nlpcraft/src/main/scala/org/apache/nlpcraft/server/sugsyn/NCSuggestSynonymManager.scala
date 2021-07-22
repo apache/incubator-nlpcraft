@@ -143,7 +143,7 @@ object NCSuggestSynonymManager extends NCService {
 
             val promise = Promise[NCSuggestSynonymResult]()
 
-            NCProbeManager.getModelInfo(mdlId = mdlId, parent = parent).onComplete {
+            NCProbeManager.getModelInfo(mdlId, parent).onComplete {
                 case Success(m) =>
                     try {
                         require(
