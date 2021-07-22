@@ -234,6 +234,63 @@ paths:
           description: Failed operation.
           schema:
             $ref: '#/definitions/Error'
+  /model/syns:
+    post:
+      tags:
+        - Tools
+      summary: Gets model element synonyms.
+      description: >-
+        Gets model element synonyms.
+        Administrative privileges required.
+      operationId: syns
+      parameters:
+        - in: body
+          name: Payload body
+          description: JSON request.
+          required: true
+          schema:
+            type: object
+            required:
+              - acsTok
+              - mdlId
+              - elemId
+            properties:
+              acsTok:
+                type: string
+                description: Access token obtain via '/signin' call.
+                maxLength: 256
+              mdlId:
+                type: string
+                maxLength: 32
+                description: ID of the model to run synonym suggestion on.
+              elemId:
+                type: string
+                description: ID of the model element to getting synonyms.
+      responses:
+        '200':
+          description: Successful operation.
+          schema:
+            type: object
+            required:
+              - status
+              - synonyms
+              - values
+            properties:
+              status:
+                type: string
+                description: Status code of this operation.
+                enum:
+                  - API_OK
+              synonyms:
+                type: object
+                description: Synonyms list.
+              values:
+                type: object
+                description: Values map (value name to vaule synonyms list). Empty if element doesn't contain values.
+        '400':
+          description: Failed operation.
+          schema:
+            $ref: '#/definitions/Error'
   /check:
     post:
       tags:
