@@ -159,6 +159,12 @@ public interface NCModelView extends NCMetadata {
     int MODEL_VERSION_MAXLEN = 16;
 
     /**
+     * TODO:
+     * Max model element length for {@link NCElement#getId()} method.
+     */
+    int MODEL_ELEMENT_ID_MAXLEN = 64;
+
+    /**
      * Default value for {@link #isSparse()} method.
      */
     boolean DFLT_IS_SPARSE = false;

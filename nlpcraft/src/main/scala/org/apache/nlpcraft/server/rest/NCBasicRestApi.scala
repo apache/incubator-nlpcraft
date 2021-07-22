@@ -107,6 +107,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
     private final val STD_FIELD_LENGTHS = Map[String, Int](
         "srvReqId" -> 32,
         "mdlId" -> NCModelView.MODEL_ID_MAXLEN,
+        "elemId" -> NCModelView.MODEL_ELEMENT_ID_MAXLEN,
         "country" -> 32,
         "postalCode" -> 32,
 
@@ -840,7 +841,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                 "acsTok" -> req.acsTok,
                 "mdlId" -> req.mdlId,
                 "elemId" -> req.elemId) { span =>
-                checkLength("acsTok" -> req.acsTok, "mdlId" -> req.mdlId)
+                checkLength("acsTok" -> req.acsTok, "mdlId" -> req.mdlId, "elemId" -> req.elemId)
 
                 val admUsr = authenticateAsAdmin(req.acsTok)
 

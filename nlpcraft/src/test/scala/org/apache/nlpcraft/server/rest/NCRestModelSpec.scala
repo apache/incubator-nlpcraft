@@ -92,6 +92,8 @@ class NCRestModelSpec extends NCRestSpec {
 
         postError("model/syns", 400, "NC_INVALID_FIELD", "mdlId" -> "UNKNOWN", "elemId" -> "UNKNOWN")
         postError("model/syns", 400, "NC_INVALID_FIELD", "mdlId" -> "rest.test.model", "elemId" -> "UNKNOWN")
+        postError("model/syns", 400, "NC_INVALID_FIELD", "mdlId" -> ("A" * 33), "elemId" -> "UNKNOWN")
+        postError("model/syns", 400, "NC_INVALID_FIELD", "mdlId" -> "rest.test.model", "elemId" -> ("A" * 65))
         postError("model/syns", 400, "NC_ERROR", "mdlId" -> "rest.test.model")
     }
 }

@@ -265,6 +265,7 @@ paths:
                 description: ID of the model to run synonym suggestion on.
               elemId:
                 type: string
+                maxLength: 64
                 description: ID of the model element to getting synonyms.
       responses:
         '200':

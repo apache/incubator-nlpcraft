@@ -923,6 +923,9 @@ object NCDeployManager extends NCService {
         checkCollection("metadata", mdl.getMetadata)
         checkCollection("restrictedCombinations", mdl.getRestrictedCombinations)
 
+        // TODO:
+        mdl.getElements.asScala.foreach(e => checkMandatoryString(e.getId, s"elementId=${e.getId}", MODEL_ELEMENT_ID_MAXLEN))
+
         for ((elm, restrs: util.Set[String]) <- mdl.getRestrictedCombinations.asScala) {
             if (elm != "nlpcraft:limit" && elm != "nlpcraft:sort" && elm != "nlpcraft:relation")
                 throw new NCE(s"Unsupported restricting element ID [" +
