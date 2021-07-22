@@ -101,6 +101,10 @@ class NCIdlCompilerSpec {
               | * +=====================+
               | */
               |intent=i1
+              |     options={
+              |         'ordered': true,
+              |         'unused_free_words': false
+              |     }
               |     flow="a[^0-9]b" // Flow comment.
               |     term(t1)={has(json("{'a': true, 'b\'2': {'arr': [1, 2, 3]}}"), list("موسكو\"", 'v1\'v1', "k2", "v2"))}
               |     fragment(f1, {'a': true, 'b': ["s1", "s2"]}) /* Another fragment. */
@@ -118,6 +122,7 @@ class NCIdlCompilerSpec {
               |     term~/class#method/
               |
               |intent=i1
+              |     options={}
               |     flow="a[^0-9]b"
               |     term(t1)={has(json("{'a': true, 'b\'2': {'arr': [1, 2, 3]}}"), list("موسكو\"", 'v1\'v1', "k2", "v2"))}
               |     fragment(f21, {'a': true, 'b': ["s1", "s2"]})
@@ -129,7 +134,47 @@ class NCIdlCompilerSpec {
     @throws[NCException]
     def testInlineCompileFail(): Unit = {
         NCIdlCompilerGlobal.clearCache(MODEL_ID)
-        
+
+        checkCompileError(
+            """
+              |intent=i1
+              |     options={'ordered': 1}
+              |     flow="a[^0-9]b"
+              |     meta={'a': true, 'b': {'Москва': [1, 2, 3]}}
+              |     term(t1)={2 == 2 && size(tok_id()) != -25}
+              |""".stripMargin
+        )
+
+        checkCompileError(
+            """
+              |intent=i1
+              |     options={'ordered1': false}
+              |     flow="a[^0-9]b"
+              |     meta={'a': true, 'b': {'Москва': [1, 2, 3]}}
+              |     term(t1)={2 == 2 && size(tok_id()) != -25}
+              |""".stripMargin
+        )
+
+        checkCompileError(
+            """
+              |intent=i1
+              |     options={'ordered': false, 'unknown': 1}
+              |     flow="a[^0-9]b"
+              |     meta={'a': true, 'b': {'Москва': [1, 2, 3]}}
+              |     term(t1)={2 == 2 && size(tok_id()) != -25}
+              |""".stripMargin
+        )
+
+        checkCompileError(
+            """
+              |intent=i1
+              |     options={'ordered': false_1} # Broken JSON.
+              |     flow="a[^0-9]b"
+              |     meta={'a': true, 'b': {'Москва': [1, 2, 3]}}
+              |     term(t1)={2 == 2 && size(tok_id()) != -25}
+              |""".stripMargin
+        )
+
         checkCompileError(
             """
               |intent=i1
@@ -228,6 +273,7 @@ class NCIdlCompilerSpec {
         checkCompileError(
             """
               |fragment=f111
+              |     options={'ordered': 1}
               |     term(t1)={2==2}
               |     term~/class#method/
               |

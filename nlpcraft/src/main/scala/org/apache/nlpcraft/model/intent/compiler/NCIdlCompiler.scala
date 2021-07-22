@@ -122,17 +122,17 @@ object NCIdlCompiler extends LazyLogging {
             def boolVal(k: String, v: Object): Boolean =
                 v match {
                     case b: java.lang.Boolean if b != null => b
-                    case _ => throw newSyntaxError(s"Invalid intent option: $k")(ctx)
+                    case _ => throw newSyntaxError(s"Invalid intent option value: $k")(ctx)
                 }
 
             for ((k, v) <- json) {
                 if (k == "ordered")
                     opts.ordered = boolVal(k, v)
-                if (k == "unused_free_words")
+                else if (k == "unused_free_words")
                     opts.ignoreUnusedFreeWords = boolVal(k, v)
-                if (k == "unused_sys_toks")
+                else if (k == "unused_sys_toks")
                     opts.ignoreUnusedSystemTokens = boolVal(k, v)
-                if (k == "unused_user_toks")
+                else if (k == "unused_user_toks")
                     opts.ignoreUnusedUserTokens = boolVal(k, v)
                 else
                     throw newSyntaxError(s"Unknown intent option: $k")(ctx)
