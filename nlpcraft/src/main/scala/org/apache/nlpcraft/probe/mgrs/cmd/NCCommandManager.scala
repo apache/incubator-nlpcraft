@@ -17,11 +17,10 @@
 
 package org.apache.nlpcraft.probe.mgrs.cmd
 
-import java.io.{Serializable => JSerializable}
 import com.google.gson.Gson
 import io.opencensus.trace.Span
-import org.apache.nlpcraft.common.{NCService, _}
 import org.apache.nlpcraft.common.nlp.NCNlpSentence
+import org.apache.nlpcraft.common.{NCService, _}
 import org.apache.nlpcraft.model.NCToken
 import org.apache.nlpcraft.probe.mgrs.NCProbeMessage
 import org.apache.nlpcraft.probe.mgrs.conn.NCConnectionManager
@@ -30,9 +29,9 @@ import org.apache.nlpcraft.probe.mgrs.dialogflow.NCDialogFlowManager
 import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnrichmentManager
 
+import java.io.{Serializable => JSerializable}
 import java.util
-import java.util.{List => JList}
-
+import java.util.{Collections, List => JList}
 import scala.jdk.CollectionConverters.{ListHasAsScala, MapHasAsJava, MapHasAsScala, SeqHasAsJava, SetHasAsScala}
 
 /**
@@ -59,6 +58,28 @@ object NCCommandManager extends NCService {
     override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
         ackStopped()
+    }
+
+    /**
+      *
+      * @param mkMsg
+      * @param mkErrorMsg
+      */
+    private def send0(mkMsg: () => NCProbeMessage, mkErrorMsg: Throwable => NCProbeMessage, parent: Span = null): Unit = {
+        val msgOpt: Option[NCProbeMessage] =
+            try
+                Some(mkMsg())
+            catch {
+                case e: Throwable =>
+                    NCConnectionManager.send(mkErrorMsg(e), parent)
+
+                    None
+            }
+
+        msgOpt match {
+            case Some(msg) => NCConnectionManager.send(msg, parent)
+            case None => // No-op.
+        }
     }
 
     /**
@@ -108,26 +129,72 @@ object NCCommandManager extends NCService {
                     )
 
                     case "S2P_MODEL_INFO" =>
-                        val mdlId = msg.data[String]("mdlId")
+                        send0(
+                            mkMsg = () => {
+                                val mdlId = msg.data[String]("mdlId")
 
-                        val mdlData = NCModelManager.getModel(mdlId)
+                                val mdlData = NCModelManager.getModel(mdlId)
 
-                        val macros: util.Map[String, String] = mdlData.model.getMacros
-                        val syns: util.Map[String, util.List[String]] = mdlData.model.getElements.asScala.map(p => p.getId -> p.getSynonyms).toMap.asJava
-                        val samples: util.Map[String, util.List[util.List[String]]] = mdlData.samples.map(p => p._1 -> p._2.map(_.asJava).asJava).toMap.asJava
+                                val macros: util.Map[String, String] = mdlData.model.getMacros
+                                val syns: util.Map[String, util.List[String]] =
+                                    mdlData.model.getElements.asScala.map(p => p.getId -> p.getSynonyms).toMap.asJava
+                                val samples: util.Map[String, util.List[util.List[String]]] =
+                                    mdlData.samples.map(p => p._1 -> p._2.map(_.asJava).asJava).toMap.asJava
 
-                        NCConnectionManager.send(
-                            NCProbeMessage(
-                                "P2S_MODEL_INFO",
-                                "reqGuid" -> msg.getGuid,
-                                "resp" -> GSON.toJson(
-                                    Map(
-                                        "macros" -> macros.asInstanceOf[JSerializable],
-                                        "synonyms" -> syns.asInstanceOf[JSerializable],
-                                        "samples" -> samples.asInstanceOf[JSerializable]
-                                    ).asJava
+                                NCProbeMessage(
+                                    "P2S_MODEL_INFO",
+                                    "reqGuid" -> msg.getGuid,
+                                    "resp" -> GSON.toJson(
+                                        Map(
+                                            "macros" -> macros.asInstanceOf[JSerializable],
+                                            "synonyms" -> syns.asInstanceOf[JSerializable],
+                                            "samples" -> samples.asInstanceOf[JSerializable]
+                                        ).asJava
+                                    )
                                 )
-                            ),
+                            },
+                            mkErrorMsg = e =>
+                                NCProbeMessage(
+                                    "P2S_MODEL_INFO",
+                                    "reqGuid" -> msg.getGuid,
+                                    "error" -> e.getLocalizedMessage
+                                ),
+                            span
+                        )
+                    case "S2P_MODEL_ELEMENT_INFO" =>
+                        send0(
+                            mkMsg = () => {
+                                val mdlId = msg.data[String]("mdlId")
+                                val elemId = msg.data[String]("elemId")
+
+                                val elm = NCModelManager.
+                                    getModel(mdlId).
+                                    model.getElements.asScala.find(_.getId == elemId).
+                                    getOrElse(throw new NCE(s"Element not found in model: $elemId"))
+
+                                val vals: util.Map[String, JList[String]] =
+                                    if (elm.getValues != null)
+                                        elm.getValues.asScala.map(e => e.getName -> e.getSynonyms).toMap.asJava
+                                    else
+                                        Collections.emptyMap()
+
+                                NCProbeMessage(
+                                    "P2S_MODEL_ELEMENT_INFO",
+                                    "reqGuid" -> msg.getGuid,
+                                    "resp" -> GSON.toJson(
+                                        Map(
+                                            "synonyms" -> elm.getSynonyms.asInstanceOf[JSerializable],
+                                            "values" -> vals.asInstanceOf[JSerializable]
+                                        ).asJava
+                                    )
+                                )
+                            },
+                            mkErrorMsg = e =>
+                                NCProbeMessage(
+                                    "P2S_MODEL_ELEMENT_INFO",
+                                    "reqGuid" -> msg.getGuid,
+                                    "error" -> e.getLocalizedMessage
+                                ),
                             span
                         )
 

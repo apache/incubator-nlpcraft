@@ -36,7 +36,6 @@ import org.apache.nlpcraft.common.pool.NCThreadPoolManager
 import org.apache.nlpcraft.common.util.NCUtils.{jsonToJavaMap, uncompress}
 import org.apache.nlpcraft.common.{JavaMeta, NCE, U}
 import org.apache.nlpcraft.model.NCModelView
-import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 import org.apache.nlpcraft.server.apicodes.NCApiStatusCode.{API_OK, _}
 import org.apache.nlpcraft.server.company.NCCompanyManager
 import org.apache.nlpcraft.server.feedback.NCFeedbackManager
@@ -89,6 +88,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
     case class InvalidExternalUserId(usrExtId: String) extends InvalidArguments(s"External user ID is invalid or unknown: $usrExtId")
     case class InvalidUserId(id: Long) extends InvalidArguments(s"User ID is invalid or unknown: $id")
     case class InvalidModelId(id: String) extends InvalidArguments(s"Unknown model ID: $id")
+    case class InvalidModelOrElementId(mdlId: String, elemId: String) extends InvalidArguments(s"Unknown model ID: $mdlId or element ID: $elemId")
 
     case class AskReqHolder(
         usrId: Long,
@@ -834,20 +834,6 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
 
         implicit val reqFmt: RootJsonFormat[Req$Model$Syn] = jsonFormat3(Req$Model$Syn)
 
-        case class Res$Model$Value(
-            name: String,
-            synonyms: Seq[String]
-        )
-
-        case class Res$Model$Element(
-            status: String,
-            synonyms: Seq[String],
-            values: Seq[Res$Model$Value]
-        )
-
-        implicit val resValFmt: RootJsonFormat[Res$Model$Value] = jsonFormat2(Res$Model$Value)
-        implicit val resFmt: RootJsonFormat[Res$Model$Element] = jsonFormat3(Res$Model$Element)
-
         entity(as[Req$Model$Syn]) { req =>
             startScopedSpan(
                 "model$syns",
@@ -858,24 +844,26 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
 
                 val admUsr = authenticateAsAdmin(req.acsTok)
 
-                checkModelId(req.mdlId, admUsr.companyId)
+                if (!NCProbeManager.existsForModelElement(admUsr.companyId, req.mdlId, req.elemId))
+                    throw InvalidModelOrElementId(req.mdlId, req.elemId)
 
-                val elm =
-                    NCModelManager.
-                        getModel(req.mdlId, span).
-                        model.
-                        getElements.asScala.find(_.getId == req.elemId).getOrElse(throw InvalidModelId(req.elemId))
+                val fut = NCProbeManager.getElementInfo(req.mdlId, req.elemId, span)
 
-                complete {
-                    Res$Model$Element(
-                        API_OK,
-                        elm.getSynonyms.asScala.toSeq,
-                        if (elm.getValues != null)
-                            elm.getValues.asScala.map(p => Res$Model$Value(p.getName, p.getSynonyms.asScala.toSeq)).toSeq
-                        else
-                            Seq.empty
-                    )
-                }
+                successWithJs(
+                    fut.collect {
+                        // We have to use Jackson (not spray) here to serialize 'result' field.
+                        case res =>
+                            require(res.containsKey("synonyms") && res.containsKey("values"))
+
+                            toJs(
+                                Map(
+                                    "status" -> API_OK.toString,
+                                    "synonyms" -> res.get("synonyms"),
+                                    "values" -> res.get("values")
+                                )
+                            )
+                    }
+                )
             }
         }
     }

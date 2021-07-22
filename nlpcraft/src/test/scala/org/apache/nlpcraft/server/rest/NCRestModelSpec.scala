@@ -54,25 +54,44 @@ class NCRestModelSpec extends NCRestSpec {
                 assertTrue(scores.forall(s => s >= 0.5 && s <= 1))
             })
         )
+
+        postError("model/sugsyn", 400, "NC_INVALID_FIELD", "mdlId" -> "UNKNOWN")
+        postError("model/sugsyn", 400, "NC_INVALID_FIELD", "mdlId" -> "rest.test.model", "minScore" -> 2)
+        postError("model/sugsyn", 400, "NC_ERROR")
     }
 
     @Test
     def testSyns(): Unit = {
-        def extract(data: JList[java.util.Map[String, Object]]): Seq[Double] =
-            data.asScala.map(_.get("score").asInstanceOf[Number].doubleValue()).toSeq
-
         // Note that checked values are valid for current configuration of `RestTestModel` model.
         post("model/syns", "mdlId" -> "rest.test.model", "elemId" -> "x")(
             ("$.status", (status: String) => assertEquals("API_OK", status)),
-            ("$.synonyms", (data: ResponseList) => {
-                println("data="+data)
+            ("$.synonyms", (syns: ResponseList) => {
+                println("synonyms="+syns)
+
+                assertTrue(!syns.isEmpty)
+            }),
+            ("$.values", (vals: java.util.Map[Object, Object]) => {
+                println("values="+vals)
+
+                assertTrue(vals.isEmpty)
             })
         )
         post("model/syns", "mdlId" -> "rest.test.model", "elemId" -> "valElem")(
             ("$.status", (status: String) => assertEquals("API_OK", status)),
-            ("$.synonyms", (data: ResponseList) => {
-                println("data="+data)
+            ("$.synonyms", (syns: ResponseList) => {
+                println("synonyms="+syns)
+
+                assertTrue(!syns.isEmpty)
+            }),
+            ("$.values", (vals: java.util.Map[Object, Object]) => {
+                println("values="+vals)
+
+                assertTrue(!vals.isEmpty)
             })
         )
+
+        postError("model/syns", 400, "NC_INVALID_FIELD", "mdlId" -> "UNKNOWN", "elemId" -> "UNKNOWN")
+        postError("model/syns", 400, "NC_INVALID_FIELD", "mdlId" -> "rest.test.model", "elemId" -> "UNKNOWN")
+        postError("model/syns", 400, "NC_ERROR", "mdlId" -> "rest.test.model")
     }
 }

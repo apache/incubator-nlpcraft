@@ -54,6 +54,7 @@ import scala.util.{Failure, Success}
 object NCProbeManager extends NCService {
     private final val GSON = new Gson()
     private final val TYPE_MODEL_INFO_RESP = new TypeToken[JavaMeta]() {}.getType
+    private final val TYPE_MODEL_ELEMENT_INFO_RESP = new TypeToken[JavaMeta]() {}.getType
 
     // Type safe and eager configuration container.
     private object Config extends NCConfigurable {
@@ -157,6 +158,7 @@ object NCProbeManager extends NCService {
     @volatile private var pending: mutable.Map[ProbeKey, ProbeHolder] = _
 
     @volatile private var modelsInfo: ConcurrentHashMap[String, Promise[JavaMeta]] = _
+    @volatile private var modelElemsInfo: ConcurrentHashMap[String, Promise[JavaMeta]] = _
 
     /**
      *
@@ -179,6 +181,7 @@ object NCProbeManager extends NCService {
         )
 
         modelsInfo = new ConcurrentHashMap[String, Promise[JavaMeta]]()
+        modelElemsInfo = new ConcurrentHashMap[String, Promise[JavaMeta]]()
 
         dnSrv = startServer("Downlink", dnHost, dnPort, downLinkHandler)
         upSrv = startServer("Uplink", upHost, upPort, upLinkHandler)
@@ -216,6 +219,7 @@ object NCProbeManager extends NCService {
         U.stopThread(upSrv)
 
         modelsInfo = null
+        modelElemsInfo = null
      
         ackStopped()
     }
@@ -613,6 +617,7 @@ object NCProbeManager extends NCService {
                             String,
                             String,
                             String,
+                            java.util.Set[String],
                             java.util.Set[String]
                         )]]("PROBE_MODELS").
                         map {
@@ -620,18 +625,21 @@ object NCProbeManager extends NCService {
                                 mdlId,
                                 mdlName,
                                 mdlVer,
-                                enabledBuiltInToks
+                                enabledBuiltInToks,
+                                elemIds
                             ) =>
                                 require(mdlId != null)
                                 require(mdlName != null)
                                 require(mdlVer != null)
                                 require(enabledBuiltInToks != null)
+                                require(elemIds != null)
 
                                 NCProbeModelMdo(
                                     id = mdlId,
                                     name = mdlName,
                                     version = mdlVer,
-                                    enabledBuiltInTokens = enabledBuiltInToks.asScala.toSet
+                                    enabledBuiltInTokens = enabledBuiltInToks.asScala.toSet,
+                                    elementIds = elemIds.asScala.toSet
                                 )
                         }.toSet
 
@@ -711,9 +719,23 @@ object NCProbeManager extends NCService {
                     val p = modelsInfo.remove(probeMsg.data[String]("reqGuid"))
 
                     if (p != null)
-                        p.success(GSON.fromJson(probeMsg.data[String]("resp"), TYPE_MODEL_INFO_RESP))
+                        probeMsg.dataOpt[String]("resp") match {
+                            case Some(resp) => p.success(GSON.fromJson(resp, TYPE_MODEL_INFO_RESP))
+                            case None => p.failure(new NCE(probeMsg.data[String]("error")))
+                        }
                     else
                         logger.warn(s"Message ignored: $probeMsg")
+                case "P2S_MODEL_ELEMENT_INFO" =>
+                    val p = modelElemsInfo.remove(probeMsg.data[String]("reqGuid"))
+
+                    if (p != null)
+                        probeMsg.dataOpt[String]("resp") match {
+                            case Some(resp) => p.success(GSON.fromJson(resp, TYPE_MODEL_ELEMENT_INFO_RESP))
+                            case None => p.failure(new NCE(probeMsg.data[String]("error")))
+                        }
+                    else
+                        logger.warn(s"Message ignored: $probeMsg")
+
                 case "P2S_ASK_RESULT" =>
                     val srvReqId = probeMsg.data[String]("srvReqId")
                     
@@ -966,6 +988,27 @@ object NCProbeManager extends NCService {
         }
 
     /**
+      * Checks whether or not a data probe exists for given model element.
+      *
+      * @param compId Company ID for authentication purpose.
+      * @param mdlId Model ID.
+      * @param elemId Element ID.
+      * @param parent Optional parent span.
+      * @return
+      */
+    def existsForModelElement(compId: Long, mdlId: String, elemId: String, parent: Span = null): Boolean =
+        startScopedSpan(
+            "existsForModelElement", parent, "compId" -> compId, "mdlId" -> mdlId, "elemId" -> elemId
+        ) { _ =>
+            val authTok = getCompany(compId).authToken
+
+            probes.synchronized {
+                probes.filter(_._1.probeToken == authTok).values.
+                    exists(_.probe.models.exists(p => p.id == mdlId && p.elementIds.contains(elemId)))
+            }
+        }
+
+    /**
       *
       * @param usrId User ID.
       * @param mdlId Model ID.
@@ -1016,24 +1059,57 @@ object NCProbeManager extends NCService {
     /**
       *
       * @param mdlId
+      * @param msg
+      * @param holder
+      * @param parent
+      */
+    private def processModelDataRequest(
+        mdlId: String, msg: NCProbeMessage, holder: ConcurrentHashMap[String, Promise[JavaMeta]], parent: Span = null
+    ): Future[JavaMeta] = {
+        val p = Promise[JavaMeta]()
+
+        getProbeForModelId(mdlId) match {
+            case Some(probe) =>
+                holder.put(msg.getGuid, p)
+
+                sendToProbe(probe.probeKey, msg, parent)
+            case None =>
+                p.failure(new NCE(s"Probe not found for model: '$mdlId''"))
+        }
+
+        p.future
+    }
+
+    /**
+      *
+      * @param mdlId
       * @param parent
       * @return
       */
     def getModelInfo(mdlId: String, parent: Span = null): Future[JavaMeta] =
         startScopedSpan("getModelInfo", parent, "mdlId" -> mdlId) { _ =>
-            getProbeForModelId(mdlId) match {
-                case Some(probe) =>
-                    val msg = NCProbeMessage("S2P_MODEL_INFO", "mdlId" -> mdlId)
+            processModelDataRequest(
+                mdlId,
+                NCProbeMessage("S2P_MODEL_INFO", "mdlId" -> mdlId),
+                modelsInfo,
+                parent
+            )
+        }
 
-                    val p = Promise[JavaMeta]()
-
-                    modelsInfo.put(msg.getGuid, p)
-
-                    sendToProbe(probe.probeKey, msg, parent)
-
-                    p.future
-
-                case None => throw new NCE(s"Probe not found for model: '$mdlId''")
-            }
+    /**
+      *
+      * @param mdlId
+      * @param elemId
+      * @param parent
+      * @return
+      */
+    def getElementInfo(mdlId: String, elemId: String, parent: Span = null): Future[JavaMeta] =
+        startScopedSpan("getModelInfo", parent, "mdlId" -> mdlId, "elemId" -> elemId) { _ =>
+            processModelDataRequest(
+                mdlId,
+                NCProbeMessage("S2P_MODEL_ELEMENT_INFO", "mdlId" -> mdlId, "elemId" -> elemId),
+                modelElemsInfo,
+                parent
+            )
         }
 }
