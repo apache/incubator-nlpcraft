@@ -135,7 +135,7 @@ abstract class NCTestContext {
       *
       * @param txts
       */
-    protected def fail(txts: String*): Unit =
+    protected def checkFail(txts: String*): Unit =
         for (txt <- txts)
             require(getClient.ask(txt).isFailed)
 

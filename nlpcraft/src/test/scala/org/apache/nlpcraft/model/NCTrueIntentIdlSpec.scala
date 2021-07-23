@@ -36,7 +36,7 @@ class NCTrueIntentIdlModel extends NCModelAdapter("nlpcraft.true.intent.test", "
 @NCTestEnvironment(model = classOf[NCTrueIntentIdlModel], startClient = true)
 class NCTrueIntentIdlSpec extends NCTestContext {
     @Test
-    def testStopWord(): Unit = fail("the")
+    def testStopWord(): Unit = checkFail("the")
 
     @Test
     def testNotStopWord(): Unit = checkIntent("test", "i")

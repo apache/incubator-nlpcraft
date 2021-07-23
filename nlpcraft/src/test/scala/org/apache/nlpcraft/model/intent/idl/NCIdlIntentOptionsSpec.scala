@@ -60,7 +60,7 @@ class NCIdlIntentOptionsModel extends NCAbstractTokensModel {
         "    term(a)={tok_id() == 'i2_a'}" +
         "    term(b)={tok_id() == 'i2_b'}"
     )
-    def i2(): NCResult = NCResult.text("i1")
+    def i2(): NCResult = NCResult.text("i2")
 
 }
 
@@ -69,7 +69,7 @@ class NCIdlIntentOptionsSpec extends NCMetaSpecAdapter {
     @Test
     def test(): Unit = {
         checkResult("i1_a i1_b", "i1")
-        fail("i1_b i1_a")
+        checkFail("i1_b i1_a")
 
         checkResult("i2_a i2_b", "i2")
         checkResult("i2_b i2_a", "i2")

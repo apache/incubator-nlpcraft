@@ -86,14 +86,14 @@ class NCTokenPropertiesModel2Spec extends NCTestContext {
     def test(): Unit = {
         checkIntent("a b", "onAB")
         checkIntent("a test test b", "onAB")
-        fail(
+        checkFail(
             "b a",
             "b test test a"
         )
 
         checkIntent("x y", "onXY")
         checkIntent("x test test y", "onXY")
-        fail(
+        checkFail(
             "b a",
             "b test test a",
             "y x",
@@ -117,7 +117,7 @@ class NCTokenPropertiesModel3Spec extends NCTestContext {
         checkIntent("y x", "onXY")
         checkIntent("x y", "onXY")
 
-        fail(
+        checkFail(
             "a test b",
             "b test a",
             "x test y",
@@ -142,7 +142,7 @@ class NCTokenPropertiesModel4Spec extends NCTestContext {
     @Test
     def test(): Unit = {
         checkIntent("a b", "onAB")
-        fail(
+        checkFail(
             "b a",
             "a test b",
             "b test a"
@@ -172,7 +172,7 @@ class NCTokenPropertiesModel5Spec extends NCTestContext {
     def test(): Unit = {
         checkIntent("a b", "onAB")
         checkIntent("a test test b", "onAB")
-        fail("b a")
+        checkFail("b a")
 
         checkIntent("x y", "onXY")
         checkIntent("x test test y", "onXY")
@@ -201,18 +201,18 @@ class NCTokenPropertiesModel6Spec extends NCTestContext {
     @Test
     def test(): Unit = {
         checkIntent("a b", "onAB")
-        fail("b a")
+        checkFail("b a")
         checkIntent("y x", "onXY")
         checkIntent("x y", "onXY")
 
-        fail(
+        checkFail(
             "a test b",
             "b test a"
         )
         checkIntent("y test x", "onXY")
         checkIntent("x test y", "onXY")
 
-        fail(
+        checkFail(
             "a test test b",
             "b test test a"
         )
@@ -242,8 +242,8 @@ class NCTokenPropertiesModel7Spec extends NCTestContext {
     def test(): Unit = {
         checkIntent("a b", "onAB")
         checkIntent("b a", "onAB")
-        fail("a test b")
-        fail("b test a")
+        checkFail("a test b")
+        checkFail("b test a")
         checkIntent("y x", "onXY")
         checkIntent("x y", "onXY")
         checkIntent("y test test x", "onXY")
