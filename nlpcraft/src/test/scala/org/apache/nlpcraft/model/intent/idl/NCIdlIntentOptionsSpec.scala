@@ -37,7 +37,7 @@ class NCIdlIntentOptionsModel extends NCAbstractTokensModel {
     @NCIntent(
         "intent=i1 " +
         "    options={" +
-        "        'ordered': false, " +
+        "        'ordered': true, " +
         "        'unused_free_words': false, " +
         "        'unused_sys_toks': false, " +
         "        'unused_usr_toks': false, " +
