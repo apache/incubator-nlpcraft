@@ -24,13 +24,12 @@ import org.apache.nlpcraft.common.debug.{NCLogGroupToken, NCLogHolder}
 import org.apache.nlpcraft.common.opencensus.NCOpenCensusTrace
 import org.apache.nlpcraft.model.impl.NCTokenLogger
 import org.apache.nlpcraft.model.impl.NCTokenPimp._
-import org.apache.nlpcraft.model.intent.{NCIdlContext, NCIdlFunction, NCIdlIntent, NCIdlTerm, NCIdlStackItem => Z}
+import org.apache.nlpcraft.model.intent.{NCIdlContext, NCIdlFunction, NCIdlIntent, NCIdlIntentOptions, NCIdlTerm, NCIdlStackItem => Z}
 import org.apache.nlpcraft.model.{NCContext, NCDialogFlowItem, NCIntentMatch, NCResult, NCToken}
 import org.apache.nlpcraft.probe.mgrs.dialogflow.NCDialogFlowManager
 
 import java.util.function.Function
 import java.util.{List => JList}
-
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.{CollectionHasAsScala, MapHasAsScala, SeqHasAsJava}
 
@@ -548,28 +547,49 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
 
                 var res: Option[IntentMatch] = None
 
+                import NCIdlIntentOptions._
+
                 if (!opts.allowStmTokenOnly && usedSenToks.isEmpty && usedConvToks.nonEmpty)
-                    logger.info(s"Intent '$intentId' ${bo(r("did not match"))} because all its matched tokens came from STM $varStr.")
+                    logger.info(
+                        s"Intent '$intentId' ${bo(r("did not match"))} because all its matched tokens came from STM $varStr. " +
+                        s"See intent '${c(JSON_ALLOW_STM_ONLY)}' option."
+                    )
                 else if (!opts.ignoreUnusedFreeWords && unusedSenToks.exists(_.token.isFreeWord))
-                    logger.info(s"Intent '$intentId' ${bo(r("did not match"))} because of unused free words $varStr.")
+                    NCTokenLogger.prepareTable(
+                        unusedSenToks.filter(_.token.isFreeWord).map(_.token)
+                    ).
+                    info(
+                        logger,
+                        Some(
+                            s"Intent '$intentId' ${bo(r("did not match"))} because of unused free words $varStr. " +
+                            s"See intent '${c(JSON_UNUSED_FREE_WORDS)}' option. " +
+                            s"Unused free words:"
+                        )
+                    )
                 else if (!opts.ignoreUnusedUserTokens && unusedSenToks.exists(_.token.isUserDefined))
-                    NCTokenLogger.prepareTable(unusedSenToks.filter(_.token.isUserDefined).map(_.token)).
-                        info(
-                            logger,
-                            Some(
-                                s"Intent '$intentId' ${bo(r("did not match"))} because of unused user tokens $varStr." +
-                                s"\nUnused user tokens for intent '$intentId' $varStr:"
-                            )
+                    NCTokenLogger.prepareTable(
+                        unusedSenToks.filter(_.token.isUserDefined).map(_.token)
+                    ).
+                    info(
+                        logger,
+                        Some(
+                            s"Intent '$intentId' ${bo(r("did not match"))} because of unused user tokens $varStr. " +
+                            s"See intent '${c(JSON_UNUSED_USER_TOKS)}' option. " +
+                            s"Unused user tokens:"
                         )
-                else if (!opts.ignoreUnusedSystemTokens && unusedSenToks.exists(_.token.isSystemDefined))
-                    NCTokenLogger.prepareTable(unusedSenToks.filter(_.token.isSystemDefined).map(_.token)).
-                        info(
-                            logger,
-                            Some(
-                                s"Intent '$intentId' ${bo(r("did not match"))} because of unused system tokens $varStr." +
-                                s"\nUnused system tokens for intent '$intentId' $varStr:"
-                            )
+                    )
+                else if (!opts.ignoreUnusedSystemTokens && unusedSenToks.exists(tok => !tok.token.isFreeWord && tok.token.isSystemDefined))
+                    NCTokenLogger.prepareTable(
+                        unusedSenToks.filter(tok => !tok.token.isFreeWord && tok.token.isSystemDefined).map(_.token)
+                    ).
+                    info(
+                        logger,
+                        Some(
+                            s"Intent '$intentId' ${bo(r("did not match"))} because of unused system tokens $varStr. " +
+                            s"See intent '${c(JSON_UNUSED_SYS_TOKS)}' option. " +
+                            s"Unused system tokens:"
                         )
+                    )
                 else {
                     if (usedSenToks.isEmpty && usedConvToks.isEmpty)
                         logger.warn(s"Intent '$intentId' ${bo(y("matched"))} but no tokens were used $varStr.")

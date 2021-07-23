@@ -138,16 +138,18 @@ object NCIdlCompiler extends LazyLogging {
                     case _ => throw newSyntaxError(s"Expecting boolean value for intent option: $k")(ctx)
                 }
 
+            import NCIdlIntentOptions._
+
             for ((k, v) <- json) {
-                if (k == "ordered")
+                if (k == JSON_ORDERED)
                     opts.ordered = boolVal(k, v)
-                else if (k == "unused_free_words")
+                else if (k == JSON_UNUSED_FREE_WORDS)
                     opts.ignoreUnusedFreeWords = boolVal(k, v)
-                else if (k == "unused_sys_toks")
+                else if (k == JSON_UNUSED_SYS_TOKS)
                     opts.ignoreUnusedSystemTokens = boolVal(k, v)
-                else if (k == "unused_user_toks")
+                else if (k == JSON_UNUSED_USER_TOKS)
                     opts.ignoreUnusedUserTokens = boolVal(k, v)
-                else if (k == "allow_stm_only")
+                else if (k == JSON_ALLOW_STM_ONLY)
                     opts.allowStmTokenOnly = boolVal(k, v)
                 else
                     throw newSyntaxError(s"Unknown intent option: $k")(ctx)

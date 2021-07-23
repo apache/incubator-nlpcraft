@@ -102,8 +102,11 @@ class NCIdlCompilerSpec {
               | */
               |intent=i1
               |     options={
-              |         'ordered': true,
-              |         'unused_free_words': false
+              |         'ordered': false,
+              |         'unused_free_words': true,
+              |         'unused_sys_toks': true,
+              |         'unused_usr_toks': false,
+              |         'allow_stm_only': false
               |     }
               |     flow="a[^0-9]b" // Flow comment.
               |     term(t1)={has(json("{'a': true, 'b\'2': {'arr': [1, 2, 3]}}"), list("موسكو\"", 'v1\'v1', "k2", "v2"))}
