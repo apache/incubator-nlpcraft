@@ -34,7 +34,7 @@ object NCIdlIntentOptions {
     */
     final val JSON_UNUSED_FREE_WORDS = "unused_free_words"
     final val JSON_UNUSED_SYS_TOKS = "unused_sys_toks"
-    final val JSON_UNUSED_USER_TOKS = "unused_user_toks"
+    final val JSON_UNUSED_USR_TOKS = "unused_usr_toks"
     final val JSON_ALLOW_STM_ONLY = "allow_stm_only"
     final val JSON_ORDERED = "ordered"
 }

@@ -574,7 +574,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                         logger,
                         Some(
                             s"Intent '$intentId' ${bo(r("did not match"))} because of unused user tokens $varStr. " +
-                            s"See intent '${c(JSON_UNUSED_USER_TOKS)}' option. " +
+                            s"See intent '${c(JSON_UNUSED_USR_TOKS)}' option. " +
                             s"Unused user tokens:"
                         )
                     )

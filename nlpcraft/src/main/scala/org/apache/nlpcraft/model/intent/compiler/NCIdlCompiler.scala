@@ -147,7 +147,7 @@ object NCIdlCompiler extends LazyLogging {
                     opts.ignoreUnusedFreeWords = boolVal(k, v)
                 else if (k == JSON_UNUSED_SYS_TOKS)
                     opts.ignoreUnusedSystemTokens = boolVal(k, v)
-                else if (k == JSON_UNUSED_USER_TOKS)
+                else if (k == JSON_UNUSED_USR_TOKS)
                     opts.ignoreUnusedUserTokens = boolVal(k, v)
                 else if (k == JSON_ALLOW_STM_ONLY)
                     opts.allowStmTokenOnly = boolVal(k, v)
