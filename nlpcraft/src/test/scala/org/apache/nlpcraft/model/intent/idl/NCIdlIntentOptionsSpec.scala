@@ -61,7 +61,6 @@ class NCIdlIntentOptionsModel extends NCAbstractTokensModel {
         "    term(b)={tok_id() == 'i2_b'}"
     )
     def i2(): NCResult = NCResult.text("i2")
-
 }
 
 @NCTestEnvironment(model = classOf[NCIdlIntentOptionsModel], startClient = true)
