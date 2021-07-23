@@ -60,7 +60,7 @@ class NCIdlIntentOptionsModel extends NCAbstractTokensModel {
         "    term(a)={tok_id() == 'i2_a'}" +
         "    term(b)={tok_id() == 'i2_b'}"
     )
-    def i2(): NCResult = NCResult.text("i1")
+    def i2(): NCResult = NCResult.text("i2")
 
 }
 
