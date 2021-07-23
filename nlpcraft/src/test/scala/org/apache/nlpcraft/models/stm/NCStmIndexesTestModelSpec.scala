@@ -51,12 +51,12 @@ class NCStmIndexesTestModel extends NCModelAdapter("nlpcraft.stm.idxs.test", "ST
         def str(t: NCToken): String = s"${t.origText}(${t.index})"
 
         println(s"variant: ${ctx.getVariant.asScala.map(str).mkString("|")}")
+        println(s"variant sort bynotes: $bynotes")
+        println(s"variant sort byindexes: $byindexes")
         println(s"variant freeTokens: ${ctx.getVariant.getFreeTokens.asScala.map(str).mkString("|")}")
         println(s"variant matchedTokens: ${ctx.getVariant.getMatchedTokens.asScala.map(str).mkString("|")}")
         println(s"variant userDefinedTokens: ${ctx.getVariant.getUserDefinedTokens.asScala.map(str).mkString("|")}")
         println(s"variant conversation: ${ctx.getContext.getConversation.getTokens.asScala.map(str).mkString("|")}")
-        println(s"bynotes: $bynotes")
-        println(s"byindexes: $byindexes")
 
         NCResult.text("OK")
     }

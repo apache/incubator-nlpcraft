@@ -421,7 +421,7 @@ class SqlModel extends NCModelFileAdapter("sql_model.yaml") with LazyLogging {
             def isColumn(t: NCToken): Boolean = findAnyColumnTokenOpt(t).isDefined
             def isDate(t: NCToken): Boolean = t.getId == "nlpcraft:date"
 
-            val ok = toks.forall(isValue) || toks.forall(isColumn) || toks.size == 1 && isDate(toks.head)
+            val ok = toks.forall(isValue) || toks.size == 1 && isDate(toks.head)
 
             if (!ok) {
                 m.getContext.getConversation.clearStm(_ => true)
