@@ -488,6 +488,15 @@ public interface NCToken extends NCMetadata {
     }
 
     /**
+     * Tests whether or not this token is not for a user-defined model element.
+     *
+     * @return {@code True} if this token is not defined by the user model element, {@code false} otherwise.
+     */
+    default boolean isSystemDefined() {
+        return !isUserDefined();
+    }
+
+    /**
      * Whether or not this token is abstract.
      * <p>
      * An abstract token is only detected when it is either a constituent part of some other non-abstract token

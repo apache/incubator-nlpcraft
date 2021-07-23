@@ -37,6 +37,11 @@ class NCIdlIntentOptions {
     var ignoreUnusedUserTokens: Boolean = false
 
     /**
+     * Whether or not to allow intent to match if all matching tokens came from STM only.
+     */
+    var allowStmTokenOnly: Boolean = false
+
+    /**
      * Whether or not the order of term is important for intent match.
      */
     var ordered: Boolean = false

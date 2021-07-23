@@ -98,6 +98,19 @@ object NCIdlCompiler extends LazyLogging {
          */
         def getCompiledSynonym: NCIdlSynonym = synonym
 
+        /**
+         *
+         * @param json
+         * @param ctx
+         * @return
+         */
+        private def json2Obj(json: String)(ctx: ParserRuleContext): Map[String, Object] =
+            try
+                U.jsonToScalaMap(json)
+            catch {
+                case e: Exception => throw newSyntaxError(s"Invalid JSON (${e.getMessage})")(ctx)
+            }
+
         /*
          * Shared/common implementation.
          */
@@ -110,9 +123,9 @@ object NCIdlCompiler extends LazyLogging {
         override def exitCallExpr(ctx: IDP.CallExprContext): Unit = expr += parseCallExpr(ctx.FUN_NAME())(ctx)
         override def exitAtom(ctx: IDP.AtomContext): Unit = expr += parseAtom(ctx.getText)(ctx)
         override def exitTermEq(ctx: IDP.TermEqContext): Unit = termConv = ctx.TILDA() != null
-        override def exitFragMeta(ctx: IDP.FragMetaContext): Unit = fragMeta = U.jsonToScalaMap(ctx.jsonObj().getText)
-        override def exitMetaDecl(ctx: IDP.MetaDeclContext): Unit = intentMeta = U.jsonToScalaMap(ctx.jsonObj().getText)
-        override def exitOptDecl (ctx: IDP.OptDeclContext): Unit = intentOpts = convertToOptions(U.jsonToScalaMap(ctx.jsonObj().getText))(ctx)
+        override def exitFragMeta(ctx: IDP.FragMetaContext): Unit = fragMeta = json2Obj(ctx.jsonObj().getText)(ctx)
+        override def exitMetaDecl(ctx: IDP.MetaDeclContext): Unit = intentMeta = json2Obj(ctx.jsonObj().getText)(ctx)
+        override def exitOptDecl (ctx: IDP.OptDeclContext): Unit = intentOpts = convertToOptions(json2Obj(ctx.jsonObj().getText)(ctx))(ctx)
         override def exitIntentId(ctx: IDP.IntentIdContext): Unit =  intentId = ctx.id().getText
         override def exitAlias(ctx: IDP.AliasContext): Unit = alias = ctx.id().getText
 
@@ -122,7 +135,7 @@ object NCIdlCompiler extends LazyLogging {
             def boolVal(k: String, v: Object): Boolean =
                 v match {
                     case b: java.lang.Boolean if b != null => b
-                    case _ => throw newSyntaxError(s"Invalid intent option value: $k")(ctx)
+                    case _ => throw newSyntaxError(s"Expecting boolean value for intent option: $k")(ctx)
                 }
 
             for ((k, v) <- json) {
@@ -134,6 +147,8 @@ object NCIdlCompiler extends LazyLogging {
                     opts.ignoreUnusedSystemTokens = boolVal(k, v)
                 else if (k == "unused_user_toks")
                     opts.ignoreUnusedUserTokens = boolVal(k, v)
+                else if (k == "allow_stm_only")
+                    opts.allowStmTokenOnly = boolVal(k, v)
                 else
                     throw newSyntaxError(s"Unknown intent option: $k")(ctx)
             }

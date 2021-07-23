@@ -178,6 +178,26 @@ class NCIdlCompilerSpec {
         checkCompileError(
             """
               |intent=i1
+              |     options={'ordered': null}
+              |     flow="a[^0-9]b"
+              |     meta={'a': true, 'b': {'Москва': [1, 2, 3]}}
+              |     term(t1)={2 == 2 && size(tok_id()) != -25}
+              |""".stripMargin
+        )
+
+        checkCompileError(
+            """
+              |intent=i1
+              |     options={'ordered': false, 'ordered': true}
+              |     flow="a[^0-9]b"
+              |     meta={'a': true, 'b': {'Москва': [1, 2, 3]}}
+              |     term(t1)={2 == 2 && size(tok_id()) != -25}
+              |""".stripMargin
+        )
+
+        checkCompileError(
+            """
+              |intent=i1
               |/*
               | * +=====================+
               | * | block comments......|

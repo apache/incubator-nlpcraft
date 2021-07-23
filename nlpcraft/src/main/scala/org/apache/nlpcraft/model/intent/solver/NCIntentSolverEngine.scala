@@ -129,7 +129,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
      * @param used
      * @param token
      */
-    private case class UsedToken(
+    private case class UseToken(
         var used: Boolean,
         var conv: Boolean,
         token: NCToken
@@ -142,7 +142,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
      */
     private case class TermMatch(
         termId: Option[String],
-        usedTokens: List[UsedToken],
+        usedTokens: List[UseToken],
         weight: Weight
     ) {
         lazy val maxIndex: Int = usedTokens.maxBy(_.token.index).token.index
@@ -155,7 +155,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
      */
     private case class TermTokensGroup(
         term: NCIdlTerm,
-        usedTokens: List[UsedToken]
+        usedTokens: List[UseToken]
     )
 
     /**
@@ -210,13 +210,13 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                         val callback = pair._2
 
                         // Isolated sentence tokens.
-                        val senToks = Seq.empty[UsedToken] ++ availToks.map(UsedToken(false, false, _))
+                        val senToks = Seq.empty[UseToken] ++ availToks.map(UseToken(false, false, _))
                         val senTokGroups = availToks.map(t => if (t.getGroups != null) t.getGroups.asScala.sorted else Seq.empty)
 
                         // Isolated conversation tokens.
                         val convToks =
                             if (intent.terms.exists(_.conv))
-                                Seq.empty[UsedToken] ++
+                                Seq.empty[UseToken] ++
                                     // We shouldn't mix tokens with same group from conversation
                                     // history and processed sentence.
                                     ctx.getConversation.getTokens.asScala.
@@ -225,9 +225,9 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
 
                                             !senTokGroups.exists(convTokGroups.containsSlice)
                                         }).
-                                        map(UsedToken(used = false, conv = true, _))
+                                        map(UseToken(used = false, conv = true, _))
                             else
-                                Seq.empty[UsedToken]
+                                Seq.empty[UseToken]
 
                         // Solve intent in isolation.
                         solveIntent(ctx, intent, senToks, convToks, vrnIdx) match {
@@ -408,15 +408,15 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
      * @param convToks
      * @return
      */
-    //noinspection DuplicatedCode
     private def solveIntent(
         ctx: NCContext,
         intent: NCIdlIntent,
-        senToks: Seq[UsedToken],
-        convToks: Seq[UsedToken],
+        senToks: Seq[UseToken],
+        convToks: Seq[UseToken],
         varIdx: Int
     ): Option[IntentMatch] = {
         val intentId = intent.id
+        val opts = intent.options
         val flow = NCDialogFlowManager.getDialogFlow(ctx.getRequest.getUser.getId, ctx.getModel.getId)
         val varStr = s"(variant #${varIdx + 1})"
         val flowRegex = intent.flowRegex
@@ -479,7 +479,6 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
             val intentW = new Weight()
             val intentGrps = mutable.ListBuffer.empty[TermTokensGroup]
             var abort = false
-            val opts = intent.options
             var lastTermMatch: TermMatch = null
 
             // Conversation metadata (shared across all terms).
@@ -549,15 +548,26 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
 
                 var res: Option[IntentMatch] = None
 
-                if (usedSenToks.isEmpty && usedConvToks.nonEmpty)
+                if (!opts.allowStmTokenOnly && usedSenToks.isEmpty && usedConvToks.nonEmpty)
                     logger.info(s"Intent '$intentId' ${bo(r("did not match"))} because all its matched tokens came from STM $varStr.")
-                else if (unusedSenToks.exists(_.token.isUserDefined))
+                else if (!opts.ignoreUnusedFreeWords && unusedSenToks.exists(_.token.isFreeWord))
+                    logger.info(s"Intent '$intentId' ${bo(r("did not match"))} because of unused free words $varStr.")
+                else if (!opts.ignoreUnusedUserTokens && unusedSenToks.exists(_.token.isUserDefined))
                     NCTokenLogger.prepareTable(unusedSenToks.filter(_.token.isUserDefined).map(_.token)).
                         info(
                             logger,
                             Some(
-                                s"Intent '$intentId' ${bo(r("did not match"))} because of remaining unused user tokens $varStr." +
+                                s"Intent '$intentId' ${bo(r("did not match"))} because of unused user tokens $varStr." +
                                 s"\nUnused user tokens for intent '$intentId' $varStr:"
+                            )
+                        )
+                else if (!opts.ignoreUnusedSystemTokens && unusedSenToks.exists(_.token.isSystemDefined))
+                    NCTokenLogger.prepareTable(unusedSenToks.filter(_.token.isSystemDefined).map(_.token)).
+                        info(
+                            logger,
+                            Some(
+                                s"Intent '$intentId' ${bo(r("did not match"))} because of unused system tokens $varStr." +
+                                s"\nUnused system tokens for intent '$intentId' $varStr:"
                             )
                         )
                 else {
@@ -598,8 +608,8 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
     private def solveTerm(
         term: NCIdlTerm,
         ctx: NCIdlContext,
-        senToks: Seq[UsedToken],
-        convToks: Seq[UsedToken]
+        senToks: Seq[UseToken],
+        convToks: Seq[UseToken]
     ): Option[TermMatch] = {
         if (senToks.isEmpty && convToks.isEmpty)
             logger.warn(s"No tokens available to match on for term '${term.toAnsiString}'.")
@@ -648,14 +658,14 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
         ctx: NCIdlContext,
         min: Int,
         max: Int,
-        senToks: Seq[UsedToken],
-        convToks: Seq[UsedToken]
-    ): Option[(List[UsedToken], Weight)] = {
+        senToks: Seq[UseToken],
+        convToks: Seq[UseToken]
+    ): Option[(List[UseToken], Weight)] = {
         // Algorithm is "hungry", i.e. it will fetch all tokens satisfying item's predicate
         // in entire sentence even if these tokens are separated by other already used tokens
         // and conversation will be used only to get to the 'max' number of the item.
 
-        var usedToks = List.empty[UsedToken]
+        var usedToks = List.empty[UseToken]
 
         var matches = 0
         var tokUses = 0
