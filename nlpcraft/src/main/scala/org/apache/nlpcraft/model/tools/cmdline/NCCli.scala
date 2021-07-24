@@ -2568,16 +2568,45 @@ object NCCli extends NCCliBase {
                     // For 'ask' and 'sugysn' - add additional model IDs auto-completion/suggestion candidates.
                     if (cmd == ASK_CMD.name || cmd == MODEL_SUGSYN_CMD.name || cmd == MODEL_SYNS_CMD.name)
                         candidates.addAll(
-                            state.probes.flatMap(_.models.toList).map(mdl => {
+                            state.probes.flatMap(_.models.toList).map(mdl =>
                                 mkCandidate(
                                     disp = s"--mdlId=${mdl.id}",
                                     grp = MANDATORY_GRP,
                                     desc = null,
                                     completed = true
                                 )
-                            })
+                            )
                             .asJava
                         )
+
+                    // For 'model-syns' add auto-completion for element IDs.
+                    if (cmd == MODEL_SYNS_CMD.name) {
+                        val mdlIdParam = MODEL_SYNS_CMD.findParameterById("mdlId")
+
+                        words.find(w => mdlIdParam.names.exists(x => w.startsWith(x))) match {
+                            case Some(p) =>
+                                val mdlId = p.substring(p.indexOf('=') + 1)
+
+                                state.probes.flatMap(_.models).find(_.id == mdlId) match {
+                                    case Some(mdl) =>
+                                        candidates.addAll(
+                                            mdl.elementIds.toList.map(id =>
+                                                mkCandidate(
+                                                    disp = s"--elmId=$id",
+                                                    grp = MANDATORY_GRP,
+                                                    desc = null,
+                                                    completed = true
+                                                )
+                                            )
+                                            .asJava
+                                        )
+
+                                    case None => ()
+                                }
+
+                            case None => ()
+                        }
+                    }
 
                     // For 'call' - add additional auto-completion/suggestion candidates.
                     if (cmd == CALL_CMD.name) {

@@ -1781,6 +1781,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             id: String,
             name: String,
             version: String,
+            elementIds: Set[String],
             enabledBuiltInTokens: Set[String]
         )
         case class Probe_Probe$All(
@@ -1810,7 +1811,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
         )
 
         implicit val reqFmt: RootJsonFormat[Req$Probe$All] = jsonFormat1(Req$Probe$All)
-        implicit val mdlFmt: RootJsonFormat[Model_Probe$All] = jsonFormat4(Model_Probe$All)
+        implicit val mdlFmt: RootJsonFormat[Model_Probe$All] = jsonFormat5(Model_Probe$All)
         implicit val probFmt: RootJsonFormat[Probe_Probe$All] = jsonFormat19(Probe_Probe$All)
         implicit val resFmt: RootJsonFormat[Res$Probe$All] = jsonFormat2(Res$Probe$All)
 
@@ -1843,6 +1844,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                         m.id,
                         m.name,
                         m.version,
+                        m.elementIds,
                         m.enabledBuiltInTokens
                     ))
                 ))
