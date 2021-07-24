@@ -857,13 +857,20 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                     fut.collect {
                         // We have to use Jackson (not spray) here to serialize 'result' field.
                         case res =>
-                            require(res.containsKey("synonyms") && res.containsKey("values"))
+                            require(
+                                res.containsKey("synonyms") &&
+                                res.containsKey("synonymsExpanded") &&
+                                res.containsKey("values") &&
+                                res.containsKey("valuesExpanded")
+                            )
 
                             toJs(
                                 Map(
                                     "status" -> API_OK.toString,
                                     "synonyms" -> res.get("synonyms"),
-                                    "values" -> res.get("values")
+                                    "synonymsExpanded" -> res.get("synonymsExpanded"),
+                                    "values" -> res.get("values"),
+                                    "valuesExpanded" -> res.get("valuesExpanded")
                                 )
                             )
                     }

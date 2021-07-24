@@ -168,9 +168,9 @@ object NCCommandManager extends NCService {
                                 val mdlId = msg.data[String]("mdlId")
                                 val elmId = msg.data[String]("elmId")
 
-                                val elm = NCModelManager.
-                                    getModel(mdlId).
-                                    model.getElements.asScala.find(_.getId == elmId).
+                                val mdl = NCModelManager.getModel(mdlId).model
+
+                                val elm = mdl.getElements.asScala.find(_.getId == elmId).
                                     getOrElse(throw new NCE(s"Element not found in model: $elmId"))
 
                                 val vals: util.Map[String, JList[String]] =
@@ -185,7 +185,8 @@ object NCCommandManager extends NCService {
                                     "resp" -> GSON.toJson(
                                         Map(
                                             "synonyms" -> elm.getSynonyms.asInstanceOf[JSerializable],
-                                            "values" -> vals.asInstanceOf[JSerializable]
+                                            "values" -> vals.asInstanceOf[JSerializable],
+                                            "macros" -> mdl.getMacros.asInstanceOf[JSerializable]
                                         ).asJava
                                     )
                                 )

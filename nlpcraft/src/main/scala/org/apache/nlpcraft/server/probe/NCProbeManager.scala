@@ -23,8 +23,9 @@ import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.crypto.NCCipher
+import org.apache.nlpcraft.common.makro.NCMacroParser
 import org.apache.nlpcraft.common.nlp.NCNlpSentence
-import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
+import org.apache.nlpcraft.common.nlp.core.{NCNlpCoreManager, NCNlpPorterStemmer}
 import org.apache.nlpcraft.common.pool.NCThreadPoolManager
 import org.apache.nlpcraft.common.socket.NCSocket
 import org.apache.nlpcraft.common.version.NCVersion
@@ -45,7 +46,7 @@ import java.util.Collections
 import java.util.concurrent.ConcurrentHashMap
 import scala.collection.mutable
 import scala.concurrent.{ExecutionContext, Future, Promise}
-import scala.jdk.CollectionConverters.SetHasAsScala
+import scala.jdk.CollectionConverters.{ListHasAsScala, MapHasAsJava, MapHasAsScala, SeqHasAsJava, SetHasAsScala}
 import scala.util.{Failure, Success}
 
 /**
@@ -1112,6 +1113,36 @@ object NCProbeManager extends NCService {
                 NCProbeMessage("S2P_MODEL_ELEMENT_INFO", "mdlId" -> mdlId, "elmId" -> elmId),
                 modelElmsInfo,
                 parent
+            ).map(
+                res => {
+                    require(
+                        res.containsKey("synonyms") &&
+                        res.containsKey("values") &&
+                        res.containsKey("macros")
+                    )
+
+                    val macros = res.remove("macros").asInstanceOf[java.util.Map[String, String]]
+                    val syns = res.get("synonyms").asInstanceOf[java.util.List[String]]
+                    val vals = res.get("values").asInstanceOf[java.util.Map[String, java.util.List[String]]]
+
+                    val parser = new NCMacroParser
+
+                    macros.asScala.foreach(t => parser.addMacro(t._1, t._2))
+
+                    val synsExpanded: java.util.List[String] =
+                        syns.asScala.flatMap(s => parser.expand(s).map(NCNlpPorterStemmer.stem)).asJava
+
+                    val valsExpanded: java.util.Map[String, java.util.List[String]] =
+                        vals.asScala.map(v =>
+                            v._1 ->
+                            v._2.asScala.flatMap(s => parser.expand(s).map(NCNlpPorterStemmer.stem)).asJava
+                        ).toMap.asJava
+
+                    res.put("synonymsExpanded", synsExpanded)
+                    res.put("valuesExpanded", valsExpanded)
+
+                    res
+                }
             )
         }
 }

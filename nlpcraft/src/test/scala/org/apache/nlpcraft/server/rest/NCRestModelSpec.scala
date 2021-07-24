@@ -17,17 +17,19 @@
 
 package org.apache.nlpcraft.server.rest
 
-import org.apache.nlpcraft.NCTestEnvironment
+import org.apache.nlpcraft.model.NCElement
+import org.apache.nlpcraft.{NCTestElement, NCTestEnvironment}
 import org.junit.jupiter.api.Assertions._
 import org.junit.jupiter.api.Test
 
-import scala.jdk.CollectionConverters.ListHasAsScala
+import java.util
+import scala.jdk.CollectionConverters.{ListHasAsScala, MapHasAsJava, SetHasAsJava, SetHasAsScala}
 
 /**
   * Note that context word server should be started.
   */
 @NCTestEnvironment(model = classOf[RestTestModel], startClient = false)
-class NCRestModelSpec extends NCRestSpec {
+class NCRestModelSpec1 extends NCRestSpec {
     @Test
     def testSugsyn(): Unit = {
         def extract(data: JList[java.util.Map[String, Object]]): Seq[Double] =
@@ -59,36 +61,49 @@ class NCRestModelSpec extends NCRestSpec {
         postError("model/sugsyn", 400, "NC_INVALID_FIELD", "mdlId" -> "rest.test.model", "minScore" -> 2)
         postError("model/sugsyn", 400, "NC_ERROR")
     }
+}
 
+class RestTestModelExt extends RestTestModel {
+    override def getMacros: util.Map[String, String] = {
+        Map(
+            "<M1>" -> "mtest1 {x|_}",
+            "<M2>" -> "<M1> mtest2 {mtest3|_}"
+        ).asJava
+    }
+
+    override def getElements: util.Set[NCElement] = {
+        (
+            super.getElements.asScala ++
+            Set(
+                NCTestElement("eExt1", "<M1>", "<M1> more"),
+                NCTestElement("eExt2", Seq("<M1>", "<M1> more"), Map("v1"-> Seq("<M2>", "<M2> more"), "v2" -> Seq("<M2>")))
+            )
+        ).asJava
+    }
+}
+
+/**
+  *
+  */
+@NCTestEnvironment(model = classOf[RestTestModelExt], startClient = false)
+class NCRestModelSpec2 extends NCRestSpec {
     @Test
     def testSyns(): Unit = {
-        // Note that checked values are valid for current configuration of `RestTestModel` model.
-        post("model/syns", "mdlId" -> "rest.test.model", "elmId" -> "x")(
-            ("$.status", (status: String) => assertEquals("API_OK", status)),
-            ("$.synonyms", (syns: ResponseList) => {
-                println("synonyms="+syns)
+        // Note that checked values are valid for current configuration of `RestTestModelExt` model.
+        def post0(elemId: String, valsShouldBe: Boolean): Unit =
+            post("model/syns", "mdlId" -> "rest.test.model", "elmId" -> elemId)(
+                ("$.status", (status: String) => assertEquals("API_OK", status)),
+                ("$.synonyms", (data: ResponseList) => assertTrue(!data.isEmpty)),
+                ("$.synonymsExpanded", (data: ResponseList) => assertTrue(!data.isEmpty)),
+                ("$.values", (data: java.util.Map[Object, Object]) =>
+                    if (valsShouldBe) assertTrue(!data.isEmpty) else assertTrue(data.isEmpty)),
+                ("$.valuesExpanded", (data: java.util.Map[Object, Object]) =>
+                    if (valsShouldBe) assertTrue(!data.isEmpty) else assertTrue(data.isEmpty)
+                )
+            )
 
-                assertTrue(!syns.isEmpty)
-            }),
-            ("$.values", (vals: java.util.Map[Object, Object]) => {
-                println("values="+vals)
-
-                assertTrue(vals.isEmpty)
-            })
-        )
-        post("model/syns", "mdlId" -> "rest.test.model", "elmId" -> "valElem")(
-            ("$.status", (status: String) => assertEquals("API_OK", status)),
-            ("$.synonyms", (syns: ResponseList) => {
-                println("synonyms="+syns)
-
-                assertTrue(!syns.isEmpty)
-            }),
-            ("$.values", (vals: java.util.Map[Object, Object]) => {
-                println("values="+vals)
-
-                assertTrue(!vals.isEmpty)
-            })
-        )
+        post0("eExt1", valsShouldBe = false)
+        post0("eExt2", valsShouldBe = true)
 
         postError("model/syns", 400, "NC_INVALID_FIELD", "mdlId" -> "UNKNOWN", "elmId" -> "UNKNOWN")
         postError("model/syns", 400, "NC_INVALID_FIELD", "mdlId" -> "rest.test.model", "elmId" -> "UNKNOWN")
