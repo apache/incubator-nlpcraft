@@ -161,16 +161,17 @@ object NCCommandManager extends NCService {
                                 ),
                             span
                         )
+
                     case "S2P_MODEL_ELEMENT_INFO" =>
                         send0(
                             mkMsg = () => {
                                 val mdlId = msg.data[String]("mdlId")
-                                val elemId = msg.data[String]("elemId")
+                                val elmId = msg.data[String]("elmId")
 
                                 val elm = NCModelManager.
                                     getModel(mdlId).
-                                    model.getElements.asScala.find(_.getId == elemId).
-                                    getOrElse(throw new NCE(s"Element not found in model: $elemId"))
+                                    model.getElements.asScala.find(_.getId == elmId).
+                                    getOrElse(throw new NCE(s"Element not found in model: $elmId"))
 
                                 val vals: util.Map[String, JList[String]] =
                                     if (elm.getValues != null)

@@ -28,7 +28,7 @@ trait NCOpenCensusServerStats extends NCOpenCensusStats {
     val M_HEALTH_MS: MeasureLong = MeasureLong.create("health_latency", "The latency of '/health' REST call", "ms")
     val M_ASK_LATENCY_MS: MeasureLong = MeasureLong.create("ask_latency", "The latency of '/ask' REST call", "ms")
     val M_CHECK_LATENCY_MS: MeasureLong = MeasureLong.create("check_latency", "The latency of '/check' REST call", "ms")
-    val M_MODEL_SUGSYN_LATENCY_MS: MeasureLong = MeasureLong.create("model_inspect_latency", "The latency of '/model/inspect' REST call", "ms")
+    val M_MODEL_SUGSYN_LATENCY_MS: MeasureLong = MeasureLong.create("model_inspect_latency", "The latency of '/model/sugsyn' REST call", "ms")
     val M_MODEL_SYNS_LATENCY_MS: MeasureLong = MeasureLong.create("model_synonyms_latency", "The latency of '/model/syns' REST call", "ms")
     val M_CANCEL_LATENCY_MS: MeasureLong = MeasureLong.create("cancel_latency", "The latency of '/cancel' REST call", "ms")
     val M_SIGNIN_LATENCY_MS: MeasureLong = MeasureLong.create("signin_latency", "The latency of '/signin' REST call", "ms")

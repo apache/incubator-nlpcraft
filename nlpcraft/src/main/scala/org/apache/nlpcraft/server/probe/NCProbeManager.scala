@@ -158,7 +158,7 @@ object NCProbeManager extends NCService {
     @volatile private var pending: mutable.Map[ProbeKey, ProbeHolder] = _
 
     @volatile private var modelsInfo: ConcurrentHashMap[String, Promise[JavaMeta]] = _
-    @volatile private var modelElemsInfo: ConcurrentHashMap[String, Promise[JavaMeta]] = _
+    @volatile private var modelElmsInfo: ConcurrentHashMap[String, Promise[JavaMeta]] = _
 
     /**
      *
@@ -181,7 +181,7 @@ object NCProbeManager extends NCService {
         )
 
         modelsInfo = new ConcurrentHashMap[String, Promise[JavaMeta]]()
-        modelElemsInfo = new ConcurrentHashMap[String, Promise[JavaMeta]]()
+        modelElmsInfo = new ConcurrentHashMap[String, Promise[JavaMeta]]()
 
         dnSrv = startServer("Downlink", dnHost, dnPort, downLinkHandler)
         upSrv = startServer("Uplink", upHost, upPort, upLinkHandler)
@@ -219,7 +219,7 @@ object NCProbeManager extends NCService {
         U.stopThread(upSrv)
 
         modelsInfo = null
-        modelElemsInfo = null
+        modelElmsInfo = null
      
         ackStopped()
     }
@@ -626,20 +626,20 @@ object NCProbeManager extends NCService {
                                 mdlName,
                                 mdlVer,
                                 enabledBuiltInToks,
-                                elemIds
+                                elmIds
                             ) =>
                                 require(mdlId != null)
                                 require(mdlName != null)
                                 require(mdlVer != null)
                                 require(enabledBuiltInToks != null)
-                                require(elemIds != null)
+                                require(elmIds != null)
 
                                 NCProbeModelMdo(
                                     id = mdlId,
                                     name = mdlName,
                                     version = mdlVer,
                                     enabledBuiltInTokens = enabledBuiltInToks.asScala.toSet,
-                                    elementIds = elemIds.asScala.toSet
+                                    elementIds = elmIds.asScala.toSet
                                 )
                         }.toSet
 
@@ -725,8 +725,9 @@ object NCProbeManager extends NCService {
                         }
                     else
                         logger.warn(s"Message ignored: $probeMsg")
+
                 case "P2S_MODEL_ELEMENT_INFO" =>
-                    val p = modelElemsInfo.remove(probeMsg.data[String]("reqGuid"))
+                    val p = modelElmsInfo.remove(probeMsg.data[String]("reqGuid"))
 
                     if (p != null)
                         probeMsg.dataOpt[String]("resp") match {
@@ -785,6 +786,7 @@ object NCProbeManager extends NCService {
                                 NCErrorCodes.UNEXPECTED_ERROR
                             )
                     }
+
                 case _ =>
                     logger.error(s"Received unrecognized probe message (ignoring): $probeMsg")
             }
@@ -992,19 +994,19 @@ object NCProbeManager extends NCService {
       *
       * @param compId Company ID for authentication purpose.
       * @param mdlId Model ID.
-      * @param elemId Element ID.
+      * @param elmId Element ID.
       * @param parent Optional parent span.
       * @return
       */
-    def existsForModelElement(compId: Long, mdlId: String, elemId: String, parent: Span = null): Boolean =
+    def existsForModelElement(compId: Long, mdlId: String, elmId: String, parent: Span = null): Boolean =
         startScopedSpan(
-            "existsForModelElement", parent, "compId" -> compId, "mdlId" -> mdlId, "elemId" -> elemId
+            "existsForModelElement", parent, "compId" -> compId, "mdlId" -> mdlId, "elmId" -> elmId
         ) { _ =>
             val authTok = getCompany(compId).authToken
 
             probes.synchronized {
                 probes.filter(_._1.probeToken == authTok).values.
-                    exists(_.probe.models.exists(p => p.id == mdlId && p.elementIds.contains(elemId)))
+                    exists(_.probe.models.exists(p => p.id == mdlId && p.elementIds.contains(elmId)))
             }
         }
 
@@ -1099,16 +1101,16 @@ object NCProbeManager extends NCService {
     /**
       *
       * @param mdlId
-      * @param elemId
+      * @param elmId
       * @param parent
       * @return
       */
-    def getElementInfo(mdlId: String, elemId: String, parent: Span = null): Future[JavaMeta] =
-        startScopedSpan("getModelInfo", parent, "mdlId" -> mdlId, "elemId" -> elemId) { _ =>
+    def getElementInfo(mdlId: String, elmId: String, parent: Span = null): Future[JavaMeta] =
+        startScopedSpan("getModelInfo", parent, "mdlId" -> mdlId, "elmId" -> elmId) { _ =>
             processModelDataRequest(
                 mdlId,
-                NCProbeMessage("S2P_MODEL_ELEMENT_INFO", "mdlId" -> mdlId, "elemId" -> elemId),
-                modelElemsInfo,
+                NCProbeMessage("S2P_MODEL_ELEMENT_INFO", "mdlId" -> mdlId, "elmId" -> elmId),
+                modelElmsInfo,
                 parent
             )
         }

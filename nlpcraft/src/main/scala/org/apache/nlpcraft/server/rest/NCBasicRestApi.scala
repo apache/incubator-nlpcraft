@@ -88,7 +88,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
     case class InvalidExternalUserId(usrExtId: String) extends InvalidArguments(s"External user ID is invalid or unknown: $usrExtId")
     case class InvalidUserId(id: Long) extends InvalidArguments(s"User ID is invalid or unknown: $id")
     case class InvalidModelId(id: String) extends InvalidArguments(s"Unknown model ID: $id")
-    case class InvalidModelOrElementId(mdlId: String, elemId: String) extends InvalidArguments(s"Unknown model ID: $mdlId or element ID: $elemId")
+    case class InvalidModelOrElementId(mdlId: String, elmId: String) extends InvalidArguments(s"Unknown model element ID: $elmId")
 
     case class AskReqHolder(
         usrId: Long,
@@ -107,7 +107,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
     private final val STD_FIELD_LENGTHS = Map[String, Int](
         "srvReqId" -> 32,
         "mdlId" -> NCModelView.MODEL_ID_MAXLEN,
-        "elemId" -> NCModelView.MODEL_ELEMENT_ID_MAXLEN,
+        "elmId" -> NCModelView.MODEL_ELEMENT_ID_MAXLEN,
         "country" -> 32,
         "postalCode" -> 32,
 
@@ -471,7 +471,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       *
       * @return
       */
-    protected def signin$(): Route = {
+    protected def $signin(): Route = {
         case class Req$Signin$(
             email: String,
             passwd: String
@@ -506,7 +506,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       *
       * @return
       */
-    protected def health$(): Route = {
+    protected def $health(): Route = {
         case class Res$Health$(status: String)
 
         implicit val resFmt: RootJsonFormat[Res$Health$] = jsonFormat1(Res$Health$)
@@ -520,7 +520,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       *
       * @return
       */
-    protected def signout$(): Route = {
+    protected def $signout(): Route = {
         case class Req$Signout$(
             acsTok: String
         )
@@ -634,7 +634,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       *
       * @return
       */
-    protected def ask$(): Route =
+    protected def $ask(): Route =
         ask0(
             (h: AskReqHolder) => {
                 val newSrvReqId = NCQueryManager.asyncAsk(
@@ -665,7 +665,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       *
       * @return
       */
-    protected def ask$Sync(): Route =
+    protected def $ask$Sync(): Route =
         ask0(
             (h: AskReqHolder) => {
                 val fut = NCQueryManager.futureAsk(
@@ -697,7 +697,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       *
       * @return
       */
-    protected def cancel$(): Route = {
+    protected def $cancel(): Route = {
         case class Req$Cancel$(
             acsTok: String,
             usrId: Option[Long],
@@ -736,7 +736,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       *
       * @return
       */
-    protected def check$(): Route = {
+    protected def $check(): Route = {
         case class Req$Check$(
             acsTok: String,
             usrId: Option[Long],
@@ -787,7 +787,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       *
       * @return
       */
-    protected def sugsyn$(): Route = {
+    protected def $model$sugsyn(): Route = {
         case class Req$Model$Sugsyn(
             acsTok: String,
             mdlId: String,
@@ -826,29 +826,32 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       *
       * @return
       */
-    protected def elementSynonyms$(): Route = {
-        case class Req$Model$Syn(
+    protected def $model$syns(): Route = {
+        case class Req$Model$Syns(
             acsTok: String,
             mdlId: String,
-            elemId: String
+            elmId: String
         )
 
-        implicit val reqFmt: RootJsonFormat[Req$Model$Syn] = jsonFormat3(Req$Model$Syn)
+        implicit val reqFmt: RootJsonFormat[Req$Model$Syns] = jsonFormat3(Req$Model$Syns)
 
-        entity(as[Req$Model$Syn]) { req =>
+        entity(as[Req$Model$Syns]) { req =>
             startScopedSpan(
                 "model$syns",
                 "acsTok" -> req.acsTok,
                 "mdlId" -> req.mdlId,
-                "elemId" -> req.elemId) { span =>
-                checkLength("acsTok" -> req.acsTok, "mdlId" -> req.mdlId, "elemId" -> req.elemId)
+                "elmId" -> req.elmId) { span =>
+                checkLength("acsTok" -> req.acsTok, "mdlId" -> req.mdlId, "elmId" -> req.elmId)
 
                 val admUsr = authenticateAsAdmin(req.acsTok)
+                val compId = admUsr.companyId
 
-                if (!NCProbeManager.existsForModelElement(admUsr.companyId, req.mdlId, req.elemId))
-                    throw InvalidModelOrElementId(req.mdlId, req.elemId)
+                if (!NCProbeManager.existsForModel(compId, req.mdlId))
+                    throw InvalidModelId(req.mdlId)
+                if (!NCProbeManager.existsForModelElement(compId, req.mdlId, req.elmId))
+                    throw InvalidModelOrElementId(req.mdlId, req.elmId)
 
-                val fut = NCProbeManager.getElementInfo(req.mdlId, req.elemId, span)
+                val fut = NCProbeManager.getElementInfo(req.mdlId, req.elmId, span)
 
                 successWithJs(
                     fut.collect {
@@ -873,7 +876,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       *
       * @return
       */
-    protected def clear$Conversation(): Route = {
+    protected def $clear$Conversation(): Route = {
         case class Req$Clear$Conversation(
             acsTok: String,
             mdlId: String,
@@ -918,7 +921,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       *
       * @return
       */
-    protected def clear$Dialog(): Route = {
+    protected def $clear$Dialog(): Route = {
         case class Req$Clear$Dialog(
             acsTok: String,
             mdlId: String,
@@ -963,7 +966,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       *
       * @return
       */
-    protected def company$Add(): Route = {
+    protected def $company$Add(): Route = {
         case class Req$Company$Add(
             acsTok: String,
             // New company.
@@ -1043,7 +1046,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       *
       * @return
       */
-    protected def company$Get(): Route = {
+    protected def $company$Get(): Route = {
         case class Req$Company$Get(
             acsTok: String
         )
@@ -1093,7 +1096,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       *
       * @return
       */
-    protected def company$Update(): Route = {
+    protected def $company$Update(): Route = {
         case class Req$Company$Update(
             // Caller.
             acsTok: String,
@@ -1154,7 +1157,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       *
       * @return
       */
-    protected def feedback$Add(): Route = {
+    protected def $feedback$Add(): Route = {
         case class Req$Feedback$Add(
             acsTok: String,
             usrId : Option[Long],
@@ -1207,7 +1210,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       *
       * @return
       */
-    protected def feedback$Delete(): Route = {
+    protected def $feedback$Delete(): Route = {
         case class Req$Feedback$Delete(
             acsTok: String,
             // Feedback IDs to delete (optional).
@@ -1264,7 +1267,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       *
       * @return
       */
-    protected def feedback$All(): Route = {
+    protected def $feedback$All(): Route = {
         case class Req$Feedback$All(
             acsTok: String,
             usrId: Option[Long],
@@ -1334,7 +1337,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       *
       * @return
       */
-    protected def company$Token$Reset(): Route = {
+    protected def $company$Token$Reset(): Route = {
         case class Req$Company$Token$Reset(
             // Caller.
             acsTok: String
@@ -1366,7 +1369,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       *
       * @return
       */
-    protected def company$Delete(): Route = {
+    protected def $company$Delete(): Route = {
         case class Req$Company$Delete(
             // Caller.
             acsTok: String
@@ -1397,7 +1400,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       *
       * @return
       */
-    protected def user$Add(): Route = {
+    protected def $user$Add(): Route = {
         case class Req$User$Add(
             // Caller.
             acsTok: String,
@@ -1459,7 +1462,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       *
       * @return
       */
-    protected def user$Update(): Route = {
+    protected def $user$Update(): Route = {
         case class Req$User$Update(
             // Caller.
             acsTok: String,
@@ -1510,7 +1513,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       *
       * @return
       */
-    protected def user$Delete(): Route = {
+    protected def $user$Delete(): Route = {
         case class Req$User$Delete(
             acsTok: String,
             id: Option[Long],
@@ -1575,7 +1578,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       *
       * @return
       */
-    protected def user$Admin(): Route = {
+    protected def $user$Admin(): Route = {
         case class Req$User$Admin(
             acsTok: String,
             id: Option[Long],
@@ -1618,7 +1621,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       *
       * @return
       */
-    protected def user$Password$Reset(): Route = {
+    protected def $user$Passwd$Reset(): Route = {
         case class Req$User$Password$Reset(
             // Caller.
             acsTok: String,
@@ -1653,7 +1656,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       *
       * @return
       */
-    protected def user$All(): Route = {
+    protected def $user$All(): Route = {
         case class Req$User$All(
             // Caller.
             acsTok: String
@@ -1708,7 +1711,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       *
       * @return
       */
-    protected def user$Get(): Route = {
+    protected def $user$Get(): Route = {
         case class Req$User$Get(
             // Caller.
             acsTok: String,
@@ -1763,7 +1766,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       *
       * @return
       */
-    protected def probe$All(): Route = {
+    protected def $probe$All(): Route = {
         case class Req$Probe$All(
             acsTok: String
         )
@@ -1997,39 +2000,39 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                 corsHandler (
                     get {
                         withRequestTimeoutResponse(_ => timeoutResp) {
-                            path(API / "health") { health$() } // Also duplicated for POST.
+                            path(API / "health") { $health() } // Also duplicated for POST.
                         }
                     } ~
                         post {
                             encodeResponseWith(Coders.NoCoding, Coders.Gzip) {
                                 withRequestTimeoutResponse(_ => timeoutResp) {
-                                    path(API / "health") { health$() } // Duplicate for POST.
-                                    path(API / "signin") { withMetric(M_SIGNIN_LATENCY_MS, signin$) } ~
-                                    path(API / "signout") { withMetric(M_SIGNOUT_LATENCY_MS, signout$) } ~
-                                    path(API / "cancel") { withMetric(M_CANCEL_LATENCY_MS, cancel$) } ~
-                                    path(API / "check") { withMetric(M_CHECK_LATENCY_MS, check$) } ~
-                                    path(API / "clear"/ "conversation") { withMetric(M_CLEAR_CONV_LATENCY_MS, clear$Conversation) } ~
-                                    path(API / "clear"/ "dialog") { withMetric(M_CLEAR_DIALOG_LATENCY_MS, clear$Dialog) } ~
-                                    path(API / "company"/ "add") { withMetric(M_COMPANY_ADD_LATENCY_MS, company$Add) } ~
-                                    path(API / "company"/ "get") { withMetric(M_COMPANY_GET_LATENCY_MS, company$Get) } ~
-                                    path(API / "company" / "update") { withMetric(M_COMPANY_UPDATE_LATENCY_MS, company$Update) } ~
-                                    path(API / "company" / "token" / "reset") { withMetric(M_COMPANY_TOKEN_LATENCY_MS, company$Token$Reset) } ~
-                                    path(API / "company" / "delete") { withMetric(M_COMPANY_DELETE_LATENCY_MS, company$Delete) } ~
-                                    path(API / "user" / "get") { withMetric(M_USER_GET_LATENCY_MS, user$Get) } ~
-                                    path(API / "user" / "add") { withMetric(M_USER_ADD_LATENCY_MS, user$Add) } ~
-                                    path(API / "user" / "update") { withMetric(M_USER_UPDATE_LATENCY_MS, user$Update) } ~
-                                    path(API / "user" / "delete") { withMetric(M_USER_DELETE_LATENCY_MS, user$Delete) } ~
-                                    path(API / "user" / "admin") { withMetric(M_USER_ADMIN_LATENCY_MS, user$Admin) } ~
-                                    path(API / "user" / "passwd" / "reset") { withMetric(M_USER_PASSWD_RESET_LATENCY_MS, user$Password$Reset) } ~
-                                    path(API / "user" / "all") { withMetric(M_USER_ALL_LATENCY_MS, user$All) } ~
-                                    path(API / "feedback"/ "add") { withMetric(M_FEEDBACK_ADD_LATENCY_MS, feedback$Add) } ~
-                                    path(API / "feedback"/ "all") { withMetric(M_FEEDBACK_GET_LATENCY_MS, feedback$All) } ~
-                                    path(API / "feedback" / "delete") { withMetric(M_FEEDBACK_DELETE_LATENCY_MS, feedback$Delete) } ~
-                                    path(API / "probe" / "all") { withMetric(M_PROBE_ALL_LATENCY_MS, probe$All) } ~
-                                    path(API / "model" / "sugsyn") { withMetric(M_MODEL_SUGSYN_LATENCY_MS, sugsyn$) } ~
-                                    path(API / "model" / "syns") { withMetric(M_MODEL_SYNS_LATENCY_MS, elementSynonyms$) } ~
-                                    path(API / "ask") { withMetric(M_ASK_LATENCY_MS, ask$) } ~
-                                    path(API / "ask" / "sync") { withMetric(M_ASK_SYNC_LATENCY_MS, ask$Sync) }
+                                    path(API / "health") { $health() } // Duplicate for POST.
+                                    path(API / "signin") { withMetric(M_SIGNIN_LATENCY_MS, $signin) } ~
+                                    path(API / "signout") { withMetric(M_SIGNOUT_LATENCY_MS, $signout) } ~
+                                    path(API / "cancel") { withMetric(M_CANCEL_LATENCY_MS, $cancel) } ~
+                                    path(API / "check") { withMetric(M_CHECK_LATENCY_MS, $check) } ~
+                                    path(API / "clear"/ "conversation") { withMetric(M_CLEAR_CONV_LATENCY_MS, $clear$Conversation) } ~
+                                    path(API / "clear"/ "dialog") { withMetric(M_CLEAR_DIALOG_LATENCY_MS, $clear$Dialog) } ~
+                                    path(API / "company"/ "add") { withMetric(M_COMPANY_ADD_LATENCY_MS, $company$Add) } ~
+                                    path(API / "company"/ "get") { withMetric(M_COMPANY_GET_LATENCY_MS, $company$Get) } ~
+                                    path(API / "company" / "update") { withMetric(M_COMPANY_UPDATE_LATENCY_MS, $company$Update) } ~
+                                    path(API / "company" / "token" / "reset") { withMetric(M_COMPANY_TOKEN_LATENCY_MS, $company$Token$Reset) } ~
+                                    path(API / "company" / "delete") { withMetric(M_COMPANY_DELETE_LATENCY_MS, $company$Delete) } ~
+                                    path(API / "user" / "get") { withMetric(M_USER_GET_LATENCY_MS, $user$Get) } ~
+                                    path(API / "user" / "add") { withMetric(M_USER_ADD_LATENCY_MS, $user$Add) } ~
+                                    path(API / "user" / "update") { withMetric(M_USER_UPDATE_LATENCY_MS, $user$Update) } ~
+                                    path(API / "user" / "delete") { withMetric(M_USER_DELETE_LATENCY_MS, $user$Delete) } ~
+                                    path(API / "user" / "admin") { withMetric(M_USER_ADMIN_LATENCY_MS, $user$Admin) } ~
+                                    path(API / "user" / "passwd" / "reset") { withMetric(M_USER_PASSWD_RESET_LATENCY_MS, $user$Passwd$Reset) } ~
+                                    path(API / "user" / "all") { withMetric(M_USER_ALL_LATENCY_MS, $user$All) } ~
+                                    path(API / "feedback"/ "add") { withMetric(M_FEEDBACK_ADD_LATENCY_MS, $feedback$Add) } ~
+                                    path(API / "feedback"/ "all") { withMetric(M_FEEDBACK_GET_LATENCY_MS, $feedback$All) } ~
+                                    path(API / "feedback" / "delete") { withMetric(M_FEEDBACK_DELETE_LATENCY_MS, $feedback$Delete) } ~
+                                    path(API / "probe" / "all") { withMetric(M_PROBE_ALL_LATENCY_MS, $probe$All) } ~
+                                    path(API / "model" / "sugsyn") { withMetric(M_MODEL_SUGSYN_LATENCY_MS, $model$sugsyn) } ~
+                                    path(API / "model" / "syns") { withMetric(M_MODEL_SYNS_LATENCY_MS, $model$syns) } ~
+                                    path(API / "ask") { withMetric(M_ASK_LATENCY_MS, $ask) } ~
+                                    path(API / "ask" / "sync") { withMetric(M_ASK_SYNC_LATENCY_MS, $ask$Sync) }
                                 }
                             }
                         }

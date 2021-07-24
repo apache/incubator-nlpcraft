@@ -238,9 +238,9 @@ paths:
     post:
       tags:
         - Tools
-      summary: Gets model element synonyms.
+      summary: Gets model element synonyms and values.
       description: >-
-        Gets model element synonyms.
+        Gets model element synonyms and values.
         Administrative privileges required.
       operationId: syns
       parameters:
@@ -253,7 +253,7 @@ paths:
             required:
               - acsTok
               - mdlId
-              - elemId
+              - elmId
             properties:
               acsTok:
                 type: string
@@ -262,11 +262,11 @@ paths:
               mdlId:
                 type: string
                 maxLength: 32
-                description: ID of the model to run synonym suggestion on.
-              elemId:
+                description: ID of the model to run get elements synonyms and values.
+              elmId:
                 type: string
                 maxLength: 64
-                description: ID of the model element to getting synonyms.
+                description: ID of the model element to get its synonyms and values.
       responses:
         '200':
           description: Successful operation.
@@ -284,10 +284,14 @@ paths:
                   - API_OK
               synonyms:
                 type: object
-                description: Synonyms list.
+                description: List of individual synomyms.
               values:
                 type: object
-                description: Values map (value name to vaule synonyms list). Empty if element doesn't contain values.
+                description: >-
+                  Map of element values, if any.
+                  Map key is the value name.
+                  Map value is a list of synonyms for that value.
+                  Empty if element doesn't have values.
         '400':
           description: Failed operation.
           schema:
@@ -298,8 +302,8 @@ paths:
         - Asking
       summary: Gets status and result of submitted requests.
       description: >-
-          Gets the status and result (OK or failure) of the previously submitted requests.
-          Request statuses returned sorted by their registration time, starting from newest.
+        Gets the status and result (OK or failure) of the previously submitted requests.
+        Request statuses returned sorted by their registration time, starting from newest.
       operationId: check
       parameters:
         - in: body

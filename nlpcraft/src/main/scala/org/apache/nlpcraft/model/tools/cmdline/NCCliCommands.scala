@@ -246,7 +246,7 @@ private [cmdline] object NCCliCommands {
             examples = Seq(
                 Example(
                     usage = Seq(
-                        s"$PROMPT $SCRIPT_NAME call -p=signin",
+                        s"> call -p=signin",
                         "  --email=admin@admin.com",
                         "  --passwd=admin"
                     ),
@@ -257,7 +257,7 @@ private [cmdline] object NCCliCommands {
                 ),
                 Example(
                     usage = Seq(
-                        s"$$ nlpcraft.sh call --path=ask/sync",
+                        s"> call --path=ask/sync",
                         "  --acsTok=qwerty123456",
                         "  --txt=\"User request\"",
                         "  --mdlId=my.model.id",
@@ -265,20 +265,7 @@ private [cmdline] object NCCliCommands {
                         "  --enableLog=false"
                     ),
                     desc =
-                        s"${bo("Unix/Linux:")} issues ${y("'ask/sync'")} REST call with given JSON payload provided as a set of parameters."
-                ),
-                Example(
-                    usage = Seq(
-                        s"> nlpcraft.cmd call --path=ask/sync",
-                        "  --acsTok=qwerty123456",
-                        "  --txt=\"User request\"",
-                        "  --mdlId=my.model.id",
-                        "  --data='{\\\"data1\\\": true, \\\"data2\\\": 123, \\\"data3\\\": \\\"some text\\\"}'",
-                        "  --enableLog=false"
-                    ),
-                    desc =
-                        s"${bo("Windows:")} issues ${y("'ask/sync'")} REST call with given JSON payload provided " +
-                        s"as a set of parameters. Note the necessary double quote escaping."
+                        s"Issues ${y("'ask/sync'")} REST call with given JSON payload provided as a set of parameters."
                 )
             )
         ),

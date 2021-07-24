@@ -63,7 +63,7 @@ class NCRestModelSpec extends NCRestSpec {
     @Test
     def testSyns(): Unit = {
         // Note that checked values are valid for current configuration of `RestTestModel` model.
-        post("model/syns", "mdlId" -> "rest.test.model", "elemId" -> "x")(
+        post("model/syns", "mdlId" -> "rest.test.model", "elmId" -> "x")(
             ("$.status", (status: String) => assertEquals("API_OK", status)),
             ("$.synonyms", (syns: ResponseList) => {
                 println("synonyms="+syns)
@@ -76,7 +76,7 @@ class NCRestModelSpec extends NCRestSpec {
                 assertTrue(vals.isEmpty)
             })
         )
-        post("model/syns", "mdlId" -> "rest.test.model", "elemId" -> "valElem")(
+        post("model/syns", "mdlId" -> "rest.test.model", "elmId" -> "valElem")(
             ("$.status", (status: String) => assertEquals("API_OK", status)),
             ("$.synonyms", (syns: ResponseList) => {
                 println("synonyms="+syns)
@@ -90,10 +90,10 @@ class NCRestModelSpec extends NCRestSpec {
             })
         )
 
-        postError("model/syns", 400, "NC_INVALID_FIELD", "mdlId" -> "UNKNOWN", "elemId" -> "UNKNOWN")
-        postError("model/syns", 400, "NC_INVALID_FIELD", "mdlId" -> "rest.test.model", "elemId" -> "UNKNOWN")
-        postError("model/syns", 400, "NC_INVALID_FIELD", "mdlId" -> ("A" * 33), "elemId" -> "UNKNOWN")
-        postError("model/syns", 400, "NC_INVALID_FIELD", "mdlId" -> "rest.test.model", "elemId" -> ("A" * 65))
+        postError("model/syns", 400, "NC_INVALID_FIELD", "mdlId" -> "UNKNOWN", "elmId" -> "UNKNOWN")
+        postError("model/syns", 400, "NC_INVALID_FIELD", "mdlId" -> "rest.test.model", "elmId" -> "UNKNOWN")
+        postError("model/syns", 400, "NC_INVALID_FIELD", "mdlId" -> ("A" * 33), "elmId" -> "UNKNOWN")
+        postError("model/syns", 400, "NC_INVALID_FIELD", "mdlId" -> "rest.test.model", "elmId" -> ("A" * 65))
         postError("model/syns", 400, "NC_ERROR", "mdlId" -> "rest.test.model")
     }
 }
