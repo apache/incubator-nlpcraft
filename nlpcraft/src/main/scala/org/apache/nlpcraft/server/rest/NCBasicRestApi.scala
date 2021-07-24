@@ -859,18 +859,18 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                         case res =>
                             require(
                                 res.containsKey("synonyms") &&
-                                res.containsKey("synonymsExpanded") &&
+                                res.containsKey("synonymsExp") &&
                                 res.containsKey("values") &&
-                                res.containsKey("valuesExpanded")
+                                res.containsKey("valuesExp")
                             )
 
                             toJs(
                                 Map(
                                     "status" -> API_OK.toString,
                                     "synonyms" -> res.get("synonyms"),
-                                    "synonymsExpanded" -> res.get("synonymsExpanded"),
+                                    "synonymsExp" -> res.get("synonymsExp"),
                                     "values" -> res.get("values"),
-                                    "valuesExpanded" -> res.get("valuesExpanded")
+                                    "valuesExp" -> res.get("valuesExp")
                                 )
                             )
                     }

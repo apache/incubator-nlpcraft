@@ -276,6 +276,8 @@ paths:
               - status
               - synonyms
               - values
+              - synonymsExp
+              - valuesExp
             properties:
               status:
                 type: string
@@ -284,13 +286,24 @@ paths:
                   - API_OK
               synonyms:
                 type: object
-                description: List of individual synomyms.
+                description: List of individual synomyms as they are specified in the model.
+              synonymsExp:
+                type: object
+                description: List of expanded synomyms as the model uses them (before stemmatization).
               values:
                 type: object
                 description: >-
-                  Map of element values, if any.
+                  Map of element values, if any, as they are specified in the model.
                   Map key is the value name.
                   Map value is a list of synonyms for that value.
+                  Empty if element doesn't have values.
+              valuesExp:
+                type: object
+                description: >-
+                  Map of element values, if any, as the model uses them (before stemmatization).
+                  Map key is the value name.
+                  Map value is a list of expanded
+                  synonyms for that value.
                   Empty if element doesn't have values.
         '400':
           description: Failed operation.

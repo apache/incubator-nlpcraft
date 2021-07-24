@@ -147,7 +147,8 @@ object NCCli extends NCCliBase {
     private final val REST_CMD = CMDS.find(_.name == "rest").get
     private final val CALL_CMD = CMDS.find(_.name == "call").get
     private final val ASK_CMD = CMDS.find(_.name == "ask").get
-    private final val SUGSYN_CMD = CMDS.find(_.name == "sugsyn").get
+    private final val MODEL_SUGSYN_CMD = CMDS.find(_.name == "model-sugsyn").get
+    private final val MODEL_SYNS_CMD = CMDS.find(_.name == "model-syns").get
 
     /**
      * @param cmd
@@ -549,6 +550,7 @@ object NCCli extends NCCliBase {
                     logln(r(" [Error]"))
 
                     error(s"Server start failed - check full log for errors: ${c(output.getAbsolutePath)}")
+                    error(s"If the problem persists - remove ${c("~/.nlpcraft")} folder and try again.")
 
                     tailFile(output.getAbsolutePath, 20)
                 }
@@ -1737,7 +1739,7 @@ object NCCli extends NCCliBase {
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
-    private [cmdline] def cmdSugSyn(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
+    private [cmdline] def cmdModelSugSyn(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
         state.accessToken match {
             case Some(acsTok) =>
                 val mdlId = getParamOpt(args, "mdlId") match {
@@ -1758,6 +1760,40 @@ object NCCli extends NCCliBase {
                        |    "acsTok": ${jsonQuote(acsTok)},
                        |    "mdlId": ${jsonQuote(mdlId)},
                        |    "minScore": $minScore
+                       |}
+                       |""".stripMargin
+                )
+
+            case None => throw NotSignedIn()
+        }
+
+    /**
+     *
+     * @param cmd Command descriptor.
+     * @param args Arguments, if any, for this command.
+     * @param repl Whether or not executing from REPL.
+     */
+    private [cmdline] def cmdModelSyns(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
+        state.accessToken match {
+            case Some(acsTok) =>
+                val mdlId = getParamOpt(args, "mdlId") match {
+                    case Some(id) => id
+                    case None =>
+                        if (state.probes.size == 1 && state.probes.head.models.length == 1)
+                            state.probes.head.models.head.id
+                        else
+                            throw MissingOptionalParameter(cmd, "mdlId")
+                }
+                val elmId = getParam(cmd, args, "elmId")
+
+                httpRest(
+                    cmd,
+                    "model/syns",
+                    s"""
+                       |{
+                       |    "acsTok": ${jsonQuote(acsTok)},
+                       |    "mdlId": ${jsonQuote(mdlId)},
+                       |    "elmId": ${jsonQuote(elmId)}
                        |}
                        |""".stripMargin
                 )
@@ -2520,7 +2556,7 @@ object NCCli extends NCCliBase {
 
                                     mkCandidate(
                                         disp = name,
-                                        grp = s"REST ${cmd.group}:",
+                                        grp = MANDATORY_GRP,
                                         desc = cmd.desc,
                                         completed = true
                                     )
@@ -2530,7 +2566,7 @@ object NCCli extends NCCliBase {
                     }
 
                     // For 'ask' and 'sugysn' - add additional model IDs auto-completion/suggestion candidates.
-                    if (cmd == ASK_CMD.name || cmd == SUGSYN_CMD.name)
+                    if (cmd == ASK_CMD.name || cmd == MODEL_SUGSYN_CMD.name || cmd == MODEL_SYNS_CMD.name)
                         candidates.addAll(
                             state.probes.flatMap(_.models.toList).map(mdl => {
                                 mkCandidate(

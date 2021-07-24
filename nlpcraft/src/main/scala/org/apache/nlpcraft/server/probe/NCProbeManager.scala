@@ -1129,17 +1129,14 @@ object NCProbeManager extends NCService {
 
                     macros.asScala.foreach(t => parser.addMacro(t._1, t._2))
 
-                    val synsExpanded: java.util.List[String] =
-                        syns.asScala.flatMap(s => parser.expand(s).map(NCNlpPorterStemmer.stem)).asJava
+                    val synsExp: java.util.List[String] =
+                        syns.asScala.flatMap(s => parser.expand(s)).sorted.asJava
 
-                    val valsExpanded: java.util.Map[String, java.util.List[String]] =
-                        vals.asScala.map(v =>
-                            v._1 ->
-                            v._2.asScala.flatMap(s => parser.expand(s).map(NCNlpPorterStemmer.stem)).asJava
-                        ).toMap.asJava
+                    val valsExp: java.util.Map[String, java.util.List[String]] =
+                        vals.asScala.map(v => v._1 -> v._2.asScala.flatMap(s => parser.expand(s)).sorted.asJava).toMap.asJava
 
-                    res.put("synonymsExpanded", synsExpanded)
-                    res.put("valuesExpanded", valsExpanded)
+                    res.put("synonymsExp", synsExp)
+                    res.put("valuesExp", valsExp)
 
                     res
                 }

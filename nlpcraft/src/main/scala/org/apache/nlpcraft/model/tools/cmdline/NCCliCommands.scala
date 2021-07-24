@@ -542,7 +542,49 @@ private [cmdline] object NCCliCommands {
             )
         ),
         Command(
-            name = "sugsyn",
+            name = "model-syns",
+            group = "2. REST Commands",
+            synopsis = s"Wrapper for ${y("'/model/syns'")} REST call.",
+            desc = Some(
+                s"Requires user to be already signed in. This command ${bo("only makes sense in the REPL mode")} as " +
+                s"it requires user to be signed in. REPL session keeps the currently active access " +
+                s"token after user signed in. For command line mode, use ${y("'rest'")} command with " +
+                s"corresponding parameters. Note also that it requires a local probe running that hosts " +
+                s"the specified model."
+            ),
+            body = NCCli.cmdModelSyns,
+            params = Seq(
+                Parameter(
+                    id = "mdlId",
+                    names = Seq("--mdlId", "-m"),
+                    value = Some("model.id"),
+                    optional = true,
+                    desc =
+                        s"ID of the model to get synonyms for. " +
+                        s"In REPL mode, hit ${rv(" Tab ")} to see auto-suggestion for possible model IDs. Note that " +
+                        s"this is optional ONLY if there is only one connected probe and it has only one model deployed - which will be " +
+                        s"used by default. In all other cases - this parameter is mandatory."
+                ),
+                Parameter(
+                    id = "elmId",
+                    names = Seq("--elmId", "-e"),
+                    value = Some("element.id"),
+                    desc =
+                        s"ID of the model element to get synonyms for."
+                )
+            ),
+            examples = Seq(
+                Example(
+                    usage = Seq(
+                        s"""> model-syns -m=my.model.id -e=my:elem"""
+                    ),
+                    desc =
+                        s"Issues ${y("'model/syns'")} REST call with given model and element IDs."
+                )
+            )
+        ),
+        Command(
+            name = "model-sugsyn",
             group = "2. REST Commands",
             synopsis = s"Wrapper for ${y("'/model/sugsyn'")} REST call.",
             desc = Some(
@@ -553,7 +595,7 @@ private [cmdline] object NCCliCommands {
                 s"the specified model as well as running ${y("'ctxword'")} server. Find more information about " +
                 s"this tool at https://nlpcraft.apache.org/tools/syn_tool.html"
             ),
-            body = NCCli.cmdSugSyn,
+            body = NCCli.cmdModelSugSyn,
             params = Seq(
                 Parameter(
                     id = "mdlId",
@@ -577,14 +619,14 @@ private [cmdline] object NCCliCommands {
             examples = Seq(
                 Example(
                     usage = Seq(
-                        s"""> sugsyn -m=my.model.id"""
+                        s"""> model-sugsyn -m=my.model.id"""
                     ),
                     desc =
                         s"Issues ${y("'model/sugsyn'")} REST call with default min score and given model ID."
                 ),
                 Example(
                     usage = Seq(
-                        s"""> sugsyn"""
+                        s"""> model-sugsyn"""
                     ),
                     desc =
                         s"Issues ${y("'model/sugsyn'")} REST call with default min score and default model ID " +

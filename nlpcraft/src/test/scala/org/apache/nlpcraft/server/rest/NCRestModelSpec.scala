@@ -94,10 +94,10 @@ class NCRestModelSpec2 extends NCRestSpec {
             post("model/syns", "mdlId" -> "rest.test.model", "elmId" -> elemId)(
                 ("$.status", (status: String) => assertEquals("API_OK", status)),
                 ("$.synonyms", (data: ResponseList) => assertTrue(!data.isEmpty)),
-                ("$.synonymsExpanded", (data: ResponseList) => assertTrue(!data.isEmpty)),
+                ("$.synonymsExp", (data: ResponseList) => assertTrue(!data.isEmpty)),
                 ("$.values", (data: java.util.Map[Object, Object]) =>
                     if (valsShouldBe) assertTrue(!data.isEmpty) else assertTrue(data.isEmpty)),
-                ("$.valuesExpanded", (data: java.util.Map[Object, Object]) =>
+                ("$.valuesExp", (data: java.util.Map[Object, Object]) =>
                     if (valsShouldBe) assertTrue(!data.isEmpty) else assertTrue(data.isEmpty)
                 )
             )
