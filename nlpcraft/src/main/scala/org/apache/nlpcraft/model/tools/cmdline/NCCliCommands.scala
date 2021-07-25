@@ -570,7 +570,8 @@ private [cmdline] object NCCliCommands {
                     names = Seq("--elmId", "-e"),
                     value = Some("element.id"),
                     desc =
-                        s"ID of the model element to get synonyms for."
+                        s"ID of the model element to get synonyms for. " +
+                        s"In REPL mode, hit ${rv(" Tab ")} to see auto-suggestion for possible element IDs."
                 )
             ),
             examples = Seq(
