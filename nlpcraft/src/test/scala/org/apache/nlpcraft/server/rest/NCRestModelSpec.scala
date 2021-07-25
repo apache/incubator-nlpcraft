@@ -111,4 +111,15 @@ class NCRestModelSpec2 extends NCRestSpec {
         postError("model/syns", 400, "NC_INVALID_FIELD", "mdlId" -> "rest.test.model", "elmId" -> ("A" * 65))
         postError("model/syns", 400, "NC_ERROR", "mdlId" -> "rest.test.model")
     }
+
+    @Test
+    def testModelInfo(): Unit = {
+        post("model/info", "mdlId" -> "rest.test.model")(
+            ("$.status", (status: String) => assertEquals("API_OK", status)),
+            ("$.model", (data: java.util.Map[Object, Object]) => assertTrue(!data.isEmpty))
+        )
+
+        postError("model/info", 400, "NC_INVALID_FIELD", "mdlId" -> "UNKNOWN")
+        postError("model/info", 400, "NC_ERROR")
+    }
 }

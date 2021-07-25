@@ -25,7 +25,7 @@ import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.crypto.NCCipher
 import org.apache.nlpcraft.common.makro.NCMacroParser
 import org.apache.nlpcraft.common.nlp.NCNlpSentence
-import org.apache.nlpcraft.common.nlp.core.{NCNlpCoreManager, NCNlpPorterStemmer}
+import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
 import org.apache.nlpcraft.common.pool.NCThreadPoolManager
 import org.apache.nlpcraft.common.socket.NCSocket
 import org.apache.nlpcraft.common.version.NCVersion
@@ -54,8 +54,7 @@ import scala.util.{Failure, Success}
   */
 object NCProbeManager extends NCService {
     private final val GSON = new Gson()
-    private final val TYPE_MODEL_INFO_RESP = new TypeToken[JavaMeta]() {}.getType
-    private final val TYPE_MODEL_ELEMENT_INFO_RESP = new TypeToken[JavaMeta]() {}.getType
+    private final val TYPE_JAVA_META = new TypeToken[JavaMeta]() {}.getType
 
     // Type safe and eager configuration container.
     private object Config extends NCConfigurable {
@@ -67,7 +66,7 @@ object NCProbeManager extends NCService {
         def reconnectTimeoutMs: Long = getLong(s"$pre.reconnectTimeoutMs")
         def pingTimeoutMs: Long = getLong(s"$pre.pingTimeoutMs")
         def soTimeoutMs: Int = getInt(s"$pre.soTimeoutMs")
-    
+
         /**
           *
           */
@@ -158,8 +157,9 @@ object NCProbeManager extends NCService {
     // All probes pending complete handshake keyed by probe key.
     @volatile private var pending: mutable.Map[ProbeKey, ProbeHolder] = _
 
-    @volatile private var modelsInfo: ConcurrentHashMap[String, Promise[JavaMeta]] = _
+    @volatile private var modelsSynsInfo: ConcurrentHashMap[String, Promise[JavaMeta]] = _
     @volatile private var modelElmsInfo: ConcurrentHashMap[String, Promise[JavaMeta]] = _
+    @volatile private var modelsInfo: ConcurrentHashMap[String, Promise[JavaMeta]] = _
 
     /**
      *
@@ -181,8 +181,9 @@ object NCProbeManager extends NCService {
             "downlink" -> s"$dnHost:$dnPort"
         )
 
-        modelsInfo = new ConcurrentHashMap[String, Promise[JavaMeta]]()
+        modelsSynsInfo = new ConcurrentHashMap[String, Promise[JavaMeta]]()
         modelElmsInfo = new ConcurrentHashMap[String, Promise[JavaMeta]]()
+        modelsInfo = new ConcurrentHashMap[String, Promise[JavaMeta]]()
 
         dnSrv = startServer("Downlink", dnHost, dnPort, downLinkHandler)
         upSrv = startServer("Uplink", upHost, upPort, upLinkHandler)
@@ -219,8 +220,9 @@ object NCProbeManager extends NCService {
         U.stopThread(dnSrv)
         U.stopThread(upSrv)
 
-        modelsInfo = null
+        modelsSynsInfo = null
         modelElmsInfo = null
+        modelsInfo = null
      
         ackStopped()
     }
@@ -691,6 +693,23 @@ object NCProbeManager extends NCService {
             }
         }
     }
+
+    /**
+      *
+      * @param probeMsg
+      * @param m
+      */
+    private def processJavaMetaMessage(probeMsg: NCProbeMessage, m: ConcurrentHashMap[String, Promise[JavaMeta]]): Unit = {
+        val p = m.remove(probeMsg.data[String]("reqGuid"))
+
+        if (p != null)
+            probeMsg.dataOpt[String]("resp") match {
+                case Some(resp) => p.success(GSON.fromJson(resp, TYPE_JAVA_META))
+                case None => p.failure(new NCE(probeMsg.data[String]("error")))
+            }
+        else
+            logger.warn(s"Message ignored: $probeMsg")
+    }
     
     /**
       * Processes the messages received from the probe.
@@ -716,27 +735,9 @@ object NCProbeManager extends NCService {
             typ match {
                 case "P2S_PING" => ()
 
-                case "P2S_MODEL_INFO" =>
-                    val p = modelsInfo.remove(probeMsg.data[String]("reqGuid"))
-
-                    if (p != null)
-                        probeMsg.dataOpt[String]("resp") match {
-                            case Some(resp) => p.success(GSON.fromJson(resp, TYPE_MODEL_INFO_RESP))
-                            case None => p.failure(new NCE(probeMsg.data[String]("error")))
-                        }
-                    else
-                        logger.warn(s"Message ignored: $probeMsg")
-
-                case "P2S_MODEL_ELEMENT_INFO" =>
-                    val p = modelElmsInfo.remove(probeMsg.data[String]("reqGuid"))
-
-                    if (p != null)
-                        probeMsg.dataOpt[String]("resp") match {
-                            case Some(resp) => p.success(GSON.fromJson(resp, TYPE_MODEL_ELEMENT_INFO_RESP))
-                            case None => p.failure(new NCE(probeMsg.data[String]("error")))
-                        }
-                    else
-                        logger.warn(s"Message ignored: $probeMsg")
+                case "P2S_MODEL_SYNS_INFO" => processJavaMetaMessage(probeMsg, modelsSynsInfo)
+                case "P2S_MODEL_ELEMENT_INFO" => processJavaMetaMessage(probeMsg, modelElmsInfo)
+                case "P2S_MODEL_INFO" => processJavaMetaMessage(probeMsg, modelsInfo)
 
                 case "P2S_ASK_RESULT" =>
                     val srvReqId = probeMsg.data[String]("srvReqId")
@@ -1089,12 +1090,12 @@ object NCProbeManager extends NCService {
       * @param parent
       * @return
       */
-    def getModelInfo(mdlId: String, parent: Span = null): Future[JavaMeta] =
-        startScopedSpan("getModelInfo", parent, "mdlId" -> mdlId) { _ =>
+    def getModelSynonymsInfo(mdlId: String, parent: Span = null): Future[JavaMeta] =
+        startScopedSpan("getModelSynonymsInfo", parent, "mdlId" -> mdlId) { _ =>
             processModelDataRequest(
                 mdlId,
-                NCProbeMessage("S2P_MODEL_INFO", "mdlId" -> mdlId),
-                modelsInfo,
+                NCProbeMessage("S2P_MODEL_SYNS_INFO", "mdlId" -> mdlId),
+                modelsSynsInfo,
                 parent
             )
         }
@@ -1142,4 +1143,15 @@ object NCProbeManager extends NCService {
                 }
             )
         }
+
+    def getModelInfo(mdlId: String, parent: Span = null): Future[JavaMeta] =
+        startScopedSpan("getModelInfo", parent, "mdlId" -> mdlId) { _ =>
+            processModelDataRequest(
+                mdlId,
+                NCProbeMessage("S2P_MODEL_INFO", "mdlId" -> mdlId),
+                modelsInfo,
+                parent
+            )
+        }
+
 }

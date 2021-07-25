@@ -879,6 +879,51 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
         }
     }
 
+
+    /**
+      *
+      * @return
+      */
+    protected def $model$info(): Route = {
+        case class Req$Model$Info(
+            acsTok: String,
+            mdlId: String
+        )
+
+        implicit val reqFmt: RootJsonFormat[Req$Model$Info] = jsonFormat2(Req$Model$Info)
+
+        entity(as[Req$Model$Info]) { req =>
+            startScopedSpan(
+                "model$syns",
+                "acsTok" -> req.acsTok,
+                "mdlId" -> req.mdlId
+            ) { span =>
+                checkLength("acsTok" -> req.acsTok, "mdlId" -> req.mdlId)
+
+                val admUsr = authenticateAsAdmin(req.acsTok)
+                val compId = admUsr.companyId
+
+                if (!NCProbeManager.existsForModel(compId, req.mdlId))
+                    throw InvalidModelId(req.mdlId)
+
+                val fut = NCProbeManager.getModelInfo(req.mdlId, span)
+
+                successWithJs(
+                    fut.collect {
+                        // We have to use Jackson (not spray) here to serialize 'result' field.
+                        case res =>
+                            toJs(
+                                Map(
+                                    "status" -> API_OK.toString,
+                                    "model" -> res
+                                )
+                            )
+                    }
+                )
+            }
+        }
+    }
+
     /**
       *
       * @return
@@ -2040,6 +2085,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                                     path(API / "probe" / "all") { withMetric(M_PROBE_ALL_LATENCY_MS, $probe$All) } ~
                                     path(API / "model" / "sugsyn") { withMetric(M_MODEL_SUGSYN_LATENCY_MS, $model$sugsyn) } ~
                                     path(API / "model" / "syns") { withMetric(M_MODEL_SYNS_LATENCY_MS, $model$syns) } ~
+                                    path(API / "model" / "info") { withMetric(M_MODEL_SYNS_LATENCY_MS, $model$info) } ~
                                     path(API / "ask") { withMetric(M_ASK_LATENCY_MS, $ask) } ~
                                     path(API / "ask" / "sync") { withMetric(M_ASK_SYNC_LATENCY_MS, $ask$Sync) }
                                 }
