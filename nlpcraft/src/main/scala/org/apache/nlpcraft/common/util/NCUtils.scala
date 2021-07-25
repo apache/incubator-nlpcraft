@@ -1667,6 +1667,10 @@ object NCUtils extends LazyLogging {
         else
             try
                 GSON.toJson(GSON.getAdapter(classOf[JsonElement]).fromJson(json))
+                    // Fix the problem with escaping '<' and '>' which is only
+                    // a theoretical problem for browsers displaying JSON.
+                    .replace("\\u003c", "<")
+                    .replace("\\u003e", ">")
             catch {
                 case _: Exception => ""
             }
