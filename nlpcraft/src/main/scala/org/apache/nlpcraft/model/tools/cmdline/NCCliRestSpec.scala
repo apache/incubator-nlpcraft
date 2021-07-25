@@ -88,6 +88,15 @@ private [cmdline] object NCCliRestSpec {
             )
         ),
         RestSpec(
+            "model/info",
+            "Gets model configuration and elements",
+            "Tools",
+            params = Seq(
+                RestSpecParameter(name = "acsTok", kind = STRING),
+                RestSpecParameter(name = "mdlId", kind = STRING)
+            )
+        ),
+        RestSpec(
             "check",
             "Gets status and result of submitted requests",
             "Asking",

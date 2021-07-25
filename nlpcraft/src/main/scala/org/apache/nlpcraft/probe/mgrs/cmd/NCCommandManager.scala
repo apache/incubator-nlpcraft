@@ -231,24 +231,24 @@ object NCCommandManager extends NCService {
                                         override def isNoUserTokensAllowed: Boolean = mdl.isNoUserTokensAllowed
                                         override def isSparse: Boolean = mdl.isSparse
                                         override def getMetadata: util.Map[String, AnyRef] = mdl.getMetadata
-                                        override def getAdditionalStopWords: util.Set[String] =
-                                            mdl.getAdditionalStopWords
+                                        override def getAdditionalStopWords: util.Set[String] = mdl.getAdditionalStopWords
                                         override def getExcludedStopWords: util.Set[String] = mdl.getExcludedStopWords
                                         override def getSuspiciousWords: util.Set[String] = mdl.getSuspiciousWords
                                         override def getMacros: util.Map[String, String] = mdl.getMacros
-                                        override def getEnabledBuiltInTokens: util.Set[String] =
-                                            mdl.getEnabledBuiltInTokens
+                                        override def getEnabledBuiltInTokens: util.Set[String] = mdl.getEnabledBuiltInTokens
                                         override def getAbstractTokens: util.Set[String] = mdl.getAbstractTokens
                                         override def getMaxElementSynonyms: Int = mdl.getMaxElementSynonyms
-                                        override def isMaxSynonymsThresholdError: Boolean =
-                                            mdl.isMaxSynonymsThresholdError
+                                        override def isMaxSynonymsThresholdError: Boolean = mdl.isMaxSynonymsThresholdError
                                         override def getConversationTimeout: Long = mdl.getConversationTimeout
                                         override def getConversationDepth: Int = mdl.getConversationDepth
-                                        override def getRestrictedCombinations: util.Map[String, util.Set[String]] =
-                                            mdl.getRestrictedCombinations
+                                        override def getRestrictedCombinations: util.Map[String, util.Set[String]] = mdl.getRestrictedCombinations
 
                                         // Cleared.
                                         override def getParsers: JList[NCCustomParser] = null
+
+                                        // Add list of just element IDs.
+                                        val elementIds: JList[String] = mdl.getElements.asScala.map(_.getId).toList.asJava
+
                                         // Converted.
                                         override def getElements: util.Set[NCElement] = mdl.getElements.asScala.map(e =>
                                             new NCElement {
@@ -259,12 +259,12 @@ object NCCommandManager extends NCService {
                                                 override def getDescription: String = e.getDescription
                                                 override def getParentId: String = e.getParentId
                                                 override def getSynonyms: JList[String] = e.getSynonyms
-                                                override def isPermutateSynonyms: Optional[lang.Boolean] =
-                                                    e.isPermutateSynonyms
+                                                override def isPermutateSynonyms: Optional[lang.Boolean] = e.isPermutateSynonyms
                                                 override def isSparse: Optional[lang.Boolean] = e.isSparse
 
                                                 // Cleared.
                                                 override def getValueLoader: Optional[NCValueLoader] = null
+
                                                 // Converted.
                                                 override def getValues: JList[NCValue] =
                                                     if (e.getValues != null) {

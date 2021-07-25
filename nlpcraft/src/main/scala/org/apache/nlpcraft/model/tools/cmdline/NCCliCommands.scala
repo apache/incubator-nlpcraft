@@ -104,7 +104,7 @@ private [cmdline] object NCCliCommands {
             group = "2. REST Commands",
             synopsis = s"REST call in a convenient way for command line mode.",
             desc = Some(
-                s"When using this command you supply all call parameters as a single ${c("'--json'")} parameter with a JSON string. " +
+                s"When using this command you supply all call parameters as a single ${y("'--json'")} parameter with a JSON string. " +
                 s"In REPL mode, you can hit ${rv(" Tab ")} to see auto-suggestion and auto-completion candidates for " +
                 s"commonly used paths. However, ${y("'call'")} command provides more convenient way to issue REST " +
                 s"calls when in REPL mode."
@@ -252,7 +252,7 @@ private [cmdline] object NCCliCommands {
                     ),
                     desc =
                         s"Issues ${y("'signin'")} REST call with given JSON payload provided as a set of parameters. " +
-                        s"Note that ${c("'--email'")} and ${c("'--passwd'")} parameters correspond to the REST call " +
+                        s"Note that ${y("'--email'")} and ${y("'--passwd'")} parameters correspond to the REST call " +
                         s"specification for ${y("'/signin'")} path."
                 ),
                 Example(
@@ -272,7 +272,7 @@ private [cmdline] object NCCliCommands {
         Command(
             name = "ask",
             group = "2. REST Commands",
-            synopsis = s"Wrapper for ${c("'/ask/sync'")} REST call.",
+            synopsis = s"Wrapper for ${y("'/ask/sync'")} REST call.",
             desc = Some(
                 s"Requires user to be already signed in. This command ${bo("only makes sense in the REPL mode")} as " +
                 s"it requires user to be signed in. REPL session keeps the currently active access " +
@@ -356,7 +356,7 @@ private [cmdline] object NCCliCommands {
                     value = Some("class"),
                     desc =
                         s"Mandatory JDBC driver class. Note that 'class' must be a fully qualified class name. " +
-                        s"It should also be available on the classpath or provided additionally via ${c("'--cp'")} parameter."
+                        s"It should also be available on the classpath or provided additionally via ${y("'--cp'")} parameter."
                 ),
                 Parameter(
                     id = "schema",
@@ -384,9 +384,9 @@ private [cmdline] object NCCliCommands {
                         s"Additional JVM classpath that will be appended to the default NLPCraft JVM classpath. " +
                         s"Parameter should include one or more classpath entry (JAR or directory) separated by the OS specific classpath separator. " +
                         s"Although this configuration property is optional, in most cases you will need to provide an " +
-                        s"additional classpath for JDBC driver that you use (see ${c("'--driver'")} parameter) unless " +
+                        s"additional classpath for JDBC driver that you use (see ${y("'--driver'")} parameter) unless " +
                         s"it is available in NLPCraft by default, i.e. Apache Ignite and H2. " +
-                        s"Note that you can have multiple ${c("'--cp'")} parameters and their values will be " +
+                        s"Note that you can have multiple ${y("'--cp'")} parameters and their values will be " +
                         s"automatically combined into one final additional classpath. " +
                         s"Note also that you can use ${y("'~'")} at the beginning of the classpath component to specify user home directory."
                 ),
@@ -441,7 +441,7 @@ private [cmdline] object NCCliCommands {
                     optional = true,
                     desc =
                         s"Semicolon-separate list of tables and/or columns to exclude. By default, none of the " +
-                        s"tables and columns in the schema are excluded. See ${c("'--help'")} parameter to get more details."
+                        s"tables and columns in the schema are excluded. See ${y("'--help'")} parameter to get more details."
                 ),
                 Parameter(
                     id = "include",
@@ -450,7 +450,7 @@ private [cmdline] object NCCliCommands {
                     optional = true,
                     desc =
                         s"Semicolon-separate list of tables and/or columns to include. By default, all of the " +
-                        s"tables and columns in the schema are included. See ${c("'--help'")} parameter to get more details."
+                        s"tables and columns in the schema are included. See ${y("'--help'")} parameter to get more details."
                 ),
                 Parameter(
                     id = "prefix",
@@ -542,6 +542,41 @@ private [cmdline] object NCCliCommands {
             )
         ),
         Command(
+            name = "model-info",
+            group = "2. REST Commands",
+            synopsis = s"Wrapper for ${y("'/model/info'")} REST call.",
+            desc = Some(
+                s"Requires user to be already signed in. This command ${bo("only makes sense in the REPL mode")} as " +
+                s"it requires user to be signed in. REPL session keeps the currently active access " +
+                s"token after user signed in. For command line mode, use ${y("'rest'")} command with " +
+                s"corresponding parameters. Note also that it requires a local probe running that hosts " +
+                s"the specified model."
+            ),
+            body = NCCli.cmdModelInfo,
+            params = Seq(
+                Parameter(
+                    id = "mdlId",
+                    names = Seq("--mdlId", "-m"),
+                    value = Some("model.id"),
+                    optional = true,
+                    desc =
+                        s"ID of the model to get configuration properties and elements for. " +
+                        s"In REPL mode, hit ${rv(" Tab ")} to see auto-suggestion for possible model IDs. Note that " +
+                        s"this is optional ONLY if there is only one connected probe and it has only one model deployed - which will be " +
+                        s"used by default. In all other cases - this parameter is mandatory."
+                )
+            ),
+            examples = Seq(
+                Example(
+                    usage = Seq(
+                        s"""> model-info -m=my.model.id"""
+                    ),
+                    desc =
+                        s"Issues ${y("'model/info'")} REST call with given model ID."
+                )
+            )
+        ),
+        Command(
             name = "model-syns",
             group = "2. REST Commands",
             synopsis = s"Wrapper for ${y("'/model/syns'")} REST call.",
@@ -560,7 +595,7 @@ private [cmdline] object NCCliCommands {
                     value = Some("model.id"),
                     optional = true,
                     desc =
-                        s"ID of the model to get synonyms for. " +
+                        s"ID of the model to get expanded synonyms for. " +
                         s"In REPL mode, hit ${rv(" Tab ")} to see auto-suggestion for possible model IDs. Note that " +
                         s"this is optional ONLY if there is only one connected probe and it has only one model deployed - which will be " +
                         s"used by default. In all other cases - this parameter is mandatory."
@@ -570,7 +605,7 @@ private [cmdline] object NCCliCommands {
                     names = Seq("--elmId", "-e"),
                     value = Some("element.id"),
                     desc =
-                        s"ID of the model element to get synonyms for. " +
+                        s"ID of the model element to get expanded synonyms and values for. " +
                         s"In REPL mode, hit ${rv(" Tab ")} to see auto-suggestion for possible element IDs."
                 )
             ),
@@ -689,7 +724,7 @@ private [cmdline] object NCCliCommands {
             synopsis = s"Starts local server.",
             desc = Some(
                 s"Server is started in the external JVM process with both stdout and stderr piped out into log file. " +
-                s"Command will block until the server is started unless ${c("'--noWait'")} parameter is used or timeout is expired."
+                s"Command will block until the server is started unless ${y("'--noWait'")} parameter is used or timeout is expired."
             ),
             body = NCCli.cmdStartServer,
             params = Seq(
@@ -762,7 +797,7 @@ private [cmdline] object NCCliCommands {
             synopsis = s"Starts local probe.",
             desc = Some(
                 s"Probe is started in the external JVM process with both stdout and stderr piped out into log file. " +
-                s"Command will block until the probe is started unless ${c("'--noWait'")} parameter is used or timeout is expired."
+                s"Command will block until the probe is started unless ${y("'--noWait'")} parameter is used or timeout is expired."
             ),
             body = NCCli.cmdStartProbe,
             params = Seq(
@@ -776,7 +811,7 @@ private [cmdline] object NCCliCommands {
                         s"When starting a probe with your models you must " +
                         s"provide this additional classpath for the models and their dependencies this probe will be hosting. " +
                         s"Parameter should include one or more classpath entry (JAR or directory) separated by the OS specific classpath separator. " +
-                        s"Note that you can have multiple ${c("'--cp'")} parameters and their values will be " +
+                        s"Note that you can have multiple ${y("'--cp'")} parameters and their values will be " +
                         s"automatically combined into one final additional classpath. " +
                         s"Note also that you can use ${y("'~'")} at the beginning of the classpath component to specify user home directory."
                 ),
@@ -801,8 +836,8 @@ private [cmdline] object NCCliCommands {
                     desc =
                         s"Comma separated list of fully qualified class names for models to deploy. This will override " +
                         s"${y("'nlpcraft.probe.models'")} configuration property from either default configuration file " +
-                        s"or the one provided by ${c("'--cfg'")} parameter. Note that you also must provide the additional " +
-                        s"classpath in this case via ${c("'--cp'")} parameter. Note also that you can have multiple '${c("'--mdls'")} " +
+                        s"or the one provided by ${y("'--cfg'")} parameter. Note that you also must provide the additional " +
+                        s"classpath in this case via ${y("'--cp'")} parameter. Note also that you can have multiple '${y("'--mdls'")} " +
                         s"parameters - each specifying one or more model class names - and they will be automatically combined together."
                 ),
                 Parameter(
@@ -856,7 +891,7 @@ private [cmdline] object NCCliCommands {
             synopsis = s"Restarts local probe (REPL mode only).",
             desc = Some(
                 s"Restart local probe with same parameters as the last start. Works only in REPL mode and only if local " +
-                s"probe was previously started using ${c("'start-probe")} command. This command provides a " +
+                s"probe was previously started using ${y("'start-probe")} command. This command provides a " +
                 s"convenient way to quickly restart the probe to reload the model during model development and testing."
             ),
             body = NCCli.cmdRestartProbe,
@@ -890,7 +925,7 @@ private [cmdline] object NCCliCommands {
                         s"Additional JVM classpath that will be appended to the default NLPCraft JVM classpath. " +
                         s"When testing your models you must provide this additional classpath for the models and their dependencies. " +
                         s"Parameter should include one or more classpath entry (JAR or directory) separated by the OS specific classpath separator. " +
-                        s"Note that you can have multiple ${c("'--cp'")} parameters and their values will be " +
+                        s"Note that you can have multiple ${y("'--cp'")} parameters and their values will be " +
                         s"automatically combined into one final additional classpath. " +
                         s"Note also that you can use ${y("'~'")} at the beginning of the classpath component to specify user home directory."
                 ),
@@ -913,9 +948,9 @@ private [cmdline] object NCCliCommands {
                     optional = true,
                     desc =
                         s"Comma separated list of fully qualified class names for models to deploy and test. Note that you also " +
-                        s"must provide the additional classpath via ${c("'--cp'")} parameter. If not provided, the models " +
-                        s"specified in configuration file (${c("'--cfg'")} parameter) will be used instead. Note that " +
-                        s"you can have multiple ${c("'--mdls'")} parameters - each specifying one or more model class " +
+                        s"must provide the additional classpath via ${y("'--cp'")} parameter. If not provided, the models " +
+                        s"specified in configuration file (${y("'--cfg'")} parameter) will be used instead. Note that " +
+                        s"you can have multiple ${y("'--mdls'")} parameters - each specifying one or more model class " +
                         s"names - and they will be automatically combined together."
                 ),
                 Parameter(
@@ -1104,7 +1139,7 @@ private [cmdline] object NCCliCommands {
             group = "3. Miscellaneous",
             synopsis = s"Displays help for ${y(s"'$SCRIPT_NAME'")}.",
             desc = Some(
-                s"By default, without ${c("'--all'")} or ${c("'--cmd'")} parameters, displays the abbreviated form of manual " +
+                s"By default, without ${y("'--all'")} or ${y("'--cmd'")} parameters, displays the abbreviated form of manual " +
                 s"only listing the commands without parameters or examples."
             ),
             body = NCCli.cmdHelp,

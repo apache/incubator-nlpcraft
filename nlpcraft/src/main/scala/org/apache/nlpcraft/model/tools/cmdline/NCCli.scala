@@ -149,6 +149,7 @@ object NCCli extends NCCliBase {
     private final val ASK_CMD = CMDS.find(_.name == "ask").get
     private final val MODEL_SUGSYN_CMD = CMDS.find(_.name == "model-sugsyn").get
     private final val MODEL_SYNS_CMD = CMDS.find(_.name == "model-syns").get
+    private final val MODEL_INFO_CMD = CMDS.find(_.name == "model-info").get
 
     /**
      * @param cmd
@@ -1807,6 +1808,38 @@ object NCCli extends NCCliBase {
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
+    private [cmdline] def cmdModelInfo(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
+        state.accessToken match {
+            case Some(acsTok) =>
+                val mdlId = getParamOpt(args, "mdlId") match {
+                    case Some(id) => id
+                    case None =>
+                        if (state.probes.size == 1 && state.probes.head.models.length == 1)
+                            state.probes.head.models.head.id
+                        else
+                            throw MissingOptionalParameter(cmd, "mdlId")
+                }
+
+                httpRest(
+                    cmd,
+                    "model/info",
+                    s"""
+                       |{
+                       |    "acsTok": ${jsonQuote(acsTok)},
+                       |    "mdlId": ${jsonQuote(mdlId)}
+                       |}
+                       |""".stripMargin
+                )
+
+            case None => throw NotSignedIn()
+        }
+
+    /**
+     *
+     * @param cmd Command descriptor.
+     * @param args Arguments, if any, for this command.
+     * @param repl Whether or not executing from REPL.
+     */
     private [cmdline] def cmdAsk(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
         state.accessToken match {
             case Some(acsTok) =>
@@ -2565,8 +2598,9 @@ object NCCli extends NCCliBase {
                             )
                     }
 
-                    // For 'ask' and 'sugysn' - add additional model IDs auto-completion/suggestion candidates.
-                    if (cmd == ASK_CMD.name || cmd == MODEL_SUGSYN_CMD.name || cmd == MODEL_SYNS_CMD.name)
+                    // For 'ask', 'sugsyn', 'model-syn' and 'model-info' - add additional
+                    // model IDs auto-completion/suggestion candidates.
+                    if (cmd == ASK_CMD.name || cmd == MODEL_SUGSYN_CMD.name || cmd == MODEL_SYNS_CMD.name || cmd == MODEL_INFO_CMD.name)
                         candidates.addAll(
                             state.probes.flatMap(_.models.toList).map(mdl =>
                                 mkCandidate(

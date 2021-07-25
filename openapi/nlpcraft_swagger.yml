@@ -238,9 +238,9 @@ paths:
     post:
       tags:
         - Tools
-      summary: Gets model element synonyms and values.
+      summary: Gets model element expanded synonyms and values.
       description: >-
-        Gets model element synonyms and values.
+        Gets model element expanded synonyms and values.
         Administrative privileges required.
       operationId: syns
       parameters:
@@ -309,6 +309,55 @@ paths:
           description: Failed operation.
           schema:
             $ref: '#/definitions/Error'
+  /model/info:
+    post:
+      tags:
+        - Tools
+      summary: Gets model information.
+      description: >-
+        Gets model configuration properties and elements.
+        Administrative privileges required.
+      operationId: syns
+      parameters:
+        - in: body
+          name: Payload body
+          description: JSON request.
+          required: true
+          schema:
+            type: object
+            required:
+              - acsTok
+              - mdlId
+            properties:
+              acsTok:
+                type: string
+                description: Access token obtain via '/signin' call.
+                maxLength: 256
+              mdlId:
+                type: string
+                maxLength: 32
+                description: ID of the model to get information for.
+      responses:
+        '200':
+          description: Successful operation.
+          schema:
+            type: object
+            required:
+              - status
+              - model
+            properties:
+              status:
+                type: string
+                description: Status code of this operation.
+                enum:
+                  - API_OK
+              model:
+                type: object
+                description: Object representing model configuration properties and elements.
+        '400':
+          description: Failed operation.
+          schema:
+          $ref: '#/definitions/Error'
   /check:
     post:
       tags:

@@ -851,7 +851,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                 if (!NCProbeManager.existsForModelElement(compId, req.mdlId, req.elmId))
                     throw InvalidModelOrElementId(req.mdlId, req.elmId)
 
-                val fut = NCProbeManager.getElementInfo(req.mdlId, req.elmId, span)
+                val fut = NCProbeManager.getModelElementInfo(req.mdlId, req.elmId, span)
 
                 successWithJs(
                     fut.collect {
