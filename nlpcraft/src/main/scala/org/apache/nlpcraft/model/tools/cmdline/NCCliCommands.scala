@@ -95,6 +95,7 @@ private [cmdline] object NCCliCommands {
     private final lazy val SCRIPT_NAME = U.sysEnv("NLPCRAFT_CLI_SCRIPT").getOrElse(s"nlpcraft.${if (SystemUtils.IS_OS_UNIX) "sh" else "cmd"}")
     private final lazy val PROMPT = if (SCRIPT_NAME.endsWith("cmd")) ">" else "$"
     private final lazy val VER = NCVersion.getCurrent
+    private final lazy val REST_SPEC_URL = "https://nlpcraft.apache.org/using-rest.html"
 
     //noinspection DuplicatedCode
     // All supported commands.
@@ -158,6 +159,7 @@ private [cmdline] object NCCliCommands {
             group = "2. REST Commands",
             synopsis = s"Wrapper for ${y("'/signin'")} REST call.",
             desc = Some(
+                s"See ${REST_SPEC_URL} for REST call specification. " +
                 s"If no arguments provided, it signs in with the " +
                 s"default 'admin@admin.com' user account. NOTE: please make sure to remove this account when " +
                 s"running in production."
@@ -195,6 +197,7 @@ private [cmdline] object NCCliCommands {
             group = "2. REST Commands",
             synopsis = s"Wrapper for ${y("'/signout'")} REST call in REPL mode.",
             desc = Some(
+                s"See ${REST_SPEC_URL} for REST call specification. " +
                 s"Signs out currently signed in user. Note that this command makes sense only in REPL mode."
             ),
             body = NCCli.cmdSignOut,
@@ -274,6 +277,7 @@ private [cmdline] object NCCliCommands {
             group = "2. REST Commands",
             synopsis = s"Wrapper for ${y("'/ask/sync'")} REST call.",
             desc = Some(
+                s"See ${REST_SPEC_URL} for REST call specification. " +
                 s"Requires user to be already signed in. This command ${bo("only makes sense in the REPL mode")} as " +
                 s"it requires user to be signed in. REPL session keeps the currently active access " +
                 s"token after user signed in. For command line mode, use ${y("'rest'")} command with " +
@@ -546,6 +550,7 @@ private [cmdline] object NCCliCommands {
             group = "2. REST Commands",
             synopsis = s"Wrapper for ${y("'/model/info'")} REST call.",
             desc = Some(
+                s"See ${REST_SPEC_URL} for REST call specification. " +
                 s"Requires user to be already signed in. This command ${bo("only makes sense in the REPL mode")} as " +
                 s"it requires user to be signed in. REPL session keeps the currently active access " +
                 s"token after user signed in. For command line mode, use ${y("'rest'")} command with " +
@@ -581,6 +586,7 @@ private [cmdline] object NCCliCommands {
             group = "2. REST Commands",
             synopsis = s"Wrapper for ${y("'/model/syns'")} REST call.",
             desc = Some(
+                s"See ${REST_SPEC_URL} for REST call specification. " +
                 s"Requires user to be already signed in. This command ${bo("only makes sense in the REPL mode")} as " +
                 s"it requires user to be signed in. REPL session keeps the currently active access " +
                 s"token after user signed in. For command line mode, use ${y("'rest'")} command with " +
@@ -624,6 +630,7 @@ private [cmdline] object NCCliCommands {
             group = "2. REST Commands",
             synopsis = s"Wrapper for ${y("'/model/sugsyn'")} REST call.",
             desc = Some(
+                s"See ${REST_SPEC_URL} for REST call specification. " +
                 s"Requires user to be already signed in. This command ${bo("only makes sense in the REPL mode")} as " +
                 s"it requires user to be signed in. REPL session keeps the currently active access " +
                 s"token after user signed in. For command line mode, use ${y("'rest'")} command with " +

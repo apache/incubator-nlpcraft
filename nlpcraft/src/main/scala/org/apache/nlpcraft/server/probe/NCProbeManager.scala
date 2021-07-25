@@ -1122,22 +1122,22 @@ object NCProbeManager extends NCService {
                         res.containsKey("macros")
                     )
 
-                    val macros = res.remove("macros").asInstanceOf[java.util.Map[String, String]]
-                    val syns = res.get("synonyms").asInstanceOf[java.util.List[String]]
-                    val vals = res.get("values").asInstanceOf[java.util.Map[String, java.util.List[String]]]
+                    val macros = res.remove("macros").asInstanceOf[java.util.Map[String, String]].asScala
+                    val syns = res.get("synonyms").asInstanceOf[java.util.List[String]].asScala
+                    val vals = res.get("values").asInstanceOf[java.util.Map[String, java.util.List[String]]].asScala
 
-                    val parser = new NCMacroParser
+                    val parser = NCMacroParser(macros.toList)
 
-                    macros.asScala.foreach(t => parser.addMacro(t._1, t._2))
+                    val synsExp = syns.flatMap(s => parser.expand(s)).sorted
+                    val valsExp = vals.map(v => v._1 -> v._2.asScala.flatMap(s => parser.expand(s)).sorted.asJava).toMap
 
-                    val synsExp: java.util.List[String] =
-                        syns.asScala.flatMap(s => parser.expand(s)).sorted.asJava
+                    res.put("synonymsExp", synsExp.asJava)
+                    res.put("valuesExp", valsExp.asJava)
 
-                    val valsExp: java.util.Map[String, java.util.List[String]] =
-                        vals.asScala.map(v => v._1 -> v._2.asScala.flatMap(s => parser.expand(s)).sorted.asJava).toMap.asJava
-
-                    res.put("synonymsExp", synsExp)
-                    res.put("valuesExp", valsExp)
+                    // Add statistics.
+                    res.put("synonymsExpCnt", Integer.valueOf(synsExp.size))
+                    res.put("synonymsCnt", Integer.valueOf(syns.size))
+                    res.put("synonymsExpRatePct", java.lang.Long.valueOf(Math.round(synsExp.size.toDouble * 100 / syns.size.toDouble)))
 
                     res
                 }

@@ -1558,6 +1558,7 @@ object NCCli extends NCCliBase {
      */
     private [cmdline] def cmdInfo(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         cmdInfoServer(CMDS.find(_.name == "info-server").get, Seq.empty[Argument], repl)
+        logln()
         cmdInfoProbe(CMDS.find(_.name == "info-probe").get, Seq.empty[Argument], repl)
     }
 
