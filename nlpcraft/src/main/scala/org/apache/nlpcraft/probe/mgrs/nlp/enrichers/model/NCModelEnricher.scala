@@ -250,14 +250,14 @@ object NCModelEnricher extends NCProbeEnricher {
 
                 if (res != null)
                     res.asScala.foreach(e => {
-                        val elemId = e.getElementId
+                        val elmId = e.getElementId
                         val words = e.getWords
 
-                        if (elemId == null)
+                        if (elmId == null)
                             throw new NCE(s"Custom model parser cannot return 'null' element ID.")
 
                         if (words == null || words.isEmpty)
-                            throw new NCE(s"Custom model parser cannot return empty custom tokens [elementId=$elemId]")
+                            throw new NCE(s"Custom model parser cannot return empty custom tokens for element: $elmId")
 
                         val matchedToks = words.asScala.map(w =>
                             ns.find(t =>
@@ -266,10 +266,10 @@ object NCModelEnricher extends NCProbeEnricher {
                         )
 
                         // Checks element's tokens.
-                        if (!alreadyMarked(ns, elemId, matchedToks, matchedToks.map(_.index).sorted))
+                        if (!alreadyMarked(ns, elmId, matchedToks, matchedToks.map(_.index).sorted))
                             mark(
                                 ns,
-                                elem = mdl.elements.getOrElse(elemId, throw new NCE(s"Custom model parser returned unknown element ID: $elemId")),
+                                elem = mdl.elements.getOrElse(elmId, throw new NCE(s"Custom model parser returned unknown element: $elmId")),
                                 toks = matchedToks,
                                 direct = true,
                                 metaOpt = Some(e.getMetadata.asScala.toMap)
@@ -577,16 +577,16 @@ object NCModelEnricher extends NCProbeEnricher {
     // TODO: simplify, add tests, check model properties (sparse etc) for optimization.
     /**
       *
-      * @param elemId
+      * @param elmId
       * @param toks
       * @param sliceToksIdxsSorted
       */
-    private def alreadyMarked(ns: Sentence, elemId: String, toks: Seq[NlpToken], sliceToksIdxsSorted: Seq[Int]): Boolean = {
+    private def alreadyMarked(ns: Sentence, elmId: String, toks: Seq[NlpToken], sliceToksIdxsSorted: Seq[Int]): Boolean = {
         lazy val toksIdxsSorted = toks.map(_.index).sorted
 
-        sliceToksIdxsSorted.map(ns).forall(_.exists(n => n.noteType == elemId && n.sparsity == 0)) ||
+        sliceToksIdxsSorted.map(ns).forall(_.exists(n => n.noteType == elmId && n.sparsity == 0)) ||
         toks.exists(_.exists(n =>
-            n.noteType == elemId &&
+            n.noteType == elmId &&
             (
                 (n.sparsity == 0 &&
                     (sliceToksIdxsSorted.containsSlice(n.tokenIndexes) || n.tokenIndexes.containsSlice(toksIdxsSorted))

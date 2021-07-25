@@ -121,10 +121,11 @@ class NCCliBase extends App {
 
     // See NCProbeModelMdo.
     case class ProbeModel(
-         id: String,
-         name: String,
-         version: String,
-         enabledBuiltInTokens: Array[String]
+        id: String,
+        name: String,
+        version: String,
+        elementIds: Array[String],
+        enabledBuiltInTokens: Array[String]
     )
 
     case class ProbeAllResponse(

@@ -234,14 +234,138 @@ paths:
           description: Failed operation.
           schema:
             $ref: '#/definitions/Error'
+  /model/syns:
+    post:
+      tags:
+        - Tools
+      summary: Gets model element expanded synonyms and values.
+      description: >-
+        Gets model element expanded synonyms and values.
+        Administrative privileges required.
+      operationId: syns
+      parameters:
+        - in: body
+          name: Payload body
+          description: JSON request.
+          required: true
+          schema:
+            type: object
+            required:
+              - acsTok
+              - mdlId
+              - elmId
+            properties:
+              acsTok:
+                type: string
+                description: Access token obtain via '/signin' call.
+                maxLength: 256
+              mdlId:
+                type: string
+                maxLength: 32
+                description: ID of the model to run get elements synonyms and values.
+              elmId:
+                type: string
+                maxLength: 64
+                description: ID of the model element to get its synonyms and values.
+      responses:
+        '200':
+          description: Successful operation.
+          schema:
+            type: object
+            required:
+              - status
+              - synonyms
+              - values
+              - synonymsExp
+              - valuesExp
+            properties:
+              status:
+                type: string
+                description: Status code of this operation.
+                enum:
+                  - API_OK
+              synonyms:
+                type: object
+                description: List of individual synomyms as they are specified in the model.
+              synonymsExp:
+                type: object
+                description: List of expanded synomyms as the model uses them (before stemmatization).
+              values:
+                type: object
+                description: >-
+                  Map of element values, if any, as they are specified in the model.
+                  Map key is the value name.
+                  Map value is a list of synonyms for that value.
+                  Empty if element doesn't have values.
+              valuesExp:
+                type: object
+                description: >-
+                  Map of element values, if any, as the model uses them (before stemmatization).
+                  Map key is the value name.
+                  Map value is a list of expanded
+                  synonyms for that value.
+                  Empty if element doesn't have values.
+        '400':
+          description: Failed operation.
+          schema:
+            $ref: '#/definitions/Error'
+  /model/info:
+    post:
+      tags:
+        - Tools
+      summary: Gets model information.
+      description: >-
+        Gets model configuration properties and elements.
+        Administrative privileges required.
+      operationId: syns
+      parameters:
+        - in: body
+          name: Payload body
+          description: JSON request.
+          required: true
+          schema:
+            type: object
+            required:
+              - acsTok
+              - mdlId
+            properties:
+              acsTok:
+                type: string
+                description: Access token obtain via '/signin' call.
+                maxLength: 256
+              mdlId:
+                type: string
+                maxLength: 32
+                description: ID of the model to get information for.
+      responses:
+        '200':
+          description: Successful operation.
+          schema:
+            type: object
+            required:
+              - status
+              - model
+            properties:
+              status:
+                type: string
+                description: Status code of this operation.
+                enum:
+                  - API_OK
+              model:
+                type: object
+                description: Object representing model configuration properties and elements.
+        '400':
+          description: Failed operation.
+          schema:
+          $ref: '#/definitions/Error'
   /check:
     post:
       tags:
         - Asking
       summary: Gets status and result of submitted requests.
       description: >-
-          Gets the status and result (OK or failure) of the previously submitted requests.
-          Request statuses returned sorted by their registration time, starting from newest.
+        Gets the status and result (OK or failure) of the previously submitted requests.
+        Request statuses returned sorted by their registration time, starting from newest.
       operationId: check
       parameters:
         - in: body

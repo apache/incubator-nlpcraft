@@ -17,9 +17,7 @@
 
 package org.apache.nlpcraft.server.opencensus
 
-import java.util.Collections
 import io.opencensus.stats.Measure._
-import io.opencensus.stats.View.Name
 import io.opencensus.stats._
 import org.apache.nlpcraft.common.opencensus.NCOpenCensusStats
 
@@ -30,7 +28,8 @@ trait NCOpenCensusServerStats extends NCOpenCensusStats {
     val M_HEALTH_MS: MeasureLong = MeasureLong.create("health_latency", "The latency of '/health' REST call", "ms")
     val M_ASK_LATENCY_MS: MeasureLong = MeasureLong.create("ask_latency", "The latency of '/ask' REST call", "ms")
     val M_CHECK_LATENCY_MS: MeasureLong = MeasureLong.create("check_latency", "The latency of '/check' REST call", "ms")
-    val M_MODEL_SUGSYN_LATENCY_MS: MeasureLong = MeasureLong.create("model_inspect_latency", "The latency of '/model/inspect' REST call", "ms")
+    val M_MODEL_SUGSYN_LATENCY_MS: MeasureLong = MeasureLong.create("model_inspect_latency", "The latency of '/model/sugsyn' REST call", "ms")
+    val M_MODEL_SYNS_LATENCY_MS: MeasureLong = MeasureLong.create("model_synonyms_latency", "The latency of '/model/syns' REST call", "ms")
     val M_CANCEL_LATENCY_MS: MeasureLong = MeasureLong.create("cancel_latency", "The latency of '/cancel' REST call", "ms")
     val M_SIGNIN_LATENCY_MS: MeasureLong = MeasureLong.create("signin_latency", "The latency of '/signin' REST call", "ms")
     val M_SIGNOUT_LATENCY_MS: MeasureLong = MeasureLong.create("signout_latency", "The latency of '/signout' REST call", "ms")
@@ -77,6 +76,7 @@ trait NCOpenCensusServerStats extends NCOpenCensusStats {
             mkViews(M_COMPANY_TOKEN_LATENCY_MS, "company/token"),
             mkViews(M_COMPANY_DELETE_LATENCY_MS, "company/delete"),
             mkViews(M_MODEL_SUGSYN_LATENCY_MS, "model/sugsyn"),
+            mkViews(M_MODEL_SYNS_LATENCY_MS, "model/syns"),
             mkViews(M_USER_ADD_LATENCY_MS, "user/add"),
             mkViews(M_USER_GET_LATENCY_MS, "user/get"),
             mkViews(M_USER_DELETE_LATENCY_MS, "user/delete"),
@@ -87,7 +87,6 @@ trait NCOpenCensusServerStats extends NCOpenCensusStats {
             mkViews(M_FEEDBACK_ADD_LATENCY_MS, "feedback/add"),
             mkViews(M_FEEDBACK_DELETE_LATENCY_MS, "feedback/delete"),
             mkViews(M_FEEDBACK_GET_LATENCY_MS, "feedback/get"),
-            mkViews(M_MODEL_SUGSYN_LATENCY_MS, "model/sugsyn"),
             mkViews(M_PROBE_ALL_LATENCY_MS, "probe/all"),
             mkViews(M_ROUND_TRIP_LATENCY_MS, "roundTrip/latdist"),
         ).flatten
