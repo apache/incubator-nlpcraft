@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.model.intent.idl
+package org.apache.nlpcraft.model.intent.idl.options
 
 import org.apache.nlpcraft.model.`abstract`.NCAbstractTokensModel
 import org.apache.nlpcraft.model.meta.NCMetaSpecAdapter
@@ -25,13 +25,12 @@ import org.junit.jupiter.api.Test
 
 import java.util
 
-class NCIdlIntentOptionsModel extends NCAbstractTokensModel {
+class NCOrderedModel extends NCAbstractTokensModel {
     override def getElements: util.Set[NCElement] = Set(
-        NCTestElement("i1_a"),
-        NCTestElement("i1_b"),
-
-        NCTestElement("i2_a"),
-        NCTestElement("i2_b")
+        NCTestElement("a"),
+        NCTestElement("b"),
+        NCTestElement("c"),
+        NCTestElement("d")
     )
 
     @NCIntent(
@@ -43,8 +42,8 @@ class NCIdlIntentOptionsModel extends NCAbstractTokensModel {
         "        'unused_usr_toks': false, " +
         "        'allow_stm_only': false" +
         "    }" +
-        "    term(a)={tok_id() == 'i1_a'}" +
-        "    term(b)={tok_id() == 'i1_b'}"
+        "    term(a)={tok_id() == 'a'}" +
+        "    term(b)={tok_id() == 'b'}"
     )
     def i1(): NCResult = NCResult.text("i1")
 
@@ -57,20 +56,20 @@ class NCIdlIntentOptionsModel extends NCAbstractTokensModel {
         "        'unused_usr_toks': false, " +
         "        'allow_stm_only': false" +
         "    }" +
-        "    term(a)={tok_id() == 'i2_a'}" +
-        "    term(b)={tok_id() == 'i2_b'}"
+        "    term(a)={tok_id() == 'c'}" +
+        "    term(b)={tok_id() == 'd'}"
     )
     def i2(): NCResult = NCResult.text("i2")
 }
 
-@NCTestEnvironment(model = classOf[NCIdlIntentOptionsModel], startClient = true)
-class NCIdlIntentOptionsSpec extends NCMetaSpecAdapter {
+@NCTestEnvironment(model = classOf[NCOrderedModel], startClient = true)
+class NCOrderedSpec extends NCMetaSpecAdapter {
     @Test
     def test(): Unit = {
-        checkResult("i1_a i1_b", "i1")
-        checkFail("i1_b i1_a")
+        checkResult("a b", "i1")
+        checkFail("b a")
 
-        checkResult("i2_a i2_b", "i2")
-        checkResult("i2_b i2_a", "i2")
+        checkResult("c d", "i2")
+        checkResult("d c", "i2")
     }
 }
