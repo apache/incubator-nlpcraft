@@ -34,6 +34,7 @@ import java.util
 import java.util.concurrent.CountDownLatch
 import java.util.{Properties, TimeZone}
 import scala.collection.mutable
+import scala.jdk.CollectionConverters.{SetHasAsJava, SetHasAsScala}
 
 /**
   * Probe down/up link connection manager.
@@ -221,7 +222,8 @@ object NCConnectionManager extends NCService {
                                 mdl.getId,
                                 mdl.getName,
                                 mdl.getVersion,
-                                new util.HashSet[String](mdl.getEnabledBuiltInTokens)
+                                new util.HashSet[String](mdl.getEnabledBuiltInTokens),
+                                new util.HashSet[String](mdl.getElements.asScala.map(_.getId).asJava)
                             )
                         })
                 ), cryptoKey)
