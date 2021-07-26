@@ -75,14 +75,11 @@ class NCStmIndexesTestModel extends NCModelAdapter("nlpcraft.stm.idxs.test", "ST
         println(s"variant userDefinedTokens: ${ctx.getVariant.getUserDefinedTokens.asScala.map(toStr).mkString("|")}")
         println(s"variant conversation: ${ctx.getContext.getConversation.getTokens.asScala.map(toStr).mkString("|")}")
 
-        val bynotes = sort.meta[JList[String]]("nlpcraft:sort:bynotes")
-        val byindexes = sort.meta[JList[Int]]("nlpcraft:sort:byindexes")
-
         NCResult.json(
             mapper.writeValueAsString(
                 NCStmIndexesTestModelData(
-                    bynotes = bynotes.asScala.toSeq,
-                    byindexes = byindexes.asScala.toSeq
+                    bynotes = sort.meta[JList[String]]("nlpcraft:sort:bynotes").asScala.toSeq,
+                    byindexes = sort.meta[JList[Int]]("nlpcraft:sort:byindexes").asScala.toSeq
                 )
             )
         )
@@ -103,7 +100,7 @@ class NCStmIndexesTestModelSpec extends NCTestContext {
         checkResult(
             "b b",
             extract,
-            NCStmIndexesTestModelData(bynotes = Seq("A"), byindexes = Seq(3))
+            NCStmIndexesTestModelData(bynotes = Seq("B"), byindexes = Seq(0))
         )
     }
 }

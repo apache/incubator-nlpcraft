@@ -357,12 +357,12 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
 
             sorted.map(m =>
                 NCIntentSolverResult(
-                    m.intentMatch.intent.id,
-                    m.callback,
-                    m.intentMatch.tokenGroups.map(grp => NCIntentTokensGroup(grp.term.id, grp.usedTokens.map(_.token))),
-                    m.intentMatch.exactMatch,
-                    m.variant,
-                    m.variantIdx
+                    intentId = m.intentMatch.intent.id,
+                    fn = m.callback,
+                    groups = m.intentMatch.tokenGroups.map(grp => NCIntentTokensGroup(grp.term.id, grp.usedTokens.map(_.token))),
+                    isExactMatch = m.intentMatch.exactMatch,
+                    variant = m.variant,
+                    variantIdx = m.variantIdx
                 )
             ).toList
         }
@@ -501,10 +501,10 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                 )
 
                 solveTerm(
-                    term,
-                    termCtx,
-                    senToks,
-                    if (term.conv) convToks else Seq.empty
+                    term = term,
+                    ctx = termCtx,
+                    senToks = senToks,
+                    convToks = if (term.conv) convToks else Seq.empty
                 ) match {
                     case Some(termMatch) =>
                         if (ordered && lastTermMatch != null && lastTermMatch.maxIndex > termMatch.maxIndex)
@@ -702,16 +702,13 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
 
             // Sum of conversation depths for each token from the conversation.
             // Negated to make sure that bigger (smaller negative number) is better.
-            val convDepthsSum = -usedToks.filter(t => convSrvReqIds.contains(t.token.getServerRequestId)).zipWithIndex.map(_._2 + 1).sum
+            val convDepthsSum =
+                -usedToks.filter(t => convSrvReqIds.contains(t.token.getServerRequestId)).zipWithIndex.map(_._2 + 1).sum
             
             // Mark found tokens as used.
             usedToks.foreach(_.used = true)
 
-            Some(usedToks -> new Weight(
-                senTokNum,
-                convDepthsSum,
-                tokUses
-            ))
+            Some(usedToks -> new Weight(senTokNum, convDepthsSum, tokUses))
         }
     }
 }

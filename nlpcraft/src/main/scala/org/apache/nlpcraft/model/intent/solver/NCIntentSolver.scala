@@ -27,10 +27,10 @@ import org.apache.nlpcraft.model.impl.{NCMetadataAdapter, NCVariantImpl}
 import org.apache.nlpcraft.model.intent.NCIdlIntent
 import org.apache.nlpcraft.model.{NCContext, NCIntentMatch, NCIntentSkip, NCModel, NCRejection, NCResult, NCToken, NCVariant}
 import org.apache.nlpcraft.probe.mgrs.dialogflow.NCDialogFlowManager
+import org.apache.nlpcraft.probe.mgrs.sentence.NCSentenceManager
 
 import java.util.{List => JList}
-
-import scala.jdk.CollectionConverters.SeqHasAsJava
+import scala.jdk.CollectionConverters.{ListHasAsScala, SeqHasAsJava}
 
 /**
  * Front-end for intent solver.
@@ -95,10 +95,24 @@ class NCIntentSolver(intents: List[(NCIdlIntent/*Intent*/, NCIntentMatch => NCRe
         for (res <- results if res != null) {
             try {
                 i += 1
-                
+
+                val allConvToks = ctx.getConversation.getTokens.asScala
+                val nonConvToks = res.groups.flatMap(_.tokens).filterNot(allConvToks.contains)
+
+                val intentToks =
+                    res.groups.map(_.tokens).map(toks => {
+                        toks.filter(allConvToks.contains).foreach(convTok =>
+                            NCSentenceManager.fixMeta(convTok, nonConvToks, allConvToks)
+                        )
+
+                        toks
+                    })
+
+                ctx.getConversation.getTokens
+
                 val intentMatch: NCIntentMatch = new NCMetadataAdapter with NCIntentMatch {
                     override val getContext: NCContext = ctx
-                    override val getIntentTokens: JList[JList[NCToken]] = res.groups.map(_.tokens.asJava).asJava
+                    override val getIntentTokens: JList[JList[NCToken]] = intentToks.map(_.asJava).asJava
                     override val getVariant: NCVariant = new NCVariantImpl(res.variant.tokens)
                     override val isAmbiguous: Boolean = !res.isExactMatch
                     override val getIntentId: String = res.intentId
