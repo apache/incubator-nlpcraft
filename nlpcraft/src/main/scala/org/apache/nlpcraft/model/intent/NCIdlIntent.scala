@@ -27,7 +27,7 @@ import java.util.regex.Pattern
  * @param origin File path, file name, method name or URL.
  * @param idl Original IDL of this intent.
  * @param id
- * @param ordered
+ * @param options
  * @param meta
  * @param flow
  * @param terms
@@ -36,7 +36,7 @@ case class NCIdlIntent(
     origin: String,
     idl: String,
     id: String,
-    ordered: Boolean,
+    options: NCIdlIntentOptions,
     meta: ScalaMeta,
     flow: Option[String],
     flowClsName: Option[String],
@@ -46,15 +46,16 @@ case class NCIdlIntent(
     require(id != null)
     require(terms.nonEmpty)
     require(meta != null)
+    require(options != null)
 
     // Flow regex as a compiled pattern.
     // Regex validity check is already done during intent compilation.
-    lazy val flowRegex = flow match {
+    lazy val flowRegex: Option[Pattern] = flow match {
         case Some(r) => Some(Pattern.compile(r))
         case None => None
     }
 
-    lazy val isFlowDefined = flow.isDefined || flowMtdName.isDefined
+    lazy val isFlowDefined: Boolean = flow.isDefined || flowMtdName.isDefined
 
     override def toString: String = idl
 }

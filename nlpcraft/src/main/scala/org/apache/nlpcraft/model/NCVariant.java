@@ -33,7 +33,7 @@ public interface NCVariant extends List<NCToken>, NCMetadata {
     /**
      * Utility method that returns all non-freeword tokens. It's equivalent to:
      * <pre class="brush: java">
-     *     return stream().filter(tok -&gt; !tok.isFreeWord() && !tok.isStopWord()).collect(Collectors.toList());
+     *     return stream().filter(tok -&gt; !tok.isFreeWord() &amp;&amp; !tok.isStopWord()).collect(Collectors.toList());
      * </pre>
      *
      * @return All non-freeword tokens.
@@ -63,7 +63,7 @@ public interface NCVariant extends List<NCToken>, NCMetadata {
      * </pre>
      *
      * @return All abstract tokens.
-     * @see NCToken#isAbstract() ()
+     * @see NCToken#isAbstract()
      */
     default List<NCToken> getAbstractTokens() {
         return stream().filter(NCToken::isAbstract).collect(Collectors.toList());
@@ -76,7 +76,7 @@ public interface NCVariant extends List<NCToken>, NCMetadata {
      * </pre>
      *
      * @return All stop word tokens.
-     * @see NCToken#isAbstract() ()
+     * @see NCToken#isAbstract()
      */
     default List<NCToken> getStopWordTokens() {
         return stream().filter(NCToken::isStopWord).collect(Collectors.toList());
@@ -89,7 +89,7 @@ public interface NCVariant extends List<NCToken>, NCMetadata {
      * </pre>
      *
      * @return All user-defined tokens.
-     * @see NCToken#isUserDefined() ()
+     * @see NCToken#isUserDefined()
      */
     default List<NCToken> getUserDefinedTokens() {
         return stream().filter(NCToken::isUserDefined).collect(Collectors.toList());

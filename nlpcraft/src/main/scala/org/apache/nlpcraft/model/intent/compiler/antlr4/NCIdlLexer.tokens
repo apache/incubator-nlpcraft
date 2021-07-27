@@ -1,7 +1,7 @@
 FUN_NAME=1
 IMPORT=2
 INTENT=3
-ORDERED=4
+OPTIONS=4
 FLOW=5
 META=6
 TERM=7
@@ -52,7 +52,7 @@ WS=51
 ErrorChar=52
 'import'=2
 'intent'=3
-'ordered'=4
+'options'=4
 'flow'=5
 'meta'=6
 'term'=7

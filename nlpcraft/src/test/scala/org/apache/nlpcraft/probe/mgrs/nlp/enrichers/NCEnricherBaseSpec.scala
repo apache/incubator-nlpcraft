@@ -52,7 +52,7 @@ abstract class NCEnricherBaseSpec extends NCTestContext {
         val res = cli.ask(txt)
 
         if (res.isFailed)
-            fail(s"Result failed [" +
+            checkFail(s"Result failed [" +
                 s"text=$txt, " +
                 s"error=${res.getResultError.get()}" +
             s"]")
@@ -84,7 +84,7 @@ abstract class NCEnricherBaseSpec extends NCTestContext {
         val res = cli.ask(txt)
 
         if (res.isFailed)
-            fail(s"Result failed [" +
+            checkFail(s"Result failed [" +
                 s"text=$txt, " +
                 s"error=${res.getResultError.get()}" +
             s"]")

@@ -19,6 +19,7 @@ package org.apache.nlpcraft.common
 
 import com.typesafe.scalalogging.LazyLogging
 import io.opencensus.trace.Span
+import org.apache.commons.lang3.StringUtils
 import org.apache.nlpcraft.common.opencensus.NCOpenCensusTrace
 import org.apache.nlpcraft.common.ansi.NCAnsi._
 
@@ -104,6 +105,14 @@ abstract class NCService extends LazyLogging with NCOpenCensusTrace {
     }
 
     /**
+     *
+     * @param ms
+     * @return
+     */
+    private def padDur(ms: Long): String =
+        StringUtils.rightPad(s"${U.now() - ms}ms", 6)
+
+    /**
      * Acks started service. Should be called at the end of the `start()` method.
      */
     protected def ackStarted(): NCService = {
@@ -119,9 +128,9 @@ abstract class NCService extends LazyLogging with NCOpenCensusTrace {
             "state" -> "started"
         )
 
-        val dur = s"$ansiGreenFg[${U.now() - timeStampMs}ms]$ansiReset"
+        val durBrkt = s"$ansiReversed$ansiGreenFg$ansiBold[${padDur(timeStampMs)}]$ansiReset"
 
-        logger.info(s"$name started $dur")
+        logger.info(s"$durBrkt $name started.")
 
         timeStampMs = -1L
 
@@ -142,7 +151,9 @@ abstract class NCService extends LazyLogging with NCOpenCensusTrace {
             "state" -> "stopped"
         )
 
-        logger.info(s"$name stopped.")
+        val durBrkt = s"$ansiReversed$ansiBlueFg$ansiBold[${padDur(timeStampMs)}]$ansiReset"
+
+        logger.info(s"$durBrkt $name stopped.")
 
         timeStampMs = -1L
     }

@@ -17,7 +17,6 @@
 
 package org.apache.nlpcraft.probe.mgrs.conn
 
-import scala.compat.java8.OptionConverters._
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.config.NCConfigurable
@@ -31,11 +30,10 @@ import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 
 import java.io.{EOFException, IOException, InterruptedIOException}
 import java.net.{InetAddress, NetworkInterface}
-import java.{lang, util}
+import java.util
 import java.util.concurrent.CountDownLatch
-import java.util.{Collections, Properties, TimeZone}
+import java.util.{Properties, TimeZone}
 import scala.collection.mutable
-import scala.jdk.CollectionConverters.{ListHasAsScala, MapHasAsJava, SeqHasAsJava, SetHasAsJava, SetHasAsScala}
 
 /**
   * Probe down/up link connection manager.
@@ -269,6 +267,7 @@ object NCConnectionManager extends NCService {
                                 mdl.getName,
                                 mdl.getVersion,
                                 new util.HashSet[String](mdl.getEnabledBuiltInTokens),
+                                new util.HashSet[String](mdl.getElements.asScala.map(_.getId).asJava),
                                 singleValues,
                                 corpus,
                                 categoriesElements

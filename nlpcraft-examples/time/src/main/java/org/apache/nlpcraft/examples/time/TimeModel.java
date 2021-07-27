@@ -138,8 +138,6 @@ public class TimeModel extends NCModelFileAdapter {
         // Check for exactly one 'x:time' token **without** looking into the conversation.
         // That's an indication of asking for local time only.
 
-        if (ctx.isAmbiguous()) throw new NCRejection("Not exact match.");
-
         Optional<GeoDataBean> geoOpt = geoMrg.get(ctx.getContext().getRequest());
 
         // Get local GEO data from sentence metadata defaulting to

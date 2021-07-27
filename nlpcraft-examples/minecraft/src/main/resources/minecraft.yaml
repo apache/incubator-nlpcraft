@@ -143,6 +143,8 @@ abstractTokens:
 #
 # Allows for multi-word synonyms in this entire model
 # to be sparse and permutate them for better detection.
+# These two properties generally enable a free-form
+# natural language comprehension.
 #
 permutateSynonyms: true
 sparse: true

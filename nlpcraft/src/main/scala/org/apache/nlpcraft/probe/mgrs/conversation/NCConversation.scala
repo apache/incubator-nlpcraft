@@ -88,7 +88,7 @@ case class NCConversation(
             if (now - lastUpdateTstamp > timeoutMs) {
                 stm.clear()
 
-                logger.trace(s"Conversation is reset by timeout [" +
+                logger.trace(s"STM is reset by timeout [" +
                     s"usrId=$usrId, " +
                     s"mdlId=$mdlId" +
                 s"]")
@@ -96,7 +96,7 @@ case class NCConversation(
             else if (depth > maxDepth) {
                 stm.clear()
 
-                logger.trace(s"Conversation is reset after reaching max depth [" +
+                logger.trace(s"STM is reset after reaching max depth [" +
                     s"usrId=$usrId, " +
                     s"mdlId=$mdlId" +
                 s"]")
@@ -114,13 +114,13 @@ case class NCConversation(
                         item.holders --= delHs
 
                         logger.trace(
-                            s"Conversation overridden tokens removed [" +
+                            s"STM tokens removed [" +
                                 s"usrId=$usrId, " +
                                 s"mdlId=$mdlId, " +
-                                s"srvReqId=${item.srvReqId}, " +
-                                s"toks=${delHs.map(_.token).mkString("[", ", ", "]")}" +
-                            s"]"
+                                s"srvReqId=${m(item.srvReqId)}]:"
                         )
+
+                        stepLogTokens(delHs.map(_.token))
                     }
                 }
 
@@ -152,7 +152,7 @@ case class NCConversation(
                 ctx = ctx.asScala.filter(tok => !p.test(tok)).asJava
             }
 
-            logger.trace(s"Conversation is cleared [" +
+            logger.trace(s"STM is cleared [" +
                 s"usrId=$usrId, " +
                 s"mdlId=$mdlId" +
             s"]")
@@ -167,6 +167,14 @@ case class NCConversation(
         clearTokens(new Predicate[NCToken] {
             override def test(t: NCToken): Boolean = p(t)
         })
+
+    /**
+     *
+     * @param toks
+     */
+    private def stepLogTokens(toks: Seq[NCToken]): Unit =
+        for (tok <- toks)
+            logger.trace(s"  ${c("+--")} $tok")
 
     /**
       * Adds given tokens to the conversation.
@@ -201,13 +209,13 @@ case class NCConversation(
                     )
     
                     logger.trace(
-                        s"Added new tokens to the conversation [" +
+                        s"Added new tokens to STM [" +
                             s"usrId=$usrId, " +
                             s"mdlId=$mdlId, " +
-                            s"srvReqId=$srvReqId, " +
-                            s"toks=${toks.mkString("[", ", ", "]")}" +
-                        s"]"
+                            s"srvReqId=${m(srvReqId)}]:"
                     )
+
+                    stepLogTokens(toks)
     
                     val registered = mutable.HashSet.empty[Seq[String]]
     
@@ -227,15 +235,9 @@ case class NCConversation(
                             case Some(_) =>
                                 item.holders --= hs
     
-                                logger.trace(
-                                    "Conversation tokens are overridden [" +
-                                        s"usrId=$usrId, " +
-                                        s"mdlId=$mdlId, " +
-                                        s"srvReqId=$srvReqId, " +
-                                        s"groups=${grps.mkString(", ")}, " +
-                                        s"toks=${hs.map(_.token).mkString("[", ", ", "]")}" +
-                                    s"]"
-                                )
+                                for (tok <- hs.map(_.token))
+                                    logger.trace(s"STM token overridden: $tok")
+
                             case None => registered += grps
                         }
                     }
@@ -255,7 +257,7 @@ case class NCConversation(
         require(Thread.holdsLock(stm))
 
         if (ctx.isEmpty)
-            logger.trace(s"Conversation context is empty for [" +
+            logger.trace(s"STM is empty for [" +
                 s"mdlId=$mdlId, " +
                 s"usrId=$usrId" +
             s"]")
@@ -267,10 +269,10 @@ case class NCConversation(
                 tok.getGroups.asScala.mkString(", "),
                 tok.normText,
                 tok.getValue,
-                tok.getServerRequestId
+                m(tok.getServerRequestId)
             ))
 
-            logger.trace(s"Conversation tokens [" +
+            logger.info(s"Current STM for [" +
                 s"mdlId=$mdlId, " +
                 s"usrId=$usrId" +
             s"]:\n${tbl.toString()}")

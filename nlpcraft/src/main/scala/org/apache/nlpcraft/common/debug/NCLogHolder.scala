@@ -98,7 +98,6 @@ class NCLogHolder extends Serializable {
 
     case class IntentJson(
         id: String,
-        exactMatch: Boolean,
         weight: util.List[Int],
         tokensGroups: util.Map[String, util.List[GroupTokenJson]],
         var best: Boolean
@@ -121,15 +120,13 @@ class NCLogHolder extends Serializable {
       * Adds intent data.
       *
       * @param id Intent ID.
-      * @param exactMatch Exact match flag.
       * @param weight Weigh.
       * @param groups Groups.
       */
-    def addIntent(id: String, exactMatch: Boolean, weight: Seq[Int], groups: Map[String, Seq[NCLogGroupToken]]): Unit =
+    def addIntent(id: String, weight: Seq[Int], groups: Map[String, Seq[NCLogGroupToken]]): Unit =
         intents.add(
             IntentJson(
                 id = id,
-                exactMatch = exactMatch,
                 weight = weight.asJava,
                 tokensGroups = groups.map { case (group, toks) =>
                     group -> toks.map(g => GroupTokenJson(convert(g.token), g.used, g.conversation)).asJava

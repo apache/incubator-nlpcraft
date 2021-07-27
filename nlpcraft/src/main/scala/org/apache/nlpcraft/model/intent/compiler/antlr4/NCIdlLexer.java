@@ -1,4 +1,4 @@
-// Generated from /Users/nivanov/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/model/intent/compiler/antlr4/NCIdl.g4 by ANTLR 4.9.1
+// Generated from C:/Users/Nikita Ivanov/Documents/GitHub/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/model/intent/compiler/antlr4\NCIdl.g4 by ANTLR 4.9.1
 package org.apache.nlpcraft.model.intent.compiler.antlr4;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
@@ -17,7 +17,7 @@ public class NCIdlLexer extends Lexer {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		FUN_NAME=1, IMPORT=2, INTENT=3, ORDERED=4, FLOW=5, META=6, TERM=7, FRAG=8, 
+		FUN_NAME=1, IMPORT=2, INTENT=3, OPTIONS=4, FLOW=5, META=6, TERM=7, FRAG=8, 
 		SQSTRING=9, DQSTRING=10, BOOL=11, NULL=12, EQ=13, NEQ=14, GTEQ=15, LTEQ=16, 
 		GT=17, LT=18, AND=19, OR=20, VERT=21, NOT=22, LPAR=23, RPAR=24, LBRACE=25, 
 		RBRACE=26, SQUOTE=27, DQUOTE=28, TILDA=29, LBR=30, RBR=31, POUND=32, COMMA=33, 
@@ -34,7 +34,7 @@ public class NCIdlLexer extends Lexer {
 
 	private static String[] makeRuleNames() {
 		return new String[] {
-			"FUN_NAME", "IMPORT", "INTENT", "ORDERED", "FLOW", "META", "TERM", "FRAG", 
+			"FUN_NAME", "IMPORT", "INTENT", "OPTIONS", "FLOW", "META", "TERM", "FRAG", 
 			"SQSTRING", "DQSTRING", "BOOL", "NULL", "EQ", "NEQ", "GTEQ", "LTEQ", 
 			"GT", "LT", "AND", "OR", "VERT", "NOT", "LPAR", "RPAR", "LBRACE", "RBRACE", 
 			"SQUOTE", "DQUOTE", "TILDA", "LBR", "RBR", "POUND", "COMMA", "COLON", 
@@ -47,7 +47,7 @@ public class NCIdlLexer extends Lexer {
 
 	private static String[] makeLiteralNames() {
 		return new String[] {
-			null, null, "'import'", "'intent'", "'ordered'", "'flow'", "'meta'", 
+			null, null, "'import'", "'intent'", "'options'", "'flow'", "'meta'", 
 			"'term'", "'fragment'", null, null, null, "'null'", "'=='", "'!='", "'>='", 
 			"'<='", "'>'", "'<'", "'&&'", "'||'", "'|'", "'!'", "'('", "')'", "'{'", 
 			"'}'", "'''", "'\"'", "'~'", "'['", "']'", "'#'", "','", "':'", "'-'", 
@@ -57,7 +57,7 @@ public class NCIdlLexer extends Lexer {
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
 	private static String[] makeSymbolicNames() {
 		return new String[] {
-			null, "FUN_NAME", "IMPORT", "INTENT", "ORDERED", "FLOW", "META", "TERM", 
+			null, "FUN_NAME", "IMPORT", "INTENT", "OPTIONS", "FLOW", "META", "TERM", 
 			"FRAG", "SQSTRING", "DQSTRING", "BOOL", "NULL", "EQ", "NEQ", "GTEQ", 
 			"LTEQ", "GT", "LT", "AND", "OR", "VERT", "NOT", "LPAR", "RPAR", "LBRACE", 
 			"RBRACE", "SQUOTE", "DQUOTE", "TILDA", "LBR", "RBR", "POUND", "COMMA", 
@@ -603,9 +603,9 @@ public class NCIdlLexer extends Lexer {
 		"\7o\2\2\u04fc\u04fd\7r\2\2\u04fd\u04fe\7q\2\2\u04fe\u04ff\7t\2\2\u04ff"+
 		"\u0500\7v\2\2\u0500\6\3\2\2\2\u0501\u0502\7k\2\2\u0502\u0503\7p\2\2\u0503"+
 		"\u0504\7v\2\2\u0504\u0505\7g\2\2\u0505\u0506\7p\2\2\u0506\u0507\7v\2\2"+
-		"\u0507\b\3\2\2\2\u0508\u0509\7q\2\2\u0509\u050a\7t\2\2\u050a\u050b\7f"+
-		"\2\2\u050b\u050c\7g\2\2\u050c\u050d\7t\2\2\u050d\u050e\7g\2\2\u050e\u050f"+
-		"\7f\2\2\u050f\n\3\2\2\2\u0510\u0511\7h\2\2\u0511\u0512\7n\2\2\u0512\u0513"+
+		"\u0507\b\3\2\2\2\u0508\u0509\7q\2\2\u0509\u050a\7r\2\2\u050a\u050b\7v"+
+		"\2\2\u050b\u050c\7k\2\2\u050c\u050d\7q\2\2\u050d\u050e\7p\2\2\u050e\u050f"+
+		"\7u\2\2\u050f\n\3\2\2\2\u0510\u0511\7h\2\2\u0511\u0512\7n\2\2\u0512\u0513"+
 		"\7q\2\2\u0513\u0514\7y\2\2\u0514\f\3\2\2\2\u0515\u0516\7o\2\2\u0516\u0517"+
 		"\7g\2\2\u0517\u0518\7v\2\2\u0518\u0519\7c\2\2\u0519\16\3\2\2\2\u051a\u051b"+
 		"\7v\2\2\u051b\u051c\7g\2\2\u051c\u051d\7t\2\2\u051d\u051e\7o\2\2\u051e"+

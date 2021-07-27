@@ -23,6 +23,7 @@ import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.crypto.NCCipher
+import org.apache.nlpcraft.common.makro.NCMacroParser
 import org.apache.nlpcraft.common.nlp.NCNlpSentence
 import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
 import org.apache.nlpcraft.common.pool.NCThreadPoolManager
@@ -46,7 +47,7 @@ import java.util.Collections
 import java.util.concurrent.ConcurrentHashMap
 import scala.collection.mutable
 import scala.concurrent.{ExecutionContext, Future, Promise}
-import scala.jdk.CollectionConverters.{MapHasAsScala, SetHasAsScala}
+import scala.jdk.CollectionConverters.{ListHasAsScala, MapHasAsJava, MapHasAsScala, SeqHasAsJava, SetHasAsScala}
 import scala.util.{Failure, Success}
 
 /**
@@ -54,7 +55,7 @@ import scala.util.{Failure, Success}
   */
 object NCProbeManager extends NCService {
     private final val GSON = new Gson()
-    private final val TYPE_MODEL_INFO_RESP = new TypeToken[JavaMeta]() {}.getType
+    private final val TYPE_JAVA_META = new TypeToken[JavaMeta]() {}.getType
 
     // Type safe and eager configuration container.
     private object Config extends NCConfigurable {
@@ -157,6 +158,8 @@ object NCProbeManager extends NCService {
     // All probes pending complete handshake keyed by probe key.
     @volatile private var pending: mutable.Map[ProbeKey, ProbeHolder] = _
 
+    @volatile private var modelsSynsInfo: ConcurrentHashMap[String, Promise[JavaMeta]] = _
+    @volatile private var modelElmsInfo: ConcurrentHashMap[String, Promise[JavaMeta]] = _
     @volatile private var modelsInfo: ConcurrentHashMap[String, Promise[JavaMeta]] = _
 
     /**
@@ -179,6 +182,8 @@ object NCProbeManager extends NCService {
             "downlink" -> s"$dnHost:$dnPort"
         )
 
+        modelsSynsInfo = new ConcurrentHashMap[String, Promise[JavaMeta]]()
+        modelElmsInfo = new ConcurrentHashMap[String, Promise[JavaMeta]]()
         modelsInfo = new ConcurrentHashMap[String, Promise[JavaMeta]]()
 
         dnSrv = startServer("Downlink", dnHost, dnPort, downLinkHandler)
@@ -216,6 +221,8 @@ object NCProbeManager extends NCService {
         U.stopThread(dnSrv)
         U.stopThread(upSrv)
 
+        modelsSynsInfo = null
+        modelElmsInfo = null
         modelsInfo = null
      
         ackStopped()
@@ -619,6 +626,7 @@ object NCProbeManager extends NCService {
                             String,
                             String,
                             java.util.Set[String],
+                            java.util.Set[String],
                             java.util.Map[String, java.util.Map[String, java.util.Set[String]]],
                             java.util.Set[String],
                             java.util.Map[String, Double]
@@ -629,6 +637,7 @@ object NCProbeManager extends NCService {
                                 mdlName,
                                 mdlVer,
                                 enabledBuiltInToks,
+                                elmIds,
                                 singleValues,
                                 corpus,
                                 categoriesElements
@@ -637,6 +646,7 @@ object NCProbeManager extends NCService {
                                 require(mdlName != null)
                                 require(mdlVer != null)
                                 require(enabledBuiltInToks != null)
+                                require(elmIds != null)
                                 require(singleValues.isEmpty && corpus.isEmpty || !singleValues.isEmpty && !corpus.isEmpty)
 
                                 NCProbeModelMdo(
@@ -644,6 +654,7 @@ object NCProbeManager extends NCService {
                                     name = mdlName,
                                     version = mdlVer,
                                     enabledBuiltInTokens = enabledBuiltInToks.asScala.toSet,
+                                    elementIds = elmIds.asScala.toSet,
                                     ctxWordConfig =
                                         if (!singleValues.isEmpty) {
                                             Some(
@@ -714,7 +725,24 @@ object NCProbeManager extends NCService {
             }
         }
     }
-    
+
+    /**
+      *
+      * @param probeMsg
+      * @param m
+      */
+    private def processJavaMetaMessage(probeMsg: NCProbeMessage, m: ConcurrentHashMap[String, Promise[JavaMeta]]): Unit = {
+        val p = m.remove(probeMsg.data[String]("reqGuid"))
+
+        if (p != null)
+            probeMsg.dataOpt[String]("resp") match {
+                case Some(resp) => p.success(GSON.fromJson(resp, TYPE_JAVA_META))
+                case None => p.failure(new NCE(probeMsg.data[String]("error")))
+            }
+        else
+            logger.warn(s"Message ignored: $probeMsg")
+    }
+
     /**
       * Processes the messages received from the probe.
       *
@@ -739,13 +767,10 @@ object NCProbeManager extends NCService {
             typ match {
                 case "P2S_PING" => ()
 
-                case "P2S_MODEL_INFO" =>
-                    val p = modelsInfo.remove(probeMsg.data[String]("reqGuid"))
+                case "P2S_MODEL_SYNS_INFO" => processJavaMetaMessage(probeMsg, modelsSynsInfo)
+                case "P2S_MODEL_ELEMENT_INFO" => processJavaMetaMessage(probeMsg, modelElmsInfo)
+                case "P2S_MODEL_INFO" => processJavaMetaMessage(probeMsg, modelsInfo)
 
-                    if (p != null)
-                        p.success(GSON.fromJson(probeMsg.data[String]("resp"), TYPE_MODEL_INFO_RESP))
-                    else
-                        logger.warn(s"Message ignored: $probeMsg")
                 case "P2S_ASK_RESULT" =>
                     val srvReqId = probeMsg.data[String]("srvReqId")
                     
@@ -768,7 +793,7 @@ object NCProbeManager extends NCService {
                                 errCode
                             )
                      
-                            logger.trace(s"Error result processed [srvReqId=$srvReqId, error=$err, code=$errCode]")
+                            logger.trace(s"Error result processed [srvReqId=${m(srvReqId)}, error=$err, code=$errCode]")
                         }
                         else { // OK result.
                             require(resTypeOpt.isDefined && resBodyOpt.isDefined, "Result defined")
@@ -782,7 +807,7 @@ object NCProbeManager extends NCService {
                                 intentId
                             )
                      
-                            logger.trace(s"OK result processed [srvReqId=$srvReqId]")
+                            logger.trace(s"OK result processed [srvReqId=${m(srvReqId)}]")
                         }
                     }
                     catch {
@@ -795,6 +820,7 @@ object NCProbeManager extends NCService {
                                 NCErrorCodes.UNEXPECTED_ERROR
                             )
                     }
+
                 case _ =>
                     logger.error(s"Received unrecognized probe message (ignoring): $probeMsg")
             }
@@ -998,6 +1024,27 @@ object NCProbeManager extends NCService {
         }
 
     /**
+      * Checks whether or not a data probe exists for given model element.
+      *
+      * @param compId Company ID for authentication purpose.
+      * @param mdlId Model ID.
+      * @param elmId Element ID.
+      * @param parent Optional parent span.
+      * @return
+      */
+    def existsForModelElement(compId: Long, mdlId: String, elmId: String, parent: Span = null): Boolean =
+        startScopedSpan(
+            "existsForModelElement", parent, "compId" -> compId, "mdlId" -> mdlId, "elmId" -> elmId
+        ) { _ =>
+            val authTok = getCompany(compId).authToken
+
+            probes.synchronized {
+                probes.filter(_._1.probeToken == authTok).values.
+                    exists(_.probe.models.exists(p => p.id == mdlId && p.elementIds.contains(elmId)))
+            }
+        }
+
+    /**
       *
       * @param usrId User ID.
       * @param mdlId Model ID.
@@ -1048,24 +1095,95 @@ object NCProbeManager extends NCService {
     /**
       *
       * @param mdlId
+      * @param msg
+      * @param holder
+      * @param parent
+      */
+    private def processModelDataRequest(
+        mdlId: String, msg: NCProbeMessage, holder: ConcurrentHashMap[String, Promise[JavaMeta]], parent: Span = null
+    ): Future[JavaMeta] = {
+        val p = Promise[JavaMeta]()
+
+        getProbeForModelId(mdlId) match {
+            case Some(probe) =>
+                holder.put(msg.getGuid, p)
+
+                sendToProbe(probe.probeKey, msg, parent)
+            case None =>
+                p.failure(new NCE(s"Probe not found for model: '$mdlId''"))
+        }
+
+        p.future
+    }
+
+    /**
+      *
+      * @param mdlId
       * @param parent
       * @return
       */
+    def getModelSynonymsInfo(mdlId: String, parent: Span = null): Future[JavaMeta] =
+        startScopedSpan("getModelSynonymsInfo", parent, "mdlId" -> mdlId) { _ =>
+            processModelDataRequest(
+                mdlId,
+                NCProbeMessage("S2P_MODEL_SYNS_INFO", "mdlId" -> mdlId),
+                modelsSynsInfo,
+                parent
+            )
+        }
+
+    /**
+      *
+      * @param mdlId
+      * @param elmId
+      * @param parent
+      * @return
+      */
+    def getModelElementInfo(mdlId: String, elmId: String, parent: Span = null): Future[JavaMeta] =
+        startScopedSpan("getModelElementInfo", parent, "mdlId" -> mdlId, "elmId" -> elmId) { _ =>
+            processModelDataRequest(
+                mdlId,
+                NCProbeMessage("S2P_MODEL_ELEMENT_INFO", "mdlId" -> mdlId, "elmId" -> elmId),
+                modelElmsInfo,
+                parent
+            ).map(
+                res => {
+                    require(
+                        res.containsKey("synonyms") &&
+                        res.containsKey("values") &&
+                        res.containsKey("macros")
+                    )
+
+                    val macros = res.remove("macros").asInstanceOf[java.util.Map[String, String]].asScala
+                    val syns = res.get("synonyms").asInstanceOf[java.util.List[String]].asScala
+                    val vals = res.get("values").asInstanceOf[java.util.Map[String, java.util.List[String]]].asScala
+
+                    val parser = NCMacroParser(macros.toList)
+
+                    val synsExp = syns.flatMap(s => parser.expand(s)).sorted
+                    val valsExp = vals.map(v => v._1 -> v._2.asScala.flatMap(s => parser.expand(s)).sorted.asJava).toMap
+
+                    res.put("synonymsExp", synsExp.asJava)
+                    res.put("valuesExp", valsExp.asJava)
+
+                    // Add statistics.
+                    res.put("synonymsExpCnt", Integer.valueOf(synsExp.size))
+                    res.put("synonymsCnt", Integer.valueOf(syns.size))
+                    res.put("synonymsExpRatePct", java.lang.Long.valueOf(Math.round(synsExp.size.toDouble * 100 / syns.size.toDouble)))
+
+                    res
+                }
+            )
+        }
+
     def getModelInfo(mdlId: String, parent: Span = null): Future[JavaMeta] =
         startScopedSpan("getModelInfo", parent, "mdlId" -> mdlId) { _ =>
-            getProbeForModelId(mdlId) match {
-                case Some(probe) =>
-                    val msg = NCProbeMessage("S2P_MODEL_INFO", "mdlId" -> mdlId)
-
-                    val p = Promise[JavaMeta]()
-
-                    modelsInfo.put(msg.getGuid, p)
-
-                    sendToProbe(probe.probeKey, msg, parent)
-
-                    p.future
-
-                case None => throw new NCE(s"Probe not found for model: '$mdlId''")
-            }
+            processModelDataRequest(
+                mdlId,
+                NCProbeMessage("S2P_MODEL_INFO", "mdlId" -> mdlId),
+                modelsInfo,
+                parent
+            )
         }
+
 }
