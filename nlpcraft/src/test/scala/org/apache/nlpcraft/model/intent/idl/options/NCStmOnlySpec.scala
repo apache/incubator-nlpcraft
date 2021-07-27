@@ -43,8 +43,8 @@ class NCStmOnlyModel extends NCAbstractTokensModel {
             "        'allow_stm_only': false" +
             "    }" +
             "    term(a)={tok_id() == 'a'}" +
-            "    term(b)={tok_id() == 'b'} " +
-            "    term(c)={tok_id() == 'c'} " +
+            "    term(b)={tok_id() == 'b'}" +
+            "    term(c)={tok_id() == 'c'}" +
             "    term(d)={tok_id() == 'd'}"
     )
     def before(): NCResult = NCResult.text("before")
@@ -97,7 +97,8 @@ class NCStmOnlySpec extends NCMetaSpecAdapter {
 
         // This should match as 'i1' intent allows:
         //   - unmatched free words, and
-        //   - all of its matched tokens to come from STM
+        //   - all of its matched tokens to come from STM, and
+        //   - its terms are conversational (~).
         checkResult("x y", "i1")
     }
 
@@ -111,5 +112,19 @@ class NCStmOnlySpec extends NCMetaSpecAdapter {
         clear()
 
         checkResult("c d", "i2")
+    }
+
+    @Test
+    def test3(): Unit = {
+        clear()
+
+        checkResult("a b c d", "before")
+        checkResult("b a d c", "before")
+        checkResult("a b", "i1")
+
+        clear()
+
+        // This should NOT match because STM is cleared.
+        checkFail("x y")
     }
 }
