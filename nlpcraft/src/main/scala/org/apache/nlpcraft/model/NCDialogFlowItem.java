@@ -89,19 +89,6 @@ public interface NCDialogFlowItem extends NCMetadata {
     NCVariant getVariant();
 
     /**
-     * Indicates whether or not the intent match was ambiguous (not exact).
-     * <p>
-     * An exact match means that for the intent to match it has to use all non-free word tokens
-     * in the user input, i.e. only free word tokens can be left unused after the match. An ambiguous match
-     * doesn't have this restriction. Note that an ambiguous match should be used with a great care.
-     * An ambiguous match completely ignores extra found user or system tokens (which are not part
-     * of the intent template) which could have altered the matching outcome had they been considered.
-     *
-     * @return {@code True} if the intent match was exact, {@code false} otherwise.
-     */
-    boolean isAmbiguous();
-
-    /**
      * Gets descriptor of the user on behalf of which the input request was submitted.
      *
      * @return User descriptor.

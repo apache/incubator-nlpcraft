@@ -28,7 +28,7 @@ import org.apache.nlpcraft.common._
  * @param pred Term predicate.
  * @param min
  * @param max
- * @param conv
+ * @param conv Whether or not this term support conversation context.
  * @param fragMeta
  */
 case class NCIdlTerm(

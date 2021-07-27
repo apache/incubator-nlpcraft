@@ -213,7 +213,7 @@ object NCUserManager extends NCService with NCIgniteInstance {
     private def clearSession(ses: SigninSession): Unit = {
         clearSigninCache(ses)
         
-        logger.info(s"User signed out: ${ses.userId}")
+        logger.info(s"User ID signed out: ${ses.userId}")
     }
 
     /**

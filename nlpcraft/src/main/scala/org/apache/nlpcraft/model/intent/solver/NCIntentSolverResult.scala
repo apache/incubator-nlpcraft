@@ -22,12 +22,14 @@ import org.apache.nlpcraft.model.{NCIntentMatch, _}
 /**
   * Intent solver engine result. Using basic case class for easier Java interop.
   */
-case class NCIntentTokensGroup(termId: Option[String], tokens: List[NCToken])
+case class NCIntentTokensGroup(
+    termId: Option[String],
+    tokens: List[NCToken]
+)
 case class NCIntentSolverResult(
     intentId: String,
     fn: java.util.function.Function[NCIntentMatch, NCResult],
     groups: List[NCIntentTokensGroup],
-    isExactMatch: Boolean,
     variant: NCIntentSolverVariant,
     variantIdx: Int
 )

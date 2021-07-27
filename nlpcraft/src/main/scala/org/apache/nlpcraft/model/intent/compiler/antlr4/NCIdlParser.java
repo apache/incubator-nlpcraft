@@ -1,4 +1,4 @@
-// Generated from /Users/nivanov/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/model/intent/compiler/antlr4/NCIdl.g4 by ANTLR 4.9.1
+// Generated from C:/Users/Nikita Ivanov/Documents/GitHub/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/model/intent/compiler/antlr4\NCIdl.g4 by ANTLR 4.9.1
 package org.apache.nlpcraft.model.intent.compiler.antlr4;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -17,7 +17,7 @@ public class NCIdlParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		FUN_NAME=1, IMPORT=2, INTENT=3, ORDERED=4, FLOW=5, META=6, TERM=7, FRAG=8, 
+		FUN_NAME=1, IMPORT=2, INTENT=3, OPTIONS=4, FLOW=5, META=6, TERM=7, FRAG=8, 
 		SQSTRING=9, DQSTRING=10, BOOL=11, NULL=12, EQ=13, NEQ=14, GTEQ=15, LTEQ=16, 
 		GT=17, LT=18, AND=19, OR=20, VERT=21, NOT=22, LPAR=23, RPAR=24, LBRACE=25, 
 		RBRACE=26, SQUOTE=27, DQUOTE=28, TILDA=29, LBR=30, RBR=31, POUND=32, COMMA=33, 
@@ -27,8 +27,8 @@ public class NCIdlParser extends Parser {
 	public static final int
 		RULE_idl = 0, RULE_synonym = 1, RULE_alias = 2, RULE_idlDecls = 3, RULE_idlDecl = 4, 
 		RULE_imp = 5, RULE_frag = 6, RULE_fragId = 7, RULE_fragRef = 8, RULE_fragMeta = 9, 
-		RULE_intent = 10, RULE_intentId = 11, RULE_orderedDecl = 12, RULE_mtdDecl = 13, 
-		RULE_flowDecl = 14, RULE_metaDecl = 15, RULE_jsonObj = 16, RULE_jsonPair = 17, 
+		RULE_intent = 10, RULE_intentId = 11, RULE_mtdDecl = 12, RULE_flowDecl = 13, 
+		RULE_metaDecl = 14, RULE_optDecl = 15, RULE_jsonObj = 16, RULE_jsonPair = 17, 
 		RULE_jsonVal = 18, RULE_jsonArr = 19, RULE_termDecls = 20, RULE_termDecl = 21, 
 		RULE_termEq = 22, RULE_term = 23, RULE_mtdRef = 24, RULE_javaFqn = 25, 
 		RULE_javaClass = 26, RULE_termId = 27, RULE_expr = 28, RULE_vars = 29, 
@@ -37,18 +37,18 @@ public class NCIdlParser extends Parser {
 	private static String[] makeRuleNames() {
 		return new String[] {
 			"idl", "synonym", "alias", "idlDecls", "idlDecl", "imp", "frag", "fragId", 
-			"fragRef", "fragMeta", "intent", "intentId", "orderedDecl", "mtdDecl", 
-			"flowDecl", "metaDecl", "jsonObj", "jsonPair", "jsonVal", "jsonArr", 
-			"termDecls", "termDecl", "termEq", "term", "mtdRef", "javaFqn", "javaClass", 
-			"termId", "expr", "vars", "varDecl", "paramList", "atom", "qstring", 
-			"minMax", "minMaxShortcut", "minMaxRange", "id"
+			"fragRef", "fragMeta", "intent", "intentId", "mtdDecl", "flowDecl", "metaDecl", 
+			"optDecl", "jsonObj", "jsonPair", "jsonVal", "jsonArr", "termDecls", 
+			"termDecl", "termEq", "term", "mtdRef", "javaFqn", "javaClass", "termId", 
+			"expr", "vars", "varDecl", "paramList", "atom", "qstring", "minMax", 
+			"minMaxShortcut", "minMaxRange", "id"
 		};
 	}
 	public static final String[] ruleNames = makeRuleNames();
 
 	private static String[] makeLiteralNames() {
 		return new String[] {
-			null, null, "'import'", "'intent'", "'ordered'", "'flow'", "'meta'", 
+			null, null, "'import'", "'intent'", "'options'", "'flow'", "'meta'", 
 			"'term'", "'fragment'", null, null, null, "'null'", "'=='", "'!='", "'>='", 
 			"'<='", "'>'", "'<'", "'&&'", "'||'", "'|'", "'!'", "'('", "')'", "'{'", 
 			"'}'", "'''", "'\"'", "'~'", "'['", "']'", "'#'", "','", "':'", "'-'", 
@@ -58,7 +58,7 @@ public class NCIdlParser extends Parser {
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
 	private static String[] makeSymbolicNames() {
 		return new String[] {
-			null, "FUN_NAME", "IMPORT", "INTENT", "ORDERED", "FLOW", "META", "TERM", 
+			null, "FUN_NAME", "IMPORT", "INTENT", "OPTIONS", "FLOW", "META", "TERM", 
 			"FRAG", "SQSTRING", "DQSTRING", "BOOL", "NULL", "EQ", "NEQ", "GTEQ", 
 			"LTEQ", "GT", "LT", "AND", "OR", "VERT", "NOT", "LPAR", "RPAR", "LBRACE", 
 			"RBRACE", "SQUOTE", "DQUOTE", "TILDA", "LBR", "RBR", "POUND", "COMMA", 
@@ -671,8 +671,8 @@ public class NCIdlParser extends Parser {
 		public TermDeclsContext termDecls() {
 			return getRuleContext(TermDeclsContext.class,0);
 		}
-		public OrderedDeclContext orderedDecl() {
-			return getRuleContext(OrderedDeclContext.class,0);
+		public OptDeclContext optDecl() {
+			return getRuleContext(OptDeclContext.class,0);
 		}
 		public FlowDeclContext flowDecl() {
 			return getRuleContext(FlowDeclContext.class,0);
@@ -706,10 +706,10 @@ public class NCIdlParser extends Parser {
 			setState(134);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if (_la==ORDERED) {
+			if (_la==OPTIONS) {
 				{
 				setState(133);
-				orderedDecl();
+				optDecl();
 				}
 			}
 
@@ -793,49 +793,6 @@ public class NCIdlParser extends Parser {
 		return _localctx;
 	}
 
-	public static class OrderedDeclContext extends ParserRuleContext {
-		public TerminalNode ORDERED() { return getToken(NCIdlParser.ORDERED, 0); }
-		public TerminalNode ASSIGN() { return getToken(NCIdlParser.ASSIGN, 0); }
-		public TerminalNode BOOL() { return getToken(NCIdlParser.BOOL, 0); }
-		public OrderedDeclContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_orderedDecl; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterOrderedDecl(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitOrderedDecl(this);
-		}
-	}
-
-	public final OrderedDeclContext orderedDecl() throws RecognitionException {
-		OrderedDeclContext _localctx = new OrderedDeclContext(_ctx, getState());
-		enterRule(_localctx, 24, RULE_orderedDecl);
-		try {
-			enterOuterAlt(_localctx, 1);
-			{
-			setState(148);
-			match(ORDERED);
-			setState(149);
-			match(ASSIGN);
-			setState(150);
-			match(BOOL);
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
-
 	public static class MtdDeclContext extends ParserRuleContext {
 		public List<TerminalNode> DIV() { return getTokens(NCIdlParser.DIV); }
 		public TerminalNode DIV(int i) {
@@ -860,15 +817,15 @@ public class NCIdlParser extends Parser {
 
 	public final MtdDeclContext mtdDecl() throws RecognitionException {
 		MtdDeclContext _localctx = new MtdDeclContext(_ctx, getState());
-		enterRule(_localctx, 26, RULE_mtdDecl);
+		enterRule(_localctx, 24, RULE_mtdDecl);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(152);
+			setState(148);
 			match(DIV);
-			setState(153);
+			setState(149);
 			mtdRef();
-			setState(154);
+			setState(150);
 			match(DIV);
 			}
 		}
@@ -908,27 +865,27 @@ public class NCIdlParser extends Parser {
 
 	public final FlowDeclContext flowDecl() throws RecognitionException {
 		FlowDeclContext _localctx = new FlowDeclContext(_ctx, getState());
-		enterRule(_localctx, 28, RULE_flowDecl);
+		enterRule(_localctx, 26, RULE_flowDecl);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(156);
+			setState(152);
 			match(FLOW);
-			setState(157);
+			setState(153);
 			match(ASSIGN);
-			setState(160);
+			setState(156);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case SQSTRING:
 			case DQSTRING:
 				{
-				setState(158);
+				setState(154);
 				qstring();
 				}
 				break;
 			case DIV:
 				{
-				setState(159);
+				setState(155);
 				mtdDecl();
 				}
 				break;
@@ -970,12 +927,57 @@ public class NCIdlParser extends Parser {
 
 	public final MetaDeclContext metaDecl() throws RecognitionException {
 		MetaDeclContext _localctx = new MetaDeclContext(_ctx, getState());
-		enterRule(_localctx, 30, RULE_metaDecl);
+		enterRule(_localctx, 28, RULE_metaDecl);
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(158);
+			match(META);
+			setState(159);
+			match(ASSIGN);
+			setState(160);
+			jsonObj();
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class OptDeclContext extends ParserRuleContext {
+		public TerminalNode OPTIONS() { return getToken(NCIdlParser.OPTIONS, 0); }
+		public TerminalNode ASSIGN() { return getToken(NCIdlParser.ASSIGN, 0); }
+		public JsonObjContext jsonObj() {
+			return getRuleContext(JsonObjContext.class,0);
+		}
+		public OptDeclContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_optDecl; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterOptDecl(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitOptDecl(this);
+		}
+	}
+
+	public final OptDeclContext optDecl() throws RecognitionException {
+		OptDeclContext _localctx = new OptDeclContext(_ctx, getState());
+		enterRule(_localctx, 30, RULE_optDecl);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(162);
-			match(META);
+			match(OPTIONS);
 			setState(163);
 			match(ASSIGN);
 			setState(164);
@@ -1661,7 +1663,7 @@ public class NCIdlParser extends Parser {
 			setState(252);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << FUN_NAME) | (1L << IMPORT) | (1L << INTENT) | (1L << ORDERED) | (1L << FLOW) | (1L << META) | (1L << TERM) | (1L << FRAG) | (1L << ID))) != 0)) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << FUN_NAME) | (1L << IMPORT) | (1L << INTENT) | (1L << OPTIONS) | (1L << FLOW) | (1L << META) | (1L << TERM) | (1L << FRAG) | (1L << ID))) != 0)) {
 				{
 				setState(251);
 				javaFqn(0);
@@ -1770,7 +1772,7 @@ public class NCIdlParser extends Parser {
 		}
 		public TerminalNode IMPORT() { return getToken(NCIdlParser.IMPORT, 0); }
 		public TerminalNode INTENT() { return getToken(NCIdlParser.INTENT, 0); }
-		public TerminalNode ORDERED() { return getToken(NCIdlParser.ORDERED, 0); }
+		public TerminalNode OPTIONS() { return getToken(NCIdlParser.OPTIONS, 0); }
 		public TerminalNode FLOW() { return getToken(NCIdlParser.FLOW, 0); }
 		public TerminalNode META() { return getToken(NCIdlParser.META, 0); }
 		public TerminalNode TERM() { return getToken(NCIdlParser.TERM, 0); }
@@ -1818,11 +1820,11 @@ public class NCIdlParser extends Parser {
 				match(INTENT);
 				}
 				break;
-			case ORDERED:
+			case OPTIONS:
 				enterOuterAlt(_localctx, 4);
 				{
 				setState(271);
-				match(ORDERED);
+				match(OPTIONS);
 				}
 				break;
 			case FLOW:
@@ -2978,8 +2980,8 @@ public class NCIdlParser extends Parser {
 		"\5f\n\5\f\5\16\5i\13\5\3\6\3\6\3\6\5\6n\n\6\3\7\3\7\3\7\3\7\3\7\3\b\3"+
 		"\b\3\b\3\t\3\t\3\t\3\t\3\n\3\n\3\n\3\n\5\n\u0080\n\n\3\n\3\n\3\13\3\13"+
 		"\3\13\3\f\3\f\5\f\u0089\n\f\3\f\5\f\u008c\n\f\3\f\5\f\u008f\n\f\3\f\3"+
-		"\f\3\r\3\r\3\r\3\r\3\16\3\16\3\16\3\16\3\17\3\17\3\17\3\17\3\20\3\20\3"+
-		"\20\3\20\5\20\u00a3\n\20\3\21\3\21\3\21\3\21\3\22\3\22\3\22\3\22\7\22"+
+		"\f\3\r\3\r\3\r\3\r\3\16\3\16\3\16\3\16\3\17\3\17\3\17\3\17\5\17\u009f"+
+		"\n\17\3\20\3\20\3\20\3\20\3\21\3\21\3\21\3\21\3\22\3\22\3\22\3\22\7\22"+
 		"\u00ad\n\22\f\22\16\22\u00b0\13\22\3\22\3\22\3\22\3\22\5\22\u00b6\n\22"+
 		"\3\23\3\23\3\23\3\23\3\24\3\24\5\24\u00be\n\24\3\24\3\24\5\24\u00c2\n"+
 		"\24\3\24\5\24\u00c5\n\24\3\24\3\24\3\24\3\24\5\24\u00cb\n\24\3\25\3\25"+
@@ -3002,7 +3004,7 @@ public class NCIdlParser extends Parser {
 		"\2\3\3\63\63\2\u0189\2N\3\2\2\2\4R\3\2\2\2\6\\\3\2\2\2\b`\3\2\2\2\nm\3"+
 		"\2\2\2\fo\3\2\2\2\16t\3\2\2\2\20w\3\2\2\2\22{\3\2\2\2\24\u0083\3\2\2\2"+
 		"\26\u0086\3\2\2\2\30\u0092\3\2\2\2\32\u0096\3\2\2\2\34\u009a\3\2\2\2\36"+
-		"\u009e\3\2\2\2 \u00a4\3\2\2\2\"\u00b5\3\2\2\2$\u00b7\3\2\2\2&\u00ca\3"+
+		"\u00a0\3\2\2\2 \u00a4\3\2\2\2\"\u00b5\3\2\2\2$\u00b7\3\2\2\2&\u00ca\3"+
 		"\2\2\2(\u00d9\3\2\2\2*\u00db\3\2\2\2,\u00e7\3\2\2\2.\u00e9\3\2\2\2\60"+
 		"\u00eb\3\2\2\2\62\u00fe\3\2\2\2\64\u0103\3\2\2\2\66\u0116\3\2\2\28\u0118"+
 		"\3\2\2\2:\u012c\3\2\2\2<\u0142\3\2\2\2>\u014c\3\2\2\2@\u0151\3\2\2\2B"+
@@ -3017,47 +3019,47 @@ public class NCIdlParser extends Parser {
 		"\2\2wx\7\n\2\2xy\7(\2\2yz\5L\'\2z\21\3\2\2\2{|\7\n\2\2|}\7\31\2\2}\177"+
 		"\5L\'\2~\u0080\5\24\13\2\177~\3\2\2\2\177\u0080\3\2\2\2\u0080\u0081\3"+
 		"\2\2\2\u0081\u0082\7\32\2\2\u0082\23\3\2\2\2\u0083\u0084\7#\2\2\u0084"+
-		"\u0085\5\"\22\2\u0085\25\3\2\2\2\u0086\u0088\5\30\r\2\u0087\u0089\5\32"+
-		"\16\2\u0088\u0087\3\2\2\2\u0088\u0089\3\2\2\2\u0089\u008b\3\2\2\2\u008a"+
-		"\u008c\5\36\20\2\u008b\u008a\3\2\2\2\u008b\u008c\3\2\2\2\u008c\u008e\3"+
-		"\2\2\2\u008d\u008f\5 \21\2\u008e\u008d\3\2\2\2\u008e\u008f\3\2\2\2\u008f"+
-		"\u0090\3\2\2\2\u0090\u0091\5*\26\2\u0091\27\3\2\2\2\u0092\u0093\7\5\2"+
-		"\2\u0093\u0094\7(\2\2\u0094\u0095\5L\'\2\u0095\31\3\2\2\2\u0096\u0097"+
-		"\7\6\2\2\u0097\u0098\7(\2\2\u0098\u0099\7\r\2\2\u0099\33\3\2\2\2\u009a"+
-		"\u009b\7,\2\2\u009b\u009c\5\62\32\2\u009c\u009d\7,\2\2\u009d\35\3\2\2"+
-		"\2\u009e\u009f\7\7\2\2\u009f\u00a2\7(\2\2\u00a0\u00a3\5D#\2\u00a1\u00a3"+
-		"\5\34\17\2\u00a2\u00a0\3\2\2\2\u00a2\u00a1\3\2\2\2\u00a3\37\3\2\2\2\u00a4"+
-		"\u00a5\7\b\2\2\u00a5\u00a6\7(\2\2\u00a6\u00a7\5\"\22\2\u00a7!\3\2\2\2"+
-		"\u00a8\u00a9\7\33\2\2\u00a9\u00ae\5$\23\2\u00aa\u00ab\7#\2\2\u00ab\u00ad"+
-		"\5$\23\2\u00ac\u00aa\3\2\2\2\u00ad\u00b0\3\2\2\2\u00ae\u00ac\3\2\2\2\u00ae"+
-		"\u00af\3\2\2\2\u00af\u00b1\3\2\2\2\u00b0\u00ae\3\2\2\2\u00b1\u00b2\7\34"+
-		"\2\2\u00b2\u00b6\3\2\2\2\u00b3\u00b4\7\33\2\2\u00b4\u00b6\7\34\2\2\u00b5"+
-		"\u00a8\3\2\2\2\u00b5\u00b3\3\2\2\2\u00b6#\3\2\2\2\u00b7\u00b8\5D#\2\u00b8"+
-		"\u00b9\7$\2\2\u00b9\u00ba\5&\24\2\u00ba%\3\2\2\2\u00bb\u00cb\5D#\2\u00bc"+
-		"\u00be\7%\2\2\u00bd\u00bc\3\2\2\2\u00bd\u00be\3\2\2\2\u00be\u00bf\3\2"+
-		"\2\2\u00bf\u00c1\7\60\2\2\u00c0\u00c2\7\61\2\2\u00c1\u00c0\3\2\2\2\u00c1"+
-		"\u00c2\3\2\2\2\u00c2\u00c4\3\2\2\2\u00c3\u00c5\7\62\2\2\u00c4\u00c3\3"+
-		"\2\2\2\u00c4\u00c5\3\2\2\2\u00c5\u00cb\3\2\2\2\u00c6\u00cb\5\"\22\2\u00c7"+
-		"\u00cb\5(\25\2\u00c8\u00cb\7\r\2\2\u00c9\u00cb\7\16\2\2\u00ca\u00bb\3"+
-		"\2\2\2\u00ca\u00bd\3\2\2\2\u00ca\u00c6\3\2\2\2\u00ca\u00c7\3\2\2\2\u00ca"+
-		"\u00c8\3\2\2\2\u00ca\u00c9\3\2\2\2\u00cb\'\3\2\2\2\u00cc\u00cd\7 \2\2"+
-		"\u00cd\u00d2\5&\24\2\u00ce\u00cf\7#\2\2\u00cf\u00d1\5&\24\2\u00d0\u00ce"+
-		"\3\2\2\2\u00d1\u00d4\3\2\2\2\u00d2\u00d0\3\2\2\2\u00d2\u00d3\3\2\2\2\u00d3"+
-		"\u00d5\3\2\2\2\u00d4\u00d2\3\2\2\2\u00d5\u00d6\7!\2\2\u00d6\u00da\3\2"+
-		"\2\2\u00d7\u00d8\7 \2\2\u00d8\u00da\7!\2\2\u00d9\u00cc\3\2\2\2\u00d9\u00d7"+
-		"\3\2\2\2\u00da)\3\2\2\2\u00db\u00dc\b\26\1\2\u00dc\u00dd\5,\27\2\u00dd"+
-		"\u00e2\3\2\2\2\u00de\u00df\f\3\2\2\u00df\u00e1\5,\27\2\u00e0\u00de\3\2"+
-		"\2\2\u00e1\u00e4\3\2\2\2\u00e2\u00e0\3\2\2\2\u00e2\u00e3\3\2\2\2\u00e3"+
-		"+\3\2\2\2\u00e4\u00e2\3\2\2\2\u00e5\u00e8\5\60\31\2\u00e6\u00e8\5\22\n"+
-		"\2\u00e7\u00e5\3\2\2\2\u00e7\u00e6\3\2\2\2\u00e8-\3\2\2\2\u00e9\u00ea"+
-		"\t\2\2\2\u00ea/\3\2\2\2\u00eb\u00ed\7\t\2\2\u00ec\u00ee\58\35\2\u00ed"+
-		"\u00ec\3\2\2\2\u00ed\u00ee\3\2\2\2\u00ee\u00ef\3\2\2\2\u00ef\u00f8\5."+
-		"\30\2\u00f0\u00f2\7\33\2\2\u00f1\u00f3\5<\37\2\u00f2\u00f1\3\2\2\2\u00f2"+
-		"\u00f3\3\2\2\2\u00f3\u00f4\3\2\2\2\u00f4\u00f5\5:\36\2\u00f5\u00f6\7\34"+
-		"\2\2\u00f6\u00f9\3\2\2\2\u00f7\u00f9\5\34\17\2\u00f8\u00f0\3\2\2\2\u00f8"+
-		"\u00f7\3\2\2\2\u00f9\u00fb\3\2\2\2\u00fa\u00fc\5F$\2\u00fb\u00fa\3\2\2"+
-		"\2\u00fb\u00fc\3\2\2\2\u00fc\61\3\2\2\2\u00fd\u00ff\5\64\33\2\u00fe\u00fd"+
-		"\3\2\2\2\u00fe\u00ff\3\2\2\2\u00ff\u0100\3\2\2\2\u0100\u0101\7\"\2\2\u0101"+
+		"\u0085\5\"\22\2\u0085\25\3\2\2\2\u0086\u0088\5\30\r\2\u0087\u0089\5 \21"+
+		"\2\u0088\u0087\3\2\2\2\u0088\u0089\3\2\2\2\u0089\u008b\3\2\2\2\u008a\u008c"+
+		"\5\34\17\2\u008b\u008a\3\2\2\2\u008b\u008c\3\2\2\2\u008c\u008e\3\2\2\2"+
+		"\u008d\u008f\5\36\20\2\u008e\u008d\3\2\2\2\u008e\u008f\3\2\2\2\u008f\u0090"+
+		"\3\2\2\2\u0090\u0091\5*\26\2\u0091\27\3\2\2\2\u0092\u0093\7\5\2\2\u0093"+
+		"\u0094\7(\2\2\u0094\u0095\5L\'\2\u0095\31\3\2\2\2\u0096\u0097\7,\2\2\u0097"+
+		"\u0098\5\62\32\2\u0098\u0099\7,\2\2\u0099\33\3\2\2\2\u009a\u009b\7\7\2"+
+		"\2\u009b\u009e\7(\2\2\u009c\u009f\5D#\2\u009d\u009f\5\32\16\2\u009e\u009c"+
+		"\3\2\2\2\u009e\u009d\3\2\2\2\u009f\35\3\2\2\2\u00a0\u00a1\7\b\2\2\u00a1"+
+		"\u00a2\7(\2\2\u00a2\u00a3\5\"\22\2\u00a3\37\3\2\2\2\u00a4\u00a5\7\6\2"+
+		"\2\u00a5\u00a6\7(\2\2\u00a6\u00a7\5\"\22\2\u00a7!\3\2\2\2\u00a8\u00a9"+
+		"\7\33\2\2\u00a9\u00ae\5$\23\2\u00aa\u00ab\7#\2\2\u00ab\u00ad\5$\23\2\u00ac"+
+		"\u00aa\3\2\2\2\u00ad\u00b0\3\2\2\2\u00ae\u00ac\3\2\2\2\u00ae\u00af\3\2"+
+		"\2\2\u00af\u00b1\3\2\2\2\u00b0\u00ae\3\2\2\2\u00b1\u00b2\7\34\2\2\u00b2"+
+		"\u00b6\3\2\2\2\u00b3\u00b4\7\33\2\2\u00b4\u00b6\7\34\2\2\u00b5\u00a8\3"+
+		"\2\2\2\u00b5\u00b3\3\2\2\2\u00b6#\3\2\2\2\u00b7\u00b8\5D#\2\u00b8\u00b9"+
+		"\7$\2\2\u00b9\u00ba\5&\24\2\u00ba%\3\2\2\2\u00bb\u00cb\5D#\2\u00bc\u00be"+
+		"\7%\2\2\u00bd\u00bc\3\2\2\2\u00bd\u00be\3\2\2\2\u00be\u00bf\3\2\2\2\u00bf"+
+		"\u00c1\7\60\2\2\u00c0\u00c2\7\61\2\2\u00c1\u00c0\3\2\2\2\u00c1\u00c2\3"+
+		"\2\2\2\u00c2\u00c4\3\2\2\2\u00c3\u00c5\7\62\2\2\u00c4\u00c3\3\2\2\2\u00c4"+
+		"\u00c5\3\2\2\2\u00c5\u00cb\3\2\2\2\u00c6\u00cb\5\"\22\2\u00c7\u00cb\5"+
+		"(\25\2\u00c8\u00cb\7\r\2\2\u00c9\u00cb\7\16\2\2\u00ca\u00bb\3\2\2\2\u00ca"+
+		"\u00bd\3\2\2\2\u00ca\u00c6\3\2\2\2\u00ca\u00c7\3\2\2\2\u00ca\u00c8\3\2"+
+		"\2\2\u00ca\u00c9\3\2\2\2\u00cb\'\3\2\2\2\u00cc\u00cd\7 \2\2\u00cd\u00d2"+
+		"\5&\24\2\u00ce\u00cf\7#\2\2\u00cf\u00d1\5&\24\2\u00d0\u00ce\3\2\2\2\u00d1"+
+		"\u00d4\3\2\2\2\u00d2\u00d0\3\2\2\2\u00d2\u00d3\3\2\2\2\u00d3\u00d5\3\2"+
+		"\2\2\u00d4\u00d2\3\2\2\2\u00d5\u00d6\7!\2\2\u00d6\u00da\3\2\2\2\u00d7"+
+		"\u00d8\7 \2\2\u00d8\u00da\7!\2\2\u00d9\u00cc\3\2\2\2\u00d9\u00d7\3\2\2"+
+		"\2\u00da)\3\2\2\2\u00db\u00dc\b\26\1\2\u00dc\u00dd\5,\27\2\u00dd\u00e2"+
+		"\3\2\2\2\u00de\u00df\f\3\2\2\u00df\u00e1\5,\27\2\u00e0\u00de\3\2\2\2\u00e1"+
+		"\u00e4\3\2\2\2\u00e2\u00e0\3\2\2\2\u00e2\u00e3\3\2\2\2\u00e3+\3\2\2\2"+
+		"\u00e4\u00e2\3\2\2\2\u00e5\u00e8\5\60\31\2\u00e6\u00e8\5\22\n\2\u00e7"+
+		"\u00e5\3\2\2\2\u00e7\u00e6\3\2\2\2\u00e8-\3\2\2\2\u00e9\u00ea\t\2\2\2"+
+		"\u00ea/\3\2\2\2\u00eb\u00ed\7\t\2\2\u00ec\u00ee\58\35\2\u00ed\u00ec\3"+
+		"\2\2\2\u00ed\u00ee\3\2\2\2\u00ee\u00ef\3\2\2\2\u00ef\u00f8\5.\30\2\u00f0"+
+		"\u00f2\7\33\2\2\u00f1\u00f3\5<\37\2\u00f2\u00f1\3\2\2\2\u00f2\u00f3\3"+
+		"\2\2\2\u00f3\u00f4\3\2\2\2\u00f4\u00f5\5:\36\2\u00f5\u00f6\7\34\2\2\u00f6"+
+		"\u00f9\3\2\2\2\u00f7\u00f9\5\32\16\2\u00f8\u00f0\3\2\2\2\u00f8\u00f7\3"+
+		"\2\2\2\u00f9\u00fb\3\2\2\2\u00fa\u00fc\5F$\2\u00fb\u00fa\3\2\2\2\u00fb"+
+		"\u00fc\3\2\2\2\u00fc\61\3\2\2\2\u00fd\u00ff\5\64\33\2\u00fe\u00fd\3\2"+
+		"\2\2\u00fe\u00ff\3\2\2\2\u00ff\u0100\3\2\2\2\u0100\u0101\7\"\2\2\u0101"+
 		"\u0102\5L\'\2\u0102\63\3\2\2\2\u0103\u0104\b\33\1\2\u0104\u0105\5\66\34"+
 		"\2\u0105\u010b\3\2\2\2\u0106\u0107\f\3\2\2\u0107\u0108\7&\2\2\u0108\u010a"+
 		"\5\66\34\2\u0109\u0106\3\2\2\2\u010a\u010d\3\2\2\2\u010b\u0109\3\2\2\2"+
@@ -3098,7 +3100,7 @@ public class NCIdlParser extends Parser {
 		"\u016dG\3\2\2\2\u016e\u016f\t\n\2\2\u016fI\3\2\2\2\u0170\u0171\7 \2\2"+
 		"\u0171\u0172\7\60\2\2\u0172\u0173\7#\2\2\u0173\u0174\7\60\2\2\u0174\u0175"+
 		"\7!\2\2\u0175K\3\2\2\2\u0176\u0177\t\13\2\2\u0177M\3\2\2\2&RVgm\177\u0088"+
-		"\u008b\u008e\u00a2\u00ae\u00b5\u00bd\u00c1\u00c4\u00ca\u00d2\u00d9\u00e2"+
+		"\u008b\u008e\u009e\u00ae\u00b5\u00bd\u00c1\u00c4\u00ca\u00d2\u00d9\u00e2"+
 		"\u00e7\u00ed\u00f2\u00f8\u00fb\u00fe\u010b\u0116\u0127\u012c\u013d\u013f"+
 		"\u0149\u0159\u015f\u0162\u0166\u016c";
 	public static final ATN _ATN =

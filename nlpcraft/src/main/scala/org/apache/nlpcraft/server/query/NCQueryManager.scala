@@ -270,7 +270,7 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
                 tbl += (s"${b("Server Request ID")}", m(srvReqId))
                 tbl += (s"${b("Data")}", U.prettyJson(data.orNull).split("\n").toSeq)
 
-                logger.info(s"New request received:\n$tbl")
+                logger.info(s"New user request received:\n$tbl")
 
                 val enabledBuiltInToks = NCProbeManager.getModel(mdlId, span).enabledBuiltInTokens
 

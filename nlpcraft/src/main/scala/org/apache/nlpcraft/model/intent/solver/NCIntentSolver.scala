@@ -114,7 +114,6 @@ class NCIntentSolver(intents: List[(NCIdlIntent/*Intent*/, NCIntentMatch => NCRe
                     override val getContext: NCContext = ctx
                     override val getIntentTokens: JList[JList[NCToken]] = intentToks.map(_.asJava).asJava
                     override val getVariant: NCVariant = new NCVariantImpl(res.variant.tokens)
-                    override val isAmbiguous: Boolean = !res.isExactMatch
                     override val getIntentId: String = res.intentId
                     override def getTermTokens(idx: Int): JList[NCToken] = res.groups(idx).tokens.asJava
                     override def getTermTokens(termId: String): JList[NCToken] = res.groups.find(_.termId === termId).flatMap(grp => Some(grp.tokens)).getOrElse(Nil).asJava

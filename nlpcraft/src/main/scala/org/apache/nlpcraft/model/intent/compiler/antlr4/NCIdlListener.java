@@ -1,4 +1,4 @@
-// Generated from /Users/nivanov/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/model/intent/compiler/antlr4/NCIdl.g4 by ANTLR 4.9.1
+// Generated from C:/Users/Nikita Ivanov/Documents/GitHub/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/model/intent/compiler/antlr4\NCIdl.g4 by ANTLR 4.9.1
 package org.apache.nlpcraft.model.intent.compiler.antlr4;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -128,16 +128,6 @@ public interface NCIdlListener extends ParseTreeListener {
 	 */
 	void exitIntentId(NCIdlParser.IntentIdContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link NCIdlParser#orderedDecl}.
-	 * @param ctx the parse tree
-	 */
-	void enterOrderedDecl(NCIdlParser.OrderedDeclContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link NCIdlParser#orderedDecl}.
-	 * @param ctx the parse tree
-	 */
-	void exitOrderedDecl(NCIdlParser.OrderedDeclContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link NCIdlParser#mtdDecl}.
 	 * @param ctx the parse tree
 	 */
@@ -167,6 +157,16 @@ public interface NCIdlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitMetaDecl(NCIdlParser.MetaDeclContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link NCIdlParser#optDecl}.
+	 * @param ctx the parse tree
+	 */
+	void enterOptDecl(NCIdlParser.OptDeclContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NCIdlParser#optDecl}.
+	 * @param ctx the parse tree
+	 */
+	void exitOptDecl(NCIdlParser.OptDeclContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link NCIdlParser#jsonObj}.
 	 * @param ctx the parse tree
