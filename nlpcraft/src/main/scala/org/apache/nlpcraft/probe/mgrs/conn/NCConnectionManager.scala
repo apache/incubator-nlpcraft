@@ -32,8 +32,10 @@ import java.io.{EOFException, IOException, InterruptedIOException}
 import java.net.{InetAddress, NetworkInterface}
 import java.util
 import java.util.concurrent.CountDownLatch
-import java.util.{Properties, TimeZone}
+import java.util.{Collections, Properties, TimeZone}
 import scala.collection.mutable
+import scala.compat.java8.OptionConverters.RichOptionalGeneric
+import scala.jdk.CollectionConverters.{ListHasAsScala, MapHasAsJava, SeqHasAsJava, SetHasAsJava, SetHasAsScala}
 
 /**
   * Probe down/up link connection manager.
@@ -220,7 +222,7 @@ object NCConnectionManager extends NCService {
                             ): (
                                 java.util.Map[String, java.util.Map[String, java.util.Set[String]]],
                                 java.util.Set[String],
-                                java.util.Map[String, lang.Double]
+                                java.util.Map[String, java.lang.Double]
                             ) = {
                                 val ctxCatElems = mdl.getElements.asScala.flatMap(e =>
                                     e.getCategoryConfidence.asScala match {

@@ -337,7 +337,7 @@ object NCSuggestSynonymManager extends NCService {
                                             logger.debug(s"Executed: $i requests...")
 
                                             allSgsts.
-                                                computeIfAbsent(elmId, (_: String) => new CopyOnWriteArrayList[Suggestion]()).
+                                                computeIfAbsent(elmId, (_: String) => new CopyOnWriteArrayList[NCWordSuggestion]()).
                                                 addAll(resps.flatten.asJava)
 
                                             if (i == allReqsCnt)
