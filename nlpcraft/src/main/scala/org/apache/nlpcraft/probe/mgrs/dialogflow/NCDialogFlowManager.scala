@@ -18,13 +18,15 @@
 package org.apache.nlpcraft.probe.mgrs.dialogflow
 
 import io.opencensus.trace.Span
+import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.{NCService, _}
 import org.apache.nlpcraft.model.intent.solver.NCIntentSolverResult
 import org.apache.nlpcraft.model.{NCCompany, NCContext, NCDialogFlowItem, NCIntentMatch, NCResult, NCToken, NCUser, NCVariant}
 import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 
+import java.text.DateFormat
 import java.util
-import java.util.Optional
+import java.util.{Date, Optional}
 import scala.collection._
 
 /**
@@ -151,6 +153,7 @@ object NCDialogFlowManager extends NCService {
       *
       * @param usrId User ID.
       * @param mdlId Model ID.
+      * @param parent Optional parent span.
       * @return Dialog flow.
       */
     def getDialogFlow(usrId: Long, mdlId: String, parent: Span = null): Seq[NCDialogFlowItem] =
@@ -159,6 +162,48 @@ object NCDialogFlowManager extends NCService {
                 flow.getOrElseUpdate(Key(usrId, mdlId), mutable.ArrayBuffer.empty[NCDialogFlowItem])
             }
         }
+
+    /**
+     * Prints out ASCII table for current dialog flow.
+     *
+     * @param usrId User ID.
+     * @param mdlId Model ID.
+     * @param parent Optional parent span.
+     */
+    def ack(usrId: Long, mdlId: String, parent: Span = null): Unit = {
+        startScopedSpan("ack", parent, "usrId" -> usrId, "mdlId" -> mdlId) { _ =>
+            val curFlow = flow.synchronized {
+                flow.getOrElseUpdate(Key(usrId, mdlId), mutable.ArrayBuffer.empty[NCDialogFlowItem])
+            }
+
+            val tbl = NCAsciiTable(
+                "",
+                "Intent ID",
+                "Sever Request ID",
+                "Text",
+                "Received"
+            )
+
+            var i = 1
+
+            curFlow.foreach(x => {
+                tbl += (
+                    i,
+                    x.getIntentId,
+                    m(x.getServerRequestId),
+                    x.getNormalizedText,
+                    DateFormat.getDateTimeInstance.format(new Date(x.getReceiveTimestamp))
+                )
+
+                i += 1
+            })
+
+            logger.info(s"Current dialog flow (oldest first) for [" +
+                s"mdlId=$mdlId, " +
+                s"usrId=$usrId" +
+            s"]:\n${tbl.toString()}")
+        }
+    }
 
     /**
      *  Gets next clearing time.

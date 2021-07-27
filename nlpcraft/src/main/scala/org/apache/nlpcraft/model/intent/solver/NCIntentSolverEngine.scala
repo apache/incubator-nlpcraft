@@ -192,11 +192,16 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
 
         val req = ctx.getRequest
 
+        val usrId = req.getUser.getId
+        val mdlId = ctx.getModel.getId
+
         startScopedSpan("solve",
             "srvReqId" -> req.getServerRequestId,
-            "userId" -> req.getUser.getId,
-            "mdlId" -> ctx.getModel.getId,
-            "normText" -> req.getNormalizedText) { _ =>
+            "userId" -> usrId,
+            "mdlId" -> mdlId,
+            "normText" -> req.getNormalizedText) { span =>
+            NCDialogFlowManager.ack(usrId, mdlId, span)
+
             val matches = mutable.ArrayBuffer.empty[MatchHolder]
 
             // Find all matches across all intents and sentence variants.
