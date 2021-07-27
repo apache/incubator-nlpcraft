@@ -101,18 +101,20 @@ object NCCommandManager extends NCService {
                     case "S2P_PING" => ()
     
                     case "S2P_CLEAR_CONV" =>
-                        NCConversationManager.getConversation(
-                            msg.data[Long]("usrId"),
-                            msg.data[String]("mdlId"),
-                            span
-                        ).clearTokens((_: NCToken) => true)
+                        val usrId = msg.data[Long]("usrId")
+                        val mdlId = msg.data[String]("mdlId")
+
+                        NCConversationManager.getConversation(usrId, mdlId, span).clearTokens((_: NCToken) => true)
+
+                        logger.info(s"Cleared conversation history upon server request [usrId=$usrId, mdlId=$mdlId]")
 
                     case "S2P_CLEAR_DLG" =>
-                        NCDialogFlowManager.clear(
-                            msg.data[Long]("usrId"),
-                            msg.data[String]("mdlId"),
-                            span
-                        )
+                        val usrId = msg.data[Long]("usrId")
+                        val mdlId = msg.data[String]("mdlId")
+
+                        NCDialogFlowManager.clear(usrId, mdlId, span)
+
+                        logger.info(s"Cleared dialog history upon server request [usrId=$usrId, mdlId=$mdlId]")
 
                     case "S2P_ASK" =>
                         NCProbeEnrichmentManager.ask(
@@ -134,10 +136,8 @@ object NCCommandManager extends NCService {
                                 val mdlData = NCModelManager.getModel(mdlId)
 
                                 val macros: util.Map[String, String] = mdlData.model.getMacros
-                                val syns: util.Map[String, util.List[String]] =
-                                    mdlData.model.getElements.asScala.map(p => p.getId -> p.getSynonyms).toMap.asJava
-                                val samples: util.Map[String, util.List[util.List[String]]] =
-                                    mdlData.samples.map(p => p._1 -> p._2.map(_.asJava).asJava).toMap.asJava
+                                val syns: util.Map[String, util.List[String]] = mdlData.model.getElements.asScala.map(p => p.getId -> p.getSynonyms).toMap.asJava
+                                val samples: util.Map[String, util.List[util.List[String]]] = mdlData.samples.map(p => p._1 -> p._2.map(_.asJava).asJava).toMap.asJava
 
                                 NCProbeMessage(
                                     "P2S_MODEL_SYNS_INFO",
@@ -168,8 +168,7 @@ object NCCommandManager extends NCService {
 
                                 val mdl = NCModelManager.getModel(mdlId).model
 
-                                val elm = mdl.getElements.asScala.find(_.getId == elmId).
-                                    getOrElse(throw new NCE(s"Element not found in model: $elmId"))
+                                val elm = mdl.getElements.asScala.find(_.getId == elmId).getOrElse(throw new NCE(s"Element not found in model: $elmId"))
 
                                 val vals: util.Map[String, JList[String]] =
                                     if (elm.getValues != null)
@@ -205,7 +204,7 @@ object NCCommandManager extends NCService {
 
                                 val mdl = NCModelManager.getModel(mdlId).model
 
-                                val convertedMdl =
+                                val jsonMdl: NCModelView =
                                     new NCModelView {
                                         // As is.
                                         override def getId: String = mdl.getId
@@ -283,7 +282,7 @@ object NCCommandManager extends NCService {
                                 NCProbeMessage(
                                     "P2S_MODEL_INFO",
                                     "reqGuid" -> msg.getGuid,
-                                    "resp" -> JS_MAPPER.writeValueAsString(convertedMdl)
+                                    "resp" -> JS_MAPPER.writeValueAsString(jsonMdl)
                                 )
                             },
                             mkErrorMsg = e =>

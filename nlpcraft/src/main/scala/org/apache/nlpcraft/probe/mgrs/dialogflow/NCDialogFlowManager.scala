@@ -100,10 +100,17 @@ object NCDialogFlowManager extends NCService {
      */
     def addMatchedIntent(intentMatch: NCIntentMatch, res: NCIntentSolverResult, cbRes: NCResult, ctx: NCContext, parent: Span = null): Unit = {
         val usrId = ctx.getRequest.getUser.getId
+        val srvReqId = ctx.getRequest.getServerRequestId
         val mdlId = ctx.getModel.getId
         val intentId = res.intentId
         
-        startScopedSpan("addMatchedIntent", parent, "usrId" -> usrId, "mdlId" -> mdlId, "intentId" -> intentId) { _ =>
+        startScopedSpan(
+            "addMatchedIntent",
+            parent,
+            "usrId" -> usrId,
+            "mdlId" -> mdlId,
+            "srvReqId" -> srvReqId,
+            "intentId" -> intentId) { _ =>
             flow.synchronized {
                 val req = ctx.getRequest
                 
@@ -130,10 +137,11 @@ object NCDialogFlowManager extends NCService {
                 flow.notifyAll()
             }
 
-            logger.trace(s"Added matched intent to dialog flow [" +
+            logger.info(s"Added matched intent to dialog flow [" +
                 s"mdlId=$mdlId, " +
                 s"intentId=$intentId, " +
                 s"userId=$usrId" +
+                s"srvReqId=${m(srvReqId)}" +
             s"]")
         }
     }
@@ -206,7 +214,7 @@ object NCDialogFlowManager extends NCService {
                 flow.notifyAll()
             }
 
-            logger.trace(s"Dialog flow history is cleared [" +
+            logger.info(s"Dialog flow history is cleared [" +
                 s"usrId=$usrId, " +
                 s"mdlId=$mdlId" +
             s"]")
@@ -230,7 +238,7 @@ object NCDialogFlowManager extends NCService {
                 flow.notifyAll()
             }
 
-            logger.trace(s"Dialog flow history is cleared [" +
+            logger.info(s"Dialog flow history is cleared [" +
                 s"usrId=$usrId, " +
                 s"mdlId=$mdlId" +
             s"]")

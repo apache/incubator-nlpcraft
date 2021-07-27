@@ -330,7 +330,7 @@ object NCConfigurable extends LazyLogging {
             
             val lines = U.splitTrimFilter(cfg.origin().description(),",").drop(1).distinct
             
-            logger.info(s"NLPCraft configuration successfully loaded as a merge of: ${lines.mkString("\n  + ", "\n  + ", "")}")
+            logger.info(s"NLPCraft configuration successfully loaded as a merge of: ${lines.mkString("\n  +-- ", "\n  +-- ", "")}")
         }
 
         // Set parsed configuration into Java shim.

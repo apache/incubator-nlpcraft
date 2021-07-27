@@ -53,7 +53,7 @@ class NCStmOnlyModel extends NCAbstractTokensModel {
         "intent=i1 " +
         "    options={" +
         "        'ordered': false, " +
-        "        'unused_free_words': false, " +
+        "        'unused_free_words': true, " +
         "        'unused_sys_toks': false, " +
         "        'unused_usr_toks': false, " +
         "        'allow_stm_only': true" +
@@ -92,12 +92,12 @@ class NCStmOnlySpec extends NCMetaSpecAdapter {
         clear()
 
         checkResult("a b c d", "before")
-
+        checkResult("b a d c", "before")
         checkResult("a b", "i1")
 
-        clear()
+//        clear()
 
-        checkFail("a b", "i1")
+        checkResult("x y", "i1")
     }
 
     @Test
@@ -105,7 +105,6 @@ class NCStmOnlySpec extends NCMetaSpecAdapter {
         clear()
 
         checkResult("a b c d", "before")
-
         checkResult("c d", "i2")
 
         clear()

@@ -48,7 +48,7 @@ abstract class NCIgniteCacheStore[K, V] extends CacheStoreAdapter[K, V] with Ser
 
             if (e.getCause != null) {
                 println(s"|>    |")
-                println(s"|>    +--- Immediate cause: ${e.getCause.toString}")
+                println(s"|>    +-- Immediate cause: ${e.getCause.toString}")
             }
 
             throw new IgniteException("Cache store error.", e)

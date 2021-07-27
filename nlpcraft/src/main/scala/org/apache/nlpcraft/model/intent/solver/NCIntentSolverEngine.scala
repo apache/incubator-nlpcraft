@@ -128,7 +128,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
      * @param used
      * @param token
      */
-    private case class UseToken(
+    private case class IntentToken(
         var used: Boolean,
         var conv: Boolean,
         token: NCToken
@@ -141,7 +141,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
      */
     private case class TermMatch(
         termId: Option[String],
-        usedTokens: List[UseToken],
+        usedTokens: List[IntentToken],
         weight: Weight
     ) {
         lazy val maxIndex: Int = usedTokens.maxBy(_.token.index).token.index
@@ -154,7 +154,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
      */
     private case class TermTokensGroup(
         term: NCIdlTerm,
-        usedTokens: List[UseToken]
+        usedTokens: List[IntentToken]
     )
 
     /**
@@ -209,24 +209,23 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                         val callback = pair._2
 
                         // Isolated sentence tokens.
-                        val senToks = Seq.empty[UseToken] ++ availToks.map(UseToken(false, false, _))
+                        val senToks = Seq.empty[IntentToken] ++ availToks.map(IntentToken(false, false, _))
                         val senTokGroups = availToks.map(t => if (t.getGroups != null) t.getGroups.asScala.sorted else Seq.empty)
 
                         // Isolated conversation tokens.
                         val convToks =
                             if (intent.terms.exists(_.conv))
-                                Seq.empty[UseToken] ++
-                                    // We shouldn't mix tokens with same group from conversation
-                                    // history and processed sentence.
+                                Seq.empty[IntentToken] ++
+                                    // We do not mix tokens with same group from the conversation and given sentence.
                                     ctx.getConversation.getTokens.asScala.
                                         filter(t => {
                                             val convTokGroups = t.getGroups.asScala.sorted
 
                                             !senTokGroups.exists(convTokGroups.containsSlice)
                                         }).
-                                        map(UseToken(used = false, conv = true, _))
+                                        map(IntentToken(used = false, conv = true, _))
                             else
-                                Seq.empty[UseToken]
+                                Seq.empty[IntentToken]
 
                         // Solve intent in isolation.
                         solveIntent(ctx, intent, senToks, convToks, vrnIdx) match {
@@ -370,7 +369,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
      */
     private def mkPickTokens(im: IntentMatch): List[String] = {
         val buf = mutable.ListBuffer.empty[String]
-        
+
         val intent = im.intent
 
         buf += s"intent=${intent.id}"
@@ -410,8 +409,8 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
     private def solveIntent(
         ctx: NCContext,
         intent: NCIdlIntent,
-        senToks: Seq[UseToken],
-        convToks: Seq[UseToken],
+        senToks: Seq[IntentToken],
+        convToks: Seq[IntentToken],
         varIdx: Int
     ): Option[IntentMatch] = {
         val intentId = intent.id
@@ -467,7 +466,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
 
             if (!res) {
                 x(s"${bo(r("did not match"))}")
-        
+
                 flowMatched = false
             }
             else
@@ -593,7 +592,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                 else {
                     if (usedSenToks.isEmpty && usedConvToks.isEmpty)
                         logger.warn(s"Intent '$intentId' ${bo(y("matched"))} but no tokens were used $varStr.")
-    
+
                     // Number of remaining (unused) non-free words in the sentence is a measure of exactness of the match.
                     // The match is exact when all non-free words are used in that match.
                     // Negate to make sure the bigger (smaller negative number) is better.
@@ -628,12 +627,12 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
     private def solveTerm(
         term: NCIdlTerm,
         ctx: NCIdlContext,
-        senToks: Seq[UseToken],
-        convToks: Seq[UseToken]
+        senToks: Seq[IntentToken],
+        convToks: Seq[IntentToken]
     ): Option[TermMatch] = {
         if (senToks.isEmpty && convToks.isEmpty)
             logger.warn(s"No tokens available to match on for term '${term.toAnsiString}'.")
-            
+
         try
             solvePredicate(term.pred, ctx, term.min, term.max, senToks, convToks) match {
                 case Some((usedToks, predWeight)) => Some(
@@ -678,14 +677,14 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
         ctx: NCIdlContext,
         min: Int,
         max: Int,
-        senToks: Seq[UseToken],
-        convToks: Seq[UseToken]
-    ): Option[(List[UseToken], Weight)] = {
+        senToks: Seq[IntentToken],
+        convToks: Seq[IntentToken]
+    ): Option[(List[IntentToken], Weight)] = {
         // Algorithm is "hungry", i.e. it will fetch all tokens satisfying item's predicate
         // in entire sentence even if these tokens are separated by other already used tokens
         // and conversation will be used only to get to the 'max' number of the item.
 
-        var usedToks = List.empty[UseToken]
+        var usedToks = List.empty[IntentToken]
 
         var matches = 0
         var tokUses = 0
@@ -696,13 +695,19 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
         for (col <- allToks; tok <- col.filter(!_.used) if usedToks.lengthCompare(max) < 0) {
             val Z(res, uses) = pred.apply(tok.token, ctx)
 
-            if (res.asInstanceOf[Boolean]) {
-                matches += 1
+            res match {
+                case b: java.lang.Boolean =>
+                    if (b) {
+                        matches += 1
 
-                if (uses > 0) {
-                    tokUses += uses
-                    usedToks :+= tok
-                }
+                        if (uses > 0) {
+                            tokUses += uses
+                            usedToks :+= tok
+                        }
+                    }
+
+                case _ =>
+                    throw new NCE(s"Predicate returned non-boolean result: $res")
             }
         }
 
