@@ -58,8 +58,8 @@ class NCStmOnlyModel extends NCAbstractTokensModel {
         "        'unused_usr_toks': false, " +
         "        'allow_stm_only': true" +
         "    }" +
-        "    term(a)={tok_id() == 'a'}" +
-        "    term(b)={tok_id() == 'b'}"
+        "    term(a)~{tok_id() == 'a'}" +
+        "    term(b)~{tok_id() == 'b'}"
     )
     def i1(): NCResult = NCResult.text("i1")
 
@@ -95,8 +95,9 @@ class NCStmOnlySpec extends NCMetaSpecAdapter {
         checkResult("b a d c", "before")
         checkResult("a b", "i1")
 
-//        clear()
-
+        // This should match as 'i1' intent allows:
+        //   - unmatched free words, and
+        //   - all of its matched tokens to come from STM
         checkResult("x y", "i1")
     }
 

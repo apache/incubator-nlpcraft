@@ -106,7 +106,7 @@ object NCCommandManager extends NCService {
 
                         NCConversationManager.getConversation(usrId, mdlId, span).clearTokens((_: NCToken) => true)
 
-                        logger.info(s"Cleared conversation history upon server request [usrId=$usrId, mdlId=$mdlId]")
+                        logger.trace(s"Cleared conversation history upon server request [usrId=$usrId, mdlId=$mdlId]")
 
                     case "S2P_CLEAR_DLG" =>
                         val usrId = msg.data[Long]("usrId")
@@ -114,7 +114,7 @@ object NCCommandManager extends NCService {
 
                         NCDialogFlowManager.clear(usrId, mdlId, span)
 
-                        logger.info(s"Cleared dialog history upon server request [usrId=$usrId, mdlId=$mdlId]")
+                        logger.trace(s"Cleared dialog history upon server request [usrId=$usrId, mdlId=$mdlId]")
 
                     case "S2P_ASK" =>
                         NCProbeEnrichmentManager.ask(

@@ -569,7 +569,7 @@ public class NCTestClientBuilder {
                 resJs = restAskSync(txt);
             }
             catch (NCTestClientException e) {
-                log.info("'ask' request '{}' answered unsuccessfully with error: {}",
+                log.trace("'ask' request '{}' answered unsuccessfully with error: {}",
                     txt,
                     e.getLocalizedMessage()
                 );
@@ -613,7 +613,7 @@ public class NCTestClientBuilder {
                 srvReqId = restAsk(txt);
             }
             catch (NCTestClientException e) {
-                log.info("'ask' request '{}' answered unsuccessfully with error: {}",
+                log.trace("'ask' request '{}' answered unsuccessfully with error: {}",
                     txt,
                     e.getLocalizedMessage()
                 );
@@ -674,7 +674,7 @@ public class NCTestClientBuilder {
                 assert res.getResultType().isPresent() && res.getResult().isPresent();
 
                 if (respLog) {
-                    log.info("'ask' request '{}' answered successfully with '{}' result:\n{}",
+                    log.trace("'ask' request '{}' answered successfully with '{}' result:\n{}",
                         txt,
                         res.getResultType().get(),
                         mkPrettyString(
@@ -688,7 +688,7 @@ public class NCTestClientBuilder {
                 assert res.getResultError().isPresent();
 
                 if (respLog) {
-                    log.info("'ask' request '{}' answered unsuccessfully with result:\n{}", txt,
+                    log.trace("'ask' request '{}' answered unsuccessfully with result:\n{}", txt,
                         res.getResultError().get());
                 }
             }
@@ -896,7 +896,7 @@ public class NCTestClientBuilder {
          * @throws NCTestClientException Thrown in case of test client errors.
          */
         private void restCancel() throws IOException, NCTestClientException {
-            log.info("'cancel' request sent.");
+            log.trace("'cancel' request sent.");
 
             checkStatus(
                 gson.fromJson(
@@ -915,7 +915,7 @@ public class NCTestClientBuilder {
          * @throws NCTestClientException Thrown in case of test client errors.
          */
         private void restClearConversation() throws IOException, NCTestClientException {
-            log.info("'clear/conversation' request sent for data model: {}", mdlId);
+            log.trace("'clear/conversation' request sent for data model: {}", mdlId);
 
             checkStatus(gson.fromJson(
                 post(
@@ -933,7 +933,7 @@ public class NCTestClientBuilder {
          * @throws NCTestClientException Thrown in case of test client errors.
          */
         private void restClearDialog() throws IOException, NCTestClientException {
-            log.info("'clear/dialog' request sent for data model: {}", mdlId);
+            log.trace("'clear/dialog' request sent for data model: {}", mdlId);
 
             checkStatus(gson.fromJson(
                 post(
@@ -951,7 +951,7 @@ public class NCTestClientBuilder {
          * @throws NCTestClientException Thrown in case of test client errors.
          */
         private String restSignin() throws IOException, NCTestClientException {
-            log.info("'/signin' request sent for: {}", email);
+            log.trace("'/signin' request sent for: {}", email);
 
             String res = post("/signin", Pair.of("email", email), Pair.of("passwd", pswd));
 
@@ -969,7 +969,7 @@ public class NCTestClientBuilder {
          * @throws NCTestClientException Thrown in case of test client errors.
          */
         private NCRequestResultJson restAskSync(String txt) throws IOException, NCTestClientException {
-            log.info("'ask/sync' request '{}' sent for data model: {}", txt, mdlId);
+            log.trace("'ask/sync' request '{}' sent for data model: {}", txt, mdlId);
 
             return
                 gson.fromJson(
@@ -990,7 +990,7 @@ public class NCTestClientBuilder {
          * @throws NCTestClientException Thrown in case of test client errors.
          */
         private String restAsk(String txt) throws IOException, NCTestClientException {
-            log.info("'ask' request '{}' sent for data model: {}", txt, mdlId);
+            log.trace("'ask' request '{}' sent for data model: {}", txt, mdlId);
 
             Map<String, Object> m = gson.fromJson(post(
                 "ask",
@@ -1009,7 +1009,7 @@ public class NCTestClientBuilder {
          * @throws NCTestClientException Thrown in case of test client errors.
          */
         private void restSignout() throws IOException, NCTestClientException {
-            log.info("'/signout' request sent for: {}", email);
+            log.trace("'/signout' request sent for: {}", email);
 
             checkStatus(gson.fromJson(
                 post(

@@ -88,7 +88,7 @@ case class NCConversation(
             if (now - lastUpdateTstamp > timeoutMs) {
                 stm.clear()
 
-                logger.info(s"STM is reset by timeout [" +
+                logger.trace(s"STM is reset by timeout [" +
                     s"usrId=$usrId, " +
                     s"mdlId=$mdlId" +
                 s"]")
@@ -96,7 +96,7 @@ case class NCConversation(
             else if (depth > maxDepth) {
                 stm.clear()
 
-                logger.info(s"STM is reset after reaching max depth [" +
+                logger.trace(s"STM is reset after reaching max depth [" +
                     s"usrId=$usrId, " +
                     s"mdlId=$mdlId" +
                 s"]")
@@ -113,7 +113,7 @@ case class NCConversation(
                     if (delHs.nonEmpty) {
                         item.holders --= delHs
 
-                        logger.info(
+                        logger.trace(
                             s"STM tokens removed [" +
                                 s"usrId=$usrId, " +
                                 s"mdlId=$mdlId, " +
@@ -152,7 +152,7 @@ case class NCConversation(
                 ctx = ctx.asScala.filter(tok => !p.test(tok)).asJava
             }
 
-            logger.info(s"STM is cleared [" +
+            logger.trace(s"STM is cleared [" +
                 s"usrId=$usrId, " +
                 s"mdlId=$mdlId" +
             s"]")
@@ -174,7 +174,7 @@ case class NCConversation(
      */
     private def stepLogTokens(toks: Seq[NCToken]): Unit =
         for (tok <- toks)
-            logger.info(s"  ${c("+--")} $tok")
+            logger.trace(s"  ${c("+--")} $tok")
 
     /**
       * Adds given tokens to the conversation.
@@ -208,7 +208,7 @@ case class NCConversation(
                         lastUpdateTstamp
                     )
     
-                    logger.info(
+                    logger.trace(
                         s"Added new tokens to STM [" +
                             s"usrId=$usrId, " +
                             s"mdlId=$mdlId, " +
@@ -236,7 +236,7 @@ case class NCConversation(
                                 item.holders --= hs
     
                                 for (tok <- hs.map(_.token))
-                                    logger.info(s"STM token overridden: $tok")
+                                    logger.trace(s"STM token overridden: $tok")
 
                             case None => registered += grps
                         }
@@ -257,7 +257,7 @@ case class NCConversation(
         require(Thread.holdsLock(stm))
 
         if (ctx.isEmpty)
-            logger.info(s"STM is empty for [" +
+            logger.trace(s"STM is empty for [" +
                 s"mdlId=$mdlId, " +
                 s"usrId=$usrId" +
             s"]")

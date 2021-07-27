@@ -137,7 +137,7 @@ object NCDialogFlowManager extends NCService {
                 flow.notifyAll()
             }
 
-            logger.info(s"Added matched intent to dialog flow [" +
+            logger.trace(s"Added matched intent to dialog flow [" +
                 s"mdlId=$mdlId, " +
                 s"intentId=$intentId, " +
                 s"userId=$usrId" +
@@ -214,7 +214,7 @@ object NCDialogFlowManager extends NCService {
                 flow.notifyAll()
             }
 
-            logger.info(s"Dialog flow history is cleared [" +
+            logger.trace(s"Dialog flow history is cleared [" +
                 s"usrId=$usrId, " +
                 s"mdlId=$mdlId" +
             s"]")
@@ -238,7 +238,7 @@ object NCDialogFlowManager extends NCService {
                 flow.notifyAll()
             }
 
-            logger.info(s"Dialog flow history is cleared [" +
+            logger.trace(s"Dialog flow history is cleared [" +
                 s"usrId=$usrId, " +
                 s"mdlId=$mdlId" +
             s"]")
