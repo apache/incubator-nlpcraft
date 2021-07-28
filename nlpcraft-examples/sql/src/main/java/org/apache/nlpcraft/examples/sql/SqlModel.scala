@@ -400,7 +400,6 @@ class SqlModel extends NCModelFileAdapter("sql_model.yaml") with LazyLogging {
       * cleared between user questions, except for the obvious clarifying questions. We assume that question is being
       * clarified if its tokens satisfy one of criteria:
       *  - all these tokens are values (What about 'Exotic Liquids')
-      *  - all these tokens are columns (Give me 'last name')
       *  - new token is single date token (What about 'tomorrow')
       *  <p>
       *  If new sentence tokens satisfied any of these criteria,
@@ -418,10 +417,9 @@ class SqlModel extends NCModelFileAdapter("sql_model.yaml") with LazyLogging {
                 case Some(col) => col.getValue != null
                 case None => false
             }
-            def isColumn(t: NCToken): Boolean = findAnyColumnTokenOpt(t).isDefined
             def isDate(t: NCToken): Boolean = t.getId == "nlpcraft:date"
 
-            val ok = toks.forall(isValue) || toks.forall(isColumn) || toks.size == 1 && isDate(toks.head)
+            val ok = toks.forall(isValue) || toks.size == 1 && isDate(toks.head)
 
             if (!ok) {
                 m.getContext.getConversation.clearStm(_ => true)
