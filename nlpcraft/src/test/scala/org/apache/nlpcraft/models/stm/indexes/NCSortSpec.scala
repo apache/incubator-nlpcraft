@@ -26,6 +26,19 @@ import java.util.{List => JList}
 import scala.jdk.CollectionConverters.ListHasAsScala
 import scala.language.implicitConversions
 
+object NCSortSpecModelData {
+    private def nvl[T](list: JList[T]): Seq[T] = if (list == null) Seq.empty else list.asScala.toSeq
+
+    def apply(subjnotes: JList[String], subjindexes: JList[Int], bynotes: JList[String], byindexes: JList[Int]):
+        NCSortSpecModelData = new
+            NCSortSpecModelData(
+                subjnotes = nvl(subjnotes),
+                subjindexes = nvl(subjindexes),
+                bynotes = nvl(bynotes),
+                byindexes = nvl(byindexes)
+            )
+}
+
 case class NCSortSpecModelData(
     subjnotes: Seq[String] = Seq.empty,
     subjindexes: Seq[Int] = Seq.empty,
@@ -39,8 +52,10 @@ class NCSortSpecModel extends NCSpecModelAdapter {
         NCResult.json(
             mapper.writeValueAsString(
                 NCSortSpecModelData(
-                    bynotes = sort.meta[JList[String]]("nlpcraft:sort:bynotes").asScala.toSeq,
-                    byindexes = sort.meta[JList[Int]]("nlpcraft:sort:byindexes").asScala.toSeq
+                    subjnotes = sort.meta[JList[String]]("nlpcraft:sort:subjnotes"),
+                    subjindexes = sort.meta[JList[Int]]("nlpcraft:sort:subjindexes"),
+                    bynotes = sort.meta[JList[String]]("nlpcraft:sort:bynotes"),
+                    byindexes = sort.meta[JList[Int]]("nlpcraft:sort:byindexes")
                 )
             )
         )
@@ -62,5 +77,16 @@ class NCSortSpec extends NCTestContext {
             extract,
             NCSortSpecModelData(bynotes = Seq("B"), byindexes = Seq(1))
         )
+        checkResult(
+            "test test sort a a by a a",
+            extract,
+            NCSortSpecModelData(subjnotes = Seq("A"), subjindexes = Seq(3), bynotes = Seq("A"), byindexes = Seq(5))
+        )
+
+//        checkResult(
+//            "test test sort a a, a a by a a, a a",
+//            extract,
+//            NCSortSpecModelData(subjnotes = Seq("A"), subjindexes = Seq(2, 3), bynotes = Seq("A"), byindexes = Seq(5, 6))
+//        )
     }
 }
