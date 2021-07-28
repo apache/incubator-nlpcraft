@@ -25,13 +25,13 @@ import java.util
 import java.util.Collections
 import scala.jdk.CollectionConverters.{SeqHasAsJava, SetHasAsJava}
 
-object NCStmSpecModelAdapter {
+object NCSpecModelAdapter {
     val mapper = new ObjectMapper()
 
     mapper.registerModule(new DefaultScalaModule())
 }
 
-class NCStmSpecModelAdapter extends NCModelAdapter("nlpcraft.stm.idxs.test", "STM Indexes Test Model", "1.0") {
+class NCSpecModelAdapter extends NCModelAdapter("nlpcraft.stm.idxs.test", "STM Indexes Test Model", "1.0") {
     override def getElements: util.Set[NCElement] =
         Set(
             mkElement("A", "G", "a a"),

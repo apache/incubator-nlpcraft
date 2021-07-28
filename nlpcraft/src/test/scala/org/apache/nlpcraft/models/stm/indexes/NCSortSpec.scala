@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.models.stm.indexes
 
 import org.apache.nlpcraft.model.{NCIntent, NCIntentMatch, NCResult, _}
-import org.apache.nlpcraft.models.stm.indexes.NCStmSpecModelAdapter.mapper
+import org.apache.nlpcraft.models.stm.indexes.NCSpecModelAdapter.mapper
 import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
 import org.junit.jupiter.api.Test
 
@@ -26,36 +26,41 @@ import java.util.{List => JList}
 import scala.jdk.CollectionConverters.ListHasAsScala
 import scala.language.implicitConversions
 
-case class NCStmRelationSpecModelData(note: String, indexes: Seq[Int])
+case class NCSortSpecModelData(
+    subjnotes: Seq[String] = Seq.empty,
+    subjindexes: Seq[Int] = Seq.empty,
+    bynotes: Seq[String] = Seq.empty,
+    byindexes: Seq[Int] = Seq.empty
+)
 
-class NCStmRelationSpecModel extends NCStmSpecModelAdapter {
-    @NCIntent("intent=rel term(rel)~{tok_id() == 'nlpcraft:relation'} term(elem)~{has(tok_groups(), 'G')}*")
-    private def onRelation(ctx: NCIntentMatch, @NCIntentTerm("rel") rel: NCToken): NCResult =
+class NCSortSpecModel extends NCSpecModelAdapter {
+    @NCIntent("intent=onBySort term(sort)~{tok_id() == 'nlpcraft:sort'} term(elem)~{has(tok_groups(), 'G')}")
+    private def onBySort(ctx: NCIntentMatch, @NCIntentTerm("sort") sort: NCToken): NCResult =
         NCResult.json(
             mapper.writeValueAsString(
-                NCStmLimitSpecModelData(
-                    note = rel.meta[String]("nlpcraft:relation:note"),
-                    indexes = rel.meta[JList[Int]]("nlpcraft:relation:indexes").asScala.toSeq
+                NCSortSpecModelData(
+                    bynotes = sort.meta[JList[String]]("nlpcraft:sort:bynotes").asScala.toSeq,
+                    byindexes = sort.meta[JList[Int]]("nlpcraft:sort:byindexes").asScala.toSeq
                 )
             )
         )
 }
 
-@NCTestEnvironment(model = classOf[NCStmRelationSpecModel], startClient = true)
-class NCStmRelationSpec extends NCTestContext {
-    private def extract(s: String): NCStmRelationSpecModelData = mapper.readValue(s, classOf[NCStmRelationSpecModelData])
+@NCTestEnvironment(model = classOf[NCSortSpecModel], startClient = true)
+class NCSortSpec extends NCTestContext {
+    private def extract(s: String): NCSortSpecModelData = mapper.readValue(s, classOf[NCSortSpecModelData])
 
     @Test
     private[stm] def test(): Unit = {
         checkResult(
-            "compare a a and a a",
+            "test test sort by a a",
             extract,
-            NCStmRelationSpecModelData(note = "A", indexes = Seq(1, 3))
+            NCSortSpecModelData(bynotes = Seq("A"), byindexes = Seq(3))
         )
         checkResult(
-            "b b and b b",
+            "test b b",
             extract,
-            NCStmRelationSpecModelData(note = "B", indexes = Seq(0, 2))
+            NCSortSpecModelData(bynotes = Seq("B"), byindexes = Seq(1))
         )
     }
 }

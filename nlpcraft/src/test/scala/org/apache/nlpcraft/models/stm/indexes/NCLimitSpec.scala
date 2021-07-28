@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.models.stm.indexes
 
 import org.apache.nlpcraft.model.{NCIntent, NCIntentMatch, NCResult, _}
-import org.apache.nlpcraft.models.stm.indexes.NCStmSpecModelAdapter.mapper
+import org.apache.nlpcraft.models.stm.indexes.NCSpecModelAdapter.mapper
 import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
 import org.junit.jupiter.api.Test
 
@@ -26,14 +26,14 @@ import java.util.{List => JList}
 import scala.jdk.CollectionConverters.ListHasAsScala
 import scala.language.implicitConversions
 
-case class NCStmLimitSpecModelData(note: String, indexes: Seq[Int])
+case class NCLimitSpecModelData(note: String, indexes: Seq[Int])
 
-class NCStmLimitSpecModel extends NCStmSpecModelAdapter {
+class NCLimitSpecModel extends NCSpecModelAdapter {
     @NCIntent("intent=limit term(limit)~{tok_id() == 'nlpcraft:limit'} term(elem)~{has(tok_groups(), 'G')}")
     private def onLimit(ctx: NCIntentMatch, @NCIntentTerm("limit") limit: NCToken): NCResult =
         NCResult.json(
             mapper.writeValueAsString(
-                NCStmLimitSpecModelData(
+                NCLimitSpecModelData(
                     note = limit.meta[String]("nlpcraft:limit:note"),
                     indexes = limit.meta[JList[Int]]("nlpcraft:limit:indexes").asScala.toSeq
                 )
@@ -41,21 +41,21 @@ class NCStmLimitSpecModel extends NCStmSpecModelAdapter {
         )
 }
 
-@NCTestEnvironment(model = classOf[NCStmLimitSpecModel], startClient = true)
-class NCStmLimitSpec extends NCTestContext {
-    private def extract(s: String): NCStmLimitSpecModelData = mapper.readValue(s, classOf[NCStmLimitSpecModelData])
+@NCTestEnvironment(model = classOf[NCLimitSpecModel], startClient = true)
+class NCLimitSpec extends NCTestContext {
+    private def extract(s: String): NCLimitSpecModelData = mapper.readValue(s, classOf[NCLimitSpecModelData])
 
     @Test
     private[stm] def test(): Unit = {
         checkResult(
             "top 23 a a",
             extract,
-            NCStmLimitSpecModelData(note = "A", indexes = Seq(1))
+            NCLimitSpecModelData(note = "A", indexes = Seq(1))
         )
         checkResult(
             "test test b b",
             extract,
-            NCStmLimitSpecModelData(note = "B", indexes = Seq(2))
+            NCLimitSpecModelData(note = "B", indexes = Seq(2))
         )
     }
 }
