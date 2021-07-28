@@ -2480,7 +2480,37 @@ object NCCli extends NCCliBase {
                         )
                     }).asJava)
                 }
-                // Complete paths.
+                // Complete path for OS commands (starting with '$').
+                else if (words.head.head == '$' && words.last.contains(PATH_SEP_STR)) {
+                    var path = words.last // Potential path.
+
+                    var prefix = ""
+                    var suffix = ""
+
+                    if (path.nonEmpty) {
+                        val first = path.head
+                        val last = path.last
+
+                        if (first == '"' || first == '\'') {
+                            prefix = first.toString
+                            path = path.drop(1)
+                        }
+                        if (last == '"' || last == '\'') {
+                            suffix = last.toString
+                            path = path.dropRight(1)
+                        }
+
+                        fsCompleter.fillCandidates(
+                            reader,
+                            null,
+                            path,
+                            prefix,
+                            suffix,
+                            candidates
+                        )
+                    }
+                }
+                // Complete paths for commands.
                 else if (words.size > 1 && isFsPath(words.head, words.last))
                     splitEqParam(words.last) match {
                         case Some((name, p)) =>
