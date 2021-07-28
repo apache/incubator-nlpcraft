@@ -2460,12 +2460,8 @@ object NCCli extends NCCliBase {
             override def complete(reader: LineReader, line: ParsedLine, candidates: java.util.List[Candidate]): Unit = {
                 val words = line.words().asScala
 
-                // Don't complete if the line starts with '$'.
-                if (words.nonEmpty && words.head.nonEmpty && words.head.head == '$') {
-                    // No-op.
-                }
                 // Complete command names.
-                else if (words.isEmpty || (words.size == 1 && !cmds.map(_._1).contains(words.head))) {
+                if (words.isEmpty || (words.size == 1 && !cmds.map(_._1).contains(words.head))) {
                     // Add all commands as a candidates.
                     candidates.addAll(cmds.map(n => {
                         val name = n._1
@@ -2481,7 +2477,7 @@ object NCCli extends NCCliBase {
                     }).asJava)
                 }
                 // Complete path for OS commands (starting with '$').
-                else if (words.head.head == '$' && words.last.contains(PATH_SEP_STR)) {
+                else if (words.nonEmpty && words.head.nonEmpty && words.head.head == '$' && words.last.contains(PATH_SEP_STR)) {
                     var path = words.last // Potential path.
 
                     var prefix = ""
@@ -2499,16 +2495,16 @@ object NCCli extends NCCliBase {
                             suffix = last.toString
                             path = path.dropRight(1)
                         }
-
-                        fsCompleter.fillCandidates(
-                            reader,
-                            null,
-                            path,
-                            prefix,
-                            suffix,
-                            candidates
-                        )
                     }
+
+                    fsCompleter.fillCandidates(
+                        reader,
+                        null,
+                        path,
+                        prefix,
+                        suffix,
+                        candidates
+                    )
                 }
                 // Complete paths for commands.
                 else if (words.size > 1 && isFsPath(words.head, words.last))
