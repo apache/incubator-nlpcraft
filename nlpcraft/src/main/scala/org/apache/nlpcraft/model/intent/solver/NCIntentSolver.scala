@@ -188,32 +188,36 @@ class NCIntentSolver(intents: List[(NCIdlIntent/*Intent*/, NCIntentMatch => NCRe
         /**
           * Gets new references candidates.
           *
-          * Initially, it finds common group for all conversation's references.
-          * Next, for found group, it tries to find tokens with this group among non-conversation tokens.
-          * If these non-conversation tokens found, they should be validated.
+          * 1. It finds references in conversation. It should be here because not found among non conversation tokens.
+          * 2. Next, it finds common group for all found conversation's references, it also should be.
+          * 3. Next, for found group, it tries to find actual tokens with this group among non-conversation tokens.
+          * If these non-conversation tokens found, they should be validated and returned,
+          * If not found - conversation tokens returned.
           *
-          * @param complexTokId Token id, which has references.
-          * @param convRefs Conversation references. Valid references which found in conversation.
-          * @param nonConvToks Non conversation tokens.
+          * @param refId Reference token ID.
+          * @param refIdxs Reference indexes.
           * @param validate Validate predicate.
           */
         @throws[NCE]
-        def getForRecalc(
-            complexTokId: String, convRefs: Seq[NCToken], nonConvToks: Seq[NCToken], validate: Seq[NCToken] => Boolean
-        ): Seq[NCToken] = {
+        def getForRecalc(refId: String, refIdxs: Seq[Int], validate: Seq[NCToken] => Boolean): Seq[NCToken] = {
+            val convRefs = allConvToks.filter(_.getId == refId)
+
+            if (convRefs.map(_.getIndex).sorted != refIdxs.sorted)
+                throw new NCE(s"Conversation references are not found [id=$refId, indexes=${refIdxs.mkString(", ")}]")
+
             val convGs = convRefs.map(_.getGroups.asScala)
             val commonConvGs = convGs.foldLeft(convGs.head)((g1, g2) => g1.intersect(g2))
 
             if (commonConvGs.isEmpty)
-                throw new NCE(s"Conversation references don't have common group [id=$complexTokId]")
+                throw new NCE(s"Conversation references don't have common group [id=$refId]")
 
-            val actualRefs = nonConvToks.filter(_.getGroups.asScala.exists(commonConvGs.contains))
+            val actualNonConvRefs = nonConvToks.filter(_.getGroups.asScala.exists(commonConvGs.contains))
 
-            if (actualRefs.nonEmpty) {
-                if (!validate(actualRefs))
-                    throw new NCE(s"Variant references are not found for recalculation [tokenId=$complexTokId]")
+            if (actualNonConvRefs.nonEmpty) {
+                if (!validate(actualNonConvRefs))
+                    throw new NCE(s"Actual valid variant references are not found for recalculation [id=$refId]")
 
-                actualRefs
+                actualNonConvRefs
             }
             else
                 convRefs
@@ -253,17 +257,9 @@ class NCIntentSolver(intents: List[(NCIdlIntent/*Intent*/, NCIntentMatch => NCRe
                         if (notFound.nonEmpty) {
                             notFound.
                                 groupBy { case (refId, _) => refId }.
-                                map { case (refId, data) =>  refId -> data.map(_._2).sorted }.
+                                map { case (refId, data) =>  refId -> data.map(_._2) }.
                                 foreach { case (refId, refIdxs) =>
-                                    val convRefs = allConvToks.filter(_.getId == refId)
-
-                                    if (convRefs.map(_.getIndex).sorted != refIdxs)
-                                        throw new NCE(
-                                            s"Conversation references are not found [id=$refId, " +
-                                            s"indexes=${refIdxs.mkString(", ")}]"
-                                        )
-
-                                    getForRecalc(refId, convRefs, nonConvToks, _.size != refIdxs.size).
+                                    getForRecalc(refId, refIdxs, _.size != refIdxs.size).
                                         foreach(t => data += t.getId -> t.getIndex)
                                 }
 
@@ -286,12 +282,7 @@ class NCIntentSolver(intents: List[(NCIdlIntent/*Intent*/, NCIntentMatch => NCRe
                 val refIdx = refIdxs.head
 
                 if (!nonConvToks.exists(isReference(_, refId, refIdx))) {
-                    val convRefs = allConvToks.filter(_.getId == refId)
-
-                    if (convRefs.size != 1 || convRefs.head.getIndex != refIdx)
-                        throw new NCE(s"Conversation reference is not found [id=$refId, index=$refIdx]")
-
-                    val ref = getForRecalc(refId, convRefs, nonConvToks, _.size == 1).head
+                    val ref = getForRecalc(refId, Seq(refIdx), _.size == 1).head
 
                     convTok.getMetadata.put(s"nlpcraft:limit:note", ref.getId)
                     convTok.getMetadata.put(s"nlpcraft:limit:indexes", Collections.singleton(ref.getIndex))
@@ -307,20 +298,11 @@ class NCIntentSolver(intents: List[(NCIdlIntent/*Intent*/, NCIntentMatch => NCRe
                     throw new NCE(s"References are not found [id=$refId, indexes=${refIdxs.mkString(", ")}]")
 
                 if (nonConvRefs.isEmpty) {
-                    val convRefs = allConvToks.filter(t => t.getId == refId  && refIdxs.contains(t.getIndex))
-
-                    if (convRefs.size != refIdxs.size)
-                        throw new NCE(
-                            s"Conversation references are not found [id=$refId, " +
-                                s"indexes=${refIdxs.mkString(", ")}]"
-                        )
-
-                    val refs = getForRecalc(refId, convRefs, nonConvToks, _.size == refIdxs.size)
-
+                    val refs = getForRecalc(refId, refIdxs, _.size == refIdxs.size)
                     val refsIds = refs.map(_.getId).distinct
 
                     if (refsIds.size != 1)
-                        throw new NCE(s"Variant references are not found [id=$refId, count=${refIdxs.size}]")
+                        throw new NCE(s"Valid variant references are not found [id=$refId, count=${refIdxs.size}]")
 
                     convTok.getMetadata.put(s"nlpcraft:relation:note", refsIds.head)
                     convTok.getMetadata.put(s"nlpcraft:relation:indexes", refs.map(_.getIndex).asJava)
