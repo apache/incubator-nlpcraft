@@ -22,7 +22,7 @@ import org.apache.nlpcraft.common.nlp.NCNlpSentence.NoteLink
 import org.apache.nlpcraft.common.nlp.pos.NCPennTreebank
 import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote, NCNlpSentenceToken}
 import org.apache.nlpcraft.common.{NCE, NCService, U, _}
-import org.apache.nlpcraft.model.{NCModel, NCToken}
+import org.apache.nlpcraft.model.NCModel
 import org.apache.nlpcraft.probe.mgrs.NCTokenPartKey
 
 import java.io.{Serializable => JSerializable}
@@ -42,6 +42,7 @@ object NCSentenceManager extends NCService {
     type CacheKey = Seq[Set[NCNlpSentenceNote]]
     type CacheValue = Seq[Seq[NCNlpSentenceNote]]
     private val combCache = mutable.HashMap.empty[String, mutable.HashMap[CacheKey, CacheValue]]
+
 
     /**
       *
@@ -790,57 +791,4 @@ object NCSentenceManager extends NCService {
       * @param srvReqId
       */
     def clearCache(srvReqId: String): Unit = combCache -= srvReqId
-
-
-
-    /**
-      *
-      * @param convTok
-      * @param nonConvToks
-      * @param allConvToks
-      */
-    def fixMeta(convTok: NCToken, nonConvToks: Seq[NCToken], allConvToks: Seq[NCToken]): Unit =
-        convTok.getId match {
-            case "nlpcraft:sort" =>
-                def fix(notesName: String, idxsName: String): Unit = {
-                    val notes = convTok.meta[JList[String]](s"nlpcraft:sort:$notesName")
-                    val idxs = convTok.meta[JList[Int]](s"nlpcraft:sort:$idxsName")
-
-                    require(notes == null && idxs == null || notes.size() == idxs.size())
-
-                    if (notes != null && !notes.isEmpty) {
-                        val data: Seq[(String, Int)] =
-                            notes.asScala.zip(idxs.asScala).map { case (note, idx) =>
-                                nonConvToks.find(t => t.getId == note && t.getIndex == idx) match {
-                                    case Some(_) => (note, idx)
-                                    case None =>
-                                        val ref =
-                                            allConvToks.
-                                                find(t => t.getId == note && t.getIndex == idx).
-                                                getOrElse(
-                                                    throw new NCE(s"Reference is not found [note=$note, index=$idx]")
-                                                )
-
-                                        val newRef =
-                                            nonConvToks.
-                                                find(t =>
-                                                    t.getGroups.asScala.toSet.intersect(ref.getGroups.asScala.toSet).nonEmpty
-                                                ).
-                                                getOrElse(
-                                                    throw new NCE(s"New reference is not found [note=$note, index=$idx]")
-                                                )
-
-                                        (newRef.getId, newRef.getIndex)
-                                }
-                            }
-
-                        convTok.getMetadata.put(s"nlpcraft:sort:$notesName", data.map(_._1).asJava)
-                        convTok.getMetadata.put(s"nlpcraft:sort:$idxsName", data.map(_._2).asJava)
-                    }
-                }
-
-                fix("bynotes", "byindexes")
-                fix("subjnotes", "subjindexes")
-            case _ => // TODO: implement all other.
-        }
 }
