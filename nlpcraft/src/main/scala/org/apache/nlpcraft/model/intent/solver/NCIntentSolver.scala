@@ -290,7 +290,7 @@ class NCIntentSolver(intents: List[(NCIdlIntent/*Intent*/, NCIntentMatch => NCRe
                     val ref = getForRecalc(refId, Seq(refIdx), _.size == 1).head
 
                     convTok.getMetadata.put(s"nlpcraft:limit:note", ref.getId)
-                    convTok.getMetadata.put(s"nlpcraft:limit:indexes", Collections.singleton(ref.getIndex))
+                    convTok.getMetadata.put(s"nlpcraft:limit:indexes", Collections.singletonList(ref.getIndex))
                 }
 
             case "nlpcraft:relation" =>
