@@ -215,7 +215,12 @@ class NCIntentSolver(intents: List[(NCIdlIntent/*Intent*/, NCIntentMatch => NCRe
 
             if (actualNonConvRefs.nonEmpty) {
                 if (!validate(actualNonConvRefs))
-                    throw new NCE(s"Actual valid variant references are not found for recalculation [id=$refId]")
+                    throw new NCE(
+                        s"Actual valid variant references are not found for recalculation [" +
+                            s"id=$refId, " +
+                            s"actualNonConvRefs=${actualNonConvRefs.map(p => s"${p.getOriginalText}(${p.getId}-${p.getIndex})").mkString(",")}" +
+                            s"]"
+                    )
 
                 actualNonConvRefs
             }
@@ -259,7 +264,7 @@ class NCIntentSolver(intents: List[(NCIdlIntent/*Intent*/, NCIntentMatch => NCRe
                                 groupBy { case (refId, _) => refId }.
                                 map { case (refId, data) =>  refId -> data.map(_._2) }.
                                 foreach { case (refId, refIdxs) =>
-                                    getForRecalc(refId, refIdxs, _.size != refIdxs.size).
+                                    getForRecalc(refId, refIdxs, _.size == refIdxs.size).
                                         foreach(t => data += t.getId -> t.getIndex)
                                 }
 
@@ -302,7 +307,7 @@ class NCIntentSolver(intents: List[(NCIdlIntent/*Intent*/, NCIntentMatch => NCRe
                     val refsIds = refs.map(_.getId).distinct
 
                     if (refsIds.size != 1)
-                        throw new NCE(s"Valid variant references are not found [id=$refId, count=${refIdxs.size}]")
+                        throw new NCE(s"Valid variant references are not found [id=$refId]")
 
                     convTok.getMetadata.put(s"nlpcraft:relation:note", refsIds.head)
                     convTok.getMetadata.put(s"nlpcraft:relation:indexes", refs.map(_.getIndex).asJava)

@@ -98,9 +98,9 @@ class NCStmIndexesTestModelSpec extends NCTestContext {
             NCStmIndexesTestModelData(bynotes = Seq("A"), byindexes = Seq(3))
         )
         checkResult(
-            "b b",
+            "test b b",
             extract,
-            NCStmIndexesTestModelData(bynotes = Seq("B"), byindexes = Seq(0))
+            NCStmIndexesTestModelData(bynotes = Seq("B"), byindexes = Seq(1))
         )
     }
 }
