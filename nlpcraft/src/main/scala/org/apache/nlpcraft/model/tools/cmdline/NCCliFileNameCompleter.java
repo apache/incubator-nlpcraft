@@ -38,7 +38,7 @@ class NCCliFileNameCompleter
     /**
      *
      * @param reader Line reader for JLine.
-     * @param paramName Name of the parameter.
+     * @param paramName Optional name of the parameter.
      * @param pathBuf Current path string.
      * @param prefix Path prefix (like a quote).
      * @param suffix Path suffix (like a quote).
@@ -79,11 +79,12 @@ class NCCliFileNameCompleter
             try (DirectoryStream<Path> dir = Files.newDirectoryStream(curPath, this::accept)) {
                 dir.forEach(path -> {
                     String value = curBuf + path.getFileName().toString();
+                    String paramEq = paramName != null ? paramName + "=" : "";
 
                     if (Files.isDirectory(path)) {
                         candidates.add(
                             new Candidate(
-                                paramName + "=" + prefix + value + (reader.isSet(LineReader.Option.AUTO_PARAM_SLASH) ? sep : "") + suffix,
+                                paramEq + prefix + value + (reader.isSet(LineReader.Option.AUTO_PARAM_SLASH) ? sep : "") + suffix,
                                 getDisplay(reader.getTerminal(), path, resolver, sep),
                                 null,
                                 null,
@@ -95,7 +96,7 @@ class NCCliFileNameCompleter
                     } else {
                         candidates.add(
                             new Candidate(
-                                paramName + "=" + prefix + value + suffix,
+                                paramEq + prefix + value + suffix,
                                 getDisplay(reader.getTerminal(), path, resolver, sep),
                                 null,
                                 null,
