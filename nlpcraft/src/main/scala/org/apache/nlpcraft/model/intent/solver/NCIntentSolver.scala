@@ -175,45 +175,46 @@ class NCIntentSolver(intents: List[(NCIdlIntent/*Intent*/, NCIntentMatch => NCRe
 
     /**
       *
-      * @param convTok4Fix
+      * @param convTokToFix
       * @param vrntNotConvToks
       * @param allConvToks
       */
     @throws[NCE]
     @throws[NCIntentSkip]
-    private def fixBuiltTokenMeta(convTok4Fix: NCToken, vrntNotConvToks: Seq[NCToken], allConvToks: Seq[NCToken]): Unit = {
+    private def fixBuiltTokenMeta(convTokToFix: NCToken, vrntNotConvToks: Seq[NCToken], allConvToks: Seq[NCToken]): Unit = {
         def isReference(tok: NCToken, id: String, idx: Int): Boolean = tok.getId == id && tok.getIndex == idx
 
         /**
-          * Gets new references candidates.
-          *
-          * 1. It finds references in conversation. It should be here because not found among non conversation tokens.
-          * 2. Next, it finds common group for all found conversation's references, it also should be.
-          * 3. Next, for found group, it tries to find actual tokens with this group among non-conversation tokens.
-          * If these non-conversation tokens found, they should be validated and returned,
-          * If not found - conversation tokens returned.
-
-          * @param refId Reference token ID.
-          * @param refIdxs Reference indexes.
-          * @param validate Validate predicate.
-          * @throws NCE It means that we sentence is invalid, internal error.
-          * @throws NCIntentSkip It means that we try to process invalid variant and it should be skipped.
-          */
+         * Gets new references candidates.
+         *
+         * 1. It attempts to find references in the conversation. They should be here because they were not found
+         *    among non conversation tokens.
+         * 2. Next, it finds common group for all found conversation's references.
+         * 3. Next, for the found group, it tries to find actual tokens with this group among non-conversation tokens.
+         *    If these non-conversation tokens found, they should be validated and returned. If not found -
+         *    conversation tokens returned.
+         *
+         * @param refId ID of the token being referenced.
+         * @param refIdxs Reference indexes.
+         * @param validate Validate predicate.
+         * @throws NCE It means that we sentence is invalid, internal error.
+         * @throws NCIntentSkip It means that we are trying to process an invalid variant and the intent should be skipped.
+         */
         @throws[NCE]
         @throws[NCIntentSkip]
-        def getForRecalc(refId: String, refIdxs: Seq[Int], validate: Seq[NCToken] => Boolean): Seq[NCToken] = {
+        def getNewReferences(refId: String, refIdxs: Seq[Int], validate: Seq[NCToken] => Boolean): Seq[NCToken] = {
             val convRefs = allConvToks.filter(_.getId == refId)
 
             if (convRefs.map(_.getIndex).sorted != refIdxs.sorted)
                 throw new NCE(s"Conversation references are not found [id=$refId, indexes=${refIdxs.mkString(", ")}]")
 
-            val convGs = convRefs.map(_.getGroups.asScala)
-            val commonConvGs = convGs.foldLeft(convGs.head)((g1, g2) => g1.intersect(g2))
+            val convGrps = convRefs.map(_.getGroups.asScala)
+            val commonConvGrps = convGrps.foldLeft(convGrps.head)((g1, g2) => g1.intersect(g2))
 
-            if (commonConvGs.isEmpty)
+            if (commonConvGrps.isEmpty)
                 throw new NCE(s"Conversation references don't have common group [id=$refId]")
 
-            val actNonConvRefs = vrntNotConvToks.filter(_.getGroups.asScala.exists(commonConvGs.contains))
+            val actNonConvRefs = vrntNotConvToks.filter(_.getGroups.asScala.exists(commonConvGrps.contains))
 
             if (actNonConvRefs.nonEmpty) {
                 if (!validate(actNonConvRefs))
@@ -221,7 +222,7 @@ class NCIntentSolver(intents: List[(NCIdlIntent/*Intent*/, NCIntentMatch => NCRe
                         s"Actual valid variant references are not found for recalculation [" +
                             s"id=$refId, " +
                             s"actualNonConvRefs=${actNonConvRefs.mkString(",")}" +
-                            s"]"
+                        s"]"
                     )
 
                 actNonConvRefs
@@ -230,7 +231,7 @@ class NCIntentSolver(intents: List[(NCIdlIntent/*Intent*/, NCIntentMatch => NCRe
                 convRefs
         }
 
-        convTok4Fix.getId match {
+        convTokToFix.getId match {
             case "nlpcraft:sort" =>
                 def getNotNullSeq[T](tok: NCToken, name: String): Seq[T] = {
                     val list = tok.meta[JList[T]](name)
@@ -239,8 +240,8 @@ class NCIntentSolver(intents: List[(NCIdlIntent/*Intent*/, NCIntentMatch => NCRe
                 }
 
                 def process(notesName: String, idxsName: String): Unit = {
-                    val refIds: Seq[String] = getNotNullSeq(convTok4Fix, s"nlpcraft:sort:$notesName")
-                    val refIdxs: Seq[Int] = getNotNullSeq(convTok4Fix, s"nlpcraft:sort:$idxsName")
+                    val refIds: Seq[String] = getNotNullSeq(convTokToFix, s"nlpcraft:sort:$notesName")
+                    val refIdxs: Seq[Int] = getNotNullSeq(convTokToFix, s"nlpcraft:sort:$idxsName")
 
                     require(refIds.length == refIdxs.length)
 
@@ -249,8 +250,8 @@ class NCIntentSolver(intents: List[(NCIdlIntent/*Intent*/, NCIntentMatch => NCRe
                         var data = mutable.ArrayBuffer.empty[(String, Int)]
                         val notFound = mutable.ArrayBuffer.empty[(String, Int)]
 
-                        // Sort references can be different types.
-                        // Part of them can be in conversation, part of them - in actual variant.
+                        // Sort references can be of different types.
+                        // Part of them can be in conversation, part of them - in the actual variant.
                         refIds.zip(refIdxs).map { case (refId, refIdx) =>
                             val seq =
                                 vrntNotConvToks.find(isReference(_, refId, refIdx)) match {
@@ -266,38 +267,39 @@ class NCIntentSolver(intents: List[(NCIdlIntent/*Intent*/, NCIntentMatch => NCRe
                                 groupBy { case (refId, _) => refId }.
                                 map { case (refId, data) =>  refId -> data.map(_._2) }.
                                 foreach { case (refId, refIdxs) =>
-                                    getForRecalc(refId, refIdxs, _.size == refIdxs.size).
+                                    getNewReferences(refId, refIdxs, _.size == refIdxs.size).
                                         foreach(t => data += t.getId -> t.getIndex)
                                 }
 
                             data = data.sortBy(_._2)
 
-                            convTok4Fix.getMetadata.put(s"nlpcraft:sort:$notesName", data.map(_._1).asJava)
-                            convTok4Fix.getMetadata.put(s"nlpcraft:sort:$idxsName", data.map(_._2).asJava)
+                            convTokToFix.getMetadata.put(s"nlpcraft:sort:$notesName", data.map(_._1).asJava)
+                            convTokToFix.getMetadata.put(s"nlpcraft:sort:$idxsName", data.map(_._2).asJava)
                         }
                     }
                 }
 
                 process("bynotes", "byindexes")
                 process("subjnotes", "subjindexes")
+
             case "nlpcraft:limit" =>
-                val refId = convTok4Fix.meta[String]("nlpcraft:limit:note")
-                val refIdxs = convTok4Fix.meta[JList[Int]]("nlpcraft:limit:indexes").asScala
+                val refId = convTokToFix.meta[String]("nlpcraft:limit:note")
+                val refIdxs = convTokToFix.meta[JList[Int]]("nlpcraft:limit:indexes").asScala
 
                 require(refIdxs.size == 1)
 
                 val refIdx = refIdxs.head
 
                 if (!vrntNotConvToks.exists(isReference(_, refId, refIdx))) {
-                    val newRef = getForRecalc(refId, Seq(refIdx), _.size == 1).head
+                    val newRef = getNewReferences(refId, Seq(refIdx), _.size == 1).head
 
-                    convTok4Fix.getMetadata.put(s"nlpcraft:limit:note", newRef.getId)
-                    convTok4Fix.getMetadata.put(s"nlpcraft:limit:indexes", Collections.singletonList(newRef.getIndex))
+                    convTokToFix.getMetadata.put(s"nlpcraft:limit:note", newRef.getId)
+                    convTokToFix.getMetadata.put(s"nlpcraft:limit:indexes", Collections.singletonList(newRef.getIndex))
                 }
 
             case "nlpcraft:relation" =>
-                val refId = convTok4Fix.meta[String]("nlpcraft:relation:note")
-                val refIdxs = convTok4Fix.meta[JList[Int]]("nlpcraft:relation:indexes").asScala.sorted
+                val refId = convTokToFix.meta[String]("nlpcraft:relation:note")
+                val refIdxs = convTokToFix.meta[JList[Int]]("nlpcraft:relation:indexes").asScala.sorted
 
                 val nonConvRefs = vrntNotConvToks.filter(t => t.getId == refId && refIdxs.contains(t.getIndex))
 
@@ -305,14 +307,14 @@ class NCIntentSolver(intents: List[(NCIdlIntent/*Intent*/, NCIntentMatch => NCRe
                     throw new NCE(s"References are not found [id=$refId, indexes=${refIdxs.mkString(", ")}]")
 
                 if (nonConvRefs.isEmpty) {
-                    val newRefs = getForRecalc(refId, refIdxs, _.size == refIdxs.size)
+                    val newRefs = getNewReferences(refId, refIdxs, _.size == refIdxs.size)
                     val newRefsIds = newRefs.map(_.getId).distinct
 
                     if (newRefsIds.size != 1)
                         throw new NCE(s"Valid variant references are not found [id=$refId]")
 
-                    convTok4Fix.getMetadata.put(s"nlpcraft:relation:note", newRefsIds.head)
-                    convTok4Fix.getMetadata.put(s"nlpcraft:relation:indexes", newRefs.map(_.getIndex).asJava)
+                    convTokToFix.getMetadata.put(s"nlpcraft:relation:note", newRefsIds.head)
+                    convTokToFix.getMetadata.put(s"nlpcraft:relation:indexes", newRefs.map(_.getIndex).asJava)
                 }
 
             case _ => // No-op.
