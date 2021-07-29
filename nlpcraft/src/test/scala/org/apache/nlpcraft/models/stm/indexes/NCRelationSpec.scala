@@ -26,19 +26,47 @@ import java.util.{List => JList}
 import scala.jdk.CollectionConverters.ListHasAsScala
 import scala.language.implicitConversions
 
-case class NCRelationSpecModelData(note: String, indexes: Seq[Int])
+case class NCRelationSpecModelData(intentId: String, note: String, indexes: Seq[Int])
 
 class NCRelationSpecModel extends NCSpecModelAdapter {
-    @NCIntent("intent=rel term(rel)~{tok_id() == 'nlpcraft:relation'} term(elem)~{has(tok_groups(), 'G')}*")
-    private def onRelation(ctx: NCIntentMatch, @NCIntentTerm("rel") rel: NCToken): NCResult =
+    private def mkResult(intentId: String, rel: NCToken) =
         NCResult.json(
             mapper.writeValueAsString(
                 NCRelationSpecModelData(
+                    intentId = intentId,
                     note = rel.meta[String]("nlpcraft:relation:note"),
                     indexes = rel.meta[JList[Int]]("nlpcraft:relation:indexes").asScala.toSeq
                 )
             )
         )
+
+    @NCIntent(
+        "intent=rel1 " +
+        "term(rel)~{tok_id() == 'nlpcraft:relation'} " +
+        "term(elem)~{has(tok_groups(), 'G1')}*"
+    )
+    private def onRelation1(ctx: NCIntentMatch, @NCIntentTerm("rel") rel: NCToken): NCResult =
+        mkResult(intentId = "rel1", rel = rel)
+
+    // `x` is mandatory (difference with `rel3`)
+    @NCIntent(
+        "intent=rel2 " +
+            "term(x)={tok_id() == 'X'} " +
+            "term(rel)~{tok_id() == 'nlpcraft:relation'} " +
+            "term(elem)~{has(tok_groups(), 'G1')}*"
+    )
+    private def onRelation2(ctx: NCIntentMatch, @NCIntentTerm("rel") rel: NCToken): NCResult =
+        mkResult(intentId = "rel2", rel = rel)
+
+    // `y` is optional (difference with `rel2`)
+    @NCIntent(
+        "intent=rel3 " +
+        "term(y)~{tok_id() == 'Y'} " +
+        "term(rel)~{tok_id() == 'nlpcraft:relation'} " +
+        "term(elem)~{has(tok_groups(), 'G1')}*"
+    )
+    private def onRelation3(ctx: NCIntentMatch, @NCIntentTerm("rel") rel: NCToken): NCResult =
+        mkResult(intentId = "rel3", rel = rel)
 }
 
 @NCTestEnvironment(model = classOf[NCRelationSpecModel], startClient = true)
@@ -46,16 +74,50 @@ class NCRelationSpec extends NCTestContext {
     private def extract(s: String): NCRelationSpecModelData = mapper.readValue(s, classOf[NCRelationSpecModelData])
 
     @Test
-    private[stm] def test(): Unit = {
+    private[stm] def test1(): Unit = {
         checkResult(
             "compare a a and a a",
             extract,
-            NCRelationSpecModelData(note = "A", indexes = Seq(1, 3))
+            // Reference to variant.
+            NCRelationSpecModelData(intentId = "rel1", note = "A2", indexes = Seq(1, 3))
         )
         checkResult(
             "b b and b b",
             extract,
-            NCRelationSpecModelData(note = "B", indexes = Seq(0, 2))
+            // Reference to recalculated variant (new changed indexes).
+            NCRelationSpecModelData(intentId = "rel1", note = "B2", indexes = Seq(0, 2))
+        )
+    }
+
+    @Test
+    private[stm] def test2(): Unit = {
+        checkResult(
+            "x compare a a and a a",
+            extract,
+            // Reference to variant.
+            NCRelationSpecModelData(intentId = "rel2", note = "A2", indexes = Seq(2, 4))
+        )
+        checkResult(
+            "test x",
+            extract,
+            // Reference to conversation (tokens by these ID and indexes can be found in conversation).
+            NCRelationSpecModelData(intentId = "rel2", note = "A2", indexes = Seq(2, 4))
+        )
+    }
+
+    @Test
+    private[stm] def test3(): Unit = {
+        checkResult(
+            "y compare a a and a a",
+            extract,
+            // Reference to variant.
+            NCRelationSpecModelData(intentId = "rel3", note = "A2", indexes = Seq(2, 4))
+        )
+        checkResult(
+            "test y",
+            extract,
+            // Reference to conversation (tokens by these ID and indexes can be found in conversation).
+            NCRelationSpecModelData(intentId = "rel3", note = "A2", indexes = Seq(2, 4))
         )
     }
 }

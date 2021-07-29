@@ -26,19 +26,48 @@ import java.util.{List => JList}
 import scala.jdk.CollectionConverters.ListHasAsScala
 import scala.language.implicitConversions
 
-case class NCLimitSpecModelData(note: String, indexes: Seq[Int])
+case class NCLimitSpecModelData(intentId: String, note: String, indexes: Seq[Int])
 
 class NCLimitSpecModel extends NCSpecModelAdapter {
-    @NCIntent("intent=limit term(limit)~{tok_id() == 'nlpcraft:limit'} term(elem)~{has(tok_groups(), 'G')}")
-    private def onLimit(ctx: NCIntentMatch, @NCIntentTerm("limit") limit: NCToken): NCResult =
+    private def mkResult(intentId: String, limit: NCToken) =
         NCResult.json(
             mapper.writeValueAsString(
                 NCLimitSpecModelData(
+                    intentId = intentId,
                     note = limit.meta[String]("nlpcraft:limit:note"),
                     indexes = limit.meta[JList[Int]]("nlpcraft:limit:indexes").asScala.toSeq
                 )
             )
         )
+
+    @NCIntent(
+        "intent=limit1 " +
+        "term(limit)~{tok_id() == 'nlpcraft:limit'} " +
+        "term(elem)~{has(tok_groups(), 'G1')}"
+    )
+    private def onLimit1(ctx: NCIntentMatch, @NCIntentTerm("limit") limit: NCToken): NCResult =
+        mkResult(intentId = "limit1", limit = limit)
+
+    // `x` is mandatory (difference with `limit3`)
+    @NCIntent(
+        "intent=limit2 " +
+        "term(x)={tok_id() == 'X'} " +
+        "term(limit)~{tok_id() == 'nlpcraft:limit'} " +
+        "term(elem)~{has(tok_groups(), 'G1')}"
+    )
+    private def onLimit2(ctx: NCIntentMatch, @NCIntentTerm("limit") limit: NCToken): NCResult =
+        mkResult(intentId = "limit2", limit = limit)
+
+    // `y` is optional (difference with `limit2`)
+    @NCIntent(
+        "intent=limit3 " +
+            "term(y)~{tok_id() == 'Y'} " +
+            "term(limit)~{tok_id() == 'nlpcraft:limit'} " +
+            "term(elem)~{has(tok_groups(), 'G1')}"
+    )
+    private def onLimit3(ctx: NCIntentMatch, @NCIntentTerm("limit") limit: NCToken): NCResult =
+        mkResult(intentId = "limit3", limit = limit)
+
 }
 
 @NCTestEnvironment(model = classOf[NCLimitSpecModel], startClient = true)
@@ -46,16 +75,50 @@ class NCLimitSpec extends NCTestContext {
     private def extract(s: String): NCLimitSpecModelData = mapper.readValue(s, classOf[NCLimitSpecModelData])
 
     @Test
-    private[stm] def test(): Unit = {
+    private[stm] def test1(): Unit = {
         checkResult(
             "top 23 a a",
             extract,
-            NCLimitSpecModelData(note = "A", indexes = Seq(1))
+            // Reference to variant.
+            NCLimitSpecModelData(intentId = "limit1", note = "A2", indexes = Seq(1))
         )
         checkResult(
             "test test b b",
             extract,
-            NCLimitSpecModelData(note = "B", indexes = Seq(2))
+            // Reference to recalculated variant (new changed indexes).
+            NCLimitSpecModelData(intentId = "limit1", note = "B2", indexes = Seq(2))
+        )
+    }
+
+    @Test
+    private[stm] def test2(): Unit = {
+        checkResult(
+            "x test top 23 a a",
+            extract,
+            // Reference to variant.
+            NCLimitSpecModelData(intentId = "limit2", note = "A2", indexes = Seq(3))
+        )
+        checkResult(
+            "test x",
+            extract,
+            // Reference to conversation (tokens by these ID and indexes can be found in conversation).
+            NCLimitSpecModelData(intentId = "limit2", note = "A2", indexes = Seq(3))
+        )
+    }
+
+    @Test
+    private[stm] def test3(): Unit = {
+        checkResult(
+            "y test top 23 a a",
+            extract,
+            // Reference to variant.
+            NCLimitSpecModelData(intentId = "limit3", note = "A2", indexes = Seq(3))
+        )
+        checkResult(
+            "test y",
+            extract,
+            // Reference to conversation (tokens by these ID and indexes can be found in conversation).
+            NCLimitSpecModelData(intentId = "limit3", note = "A2", indexes = Seq(3))
         )
     }
 }

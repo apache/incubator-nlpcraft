@@ -377,19 +377,21 @@ object NCSortEnricher extends NCProbeEnricher {
 
                                     case TYPE_SUBJ_BY =>
                                         require(seq1.nonEmpty)
-                                        require(seq2.nonEmpty)
                                         require(sortToks.nonEmpty)
                                         require(byToks.nonEmpty)
 
-                                        res = Some(
-                                            Match(
-                                                asc = asc,
-                                                main = sortToks,
-                                                stop = byToks ++ orderToks,
-                                                subjSeq = seq1,
-                                                bySeq = seq2
+                                        if (seq2.isEmpty)
+                                            res = None
+                                        else
+                                            res = Some(
+                                                Match(
+                                                    asc = asc,
+                                                    main = sortToks,
+                                                    stop = byToks ++ orderToks,
+                                                    subjSeq = seq1,
+                                                    bySeq = seq2
+                                                )
                                             )
-                                        )
 
                                     case TYPE_BY =>
                                         require(seq1.nonEmpty)

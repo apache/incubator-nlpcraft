@@ -34,8 +34,13 @@ object NCSpecModelAdapter {
 class NCSpecModelAdapter extends NCModelAdapter("nlpcraft.stm.idxs.test", "STM Indexes Test Model", "1.0") {
     override def getElements: util.Set[NCElement] =
         Set(
-            mkElement("A", "G", "a a"),
-            mkElement("B", "G", "b b")
+            mkElement("A2", "G1", "a a"),
+            mkElement("B2", "G1", "b b"),
+
+            mkElement("X", "G2", "x"),
+            mkElement("Y", "G2", "y"),
+
+            mkElement("Z", "G3", "z")
         ).asJava
 
     private def mkElement(id: String, group: String, syns: String*): NCElement =
@@ -48,6 +53,4 @@ class NCSpecModelAdapter extends NCModelAdapter("nlpcraft.stm.idxs.test", "STM I
             }
             override def getGroups: util.List[String] = Collections.singletonList(group)
         }
-
-
 }
