@@ -67,7 +67,6 @@ class NCLimitSpecModel extends NCSpecModelAdapter {
     )
     private def onLimit3(ctx: NCIntentMatch, @NCIntentTerm("limit") limit: NCToken): NCResult =
         mkResult(intentId = "limit3", limit = limit)
-
 }
 
 @NCTestEnvironment(model = classOf[NCLimitSpecModel], startClient = true)
