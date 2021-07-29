@@ -49,7 +49,7 @@ import static java.time.temporal.ChronoUnit.DAYS;
  * intent matching logic. It uses OpenWeather API weather provider REST service for the actual
  * weather information (https://openweathermap.org/api/one-call-api).
  * <p>
- * NOTE: you must provide OpenWorldMap API key in 'OWM_API_KEY' system property.
+ * NOTE: you must provide OpenWeather API key in 'OWM_API_KEY' system property.
  * See  https://openweathermap.org/api for more information.
  * <p>
  * See 'README.md' file in the same folder for running and testing instructions.
@@ -78,7 +78,7 @@ public class WeatherModel extends NCModelFileAdapter {
     private static final Set<String> LOCAL_WORDS = new HashSet<>(Arrays.asList("my", "local", "hometown"));
 
     /**
-     * Extracts geo location (city) from given solver context that is suitable for Dark Sky API weather service.
+     * Extracts geolocation (city) from given solver context that is suitable for Dark Sky API weather service.
      *
      * @param ctx Intent solver context.
      * @param geoTokOpt Optional geo token.

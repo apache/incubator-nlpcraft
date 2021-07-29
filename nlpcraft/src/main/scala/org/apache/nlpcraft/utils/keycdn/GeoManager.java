@@ -138,7 +138,7 @@ public class GeoManager {
      */
     private static String getExternalIp() throws IOException {
         try (BufferedReader in =
-            new BufferedReader(new InputStreamReader(new URL("http://checkip.amazonaws.com").openStream()))) {
+            new BufferedReader(new InputStreamReader(new URL("https://checkip.amazonaws.com").openStream()))) {
             return in.readLine();
         }
     }
