@@ -110,7 +110,7 @@ abstract class NCService extends LazyLogging with NCOpenCensusTrace {
      * @return
      */
     private def padDur(ms: Long): String =
-        StringUtils.rightPad(s"${U.now() - ms}ms", 6)
+        StringUtils.leftPad(s"${U.now() - ms}ms", 6)
 
     /**
      * Acks started service. Should be called at the end of the `start()` method.
