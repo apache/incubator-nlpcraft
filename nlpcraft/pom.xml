@@ -390,7 +390,7 @@
                                 <!-- Reason: output is to big. -->
                                 <exclude>**/NCDateGeneratorSpec.*</exclude>
                                 <!-- Reason: 'contextWordServer' should be started. -->
-                                <exclude>**/NCRestModelSpec.*</exclude>
+                                <exclude>**/NCRestModelSpec1.*</exclude>
                             </excludes>
                         </configuration>
                     </execution>
