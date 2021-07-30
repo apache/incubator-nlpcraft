@@ -49,6 +49,7 @@ class NCAnsiProgressBar(
     private final val PB_RIGHT = s"$B${CHAR_SET(3)}$RST"
     private final val PB_EMPTY =s"$W${CHAR_SET(2)}$RST"
     private final val PB_FULL = s"$R$BO${CHAR_SET(1)}$RST"
+    private final val PB_LEAD = s"$Y$BO${CHAR_SET(4)}$RST"
 
     /**
      *
@@ -90,8 +91,14 @@ class NCAnsiProgressBar(
                 val bar = if (tick == 1) 1 else Math.round((tick.toFloat / totalTicks.toFloat) * dispSize)
 
                 out.print(PB_LEFT)
-                for (i <- 0 until dispSize)
-                    out.print(if (i < bar) PB_FULL else PB_EMPTY)
+                for (i <- 0 until dispSize) {
+                    if (i < bar)
+                        out.print(PB_FULL)
+                    else if (i == bar)
+                        out.print(PB_LEAD)
+                    else
+                        out.print(PB_EMPTY)
+                }
                 out.print(PB_RIGHT)
                 out.flush()
             }
@@ -130,5 +137,5 @@ class NCAnsiProgressBar(
 object NCAnsiProgressBar{
     // Active charset to use.
     private final val NON_ANSI_CHAR = '='
-    private val CHAR_SET = Seq('[', '=', '.', ']')
+    private val CHAR_SET = Seq('[', '=', '.', ']', '>')
 }
