@@ -111,10 +111,10 @@ class NCAsciiTable {
     // Table drawing symbols.
     private val HDR_HOR = c("=")
     private val HDR_VER = c("|")
-    private val HDR_CRS = c("+")
+    private val HDR_CRS = bo(c("+"))
     private val ROW_HOR = c("-")
     private val ROW_VER = c("|")
-    private val ROW_CRS = c("+")
+    private val ROW_CRS = bo(c("+"))
 
     // Headers & rows.
     private var hdr = IndexedSeq.empty[Cell]
