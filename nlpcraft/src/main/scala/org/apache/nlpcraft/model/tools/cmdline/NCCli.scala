@@ -2783,7 +2783,6 @@ object NCCli extends NCCliBase {
             new File(SystemUtils.getUserHome, HIST_PATH).getAbsolutePath
         )
 
-        logln()
         logln(s"${y("Tip:")} Hit ${rv(bo(" Tab "))} for commands, parameters and paths completion.")
         logln(s"     Type '${c("help")}' to get help and ${rv(bo(" ↑ "))} or ${rv(bo(" ↓ "))} to scroll through history.")
         logln(s"     Type '${c("quit")}' to exit.")
@@ -2930,6 +2929,9 @@ object NCCli extends NCCliBase {
     private def title(): Unit = {
         logln(U.asciiLogo())
         logln(s"$NAME ver. ${VER.version}")
+        logln()
+        logln(s"Docs: ${g("nlpcraft.apache.org")}")
+        logln(s"GitHub: ${g("github.com/apache/incubator-nlpcraft")}")
         logln()
     }
 

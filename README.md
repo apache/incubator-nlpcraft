@@ -120,39 +120,58 @@ name: "Light Switch Example Model"
 version: "1.0"
 description: "NLI-powered light switch example model."
 macros:
-  - name: "<ACTION>"
-    macro: "{turn|switch|dial|control|let|set|get|put}"
-  - name: "<ENTIRE_OPT>"
-    macro: "{entire|full|whole|total|_}"
-  - name: "<LIGHT>"
-    macro: "{all|_} {it|them|light|illumination|lamp|lamplight}"
+ - name: "<ACTION>"
+   macro: "{turn|switch|dial|let|set|get|put}"
+ - name: "<KILL>"
+   macro: "{shut|kill|stop|eliminate}"
+ - name: "<ENTIRE_OPT>"
+   macro: "{entire|full|whole|total|_}"
+ - name: "<FLOOR_OPT>"
+   macro: "{upstairs|downstairs|{1st|2nd|3rd|4th|5th|top|ground} floor|_}"
+ - name: "<TYPE>"
+   macro: "{room|closet|attic|loft|{store|storage} {room|_}}"
+ - name: "<LIGHT>"
+   macro: "{all|_} {it|them|light|illumination|lamp|lamplight}"
 enabledBuiltInTokens: [] # This example doesn't use any built-in tokens.
+
+#
+# Allows for multi-word synonyms in this entire model
+# to be sparse and permutate them for better detection.
+# These two properties generally enable a free-form
+# natural language comprehension.
+#
+permutateSynonyms: true
+sparse: true
+
 elements:
-  - id: "ls:loc"
-    description: "Location of lights."
-    synonyms:
-      - "<ENTIRE_OPT> {upstairs|downstairs|_} {kitchen|library|closet|garage|office|playroom|{dinning|laundry|play} room}"
-      - "<ENTIRE_OPT> {upstairs|downstairs|_} {master|kid|children|child|guest|_} {bedroom|bathroom|washroom|storage} {closet|_}"
-      - "<ENTIRE_OPT> {house|home|building|{1st|first} floor|{2nd|second} floor}"
- 
-  - id: "ls:on"
-    groups:
-      - "act"
-    description: "Light switch ON action."
-    synonyms:
-      - "<ACTION> <LIGHT>"
-      - "<ACTION> on <LIGHT>"
- 
-  - id: "ls:off"
-    groups:
-      - "act"
-    description: "Light switch OFF action."
-    synonyms:
-      - "<ACTION> <LIGHT> {off|out}"
-      - "{<ACTION>|shut|kill|stop|eliminate} {off|out} <LIGHT>"
-      - "no <LIGHT>"
+ - id: "ls:loc"
+   description: "Location of lights."
+   synonyms:
+    - "<ENTIRE_OPT> <FLOOR_OPT> {kitchen|library|closet|garage|office|playroom|{dinning|laundry|play} <TYPE>}"
+    - "<ENTIRE_OPT> <FLOOR_OPT> {master|kid|children|child|guest|_} {bedroom|bathroom|washroom|storage} {<TYPE>|_}"
+    - "<ENTIRE_OPT> {house|home|building|{1st|first} floor|{2nd|second} floor}"
+
+ - id: "ls:on"
+   groups:
+    - "act"
+   description: "Light switch ON action."
+   synonyms:
+    - "<ACTION> {on|up|_} <LIGHT> {on|up|_}"
+    - "<LIGHT> {on|up}"
+
+ - id: "ls:off"
+   groups:
+    - "act"
+   description: "Light switch OFF action."
+   synonyms:
+    - "<ACTION> <LIGHT> {off|out}"
+    - "{<ACTION>|<KILL>} {off|out} <LIGHT>"
+    - "<KILL> <LIGHT>"
+    - "<LIGHT> <KILL>"
+    - "no <LIGHT>"
+
 intents:
-  - "intent=ls term(act)~{has(tok_groups(), 'act')} term(loc)~{tok_id() == 'ls:loc'}*"
+ - "intent=ls term(act)={has(tok_groups(), 'act')} term(loc)={tok_id() == 'ls:loc'}*"
 ```
 
 ### Model Implementation
@@ -160,15 +179,17 @@ Once we have model declaration we can provide implementation for intent callback
 implement the data model, but you can use any JVM-based language like Java, Groovy, or Kotlin:
 ```scala
 package org.apache.nlpcraft.examples.lightswitch
- 
+
 import org.apache.nlpcraft.model.{NCIntentTerm, _}
- 
-class LightSwitchModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/lightswitch/lightswitch_model.yaml") {
+
+class LightSwitchScalaModel extends NCModelFileAdapter("lightswitch_model.yaml") {  
     @NCIntentRef("ls")
     @NCIntentSample(Array(
         "Turn the lights off in the entire house.",
+        "Turn off all lights now",
         "Switch on the illumination in the master bedroom closet.",
         "Get the lights on.",
+        "Lights up in the kitchen.",
         "Please, put the light out in the upstairs bedroom.",
         "Set the lights on in the entire house.",
         "Turn the lights off in the guest bedroom.",
@@ -176,25 +197,30 @@ class LightSwitchModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/
         "Dial off illumination on the 2nd floor.",
         "Please, no lights!",
         "Kill off all the lights now!",
-        "No lights in the bedroom, please."
+        "No lights in the bedroom, please.",
+        "Light up the garage, please!",
+        "Kill the illumination now!"
     ))
     def onMatch(
-        @NCIntentTerm("act") actTok: NCToken,
-        @NCIntentTerm("loc") locToks: List[NCToken]
+         @NCIntentTerm("act") actTok: NCToken,
+         @NCIntentTerm("loc") locToks: List[NCToken]
     ): NCResult = {
         val status = if (actTok.getId == "ls:on") "on" else "off"
         val locations =
             if (locToks.isEmpty)
                 "entire house"
             else
-                locToks.map(_.meta[String]("nlpcraft:nlp:origtext")).mkString(", ")
- 
+                locToks.map(_.getOriginalText).mkString(", ")
+
         // Add HomeKit, Arduino or other integration here.
- 
+
         // By default - just return a descriptive action string.
-        NCResult.text(s"Lights '$status' in '${locations.toLowerCase}'.")
+        NCResult.text(s"Lights are [$status] in [${locations.toLowerCase}].")
     }
+
+    override def getId: String = s"${super.getId}.scala"
 }
+
 ```
 NOTES:
  - We are loading our static model declaration that we've defined above using `NCModelFileAdapter` base class.       
