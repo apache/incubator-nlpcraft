@@ -55,7 +55,7 @@ class NCCliBase extends App {
     )
 
     //noinspection RegExpRedundantEscape
-    final val TAILER_PTRN = Pattern.compile("^.*\\[[\\d]+ms(\\s)*\\]\\s*NC[a-zA-Z0-9]+(\\s*)started\\.$")
+    final val TAILER_PTRN = Pattern.compile("^.*\\[(\\s)*[\\d]+ms\\]\\s*NC[a-zA-Z0-9]+(\\s*)started\\.$")
     final val CMD_NAME = Pattern.compile("(^\\s*[\\w-]+)(\\s)")
     final val CMD_PARAM = Pattern.compile("(\\s)(--?[\\w-]+)")
 
