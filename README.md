@@ -113,7 +113,7 @@ NOTE: **0.9.0** should be the latest NLPCraft version.
 
 ### Define Data Model
 Declare the static part of the data model using YAML which we will later load in our model implementation. You can declare entire
-model in the code - but doing it with JSON or YAML is more productive:
+model in the code - but doing it with JSON or YAML is usually more productive:
 ```yaml
 id: "nlpcraft.lightswitch.ex"
 name: "Light Switch Example Model"
