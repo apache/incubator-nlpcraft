@@ -217,8 +217,6 @@ class LightSwitchScalaModel extends NCModelFileAdapter("lightswitch_model.yaml")
         // By default - just return a descriptive action string.
         NCResult.text(s"Lights are [$status] in [${locations.toLowerCase}].")
     }
-
-    override def getId: String = s"${super.getId}.scala"
 }
 
 ```
