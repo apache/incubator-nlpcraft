@@ -84,7 +84,11 @@ function cpSrc() {
   rsync -avzq "$1"/src ${zipDir}/${tmpDir}/"$1" --exclude '**/.DS_Store' --exclude '**/*.iml'
 }
 
-cpSrc ${coreModule}
+function cpSrcExtraExclude() {
+  rsync -avzq "$1"/src ${zipDir}/${tmpDir}/"$1" --exclude '**/.DS_Store' --exclude '**/*.iml' --exclude "$2"
+}
+
+cpSrcExtraExclude ${coreModule} "main/python/ctxword/data/"
 cpSrc ${stanfordModule}
 cpSrc ${exampleAlarm}
 cpSrc ${exampleEcho}
