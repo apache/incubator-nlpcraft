@@ -224,6 +224,6 @@ Files in src/main/resources/moby folder are released by Grady Ward into the publ
    - http://cs.sru.edu/~ddailey/whence.html
 
 File org.apache.nlpcraft.common.util.NCIdGenerator.java
-is based on https://github.com/peet/Hashids.java that is licensed under MIT license:
+is loosely based on https://github.com/peet/Hashids.java that is licensed under MIT license:
    - Copyright (C) Ivan Akimov
    - Copyright (C) Peet Goddard
