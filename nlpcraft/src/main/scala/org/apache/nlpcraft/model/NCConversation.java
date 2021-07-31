@@ -21,18 +21,21 @@ import java.util.List;
 import java.util.function.Predicate;
 
 /**
- * Conversation container for specific user and data model.
+ * Conversation container for unique combination of user and data model.
  * <p>
  * Conversation management is based on idea of a short-term-memory (STM). STM can be viewed as a condensed
- * short-term history of the input for a given user and data model. Every submitted user request that wasn't
- * rejected is added to the conversation STM as a list of {@link NCToken tokens}. Existing STM tokens belonging to
+ * short-term history of the input for a given user and data model. Every submitted user request that was
+ * successfully answered is added to the conversation STM as a list of {@link NCToken tokens}. Existing STM tokens belonging to
  * the same {@link NCElement#getGroups() group} will be overridden by the more recent tokens from the same group.
  * Note also that tokens in STM automatically expire (i.e. context is "forgotten") after a certain period of time and/or
  * based on the depth of the conversation since the last mention.
  * <p>
- * You can also maintain user state-machine between requests using metadata. Conversation's metadata is a
+ * You can also maintain user state between requests using metadata. Conversation's metadata is a
  * mutable thread-safe container that can hold any arbitrary user data while supporting the same
  * expiration logic as the rest of the conversation elements (i.e. tokens and previously matched intent IDs).
+ * <p>
+ * You can also access dialog flow history as a chronologically ordered list of previously matched intents sorted
+ * from oldest to newest for the current user and data model.
  *
  * @see NCContext#getConversation()
  * @see NCModelView#getConversationDepth()
@@ -62,22 +65,21 @@ public interface NCConversation extends NCMetadata {
     List<NCDialogFlowItem> getDialogFlow();
 
     /**
-     * Removes all tokens satisfying given predicate from the conversation STM.
+     * Removes all tokens satisfying given token predicate from the conversation STM.
+     * <p>
      * This is particularly useful when the logic processing the user input makes an implicit
      * assumption not present in the user input itself. Such assumption may alter the conversation (without
      * having an explicit token responsible for it) and therefore this method can be used to remove "stale" tokens
-     * from conversation STM.
-     * <p>
-     * For example, in some cases the intent logic can assume the user current location as an implicit geo
-     * location and therefore all existing geo tokens should be removed from the conversation STM
-     * to maintain correct context.
+     * from conversation STM. For example, in some cases the intent logic can assume the user current location as
+     * an implicit geolocation and therefore all existing <code>nlpcraft:geo</code> tokens should be removed from the
+     * conversation STM to maintain correct context.
      *
      * @param filter Token remove filter.
      */
     void clearStm(Predicate<NCToken> filter);
 
     /**
-     * Clears history of matched intents using given intent predicate.
+     * Removes all previously matched intents using given intent predicate.
      * <p>
      * History of matched intents (i.e. the dialog flow) can be used in intent definition as part of its
      * matching template. NLPCraft maintains the window of previously matched intents based on time, i.e.
