@@ -18,23 +18,25 @@
 package org.apache.nlpcraft.model.intent
 
 import org.apache.nlpcraft.common.ScalaMeta
-import org.apache.nlpcraft.model.NCRequest
+import org.apache.nlpcraft.model.{NCRequest, NCToken}
 
 import scala.collection.mutable
 
 /**
  *
+ * @param toks User input tokens.
  * @param intentMeta Intent metadata.
  * @param convMeta Conversation metadata.
- * @param fragMeta Optional fragment (argument) metadata passed during intent fragment reference.
+ * @param fragMeta Fragment (argument) metadata passed during intent fragment reference.
  * @param req Server request holder.
- * @param vars Variable storage.
+ * @param vars Intent variable storage.
  */
 case class NCIdlContext(
-    intentMeta: ScalaMeta = Map.empty[String, Object],
-    convMeta: ScalaMeta = Map.empty[String, Object],
-    fragMeta: ScalaMeta = Map.empty[String, Object],
+    toks: Seq[NCToken] = Seq.empty,
+    intentMeta: ScalaMeta = Map.empty,
+    convMeta: ScalaMeta = Map.empty,
+    fragMeta: ScalaMeta = Map.empty,
     req: NCRequest,
-    vars: mutable.Map[String, NCIdlFunction] = mutable.HashMap.empty[String, NCIdlFunction]
+    vars: mutable.Map[String, NCIdlFunction] = mutable.HashMap.empty
 )
 
