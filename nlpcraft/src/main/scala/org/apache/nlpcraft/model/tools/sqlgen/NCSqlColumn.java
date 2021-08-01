@@ -106,7 +106,7 @@ public interface NCSqlColumn {
     int getDataType();
 
     /**
-     * Tests whether or not this column is a primary key column.
+     * Tests whether this column is a primary key column.
      * <p>
      * In JSON/YAML generated model the primary key flag is declared with the following element
      * metadata (example):
@@ -114,12 +114,12 @@ public interface NCSqlColumn {
      *     sql:ispk: false
      * </pre>
      *
-     * @return Whether or not this column is a primary key column.
+     * @return Whether this column is a primary key column.
      */
     boolean isPk();
 
     /**
-     * Tests whether or not this column is nullable.
+     * Tests whether this column is nullable.
      * <p>
      * In JSON/YAML generated model the nullable flag is declared with the following element
      * metadata (example):
@@ -127,7 +127,7 @@ public interface NCSqlColumn {
      *     sql:isnullable: false
      * </pre>
      *
-     * @return Whether or not this column is nullable.
+     * @return Whether this column is nullable.
      */
     boolean isNullable();
 }

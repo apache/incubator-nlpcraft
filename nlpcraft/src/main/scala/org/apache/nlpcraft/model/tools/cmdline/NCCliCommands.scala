@@ -479,7 +479,7 @@ private [cmdline] object NCCliCommands {
                     names = Seq("--synonyms", "-y"),
                     value = Some("true|false"),
                     optional = true,
-                    desc = s"Flag on whether or not to generated auto synonyms for the model elements. Default is ${y("'true'")}."
+                    desc = s"Flag on whether to generated auto synonyms for the model elements. Default is ${y("'true'")}."
                 ),
                 Parameter(
                     id = "override",
@@ -487,7 +487,7 @@ private [cmdline] object NCCliCommands {
                     value = Some("true|false"),
                     optional = true,
                     desc =
-                        s"Flag to determine whether or not to override output file if it already exist. " +
+                        s"Flag to determine whether to override output file if it already exist. " +
                         s"If override is disabled (default) and output file exists - a unique file name " +
                         s"will be used instead. Default is ${y("'false'")}."
                 ),
@@ -497,7 +497,7 @@ private [cmdline] object NCCliCommands {
                     value = Some("true|false"),
                     optional = true,
                     desc =
-                        s"Flag on whether or not to use element's parent relationship for defining " +
+                        s"Flag on whether to use element's parent relationship for defining " +
                         s"SQL columns and their containing (i.e. parent) tables. Default is ${y("'false'")}."
                 ),
                 Parameter(

@@ -61,9 +61,9 @@ public interface NCUser extends NCMetadata {
     Optional<String> getAvatarUrl();
 
     /**
-     * Tests whether or not the user has administrative privileges.
+     * Tests whether the user has administrative privileges.
      *
-     * @return Whether or not the user has administrative privileges.
+     * @return Whether the user has administrative privileges.
      */
     boolean isAdmin();
 
