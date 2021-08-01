@@ -42,14 +42,14 @@ class NCIdlFunctionsToken extends NCIdlFunctions {
         "nlpcraft:nlp:unid" -> "21421"
     )
 
-    private def mkMeta(truth: String):TestDesc = TestDesc(truth = truth, token = tkn(meta = meta))
+    private def mkMeta(truth: String):TestDesc = TestDesc(truth = truth, token = mkToken(meta = meta))
 
     @Test
     def test(): Unit =
         test(
             TestDesc(
                 truth = "tok_id() == 'a'",
-                token = tkn(id = "a")
+                token = mkToken(id = "a")
             ),
             mkMeta(truth = s"tok_lemma() == '${meta("nlpcraft:nlp:lemma")}'"),
             mkMeta(truth = s"tok_stem() == '${meta("nlpcraft:nlp:stem")}'"),
@@ -58,7 +58,7 @@ class NCIdlFunctionsToken extends NCIdlFunctions {
             mkMeta(truth = s"tok_unid() == '${meta("nlpcraft:nlp:unid")}'"),
             TestDesc(
                 truth = s"tok_is_abstract() == true",
-                token = tkn(isAbstr = true)
+                token = mkToken(`abstract` = true)
             ),
             mkMeta(truth = s"tok_is_abstract() == false"),
             mkMeta(truth = s"tok_is_bracketed() == ${meta("nlpcraft:nlp:bracketed")}"),
@@ -71,41 +71,43 @@ class NCIdlFunctionsToken extends NCIdlFunctions {
             mkMeta(truth = s"tok_is_swear() == ${meta("nlpcraft:nlp:swear")}"),
             TestDesc(
                 truth = s"tok_is_user() == true",
-                token = tkn(id = "aa")
+                token = mkToken(id = "aa")
             ),
             TestDesc(
                 truth = s"tok_is_user() == false",
-                token = tkn(id = "nlpcraft:nlp")
+                token = mkToken(id = "nlpcraft:nlp")
             ),
             mkMeta(truth = s"tok_is_wordnet() == ${meta("nlpcraft:nlp:dict")}"),
             TestDesc(
                 truth = s"tok_ancestors() == list('1', '2')",
-                token = tkn(ancestors = Seq("1", "2"))
+                token = mkToken(ancestors = Seq("1", "2"))
             ),
             TestDesc(
                 truth = s"tok_parent() == 'parentId'",
-                token = tkn(parentId = "parentId")
+                token = mkToken(parentId = "parentId")
             ),
             TestDesc(
                 truth = "tok_groups() == list('1', '2')",
-                token = tkn(groups = Seq("1", "2"))
+                token = mkToken(groups = Seq("1", "2"))
             ),
             TestDesc(
                 truth = "tok_value() == 'value'",
-                token = tkn(value = "value")
+                token = mkToken(value = "value")
             ),
             TestDesc(
                 truth = "tok_value() == null",
-                token = tkn()
+                token = mkToken()
             ),
             TestDesc(
                 truth = "tok_start_idx() == 123",
-                token = tkn(start = 123)
+                token = mkToken(start = 123)
             ),
             TestDesc(
                 truth = "tok_end_idx() == 123",
-                token = tkn(end = 123)
+                token = mkToken(end = 123)
             ),
-            TestDesc(truth = "tok_this() == tok_this()")
+            TestDesc(truth = "tok_this() == tok_this()"),
+            TestDesc(truth = "tok_is_first() == true"),
+            TestDesc(truth = "tok_is_last() == true")
         )
 }

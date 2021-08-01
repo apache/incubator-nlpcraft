@@ -162,7 +162,7 @@ trait NCIdlCompilerBase {
     def rtFunError(fun: String, cause: Exception)(implicit ctx: PRC): NCE =
         newRuntimeError(s"Runtime error in IDL function: $fun()", cause)
     def rtUnavailFunError(fun: String)(implicit ctx: PRC): NCE =
-        newRuntimeError(s"IDL function is unavailable in this context: $fun()")
+        newRuntimeError(s"Function '$fun()' is unavailable in this IDL context.")
 
     /**
      *

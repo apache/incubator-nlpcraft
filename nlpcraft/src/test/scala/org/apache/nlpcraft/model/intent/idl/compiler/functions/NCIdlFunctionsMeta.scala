@@ -46,35 +46,35 @@ class NCIdlFunctionsMeta extends NCIdlFunctions {
     def testMetaToken(): Unit =
         testValue(
             "meta_tok",
-            token = Some(tkn(meta = Map("k1" -> "v1")))
+            token = Some(mkToken(meta = Map("k1" -> "v1")))
         )
 
     @Test
     def testMetaRequest(): Unit =
         testValue(
             "meta_req",
-            ctx(reqData = Map("k1" -> "v1"))
+            mkIdlContext(reqData = Map("k1" -> "v1"))
         )
 
     @Test
     def testMetaConv(): Unit =
         testValue(
             "meta_conv",
-            ctx(convMeta = Map("k1" -> "v1"))
+            mkIdlContext(convMeta = Map("k1" -> "v1"))
         )
 
     @Test
     def testMetaFrag(): Unit =
         testValue(
             "meta_frag",
-            ctx(fragMeta = Map("k1" -> "v1"))
+            mkIdlContext(fragMeta = Map("k1" -> "v1"))
         )
 
     @Test
     def testMetaUser(): Unit =
         testValue(
             "meta_user",
-            ctx(reqUsr =
+            mkIdlContext(reqUsr =
                 new NCUser {
                     override def getId: Long = -1
                     override def getFirstName: Optional[String] = Optional.empty()
@@ -93,7 +93,7 @@ class NCIdlFunctionsMeta extends NCIdlFunctions {
     def testMetaCompany(): Unit =
         testValue(
             "meta_company",
-            ctx(reqComp =
+            mkIdlContext(reqComp =
                 new NCCompany {
                     override def getId: Long = -1
                     override def getName: String = "name"
@@ -111,15 +111,15 @@ class NCIdlFunctionsMeta extends NCIdlFunctions {
 
     // Simplified test.
     @Test
-    def testMetaModel(): Unit = testNoValue("meta_model", ctx())
+    def testMetaModel(): Unit = testNoValue("meta_model", mkIdlContext())
 
     // Simplified test.
     @Test
-    def testMetaIntent(): Unit = testNoValue("meta_intent", ctx())
+    def testMetaIntent(): Unit = testNoValue("meta_intent", mkIdlContext())
 
-    private def testValue(f: String, idlCtx: => NCIdlContext = ctx(), token: Option[NCToken] = None): Unit =
+    private def testValue(f: String, idlCtx: => NCIdlContext = mkIdlContext(), token: Option[NCToken] = None): Unit =
         test(TestDesc(truth = s"$f('k1') == 'v1'", token = token, idlCtx = idlCtx))
 
-    private def testNoValue(f: String, idlCtx: => NCIdlContext = ctx(), token: Option[NCToken] = None): Unit =
+    private def testNoValue(f: String, idlCtx: => NCIdlContext = mkIdlContext(), token: Option[NCToken] = None): Unit =
         test(TestDesc(truth = s"$f('k1') == null", token = token, idlCtx = idlCtx))
 }

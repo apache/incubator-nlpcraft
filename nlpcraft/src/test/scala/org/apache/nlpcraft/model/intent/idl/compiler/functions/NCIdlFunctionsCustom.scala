@@ -66,13 +66,13 @@ class NCIdlFunctionsCustom extends NCIdlFunctions {
             TestDesc(
                 truth = s"$C#trueOn123",
                 isCustom = true,
-                token = Some(tkn(txt = "123")),
+                token = Some(mkToken(txt = "123")),
                 tokensUsed = Some(1)
             ),
             TestDesc(
                 truth = s"$C#trueOn123",
                 isCustom = true,
-                token = Some(tkn(txt = "456")),
+                token = Some(mkToken(txt = "456")),
                 expectedRes = false,
                 tokensUsed = Some(1)
             ),
@@ -80,7 +80,7 @@ class NCIdlFunctionsCustom extends NCIdlFunctions {
                 // Method defined in model.
                 truth = s"#trueAlwaysCustomToken",
                 isCustom = true,
-                token = Some(tkn(txt = "any"))
+                token = Some(mkToken(txt = "any"))
             )
         )
 }

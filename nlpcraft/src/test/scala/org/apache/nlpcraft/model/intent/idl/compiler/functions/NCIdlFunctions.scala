@@ -55,7 +55,7 @@ private[functions] trait NCIdlFunctions {
     case class TestDesc(
         truth: String,
         token: Option[NCToken] = None,
-        idlCtx: NCIdlContext = ctx(),
+        idlCtx: NCIdlContext,
         isCustom: Boolean = false,
         expectedRes: Boolean = true,
         tokensUsed: Option[Int] = None
@@ -84,7 +84,7 @@ private[functions] trait NCIdlFunctions {
             TestDesc(truth = truth, token = Some(token), idlCtx = idlCtx)
 
         def apply(truth: String, token: NCToken): TestDesc =
-            TestDesc(truth = truth, token = Some(token))
+            TestDesc(truth = truth, token = Some(token), idlCtx = mkIdlContext(toks = Seq(token)))
     }
 
     private def t2s(t: NCToken): String = {
@@ -93,7 +93,8 @@ private[functions] trait NCIdlFunctions {
         s"text=${nvl(t.getOriginalText, "text")} [${nvl(t.getId, "id")}]"
     }
 
-    protected def ctx(
+    protected def mkIdlContext(
+        toks: Seq[NCToken] = Seq.empty,
         reqUsr: NCUser = null,
         reqComp: NCCompany = null,
         reqSrvReqId: String = null,
@@ -107,6 +108,7 @@ private[functions] trait NCIdlFunctions {
         fragMeta: ScalaMeta = Map.empty[String, AnyRef]
     ): NCIdlContext =
         NCIdlContext(
+            toks = toks,
             intentMeta = intentMeta,
             convMeta = convMeta,
             fragMeta = fragMeta,
@@ -122,7 +124,7 @@ private[functions] trait NCIdlFunctions {
             }
         )
 
-    protected def tkn(
+    protected def mkToken(
         id: String = null,
         srvReqId: String = null,
         parentId: String = null,
@@ -134,7 +136,7 @@ private[functions] trait NCIdlFunctions {
         ancestors: Seq[String] = Seq.empty,
         aliases: Set[String] = Set.empty,
         partTokens: Seq[NCToken] = Seq.empty,
-        isAbstr: Boolean = false,
+        `abstract`: Boolean = false,
         meta: Map[String, AnyRef] = Map.empty[String, AnyRef]
     ): NCToken = {
         val map = new util.HashMap[String, AnyRef]
@@ -156,7 +158,7 @@ private[functions] trait NCIdlFunctions {
             override def getGroups: util.List[String] = if (groups.isEmpty && id != null) Collections.singletonList(id) else groups.asJava
             override def getStartCharIndex: Int = start
             override def getEndCharIndex: Int = end
-            override def isAbstract: Boolean = isAbstr
+            override def isAbstract: Boolean = `abstract`
             override def getMetadata: util.Map[String, AnyRef] = map
         }
     }
@@ -169,7 +171,7 @@ private[functions] trait NCIdlFunctions {
                     f.idlCtx.vars ++= f.term.decls
 
                     // Execute term's predicate.
-                    f.term.pred.apply(f.token.getOrElse(tkn()), f.idlCtx)
+                    f.term.pred.apply(f.token.getOrElse(mkToken()), f.idlCtx)
                 }
                 catch {
                     case e: NCE => throw e
@@ -224,5 +226,5 @@ private[functions] trait NCIdlFunctions {
                     }
             }
 
-    protected implicit def convert(pred: String): TestDesc = TestDesc(truth = pred)
+    protected implicit def convert(pred: String): TestDesc = TestDesc(truth = pred, idlCtx = mkIdlContext())
 }

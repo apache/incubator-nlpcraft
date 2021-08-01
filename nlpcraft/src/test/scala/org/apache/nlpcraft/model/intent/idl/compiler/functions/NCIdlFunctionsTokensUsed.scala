@@ -32,22 +32,22 @@ class NCIdlFunctionsTokensUsed extends NCIdlFunctions {
             ),
             TestDesc(
                 truth = "tok_id() == 'a'",
-                token = Some(tkn(id = "a")),
+                token = Some(mkToken(id = "a")),
                 tokensUsed = Some(1)
             ),
             TestDesc(
                 truth = "tok_id() == 'a' && tok_id() == 'a'",
-                token = Some(tkn(id = "a")),
+                token = Some(mkToken(id = "a")),
                 tokensUsed = Some(2)
             ),
             TestDesc(
                 truth = "tok_id() == 'a' && tok_parent() == 'b'",
-                token = Some(tkn(id = "a", parentId = "b")),
+                token = Some(mkToken(id = "a", parentId = "b")),
                 tokensUsed = Some(2)
             ),
             TestDesc(
                 truth = "tok_id() == 'a' && tok_id() == 'a' && tok_parent() == 'b'",
-                token = Some(tkn(id = "a", parentId = "b")),
+                token = Some(mkToken(id = "a", parentId = "b")),
                 tokensUsed = Some(3)
             )
         )
