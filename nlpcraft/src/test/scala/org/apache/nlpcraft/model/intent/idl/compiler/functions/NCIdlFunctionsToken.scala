@@ -162,4 +162,46 @@ class NCIdlFunctionsToken extends NCIdlFunctions {
             )
         )
     }
+
+    @Test
+    def testTokenCount(): Unit = {
+        val tok1 = mkToken(id = "1")
+        val tok2 = mkToken(id = "2")
+
+        test(
+            TestDesc(
+                truth = "tok_count() == 2",
+                token = tok2,
+                idlCtx = mkIdlContext(Seq(tok1, tok2))
+            )
+        )
+    }
+
+    @Test
+    def testTokenForAll(): Unit = {
+        val tok1 = mkToken(id = "1", parentId = "x")
+        val tok2 = mkToken(id = "2", groups = Seq("g", "z", "w"))
+        val tok3 = mkToken(id = "2")
+
+        test(
+            TestDesc(
+                truth = "size(tok_all_for_id('1')) == 1",
+                token = tok2,
+                idlCtx = mkIdlContext(Seq(tok1, tok2, tok3))
+            ),
+            TestDesc(
+                truth = "size(tok_all_for_parent('x')) == 1",
+                token = tok2,
+                idlCtx = mkIdlContext(Seq(tok1, tok2, tok3))
+            ),
+            TestDesc(
+                truth =
+                    "size(tok_all_for_group('g')) == 1 && " +
+                    "tok_id(first(tok_all_for_group('w'))) == '2' && " +
+                    "is_empty(tok_all_for_group('unknown'))",
+                token = tok2,
+                idlCtx = mkIdlContext(Seq(tok1, tok2, tok3))
+            )
+        )
+    }
 }
