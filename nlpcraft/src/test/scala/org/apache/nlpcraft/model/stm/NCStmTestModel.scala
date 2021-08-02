@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.models.stm
+package org.apache.nlpcraft.model.stm
 
 import org.apache.nlpcraft.model.{NCIntentMatch, _}
 

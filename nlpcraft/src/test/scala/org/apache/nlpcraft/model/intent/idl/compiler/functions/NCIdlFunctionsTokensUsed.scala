@@ -24,31 +24,39 @@ import org.junit.jupiter.api.Test
   */
 class NCIdlFunctionsTokensUsed extends NCIdlFunctions {
     @Test
-    def test(): Unit =
+    def test(): Unit = {
+        val tokIdA = mkToken(id = "a")
+        val tokAb = mkToken(id = "a", parentId = "b")
         test(
             TestDesc(
                 truth = "1 == 1",
+                idlCtx = mkIdlContext(),
                 tokensUsed = Some(0)
             ),
             TestDesc(
                 truth = "tok_id() == 'a'",
-                token = Some(mkToken(id = "a")),
+                token = Some(tokIdA),
+                idlCtx = mkIdlContext(Seq(tokIdA)),
                 tokensUsed = Some(1)
             ),
             TestDesc(
                 truth = "tok_id() == 'a' && tok_id() == 'a'",
-                token = Some(mkToken(id = "a")),
+                token = Some(tokIdA),
+                idlCtx = mkIdlContext(Seq(tokIdA)),
                 tokensUsed = Some(2)
             ),
             TestDesc(
                 truth = "tok_id() == 'a' && tok_parent() == 'b'",
-                token = Some(mkToken(id = "a", parentId = "b")),
+                token = Some(tokAb),
+                idlCtx = mkIdlContext(Seq(tokAb)),
                 tokensUsed = Some(2)
             ),
             TestDesc(
                 truth = "tok_id() == 'a' && tok_id() == 'a' && tok_parent() == 'b'",
-                token = Some(mkToken(id = "a", parentId = "b")),
+                token = Some(tokAb),
+                idlCtx = mkIdlContext(Seq(tokAb)),
                 tokensUsed = Some(3)
             )
         )
+    }
 }

@@ -106,8 +106,26 @@ class NCIdlFunctionsToken extends NCIdlFunctions {
                 truth = "tok_end_idx() == 123",
                 token = mkToken(end = 123)
             ),
-            TestDesc(truth = "tok_this() == tok_this()"),
-            TestDesc(truth = "tok_is_first() == true"),
-            TestDesc(truth = "tok_is_last() == true")
+            TestDesc(truth = "tok_this() == tok_this()", idlCtx = mkIdlContext())
         )
+
+    @Test
+    def testTokenOrder(): Unit = {
+        val tok = mkToken(id = "a")
+
+        tok.getMetadata.put("nlpcraft:nlp:index", 0)
+
+        test(
+            TestDesc(
+                truth = "tok_is_first() == true",
+                token = tok,
+                idlCtx = mkIdlContext(toks = Seq(tok))
+            ),
+            TestDesc(
+                truth = "tok_is_last() == true",
+                token = tok,
+                idlCtx = mkIdlContext(toks = Seq(tok))
+            )
+        )
+    }
 }

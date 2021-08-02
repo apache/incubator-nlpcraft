@@ -45,7 +45,7 @@ class NCIdlFunctionsCustom extends NCIdlFunctions {
     def testErrors(): Unit = {
         def test(truth: String*): Unit =
             for (t <- truth)
-                expectError(TestDesc(truth = t, isCustom = true))
+                expectError(TestDesc(truth = t, idlCtx = mkIdlContext(), isCustom = true))
 
         test(
             "invalid",
@@ -61,26 +61,34 @@ class NCIdlFunctionsCustom extends NCIdlFunctions {
     }
 
     @Test
-    def test(): Unit =
+    def test(): Unit = {
+        val tok123 = mkToken(txt = "123")
+        val tok456 = mkToken(txt = "456")
+        val tokAny = mkToken(txt = "any")
+
         test(
             TestDesc(
                 truth = s"$C#trueOn123",
                 isCustom = true,
-                token = Some(mkToken(txt = "123")),
+                token = Some(tok123),
+                idlCtx = mkIdlContext(toks = Seq(tok123)),
                 tokensUsed = Some(1)
             ),
             TestDesc(
                 truth = s"$C#trueOn123",
                 isCustom = true,
-                token = Some(mkToken(txt = "456")),
+                token = Some(tok456),
+                idlCtx = mkIdlContext(toks = Seq(tok456)),
                 expectedRes = false,
                 tokensUsed = Some(1)
             ),
             TestDesc(
-                // Method defined in model.
+                // Method defined in the model.
                 truth = s"#trueAlwaysCustomToken",
                 isCustom = true,
-                token = Some(mkToken(txt = "any"))
+                token = Some(tokAny),
+                idlCtx = mkIdlContext(toks = Seq(tokAny)),
             )
         )
+    }
 }

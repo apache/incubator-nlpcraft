@@ -80,11 +80,14 @@ private[functions] trait NCIdlFunctions {
     }
 
     object TestDesc {
+        def apply(truth: String): TestDesc =
+            new TestDesc(truth = truth, idlCtx = mkIdlContext())
+
         def apply(truth: String, token: NCToken, idlCtx: NCIdlContext): TestDesc =
-            TestDesc(truth = truth, token = Some(token), idlCtx = idlCtx)
+            new TestDesc(truth = truth, token = Some(token), idlCtx = idlCtx)
 
         def apply(truth: String, token: NCToken): TestDesc =
-            TestDesc(truth = truth, token = Some(token), idlCtx = mkIdlContext(toks = Seq(token)))
+            new TestDesc(truth = truth, token = Some(token), idlCtx = mkIdlContext(toks = Seq(token)))
     }
 
     private def t2s(t: NCToken): String = {
@@ -143,7 +146,6 @@ private[functions] trait NCIdlFunctions {
 
         map.putAll(meta.asJava)
 
-        map.put("nlpcraft:nlp:origtext", txt)
         map.put("nlpcraft:nlp:origtext", txt)
 
         new NCToken {
