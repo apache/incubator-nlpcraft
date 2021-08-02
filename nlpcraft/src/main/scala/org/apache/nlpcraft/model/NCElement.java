@@ -269,7 +269,7 @@ public interface NCElement extends NCMetadata, Serializable {
 
     /**
      * Gets the list of synonyms by which this model element will be recognized by. Read more about
-     * many different forms of synonyms in <a target=_ href="https://nlpcraft.apache.org/data-model.html">Data Model</a> section
+     * many forms of synonyms in <a target=_ href="https://nlpcraft.apache.org/data-model.html">Data Model</a> section
      * and review <a target=_ href="https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft-examples">examples</a>.
      * <p>
      * <b>JSON</b>
@@ -329,7 +329,7 @@ public interface NCElement extends NCMetadata, Serializable {
     }
 
     /**
-     * Whether or not to permutate multi-word synonyms. Automatic multi-word synonyms permutations greatly
+     * Whether to permutate multi-word synonyms. Automatic multi-word synonyms permutations greatly
      * increase the total number of synonyms in the system and allows for better multi-word synonym detection.
      * For example, if permutation is allowed the synonym "a b c" will be automatically converted into a
      * sequence of synonyms of "a b c", "b a c", "a c b".
@@ -358,7 +358,7 @@ public interface NCElement extends NCMetadata, Serializable {
     }
 
     /**
-     * Whether or not this element allows the non-stop words gaps in its multi-word synonyms.
+     * Whether this element allows the non-stop words gaps in its multi-word synonyms.
      * <p>
      * This property overrides the value from {@link NCModelView#isSparse()}.
      * One should use this property if model's value isn't applicable to this element.

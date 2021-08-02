@@ -32,12 +32,12 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD, ElementType.METHOD})
 public @interface NCMdoField {
     /**
-     * @return Whether or not to include into SQL CRUD operations.
+     * @return Whether to include into SQL CRUD operations.
      */                                                              
     boolean sql() default true;
 
     /**
-     * @return Whether or not to include into JSON export.
+     * @return Whether to include into JSON export.
      */
     boolean json() default true;
 
@@ -66,12 +66,12 @@ public @interface NCMdoField {
     String jsonName() default "";
 
     /**
-     * @return Custom JDBC type to use instead of default JDBC type mapping.
+     * @return A custom JDBC type to use instead of default JDBC type mapping.
      */
     int jdbcType() default Integer.MIN_VALUE;
 
     /**
-     * @return Whether or not this field is a primary key.
+     * @return Whether this field is a primary key.
      */
     boolean pk() default false;
 }

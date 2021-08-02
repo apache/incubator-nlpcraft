@@ -93,7 +93,7 @@ public class NCEmbeddedProbe {
      *      defined in the configuration (default or provided via {@code cfgFile} parameter) will be used.
      *      Each class should be a fully qualified class name.
      * @throws NCException Thrown in case of any errors starting the data probe.
-     * @return Whether or not probe started ok.
+     * @return Whether probe started ok.
      */
     public static boolean start(String cfgFile, Collection<String> mdlClasses) {
         CompletableFuture<Integer> fut = new CompletableFuture<>();
@@ -113,7 +113,7 @@ public class NCEmbeddedProbe {
      * @param mdlClasses One or more data model classes overrides to be deployed by the embedded probe. At least
      *      model must be provided. Each class should be a fully qualified class name.
      * @throws NCException Thrown in case of any errors starting the data probe.
-     * @return  Whether or not probe started ok.
+     * @return  Whether probe started ok.
      */
     public static boolean start(
         String probeId,

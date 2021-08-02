@@ -20,7 +20,7 @@ package org.apache.nlpcraft.common.util;
 import java.util.*;
 
 /**
- * Implementation is based on https://github.com/peet/hashids.java/blob/master/src/HashidsJava/Hashids.java
+ * Implementation is loosely based on https://github.com/peet/hashids.java/blob/master/src/HashidsJava/Hashids.java
  */
 public class NCIdGenerator {
     private static final String DEFAULT_ALPHABET = "xcS4F6h89aUbideAI7tkynuopqrXCgTE5GBKHLMjfRsz";
@@ -278,10 +278,10 @@ public class NCIdGenerator {
         StringBuilder ret = new StringBuilder();
 
         if (!alphabet.isEmpty()) {
-            List<String> alphabetArr = charArrayToStringList(alphabet.toCharArray());
+            List<String> alphaArr = charArrayToStringList(alphabet.toCharArray());
 
             if (salt == null || salt.isEmpty())
-                salt = new String(new char[]{'\0'});
+                salt = String.valueOf('\0');
 
             int[] sortArr = new int[salt.length()];
 
@@ -307,15 +307,15 @@ public class NCIdGenerator {
 
             int i = 0;
 
-            while (alphabetArr.size() > 0) {
+            while (alphaArr.size() > 0) {
                 int pos = sortArr[i];
 
-                if (pos >= alphabetArr.size())
-                    pos %= alphabetArr.size();
+                if (pos >= alphaArr.size())
+                    pos %= alphaArr.size();
 
-                ret.append(alphabetArr.get(pos));
+                ret.append(alphaArr.get(pos));
 
-                alphabetArr.remove(pos);
+                alphaArr.remove(pos);
 
                 i = ++i % sortArr.length;
             }
@@ -403,16 +403,16 @@ public class NCIdGenerator {
         Iterator<?> iter = s.iterator();
 
         if (iter.hasNext()) {
-            StringBuilder builder = new StringBuilder(s.size());
+            StringBuilder bldr = new StringBuilder(s.size());
 
-            builder.append(iter.next());
+            bldr.append(iter.next());
 
             while (iter.hasNext()) {
-                builder.append(del);
-                builder.append(iter.next());
+                bldr.append(del);
+                bldr.append(iter.next());
             }
 
-            return builder.toString();
+            return bldr.toString();
         }
         
         return "";

@@ -82,7 +82,7 @@ public interface NCTestResult {
     Optional<String> getResultError();
 
     /**
-     * Tests whether or not this result corresponds to a failed execution. This is identical to:
+     * Tests whether this result corresponds to a failed execution. This is identical to:
      * <pre class="brush: java">
      *      return getResultError().isPresent();
      * </pre>
@@ -94,7 +94,7 @@ public interface NCTestResult {
     }
 
     /**
-     * Tests whether or not this result corresponds to a successful execution. This is identical to:
+     * Tests whether this result corresponds to a successful execution. This is identical to:
      * <pre class="brush: java">
      *      return getResult().isPresent() &amp;&amp; getResultType().isPresent();
      * </pre>

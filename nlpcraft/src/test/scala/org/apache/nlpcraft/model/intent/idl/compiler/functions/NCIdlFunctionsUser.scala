@@ -59,7 +59,7 @@ class NCIdlFunctionsUser extends NCIdlFunctions {
     }
 
     private def test(usr: NCUser): Unit = {
-        val idlCtx = ctx(reqUsr = usr)
+        val idlCtx = mkIdlContext(reqUsr = usr)
 
         def mkTestDesc(truth: String): TestDesc = TestDesc(truth = truth, idlCtx = idlCtx)
         def get(opt: Optional[String]): String = if (opt.isEmpty) null else s"'${opt.get()}'"

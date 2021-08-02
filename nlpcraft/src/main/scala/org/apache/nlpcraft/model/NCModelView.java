@@ -587,7 +587,7 @@ public interface NCModelView extends NCMetadata {
     }
 
     /**
-     * Whether or not to allow non-English language in user input.
+     * Whether to allow non-English language in user input.
      * Currently, only English language is supported. However, model can choose whether or not
      * to automatically reject user input that is detected to be a non-English. Note that current
      * algorithm only works reliably on longer user input (10+ words). On short sentences it will
@@ -606,15 +606,15 @@ public interface NCModelView extends NCMetadata {
      * }
      * </pre>
      *
-     * @return Whether or not to allow non-English language in user input.
+     * @return Whether to allow non-English language in user input.
      */
     default boolean isNonEnglishAllowed() {
         return DFLT_IS_NON_ENGLISH_ALLOWED;
     }
 
     /**
-     * Whether or not to allow non-Latin charset in user input. Currently, only
-     * Latin charset is supported. However, model can choose whether or not to automatically reject user
+     * Whether to allow non-Latin charset in user input. Currently, only
+     * Latin charset is supported. However, model can choose whether to automatically reject user
      * input with characters outside of Latin charset. If {@code false} such user input will be automatically
      * rejected.
      * <p>
@@ -631,14 +631,14 @@ public interface NCModelView extends NCMetadata {
      * }
      * </pre>
      *
-     * @return Whether or not to allow non-Latin charset in user input.
+     * @return Whether to allow non-Latin charset in user input.
      */
     default boolean isNotLatinCharsetAllowed() {
         return DFLT_IS_NOT_LATIN_CHARSET_ALLOWED;
     }
 
     /**
-     * Whether or not to allow known English swear words in user input. If {@code false} - user input with
+     * Whether to allow known English swear words in user input. If {@code false} - user input with
      * detected known English swear words will be automatically rejected.
      * <p>
      * <b>Default</b>
@@ -654,15 +654,15 @@ public interface NCModelView extends NCMetadata {
      * }
      * </pre>
      *
-     * @return Whether or not to allow known swear words in user input.
+     * @return Whether to allow known swear words in user input.
      */
     default boolean isSwearWordsAllowed() {
         return DFLT_IS_SWEAR_WORDS_ALLOWED;
     }
 
     /**
-     * Whether or not to allow user input without a single noun. If {@code false} such user input
-     * will be automatically rejected. Typically for strict command or query-oriented models this should be set to
+     * Whether to allow user input without a single noun. If {@code false} such user input
+     * will be automatically rejected. Typically, for strict command or query-oriented models this should be set to
      * {@code false} as any command or query should have at least one noun subject. However, for conversational
      * models this can be set to {@code false} to allow for a smalltalk and one-liners.
      * <p>
@@ -679,14 +679,14 @@ public interface NCModelView extends NCMetadata {
      * }
      * </pre>
      *
-     * @return Whether or not to allow user input without a single noun.
+     * @return Whether to allow user input without a single noun.
      */
     default boolean isNoNounsAllowed() {
         return DFLT_IS_NO_NOUNS_ALLOWED;
     }
 
     /**
-     * Whether or not to permutate multi-word synonyms. Automatic multi-word synonyms permutations greatly
+     * Whether to permutate multi-word synonyms. Automatic multi-word synonyms permutations greatly
      * increase the total number of synonyms in the system and allows for better multi-word synonym detection.
      * For example, if permutation is allowed the synonym "a b c" will be automatically converted into a
      * sequence of synonyms of "a b c", "b a c", "a c b". This property is closely related to {@link #isSparse()}
@@ -706,7 +706,7 @@ public interface NCModelView extends NCMetadata {
      * }
      * </pre>
      *
-     * @return Whether or not to permutate multi-word synonyms.
+     * @return Whether to permutate multi-word synonyms.
      * @see NCElement#isPermutateSynonyms()
      * @see NCElement#isSparse()
      * @see #isSparse()
@@ -716,7 +716,7 @@ public interface NCModelView extends NCMetadata {
     }
 
     /**
-     * Whether or not duplicate synonyms are allowed. If {@code true} - the model will pick the random
+     * Whether duplicate synonyms are allowed. If {@code true} - the model will pick the random
      * model element when multiple elements found due to duplicate synonyms. If {@code false} - model
      * will print error message and will not deploy.
      * <p>
@@ -733,7 +733,7 @@ public interface NCModelView extends NCMetadata {
      * }
      * </pre>
      *
-     * @return Whether or not to allow duplicate synonyms.
+     * @return Whether to allow duplicate synonyms.
      */
     default boolean isDupSynonymsAllowed() {
         return DFLT_IS_DUP_SYNONYMS_ALLOWED;
@@ -764,7 +764,7 @@ public interface NCModelView extends NCMetadata {
     }
 
     /**
-     * Whether or not to allow the user input with no user token detected. If {@code false} such user
+     * Whether to allow the user input with no user token detected. If {@code false} such user
      * input will be automatically rejected. Note that this property only applies to user-defined
      * token (i.e. model element). Even if there are no user defined tokens, the user input may still
      * contain system token like <code>nlpcraft:city</code> or <code>nlpcraft:date</code>. In many cases models
@@ -784,14 +784,14 @@ public interface NCModelView extends NCMetadata {
      * }
      * </pre>
      *
-     * @return Whether or not to allow the user input with no user token detected.
+     * @return Whether to allow the user input with no user token detected.
      */
     default boolean isNoUserTokensAllowed() {
         return DFLT_IS_NO_USER_TOKENS_ALLOWED;
     }
 
     /**
-     * Whether or not this model elements allows non-stop words gaps in their multi-word synonyms.
+     * Whether this model elements allows non-stop words gaps in their multi-word synonyms.
      * This property is closely related to {@link #isPermutateSynonyms()} which are typically changed together.
      * Note that individual model elements can override this property using {@link NCElement#isSparse()}
      * method.
@@ -1105,7 +1105,7 @@ public interface NCModelView extends NCMetadata {
     default int getMaxElementSynonyms() { return DFLT_MAX_ELEMENT_SYNONYMS; }
 
     /**
-     * Whether or not exceeding {@link #getMaxElementSynonyms()} will trigger a warning log or throwing an exception.
+     * Whether exceeding {@link #getMaxElementSynonyms()} will trigger a warning log or throwing an exception.
      * Note that throwing exception will prevent data probe from starting.
      * <p>
      * <b>Default</b>
@@ -1121,7 +1121,7 @@ public interface NCModelView extends NCMetadata {
      * }
      * </pre>
      *
-     * @return Whether or not exceeding {@link #getMaxElementSynonyms()} will trigger a warning log or
+     * @return Whether exceeding {@link #getMaxElementSynonyms()} will trigger a warning log or
      *      throwing an exception.
      * @see #getMaxElementSynonyms()
      */
@@ -1136,8 +1136,8 @@ public interface NCModelView extends NCMetadata {
      * conversation's short-term-memory.
      * <p>
      * Note that both conversation timeout and {@link #getConversationDepth() depth}
-     * combined define the expiration policy for the conversation management. These two properties allow to
-     * fine tune for different types of dialogs. For example, setting longer timeout and smaller depth mimics
+     * combined define the expiration policy for the conversation management. These two properties allow fine-tuning
+     * for different types of dialogs. For example, setting longer timeout and smaller depth mimics
      * slow-moving but topic-focused conversation. Alternatively, settings shorter timeout and longer depth better
      * supports fast-moving wide-ranging conversation that may cover multiple topics.
      * <p>
@@ -1168,8 +1168,8 @@ public interface NCModelView extends NCMetadata {
      * conversation's short-term-memory.
      * <p>
      * Note that both conversation {@link #getConversationTimeout() timeout} and depth
-     * combined define the expiration policy for the conversation management. These two properties allow to
-     * fine tune for different types of dialogs. For example, setting longer timeout and smaller depth mimics
+     * combined define the expiration policy for the conversation management. These two properties allow fine-tuning
+     * for different types of dialogs. For example, setting longer timeout and smaller depth mimics
      * slow-moving but topic-focused conversation. Alternatively, settings shorter timeout and longer depth better
      * supports fast-moving wide-ranging conversation that may cover multiple topics.
      * <p>
@@ -1194,7 +1194,7 @@ public interface NCModelView extends NCMetadata {
     /**
      * Gets an optional map of restricted named entity combinations (linkage). Returned map is a map of entity ID to a set
      * of other entity IDs, with each key-value pair defining the restricted combination. Restricting certain entities
-     * from being linked (or referenced) by some other entities allows to reduce "wasteful" parsing variant
+     * from being linked (or referenced) by some other entities allows reducing "wasteful" parsing variant
      * generation. For example, it we know that entity with ID "adjective" cannot be sorted, we can restrict it
      * from being linked with <code>nlpcraft:limit</code> and <code>nlpcraft:sort</code> entities to reduce the
      * amount of parsing variants being generated.

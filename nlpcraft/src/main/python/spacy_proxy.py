@@ -21,6 +21,9 @@ import spacy
 from flask import Flask, request
 from flask_restful import Resource, Api
 
+import logging
+
+logger = logging.getLogger(__name__)
 #
 # This is an example of spaCy REST proxy. It only should be used during development.
 # For production usage we recommend WSGI server instead.
@@ -30,7 +33,12 @@ from flask_restful import Resource, Api
 # Add your own or modify spaCy libraries here.
 # By default, the English model 'en_core_web_sm' is loaded.
 #
-nlp = spacy.load("en_core_web_sm")
+spacy_model_name = "en_core_web_sm"
+try:
+    nlp = spacy.load(spacy_model_name)
+except Exception as err:
+    logger.error(f"Error loading spaCy model: {spacy_model_name}")
+    logger.error(err)
 
 app = Flask(__name__)
 api = Api(app)
