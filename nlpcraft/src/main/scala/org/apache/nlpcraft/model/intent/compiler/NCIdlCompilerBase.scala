@@ -1100,7 +1100,7 @@ trait NCIdlCompilerBase {
             stack.push(() => {
                 val Z(arg, n) = x()
 
-                Z(idlCtx.toks.filter(f(_, toStr(arg))), n)
+                Z(idlCtx.toks.filter(f(_, toStr(arg))).asJava, n)
             })
         }
 
