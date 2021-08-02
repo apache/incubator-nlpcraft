@@ -32,6 +32,7 @@ import java.util
 import java.util.{Calendar, Collections, Collection => JColl, List => JList, Map => JMap}
 
 import scala.jdk.CollectionConverters.CollectionHasAsScala
+import scala.jdk.CollectionConverters.SeqHasAsJava
 
 trait NCIdlCompilerBase {
     type S = NCIdlStack
@@ -1093,6 +1094,16 @@ trait NCIdlCompilerBase {
             })
         }
 
+        def doForAll(f: (NCToken, String) => Boolean): Unit = {
+            val x = arg1()
+
+            stack.push(() => {
+                val Z(arg, n) = x()
+
+                Z(idlCtx.toks.filter(f(_, toStr(arg))), n)
+            })
+        }
+
         def doLength(): Unit = {
             val x = arg1()
 
@@ -1196,6 +1207,12 @@ trait NCIdlCompilerBase {
             case "tok_has_part" => doHasPart()
             case "tok_find_part" => doFindPart()
             case "tok_find_parts" => doFindParts()
+
+            case "tok_count" => checkAvail(); z0(() => Z(idlCtx.toks.size, 0))
+            case "tok_all" => checkAvail(); z0(() => Z(idlCtx.toks.asJava, 0))
+            case "tok_all_for_id" => checkAvail(); doForAll((tok, id) => tok.getId == id)
+            case "tok_all_for_parent" => checkAvail(); doForAll((tok, id) => tok.getParentId == id)
+            case "tok_all_for_group" => checkAvail(); doForAll((tok, grp) => tok.getGroups.contains(grp))
 
             // Request data.
             case "req_id" => z0(() => Z(idlCtx.req.getServerRequestId, 0))
