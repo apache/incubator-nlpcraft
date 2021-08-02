@@ -45,7 +45,7 @@ class NCIdlFunctionsToken extends NCIdlFunctions {
     private def mkMeta(truth: String):TestDesc = TestDesc(truth = truth, token = mkToken(meta = meta))
 
     @Test
-    def test(): Unit =
+    def testMainTokenProperties(): Unit =
         test(
             TestDesc(
                 truth = "tok_id() == 'a'",
@@ -57,7 +57,7 @@ class NCIdlFunctionsToken extends NCIdlFunctions {
             mkMeta(truth = s"tok_sparsity() == ${meta("nlpcraft:nlp:sparsity")}"),
             mkMeta(truth = s"tok_unid() == '${meta("nlpcraft:nlp:unid")}'"),
             TestDesc(
-                truth = s"tok_is_abstract() == true",
+                truth = s"tok_is_abstract()",
                 token = mkToken(`abstract` = true)
             ),
             mkMeta(truth = s"tok_is_abstract() == false"),
@@ -70,11 +70,11 @@ class NCIdlFunctionsToken extends NCIdlFunctions {
             mkMeta(truth = s"tok_is_stopword() == ${meta("nlpcraft:nlp:stopword")}"),
             mkMeta(truth = s"tok_is_swear() == ${meta("nlpcraft:nlp:swear")}"),
             TestDesc(
-                truth = s"tok_is_user() == true",
+                truth = s"tok_is_user()",
                 token = mkToken(id = "aa")
             ),
             TestDesc(
-                truth = s"tok_is_user() == false",
+                truth = s"!tok_is_user()",
                 token = mkToken(id = "nlpcraft:nlp")
             ),
             mkMeta(truth = s"tok_is_wordnet() == ${meta("nlpcraft:nlp:dict")}"),
@@ -110,21 +110,55 @@ class NCIdlFunctionsToken extends NCIdlFunctions {
         )
 
     @Test
-    def testTokenOrder(): Unit = {
+    def testTokenFirstLast(): Unit = {
         val tok = mkToken(id = "a")
 
         tok.getMetadata.put("nlpcraft:nlp:index", 0)
 
         test(
             TestDesc(
-                truth = "tok_is_first() == true",
+                truth = "tok_is_first()",
                 token = tok,
                 idlCtx = mkIdlContext(toks = Seq(tok))
             ),
             TestDesc(
-                truth = "tok_is_last() == true",
+                truth = "tok_is_last()",
                 token = tok,
                 idlCtx = mkIdlContext(toks = Seq(tok))
+            )
+        )
+    }
+
+    @Test
+    def testTokenBeforeId(): Unit = {
+        val tok1 = mkToken(id = "1")
+        val tok2 = mkToken(id = "2")
+
+        tok1.getMetadata.put("nlpcraft:nlp:index", 0)
+        tok2.getMetadata.put("nlpcraft:nlp:index", 1)
+
+        test(
+            TestDesc(
+                truth = "tok_is_before_id('2')",
+                token = tok1,
+                idlCtx = mkIdlContext(Seq(tok1, tok2))
+            )
+        )
+    }
+
+    @Test
+    def testTokenAfterId(): Unit = {
+        val tok1 = mkToken(id = "1")
+        val tok2 = mkToken(id = "2")
+
+        tok1.getMetadata.put("nlpcraft:nlp:index", 0)
+        tok2.getMetadata.put("nlpcraft:nlp:index", 1)
+
+        test(
+            TestDesc(
+                truth = "tok_is_after_id('1')",
+                token = tok2,
+                idlCtx = mkIdlContext(Seq(tok1, tok2))
             )
         )
     }

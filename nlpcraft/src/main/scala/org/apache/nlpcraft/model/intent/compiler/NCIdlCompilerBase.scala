@@ -526,10 +526,10 @@ trait NCIdlCompilerBase {
 
         val fun = id.getText
 
-        def ensureStack(min: Int): Unit = if (stack.size < min) throw rtMissingParamError(min, fun)
         def popMarker(argNum: Int): Unit = if (pop1() != stack.PLIST_MARKER) throw rtTooManyParamsError(argNum, fun)
         def arg[X](argNum: Int, f: () => X): X = {
-            ensureStack(argNum + 1) // +1 for the frame marker.
+            if (stack.size < argNum + 1) // +1 for stack frame marker.
+                throw rtMissingParamError(argNum, fun)
 
             val x = f()
 
@@ -1074,26 +1074,22 @@ trait NCIdlCompilerBase {
         }
 
         def doIsBefore(f: (NCToken, String) => Boolean): Unit = {
-            val (x1, x2) = arg2()
+            val x = arg1()
 
             stack.push(() => {
-                val (t, a, n) = extract2(x1, x2)
+                val Z(arg, n) = x()
 
-                val tok = toToken(t)
-
-                Z(idlCtx.toks.exists(t => t.getIndex > tok.getIndex && f(t, toStr(a))), n)
+                Z(idlCtx.toks.exists(t => t.getIndex > tok.getIndex && f(t, toStr(arg))), n)
             })
         }
 
         def doIsAfter(f: (NCToken, String) => Boolean): Unit = {
-            val (x1, x2) = arg2()
+            val x = arg1()
 
             stack.push(() => {
-                val (t, a, n) = extract2(x1, x2)
+                val Z(arg, n) = x()
 
-                val tok = toToken(t)
-
-                Z(idlCtx.toks.exists(t => t.getIndex < tok.getIndex && f(t, toStr(a))), n)
+                Z(idlCtx.toks.exists(t => t.getIndex < tok.getIndex && f(t, toStr(arg))), n)
             })
         }
 
