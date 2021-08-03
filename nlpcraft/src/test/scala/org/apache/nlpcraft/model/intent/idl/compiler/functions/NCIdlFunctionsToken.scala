@@ -195,6 +195,16 @@ class NCIdlFunctionsToken extends NCIdlFunctions {
                 idlCtx = mkIdlContext(Seq(tok1, tok2, tok3))
             ),
             TestDesc(
+                truth = "size(tok_all()) == 3",
+                token = tok2,
+                idlCtx = mkIdlContext(Seq(tok1, tok2, tok3))
+            ),
+            TestDesc(
+                truth = "tok_count() == size(tok_all())",
+                token = tok2,
+                idlCtx = mkIdlContext(Seq(tok1, tok2, tok3))
+            ),
+            TestDesc(
                 truth =
                     "size(tok_all_for_group('g')) == 1 && " +
                     "tok_id(first(tok_all_for_group('w'))) == '2' && " +
