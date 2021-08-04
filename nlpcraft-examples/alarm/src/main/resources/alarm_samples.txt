@@ -22,4 +22,15 @@
 Ping me in 3 minutes tomorrow
 Buzz me in an hour and 15mins
 Set my alarm for 30s
-Please, wake me up in twenty five minutes!
+Please, wake me up in twenty-five minutes!
+Buzz me in few minutes
+Buzz me in a couple of minutes
+Wake me up in an hour
+Buzz me in a couple of hours
+Wake me up in a bit
+Set my alarm clock for an hour and 15mins
+Buzz me in one hour and 15mins
+Buzz me in 1 hour and 15mins
+Buzz me in 1h and 15mins
+Buzz me in a day, 1h and 15mins
+Buzz me in one day, 1h and 15mins

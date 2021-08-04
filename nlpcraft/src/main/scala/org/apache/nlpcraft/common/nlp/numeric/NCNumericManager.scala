@@ -17,26 +17,15 @@
 
 package org.apache.nlpcraft.common.nlp.numeric
 
-import java.text.{DecimalFormat, ParseException}
-import java.util.Locale
-
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.NCService
 import org.apache.nlpcraft.common.nlp._
 import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
 import org.apache.nlpcraft.common.util.NCUtils.mapResource
 
-case class NCNumericUnit(name: String, unitType: String)
-case class NCNumeric(
-    tokens: Seq[NCNlpSentenceToken],
-    value: Double,
-    isFractional: Boolean,
-    unit: Option[NCNumericUnit]
-)
+import java.text.{DecimalFormat, ParseException}
+import java.util.Locale
 
-/**
-  * Numeric detection manager.
-  */
 object NCNumericManager extends NCService {
     // Sets EN numeric format.
     Locale.setDefault(Locale.forLanguageTag("EN"))
@@ -116,6 +105,34 @@ object NCNumericManager extends NCService {
         }
         else
             None
+    }
+
+    /**
+      * Tries to find special cases for numerics definition, without explicit numerics.
+      *
+      * Example: 'in an hour'.
+      *
+      * @param ns Sentence.
+      */
+    private def findFuzzy(ns: NCNlpSentence): Seq[NCNumeric] = {
+        val senToks: Seq[NCNlpSentenceToken] = ns.tokens.toSeq
+        val senWords: Seq[String] = senToks.map(_.normText)
+
+        NCNumericFuzzy.NUMS.map { case (txt, period) => txt.split(" ") -> period }.flatMap {
+            case (dtWords, dtPeriod) =>
+                senWords.indexOfSlice(dtWords) match {
+                    case -1 => None
+                    case idx =>
+                        Some(
+                            NCNumeric(
+                                tokens = senToks.slice(idx, idx + dtWords.length),
+                                value = dtPeriod.value,
+                                isFractional = false,
+                                unit = Some(dtPeriod.unit)
+                            )
+                        )
+                }
+        }
     }
 
     /**
@@ -434,7 +451,11 @@ object NCNumericManager extends NCService {
          
             val usedToks = nums.flatMap(_.tokens)
          
-            (nums ++ ns.filter(t => !usedToks.contains(t)).flatMap(mkSolidNumUnit)).sortBy(_.tokens.head.index).distinct
+            (
+                nums ++
+                ns.filter(t => !usedToks.contains(t)).flatMap(mkSolidNumUnit) ++
+                findFuzzy(ns)
+            ).sortBy(_.tokens.head.index).distinct
         }
     }
 }
