@@ -29,7 +29,7 @@
             "description": "Alarm token indicator.",
             "synonyms": [
                 "{ping|buzz|wake|call|hit} {me|up|me up|_}",
-                "{set|_} {my|_} {wake|wake up|_} {alarm|timer|clock|buzzer|call} {up|_}"
+                "{set|_} {my|_} {wake|wake up|_} {alarm|timer|clock|buzzer|call} {clock|_} {up|_}"
             ]
         }
     ],

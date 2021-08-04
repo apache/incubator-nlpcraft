@@ -438,7 +438,6 @@ object NCNumericEnricher extends NCServerEnricher {
     
                 num.tokens.foreach(_.add(note))
             }
-    
         }
     }
 }
