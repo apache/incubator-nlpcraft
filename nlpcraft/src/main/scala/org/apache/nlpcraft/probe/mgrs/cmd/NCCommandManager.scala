@@ -257,20 +257,10 @@ object NCCommandManager extends NCService {
                                                 override def getSynonyms: JList[String] = e.getSynonyms
                                                 override def isPermutateSynonyms: Optional[lang.Boolean] = e.isPermutateSynonyms
                                                 override def isSparse: Optional[lang.Boolean] = e.isSparse
+                                                override def getValues: JList[NCValue] = e.getValues
 
                                                 // Cleared.
                                                 override def getValueLoader: Optional[NCValueLoader] = null
-
-                                                // Converted.
-                                                override def getValues: JList[NCValue] =
-                                                    if (e.getValues != null) {
-                                                        e.getValues.asScala.map(v => new NCValue {
-                                                            override def getName: String = v.getName
-                                                            override def getSynonyms: JList[String] = v.getSynonyms
-                                                        }).asJava
-                                                    }
-                                                    else
-                                                        null
                                             }
                                         ).asJava
                                     }
