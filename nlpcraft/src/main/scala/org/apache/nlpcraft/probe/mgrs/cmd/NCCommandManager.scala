@@ -251,7 +251,9 @@ object NCCommandManager extends NCService {
                                             // (even with Jdk8Module)
                                             // Below `is` getters data provided as `get` getters data.
                                             abstract class NCElementExt extends NCElement {
+                                                // New method instead of `isPermutateSynonyms`
                                                 def getPermutateSynonyms: lang.Boolean
+                                                // New method instead of `isSparse`
                                                 def getSparse: lang.Boolean
                                             }
 
@@ -266,18 +268,18 @@ object NCCommandManager extends NCService {
                                                     override def getSynonyms: JList[String] = e.getSynonyms
                                                     override def getValues: JList[NCValue] = e.getValues
 
-                                                    // Hides.
+                                                    // Hidden.
                                                     override def isPermutateSynonyms: Optional[lang.Boolean] = null
                                                     override def isSparse: Optional[lang.Boolean] = null
 
-                                                    // Wraps.
+                                                    // Wrapped.
                                                     override def getPermutateSynonyms: lang.Boolean =
                                                         e.isPermutateSynonyms.orElse(null)
-                                                    override def getSparse: lang.Boolean = e.isSparse.orElse(null)
+                                                    override def getSparse: lang.Boolean =
+                                                        e.isSparse.orElse(null)
 
                                                     // Cleared.
                                                     override def getValueLoader: Optional[NCValueLoader] = null
-
                                                 }
 
                                             eExt
