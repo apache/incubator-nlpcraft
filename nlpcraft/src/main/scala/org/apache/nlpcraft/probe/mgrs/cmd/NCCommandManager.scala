@@ -246,33 +246,52 @@ object NCCommandManager extends NCService {
                                         override def getParsers: JList[NCCustomParser] = null
 
                                         // Converted.
-                                        override def getElements: util.Set[NCElement] = mdl.getElements.asScala.map(e =>
-                                            new NCElement {
-                                                // As is.
-                                                override def getId: String = e.getId
-                                                override def getGroups: JList[String] = e.getGroups
-                                                override def getMetadata: util.Map[String, AnyRef] = e.getMetadata
-                                                override def getDescription: String = e.getDescription
-                                                override def getParentId: String = e.getParentId
-                                                override def getSynonyms: JList[String] = e.getSynonyms
-                                                override def isPermutateSynonyms: Optional[lang.Boolean] = e.isPermutateSynonyms
-                                                override def isSparse: Optional[lang.Boolean] = e.isSparse
-
-                                                // Cleared.
-                                                override def getValueLoader: Optional[NCValueLoader] = null
-
-                                                // Converted.
-                                                override def getValues: JList[NCValue] =
-                                                    if (e.getValues != null) {
-                                                        e.getValues.asScala.map(v => new NCValue {
-                                                            override def getName: String = v.getName
-                                                            override def getSynonyms: JList[String] = v.getSynonyms
-                                                        }).asJava
-                                                    }
-                                                    else
-                                                        null
+                                        override def getElements: util.Set[NCElement] = mdl.getElements.asScala.map(e => {
+                                            // Jackson can serialize `is` getters but only for boolean return types
+                                            // (even with Jdk8Module)
+                                            // Below `is` getters data provided as `get` getters data.
+                                            abstract class NCElementExt extends NCElement {
+                                                def getPermutateSynonyms: lang.Boolean
+                                                def getSparse: lang.Boolean
                                             }
-                                        ).asJava
+
+                                            val eExt: NCElement =
+                                                new NCElementExt {
+                                                    // As is.
+                                                    override def getId: String = e.getId
+                                                    override def getGroups: JList[String] = e.getGroups
+                                                    override def getMetadata: util.Map[String, AnyRef] = e.getMetadata
+                                                    override def getDescription: String = e.getDescription
+                                                    override def getParentId: String = e.getParentId
+                                                    override def getSynonyms: JList[String] = e.getSynonyms
+
+                                                    // Hides.
+                                                    override def isPermutateSynonyms: Optional[lang.Boolean] = null
+                                                    override def isSparse: Optional[lang.Boolean] = null
+
+                                                    // Wraps.
+                                                    override def getPermutateSynonyms: lang.Boolean =
+                                                        e.isPermutateSynonyms.orElse(null)
+                                                    override def getSparse: lang.Boolean = e.isSparse.orElse(null)
+
+                                                    // Cleared.
+                                                    override def getValueLoader: Optional[NCValueLoader] = null
+
+                                                    // Converted.
+                                                    override def getValues: JList[NCValue] =
+                                                        if (e.getValues != null) {
+                                                            e.getValues.asScala.map(v => new NCValue {
+                                                                override def getName: String = v.getName
+
+                                                                override def getSynonyms: JList[String] = v.getSynonyms
+                                                            }).asJava
+                                                        }
+                                                        else
+                                                            null
+                                                }
+
+                                            eExt
+                                        }).asJava
                                     }
 
                                 NCProbeMessage(
