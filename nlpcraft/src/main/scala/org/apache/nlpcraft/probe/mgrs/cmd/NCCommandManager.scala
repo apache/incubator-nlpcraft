@@ -245,9 +245,6 @@ object NCCommandManager extends NCService {
                                         // Cleared.
                                         override def getParsers: JList[NCCustomParser] = null
 
-                                        // Add list of just element IDs.
-                                        val elementIds: JList[String] = mdl.getElements.asScala.map(_.getId).toList.asJava
-
                                         // Converted.
                                         override def getElements: util.Set[NCElement] = mdl.getElements.asScala.map(e =>
                                             new NCElement {
@@ -269,8 +266,7 @@ object NCCommandManager extends NCService {
                                                     if (e.getValues != null) {
                                                         e.getValues.asScala.map(v => new NCValue {
                                                             override def getName: String = v.getName
-                                                            // Cleared.
-                                                            override def getSynonyms: JList[String] = null
+                                                            override def getSynonyms: JList[String] = v.getSynonyms
                                                         }).asJava
                                                     }
                                                     else
