@@ -264,6 +264,7 @@ object NCCommandManager extends NCService {
                                                     override def getDescription: String = e.getDescription
                                                     override def getParentId: String = e.getParentId
                                                     override def getSynonyms: JList[String] = e.getSynonyms
+                                                    override def getValues: JList[NCValue] = e.getValues
 
                                                     // Hides.
                                                     override def isPermutateSynonyms: Optional[lang.Boolean] = null
@@ -277,17 +278,6 @@ object NCCommandManager extends NCService {
                                                     // Cleared.
                                                     override def getValueLoader: Optional[NCValueLoader] = null
 
-                                                    // Converted.
-                                                    override def getValues: JList[NCValue] =
-                                                        if (e.getValues != null) {
-                                                            e.getValues.asScala.map(v => new NCValue {
-                                                                override def getName: String = v.getName
-
-                                                                override def getSynonyms: JList[String] = v.getSynonyms
-                                                            }).asJava
-                                                        }
-                                                        else
-                                                            null
                                                 }
 
                                             eExt
