@@ -29,7 +29,6 @@ import java.util.Collection;
  * text body and the type. The type is similar in notion to MIME types. The following is the list of supported
  * result types:
  * <table class="dl-table">
- *     <caption>Result types.</caption>
  *     <tr>
  *         <th>Result Type</th>
  *         <th>Factory Method</th>
