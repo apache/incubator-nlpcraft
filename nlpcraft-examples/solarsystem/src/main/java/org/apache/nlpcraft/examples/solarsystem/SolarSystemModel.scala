@@ -45,10 +45,10 @@ class SolarSystemModel extends NCModelFileAdapter("solarsystem_model.yaml") with
     )
     @NCIntent(
         "intent=planetInfo " +
-            "    options={" +
-            "        'unused_usr_toks': false " +
-            "    }" +
-            "    term(planet)={tok_id() == 'planet'}"
+        "    options={" +
+        "        'unused_usr_toks': false " +
+        "    }" +
+        "    term(planet)={tok_id() == 'planet'}"
     )
     def planetInfo(@NCIntentTerm("planet") planet: NCToken): NCResult =
         NCResult.text(api.bodyRequest().withFilter("id", "eq", planet.getNormalizedText).execute().toString())
