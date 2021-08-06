@@ -21,6 +21,10 @@ import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.examples.solarsystem.tools.SolarSystemOpenApiService
 import org.apache.nlpcraft.model.{NCIntent, NCIntentSample, NCIntentTerm, NCModelFileAdapter, NCResult, NCToken}
 
+import java.time.format.{DateTimeFormatter, DateTimeFormatterBuilder, DateTimeParseException}
+import java.time.temporal.ChronoField
+import java.time.{LocalDate, ZoneOffset}
+
 class SolarSystemModel extends NCModelFileAdapter("solarsystem_model.yaml") with LazyLogging {
     private var api: SolarSystemOpenApiService = _
 
@@ -70,4 +74,66 @@ class SolarSystemModel extends NCModelFileAdapter("solarsystem_model.yaml") with
     )
     def discoverer(@NCIntentTerm("discoverer") discoverer: NCToken): NCResult =
         NCResult.text(api.bodyRequest().withFilter("discoveredBy", "cs", discoverer.getNormalizedText).execute().toString())
+
+    @NCIntentSample(
+        Array(
+            "After 1900 year",
+            "After 1900 year",
+        )
+    )
+    @NCIntent(
+        "intent=date " +
+            "    options={" +
+            "        'unused_usr_toks': true " +
+            "    }" +
+            "    term(date)={tok_id() == 'nlpcraft:date'} "
+    )
+    def date(@NCIntentTerm("date") date: NCToken): NCResult = {
+        // API doesn't support filter by dates.
+        // We do it here.
+        var res = api.bodyRequest().execute()
+
+        val supportedFmts =
+            Seq (
+                DateTimeFormatter.ofPattern("dd/MM/yyyy"),
+                new DateTimeFormatterBuilder().
+                    appendPattern("yyyy").
+                    parseDefaulting(ChronoField.MONTH_OF_YEAR, 1).
+                    parseDefaulting(ChronoField.DAY_OF_MONTH, 1).
+                    toFormatter(),
+                new DateTimeFormatterBuilder().
+                    appendPattern("??/MM/yyyy").
+                    parseDefaulting(ChronoField.DAY_OF_MONTH, 1).
+                    toFormatter()
+            )
+
+        val from: Long = date.metax("nlpcraft:date:from")
+        val to: Long = date.metax("nlpcraft:date:to")
+
+        res = res.filter(row => {
+            val dateStr = row("discoveryDate").asInstanceOf[String]
+
+            if (dateStr.nonEmpty) {
+                supportedFmts.flatMap(p => {
+                    try {
+                        val time = LocalDate.parse(dateStr, p).atStartOfDay(ZoneOffset.UTC).toInstant.toEpochMilli
+
+                        Some(time >= from && time <= to)
+                    }
+                    catch {
+                        case _: DateTimeParseException => None
+                    }
+                }).
+                    to(LazyList).
+                    headOption.
+                    getOrElse(throw new AssertionError(s"Template not found for: $dateStr"))
+            }
+            else
+                false
+        })
+
+        println("after=" + res.size)
+
+        NCResult.text(res.toString())
+    }
 }
