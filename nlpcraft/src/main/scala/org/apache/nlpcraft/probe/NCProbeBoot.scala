@@ -184,6 +184,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
         checkStarted()
 
         U.ensureHomeDir()
+        U.ensurePythonDir()
 
         val cfg = initializeConfig(args, None)
 

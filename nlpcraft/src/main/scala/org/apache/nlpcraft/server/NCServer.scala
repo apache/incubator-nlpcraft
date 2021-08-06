@@ -173,6 +173,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
         NCAnsi.ackStatus()
 
         U.ensureHomeDir()
+        U.ensurePythonDir()
 
         setSysProps()
 

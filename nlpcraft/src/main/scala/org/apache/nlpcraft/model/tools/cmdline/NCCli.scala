@@ -69,6 +69,7 @@ object NCCli extends NCCliBase {
     var term: Terminal = _
 
     U.ensureHomeDir()
+    U.ensurePythonDir()
 
     NCModule.setModule(NCModule.CLI)
 
