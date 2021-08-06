@@ -22,7 +22,7 @@ import org.apache.nlpcraft.examples.solarsystem.tools.SolarSystemOpenApiService
 import org.apache.nlpcraft.model.{NCIntent, NCIntentSample, NCIntentTerm, NCModelFileAdapter, NCResult, NCToken}
 
 import java.time.format.{DateTimeFormatter, DateTimeFormatterBuilder, DateTimeParseException}
-import java.time.temporal.ChronoField
+import java.time.temporal.ChronoField._
 import java.time.{LocalDate, ZoneOffset}
 
 class SolarSystemModel extends NCModelFileAdapter("solarsystem_model.yaml") with LazyLogging {
@@ -98,12 +98,12 @@ class SolarSystemModel extends NCModelFileAdapter("solarsystem_model.yaml") with
                 DateTimeFormatter.ofPattern("dd/MM/yyyy"),
                 new DateTimeFormatterBuilder().
                     appendPattern("yyyy").
-                    parseDefaulting(ChronoField.MONTH_OF_YEAR, 1).
-                    parseDefaulting(ChronoField.DAY_OF_MONTH, 1).
+                    parseDefaulting(MONTH_OF_YEAR, 1).
+                    parseDefaulting(DAY_OF_MONTH, 1).
                     toFormatter(),
                 new DateTimeFormatterBuilder().
                     appendPattern("??/MM/yyyy").
-                    parseDefaulting(ChronoField.DAY_OF_MONTH, 1).
+                    parseDefaulting(DAY_OF_MONTH, 1).
                     toFormatter()
             )
 
