@@ -114,16 +114,16 @@ class SolarSystemModel extends NCModelFileAdapter("solarsystem_model.yaml") with
             val dateStr = row("discoveryDate").asInstanceOf[String]
 
             if (dateStr.nonEmpty) {
-                supportedFmts.flatMap(p => {
+                supportedFmts.flatMap(p =>
                     try {
-                        val time = LocalDate.parse(dateStr, p).atStartOfDay(ZoneOffset.UTC).toInstant.toEpochMilli
+                        val ms = LocalDate.parse(dateStr, p).atStartOfDay(ZoneOffset.UTC).toInstant.toEpochMilli
 
-                        Some(time >= from && time <= to)
+                        Some(ms >= from && ms <= to)
                     }
                     catch {
                         case _: DateTimeParseException => None
                     }
-                }).
+                ).
                     to(LazyList).
                     headOption.
                     getOrElse(throw new AssertionError(s"Template not found for: $dateStr"))
@@ -131,8 +131,6 @@ class SolarSystemModel extends NCModelFileAdapter("solarsystem_model.yaml") with
             else
                 false
         })
-
-        println("after=" + res.size)
 
         NCResult.text(res.toString())
     }
