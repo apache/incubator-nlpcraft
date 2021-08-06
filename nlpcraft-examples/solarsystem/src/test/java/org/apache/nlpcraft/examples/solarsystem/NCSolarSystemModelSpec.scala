@@ -27,5 +27,6 @@ import org.junit.jupiter.api.Test
 class NCSolarSystemModelSpec extends NCTestContext {
     @Test
     def test(): Unit = {
+        checkIntent("moon", "i1")
     }
 }

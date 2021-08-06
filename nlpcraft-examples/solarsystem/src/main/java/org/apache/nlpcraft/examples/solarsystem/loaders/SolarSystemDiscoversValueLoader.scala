@@ -17,8 +17,8 @@
 
 package org.apache.nlpcraft.examples.solarsystem.loaders
 
-import org.apache.nlpcraft.examples.solarsystem.tools.SolarSystemOpenDataApi
+import org.apache.nlpcraft.examples.solarsystem.tools.SolarSystemOpenApiService
 
 class SolarSystemDiscoversValueLoader extends SolarSystemValueLoader  {
-    override def getData: Seq[String] = SolarSystemOpenDataApi.getInstance().getAllDiscovers
+    override def getData: Seq[String] = SolarSystemOpenApiService.getInstance().getAllDiscovers
 }

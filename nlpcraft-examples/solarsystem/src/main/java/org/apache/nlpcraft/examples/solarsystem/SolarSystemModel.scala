@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.examples.solarsystem
 
 import com.typesafe.scalalogging.LazyLogging
-import org.apache.nlpcraft.model.NCModelFileAdapter
+import org.apache.nlpcraft.model.{NCIntent, NCIntentTerm, NCModelFileAdapter, NCResult, NCToken}
 
 class SolarSystemModel extends NCModelFileAdapter("solarsystem_model.yaml") with LazyLogging {
     override def onInit(): Unit = {
@@ -27,5 +27,15 @@ class SolarSystemModel extends NCModelFileAdapter("solarsystem_model.yaml") with
 
     override def onDiscard(): Unit = {
         super.onDiscard()
+    }
+
+    @NCIntent(
+        "intent=i1 " +
+            "term(planet)~{tok_id() == 'prop:moon'}"
+    )
+    def onCustomSortReport(
+        @NCIntentTerm("planet") sortTok: NCToken,
+    ): NCResult = {
+        NCResult.json("OK")
     }
 }

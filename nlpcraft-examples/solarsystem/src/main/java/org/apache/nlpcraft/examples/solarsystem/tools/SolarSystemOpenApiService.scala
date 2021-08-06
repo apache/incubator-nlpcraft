@@ -19,21 +19,22 @@ package org.apache.nlpcraft.examples.solarsystem.tools
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import org.apache.nlpcraft.examples.solarsystem.tools.SolarSystemOpenDataApi.BodiesBean
+import com.typesafe.scalalogging.LazyLogging
+import org.apache.nlpcraft.examples.solarsystem.tools.SolarSystemOpenApiService.BodiesBean
 
 import java.net.URI
-import java.net.http.{HttpClient, HttpRequest, HttpResponse}
 import java.net.http.HttpClient.Version
+import java.net.http.{HttpClient, HttpRequest, HttpResponse}
 
-object SolarSystemOpenDataApi {
+object SolarSystemOpenApiService {
     case class BodiesBean(bodies: Seq[Map[String, Object]])
 
-    private var s: SolarSystemOpenDataApi = _
+    private var s: SolarSystemOpenApiService = _
 
-    def getInstance(): SolarSystemOpenDataApi = {
+    def getInstance(): SolarSystemOpenApiService = {
         this.synchronized {
             if (s == null) {
-                s = new SolarSystemOpenDataApi
+                s = new SolarSystemOpenApiService
 
                 s.start()
             }
@@ -43,7 +44,7 @@ object SolarSystemOpenDataApi {
     }
 }
 
-class SolarSystemOpenDataApi {
+class SolarSystemOpenApiService extends LazyLogging {
     private final val URL_BODIES = "https://api.le-systeme-solaire.net/rest/bodies"
     private final val MAPPER = new ObjectMapper().registerModule(DefaultScalaModule)
 
@@ -52,10 +53,11 @@ class SolarSystemOpenDataApi {
     private var discovers: Seq[String] = _
 
     private def getBody(params: String*): Seq[Map[String, Object]] = {
-        val req = HttpRequest.newBuilder(URI.create(s"$URL_BODIES?data=${params.mkString(",")}")).
-            header("Content-Type", "application/json").
-            GET().
-            build()
+        val req =
+            HttpRequest.newBuilder(URI.create(s"$URL_BODIES?data=${params.mkString(",")}")).
+                header("Content-Type", "application/json").
+                GET().
+                build()
 
         val respJs = client.sendAsync(req, HttpResponse.BodyHandlers.ofString()).get().body()
 
@@ -68,10 +70,15 @@ class SolarSystemOpenDataApi {
         val res = getBody("englishName,discoveredBy")
 
         def extract(name: String): Seq[String] =
-            res.map(_(name).asInstanceOf[String]).map(_.strip()).filter(_.nonEmpty).distinct
+            res.map(_(name).asInstanceOf[String]).map(_.strip).filter(_.nonEmpty).distinct
 
         planets = extract("englishName")
         discovers = extract("discoveredBy")
+
+        logger.info(
+            s"Solar System Open Api Service started. " +
+            s"Initial data discovered [planets=${planets.size}, discovers=${discovers.size}]"
+        )
     }
 
     def stop(): Unit = {
@@ -79,6 +86,8 @@ class SolarSystemOpenDataApi {
         discovers = null
 
         client = null
+
+        logger.info(s"Solar System Open Api Service stopped.")
     }
 
     def getAllPlanets: Seq[String] = planets
