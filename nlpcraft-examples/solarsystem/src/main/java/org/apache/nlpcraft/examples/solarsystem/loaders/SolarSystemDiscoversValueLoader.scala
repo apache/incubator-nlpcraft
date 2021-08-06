@@ -30,13 +30,15 @@ class SolarSystemDiscoversValueLoader extends NCValueLoader {
         val syns = ArrayBuffer.empty[String]
 
         for (d <- discInfo.split(",").map(_.trim).filter(_.nonEmpty)) {
-            syns += d.toLowerCase
+            val lc = d.toLowerCase
 
-            val arr = d.split(" ")
+            syns += lc
+
+            val lastNameIdx = lc.lastIndexOf(" ")
 
             // Tries to detect last name.
-            if (arr.length > 1)
-                syns += arr.last.strip.toLowerCase
+            if (lastNameIdx > 0)
+                syns += lc.substring(lastNameIdx + 1)
         }
 
         new NCValue {
