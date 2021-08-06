@@ -18,7 +18,34 @@
 package org.apache.nlpcraft.examples.solarsystem.loaders
 
 import org.apache.nlpcraft.examples.solarsystem.tools.SolarSystemOpenApiService
+import org.apache.nlpcraft.model.{NCElement, NCValue, NCValueLoader}
 
-class SolarSystemDiscoversValueLoader extends SolarSystemValueLoader  {
-    override def getData: Seq[String] = SolarSystemOpenApiService.getInstance().getAllDiscovers
+import java.util
+import scala.collection.mutable.ArrayBuffer
+import scala.jdk.CollectionConverters.{SeqHasAsJava, SetHasAsJava}
+
+class SolarSystemDiscoversValueLoader extends NCValueLoader {
+    // Example: "Scott S. Sheppard, David C. Jewitt"
+    private def mkValue(discInfo: String): NCValue = {
+        val syns = ArrayBuffer.empty[String]
+
+        for (d <- discInfo.split(",").map(_.trim).filter(_.nonEmpty)) {
+            syns += d.toLowerCase
+
+            val arr = d.split(" ")
+
+            // Tries to detect last name.
+            if (arr.length > 1)
+                syns += arr.last.strip.toLowerCase
+        }
+
+        new NCValue {
+            override def getName: String = discInfo
+            override def getSynonyms: util.List[String] = syns.asJava
+        }
+    }
+
+    override def load(owner: NCElement): util.Set[NCValue] =
+        SolarSystemOpenApiService.getInstance().getAllDiscovers.map(mkValue).toSet.asJava
+
 }

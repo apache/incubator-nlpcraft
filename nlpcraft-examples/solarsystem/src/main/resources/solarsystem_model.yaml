@@ -67,27 +67,10 @@ elements:
     synonyms:
       - "{discovered {by|_}}"
 
-  - id: "prop:discoveredDate"
-    groups:
-      - "prop"
-    description: "..."
-    synonyms:
-      - "{discovered {date|_}}"
-
-  - id: "prop:discoveredDate"
-    groups:
-      - "prop"
-    description: "..."
-    synonyms:
-      - "{discovered {date|_}}"
-
-  - id: "enum:planet"
+  - id: "planet"
     description: "..."
     valueLoader: "org.apache.nlpcraft.examples.solarsystem.loaders.SolarSystemPlanetsValueLoader"
 
-  - id: "enum:discoverer"
+  - id: "discoverer"
     description: "..."
     valueLoader: "org.apache.nlpcraft.examples.solarsystem.loaders.SolarSystemDiscoversValueLoader"
-
-intents:
-  - "intent=ls term(act)={has(tok_groups(), 'prop')}"

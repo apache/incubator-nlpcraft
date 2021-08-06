@@ -19,14 +19,14 @@ package org.apache.nlpcraft.examples.solarsystem
 
 import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
 import org.junit.jupiter.api.Test
-
 /**
  *
  */
 @NCTestEnvironment(model = classOf[SolarSystemModel], startClient = true)
 class NCSolarSystemModelSpec extends NCTestContext {
     @Test
-    def test(): Unit = {
-        checkIntent("moon", "i1")
+    def planetInfo(): Unit = {
+        checkIntent("moon", "planetInfo")
+        checkIntent("give me information about Larissa", "planetInfo")
     }
 }

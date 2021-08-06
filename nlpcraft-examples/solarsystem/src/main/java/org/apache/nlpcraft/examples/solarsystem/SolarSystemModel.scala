@@ -18,24 +18,56 @@
 package org.apache.nlpcraft.examples.solarsystem
 
 import com.typesafe.scalalogging.LazyLogging
-import org.apache.nlpcraft.model.{NCIntent, NCIntentTerm, NCModelFileAdapter, NCResult, NCToken}
+import org.apache.nlpcraft.examples.solarsystem.tools.SolarSystemOpenApiService
+import org.apache.nlpcraft.model.{NCIntent, NCIntentSample, NCIntentTerm, NCModelFileAdapter, NCResult, NCToken}
 
 class SolarSystemModel extends NCModelFileAdapter("solarsystem_model.yaml") with LazyLogging {
-    override def onInit(): Unit = {
+    private var api: SolarSystemOpenApiService = _
 
+    override def onInit(): Unit = {
+        api = SolarSystemOpenApiService.getInstance()
+
+        logger.info("Solar System Model started.")
     }
 
     override def onDiscard(): Unit = {
-        super.onDiscard()
+        if (api != null)
+            api.stop()
+
+        logger.info("Solar System Model stopped.")
     }
 
-    @NCIntent(
-        "intent=i1 " +
-            "term(planet)~{tok_id() == 'prop:moon'}"
+    @NCIntentSample(
+        Array(
+            "Moon!",
+            "give me information about Larissa",
+        )
     )
-    def onCustomSortReport(
-        @NCIntentTerm("planet") sortTok: NCToken,
-    ): NCResult = {
-        NCResult.json("OK")
-    }
+    @NCIntent(
+        "intent=planetInfo " +
+            "    options={" +
+            "        'unused_usr_toks': false " +
+            "    }" +
+            "    term(planet)={tok_id() == 'planet'}"
+    )
+    def planetInfo(@NCIntentTerm("planet") planet: NCToken): NCResult =
+        NCResult.text(api.bodyRequest().withFilter("id", "eq", planet.getNormalizedText).execute().toString())
+
+    @NCIntentSample(
+        Array(
+            "What was discovered by Asaph Hall",
+            "What was discovered by Hall",
+            "Galileo Galilei planets",
+            "Galilei planets",
+        )
+    )
+    @NCIntent(
+        "intent=discoverer " +
+        "    options={" +
+        "        'unused_usr_toks': true " +
+        "    }" +
+        "    term(discoverer)={tok_id() == 'discoverer'}"
+    )
+    def discoverer(@NCIntentTerm("discoverer") discoverer: NCToken): NCResult =
+        NCResult.text(api.bodyRequest().withFilter("discoveredBy", "cs", discoverer.getNormalizedText).execute().toString())
 }

@@ -15,21 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.examples.solarsystem.loaders
+package org.apache.nlpcraft.examples.solarsystem.tools
 
-import org.apache.nlpcraft.examples.solarsystem.tools.SolarSystemOpenApiService
-import org.apache.nlpcraft.model.{NCElement, NCValue, NCValueLoader}
+trait SolarSystemOpenApiBodyRequest {
+    def withParameters(params: String*): SolarSystemOpenApiBodyRequest
+    def withFilter(data: String, oper: String, value: String): SolarSystemOpenApiBodyRequest
 
-import java.util
-import scala.jdk.CollectionConverters.{SeqHasAsJava, SetHasAsJava}
-
-class SolarSystemPlanetsValueLoader extends NCValueLoader {
-    private def mkValue(id: String, v: String): NCValue =
-        new NCValue {
-            override def getName: String = id
-            override def getSynonyms: util.List[String] = Seq(id.toLowerCase, v.toLowerCase).asJava
-        }
-
-    override def load(owner: NCElement): util.Set[NCValue] =
-        SolarSystemOpenApiService.getInstance().getAllPlanets.map{ case (id, v) => mkValue(id, v) }.toSet.asJava
+    def execute(): Seq[Map[String, Object]]
 }

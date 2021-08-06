@@ -22,7 +22,7 @@ import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.examples.solarsystem.tools.SolarSystemOpenApiService.BodiesBean
 
-import java.net.URI
+import java.net.{URI, URLEncoder}
 import java.net.http.HttpClient.Version
 import java.net.http.{HttpClient, HttpRequest, HttpResponse}
 
@@ -31,7 +31,7 @@ object SolarSystemOpenApiService {
 
     private var s: SolarSystemOpenApiService = _
 
-    def getInstance(): SolarSystemOpenApiService = {
+    def getInstance(): SolarSystemOpenApiService =
         this.synchronized {
             if (s == null) {
                 s = new SolarSystemOpenApiService
@@ -41,7 +41,6 @@ object SolarSystemOpenApiService {
 
             s
         }
-    }
 }
 
 class SolarSystemOpenApiService extends LazyLogging {
@@ -49,31 +48,74 @@ class SolarSystemOpenApiService extends LazyLogging {
     private final val MAPPER = new ObjectMapper().registerModule(DefaultScalaModule)
 
     private var client: HttpClient = _
-    private var planets: Seq[String] = _
+
+    private var planets: Map[String, String] = _
     private var discovers: Seq[String] = _
 
-    private def getBody(params: String*): Seq[Map[String, Object]] = {
-        val req =
-            HttpRequest.newBuilder(URI.create(s"$URL_BODIES?data=${params.mkString(",")}")).
-                header("Content-Type", "application/json").
-                GET().
-                build()
+    // Simplified implementation of 'https://api.le-systeme-solaire.net/rest/bodies/' request.
+    // Only single filter can be used.
+    def bodyRequest(): SolarSystemOpenApiBodyRequest = new SolarSystemOpenApiBodyRequest() {
+        case class Filter(data: String, oper: String, value: String) {
+            require(data != null)
+            require(oper != null)
+            require(value != null)
+        }
 
-        val respJs = client.sendAsync(req, HttpResponse.BodyHandlers.ofString()).get().body()
+        private var params: Seq[String] = _
+        private var filter: Filter = _
 
-        MAPPER.readValue(respJs, classOf[BodiesBean]).bodies
+        override def withParameters(params: String*): SolarSystemOpenApiBodyRequest = {
+            this.params = params
+
+            this
+        }
+
+        override def withFilter(data: String, oper: String, value: String): SolarSystemOpenApiBodyRequest = {
+            this.filter = Filter(data, oper, value)
+
+            this
+        }
+
+        override def execute(): Seq[Map[String, Object]] = {
+            var url = URL_BODIES
+
+            def getSeparator: String = if (url == URL_BODIES) "?" else "&"
+
+            if (params != null)
+                url = s"$url${getSeparator}data=${params.mkString(",")}"
+
+            if (filter != null)
+                url = s"$url${getSeparator}filter=${filter.data},${filter.oper},${URLEncoder.encode(filter.value, "UTF-8")}"
+
+            logger.info(s"Request prepared: $url")
+
+            val respJs = client.sendAsync(
+                HttpRequest.newBuilder(URI.create(url)).header("Content-Type", "application/json").GET().build(),
+                HttpResponse.BodyHandlers.ofString()
+            ).get().body()
+
+            logger.info(s"Response received: $respJs")
+
+            MAPPER.readValue(respJs, classOf[BodiesBean]).bodies
+        }
     }
 
     def start(): Unit = {
         client = HttpClient.newBuilder.version(Version.HTTP_2).build
 
-        val res = getBody("englishName,discoveredBy")
+        val res = bodyRequest().withParameters("id", "englishName", "discoveredBy").execute()
 
-        def extract(name: String): Seq[String] =
-            res.map(_(name).asInstanceOf[String]).map(_.strip).filter(_.nonEmpty).distinct
+        def extract(name: String): Map[String, String] =
+            res.map(row => row("id").toString.strip() -> row(name).toString.strip()).
+                filter(p => p._1.nonEmpty && p._2.nonEmpty).distinct.toMap
 
-        planets = extract("englishName")
-        discovers = extract("discoveredBy")
+        def str(m: Map[String, Object], name: String): String = m(name).asInstanceOf[String].strip
+
+        planets =
+            res.map(row => str(row, "id") -> str(row, "englishName")).
+                filter(p => p._1.nonEmpty && p._2.nonEmpty).toMap
+
+        discovers = res.map(row => str(row, "discoveredBy")).distinct
 
         logger.info(
             s"Solar System Open Api Service started. " +
@@ -90,6 +132,6 @@ class SolarSystemOpenApiService extends LazyLogging {
         logger.info(s"Solar System Open Api Service stopped.")
     }
 
-    def getAllPlanets: Seq[String] = planets
+    def getAllPlanets: Map[String, String] = planets
     def getAllDiscovers: Seq[String] = discovers
 }
