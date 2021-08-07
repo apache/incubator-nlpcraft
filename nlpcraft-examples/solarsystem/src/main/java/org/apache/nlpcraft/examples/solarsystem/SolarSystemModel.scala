@@ -62,7 +62,7 @@ class SolarSystemModel extends NCModelFileAdapter("solarsystem_model.yaml") with
             "What was discovered by Asaph Hall",
             "What was discovered by Hall",
             "Galileo Galilei planets",
-            "Galilei planets",
+            "Galilei planets"
         )
     )
     @NCIntent(
