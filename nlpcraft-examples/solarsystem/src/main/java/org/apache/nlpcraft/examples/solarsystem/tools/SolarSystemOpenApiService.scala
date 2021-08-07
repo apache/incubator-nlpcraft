@@ -105,10 +105,6 @@ class SolarSystemOpenApiService extends LazyLogging {
 
         val res = bodyRequest().withParameters("id", "englishName", "discoveredBy").execute()
 
-        def extract(name: String): Map[String, String] =
-            res.map(row => row("id").toString.strip() -> row(name).toString.strip()).
-                filter(p => p._1.nonEmpty && p._2.nonEmpty).distinct.toMap
-
         def str(m: Map[String, Object], name: String): String = m(name).asInstanceOf[String].strip
 
         planets =
