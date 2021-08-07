@@ -46,42 +46,51 @@ object NCModelManager extends NCService {
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span =>
         ackStarting()
 
-        val tbl = NCAsciiTable("Models")
-
         mux.synchronized {
-            data = NCDeployManager.getModels.map(w => {
-                w.model.onInit()
-                w.model.getId -> w
+            data = NCDeployManager.getModels.map(pm => {
+                pm.model.onInit()
+                pm.model.getId -> pm
             }).toMap
 
-            data.values.foreach(w => {
-                val mdl = w.model
+            logger.info(s"Models deployed: ${data.size}")
 
-                val contCnt = w.continuousSynonyms.flatMap(_._2.map(_._2.count)).sum
-                val sparseCnt = w.sparseSynonyms.map(_._2.size).sum
-                val allIdlSyns = w.idlSynonyms.values.flatten
+            data.values.foreach(pm => {
+                val mdl = pm.model
+
+                val contCnt = pm.continuousSynonyms.flatMap(_._2.map(_._2.count)).sum
+                val sparseCnt = pm.sparseSynonyms.map(_._2.size).sum
+                val allIdlSyns = pm.idlSynonyms.values.flatMap(_.toSeq)
                 val sparseIdlCnt = allIdlSyns.count(_.sparse)
                 val contIdlCnt = allIdlSyns.size - sparseIdlCnt
 
                 def withWarn(i: Int): String = if (i == 0) s"0 ${r("(!)")}" else i.toString
+
+                val tbl = NCAsciiTable()
 
                 tbl += Seq(
                     s"${B}Name:$RST                  ${bo(c(mdl.getName))}",
                     s"${B}ID:$RST                    ${bo(mdl.getId)}",
                     s"${B}Version:$RST               ${mdl.getVersion}",
                     s"${B}Origin:$RST                ${mdl.getOrigin}",
-                    s"${B}Elements:$RST              ${withWarn(w.elements.keySet.size)}",
+                    s"${B}Elements:$RST              ${withWarn(pm.elements.keySet.size)}"
+                )
+                tbl += Seq(
                     s"${B}Synonyms:$RST",
                     s"$B   Simple continuous:$RST  $contCnt",
                     s"$B   Simple sparse:$RST      $sparseCnt",
                     s"$B   IDL continuous:$RST     $contIdlCnt",
                     s"$B   IDL sparse:$RST         $sparseIdlCnt",
-                    s"${B}Intents:$RST               ${withWarn(w.intents.size)}"
+
                 )
+                tbl += Seq(s"${B}Intents:$RST ${withWarn(pm.intents.size)}") ++
+                    (
+                        for (cb <- pm.callbacks) yield
+                        s"   ${g(bo(cb._1))} from ${m(cb._2.origin)} -> ${c(cb._2.className)}${bo("#")}${c(cb._2.methodName)}(...)"
+                    ).toSeq
+
+                tbl.info(logger, Some("Model:"))
             })
         }
-
-        tbl.info(logger, Some(s"Models deployed: ${data.size}"))
 
         addTags(
             span,

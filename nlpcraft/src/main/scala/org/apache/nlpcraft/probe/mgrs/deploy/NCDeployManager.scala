@@ -37,7 +37,7 @@ import org.apache.nlpcraft.model.intent.compiler.NCIdlCompiler
 import org.apache.nlpcraft.model.intent.solver.NCIntentSolver
 import org.apache.nlpcraft.model.intent._
 import org.apache.nlpcraft.probe.mgrs.NCProbeSynonymChunkKind.{IDL, REGEX, TEXT}
-import org.apache.nlpcraft.probe.mgrs.{NCProbeModel, NCProbeSynonym, NCProbeSynonymChunk, NCProbeSynonymsWrapper}
+import org.apache.nlpcraft.probe.mgrs.{NCProbeModel, NCProbeModelCallback, NCProbeSynonym, NCProbeSynonymChunk, NCProbeSynonymsWrapper}
 
 import scala.util.Using
 import scala.compat.java8.OptionConverters._
@@ -76,7 +76,7 @@ object NCDeployManager extends NCService {
         CLS_JAVA_OPT
     )
     
-    type Callback = (String /* ID */, Function[NCIntentMatch, NCResult])
+    case class Callback(id: String, clsName: String, funName: String, cbFun: Function[NCIntentMatch, NCResult])
     type Intent = (NCIdlIntent, Callback)
     type Sample = (String/* Intent ID */, Seq[Seq[String]] /* List of list of input samples for that intent. */)
     
@@ -497,7 +497,7 @@ object NCDeployManager extends NCService {
             }
 
             solver = new NCIntentSolver(
-                intents.toList.map(x => (x._1, (z: NCIntentMatch) => x._2._2.apply(z)))
+                intents.toList.map(x => (x._1, (z: NCIntentMatch) => x._2.cbFun.apply(z)))
             )
         }
         else
@@ -512,6 +512,14 @@ object NCDeployManager extends NCService {
             model = mdl,
             solver = solver,
             intents = intents.map(_._1).toSeq,
+            callbacks = intents.map(kv => (
+                kv._1.id,
+                NCProbeModelCallback(
+                    kv._1.origin,
+                    kv._2.clsName,
+                    kv._2.funName
+                )
+            )).toMap,
             continuousSynonyms = mkFastAccessMap(sparse(simple, sp = false), NCProbeSynonymsWrapper(_)),
             sparseSynonyms = toMap(sparse(simple, sp = true)),
             idlSynonyms = toMap(idl(syns.toSet, idl = true)),
@@ -1186,9 +1194,10 @@ object NCDeployManager extends NCService {
 
         checkMinMax(mdl, mtd, tokParamTypes, termIds.map(allLimits), ctxFirstParam)
 
-        // Prepares invocation method.
-        (
+        Callback(
             mtd.toString,
+            mtd.getDeclaringClass.getName,
+            mtd.getName,
             (ctx: NCIntentMatch) => {
                 invoke(
                     mtd,
@@ -1544,7 +1553,7 @@ object NCDeployManager extends NCService {
             val mtdStr = method2Str(m)
 
             def bindIntent(intent: NCIdlIntent, cb: Callback): Unit = {
-                if (intents.exists(i => i._1.id == intent.id && i._2._1 != cb._1))
+                if (intents.exists(i => i._1.id == intent.id && i._2.id != cb.id))
                     throw new NCE(s"The intent cannot be bound to more than one callback [" +
                         s"mdlId=$mdlId, " +
                         s"origin=${mdl.getOrigin}, " +
