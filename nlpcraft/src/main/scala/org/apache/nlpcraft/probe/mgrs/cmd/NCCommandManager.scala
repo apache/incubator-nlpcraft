@@ -39,9 +39,7 @@ import scala.jdk.CollectionConverters.{ListHasAsScala, MapHasAsJava, MapHasAsSca
   * Probe commands processor.
   */
 object NCCommandManager extends NCService {
-    private final val JS_MAPPER = new ObjectMapper()
-
-    JS_MAPPER.registerModule(DefaultScalaModule)
+    private final val JS_MAPPER = new ObjectMapper().registerModule(DefaultScalaModule)
 
     override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ =>
         ackStarting()
@@ -246,23 +244,44 @@ object NCCommandManager extends NCService {
                                         override def getParsers: JList[NCCustomParser] = null
 
                                         // Converted.
-                                        override def getElements: util.Set[NCElement] = mdl.getElements.asScala.map(e =>
-                                            new NCElement {
-                                                // As is.
-                                                override def getId: String = e.getId
-                                                override def getGroups: JList[String] = e.getGroups
-                                                override def getMetadata: util.Map[String, AnyRef] = e.getMetadata
-                                                override def getDescription: String = e.getDescription
-                                                override def getParentId: String = e.getParentId
-                                                override def getSynonyms: JList[String] = e.getSynonyms
-                                                override def isPermutateSynonyms: Optional[lang.Boolean] = e.isPermutateSynonyms
-                                                override def isSparse: Optional[lang.Boolean] = e.isSparse
-                                                override def getValues: JList[NCValue] = e.getValues
+                                        override def getElements: util.Set[NCElement] = mdl.getElements.asScala.map(e => {
+                                            // Jackson serializes `is` getters but only for boolean return types,
+                                            // even with Jdk8Module.
+                                            // Below `is` getters data provided as `get` getters data.
+                                            abstract class NCElementJs extends NCElement {
+                                                // New method instead of `isPermutateSynonyms`
+                                                def getPermutateSynonyms: lang.Boolean
 
-                                                // Cleared.
-                                                override def getValueLoader: Optional[NCValueLoader] = null
+                                                // New method instead of `isSparse`
+                                                def getSparse: lang.Boolean
                                             }
-                                        ).asJava
+
+                                            val eJs: NCElement =
+                                                new NCElementJs {
+                                                    // As is.
+                                                    override def getId: String = e.getId
+                                                    override def getGroups: JList[String] = e.getGroups
+                                                    override def getMetadata: util.Map[String, AnyRef] = e.getMetadata
+                                                    override def getDescription: String = e.getDescription
+                                                    override def getParentId: String = e.getParentId
+                                                    override def getSynonyms: JList[String] = e.getSynonyms
+                                                    override def getValues: JList[NCValue] = e.getValues
+
+                                                    // Cleared.
+                                                    override def getValueLoader: Optional[NCValueLoader] = null
+
+                                                    // Hidden.
+                                                    override def isPermutateSynonyms: Optional[lang.Boolean] = null
+                                                    override def isSparse: Optional[lang.Boolean] = null
+
+                                                    // Wrapped.
+                                                    override def getPermutateSynonyms: lang.Boolean =
+                                                        e.isPermutateSynonyms.orElse(null)
+                                                    override def getSparse: lang.Boolean =
+                                                        e.isSparse.orElse(null)
+                                                }
+                                            eJs
+                                        }).asJava
                                     }
 
                                 NCProbeMessage(
