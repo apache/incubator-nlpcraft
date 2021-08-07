@@ -198,7 +198,7 @@ private [cmdline] object NCCliCommands {
             synopsis = s"Wrapper for ${y("'/signout'")} REST call in REPL mode.",
             desc = Some(
                 s"See $REST_SPEC_URL for REST call specification. " +
-                s"Signs out currently signed in user. Note that this command makes sense only in REPL mode."
+                s"Signs out currently signed-in user. Note that this command makes sense only in REPL mode."
             ),
             body = NCCli.cmdSignOut,
             examples = Seq(
@@ -206,7 +206,7 @@ private [cmdline] object NCCliCommands {
                     usage = Seq(
                         s"$PROMPT $SCRIPT_NAME signout"
                     ),
-                    desc = s"Signs out currently signed in user, if any."
+                    desc = s"Signs out currently signed-in user, if any."
                 )
             )
         ),

@@ -1510,7 +1510,7 @@ object NCCli extends NCCliBase {
             tbl += (s"${g("Email")}", state.userEmail.get)
             tbl += (s"${g("Access token")}", state.accessToken.get)
 
-            logln(s"Signed in user account:\n$tbl")
+            logln(s"Signed-in user account:\n$tbl")
         }
     }
 
