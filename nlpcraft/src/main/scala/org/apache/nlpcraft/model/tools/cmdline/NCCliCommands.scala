@@ -198,7 +198,7 @@ private [cmdline] object NCCliCommands {
             synopsis = s"Wrapper for ${y("'/signout'")} REST call in REPL mode.",
             desc = Some(
                 s"See $REST_SPEC_URL for REST call specification. " +
-                s"Signs out currently signed in user. Note that this command makes sense only in REPL mode."
+                s"Signs out currently signed-in user. Note that this command makes sense only in REPL mode."
             ),
             body = NCCli.cmdSignOut,
             examples = Seq(
@@ -206,7 +206,7 @@ private [cmdline] object NCCliCommands {
                     usage = Seq(
                         s"$PROMPT $SCRIPT_NAME signout"
                     ),
-                    desc = s"Signs out currently signed in user, if any."
+                    desc = s"Signs out currently signed-in user, if any."
                 )
             )
         ),
@@ -281,7 +281,9 @@ private [cmdline] object NCCliCommands {
                 s"Requires user to be already signed in. This command ${bo("only makes sense in the REPL mode")} as " +
                 s"it requires user to be signed in. REPL session keeps the currently active access " +
                 s"token after user signed in. For command line mode, use ${y("'rest'")} command with " +
-                s"corresponding parameters."
+                s"corresponding parameters. In REPL mode this command has a syntax shortcut providing a chatbot-like " +
+                s"interface: you can just type ${y("'@user input'")} and it will be automatically " +
+                s"replaced by ${y("'ask --txt=\"user input\"'")}."
             ),
             body = NCCli.cmdAsk,
             params = Seq(
@@ -293,7 +295,7 @@ private [cmdline] object NCCliCommands {
                     desc =
                         s"ID of the data model to send the request to. Note that this is optional ONLY if there is only one " +
                         s"connected probe and it has only one model deployed - which will be used by default. In all other " +
-                        s"cases - this parameter is mandatory." +
+                        s"cases - this parameter is mandatory. " +
                         s"In REPL mode, hit ${rv(" Tab ")} to see auto-suggestion for possible model IDs."
                 ),
                 Parameter(
@@ -320,20 +322,27 @@ private [cmdline] object NCCliCommands {
             examples = Seq(
                 Example(
                     usage = Seq(
-                        s"""> ask --txt="User request" --mdlId=my.model.id"""
+                        s"""> ask --txt="user input" --mdlId=my.model.id"""
                     ),
                     desc =
                         s"Issues ${y("'ask/sync'")} REST call with given text and model ID."
                 ),
                 Example(
                     usage = Seq(
-                        s"""> ask --txt="User text""""
+                        s"""> ask --txt="user input""""
                     ),
                     desc =
-                        s"Issues ${y("'ask/sync'")} REST call with given text and default model ID " +
+                        s"Issues ${y("'ask/sync'")} REST call with given ${y("'user input'")} text and default model ID " +
                         s"(single connected probe that has a single model deployed)."
+                ),
+                Example(
+                    usage = Seq(
+                        s"> @user input"
+                    ),
+                    desc =
+                        s"Issues ${y("'ask/sync'")} REST call with given ${y("'user input'")} text and default model ID " +
+                        s"(single connected probe that has a single model deployed). This shortcut syntax works only in REPL mode."
                 )
-
             )
         ),
         Command(

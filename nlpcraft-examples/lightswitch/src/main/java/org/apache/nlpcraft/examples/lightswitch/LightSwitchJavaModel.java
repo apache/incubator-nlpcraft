@@ -50,7 +50,9 @@ public class LightSwitchJavaModel extends NCModelFileAdapter {
     @NCIntentRef("ls")
     @NCIntentSample({
         "Turn the lights off in the entire house.",
+        "Turn off all lights now",
         "Switch on the illumination in the master bedroom closet.",
+        "Off the lights on the 1st floor",
         "Get the lights on.",
         "Lights up in the kitchen.",
         "Please, put the light out in the upstairs bedroom.",
@@ -58,8 +60,14 @@ public class LightSwitchJavaModel extends NCModelFileAdapter {
         "Turn the lights off in the guest bedroom.",
         "Could you please switch off all the lights?",
         "Dial off illumination on the 2nd floor.",
+        "Turn down lights in 1st floor bedroom",
+        "Lights on at second floor kitchen",
         "Please, no lights!",
         "Kill off all the lights now!",
+        "Down the lights in the garage",
+        "Lights down in the kitchen!",
+        "Turn up the illumination in garage and master bedroom",
+        "Turn down all the light now!",
         "No lights in the bedroom, please.",
         "Light up the garage, please!",
         "Kill the illumination now!"

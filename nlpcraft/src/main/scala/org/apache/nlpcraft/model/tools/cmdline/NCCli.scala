@@ -1510,7 +1510,7 @@ object NCCli extends NCCliBase {
             tbl += (s"${g("Email")}", state.userEmail.get)
             tbl += (s"${g("Access token")}", state.accessToken.get)
 
-            logln(s"Signed in user account:\n$tbl")
+            logln(s"Signed-in user account:\n$tbl")
         }
     }
 
@@ -2813,7 +2813,7 @@ object NCCli extends NCCliBase {
                 if (!wasLastLineEmpty)
                     reader.printAbove("\n" + prompt1 + ":" + prompt2 + ":" + prompt3 + ":" + prompt4)
 
-                reader.readLine(s"${g(">")} ")
+                reader.readLine(s"${g(bo(">"))} ")
             }
             catch {
                 case _: UserInterruptException => "" // Ignore.
@@ -3195,7 +3195,20 @@ object NCCli extends NCCliBase {
 
                     execOsCmd(if (head.isEmpty) tail else head :: tail)
                 }
-                else {
+                else if (args.head.head == '@') {
+                    if (!repl)
+                        throw new IllegalStateException("This syntax is only available in REPL mode.")
+
+                    // A shortcut for the 'ask' command.
+                    ASK_CMD.body(
+                        ASK_CMD,
+                        Seq(
+                            Argument(ASK_CMD.params.find(_.id == "txt").get,
+                            Some(args.head.tail.strip + " " + args.tail.mkString(" ")))
+                        ),
+                        repl
+                    )
+                } else {
                     // Process 'no-ansi' and 'ansi' commands first.
                     processAnsi(args, repl)
 
