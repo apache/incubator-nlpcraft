@@ -101,11 +101,11 @@ private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
             }
 
             for ((intentId, seq) <- samples; txts <- seq)  yield ask(intentId, txts)
-        }.flatten.toList
+        }.flatMap(_.toSeq)
 
         val tbl = NCAsciiTable()
 
-        tbl #= ("Model ID", "Intent ID", "+/-", "Text", "Error", "Execution time, ms.")
+        tbl #= ("Model ID", "Intent ID", "+/-", "Text", "Error", "ms.")
 
         for (res <- results)
             tbl += (
@@ -116,7 +116,7 @@ private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
                 res.error.getOrElse(""),
                 res.time
             )
-        
+
         val passCnt = results.count(_.pass)
         val failCnt = results.count(!_.pass)
         
