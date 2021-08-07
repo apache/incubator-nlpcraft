@@ -17,7 +17,7 @@
 
 package org.apache.nlpcraft.examples.solarsystem.loaders
 
-import org.apache.nlpcraft.examples.solarsystem.tools.SolarSystemOpenApiService
+import org.apache.nlpcraft.examples.solarsystem.api.SolarSystemOpenApiService
 import org.apache.nlpcraft.model.{NCElement, NCValue, NCValueLoader}
 
 import java.util

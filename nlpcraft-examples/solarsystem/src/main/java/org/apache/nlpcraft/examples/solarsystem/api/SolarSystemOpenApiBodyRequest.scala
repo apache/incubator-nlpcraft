@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.examples.solarsystem.tools
+package org.apache.nlpcraft.examples.solarsystem.api
 
 trait SolarSystemOpenApiBodyRequest {
     def withParameters(params: String*): SolarSystemOpenApiBodyRequest

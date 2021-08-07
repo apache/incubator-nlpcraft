@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.examples.solarsystem.tools
+package org.apache.nlpcraft.examples.solarsystem.api
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.typesafe.scalalogging.LazyLogging
-import org.apache.nlpcraft.examples.solarsystem.tools.SolarSystemOpenApiService.BodiesBean
+import org.apache.nlpcraft.examples.solarsystem.api.SolarSystemOpenApiService.BodiesBean
 
 import java.net.{URI, URLEncoder}
 import java.net.http.HttpClient.Version

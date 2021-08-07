@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.examples.solarsystem
 
 import com.typesafe.scalalogging.LazyLogging
-import org.apache.nlpcraft.examples.solarsystem.tools.SolarSystemOpenApiService
+import org.apache.nlpcraft.examples.solarsystem.api.SolarSystemOpenApiService
 import org.apache.nlpcraft.model.{NCIntent, NCIntentSample, NCIntentTerm, NCModelFileAdapter, NCResult, NCToken}
 
 import java.time.format.{DateTimeFormatter, DateTimeFormatterBuilder, DateTimeParseException}
@@ -113,7 +113,7 @@ class SolarSystemModel extends NCModelFileAdapter("solarsystem_model.yaml") with
         res = res.filter(row => {
             val dateStr = row("discoveryDate").asInstanceOf[String]
 
-            if (dateStr.nonEmpty) {
+            if (dateStr.nonEmpty)
                 supportedFmts.flatMap(p =>
                     try {
                         val ms = LocalDate.parse(dateStr, p).atStartOfDay(ZoneOffset.UTC).toInstant.toEpochMilli
@@ -127,7 +127,6 @@ class SolarSystemModel extends NCModelFileAdapter("solarsystem_model.yaml") with
                     to(LazyList).
                     headOption.
                     getOrElse(throw new AssertionError(s"Template not found for: $dateStr"))
-            }
             else
                 false
         })
