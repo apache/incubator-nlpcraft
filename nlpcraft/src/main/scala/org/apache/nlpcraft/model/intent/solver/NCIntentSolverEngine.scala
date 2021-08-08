@@ -323,11 +323,11 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                         tbl += (
                             Seq(
                                 s"#${m.variantIdx + 1}",
-                                g(bo("best match"))
+                                g(bo("<|best match|>"))
                             ),
                             Seq(
                                 im.intent.id,
-                                g(bo("best match"))
+                                g(bo("<|best match|>"))
                             ),
                             mkPickTokens(im),
                             w.toAnsiString
