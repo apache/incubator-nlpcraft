@@ -970,6 +970,14 @@ private [cmdline] object NCCliCommands {
                         s"names - and they will be automatically combined together."
                 ),
                 Parameter(
+                    id = "intents",
+                    names = Seq("--ints", "-i"),
+                    value = Some("int1,int2"),
+                    optional = true,
+                    desc =
+                        s"Comma separated list of intent IDs to test. If not provided, all detected intents will be tested."
+                ),
+                Parameter(
                     id = "jvmopts",
                     names = Seq("--jvmOpts", "-j"),
                     value = Some("<jvm flags>"),
