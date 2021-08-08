@@ -1,0 +1,7 @@
+{
+  "conda_version": 4.8,
+  "python_version": 3.8,
+  "fasttext": {
+    "model_url": "https://dl.fbaipublicfiles.com/fasttext/vectors-crawl/cc.en.300.bin.gz"
+  }
+}
