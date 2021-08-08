@@ -137,6 +137,7 @@
         <fliptables.ver>1.1.0</fliptables.ver>
         <jline.ver>3.20.0</jline.ver>
         <jansi.ver>2.3.3</jansi.ver>
+        <os-lib.ver>0.7.8</os-lib.ver>
 
         <!--
             Following libraries versions are compatible:
@@ -484,6 +485,12 @@
                 <artifactId>stanford-corenlp</artifactId>
                 <version>${stanford.corenlp.ver}</version>
                 <classifier>models</classifier>
+            </dependency>
+
+            <dependency>
+                <groupId>com.lihaoyi</groupId>
+                <artifactId>os-lib_2.11</artifactId>
+                <version>${os-lib.ver}</version>
             </dependency>
 
             <!-- Test dependencies. -->
