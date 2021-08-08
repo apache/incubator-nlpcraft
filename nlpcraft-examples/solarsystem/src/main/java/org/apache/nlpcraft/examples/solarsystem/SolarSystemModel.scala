@@ -20,27 +20,13 @@ package org.apache.nlpcraft.examples.solarsystem
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.examples.solarsystem.api.SolarSystemOpenApiService
 import org.apache.nlpcraft.model.{NCIntent, NCIntentSample, NCIntentTerm, NCModelFileAdapter, NCResult, NCToken}
+import org.springframework.beans.factory.annotation.Autowired
 
 import java.time.format.{DateTimeFormatter, DateTimeFormatterBuilder, DateTimeParseException}
 import java.time.temporal.ChronoField._
 import java.time.{LocalDate, ZoneOffset}
 
-class SolarSystemModel extends NCModelFileAdapter("solarsystem_model.yaml") with LazyLogging {
-    private var api: SolarSystemOpenApiService = _
-
-    override def onInit(): Unit = {
-        api = SolarSystemOpenApiService.getInstance()
-
-        logger.info("Solar System Model started.")
-    }
-
-    override def onDiscard(): Unit = {
-        if (api != null)
-            api.stop()
-
-        logger.info("Solar System Model stopped.")
-    }
-
+class SolarSystemModel(api: SolarSystemOpenApiService) extends NCModelFileAdapter("solarsystem_model.yaml") with LazyLogging {
     @NCIntentSample(
         Array(
             "Moon!",

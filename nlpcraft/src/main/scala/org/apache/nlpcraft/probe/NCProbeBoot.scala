@@ -191,7 +191,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
             override def run(): Unit = start0(cfg, fut)
         }.start()
     }
-    
+
     /**
       *
       * @param cfg Probe configuration.

@@ -20,28 +20,18 @@ package org.apache.nlpcraft.examples.solarsystem.api
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.typesafe.scalalogging.LazyLogging
-import org.apache.nlpcraft.examples.solarsystem.api.SolarSystemOpenApiService.BodiesBean
 
-import java.net.{URI, URLEncoder}
 import java.net.http.HttpClient.Version
 import java.net.http.{HttpClient, HttpRequest, HttpResponse}
+import java.net.{URI, URLEncoder}
+import javax.annotation.{PostConstruct, PreDestroy}
+import scala.jdk.CollectionConverters.{MapHasAsJava, SeqHasAsJava}
 
 object SolarSystemOpenApiService {
     case class BodiesBean(bodies: Seq[Map[String, Object]])
-
-    private var s: SolarSystemOpenApiService = _
-
-    def getInstance(): SolarSystemOpenApiService =
-        this.synchronized {
-            if (s == null) {
-                s = new SolarSystemOpenApiService
-
-                s.start()
-            }
-
-            s
-        }
 }
+
+import SolarSystemOpenApiService._
 
 class SolarSystemOpenApiService extends LazyLogging {
     private final val URL_BODIES = "https://api.le-systeme-solaire.net/rest/bodies"
@@ -100,6 +90,7 @@ class SolarSystemOpenApiService extends LazyLogging {
         }
     }
 
+    @PostConstruct
     def start(): Unit = {
         client = HttpClient.newBuilder.version(Version.HTTP_2).build
 
@@ -119,6 +110,7 @@ class SolarSystemOpenApiService extends LazyLogging {
         )
     }
 
+    @PreDestroy
     def stop(): Unit = {
         planets = null
         discovers = null
@@ -128,6 +120,6 @@ class SolarSystemOpenApiService extends LazyLogging {
         logger.info(s"Solar System Open Api Service stopped.")
     }
 
-    def getAllPlanets: Map[String, String] = planets
-    def getAllDiscovers: Seq[String] = discovers
+    def getAllPlanets: java.util.Map[String, String] = planets.asJava
+    def getAllDiscovers: java.util.List[String] = discovers.asJava
 }
