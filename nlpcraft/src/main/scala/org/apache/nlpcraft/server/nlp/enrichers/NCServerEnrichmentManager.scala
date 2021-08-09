@@ -123,7 +123,7 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
 
             ner(s, enabledBuiltInToks)
 
-            prepareAsciiTable(s).info(logger, Some(s"Sentence enriched: '$normTxt'"))
+            prepareAsciiTable(s).info(logger, Some(s"Server-side enrichment (built-in tokens only) for: '$normTxt'"))
 
             cache += normTxt -> Holder(s, enabledBuiltInToks)
 
