@@ -65,6 +65,7 @@ import scala.reflect.runtime.universe._
 import scala.sys.SystemProperties
 import scala.util.control.Exception.ignoring
 import scala.util._
+import scala.sys.process._
 
 /**
   * Project-wide, global utilities ans miscellaneous functions.
@@ -82,6 +83,8 @@ object NCUtils extends LazyLogging {
     private val idGen = new NCIdGenerator(NCBlowfishHasher.salt(), 8)
 
     private final val DISABLE_GA_PROP = "NLPCRAFT_DISABLE_GA"
+
+    final val OS_TYPE = System.getProperty("os.name")
 
     private lazy val ANSI_FG_COLORS = Seq(
         ansiRedFg,
@@ -367,10 +370,10 @@ object NCUtils extends LazyLogging {
      * Creates one, if necessary.
      */
     def ensurePythonDir(): Unit = {
-        val pythonHome = new File(SystemUtils.getUserHome, ".nlpcraft-python")
+        val pythonHome = new File(SystemUtils.USER_DIR, ".nlpcraft-python")
 
-        if (pythonHome.exists() && pythonHome.isFile || !pythonHome.exists() && !pythonHome.mkdirs())
-            throw new NCException(s"Failed to create NLPCraft Python directory: ${pythonHome.getAbsolutePath}")
+        if (pythonHome.exists() && pythonHome.isFile || !pythonHome.exists() )
+            throw new NCException(s"NLPCraft python directory does not exist: ${pythonHome.getAbsolutePath}")
     }
 
     /**

@@ -37,3 +37,9 @@ abort() {
   abort "Failed to download fasttext data."; }
 
 [ ! -f data/cc.en.300.bin ] && { gunzip -v data/cc.en.300.bin.gz || abort "Failed to extract files."; }
+
+[ ! -d /tmp/fastText/ ] && git clone https://github.com/facebookresearch/fastText.git /tmp/fastText
+
+pip3 install /tmp/fastText || abort "Failed to install fasttext python module."
+
+rm -rf /tmp/fastText
