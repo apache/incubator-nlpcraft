@@ -83,9 +83,9 @@ object NCUtils extends LazyLogging {
 
     private final val DISABLE_GA_PROP = "NLPCRAFT_DISABLE_GA"
 
-    private lazy val ANSI_FG_8BIT_COLORS = for (i <- 1 to 255) yield ansi256Fg(i)
+    private lazy val ANSI_FG_8BIT_COLORS = for (i <- 16 to 255) yield ansi256Fg(i)
 
-    private lazy val ANSI_BG_8BIT_COLORS = for (i <- 1 to 255) yield ansi256Bg(i)
+    private lazy val ANSI_BG_8BIT_COLORS = for (i <- 16 to 255) yield ansi256Bg(i)
 
     private lazy val ANSI_FG_4BIT_COLORS = Seq(
         ansiRedFg,
@@ -114,7 +114,7 @@ object NCUtils extends LazyLogging {
 
     private final lazy val DEC_FMT_SYMS = new DecimalFormatSymbols(Locale.US)
 
-    private final lazy val GSON = new GsonBuilder().setPrettyPrinting().create()
+    private final lazy val GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create()
     private final lazy val YAML = new ObjectMapper(new YAMLFactory).
         configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).
         registerModule(new DefaultScalaModule()).
@@ -1613,7 +1613,7 @@ object NCUtils extends LazyLogging {
             val start = startColor + (36 * idx)
             val end = start + range - 1
 
-            gradAnsi8BitLine(line, start, end)
+            gradAnsi8BitFgLine(line, start, end)
         })
         .mkString("")
     }
@@ -1625,13 +1625,31 @@ object NCUtils extends LazyLogging {
      * @param endColor Inclusive.
      * @return
      */
-    private def gradAnsi8BitLine(line: String, startColor: Int, endColor: Int): String = {
+    def gradAnsi8BitFgLine(line: String, startColor: Int, endColor: Int): String = {
         line.zipWithIndex.foldLeft(new StringBuilder())((buf, zip) => {
             val ch = zip._1
             val idx = zip._2
             val color = startColor + idx % (endColor - startColor + 1)
 
             buf ++= s"${ansi256Fg(color)}$ch"
+        })
+        .toString + ansiReset
+    }
+
+    /**
+     *
+     * @param line
+     * @param startColor Inclusive.
+     * @param endColor Inclusive.
+     * @return
+     */
+    def gradAnsi8BitBgLine(line: String, startColor: Int, endColor: Int): String = {
+        line.zipWithIndex.foldLeft(new StringBuilder())((buf, zip) => {
+            val ch = zip._1
+            val idx = zip._2
+            val color = startColor + idx % (endColor - startColor + 1)
+
+            buf ++= s"${ansi256Bg(color)}$ch"
         })
         .toString + ansiReset
     }
@@ -1707,17 +1725,20 @@ object NCUtils extends LazyLogging {
         val buf = new StringBuilder
 
         var inQuotes = false
+        var isValue = false
 
         for (ch <- json) {
             ch match {
-                case ':' if !inQuotes => buf ++= r(":")
-                case '[' | ']' | '{' | '}' if !inQuotes => buf ++= y(s"$ch")
-                case ',' if !inQuotes => buf ++= g(s"$ch")
+                case ':' if !inQuotes => buf ++= r(":"); isValue = true
+                case '[' | ']' | '{' | '}' if !inQuotes => buf ++= y(s"$ch"); isValue = false
+                case ',' if !inQuotes => buf ++= ansi256Fg(213, s"$ch"); isValue = false
                 case '"' =>
                     if (inQuotes)
-                        buf ++= b(s"$ch")
-                    else
-                        buf ++= s"$ansiBlueFg$ch$ansiCyanFg"
+                        buf ++= ansi256Fg(105, s"$ch")
+                    else {
+                        buf ++= s"${ansi256Fg(105)}$ch"
+                        buf ++= (if (isValue) G else ansiCyanFg)
+                    }
 
                     inQuotes = !inQuotes
 

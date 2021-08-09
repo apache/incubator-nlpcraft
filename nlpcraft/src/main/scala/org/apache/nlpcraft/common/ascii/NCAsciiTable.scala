@@ -109,8 +109,8 @@ class NCAsciiTable {
     )
 
     // Table drawing symbols.
-    private val HDR_HOR = ansi256Fg(75, "=")
-    private val HDR_VER = ansi256Fg(75, "|")
+    private val HDR_HOR = ansi256Fg(105, "=")
+    private val HDR_VER = ansi256Fg(105, "|")
     private val HDR_CRS = ansi256Fg(99, "+")
     private val ROW_HOR = ansi256Fg(39, "-")
     private val ROW_VER = ansi256Fg(67, "|")
