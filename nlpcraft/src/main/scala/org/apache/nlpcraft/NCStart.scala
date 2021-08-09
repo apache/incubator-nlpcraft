@@ -55,7 +55,7 @@ object NCStart extends App with LazyLogging {
     
             logger.info(
                 U.NL +
-                U.asciiLogo() +
+                U.asciiLogo8Bit() +
                 s"${U.NL}" +
                 s"Version: ${ansiBold(ver.version)}${U.NL}" +
                 s"${NCVersion.copyright}${U.NL}"

@@ -61,14 +61,15 @@ package object common {
     def BB: String = ansiBlueBg
     def KB: String = ansiBlackBg
     def RST: String = ansiReset
-    def g(s: Any): String = s"$G${s.toString}$RST"
-    def m(s: Any): String = s"$M${s.toString}$RST"
-    def r(s: Any): String = s"$R${s.toString}$RST"
+    def g(s: Any): String = s"${ansi256Fg(34)}${s.toString}$RST"
+    def m(s: Any): String = s"${ansi256Fg(177)}${s.toString}$RST"
+    def r(s: Any): String = s"${ansi256Fg(202)}${s.toString}$RST"
     def c(s: Any): String = s"$C${s.toString}$RST"
     def y(s: Any): String = s"$Y${s.toString}$RST"
     def w(s: Any): String = s"$W${s.toString}$RST"
     def b(s: Any): String = s"$B${s.toString}$RST"
     def k(s: Any): String = s"$K${s.toString}$RST"
+
     def green(s: Any): String = s"$G${s.toString}$RST"
     def magenta(s: Any): String = s"$M${s.toString}$RST"
     def red(s: Any): String = s"$R${s.toString}$RST"
