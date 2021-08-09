@@ -37,8 +37,8 @@ public interface NCElement extends NCMetadata, Serializable {
     /**
      * Gets unique ID of this element.
      * <p>
-     * This unique ID should be human readable for simpler debugging and testing of the model.
-     * Although element ID could be any arbitrary string it is highly recommended to have
+     * This unique ID should be human-readable for simpler debugging and testing of the model.
+     * Although element ID could be any arbitrary string it is highly recommended having
      * element ID as a lower case string starting with some model prefix, followed by colon and
      * then the element's name. For example, some built-in NLPCraft IDs are: <code>nlpcraft:date</code>,
      * <code>nlpcraft:city</code>.
@@ -75,13 +75,13 @@ public interface NCElement extends NCMetadata, Serializable {
     String getId();
 
     /**
-     * Gets the list of groups this elements belongs to.
+     * Gets the list of groups this element belongs to.
      * <p>
      * Model element can belong to one or more groups. By default, the element belongs to a single group whose group
      * ID is equal to its {@link #getId() ID}. The proper grouping of the model elements is required for operation
      * of Short-Term-Memory (STM) in {@link NCConversation conversation} (if and when conversation
      * is used). Specifically, a token (i.e. found model element) that is part of the group set will override
-     * other tokens from the same set or a its superset. In other words, tokens with a smaller group set
+     * other tokens from the same set or its superset. In other words, tokens with a smaller group set
      * (more specific token) will override the tokens from a larger group set (more generic tokens).
      * <p>
      * Note that built-in tokens (including from 3rd party token providers) belong to a single group whose group
@@ -329,7 +329,7 @@ public interface NCElement extends NCMetadata, Serializable {
     }
 
     /**
-     * Whether or not to permutate multi-word synonyms. Automatic multi-word synonyms permutations greatly
+     * Whether to permutate multi-word synonyms. Automatic multi-word synonyms permutations greatly
      * increase the total number of synonyms in the system and allows for better multi-word synonym detection.
      * For example, if permutation is allowed the synonym "a b c" will be automatically converted into a
      * sequence of synonyms of "a b c", "b a c", "a c b".
@@ -358,7 +358,7 @@ public interface NCElement extends NCMetadata, Serializable {
     }
 
     /**
-     * Whether or not this element allows the non-stop words gaps in its multi-word synonyms.
+     * Whether this element allows the non-stop words gaps in its multi-word synonyms.
      * <p>
      * This property overrides the value from {@link NCModelView#isSparse()}.
      * One should use this property if model's value isn't applicable to this element.

@@ -165,6 +165,21 @@ abstract class NCTestContext {
         assertEquals(expResp, resExtractor(res.getResult.get))
     }
 
+    /**
+      *
+      * @param req
+      * @param resExtractor
+      * @param validator
+      * @tparam T
+      */
+    protected def checkResult[T](req: String, resExtractor: String => T, validator: T => Boolean): Unit = {
+        val res = getClient.ask(req)
+
+        assertTrue(res.isOk, s"Unexpected result, error=${res.getResultError.orElse(null)}")
+        assertTrue(res.getResult.isPresent)
+        assertTrue(validator.apply(resExtractor(res.getResult.get)))
+    }
+
     final protected def getClient: NCTestClient = {
         if (cli == null)
             throw new IllegalStateException("Client is not started.")

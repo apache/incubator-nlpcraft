@@ -92,39 +92,39 @@ public interface NCCustomWord {
     String getStem();
 
     /**
-     * Gets whether or not this word is a stopword. Stopwords are some extremely common words which
-     * add little value in helping understanding user input and are excluded from the processing
+     * Gets whether this word is a stopword. Stopwords are some extremely common words which
+     * add little value in helping to understand user input and are excluded from the processing
      * entirely. For example, words like {@code a, the, can, of, about, over}, etc. are typical
      * stopwords in English. NLPCraft has built-in set of stopwords. Each model can also
      * provide its own set of included and excluded stopwords.
      *
-     * @return Whether or not this word is a stopword.
+     * @return Whether this word is a stopword.
      */
     boolean isStopWord();
 
     /**
-     * Gets whether or not this word is surrounded by any of {@code '[', ']', '{', '}', '(', ')'} brackets.
+     * Gets whether this word is surrounded by any of {@code '[', ']', '{', '}', '(', ')'} brackets.
      *
-     * @return Whether or not this word is surrounded by any of {@code '[', ']', '{', '}', '(', ')'} brackets.
+     * @return Whether this word is surrounded by any of {@code '[', ']', '{', '}', '(', ')'} brackets.
      */
     boolean isBracketed();
 
     /**
-     * Gets whether or not this word is surrounded by single or double quotes.
+     * Gets whether this word is surrounded by single or double quotes.
      *
-     * @return Whether or not this word is surrounded by single or double quotes.
+     * @return Whether this word is surrounded by single or double quotes.
      */
     boolean isQuoted();
 
     /**
-     * Tests whether or not this token is found in Princeton WordNet database.
+     * Tests whether this token is found in Princeton WordNet database.
      *
      * @return Princeton WordNet database inclusion flag.
      */
     boolean isKnownWord();
 
     /**
-     * Tests whether or not the given token is a swear word. NLPCraft has built-in list of common English swear words.
+     * Tests whether the given token is a swear word. NLPCraft has built-in list of common English swear words.
      *
      * @return Swear word flag.
      */

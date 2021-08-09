@@ -31,7 +31,7 @@ class NCIdlFunctionsRequest extends NCIdlFunctions {
         val reqAddr = "address"
         val reqAgent = "agent"
 
-        val idlCtx = ctx(
+        val idlCtx = mkIdlContext(
             reqSrvReqId = reqSrvReqId,
             reqNormText = reqNormText,
             reqTstamp = reqTstamp,

@@ -37,7 +37,7 @@ import org.apache.nlpcraft.model.intent.compiler.NCIdlCompiler
 import org.apache.nlpcraft.model.intent.solver.NCIntentSolver
 import org.apache.nlpcraft.model.intent._
 import org.apache.nlpcraft.probe.mgrs.NCProbeSynonymChunkKind.{IDL, REGEX, TEXT}
-import org.apache.nlpcraft.probe.mgrs.{NCProbeModel, NCProbeSynonym, NCProbeSynonymChunk, NCProbeSynonymsWrapper}
+import org.apache.nlpcraft.probe.mgrs.{NCProbeModel, NCProbeModelCallback, NCProbeSynonym, NCProbeSynonymChunk, NCProbeSynonymsWrapper}
 
 import scala.util.Using
 import scala.compat.java8.OptionConverters._
@@ -76,7 +76,7 @@ object NCDeployManager extends NCService {
         CLS_JAVA_OPT
     )
     
-    type Callback = (String /* ID */, Function[NCIntentMatch, NCResult])
+    case class Callback(id: String, clsName: String, funName: String, cbFun: Function[NCIntentMatch, NCResult])
     type Intent = (NCIdlIntent, Callback)
     type Sample = (String/* Intent ID */, Seq[Seq[String]] /* List of list of input samples for that intent. */)
     
@@ -427,8 +427,7 @@ object NCDeployManager extends NCService {
             .groupBy(_.origText)
             .map(x => (x._1, x._2.map(_.alias).filter(_ != null)))
             .values
-            .toSeq
-            .flatten
+            .flatMap(_.toSeq)
             .toList
 
         // Check for IDL alias uniqueness.
@@ -491,14 +490,14 @@ object NCDeployManager extends NCService {
                 case ids if ids.nonEmpty =>
                     throw new NCE(s"Duplicate intent IDs [" +
                         s"mdlId=$mdlId, " +
-                        s"mdlOrigin=${mdl.getOrigin}, " +
+                        s"origin=${mdl.getOrigin}, " +
                         s"ids=${ids.mkString(",")}" +
                     s"]")
                 case _ => ()
             }
 
             solver = new NCIntentSolver(
-                intents.toList.map(x => (x._1, (z: NCIntentMatch) => x._2._2.apply(z)))
+                intents.toList.map(x => (x._1, (z: NCIntentMatch) => x._2.cbFun.apply(z)))
             )
         }
         else
@@ -513,6 +512,14 @@ object NCDeployManager extends NCService {
             model = mdl,
             solver = solver,
             intents = intents.map(_._1).toSeq,
+            callbacks = intents.map(kv => (
+                kv._1.id,
+                NCProbeModelCallback(
+                    kv._1.origin,
+                    kv._2.clsName,
+                    kv._2.funName
+                )
+            )).toMap,
             continuousSynonyms = mkFastAccessMap(sparse(simple, sp = false), NCProbeSynonymsWrapper(_)),
             sparseSynonyms = toMap(sparse(simple, sp = true)),
             idlSynonyms = toMap(idl(syns.toSet, idl = true)),
@@ -1187,9 +1194,10 @@ object NCDeployManager extends NCService {
 
         checkMinMax(mdl, mtd, tokParamTypes, termIds.map(allLimits), ctxFirstParam)
 
-        // Prepares invocation method.
-        (
+        Callback(
             mtd.toString,
+            mtd.getDeclaringClass.getName,
+            mtd.getName,
             (ctx: NCIntentMatch) => {
                 invoke(
                     mtd,
@@ -1363,7 +1371,7 @@ object NCDeployManager extends NCService {
                 if (compType != CLS_TOKEN)
                     throw new NCE(s"Unexpected array element type for @NCIntentTerm annotated argument [" +
                         s"mdlId=$mdlId, " +
-                        s"mdlOrigin=${mdl.getOrigin}, " +
+                        s"origin=${mdl.getOrigin}, " +
                         s"type=${class2Str(compType)}, " +
                         s"arg=${mkArg()}" +
                     s"]")
@@ -1379,7 +1387,7 @@ object NCDeployManager extends NCService {
                             throw new NCE(
                                 s"Unexpected generic types count for @NCIntentTerm annotated argument [" +
                                     s"mdlId=$mdlId, " +
-                                    s"mdlOrigin=${mdl.getOrigin}, " +
+                                    s"origin=${mdl.getOrigin}, " +
                                     s"count=${compTypes.length}, " +
                                     s"arg=${mkArg()}" +
                                 s"]")
@@ -1394,7 +1402,7 @@ object NCDeployManager extends NCService {
                                 if (genClass != CLS_TOKEN)
                                     throw new NCE(s"Unexpected generic type for @NCIntentTerm annotated argument [" +
                                         s"mdlId=$mdlId, " +
-                                        s"mdlOrigin=${mdl.getOrigin}, " +
+                                        s"origin=${mdl.getOrigin}, " +
                                         s"type=${class2Str(genClass)}, " +
                                         s"arg=${mkArg()}" +
                                     s"]")
@@ -1409,14 +1417,14 @@ object NCDeployManager extends NCService {
                                     throw new NCE(
                                         s"Unexpected Kotlin generic type for @NCIntentTerm annotated argument [" +
                                             s"mdlId=$mdlId, " +
-                                            s"mdlOrigin=${mdl.getOrigin}, " +
+                                            s"origin=${mdl.getOrigin}, " +
                                             s"type=${wc2Str(wildcardType)}, " +
                                             s"arg=${mkArg()}" +
                                         s"]")
                             case _ =>
                                 throw new NCE(s"Unexpected generic type for @NCIntentTerm annotated argument [" +
                                     s"mdlId=$mdlId, " +
-                                    s"mdlOrigin=${mdl.getOrigin}, " +
+                                    s"origin=${mdl.getOrigin}, " +
                                     s"type=${compType.getTypeName}, " +
                                     s"arg=${mkArg()}" +
                                 s"]")
@@ -1424,7 +1432,7 @@ object NCDeployManager extends NCService {
 
                     case _ => throw new NCE(s"Unexpected parameter type for @NCIntentTerm annotated argument [" +
                         s"mdlId=$mdlId, " +
-                        s"mdlOrigin=${mdl.getOrigin}, " +
+                        s"origin=${mdl.getOrigin}, " +
                         s"type=${pGenType.getTypeName}, " +
                         s"arg=${mkArg()}" +
                     s"]")
@@ -1433,7 +1441,7 @@ object NCDeployManager extends NCService {
             else
                 throw new NCE(s"Unexpected parameter type for @NCIntentTerm annotated argument [" +
                     s"mdlId=$mdlId, " +
-                    s"mdlOrigin=${mdl.getOrigin}, " +
+                    s"origin=${mdl.getOrigin}, " +
                     s"type=${class2Str(pClass)}, " +
                     s"arg=${mkArg()}" +
                 s"]")
@@ -1465,7 +1473,7 @@ object NCDeployManager extends NCService {
             val p1 = "its @NCIntentTerm annotated argument"
             val p2 = s"[" +
                 s"mdlId=$mdlId, " +
-                s"mdlOrigin=${mdl.getOrigin}, " +
+                s"origin=${mdl.getOrigin}, " +
                 s"arg=${mkArg()}" +
             s"]"
 
@@ -1528,7 +1536,7 @@ object NCDeployManager extends NCService {
                     if (intentDecls.exists(_.id == intent.id))
                         throw new NCE(s"Duplicate intent ID [" +
                             s"mdlId=$mdlId, " +
-                            s"mdlOrigin=${mdl.getOrigin}, " +
+                            s"origin=${mdl.getOrigin}, " +
                             s"class=$mdlCls, " +
                             s"id=${intent.id}" +
                         s"]")
@@ -1545,10 +1553,10 @@ object NCDeployManager extends NCService {
             val mtdStr = method2Str(m)
 
             def bindIntent(intent: NCIdlIntent, cb: Callback): Unit = {
-                if (intents.exists(i => i._1.id == intent.id && i._2._1 != cb._1))
+                if (intents.exists(i => i._1.id == intent.id && i._2.id != cb.id))
                     throw new NCE(s"The intent cannot be bound to more than one callback [" +
                         s"mdlId=$mdlId, " +
-                        s"mdlOrigin=${mdl.getOrigin}, " +
+                        s"origin=${mdl.getOrigin}, " +
                         s"class=$mdlCls, " +
                         s"intentId=${intent.id}" +
                     s"]")
@@ -1563,7 +1571,7 @@ object NCDeployManager extends NCService {
                 if (intentDecls.exists(_.id == intent.id) || intents.exists(_._1.id == intent.id))
                     throw new NCE(s"Duplicate intent ID [" +
                         s"mdlId=$mdlId, " +
-                        s"mdlOrigin=${mdl.getOrigin}, " +
+                        s"origin=${mdl.getOrigin}, " +
                         s"callback=$mtdStr, " +
                         s"id=${intent.id}" +
                     s"]")
@@ -1579,7 +1587,7 @@ object NCDeployManager extends NCService {
                     case None => throw new NCE(
                         s"""@NCIntentRef("$refId") references unknown intent ID [""" +
                             s"mdlId=$mdlId, " +
-                            s"mdlOrigin=${mdl.getOrigin}, " +
+                            s"origin=${mdl.getOrigin}, " +
                             s"refId=$refId, " +
                             s"callback=$mtdStr" +
                         s"]")
@@ -1590,9 +1598,9 @@ object NCDeployManager extends NCService {
         val unusedIntents = intentDecls.filter(i => !intents.exists(_._1.id == i.id))
 
         if (unusedIntents.nonEmpty)
-            logger.warn(s"Declared but unused intents: [" +
+            logger.warn(s"Intents are unused (have no callback): [" +
                 s"mdlId=$mdlId, " +
-                s"mdlOrigin=${mdl.getOrigin}, " +
+                s"origin=${mdl.getOrigin}, " +
                 s"intentIds=${unusedIntents.map(_.id).mkString("(", ", ", ")")}]"
             )
         
@@ -1639,7 +1647,7 @@ object NCDeployManager extends NCService {
                             smpAnnsRef, "@NCIntentSampleRef", a => U.readAnySource(a.value())
                         )
 
-                    if (U.containsDups(seqSeq.flatten.toList))
+                    if (U.containsDups(seqSeq.flatMap(_.toSeq).toList))
                         logger.warn(s"@NCIntentSample and @NCIntentSampleRef annotations have duplicates (safely ignoring): $mtdStr")
 
                     val distinct = seqSeq.map(_.distinct).distinct
@@ -1672,7 +1680,7 @@ object NCDeployManager extends NCService {
             val processed = mutable.HashSet.empty[Case]
 
             samples.
-                flatMap { case (_, smp) => smp.flatten.map(_.toLowerCase) }.
+                flatMap { case (_, smp) => smp.flatMap(_.toSeq).map(_.toLowerCase) }.
                 map(s => s -> SEPARATORS.foldLeft(s)((s, ch) => s.replaceAll(s"\\$ch", s" $ch "))).
                 foreach {
                     case (s, sNorm) =>

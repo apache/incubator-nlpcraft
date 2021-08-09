@@ -26,10 +26,9 @@ import java.util.Collection;
 
 /**
  * Data model result returned from model intent callbacks. Result consists of the
- * text body and the type. The type is similar in notion to MIME types. The following is the list of supported
- * result types:
+ * text body and the type. The type is similar in notion to MIME types.
  * <table class="dl-table">
- *     <caption>Result types.</caption>
+ *     <caption>Supported result types:</caption>
  *     <tr>
  *         <th>Result Type</th>
  *         <th>Factory Method</th>

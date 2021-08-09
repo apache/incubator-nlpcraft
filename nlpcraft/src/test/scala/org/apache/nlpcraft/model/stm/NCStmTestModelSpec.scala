@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,18 +15,25 @@
  * limitations under the License.
  */
 
-// Fragments (mostly for demo purposes here).
-fragment=buzz term~{tok_id() == 'x:alarm'}
-fragment=when
-    term(nums)~{
-        // Demonstrating term variables.
-        @type = meta_tok('nlpcraft:num:unittype')
-        @iseq = meta_tok('nlpcraft:num:isequalcondition') // Excludes conditional statements.
+package org.apache.nlpcraft.model.stm
 
-        tok_id() == 'nlpcraft:num' && @type == 'datetime' && @iseq == true
-    }[1,7]
+import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
+import org.junit.jupiter.api.Test
 
-// Intents (using fragments).
-intent=alarm
-    fragment(buzz)
-    fragment(when)
+/**
+ *
+ */
+@NCTestEnvironment(model = classOf[NCStmTestModel], startClient = true)
+class NCStmTestModelSpec extends NCTestContext {
+    /**
+     * Checks behaviour. It is based on intents and elements groups.
+     */
+    @Test
+    private[stm] def test(): Unit = for (i <- 0 until 3) {
+        checkResult("sale", "sale")
+        checkResult("best", "sale_best_employee")
+        checkResult("buy", "buy")
+        checkResult("best", "buy_best_employee")
+        checkResult("sale", "sale")
+    }
+}

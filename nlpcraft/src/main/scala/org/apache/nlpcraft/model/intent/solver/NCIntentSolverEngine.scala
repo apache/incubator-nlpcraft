@@ -323,11 +323,11 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                         tbl += (
                             Seq(
                                 s"#${m.variantIdx + 1}",
-                                g(bo("best match"))
+                                g(bo("<|best match|>"))
                             ),
                             Seq(
                                 im.intent.id,
-                                g(bo("best match"))
+                                g(bo("<|best match|>"))
                             ),
                             mkPickTokens(im),
                             w.toAnsiString
@@ -484,14 +484,15 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
             var abort = false
             var lastTermMatch: TermMatch = null
 
-            // Conversation metadata (shared across all terms).
-            val x = ctx.getConversation.getMetadata
+            val x = ctx.getConversation.getMetadata // Conversation metadata (shared across all terms).
             val convMeta = if (x.isEmpty) Map.empty[String, Object] else x.asScala.toMap[String, Object]
+            val toks = senToks.map(_.token)
 
             // Check terms.
             for (term <- intent.terms if !abort) {
                 // Fresh context for each term.
-                val termCtx = NCIdlContext(
+                val idlCtx = NCIdlContext(
+                    toks,
                     intentMeta = intent.meta,
                     convMeta = convMeta,
                     req = ctx.getRequest,
@@ -500,7 +501,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
 
                 solveTerm(
                     term,
-                    termCtx,
+                    idlCtx,
                     senToks,
                     if (term.conv) convToks else Seq.empty
                 ) match {
@@ -623,7 +624,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
      * Solves term.
      *
      * @param term
-     * @param ctx
+     * @param idlCtx
      * @param convToks
      * @param senToks
      * @return
@@ -631,7 +632,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
     @throws[NCE]
     private def solveTerm(
         term: NCIdlTerm,
-        ctx: NCIdlContext,
+        idlCtx: NCIdlContext,
         senToks: Seq[IntentToken],
         convToks: Seq[IntentToken]
     ): Option[TermMatch] = {
@@ -639,7 +640,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
             logger.warn(s"No tokens available to match on for term '${term.toAnsiString}'.")
 
         try
-            solvePredicate(term.pred, ctx, term.min, term.max, senToks, convToks) match {
+            solvePredicate(term.pred, idlCtx, term.min, term.max, senToks, convToks) match {
                 case Some((usedToks, predWeight)) => Some(
                     TermMatch(
                         term.id,
@@ -669,7 +670,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
      * Solves term's predicate.
      *
      * @param pred
-     * @param ctx
+     * @param idlCtx
      * @param min
      * @param max
      * @param senToks
@@ -679,7 +680,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
     @throws[NCE]
     private def solvePredicate(
         pred: (NCToken, NCIdlContext) => Z,
-        ctx: NCIdlContext,
+        idlCtx: NCIdlContext,
         min: Int,
         max: Int,
         senToks: Seq[IntentToken],
@@ -693,12 +694,12 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
 
         var matches = 0
         var tokUses = 0
-        
+
         val allToks = Seq(senToks, convToks)
-        
+
         // Collect to the 'max' from sentence & conversation, if possible.
         for (col <- allToks; tok <- col.filter(!_.used) if usedToks.lengthCompare(max) < 0) {
-            val Z(res, uses) = pred.apply(tok.token, ctx)
+            val Z(res, uses) = pred.apply(tok.token, idlCtx)
 
             res match {
                 case b: java.lang.Boolean =>

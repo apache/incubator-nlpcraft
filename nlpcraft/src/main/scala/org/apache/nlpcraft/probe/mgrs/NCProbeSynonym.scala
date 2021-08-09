@@ -154,6 +154,7 @@ class NCProbeSynonym(
 
         chunk.kind match {
             case TEXT => chunk.wordStem == get0(_.stem, _.stem)
+
             case REGEX =>
                 val r = chunk.regex
 

@@ -103,7 +103,7 @@ public interface NCToken extends NCMetadata {
     }
 
     /**
-     * Gets the list of tokens this tokens is composed of. This method returns only immediate part tokens.
+     * Gets the list of tokens this token is composed of. This method returns only immediate part tokens.
      *
      * @return List of constituent tokens, potentially empty but never {@code null}, that this token is composed of.
      * @see #findPartTokens(String...) 
@@ -168,7 +168,7 @@ public interface NCToken extends NCMetadata {
     Set<String> getAliases();
 
     /**
-     * Tests whether or not this token has given alias. It is equivalent to:
+     * Tests whether this token has given alias. It is equivalent to:
      * <pre class="brush: java">
      *      return getAliases().contains(alias);
      * </pre>
@@ -181,9 +181,9 @@ public interface NCToken extends NCMetadata {
     }
 
     /**
-     * Gets the value if this token was detected via element's value (or its synonyms). Otherwise
+     * Gets the value if this token was detected via element's value (or its synonyms). Otherwise,
      * returns {@code null}. Only applicable for user-defined model elements - built-in tokens
-     * do not have values and it will return {@code null}.
+     * do not have values, and it will return {@code null}.
      * 
      * @return Value for the user-defined model element or {@code null}, if not available.
      * @see NCElement#getValues()
@@ -200,7 +200,7 @@ public interface NCToken extends NCMetadata {
     List<String> getGroups();
 
     /**
-     * Tests whether or not this token belongs to the given group. It is equivalent to:
+     * Tests whether this token belongs to the given group. It is equivalent to:
      * <pre class="brush: java">
      *      return getGroups().contains(grp);
      * </pre>
@@ -227,8 +227,8 @@ public interface NCToken extends NCMetadata {
     int getEndCharIndex();
     
     /**
-     * A shortcut method checking whether or not this token is a stopword. Stopwords are some extremely common
-     * words which add little value in helping understanding user input and are excluded from the
+     * A shortcut method checking whether this token is a stopword. Stopwords are some extremely common
+     * words which add little value in helping to understand user input and are excluded from the
      * processing entirely. For example, words like a, the, can, of, about, over, etc. are
      * typical stopwords in English. NLPCraft has built-in set of stopwords.
      * <p>
@@ -238,7 +238,7 @@ public interface NCToken extends NCMetadata {
      * </pre>
      * See more information on token metadata <a target=_ href="https://nlpcraft.apache.org/data-model.html#meta">here</a>.
      * 
-     * @return Whether or not this token is a stopword.
+     * @return Whether this token is a stopword.
      * @see NCModelView#getAdditionalStopWords()
      * @see NCModelView#getExcludedStopWords()
      */
@@ -247,8 +247,8 @@ public interface NCToken extends NCMetadata {
     }
 
     /**
-     * A shortcut method checking whether or not this token represents a free word. A free word is a
-     * token that was detected neither as a part of user defined or system tokens.
+     * A shortcut method checking whether this token represents a free word. A free word is a
+     * token that was detected neither as a part of user defined nor system tokens.
      * <p>
      * This method is equivalent to:
      * <pre class="brush: java">
@@ -256,7 +256,7 @@ public interface NCToken extends NCMetadata {
      * </pre>
      * See more information on token metadata <a target=_ href="https://nlpcraft.apache.org/data-model.html#meta">here</a>.
      *
-     * @return Whether or not this token is a freeword.
+     * @return Whether this token is a freeword.
      */
     default boolean isFreeWord() {
         return meta("nlpcraft:nlp:freeword");
@@ -306,7 +306,7 @@ public interface NCToken extends NCMetadata {
     default String getNormalizedText() { return meta("nlpcraft:nlp:normtext"); }
 
     /**
-     * A shortcut method on whether or not this token was matched on direct (not permutated) synonym.
+     * A shortcut method on whether  this token was matched on direct (not permutated) synonym.
      * <p>
      * This method is equivalent to:
      * <pre class="brush: java">
@@ -314,12 +314,12 @@ public interface NCToken extends NCMetadata {
      * </pre>
      * See more information on token metadata <a target=_ href="https://nlpcraft.apache.org/data-model.html#meta">here</a>.
      *
-     * @return Whether or not this token was matched on direct (not permutated) synonym.
+     * @return Whether this token was matched on direct (not permutated) synonym.
      */
     default boolean isDirect() { return meta("nlpcraft:nlp:direct"); }
 
     /**
-     * A shortcut method on whether or not this token was matched on permutated (not direct) synonym.
+     * A shortcut method on whether this token was matched on permutated (not direct) synonym.
      * <p>
      * This method is equivalent to:
      * <pre class="brush: java">
@@ -327,7 +327,7 @@ public interface NCToken extends NCMetadata {
      * </pre>
      * See more information on token metadata <a target=_ href="https://nlpcraft.apache.org/data-model.html#meta">here</a>.
      *
-     * @return Whether or not this token was matched on permutated (not direct) synonym.
+     * @return Whether this token was matched on permutated (not direct) synonym.
      */
     default boolean isPermutated() { return !isDirect(); }
 
@@ -347,7 +347,7 @@ public interface NCToken extends NCMetadata {
     default boolean isEnglish() { return meta("nlpcraft:nlp:english"); }
 
     /**
-     * A shortcut method on whether or not this token is a swear word. NLPCraft has built-in list of
+     * A shortcut method on whether this token is a swear word. NLPCraft has built-in list of
      * common English swear words.
      * <p>
      * This method is equivalent to:
@@ -356,12 +356,12 @@ public interface NCToken extends NCMetadata {
      * </pre>
      * See more information on token metadata <a target=_ href="https://nlpcraft.apache.org/data-model.html#meta">here</a>.
      *
-     * @return Whether or not this token is a swear word.
+     * @return Whether this token is a swear word.
      */
     default boolean isSwear() { return meta("nlpcraft:nlp:swear"); }
 
     /**
-     * A shortcut method on whether or not this token is surrounded by single or double quotes.
+     * A shortcut method on whether this token is surrounded by single or double quotes.
      * <p>
      * This method is equivalent to:
      * <pre class="brush: java">
@@ -369,12 +369,12 @@ public interface NCToken extends NCMetadata {
      * </pre>
      * See more information on token metadata <a target=_ href="https://nlpcraft.apache.org/data-model.html#meta">here</a>.
      *
-     * @return Whether or not this token is surrounded by single or double quotes.
+     * @return Whether this token is surrounded by single or double quotes.
      */
     default boolean isQuoted() { return meta("nlpcraft:nlp:quoted"); }
 
     /**
-     * A shortcut method on whether or not this token is surrounded by any of '[', ']', '{', '}', '(', ')' brackets.
+     * A shortcut method on whether this token is surrounded by any of '[', ']', '{', '}', '(', ')' brackets.
      * <p>
      * This method is equivalent to:
      * <pre class="brush: java">
@@ -382,12 +382,12 @@ public interface NCToken extends NCMetadata {
      * </pre>
      * See more information on token metadata <a target=_ href="https://nlpcraft.apache.org/data-model.html#meta">here</a>.
      *
-     * @return Whether or not this token is surrounded by any of '[', ']', '{', '}', '(', ')' brackets.
+     * @return Whether this token is surrounded by any of '[', ']', '{', '}', '(', ')' brackets.
      */
     default boolean isBracketed() { return meta("nlpcraft:nlp:bracketed"); }
 
     /**
-     * A shortcut method on whether or not this token is found in Princeton WordNet database.
+     * A shortcut method on whether this token is found in Princeton WordNet database.
      * <p>
      * This method is equivalent to:
      * <pre class="brush: java">
@@ -395,13 +395,13 @@ public interface NCToken extends NCMetadata {
      * </pre>
      * See more information on token metadata <a target=_ href="https://nlpcraft.apache.org/data-model.html#meta">here</a>.
      *
-     * @return Whether or not this token is found in Princeton WordNet database.
+     * @return Whether this token is found in Princeton WordNet database.
      */
     default boolean isWordnet() { return meta("nlpcraft:nlp:dict"); }
 
     /**
      * A shortcut method to get lemma of this token, i.e. a canonical form of this word. Note that
-     * stemming and lemmatization allow to reduce inflectional forms and sometimes derivationally related
+     * stemming and lemmatization allow reducing inflectional forms and sometimes derivationally related
      * forms of a word to a common base form. Lemmatization refers to the use of a vocabulary and
      * morphological analysis of words, normally aiming to remove inflectional endings only and to
      * return the base or dictionary form of a word, which is known as the lemma.
@@ -476,7 +476,7 @@ public interface NCToken extends NCMetadata {
     }
 
     /**
-     * Tests whether or not this token is for a user-defined model element.
+     * Tests whether this token is for a user-defined model element.
      *
      * @return {@code True} if this token is defined by the user model element, {@code false} otherwise.
      */
@@ -488,7 +488,7 @@ public interface NCToken extends NCMetadata {
     }
 
     /**
-     * Tests whether or not this token is not for a user-defined model element.
+     * Tests whether this token is not for a user-defined model element.
      *
      * @return {@code True} if this token is not defined by the user model element, {@code false} otherwise.
      */
@@ -497,11 +497,11 @@ public interface NCToken extends NCMetadata {
     }
 
     /**
-     * Whether or not this token is abstract.
+     * Whether this token is abstract.
      * <p>
      * An abstract token is only detected when it is either a constituent part of some other non-abstract token
      * or referenced by built-in tokens. In other words, an abstract token will not be detected in a standalone
-     * unreferenced position. By default (unless returned by this method), all named entities considered to be
+     * unreferenced position. By default, (unless returned by this method), all named entities considered to be
      * non-abstract.
      * <p>
      * Declaring tokens as abstract is important to minimize number of parsing variants automatically
@@ -510,7 +510,7 @@ public interface NCToken extends NCMetadata {
      * abstract can significantly reduce the number of parsing variants leading to a better performance,
      * and often simpler corresponding intent definition and callback logic.
      *
-     * @return Whether or not this token is abstract.
+     * @return Whether this token is abstract.
      */
     boolean isAbstract();
 }

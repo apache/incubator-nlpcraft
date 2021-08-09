@@ -157,7 +157,7 @@ public class NCTestClientBuilder {
     }
 
     /**
-     * Sets whether or not to log responses from the probe. Default value is {@link #DFLT_RESP_LOG}.
+     * Sets whether to log responses from the probe. Default value is {@link #DFLT_RESP_LOG}.
      *
      * @param respLog {@code true} to log responses, {@code false} otherwise.
      * @return Builder instance for chaining calls.

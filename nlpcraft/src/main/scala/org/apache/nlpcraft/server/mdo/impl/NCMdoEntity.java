@@ -39,9 +39,9 @@ public @interface NCMdoEntity {
     String table() default "";
 
     /**
-     * Whether or not SQL is supported.
+     * Whether SQL is supported.
      *
-     * @return Whether or not SQL is supported.
+     * @return Whether SQL is supported.
      */
     boolean sql() default true;
 }

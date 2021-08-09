@@ -663,17 +663,17 @@ object NCSqlModelGeneratorImpl {
                |        for more information.
                |
                |    ${c("--synonyms|-y")}=${g("true|false")}
-               |        Optional flag on whether or not to generated auto synonyms for the model elements.
+               |        Optional flag on whether to generated auto synonyms for the model elements.
                |        Default is true.
                |
                |    ${c("--override|-z")}=${g("true|false")}
-               |        Optional flag to determine whether or not to override output file if it already exist.
+               |        Optional flag to determine whether to override output file if it already exist.
                |        If override is disabled (default) and output file exists - a unique file name will
                |        be used instead.
                |        Default is false.
                |
                |    ${c("--parent|-p")}=${g("true|false")}
-               |        Optional flag on whether or not to use element's parent relationship for
+               |        Optional flag on whether to use element's parent relationship for
                |        defining SQL columns and their containing (i.e. parent) tables.
                |        Default is false.
                |

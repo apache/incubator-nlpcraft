@@ -32,6 +32,7 @@ import java.util
 import java.util.{Calendar, Collections, Collection => JColl, List => JList, Map => JMap}
 
 import scala.jdk.CollectionConverters.CollectionHasAsScala
+import scala.jdk.CollectionConverters.SeqHasAsJava
 
 trait NCIdlCompilerBase {
     type S = NCIdlStack
@@ -161,6 +162,8 @@ trait NCIdlCompilerBase {
         newRuntimeError(s"Expected uniform list type for IDL function '$fun()', found polymorphic list.", cause)
     def rtFunError(fun: String, cause: Exception)(implicit ctx: PRC): NCE =
         newRuntimeError(s"Runtime error in IDL function: $fun()", cause)
+    def rtUnavailFunError(fun: String)(implicit ctx: PRC): NCE =
+        newRuntimeError(s"Function '$fun()' is unavailable in this IDL context.")
 
     /**
      *
@@ -519,15 +522,15 @@ trait NCIdlCompilerBase {
      * @param id
      * @return
      */
-    def parseCallExpr(id: TN)(implicit ctx: PRC): SI = (tok, stack: S, termCtx) => {
+    def parseCallExpr(id: TN)(implicit ctx: PRC): SI = (tok, stack: S, idlCtx) => {
         implicit val evidence: S = stack
 
         val fun = id.getText
 
-        def ensureStack(min: Int): Unit = if (stack.size < min) throw rtMissingParamError(min, fun)
         def popMarker(argNum: Int): Unit = if (pop1() != stack.PLIST_MARKER) throw rtTooManyParamsError(argNum, fun)
         def arg[X](argNum: Int, f: () => X): X = {
-            ensureStack(argNum + 1) // +1 for the frame marker.
+            if (stack.size < argNum + 1) // +1 for stack frame marker.
+                throw rtMissingParamError(argNum, fun)
 
             val x = f()
 
@@ -992,13 +995,13 @@ trait NCIdlCompilerBase {
                 }
             })
         }
-    
+
         def doOrElse(): Unit = {
             val (x1, x2) = arg2()
-        
+
             stack.push(() => {
                 val Z(v1, n1) = x1()
-            
+
                 if (v1 != null)
                     Z(v1, n1)
                 else
@@ -1039,10 +1042,10 @@ trait NCIdlCompilerBase {
                 Z(box(findPart(toToken(tok), toStr(aliasId))), n)
             })
         }
-        
+
         def doPartMeta(): Unit = {
             val (x1, x2) = arg2()
-    
+
             stack.push(() => {
                 val (aliasId, key, n) = extract2(x1, x2)
 
@@ -1060,14 +1063,44 @@ trait NCIdlCompilerBase {
                 Z(toToken(t).findPartTokens(toStr(a)), n)
             })
         }
-    
+
         def doHasPart(): Unit = {
             val (x1, x2) = arg2()
-        
+
             stack.push(() => {
                 val (t, a, n) = extract2(x1, x2)
-                
+
                 Z(toToken(t).findPartTokens(toStr(a)).size() == 1, n)
+            })
+        }
+
+        def doIsBefore(f: (NCToken, String) => Boolean): Unit = {
+            val x = arg1()
+
+            stack.push(() => {
+                val Z(arg, n) = x()
+
+                Z(idlCtx.toks.exists(t => t.getIndex > tok.getIndex && f(t, toStr(arg))), n)
+            })
+        }
+
+        def doIsAfter(f: (NCToken, String) => Boolean): Unit = {
+            val x = arg1()
+
+            stack.push(() => {
+                val Z(arg, n) = x()
+
+                Z(idlCtx.toks.exists(t => t.getIndex < tok.getIndex && f(t, toStr(arg))), n)
+            })
+        }
+
+        def doForAll(f: (NCToken, String) => Boolean): Unit = {
+            val x = arg1()
+
+            stack.push(() => {
+                val Z(arg, n) = x()
+
+                Z(idlCtx.toks.filter(f(_, toStr(arg))).asJava, n)
             })
         }
 
@@ -1108,18 +1141,22 @@ trait NCIdlCompilerBase {
         def z[Y](args: () => Y, body: Y => Z): Unit = { val x = args(); stack.push(() => body(x)) }
         def z0(body: () => Z): Unit = { popMarker(0); stack.push(() => body()) }
 
+        def checkAvail(): Unit =
+            if (idlCtx.toks.isEmpty)
+                throw rtUnavailFunError(fun)
+
         try
             fun match {
             // Metadata access.
             case "meta_part" => doPartMeta()
             case "meta_tok" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(tok.meta[Object](toStr(v))), 1) })
             case "meta_model" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(tok.getModel.meta[Object](toStr(v))), 0) })
-            case "meta_req" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(termCtx.req.getRequestData.get(toStr(v))), 0) })
-            case "meta_user" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(termCtx.req.getUser.meta(toStr(v))), 0) })
-            case "meta_company" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(termCtx.req.getCompany.meta(toStr(v))), 0) })
-            case "meta_intent" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(termCtx.intentMeta.get(toStr(v)).orNull), 0) })
-            case "meta_conv" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(termCtx.convMeta.get(toStr(v)).orNull), 0) })
-            case "meta_frag" => z[ST](arg1, { x => val Z(v, f) = x(); Z(box(termCtx.fragMeta.get(toStr(v)).orNull), f) })
+            case "meta_req" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(idlCtx.req.getRequestData.get(toStr(v))), 0) })
+            case "meta_user" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(idlCtx.req.getUser.meta(toStr(v))), 0) })
+            case "meta_company" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(idlCtx.req.getCompany.meta(toStr(v))), 0) })
+            case "meta_intent" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(idlCtx.intentMeta.get(toStr(v)).orNull), 0) })
+            case "meta_conv" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(idlCtx.convMeta.get(toStr(v)).orNull), 0) })
+            case "meta_frag" => z[ST](arg1, { x => val Z(v, f) = x(); Z(box(idlCtx.fragMeta.get(toStr(v)).orNull), f) })
             case "meta_sys" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(U.sysEnv(toStr(v)).orNull), 0) })
 
             // Converts JSON to map.
@@ -1137,6 +1174,17 @@ trait NCIdlCompilerBase {
             case "tok_pos" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).getPos, 1) }) }
             case "tok_sparsity" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).getSparsity, 1) }) }
             case "tok_unid" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).getUnid, 1) }) }
+
+            case "tok_index" => checkAvail(); arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).getIndex, 1) }) }
+            case "tok_is_last" => checkAvail(); arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).getIndex == idlCtx.toks.size - 1, 1) }) }
+            case "tok_is_first" => checkAvail(); arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).getIndex == 0, 1) }) }
+            case "tok_is_before_id" => checkAvail(); doIsBefore((tok, id) => tok.getId == id)
+            case "tok_is_before_group" => checkAvail(); doIsBefore((tok, grpId) => tok.getGroups.contains(grpId))
+            case "tok_is_before_parent" => checkAvail(); doIsBefore((tok, id) => tok.getParentId == id)
+            case "tok_is_after_id" => checkAvail(); doIsAfter((tok, id) => tok.getId == id)
+            case "tok_is_after_group" => checkAvail(); doIsAfter((tok, grpId) => tok.getGroups.contains(grpId))
+            case "tok_is_after_parent" => checkAvail(); doIsAfter((tok, id) => tok.getParentId == id)
+
             case "tok_is_abstract" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).isAbstract, 1) }) }
             case "tok_is_bracketed" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).isBracketed, 1) }) }
             case "tok_is_direct" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).isDirect, 1) }) }
@@ -1160,30 +1208,36 @@ trait NCIdlCompilerBase {
             case "tok_find_part" => doFindPart()
             case "tok_find_parts" => doFindParts()
 
+            case "tok_count" => checkAvail(); z0(() => Z(idlCtx.toks.size, 0))
+            case "tok_all" => checkAvail(); z0(() => Z(idlCtx.toks.asJava, 0))
+            case "tok_all_for_id" => checkAvail(); doForAll((tok, id) => tok.getId == id)
+            case "tok_all_for_parent" => checkAvail(); doForAll((tok, id) => tok.getParentId == id)
+            case "tok_all_for_group" => checkAvail(); doForAll((tok, grp) => tok.getGroups.contains(grp))
+
             // Request data.
-            case "req_id" => z0(() => Z(termCtx.req.getServerRequestId, 0))
-            case "req_normtext" => z0(() => Z(termCtx.req.getNormalizedText, 0))
-            case "req_tstamp" => z0(() => Z(termCtx.req.getReceiveTimestamp, 0))
-            case "req_addr" => z0(() => Z(termCtx.req.getRemoteAddress.orElse(null), 0))
-            case "req_agent" => z0(() => Z(termCtx.req.getClientAgent.orElse(null), 0))
+            case "req_id" => z0(() => Z(idlCtx.req.getServerRequestId, 0))
+            case "req_normtext" => z0(() => Z(idlCtx.req.getNormalizedText, 0))
+            case "req_tstamp" => z0(() => Z(idlCtx.req.getReceiveTimestamp, 0))
+            case "req_addr" => z0(() => Z(idlCtx.req.getRemoteAddress.orElse(null), 0))
+            case "req_agent" => z0(() => Z(idlCtx.req.getClientAgent.orElse(null), 0))
 
             // User data.
-            case "user_id" => z0(() => Z(termCtx.req.getUser.getId, 0))
-            case "user_fname" => z0(() => Z(termCtx.req.getUser.getFirstName.orElse(null), 0))
-            case "user_lname" => z0(() => Z(termCtx.req.getUser.getLastName.orElse(null), 0))
-            case "user_email" => z0(() => Z(termCtx.req.getUser.getEmail.orElse(null), 0))
-            case "user_admin" => z0(() => Z(termCtx.req.getUser.isAdmin, 0))
-            case "user_signup_tstamp" => z0(() => Z(termCtx.req.getUser.getSignupTimestamp, 0))
+            case "user_id" => z0(() => Z(idlCtx.req.getUser.getId, 0))
+            case "user_fname" => z0(() => Z(idlCtx.req.getUser.getFirstName.orElse(null), 0))
+            case "user_lname" => z0(() => Z(idlCtx.req.getUser.getLastName.orElse(null), 0))
+            case "user_email" => z0(() => Z(idlCtx.req.getUser.getEmail.orElse(null), 0))
+            case "user_admin" => z0(() => Z(idlCtx.req.getUser.isAdmin, 0))
+            case "user_signup_tstamp" => z0(() => Z(idlCtx.req.getUser.getSignupTimestamp, 0))
 
             // Company data.
-            case "comp_id" => z0(() => Z(termCtx.req.getCompany.getId, 0))
-            case "comp_name" => z0(() => Z(termCtx.req.getCompany.getName, 0))
-            case "comp_website" => z0(() => Z(termCtx.req.getCompany.getWebsite.orElse(null), 0))
-            case "comp_country" => z0(() => Z(termCtx.req.getCompany.getCountry.orElse(null), 0))
-            case "comp_region" => z0(() => Z(termCtx.req.getCompany.getRegion.orElse(null), 0))
-            case "comp_city" => z0(() => Z(termCtx.req.getCompany.getCity.orElse(null), 0))
-            case "comp_addr" => z0(() => Z(termCtx.req.getCompany.getAddress.orElse(null), 0))
-            case "comp_postcode" => z0(() => Z(termCtx.req.getCompany.getPostalCode.orElse(null), 0))
+            case "comp_id" => z0(() => Z(idlCtx.req.getCompany.getId, 0))
+            case "comp_name" => z0(() => Z(idlCtx.req.getCompany.getName, 0))
+            case "comp_website" => z0(() => Z(idlCtx.req.getCompany.getWebsite.orElse(null), 0))
+            case "comp_country" => z0(() => Z(idlCtx.req.getCompany.getCountry.orElse(null), 0))
+            case "comp_region" => z0(() => Z(idlCtx.req.getCompany.getRegion.orElse(null), 0))
+            case "comp_city" => z0(() => Z(idlCtx.req.getCompany.getCity.orElse(null), 0))
+            case "comp_addr" => z0(() => Z(idlCtx.req.getCompany.getAddress.orElse(null), 0))
+            case "comp_postcode" => z0(() => Z(idlCtx.req.getCompany.getPostalCode.orElse(null), 0))
 
             // String functions.
             case "trim" | "strip" => z[ST](arg1, { x => val Z(v, f) = x(); Z(toStr(v).trim, f) })

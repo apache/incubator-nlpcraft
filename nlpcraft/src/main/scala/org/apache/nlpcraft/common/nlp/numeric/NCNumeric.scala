@@ -15,25 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.models.stm
+package org.apache.nlpcraft.common.nlp.numeric
 
-import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
-import org.junit.jupiter.api.Test
+import org.apache.nlpcraft.common.nlp.NCNlpSentenceToken
 
 /**
- *
- */
-@NCTestEnvironment(model = classOf[NCStmTestModel], startClient = true)
-class NCStmTestModelSpec extends NCTestContext {
-    /**
-     * Checks behaviour. It is based on intents and elements groups.
-     */
-    @Test
-    private[stm] def test(): Unit = for (i <- 0 until 3) {
-        checkResult("sale", "sale")
-        checkResult("best", "sale_best_employee")
-        checkResult("buy", "buy")
-        checkResult("best", "buy_best_employee")
-        checkResult("sale", "sale")
-    }
-}
+  *
+  * @param name
+  * @param unitType
+  */
+case class NCNumericUnit(name: String, unitType: String)
+
+/**
+  *
+  * @param tokens
+  * @param value
+  * @param isFractional
+  * @param unit
+  */
+case class NCNumeric(
+    tokens: Seq[NCNlpSentenceToken],
+    value: Double,
+    isFractional: Boolean,
+    unit: Option[NCNumericUnit]
+)

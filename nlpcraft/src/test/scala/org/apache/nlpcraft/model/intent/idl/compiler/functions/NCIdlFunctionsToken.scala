@@ -42,14 +42,14 @@ class NCIdlFunctionsToken extends NCIdlFunctions {
         "nlpcraft:nlp:unid" -> "21421"
     )
 
-    private def mkMeta(truth: String):TestDesc = TestDesc(truth = truth, token = tkn(meta = meta))
+    private def mkMeta(truth: String):TestDesc = TestDesc(truth = truth, token = mkToken(meta = meta))
 
     @Test
-    def test(): Unit =
+    def testMainTokenProperties(): Unit =
         test(
             TestDesc(
                 truth = "tok_id() == 'a'",
-                token = tkn(id = "a")
+                token = mkToken(id = "a")
             ),
             mkMeta(truth = s"tok_lemma() == '${meta("nlpcraft:nlp:lemma")}'"),
             mkMeta(truth = s"tok_stem() == '${meta("nlpcraft:nlp:stem")}'"),
@@ -57,8 +57,8 @@ class NCIdlFunctionsToken extends NCIdlFunctions {
             mkMeta(truth = s"tok_sparsity() == ${meta("nlpcraft:nlp:sparsity")}"),
             mkMeta(truth = s"tok_unid() == '${meta("nlpcraft:nlp:unid")}'"),
             TestDesc(
-                truth = s"tok_is_abstract() == true",
-                token = tkn(isAbstr = true)
+                truth = s"tok_is_abstract()",
+                token = mkToken(`abstract` = true)
             ),
             mkMeta(truth = s"tok_is_abstract() == false"),
             mkMeta(truth = s"tok_is_bracketed() == ${meta("nlpcraft:nlp:bracketed")}"),
@@ -70,42 +70,148 @@ class NCIdlFunctionsToken extends NCIdlFunctions {
             mkMeta(truth = s"tok_is_stopword() == ${meta("nlpcraft:nlp:stopword")}"),
             mkMeta(truth = s"tok_is_swear() == ${meta("nlpcraft:nlp:swear")}"),
             TestDesc(
-                truth = s"tok_is_user() == true",
-                token = tkn(id = "aa")
+                truth = s"tok_is_user()",
+                token = mkToken(id = "aa")
             ),
             TestDesc(
-                truth = s"tok_is_user() == false",
-                token = tkn(id = "nlpcraft:nlp")
+                truth = s"!tok_is_user()",
+                token = mkToken(id = "nlpcraft:nlp")
             ),
             mkMeta(truth = s"tok_is_wordnet() == ${meta("nlpcraft:nlp:dict")}"),
             TestDesc(
                 truth = s"tok_ancestors() == list('1', '2')",
-                token = tkn(ancestors = Seq("1", "2"))
+                token = mkToken(ancestors = Seq("1", "2"))
             ),
             TestDesc(
                 truth = s"tok_parent() == 'parentId'",
-                token = tkn(parentId = "parentId")
+                token = mkToken(parentId = "parentId")
             ),
             TestDesc(
                 truth = "tok_groups() == list('1', '2')",
-                token = tkn(groups = Seq("1", "2"))
+                token = mkToken(groups = Seq("1", "2"))
             ),
             TestDesc(
                 truth = "tok_value() == 'value'",
-                token = tkn(value = "value")
+                token = mkToken(value = "value")
             ),
             TestDesc(
                 truth = "tok_value() == null",
-                token = tkn()
+                token = mkToken()
             ),
             TestDesc(
                 truth = "tok_start_idx() == 123",
-                token = tkn(start = 123)
+                token = mkToken(start = 123)
             ),
             TestDesc(
                 truth = "tok_end_idx() == 123",
-                token = tkn(end = 123)
+                token = mkToken(end = 123)
             ),
-            TestDesc(truth = "tok_this() == tok_this()")
+            TestDesc(truth = "tok_this() == tok_this()", idlCtx = mkIdlContext())
         )
+
+    @Test
+    def testTokenFirstLast(): Unit = {
+        val tok = mkToken(id = "a")
+
+        tok.getMetadata.put("nlpcraft:nlp:index", 0)
+
+        test(
+            TestDesc(
+                truth = "tok_is_first()",
+                token = tok,
+                idlCtx = mkIdlContext(toks = Seq(tok))
+            ),
+            TestDesc(
+                truth = "tok_is_last()",
+                token = tok,
+                idlCtx = mkIdlContext(toks = Seq(tok))
+            )
+        )
+    }
+
+    @Test
+    def testTokenBeforeId(): Unit = {
+        val tok1 = mkToken(id = "1")
+        val tok2 = mkToken(id = "2")
+
+        tok1.getMetadata.put("nlpcraft:nlp:index", 0)
+        tok2.getMetadata.put("nlpcraft:nlp:index", 1)
+
+        test(
+            TestDesc(
+                truth = "tok_is_before_id('2')",
+                token = tok1,
+                idlCtx = mkIdlContext(Seq(tok1, tok2))
+            )
+        )
+    }
+
+    @Test
+    def testTokenAfterId(): Unit = {
+        val tok1 = mkToken(id = "1")
+        val tok2 = mkToken(id = "2")
+
+        tok1.getMetadata.put("nlpcraft:nlp:index", 0)
+        tok2.getMetadata.put("nlpcraft:nlp:index", 1)
+
+        test(
+            TestDesc(
+                truth = "tok_is_after_id('1')",
+                token = tok2,
+                idlCtx = mkIdlContext(Seq(tok1, tok2))
+            )
+        )
+    }
+
+    @Test
+    def testTokenCount(): Unit = {
+        val tok1 = mkToken(id = "1")
+        val tok2 = mkToken(id = "2")
+
+        test(
+            TestDesc(
+                truth = "tok_count() == 2",
+                token = tok2,
+                idlCtx = mkIdlContext(Seq(tok1, tok2))
+            )
+        )
+    }
+
+    @Test
+    def testTokenForAll(): Unit = {
+        val tok1 = mkToken(id = "1", parentId = "x")
+        val tok2 = mkToken(id = "2", groups = Seq("g", "z", "w"))
+        val tok3 = mkToken(id = "2")
+
+        test(
+            TestDesc(
+                truth = "size(tok_all_for_id('1')) == 1",
+                token = tok2,
+                idlCtx = mkIdlContext(Seq(tok1, tok2, tok3))
+            ),
+            TestDesc(
+                truth = "size(tok_all_for_parent('x')) == 1",
+                token = tok2,
+                idlCtx = mkIdlContext(Seq(tok1, tok2, tok3))
+            ),
+            TestDesc(
+                truth = "size(tok_all()) == 3",
+                token = tok2,
+                idlCtx = mkIdlContext(Seq(tok1, tok2, tok3))
+            ),
+            TestDesc(
+                truth = "tok_count() == size(tok_all())",
+                token = tok2,
+                idlCtx = mkIdlContext(Seq(tok1, tok2, tok3))
+            ),
+            TestDesc(
+                truth =
+                    "size(tok_all_for_group('g')) == 1 && " +
+                    "tok_id(first(tok_all_for_group('w'))) == '2' && " +
+                    "is_empty(tok_all_for_group('unknown'))",
+                token = tok2,
+                idlCtx = mkIdlContext(Seq(tok1, tok2, tok3))
+            )
+        )
+    }
 }

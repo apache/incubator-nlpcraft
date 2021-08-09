@@ -46,11 +46,11 @@ package org.apache.nlpcraft.model;
 public interface NCModel extends NCModelView, NCLifecycle {
     /**
      * A callback to accept or reject a parsed variant. This callback is called before any other
-     * callbacks at the beginning of the processing pipeline and it is called for each parsed variant.
+     * callbacks at the beginning of the processing pipeline, and it is called for each parsed variant.
      * <p>
      * Note that a given user input can have one or more possible different parsing variants. Depending on model
      * configuration a user input can produce hundreds or even thousands of parsing variants that can significantly slow
-     * down the overall processing. This method allows to filter out unnecessary parsing variants based on variety of
+     * down the overall processing. This method allows filtering out unnecessary parsing variants based on variety of
      * user-defined factors like number of tokens, presence of a particular token in the variant, etc.
      * <p>
      * By default, this method accepts all variants (returns {@code true}).

@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.models.stm.indexes
+package org.apache.nlpcraft.model.stm.indexes
 
 import org.apache.nlpcraft.model.{NCIntent, NCIntentMatch, NCResult, _}
-import org.apache.nlpcraft.models.stm.indexes.NCSpecModelAdapter.mapper
+import NCSpecModelAdapter.mapper
 import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
 import org.junit.jupiter.api.Test
 

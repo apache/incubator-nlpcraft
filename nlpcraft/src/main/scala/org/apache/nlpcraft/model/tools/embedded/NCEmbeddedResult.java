@@ -85,9 +85,9 @@ public interface NCEmbeddedResult extends NCMetadata {
     String getErrorMessage();
 
     /**
-     * Gets optional error code. One of the following codes:
+     * Gets optional error code.
      * <table class="dl-table">
-     * <caption>Error codes.</caption>
+     * <caption>Supported error codes:</caption>
      * <thead>
      *     <tr>
      *         <th>Code</th>

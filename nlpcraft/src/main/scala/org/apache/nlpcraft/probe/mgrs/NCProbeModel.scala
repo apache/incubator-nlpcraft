@@ -21,11 +21,18 @@ import org.apache.nlpcraft.model.intent.NCIdlIntent
 import org.apache.nlpcraft.model.intent.solver.NCIntentSolver
 import org.apache.nlpcraft.model.{NCElement, NCModel}
 
+case class NCProbeModelCallback(
+    origin: String,
+    className: String,
+    methodName: String
+)
+
 /**
   *
   * @param model
   * @param solver
   * @param intents
+  * @param callbacks
   * @param continuousSynonyms
   * @param sparseSynonyms
   * @param idlSynonyms
@@ -37,6 +44,7 @@ case class NCProbeModel(
     model: NCModel,
     solver: NCIntentSolver,
     intents: Seq[NCIdlIntent],
+    callbacks: Map[String /* Intent ID */, NCProbeModelCallback],
     continuousSynonyms: Map[String /*Element ID*/ , Map[Int /*Synonym length*/ , NCProbeSynonymsWrapper]], // Fast access map.
     sparseSynonyms: Map[String /*Element ID*/, Seq[NCProbeSynonym]],
     idlSynonyms: Map[String /*Element ID*/ , Seq[NCProbeSynonym]], // Fast access map.

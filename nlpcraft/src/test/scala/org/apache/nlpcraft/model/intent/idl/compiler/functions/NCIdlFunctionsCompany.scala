@@ -58,7 +58,7 @@ class NCIdlFunctionsCompany extends NCIdlFunctions {
     }
 
     private def test(comp: NCCompany): Unit = {
-        val idlCtx = ctx(reqComp = comp)
+        val idlCtx = mkIdlContext(reqComp = comp)
 
         def mkTestDesc(truth: String): TestDesc = TestDesc(truth = truth, idlCtx = idlCtx)
         def get(opt: Optional[String]): String = if (opt.isEmpty) null else s"'${opt.get()}'"
