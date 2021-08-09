@@ -74,6 +74,7 @@
         <!-- Major Scala version. -->
         <scala.base>2.13</scala.base>
         <java.ver>11</java.ver>
+        <python.ver>3.8</python.ver>
 
         <maven.build.timestamp.format>yyyy-MM-dd-HH-mm</maven.build.timestamp.format>
         <timestamp>${maven.build.timestamp}</timestamp>
@@ -137,7 +138,7 @@
         <fliptables.ver>1.1.0</fliptables.ver>
         <jline.ver>3.20.0</jline.ver>
         <jansi.ver>2.3.3</jansi.ver>
-        <os-lib.ver>0.7.8</os-lib.ver>
+        <codehaus.mojo.ver>3.0.0</codehaus.mojo.ver>
 
         <!--
             Following libraries versions are compatible:
@@ -168,6 +169,11 @@
             the end user, when required.
         -->
         <stanford.corenlp.ver>3.9.2</stanford.corenlp.ver>
+
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>${project.build.sourceEncoding}</project.reporting.outputEncoding>
+<!--        <java.version>11</java.version>-->
+        <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
     </properties>
 
     <dependencyManagement>
@@ -487,11 +493,6 @@
                 <classifier>models</classifier>
             </dependency>
 
-            <dependency>
-                <groupId>com.lihaoyi</groupId>
-                <artifactId>os-lib_2.11</artifactId>
-                <version>${os-lib.ver}</version>
-            </dependency>
 
             <!-- Test dependencies. -->
             <dependency>
@@ -602,6 +603,75 @@
                         <goals>
                             <goal>jar-no-fork</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>${codehaus.mojo.ver}</version>
+                <executions>
+                    <execution>
+                        <id>python-conda-verification</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>python3</executable>
+                            <arguments>
+                                <argument>${project.basedir}/nlpcraft/src/main/python/python_setup.py</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>create-py-dir</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>mkdir</executable>
+                            <arguments>
+                                <argument>-p</argument>
+                                <argument>${project.basedir}/.nlpcraft-python</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>setup-condaenv</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>conda</executable>
+                            <arguments>
+                                <argument>create</argument>
+                                <argument>-p</argument>
+                                <argument>${project.basedir}/.nlpcraft-python/nlpcraft-condaenv</argument>
+                                <argument>python=${python.ver}</argument>
+                                <argument>-y</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>install-py-dependencies</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>${project.basedir}/.nlpcraft-python/nlpcraft-condaenv/bin/python3</executable>
+                            <arguments>
+                                <argument>-m</argument>
+                                <argument>pip</argument>
+                                <argument>install</argument>
+                                <argument>-r</argument>
+                                <argument>${project.basedir}/nlpcraft/src/main/python/requirements.txt</argument>
+                            </arguments>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

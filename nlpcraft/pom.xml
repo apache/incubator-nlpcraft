@@ -232,10 +232,6 @@
             <groupId>org.jline</groupId>
             <artifactId>jline</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.lihaoyi</groupId>
-            <artifactId>os-lib_2.11</artifactId>
-        </dependency>
 
         <!-- Test dependencies. -->
         <dependency>
@@ -554,6 +550,15 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>${codehaus.mojo.ver}</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
             </plugin>
         </plugins>
     </build>
