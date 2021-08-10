@@ -1663,13 +1663,13 @@ object NCDeployManager extends NCService {
         }
 
         // Process @NCModelAddClasses annotation.
-        scanAdditionalClasses(CLS_MDL_CLS_REF, (a: NCModelAddClasses) => a.value())
+        scanAdditionalClasses(CLS_MDL_CLS_REF, (a: NCModelAddClasses) => a.value().toIndexedSeq)
 
         // Process @NCModelAddPackages annotation.
         scanAdditionalClasses(
             CLS_MDL_PKGS_REF,
             (a: NCModelAddPackage) =>
-                a.value().flatMap(p => {
+                a.value().toIndexedSeq.flatMap(p => {
                     if (cl.getDefinedPackage(p) == null)
                         throw new NCE(
                             s"Invalid additional references in @${CLS_MDL_PKGS_REF.getSimpleName} annotation [" +
