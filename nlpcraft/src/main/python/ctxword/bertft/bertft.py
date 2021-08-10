@@ -19,16 +19,18 @@ import logging
 import operator
 import time
 from pathlib import Path
+import os
 
 import fasttext.util
 import torch
 from transformers import AutoModelWithLMHead, AutoTokenizer
 
-from .utils import ROOT_DIR
+from .utils import ROOT_DIR, download_file, gunzip
 
 """
 Main class for processing sentences and predicting words 
 """
+print(f"BERT ROOT DIR: {ROOT_DIR}")
 
 
 class Pipeline:
@@ -47,6 +49,20 @@ class Pipeline:
         else:
             self.log.warning("CUDA is not available for Torch.")
             self.device = torch.device('cpu')
+
+        # TODO: Make this configurable
+        DEFAULT_MODEL = 'cc.en.300.bin'
+        DEFAULT_MODEL_PATH_ZIP = os.path.join(ROOT_DIR, 'data', 'cc.en.300.bin.gz')
+        DEFAULT_MODEL_PATH = os.path.join(ROOT_DIR, 'data', DEFAULT_MODEL)
+
+        if not os.path.isfile(DEFAULT_MODEL_PATH_ZIP):
+            self.log.debug(f'Default model not found. Downloading {DEFAULT_MODEL}')
+            download_file(dl_url='https://dl.fbaipublicfiles.com/fasttext/vectors-crawl/cc.en.300.bin.gz',
+                          save_path=DEFAULT_MODEL_PATH_ZIP)
+
+        if os.path.isfile(DEFAULT_MODEL_PATH_ZIP) and not os.path.isfile(DEFAULT_MODEL_PATH):
+            self.log.debug(f'Default model zip file found. Gzip decompressing: {DEFAULT_MODEL}')
+            gunzip(source_filepath=DEFAULT_MODEL_PATH_ZIP, dest_filepath=DEFAULT_MODEL_PATH)
 
         start_time = time.time()
         # ft_size = 100 # ~2.6 GB
