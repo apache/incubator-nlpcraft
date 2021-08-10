@@ -287,7 +287,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
     /**
       * Checks operation permissions and gets user ID.
       *
-      * @param acsUsr Currently signed in user.
+      * @param acsUsr Currently signed-in user.
       * @param usrIdOpt User ID. Optional.
       * @param usrExtIdOpt User 'on-behalf-of' external ID. Optional.
       */

@@ -1099,7 +1099,7 @@ object NCProbeManager extends NCService {
       * @param holder
       * @param parent
       */
-    private def processModelDataRequest(
+    private def processModelInfoRequest(
         mdlId: String, msg: NCProbeMessage, holder: ConcurrentHashMap[String, Promise[JavaMeta]], parent: Span = null
     ): Future[JavaMeta] = {
         val p = Promise[JavaMeta]()
@@ -1109,6 +1109,7 @@ object NCProbeManager extends NCService {
                 holder.put(msg.getGuid, p)
 
                 sendToProbe(probe.probeKey, msg, parent)
+
             case None =>
                 p.failure(new NCE(s"Probe not found for model: '$mdlId''"))
         }
@@ -1124,7 +1125,7 @@ object NCProbeManager extends NCService {
       */
     def getModelSynonymsInfo(mdlId: String, parent: Span = null): Future[JavaMeta] =
         startScopedSpan("getModelSynonymsInfo", parent, "mdlId" -> mdlId) { _ =>
-            processModelDataRequest(
+            processModelInfoRequest(
                 mdlId,
                 NCProbeMessage("S2P_MODEL_SYNS_INFO", "mdlId" -> mdlId),
                 modelsSynsInfo,
@@ -1141,7 +1142,7 @@ object NCProbeManager extends NCService {
       */
     def getModelElementInfo(mdlId: String, elmId: String, parent: Span = null): Future[JavaMeta] =
         startScopedSpan("getModelElementInfo", parent, "mdlId" -> mdlId, "elmId" -> elmId) { _ =>
-            processModelDataRequest(
+            processModelInfoRequest(
                 mdlId,
                 NCProbeMessage("S2P_MODEL_ELEMENT_INFO", "mdlId" -> mdlId, "elmId" -> elmId),
                 modelElmsInfo,
@@ -1178,7 +1179,7 @@ object NCProbeManager extends NCService {
 
     def getModelInfo(mdlId: String, parent: Span = null): Future[JavaMeta] =
         startScopedSpan("getModelInfo", parent, "mdlId" -> mdlId) { _ =>
-            processModelDataRequest(
+            processModelInfoRequest(
                 mdlId,
                 NCProbeMessage("S2P_MODEL_INFO", "mdlId" -> mdlId),
                 modelsInfo,

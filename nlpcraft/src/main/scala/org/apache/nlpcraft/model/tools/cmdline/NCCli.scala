@@ -36,6 +36,7 @@ import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.module.NCModule
 import org.apache.nlpcraft.model.tools.cmdline.NCCliCommands._
 import org.apache.nlpcraft.model.tools.cmdline.NCCliRestSpec._
+import org.apache.nlpcraft.model.tools.test.NCTestAutoModelValidator
 import org.jline.reader._
 import org.jline.reader.impl.DefaultParser
 import org.jline.reader.impl.DefaultParser.Bracket
@@ -471,6 +472,7 @@ object NCCli extends NCCliBase {
                 tbl += (s"${g("info-server")}", "Get server information.")
                 tbl += (s"${g("ping-server")}", "Ping the server.")
                 tbl += (s"${g("tail-server")}", "Tail the server log.")
+                tbl += (s"${g("info")}", "Get server & probe information.")
 
                 logln(s"Handy commands:\n${tbl.toString}")
             }
@@ -585,6 +587,7 @@ object NCCli extends NCCliBase {
             case Some(opts) => U.splitTrimFilter(U.trimQuotes(opts), " ")
             case None => Seq("-ea", "-Xms1024m")
         }
+        val intIds = getParamOpt(args, "intents")
 
         val jvmArgs = mutable.ArrayBuffer.empty[String]
 
@@ -595,10 +598,13 @@ object NCCli extends NCCliBase {
         jvmArgs ++= jvmOpts
 
         if (cfgPath != null)
-            jvmArgs += s"-DNLPCRAFT_PROBE_CONFIG=$cfgPath"
+            jvmArgs += s"-D${NCTestAutoModelValidator.PROP_PROBE_CFG}=$cfgPath"
 
         if (mdls.nonEmpty)
-            jvmArgs += s"-DNLPCRAFT_TEST_MODELS=$mdls"
+            jvmArgs += s"-D${NCTestAutoModelValidator.PROP_MODELS}=$mdls"
+
+        if (intIds.isDefined)
+            jvmArgs += s"-D${NCTestAutoModelValidator.PROP_INTENT_IDS}=${intIds.get}"
 
         if (!NCAnsi.isEnabled)
             jvmArgs += "-DNLPCRAFT_ANSI_COLOR_DISABLED=true"
@@ -774,6 +780,9 @@ object NCCli extends NCCliBase {
                 val tbl = new NCAsciiTable()
 
                 tbl += (s"${g(STOP_PRB_CMD.name)}", "Stop the probe.")
+                tbl += (s"${g("restart-probe")}", "Restart the probe.")
+                tbl += (s"${g("test-model")}", "Auto test the model.")
+                tbl += (s"${g("tail-probe")}", "Tail the probe log.")
                 tbl += (s"${g("info")}", "Get server & probe information.")
 
                 logln(s"Handy commands:\n${tbl.toString}")
@@ -1441,7 +1450,7 @@ object NCCli extends NCCliBase {
 
         val logPath = if (beacon.logPath != null) g(beacon.logPath) else y("<not available>")
         val jarsFolder = if (beacon.jarsFolder != null) g(beacon.jarsFolder) else y("<not set>")
-        val mdlSeq = beacon.modelsSeq.map(s => g(s.strip))
+        val mdlSeq = beacon.modelsSeq.map(s => m(s.strip))
 
         tbl += ("PID", s"${g(beacon.pid)}")
         tbl += ("Version", s"${g(beacon.ver)} released on ${g(beacon.relDate)}")
@@ -1508,9 +1517,9 @@ object NCCli extends NCCliBase {
             val tbl = new NCAsciiTable()
 
             tbl += (s"${g("Email")}", state.userEmail.get)
-            tbl += (s"${g("Access token")}", state.accessToken.get)
+            tbl += (s"${g("Access token")}", b(state.accessToken.get))
 
-            logln(s"Signed in user account:\n$tbl")
+            logln(s"Signed-in user account:\n$tbl")
         }
     }
 
@@ -2813,7 +2822,7 @@ object NCCli extends NCCliBase {
                 if (!wasLastLineEmpty)
                     reader.printAbove("\n" + prompt1 + ":" + prompt2 + ":" + prompt3 + ":" + prompt4)
 
-                reader.readLine(s"${g(">")} ")
+                reader.readLine(s"${g(bo(">"))} ")
             }
             catch {
                 case _: UserInterruptException => "" // Ignore.
@@ -2927,7 +2936,7 @@ object NCCli extends NCCliBase {
      * Prints out the version and copyright title header.
      */
     private def title(): Unit = {
-        logln(U.asciiLogo())
+        logln(U.asciiLogo8Bit())
         logln(s"$NAME ver. ${VER.version}")
         logln()
         logln(s"Docs: ${g("nlpcraft.apache.org")}")
@@ -3195,7 +3204,20 @@ object NCCli extends NCCliBase {
 
                     execOsCmd(if (head.isEmpty) tail else head :: tail)
                 }
-                else {
+                else if (args.head.head == '@') {
+                    if (!repl)
+                        throw new IllegalStateException("This syntax is only available in REPL mode.")
+
+                    // A shortcut for the 'ask' command.
+                    ASK_CMD.body(
+                        ASK_CMD,
+                        Seq(
+                            Argument(ASK_CMD.params.find(_.id == "txt").get,
+                            Some(args.head.tail.strip + " " + args.tail.mkString(" ")))
+                        ),
+                        repl
+                    )
+                } else {
                     // Process 'no-ansi' and 'ansi' commands first.
                     processAnsi(args, repl)
 

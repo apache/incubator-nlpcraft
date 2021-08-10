@@ -21,7 +21,8 @@ import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.model.tools.embedded.NCEmbeddedProbe
-import org.apache.nlpcraft.model.tools.test.{NCTestAutoModelValidator, NCTestClientBuilder}
+import org.apache.nlpcraft.model.tools.test.NCTestClientBuilder
+import org.apache.nlpcraft.model.tools.test.NCTestAutoModelValidator._
 import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 
 import scala.jdk.CollectionConverters.SeqHasAsJava
@@ -30,16 +31,13 @@ import scala.jdk.CollectionConverters.SeqHasAsJava
   * Implementation for `NCTestAutoModelValidator` class.
   */
 private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
-    private final val PROP_PROBE_CFG = "NLPCRAFT_PROBE_CONFIG"
-
     /**
      *
      * @throws Exception Thrown in case of any errors.
      * @return
      */
-    @throws[Exception]
     def isValid: Boolean = {
-        val prop = NCTestAutoModelValidator.PROP_MODELS
+        val prop = PROP_MODELS
 
         val classes = U.sysEnv(prop) match {
             case Some(s) => U.splitTrimFilter(s, ",")
@@ -49,10 +47,14 @@ private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
                 null
         }
         val cfgFile = U.sysEnv(PROP_PROBE_CFG).orNull
+        val intentIds = U.sysEnv(PROP_INTENT_IDS).flatMap(s => Some(s.split(",").map(_.strip).toSeq))
 
         if (NCEmbeddedProbe.start(cfgFile, classes.asJava))
             try
-                process(NCModelManager.getAllModels().map(p => p.model.getId -> p.samples.toMap).toMap.filter(_._2.nonEmpty))
+                process(
+                    NCModelManager.getAllModels().map(p => p.model.getId -> p.samples.toMap).toMap.filter(_._2.nonEmpty),
+                    intentIds
+                )
             finally
                 NCEmbeddedProbe.stop()
         else
@@ -62,9 +64,13 @@ private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
     /**
       *
       * @param samples
+      * @param intentIds
       * @return
       */
-    private def process(samples: Map[/*Model ID*/String, Map[String/*Intent ID*/, Seq[Seq[String]]/*Samples*/]]): Boolean = {
+    private def process(
+        samples: Map[/*Model ID*/String, Map[String/*Intent ID*/, Seq[Seq[String]]/*Samples*/]],
+        intentIds: Option[Seq[String]]
+    ): Boolean = {
         case class Result(
             modelId: String,
             intentId: String,
@@ -100,12 +106,15 @@ private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
                     cli.close()
             }
 
-            for ((intentId, seq) <- samples; txts <- seq)  yield ask(intentId, txts)
-        }.flatten.toList
+            intentIds match {
+                case Some(ids) => for ((intentId, seq) <- samples if ids.contains(intentId); txts <- seq) yield ask(intentId, txts)
+                case None => for ((intentId, seq) <- samples; txts <- seq) yield ask(intentId, txts)
+            }
+        }.flatMap(_.toSeq)
 
         val tbl = NCAsciiTable()
 
-        tbl #= ("Model ID", "Intent ID", "+/-", "Text", "Error", "Execution time, ms.")
+        tbl #= ("Model ID", "Intent ID", "+/-", "Text", "Error", "ms.")
 
         for (res <- results)
             tbl += (
@@ -116,7 +125,7 @@ private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
                 res.error.getOrElse(""),
                 res.time
             )
-        
+
         val passCnt = results.count(_.pass)
         val failCnt = results.count(!_.pass)
         

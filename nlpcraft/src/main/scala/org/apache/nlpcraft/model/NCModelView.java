@@ -34,112 +34,112 @@ import java.util.*;
  */
 public interface NCModelView extends NCMetadata {
     /**
-     * Min value for {@link #getConversationTimeout()} method.
+     * Minimum value for {@link #getConversationTimeout()} method.
      */
     long CONV_TIMEOUT_MIN = 0L;
 
     /**
-     * Max value for {@link #getConversationTimeout()} method.
+     * Maximum value for {@link #getConversationTimeout()} method.
      */
     long CONV_TIMEOUT_MAX = Long.MAX_VALUE;
 
     /**
-     * Min value for {@link #getMaxUnknownWords()} method.
+     * Minimum value for {@link #getMaxUnknownWords()} method.
      */
     long MAX_UNKNOWN_WORDS_MIN = 0L;
 
     /**
-     * Max value for {@link #getMaxUnknownWords()} method.
+     * Maximum value for {@link #getMaxUnknownWords()} method.
      */
     long MAX_UNKNOWN_WORDS_MAX = Long.MAX_VALUE;
 
     /**
-     * Min value for {@link #getMaxFreeWords()} method.
+     * Minimum value for {@link #getMaxFreeWords()} method.
      */
     long MAX_FREE_WORDS_MIN = 0L;
 
     /**
-     * Max value for {@link #getMaxFreeWords()} method.
+     * Maximum value for {@link #getMaxFreeWords()} method.
      */
     long MAX_FREE_WORDS_MAX = Long.MAX_VALUE;
 
     /**
-     * Min value for {@link #getMaxSuspiciousWords()} method.
+     * Minimum value for {@link #getMaxSuspiciousWords()} method.
      */
     long MAX_SUSPICIOUS_WORDS_MIN = 0L;
 
     /**
-     * Max value for {@link #getMaxSuspiciousWords()} method.
+     * Maximum value for {@link #getMaxSuspiciousWords()} method.
      */
     long MAX_SUSPICIOUS_WORDS_MAX = Long.MAX_VALUE;
 
     /**
-     * Min value for {@link #getMinWords()} method.
+     * Minimum value for {@link #getMinWords()} method.
      */
     long MIN_WORDS_MIN = 1L;
 
     /**
-     * Max value for {@link #getMinWords()} method.
+     * Maximum value for {@link #getMinWords()} method.
      */
     long MIN_WORDS_MAX = Long.MAX_VALUE;
 
     /**
-     * Min value for {@link #getMinNonStopwords()} method.
+     * Minimum value for {@link #getMinNonStopwords()} method.
      */
     long MIN_NON_STOPWORDS_MIN = 0L;
 
     /**
-     * Max value for {@link #getMinNonStopwords()} method.
+     * Maximum value for {@link #getMinNonStopwords()} method.
      */
     long MIN_NON_STOPWORDS_MAX = Long.MAX_VALUE;
 
     /**
-     * Min value for {@link #getMinTokens()} method.
+     * Minimum value for {@link #getMinTokens()} method.
      */
     long MIN_TOKENS_MIN = 0L;
 
     /**
-     * Max value for {@link #getMinTokens()} method.
+     * Maximum value for {@link #getMinTokens()} method.
      */
     long MIN_TOKENS_MAX = Long.MAX_VALUE;
 
     /**
-     * Min value for {@link #getMaxTokens()} method.
+     * Minimum value for {@link #getMaxTokens()} method.
      */
     long MAX_TOKENS_MIN = 0L;
 
     /**
-     * Max value for {@link #getMaxTokens()} method.
+     * Maximum value for {@link #getMaxTokens()} method.
      */
     long MAX_TOKENS_MAX = 100L;
 
     /**
-     * Min value for {@link #getMaxWords()} method.
+     * Minimum value for {@link #getMaxWords()} method.
      */
     long MAX_WORDS_MIN = 1L;
 
     /**
-     * Max value for {@link #getMaxWords()} method.
+     * Maximum value for {@link #getMaxWords()} method.
      */
     long MAX_WORDS_MAX = 100L;
 
     /**
-     * Min value for {@link #getMaxElementSynonyms()} method.
+     * Minimum value for {@link #getMaxElementSynonyms()} method.
      */
     long MAX_SYN_MIN = 1L;
 
     /**
-     * Max value for {@link #getMaxElementSynonyms()} method.
+     * Maximum value for {@link #getMaxElementSynonyms()} method.
      */
     long MAX_SYN_MAX = Long.MAX_VALUE;
 
     /**
-     * Min value for {@link #getConversationDepth()} method.
+     * Minimum value for {@link #getConversationDepth()} method.
      */
     long CONV_DEPTH_MIN = 1L;
 
     /**
-     * Max value for {@link #getConversationDepth()} method.
+     * Maximum value for {@link #getConversationDepth()} method.
      */
     long CONV_DEPTH_MAX = Long.MAX_VALUE;
 
@@ -390,9 +390,9 @@ public interface NCModelView extends NCMetadata {
 
     /**
      * Gets maximum number of unknown words until automatic rejection. An unknown word is a word
-     * that is not part of Princeton WordNet database. If you expect a very formalized and well
-     * defined input without uncommon slang and abbreviations you can set this to a small number
-     * like one or two. However, in most cases we recommend to leave it as default or set it to a larger
+     * that is not part of Princeton WordNet database. If you expect a very formalized and well-defined
+     * input without uncommon slang and abbreviations you can set this to a small number
+     * like one or two. However, in most cases we recommend leaving it as default or set it to a larger
      * number like five or more.
      * <p>
      * <b>Default</b>
@@ -588,7 +588,7 @@ public interface NCModelView extends NCMetadata {
 
     /**
      * Whether to allow non-English language in user input.
-     * Currently, only English language is supported. However, model can choose whether or not
+     * Currently, only English language is supported. However, model can choose whether
      * to automatically reject user input that is detected to be a non-English. Note that current
      * algorithm only works reliably on longer user input (10+ words). On short sentences it will
      * often produce an incorrect result.
@@ -791,7 +791,7 @@ public interface NCModelView extends NCMetadata {
     }
 
     /**
-     * Whether this model elements allows non-stop words gaps in their multi-word synonyms.
+     * Whether this model elements allow non-stop words gaps in their multi-word synonyms.
      * This property is closely related to {@link #isPermutateSynonyms()} which are typically changed together.
      * Note that individual model elements can override this property using {@link NCElement#isSparse()}
      * method.
@@ -987,7 +987,7 @@ public interface NCModelView extends NCMetadata {
      * that will be automatically recognized in the user input. See also {@link NCModel#getParsers()} method on how
      * to provide programmatic named entity recognizer (NER) implementations.
      * <p>
-     * Note that unless model elements are loaded dynamically it is highly recommended to declare model
+     * Note that unless model elements are loaded dynamically it is highly recommended declaring model
      * elements in the external JSON/YAML model configuration (under <code>elements</code> property):
      * <pre class="brush: js">
      * {
@@ -1195,7 +1195,7 @@ public interface NCModelView extends NCMetadata {
      * Gets an optional map of restricted named entity combinations (linkage). Returned map is a map of entity ID to a set
      * of other entity IDs, with each key-value pair defining the restricted combination. Restricting certain entities
      * from being linked (or referenced) by some other entities allows reducing "wasteful" parsing variant
-     * generation. For example, it we know that entity with ID "adjective" cannot be sorted, we can restrict it
+     * generation. For example, if we know that entity with ID "adjective" cannot be sorted, we can restrict it
      * from being linked with <code>nlpcraft:limit</code> and <code>nlpcraft:sort</code> entities to reduce the
      * amount of parsing variants being generated.
      * <p>

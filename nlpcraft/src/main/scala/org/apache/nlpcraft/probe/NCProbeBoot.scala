@@ -438,7 +438,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
 
         println(
             U.NL +
-            U.asciiLogo() +
+            U.asciiLogo8Bit() +
             s"${U.NL}" +
             s"Embedded Data Probe${U.NL}" +
             s"Version: ${bo(ver.version)}${U.NL}" +
@@ -460,7 +460,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
         tbl += (s"${B}Down-Link$RST", cfg.downLinkString)
         tbl += (s"${B}Up-Link$RST", cfg.upLinkString)
         tbl += (s"${B}Lifecycle$RST", cfg.lifecycle)
-        tbl += (s"${B}Models (${cfg.modelsSeq.size})$RST", cfg.modelsSeq)
+        tbl += (s"${B}Models (${cfg.modelsSeq.size})$RST", cfg.modelsSeq.map(c(_)))
         tbl += (s"${B}JARs Folder$RST", cfg.jarsFolder.getOrElse(""))
 
         tbl.info(logger, Some("Probe Configuration:"))

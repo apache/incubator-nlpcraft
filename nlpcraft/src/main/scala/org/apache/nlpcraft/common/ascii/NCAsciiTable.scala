@@ -109,12 +109,12 @@ class NCAsciiTable {
     )
 
     // Table drawing symbols.
-    private val HDR_HOR = c("=")
-    private val HDR_VER = c("|")
-    private val HDR_CRS = bo(c("+"))
-    private val ROW_HOR = c("-")
-    private val ROW_VER = c("|")
-    private val ROW_CRS = bo(c("+"))
+    private val HDR_HOR = ansi256Fg(105, "=")
+    private val HDR_VER = ansi256Fg(105, "|")
+    private val HDR_CRS = ansi256Fg(99, "+")
+    private val ROW_HOR = ansi256Fg(39, "-")
+    private val ROW_VER = ansi256Fg(39, "|")
+    private val ROW_CRS = ansi256Fg(202, "+")
 
     // Headers & rows.
     private var hdr = IndexedSeq.empty[Cell]
@@ -136,7 +136,7 @@ class NCAsciiTable {
      * Global Flag indicating whether of not to automatically draw horizontal lines
      * for multiline rows.
      */
-    var autoBorder = true
+    var multiLineAutoBorder = true
 
     /**
      * If lines exceeds the style's maximum width it will be broken up
@@ -492,8 +492,8 @@ class NCAsciiTable {
         // At this point all rows in the table have the
         // the same number of columns.
 
-        val colWs = new Array[Int](colsNum) // Column widths.
-        val rowHs = new Array[Int](rows.length) // Row heights.
+        val colWidths = new Array[Int](colsNum) // Column widths.
+        val rowHeights = new Array[Int](rows.length) // Row heights.
 
         // Header height.
         var hdrH = 0
@@ -502,7 +502,7 @@ class NCAsciiTable {
         for (i <- hdr.indices) {
             val c = hdr(i)
 
-            colWs(i) = c.width
+            colWidths(i) = c.width
 
             hdrH = math.max(hdrH, c.height)
         }
@@ -511,12 +511,12 @@ class NCAsciiTable {
         for (i <- rows.indices; j <- 0 until colsNum) {
             val c = rows(i)(j)
 
-            rowHs(i) = math.max(rowHs(i), c.height)
-            colWs(j) = math.max(colWs(j), c.width)
+            rowHeights(i) = math.max(rowHeights(i), c.height)
+            colWidths(j) = math.max(colWidths(j), c.width)
         }
 
         // Table width without the border.
-        val tableW = colWs.sum + colsNum - 1
+        val tableW = colWidths.sum + colsNum - 1
 
         val tbl = new StringBuilder
 
@@ -545,9 +545,9 @@ class NCAsciiTable {
                     val c = hdr(j)
 
                     if (i >= 0 && i < c.height)
-                        tbl ++= aligned(c.lines(i), colWs(j), c.style)
+                        tbl ++= aligned(c.lines(i), colWidths(j), c.style)
                     else
-                        tbl ++= space(colWs(j))
+                        tbl ++= space(colWidths(j))
 
                     tbl ++= s"$HDR_VER" // '|'
                 }
@@ -561,34 +561,33 @@ class NCAsciiTable {
         else
             tbl ++= mkAsciiLine(ROW_CRS, ROW_HOR)
 
+        val tblWidthLine = s"${space(margin.left)}$ROW_CRS${dash(ROW_HOR, tableW)}$ROW_CRS${space(margin.right)}\n"
+
         // Print rows, if any.
         if (rows.nonEmpty) {
-            val horLine = (i: Int) => {
+            val addHorLine = (i: Int) => {
                 // Left margin and '+'
                 tbl ++= s"${space(margin.left)}$ROW_CRS"
 
                 for (k <- rows(i).indices)
-                    tbl ++= s"${dash(ROW_HOR, colWs(k))}$ROW_CRS"
+                    tbl ++= s"${dash(ROW_HOR, colWidths(k))}$ROW_CRS"
 
                 // Right margin.
                 tbl ++= s"${space(margin.right)}\n"
             }
 
             for (i <- rows.indices) {
-                val r = rows(i)
+                val row = rows(i)
 
-                val rowH = rowHs(i)
-
-                if (i > 0 && ((rowH > 1 && autoBorder) || insideBorder) && rowHs(i - 1) == 1)
-                    horLine(i)
+                val rowH = rowHeights(i)
 
                 for (j <- 0 until rowH) {
                     // Left margin and '|'
                     tbl ++= s"${space(margin.left)}$ROW_VER"
 
-                    for (k <- r.indices) {
-                        val c = r(k)
-                        val w = colWs(k)
+                    for (k <- row.indices) {
+                        val c = row(k)
+                        val w = colWidths(k)
 
                         if (j < c.height)
                             tbl ++= aligned(c.lines(j), w, c.style)
@@ -602,11 +601,11 @@ class NCAsciiTable {
                     tbl ++= s"${space(margin.right)}\n"
                 }
 
-                if (i < rows.size - 1 && ((rowH > 1 && autoBorder) || insideBorder))
-                    horLine(i)
+                if (i < rows.size - 1 && ((rowH > 1 && multiLineAutoBorder) || insideBorder))
+                    addHorLine(i)
             }
 
-            tbl ++= s"${space(margin.left)}$ROW_CRS${dash(ROW_HOR, tableW)}$ROW_CRS${space(margin.right)}\n"
+            tbl ++= tblWidthLine
         }
 
         // Bottom margin.
