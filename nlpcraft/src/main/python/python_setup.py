@@ -45,31 +45,10 @@ try:
     conda_version: str = subprocess.run(['conda', '-V'], stdout=subprocess.PIPE).stdout.decode('utf-8').split()[1][:4]
     # Checking conda version
     if float(conda_version) < nc_setup_conf['MIN_CONDA_VERSION']:
-        raise RuntimeError(f'Invalid conda version. The version you have is {float(conda_version)} .'
+        raise SystemExit(f'[ERROR] Invalid conda version. The version you have is {float(conda_version)} .'
                            'See requirements: https://nlpcraft.apache.org/download.html')
 except FileNotFoundError:
-    raise ModuleNotFoundError('Conda is not installed. See requirements: https://nlpcraft.apache.org/download.html')
+    raise SystemExit('[ERROR] Conda is not installed. See requirements: https://nlpcraft.apache.org/download.html')
 except Exception as err:
-    logger.critical('Conda verification failure.')
-    logger.error(err)
+    raise SystemExit(f'[ERROR] Conda verification error. See requirements: https://nlpcraft.apache.org/download.html')
 
-
-# # TODO: log the output of conda create into the log file
-# logger.info('Conda environment creation starting...')
-# subprocess.call(['conda', 'create', '-p', nc_setup_conf['CONDA_ENV_PATH'],
-#                 f"python={py_config['python_version']}", '-y'], stdout=subprocess.PIPE)
-
-# import sys
-# with open('nlpcraft_python.log', 'wb') as f:
-#     process = subprocess.Popen(['conda', 'create', '-p', nc_setup_conf['CONDA_ENV_PATH'],
-#                                 f"python={py_config['python_version']}"], stdout=subprocess.PIPE)
-    # for c in iter(lambda: process.stdout.read(1), b''):
-    #     sys.stdout.buffer.write(c)
-    #     f.buffer.write(c)
-
-#
-# # TODO: log the output of python dependency installation into the log file
-# logger.info('Installing python dependencies...')
-# subprocess.run([nc_setup_conf['NLPCRAFT_PYTHON3'], '-m', 'pip', 'install', '-r', nc_setup_conf['PY_REQUIREMENTS_PATH']])
-#
-# logger.info('Python environment setup successful.')
