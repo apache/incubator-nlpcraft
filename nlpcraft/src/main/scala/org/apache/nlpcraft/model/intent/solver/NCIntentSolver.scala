@@ -145,7 +145,7 @@ class NCIntentSolver(intents: List[(NCIdlIntent/*Intent*/, NCIntentMatch => NCRe
                 if (cbRes.getIntentId == null)
                     cbRes.setIntentId(res.intentId)
                     
-                logger.info(s"Intent '${res.intentId}' for variant #${res.variantIdx + 1} selected as the ${g(bo("'best match'"))}.")
+                logger.info(s"Intent '${res.intentId}' for variant #${res.variantIdx + 1} selected as the ${g(bo("<|best match|>"))}.")
 
                 NCDialogFlowManager.addMatchedIntent(
                     intentMatch,

@@ -22,6 +22,7 @@ import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.nlp.NCNlpSentence
 import org.apache.nlpcraft.common.{NCService, _}
+import org.apache.nlpcraft.model.intent.NCIdlIntent
 import org.apache.nlpcraft.model.{NCCustomParser, NCElement, NCModelView, NCToken, NCValue, NCValueLoader}
 import org.apache.nlpcraft.probe.mgrs.NCProbeMessage
 import org.apache.nlpcraft.probe.mgrs.conn.NCConnectionManager
@@ -200,9 +201,23 @@ object NCCommandManager extends NCService {
                             mkMsg = () => {
                                 val mdlId = msg.data[String]("mdlId")
 
-                                val mdl = NCModelManager.getModel(mdlId).model
+                                val probeMdl = NCModelManager.getModel(mdlId)
+                                val mdl = probeMdl.model
 
-                                val jsonMdl: NCModelView =
+                                case class IntentInfo(
+                                    intentId: String,
+                                    intentIdl: String,
+                                    intentOrigin: String,
+                                    callback: String
+                                )
+
+                                case class ModelInfo(
+                                    model: NCModelView,
+                                    intentsCnt: Int,
+                                    intents: Seq[IntentInfo]
+                                )
+
+                                val mdlView: NCModelView =
                                     new NCModelView {
                                         // As is.
                                         override def getId: String = mdl.getId
@@ -256,7 +271,7 @@ object NCCommandManager extends NCService {
                                                 def getSparse: lang.Boolean
                                             }
 
-                                            val eJs: NCElement =
+                                            val elm: NCElement =
                                                 new NCElementJs {
                                                     // As is.
                                                     override def getId: String = e.getId
@@ -275,19 +290,32 @@ object NCCommandManager extends NCService {
                                                     override def isSparse: Optional[lang.Boolean] = null
 
                                                     // Wrapped.
-                                                    override def getPermutateSynonyms: lang.Boolean =
-                                                        e.isPermutateSynonyms.orElse(null)
-                                                    override def getSparse: lang.Boolean =
-                                                        e.isSparse.orElse(null)
+                                                    override def getPermutateSynonyms: lang.Boolean = e.isPermutateSynonyms.orElse(null)
+                                                    override def getSparse: lang.Boolean = e.isSparse.orElse(null)
                                                 }
-                                            eJs
+                                            elm
                                         }).asJava
                                     }
+
+                                val mdlInfo = ModelInfo(
+                                    model = mdlView,
+                                    intentsCnt = probeMdl.intents.size,
+                                    probeMdl.intents.map((intent: NCIdlIntent) => {
+                                        val cb = probeMdl.callbacks.get(intent.id)
+
+                                        IntentInfo(
+                                            intentId = intent.id,
+                                            intentIdl = intent.idl,
+                                            intentOrigin = intent.origin,
+                                            callback = if (cb.isDefined) s"${cb.get.className}#${cb.get.methodName}(...)" else null
+                                        )
+                                    })
+                                )
 
                                 NCProbeMessage(
                                     "P2S_MODEL_INFO",
                                     "reqGuid" -> msg.getGuid,
-                                    "resp" -> JS_MAPPER.writeValueAsString(jsonMdl)
+                                    "resp" -> JS_MAPPER.writeValueAsString(mdlInfo)
                                 )
                             },
                             mkErrorMsg = e =>

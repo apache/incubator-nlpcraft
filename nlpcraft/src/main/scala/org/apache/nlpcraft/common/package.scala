@@ -43,24 +43,29 @@ package object common {
     final val TOK_META_ALIASES_KEY = "__NLPCRAFT_TOK_META_ALIASES"
     final val MDL_META_MODEL_CLASS_KEY = "__NLPCRAFT_MDL_CLASS_NAME"
 
-    def G: String = ansiGreenFg
-    def M: String = ansiMagentaFg
-    def R: String = ansiRedFg
+    // Re-route to 8-bit colors.
+    def G: String = ansi256Fg(34)
+    def M: String = ansi256Fg(177)
+    def R: String = ansi256Fg(202)
+
     def C: String = ansiCyanFg
     def Y: String = ansiYellowFg
-    def W: String = ansiWhiteFg
+    def W: String = ansi256Fg(231)
     def B: String = ansiBlueFg
-    def BO: String = ansiBold
     def K: String = ansiBlackFg
-    def GB: String = ansiGreenBg
-    def MB: String = ansiMagentaBg
-    def RB: String = ansiRedBg
+
+    def GB: String = ansi256Bg(34)
+    def MB: String = ansi256Bg(177)
+    def RB: String = ansi256Bg(202)
     def CB: String = ansiCyanBg
     def YB: String = ansiYellowBg
     def WB: String = ansiWhiteBg
     def BB: String = ansiBlueBg
     def KB: String = ansiBlackBg
+
+    def BO: String = ansiBold
     def RST: String = ansiReset
+
     def g(s: Any): String = s"$G${s.toString}$RST"
     def m(s: Any): String = s"$M${s.toString}$RST"
     def r(s: Any): String = s"$R${s.toString}$RST"
@@ -69,6 +74,7 @@ package object common {
     def w(s: Any): String = s"$W${s.toString}$RST"
     def b(s: Any): String = s"$B${s.toString}$RST"
     def k(s: Any): String = s"$K${s.toString}$RST"
+
     def green(s: Any): String = s"$G${s.toString}$RST"
     def magenta(s: Any): String = s"$M${s.toString}$RST"
     def red(s: Any): String = s"$R${s.toString}$RST"
@@ -130,7 +136,6 @@ package object common {
         def mb: Long = MB
         def kb: Long = KB
     }
-
 
     /**
      * Pimps integers with time units.

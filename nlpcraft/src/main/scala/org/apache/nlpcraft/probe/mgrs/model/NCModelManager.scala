@@ -85,7 +85,7 @@ object NCModelManager extends NCService {
                 tbl += Seq(s"${B}Intents:$RST ${withWarn(pm.intents.size)}") ++
                     (
                         for (cb <- pm.callbacks) yield
-                        s"   ${g(bo(cb._1))} from ${m(cb._2.origin)} -> ${c(cb._2.className)}${bo("#")}${c(cb._2.methodName)}(...)"
+                        s"   ${g(bo(cb._1))} @ ${m(cb._2.origin)} -> ${c(cb._2.className)}${bo("#")}${c(cb._2.methodName)}(...)"
                     ).toSeq
 
                 tbl.info(logger, Some("Model:"))
