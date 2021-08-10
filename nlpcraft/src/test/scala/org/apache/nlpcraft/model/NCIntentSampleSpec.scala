@@ -19,7 +19,7 @@ package org.apache.nlpcraft.model
 
 import org.apache.nlpcraft.NCTestElement
 import org.apache.nlpcraft.model.tools.test.NCTestAutoModelValidator
-import org.junit.jupiter.api.{Assertions, Test}
+import org.junit.jupiter.api.Test
 
 import java.util
 import scala.language.implicitConversions
