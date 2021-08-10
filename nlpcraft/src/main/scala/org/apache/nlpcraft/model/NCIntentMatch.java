@@ -32,6 +32,8 @@ import java.util.*;
  * @see NCIntent
  * @see NCIntentTerm
  * @see NCIntentSkip
+ * @see NCModelAddClasses
+ * @see NCModelAddPackage
  * @see NCIntentSample
  * @see NCIntentSampleRef
  * @see NCIntentRef

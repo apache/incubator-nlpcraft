@@ -84,9 +84,7 @@ object NCUtils extends LazyLogging {
     private final val DISABLE_GA_PROP = "NLPCRAFT_DISABLE_GA"
 
     private lazy val ANSI_FG_8BIT_COLORS = for (i <- 16 to 255) yield ansi256Fg(i)
-
     private lazy val ANSI_BG_8BIT_COLORS = for (i <- 16 to 255) yield ansi256Bg(i)
-
     private lazy val ANSI_FG_4BIT_COLORS = Seq(
         ansiRedFg,
         ansiGreenFg,
@@ -300,13 +298,14 @@ object NCUtils extends LazyLogging {
       *
       * @param f Closure to convert.
       */
-    implicit def toRun(f: => Unit): Runnable = () => try {
-        f
-    }
-    catch {
-        case _: InterruptedException => Thread.currentThread().interrupt()
-        case e: Throwable => prettyError(logger, "Unhandled exception caught:", e)
-    }
+    implicit def toRun(f: => Unit): Runnable = () =>
+        try {
+            f
+        }
+        catch {
+            case _: InterruptedException => Thread.currentThread().interrupt()
+            case e: Throwable => prettyError(logger, "Unhandled exception caught:", e)
+        }
 
     /**
       * Destroys given process (using proper waiting algorithm).
@@ -874,9 +873,7 @@ object NCUtils extends LazyLogging {
       *
       * @param res Resource.
       */
-    @throws[NCE]
-    def hasResource(res: String): Boolean =
-        getClass.getClassLoader.getResourceAsStream(res) != null
+    def hasResource(res: String): Boolean = getClass.getClassLoader.getResourceAsStream(res) != null
 
     /**
       * Serializes data.

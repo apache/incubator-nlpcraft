@@ -137,7 +137,6 @@ package object common {
         def kb: Long = KB
     }
 
-
     /**
      * Pimps integers with time units.
      *
