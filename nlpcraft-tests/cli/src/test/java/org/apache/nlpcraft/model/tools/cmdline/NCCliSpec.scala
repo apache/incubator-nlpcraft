@@ -27,12 +27,22 @@ import scala.collection.mutable
 import scala.util.Using
 
 /**
-  * This test designed only for maven tests (mvn clean verify)
-  * It cannot be started together with other server instances.
+  * This test designed only for maven tests ('mvn clean verify')
+  *  - Project target folder should contains built jars.
+  *  - This test cannot be started together with other server instances.
   */
 class NCCliSpec {
+    /**
+      *
+      * @param dirs
+      */
     private def check(dirs: File*): Unit = dirs.foreach(d => require(d.exists() && d.isDirectory, s"Invalid folder: $d"))
 
+    /**
+      *
+      * @param dirTarget
+      * @return
+      */
     private def getAllDepsJar(dirTarget: File): File = {
         val jars = dirTarget.listFiles(new FileFilter {
             override def accept(f: File): Boolean = f.isFile && f.getName.toLowerCase().endsWith("all-deps.jar")
@@ -67,7 +77,7 @@ class NCCliSpec {
         val thread = new Thread() {
             override def run(): Unit = {
                 Using.resource { new BufferedReader(new InputStreamReader(process.getInputStream)) }(reader => {
-                    var line: String = reader.readLine()
+                    var line = reader.readLine()
 
                     while (line != null && !done) {
                         if (expectedLines.exists(line.contains)) {
@@ -101,13 +111,13 @@ class NCCliSpec {
 
     @Test
     def test(): Unit = {
-        // All folders should be exists because tests started from maven phase, after build project.
         val ext = if (SystemUtils.IS_OS_UNIX) "sh" else "cmd"
         val dirUsr = new File(SystemUtils.USER_DIR).getParentFile.getParentFile
         val dirBin = new File(dirUsr, "bin")
         val dirTarget = new File(dirUsr, "nlpcraft/target")
         val script = new File(dirBin, s"nlpcraft.$ext").getAbsolutePath
 
+        // All folders should be exists because tests started from maven phase, after build project.
         check(dirUsr, dirBin, dirTarget)
 
         val allDepsJar = getAllDepsJar(dirTarget)
@@ -119,10 +129,8 @@ class NCCliSpec {
 
         def stopInstances(): Unit = {
             // Both variant (stopped or already stopped) are fine.
-            def stop(cmd: String): Process = make(cmd, 10, "has been stopped", "not found")
-
-            procs += stop("stop-server")
-            procs += stop("stop-probe")
+            procs += make("stop-server", 10, "has been stopped", "not found")
+            procs += make("stop-probe", 10, "has been stopped", "not found")
         }
 
         try {
