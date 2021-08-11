@@ -19,7 +19,7 @@ package org.apache.nlpcraft.model.tools.cmdline
 
 import org.apache.commons.lang3.SystemUtils
 import org.apache.nlpcraft.common.U
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.{BeforeEach, Test}
 
 import java.io.{BufferedReader, File, FileFilter, InputStreamReader}
 import java.util.concurrent.{CountDownLatch, TimeUnit}
@@ -32,64 +32,67 @@ import scala.util.Using
   *  - This test cannot be started together with other server instances.
   */
 class NCCliSpec {
-    /**
-      *
-      * @param dirs
-      */
-    private def check(dirs: File*): Unit = dirs.foreach(d => require(d.exists() && d.isDirectory, s"Invalid folder: $d"))
+    private var dirBin: File  = _
+    private var script: File  = _
+    private var allDepsJar: File = _
 
-    /**
-      *
-      * @param dirTarget
-      * @return
-      */
-    private def getAllDepsJar(dirTarget: File): File = {
-        val jars = dirTarget.listFiles(new FileFilter {
-            override def accept(f: File): Boolean = f.isFile && f.getName.toLowerCase().endsWith("all-deps.jar")
-        })
+    @BeforeEach
+    def before(): Unit = {
+        val dirUsr = new File(SystemUtils.USER_DIR).getParentFile.getParentFile
+        val dirTarget = new File(dirUsr, "nlpcraft/target")
 
-        require(jars != null && jars.length == 1, s"Required jar file not found in ${dirTarget.getAbsolutePath}")
+        dirBin = new File(dirUsr, "bin")
+        script = new File(dirBin, s"nlpcraft.${if (SystemUtils.IS_OS_UNIX) "sh" else "cmd"}")
 
-        jars.head
+        // All folders should be exists because tests started from maven phase, after build project.
+        Seq(dirUsr, dirBin, dirTarget).foreach(d => require(d.exists() && d.isDirectory, s"Invalid folder: $d"))
+
+        allDepsJar = {
+            val jars = dirTarget.listFiles(new FileFilter {
+                override def accept(f: File): Boolean = f.isFile && f.getName.toLowerCase().endsWith("all-deps.jar")
+            })
+
+            require(jars != null && jars.length == 1, s"Required jar file not found in ${dirTarget.getAbsolutePath}")
+
+            jars.head
+        }
     }
 
-    private def makeProcess(
-        scriptArg: String,
-        script: String,
-        allDepsJar: File,
-        dirBin: File,
-        timeoutSecs: Int,
-        expectedLines: String*
-    ): Process = {
-        val args = if (SystemUtils.IS_OS_UNIX) Seq("bash", "-f", script, scriptArg) else Seq(script, scriptArg)
+    private def start(arg: String, timeoutSecs: Int, expectedLines: String*): Process = {
+        val scriptArgs =
+            if (SystemUtils.IS_OS_UNIX)
+                Seq("bash", "-f", script.getAbsolutePath, arg)
+            else
+                Seq(script.getAbsolutePath, arg)
 
-        val builder = new ProcessBuilder(args: _*)
+        val builder =
+            new ProcessBuilder(scriptArgs: _*).
+                directory(dirBin).
+                redirectErrorStream(true)
 
         builder.environment().put("CP", allDepsJar.getAbsolutePath)
-        builder.directory(dirBin)
-        builder.redirectErrorStream(true)
 
-        val process = builder.start()
+        val proc = builder.start()
 
         val cdl = new CountDownLatch(1)
-        var done = false
+        var isStarted = false
 
         val thread = new Thread() {
             override def run(): Unit = {
-                Using.resource { new BufferedReader(new InputStreamReader(process.getInputStream)) }(reader => {
+                Using.resource { new BufferedReader(new InputStreamReader(proc.getInputStream)) }(reader => {
                     var line = reader.readLine()
 
-                    while (line != null && !done) {
+                    while (line != null && !isStarted) {
                         if (expectedLines.exists(line.contains)) {
-                            done = true
+                            isStarted = true
 
-                            println(s"$scriptArg finished fine by expected line: '$line'")
+                            println(s"$arg finished fine by expected line: '$line'")
                             println()
 
                             cdl.countDown()
                         }
                         else {
-                            println(s"($scriptArg) $line")
+                            println(s"($arg) $line")
 
                             line = reader.readLine()
                         }
@@ -104,41 +107,31 @@ class NCCliSpec {
 
         U.stopThread(thread)
 
-        require(done, s"Command cannot be started: $scriptArg")
+        if (!isStarted) {
+            proc.destroy()
 
-        process
+            require(requirement = false, s"Command cannot be started: $arg")
+        }
+
+        proc
     }
 
     @Test
     def test(): Unit = {
-        val ext = if (SystemUtils.IS_OS_UNIX) "sh" else "cmd"
-        val dirUsr = new File(SystemUtils.USER_DIR).getParentFile.getParentFile
-        val dirBin = new File(dirUsr, "bin")
-        val dirTarget = new File(dirUsr, "nlpcraft/target")
-        val script = new File(dirBin, s"nlpcraft.$ext").getAbsolutePath
-
-        // All folders should be exists because tests started from maven phase, after build project.
-        check(dirUsr, dirBin, dirTarget)
-
-        val allDepsJar = getAllDepsJar(dirTarget)
-
-        def make(scriptArg: String, timeoutSecs: Int, expectedLines: String*): Process =
-            makeProcess(scriptArg, script, allDepsJar, dirBin, timeoutSecs, expectedLines: _*)
-
         val procs = mutable.Buffer.empty[Process]
 
         def stopInstances(): Unit = {
             // Both variant (stopped or already stopped) are fine.
-            procs += make("stop-server", 10, "has been stopped", "not found")
-            procs += make("stop-probe", 10, "has been stopped", "not found")
+            procs += start("stop-server", 10, "has been stopped", "Local server not found")
+            procs += start("stop-probe", 10, "has been stopped", "Local probe not found")
         }
 
         try {
             stopInstances()
 
-            procs += make("start-server", 120, "Started on")
-            procs += make("start-probe", 30, "Started on")
-            procs += make("info", 10, "Local server")
+            procs += start("start-server", 120, "Started on")
+            procs += start("start-probe", 30, "Started on")
+            procs += start("info", 10, "Local server")
         }
         finally
             try
