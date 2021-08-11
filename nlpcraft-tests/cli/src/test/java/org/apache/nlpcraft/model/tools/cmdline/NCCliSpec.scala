@@ -36,6 +36,13 @@ class NCCliSpec {
     private var script: File  = _
     private var allDepsJar: File = _
 
+    case class ProcessWrapper(process: Process, listener: Thread) {
+        def destroy(): Unit = {
+            process.destroy()
+            U.stopThread(listener)
+        }
+    }
+
     @BeforeEach
     def before(): Unit = {
         val dirUsr = new File(SystemUtils.USER_DIR).getParentFile.getParentFile
@@ -58,7 +65,7 @@ class NCCliSpec {
         }
     }
 
-    private def start(arg: String, timeoutSecs: Int, expectedLines: String*): Process = {
+    private def start(arg: String, timeoutSecs: Int, expectedLines: String*): ProcessWrapper = {
         val scriptArgs =
             if (SystemUtils.IS_OS_UNIX)
                 Seq("bash", "-f", script.getAbsolutePath, arg)
@@ -86,7 +93,7 @@ class NCCliSpec {
                         if (expectedLines.exists(line.contains)) {
                             isStarted = true
 
-                            println(s"$arg finished fine by expected line: '$line'")
+                            println(s"$arg started fine. Expected line found: '$line'")
                             println()
 
                             cdl.countDown()
@@ -103,22 +110,22 @@ class NCCliSpec {
 
         thread.start()
 
+        val w = ProcessWrapper(proc, thread)
+
         cdl.await(timeoutSecs, TimeUnit.SECONDS)
 
-        U.stopThread(thread)
-
         if (!isStarted) {
-            proc.destroy()
+            w.destroy()
 
-            require(requirement = false, s"Command cannot be started: $arg")
+            throw new RuntimeException(s"Command cannot be started: $arg")
         }
 
-        proc
+        w
     }
 
     @Test
     def test(): Unit = {
-        val procs = mutable.Buffer.empty[Process]
+        val procs = mutable.Buffer.empty[ProcessWrapper]
 
         def stopInstances(): Unit = {
             // Both variant (stopped or already stopped) are fine.
