@@ -26,6 +26,16 @@ abort() {
   exit 1
 }
 
-[ -x "$(command -v python3)" ] || abort "'python3' not found."
+# Use/Uncomment the command below if needed
+#conda init <your-shell-name>
 
+conda activate /home/annihilat1on/Code/ws2/incubator-nlpcraft/.nlpcraft-python/nlpcraft-condaenv
+
+[ -x "$(command -v python3)" ] || abort "'python3' not found."
+echo "Python executable used:" $(which python3)
+
+export FLASK_ENV=development
 FLASK_APP=server.py python3 -m flask run
+
+# Use the command below to deactivate the conda environment
+# conda deactivate

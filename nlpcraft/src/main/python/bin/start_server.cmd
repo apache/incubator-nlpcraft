@@ -21,6 +21,8 @@
 
 @echo OFF
 
+conda activate %homedrive%%homepath%\.nlpcraft-python\nlpcraft-condaenv
+
 where python3 >nul 2>&1 || echo 'python3' not found && exit /b
 
 set FLASK_APP=server.py
