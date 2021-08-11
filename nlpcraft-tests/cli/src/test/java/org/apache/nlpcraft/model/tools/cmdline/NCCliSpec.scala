@@ -89,7 +89,7 @@ class NCCliSpec {
                 Using.resource { new BufferedReader(new InputStreamReader(proc.getInputStream)) }(reader => {
                     var line = reader.readLine()
 
-                    while (line != null && !isStarted) {
+                    while (line != null && !isStarted)
                         if (expectedLines.exists(line.contains)) {
                             isStarted = true
 
@@ -103,7 +103,6 @@ class NCCliSpec {
 
                             line = reader.readLine()
                         }
-                    }
                 })
             }
         }
