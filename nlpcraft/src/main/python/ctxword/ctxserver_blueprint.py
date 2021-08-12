@@ -16,14 +16,14 @@
 
 import logging
 
-from bertft import Pipeline
-from flask import Flask
+from ctxword.bertft import Pipeline
 from flask import jsonify
 from flask import request
+from flask import Blueprint
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
 
-app = Flask(__name__)
+blueprint_ctxserver = Blueprint("blueprint_ctxserver", __name__)
 
 pipeline = Pipeline()
 
@@ -33,7 +33,7 @@ class ValidationException(Exception):
         super().__init__(message)
 
 
-@app.errorhandler(ValidationException)
+@blueprint_ctxserver.errorhandler(ValidationException)
 def handle_bad_request(e):
     return str(e), 400
 
@@ -50,7 +50,7 @@ def present(json, name):
                            "Required '" + name + "' argument is not present")
 
 
-@app.route('/suggestions', methods=['POST'])
+@blueprint_ctxserver.route('/suggestions', methods=['POST'])
 def main():
     if not request.is_json:
         raise ValidationException("Json expected")
@@ -76,8 +76,3 @@ def main():
 
 def to_dict(y):
     return {'word': y[0], 'score': y[1], 'ftext_score': y[2], 'bert_score': y[3]}
-
-# Do not use this for production
-if __name__ == '__main__':
-    # TODO add port to config
-    app.run(host='0.0.0.0', port=5000)

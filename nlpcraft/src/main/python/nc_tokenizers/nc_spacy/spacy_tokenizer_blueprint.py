@@ -18,12 +18,18 @@
 import urllib.parse
 
 import spacy
-from flask import Flask, request
-from flask_restful import Resource, Api
+from flask import Blueprint
+from flask import request
+from flask import jsonify
 
 import logging
 
 logger = logging.getLogger(__name__)
+
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
+
+blueprint_spacy = Blueprint("blueprint_spacy", __name__)
+
 #
 # This is an example of spaCy REST proxy. It only should be used during development.
 # For production usage we recommend WSGI server instead.
@@ -33,6 +39,7 @@ logger = logging.getLogger(__name__)
 # Add your own or modify spaCy libraries here.
 # By default, the English model 'en_core_web_sm' is loaded.
 #
+# TODO: Add the model to the config file
 spacy_model_name = "en_core_web_sm"
 try:
     nlp = spacy.load(spacy_model_name)
@@ -40,48 +47,32 @@ except Exception as err:
     logger.error(f"Error loading spaCy model: {spacy_model_name}")
     logger.error(err)
 
-app = Flask(__name__)
-api = Api(app)
 
+@blueprint_spacy.route('/spacy', methods=['POST'])
+def get_tokens():
+    """TODO: documentation"""
 
-class Ner(Resource):
-    @staticmethod
-    def get():
+    doc = nlp(urllib.parse.unquote_plus(request.args.get('text')))
+    res = []
+    for e in doc.ents:
+        meta = {}
 
-        doc = nlp(urllib.parse.unquote_plus(request.args.get('text')))
-        res = []
-        for e in doc.ents:
-            meta = {}
+        # Change the following two lines to implements your own logic for
+        # filling up meta object with custom user attributes. 'meta' should be a dictionary (JSON)
+        # with types 'string:string'.
+        for key in e._.span_extensions:
+            meta[key] = e._.__getattr__(key)
 
-            # Change the following two lines to implements your own logic for
-            # filling up meta object with custom user attributes. 'meta' should be a dictionary (JSON)
-            # with types 'string:string'.
-            for key in e._.span_extensions:
-                meta[key] = e._.__getattr__(key)
+        res.append(
+            {
+                "text": e.text,
+                "from": e.start_char,
+                "to": e.end_char,
+                "ner": e.label_,
+                "vector": str(e.vector_norm),
+                "sentiment": str(e.sentiment),
+                "meta": meta
+            }
+        )
 
-            res.append(
-                {
-                    "text": e.text,
-                    "from": e.start_char,
-                    "to": e.end_char,
-                    "ner": e.label_,
-                    "vector": str(e.vector_norm),
-                    "sentiment": str(e.sentiment),
-                    "meta": meta
-                }
-            )
-
-        return res
-
-
-api.add_resource(Ner, '/spacy')
-
-#
-# Default endpoint is 'localhost:5002'. Note that this should be the same endpoint
-# as in server configuration.
-#
-if __name__ == '__main__':
-    app.run(
-        host="localhost",
-        port='5002'
-    )
+    return jsonify(res)

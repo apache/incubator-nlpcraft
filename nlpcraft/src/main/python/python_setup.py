@@ -18,7 +18,7 @@ import os
 import subprocess
 import time
 import logging
-from ncpyutils.ncutilities import get_nc_setup_config
+from nc_pyutils.ncutilities import get_nc_setup_config
 
 # getting the configuration
 nc_setup_conf = get_nc_setup_config()
