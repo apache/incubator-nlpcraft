@@ -38,7 +38,7 @@
 #         ]
 #     ]
 #
-# NOTE: You need to have REST server running (see 'start_server.sh' script in the same folder).
+# NOTE: You need to have REST server running (see 'start_server.sh' script in the nlpcraft parent folder).
 #
 
 abort() {
@@ -49,4 +49,4 @@ abort() {
 [ -x "$(command -v curl)" ] || abort "'curl' not found."
 [ -x "$(command -v python3)" ] || abort "'python3' not found."
 
-curl -d "{\"sentences\": [{\"text\": \"$1\", \"indexes\": [$2]}], \"simple\": true, \"limit\": 10}" -H 'Content-Type: application/json' http://localhost:5000/suggestions | python3 -m json.tool
+curl -d "{\"sentences\": [{\"text\": \"$1\", \"indexes\": [$2]}], \"simple\": true, \"limit\": 10}" -H 'Content-Type: application/json' http://localhost:5000/api/v1/ctxserver/suggestions | python3 -m json.tool

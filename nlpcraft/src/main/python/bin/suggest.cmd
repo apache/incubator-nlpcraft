@@ -43,4 +43,4 @@
 where curl >nul 2>&1 || echo 'curl' not found && exit /b
 where python3 >nul 2>&1 || echo 'python3' not found && exit /b
 
-curl http://localhost:5000/suggestions -d "{\"sentences\": [{\"text\": \"%~1\", \"indexes\": [%~2]}], \"simple\": true, \"limit\": 10}" -H "Content-Type: application/json" | python3 -m json.tool
+curl http://localhost:5000/api/v1/ctxserver/suggestions -d "{\"sentences\": [{\"text\": \"%~1\", \"indexes\": [%~2]}], \"simple\": true, \"limit\": 10}" -H "Content-Type: application/json" | python3 -m json.tool
