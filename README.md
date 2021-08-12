@@ -226,6 +226,10 @@ NOTES:
  - We use `@NCIntentSample` to provide sample sentences that should satisfy this intent. These 
  samples are used for model auto-testing and synonyms analysis.
  
+### Python Requirements
+
+conda version >= 4.8.3
+
 Done! 👌 
 
 [Learn more about this example >](https://nlpcraft.apache.org/examples/light_switch.html)
