@@ -76,3 +76,8 @@ def main():
 
 def to_dict(y):
     return {'word': y[0], 'score': y[1], 'ftext_score': y[2], 'bert_score': y[3]}
+
+# Do not use this for production
+if __name__ == '__main__':
+    # TODO add port to config
+    app.run(host='0.0.0.0', port=5000)
