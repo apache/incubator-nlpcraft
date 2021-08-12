@@ -648,7 +648,7 @@
         </profile>
 
         <profile>
-            <id>tests</id>
+            <id>mvntests</id>
             <modules>
                 <module>nlpcraft-tests/cli</module>
             </modules>

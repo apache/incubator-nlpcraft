@@ -32,6 +32,8 @@ import scala.util.Using
   *  - This test cannot be started together with other server instances.
   */
 class NCCliSpec {
+    private lazy val SKIP = !U.isSysEnvSet("DNLPCRAFT_CLI_TEST_ENABLED")
+
     private var dirBin: File  = _
     private var script: File  = _
     private var allDepsJar: File = _
@@ -45,6 +47,9 @@ class NCCliSpec {
 
     @BeforeEach
     def before(): Unit = {
+        if (SKIP)
+            return
+
         val dirUsr = new File(SystemUtils.USER_DIR).getParentFile.getParentFile
         val dirTarget = new File(dirUsr, "nlpcraft/target")
 
@@ -109,21 +114,27 @@ class NCCliSpec {
 
         thread.start()
 
-        val w = ProcessWrapper(proc, thread)
+        val wrapper = ProcessWrapper(proc, thread)
 
         cdl.await(timeoutSecs, TimeUnit.SECONDS)
 
         if (!isStarted) {
-            w.destroy()
+            wrapper.destroy()
 
             throw new RuntimeException(s"Command cannot be started: $arg")
         }
 
-        w
+        wrapper
     }
 
     @Test
     def test(): Unit = {
+        if (SKIP) {
+            println(s"Test disabled: ${this.getClass}")
+
+            return
+        }
+
         val procs = mutable.Buffer.empty[ProcessWrapper]
 
         def stopInstances(): Unit = {

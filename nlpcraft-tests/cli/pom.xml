@@ -47,16 +47,45 @@
     </dependencies>
 
     <build>
-        <resources>
-            <resource>
-                <directory>src/main/scala</directory>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
-                <includes>
-                    <include>**/*.*</include>
-                </includes>
-            </resource>
-        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven.compiler.plugin.ver}</version>
+                <configuration>
+                    <source>${java.ver}</source>
+                    <target>${java.ver}</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven.surefire.plugin.ver}</version>
+                <configuration>
+                    <skip>true</skip>
+                    <environmentVariables>
+                        <DNLPCRAFT_CLI_TEST_ENABLED>true</DNLPCRAFT_CLI_TEST_ENABLED>
+                    </environmentVariables>
+                </configuration>
+                <executions>
+                    <!-- All tests are defined as integration. -->
+                    <execution>
+                        <id>integration-tests</id>
+                        <phase>integration-test</phase>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <configuration>
+                            <skip>false</skip>
+                            <!-- Mandatory part. -->
+                            <includes>
+                                <include>**/*.*</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
 </project>
