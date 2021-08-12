@@ -21,6 +21,9 @@
 # This script may not be suitable for production usage. Please see official Flask documentation for
 # more info on how to deploy Flask applications.
 
+# get the location of this file
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+
 abort() {
   echo "$1"
   exit 1
@@ -29,13 +32,15 @@ abort() {
 # Use/Uncomment the command below if needed
 #conda init <your-shell-name>
 
-conda activate /home/annihilat1on/Code/ws2/incubator-nlpcraft/.nlpcraft-python/nlpcraft-condaenv
+conda activate $SCRIPT_DIR/../../../../../.nlpcraft-python/nlpcraft-condaenv
 
 [ -x "$(command -v python3)" ] || abort "'python3' not found."
 echo "Python executable used:" $(which python3)
 
 export FLASK_ENV=development
-FLASK_APP=server.py python3 -m flask run
+export FLASK_APP=$SCRIPT_DIR/../server.py
+
+python3 -m flask run
 
 # Use the command below to deactivate the conda environment
 # conda deactivate
