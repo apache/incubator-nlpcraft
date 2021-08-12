@@ -48,7 +48,7 @@ available memory. Subsequent starts will skip this step, and the server will sta
 Once the REST server starts you can issue REST calls to get suggestions for the contextual related words.
 REST server provides a single `application/json` endpoint:
  
-##### `/suggestions` (POST)
+##### `api/v1/ctxserver/suggestions` (POST)
 Returns contextual word replacement(s) for the specified word in the input sentence. Accepts JSON object parameter 
 with the following fields:
  * `"sentences"`
