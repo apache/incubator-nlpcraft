@@ -14,3 +14,8 @@ model.json
 **/__pycache__
 **/data
 **/.ipynb_checkpoints/
+.bsp/
+.metals/
+.nlpcraft-python/
+.vscode/
+project/
