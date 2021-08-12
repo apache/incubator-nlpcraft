@@ -65,7 +65,7 @@
                 <configuration>
                     <skip>true</skip>
                     <environmentVariables>
-                        <DNLPCRAFT_CLI_TEST_ENABLED>true</DNLPCRAFT_CLI_TEST_ENABLED>
+                        <NLPCRAFT_CLI_TEST_ENABLED>true</NLPCRAFT_CLI_TEST_ENABLED>
                     </environmentVariables>
                 </configuration>
                 <executions>

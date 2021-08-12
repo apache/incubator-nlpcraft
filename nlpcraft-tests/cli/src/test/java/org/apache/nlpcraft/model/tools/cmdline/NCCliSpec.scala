@@ -28,16 +28,21 @@ import scala.util.Using
 
 /**
   * This test designed only for maven tests ('mvn clean verify')
-  *  - Project target folder should contains built jars.
+  *  - Project target folder should contains built JARs.
   *  - This test cannot be started together with other server instances.
   */
 class NCCliSpec {
-    private lazy val SKIP = !U.isSysEnvSet("DNLPCRAFT_CLI_TEST_ENABLED")
+    private lazy val SKIP = !U.isSysEnvSet("NLPCRAFT_CLI_TEST_ENABLED")
 
-    private var dirBin: File  = _
-    private var script: File  = _
+    private var dirBin: File = _
+    private var script: File = _
     private var allDepsJar: File = _
 
+    /**
+     *
+     * @param process
+     * @param listener
+     */
     case class ProcessWrapper(process: Process, listener: Thread) {
         def destroy(): Unit = {
             process.destroy()
@@ -45,6 +50,9 @@ class NCCliSpec {
         }
     }
 
+    /**
+     *
+     */
     @BeforeEach
     def before(): Unit = {
         if (SKIP)
@@ -64,18 +72,26 @@ class NCCliSpec {
                 override def accept(f: File): Boolean = f.isFile && f.getName.toLowerCase().endsWith("all-deps.jar")
             })
 
-            require(jars != null && jars.length == 1, s"Required jar file not found in ${dirTarget.getAbsolutePath}")
+            require(jars != null && jars.length == 1, s"Required JAR file not found in ${dirTarget.getAbsolutePath}")
 
             jars.head
         }
     }
 
-    private def start(arg: String, timeoutSecs: Int, expectedLines: String*): ProcessWrapper = {
+    /**
+     *
+     * @param args
+     * @param timeoutSecs
+     * @param expectedLines
+     * @return
+     */
+    private def start(args: String, timeoutSecs: Int, expectedLines: String*): ProcessWrapper = {
+        val argsSeq = args.split(" ").toSeq
         val scriptArgs =
             if (SystemUtils.IS_OS_UNIX)
-                Seq("bash", "-f", script.getAbsolutePath, arg)
+                Seq("bash", "-f", script.getAbsolutePath) ++ argsSeq
             else
-                Seq(script.getAbsolutePath, arg)
+                Seq(script.getAbsolutePath) ++ argsSeq
 
         val builder =
             new ProcessBuilder(scriptArgs: _*).
@@ -98,13 +114,13 @@ class NCCliSpec {
                         if (expectedLines.exists(line.contains)) {
                             isStarted = true
 
-                            println(s"$arg started fine. Expected line found: '$line'")
+                            println(s"'$args' started fine. Expected line found: '$line'")
                             println()
 
                             cdl.countDown()
                         }
                         else {
-                            println(s"($arg) $line")
+                            println(s"($args) $line")
 
                             line = reader.readLine()
                         }
@@ -121,12 +137,15 @@ class NCCliSpec {
         if (!isStarted) {
             wrapper.destroy()
 
-            throw new RuntimeException(s"Command cannot be started: $arg")
+            throw new RuntimeException(s"Command cannot be started: $args")
         }
 
         wrapper
     }
 
+    /**
+     *
+     */
     @Test
     def test(): Unit = {
         if (SKIP) {
@@ -139,16 +158,16 @@ class NCCliSpec {
 
         def stopInstances(): Unit = {
             // Both variant (stopped or already stopped) are fine.
-            procs += start("stop-server", 10, "has been stopped", "Local server not found")
-            procs += start("stop-probe", 10, "has been stopped", "Local probe not found")
+            procs += start("stop-server no-logo no-ansi", 10, "has been stopped", "Local server not found")
+            procs += start("stop-probe no-logo no-ansi", 10, "has been stopped", "Local probe not found")
         }
 
         try {
             stopInstances()
 
-            procs += start("start-server", 120, "Started on")
-            procs += start("start-probe", 30, "Started on")
-            procs += start("info", 10, "Local server")
+            procs += start("start-server no-logo no-ansi", 120, "Started on")
+            procs += start("start-probe no-logo no-ansi", 30, "Started on")
+            procs += start("info no-logo no-ansi", 10, "Local server")
         }
         finally
             try
