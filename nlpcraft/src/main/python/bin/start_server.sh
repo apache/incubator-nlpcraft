@@ -32,13 +32,21 @@ abort() {
 # Use/Uncomment the command below if needed
 #conda init <your-shell-name>
 
+echo "IMPORTANT REMINDER: Please do not forget to set the path to your conda.sh file"
+# Replace your conda.sh location here
+source ENTER_YOUR_PATH/miniconda3/etc/profile.d/conda.sh
+
+# deactivating any virtual environments that are already running
+deactivate || echo "Tried to deactivate any virtual environments"
+conda deactivate || echo "Tried to deactivate any conda environment"
+
 conda activate $SCRIPT_DIR/../../../../../.nlpcraft-python/nlpcraft-condaenv
 
 [ -x "$(command -v python3)" ] || abort "'python3' not found."
 echo "Python executable used:" $(which python3)
 
 export FLASK_ENV=development
-export FLASK_APP=$SCRIPT_DIR/../server.py
+export FLASK_APP=$SCRIPT_DIR/../nc_server.py
 
 python3 -m flask run
 
