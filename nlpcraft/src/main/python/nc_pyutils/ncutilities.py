@@ -20,7 +20,7 @@ def get_nc_setup_config() -> dict:
 
     USER_HOME_DIR = os.path.expanduser('~')
     NLPCRAFT_PROJ_HOME = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                      os.pardir, os.pardir, os.pardir, os.pardir)
+                                      os.pardir, os.pardir, os.pardir, os.pardir, os.pardir)
     PYTHON_PROJ_REL_PATH = os.path.join('nlpcraft', 'src', 'main', 'python')
     CONF_REL_PATH = os.path.join('nlpcraft', 'src', 'main', 'resources', 'nlpcraft.conf')
     CONF_ABS_PATH = os.path.join(NLPCRAFT_PROJ_HOME, CONF_REL_PATH)
