@@ -32,6 +32,8 @@ Main class for processing sentences and predicting words
 """
 print(f"BERT ROOT DIR: {ROOT_DIR}")
 
+#TODO: Add documentation
+
 
 class Pipeline:
     """
@@ -95,6 +97,7 @@ class Pipeline:
         self.ft_dict = set(ft.get_words())
 
         self.log.info("Loading bert")
+        # TODO: Make the model configurable from nlpcraft.conf
         # ~3 GB
         self.tokenizer = AutoTokenizer.from_pretrained("roberta-large")
         self.model = AutoModelWithLMHead.from_pretrained("roberta-large")
