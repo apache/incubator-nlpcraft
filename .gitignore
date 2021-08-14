@@ -19,3 +19,4 @@ model.json
 .nlpcraft-python/
 .vscode/
 project/
+*.log
