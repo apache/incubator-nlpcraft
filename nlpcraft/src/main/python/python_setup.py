@@ -24,8 +24,9 @@ from nc_pyutils.ncutilities import get_nc_setup_config
 nc_setup_conf = get_nc_setup_config()
 
 log_filename = f'python_setup_{time.strftime("%Y%m%d-%H%M%S")}.log'
-log_file_path = os.path.join(nc_setup_conf['NLPCRAFT_PYTHON_FOLDER'], log_filename)
-logging.basicConfig(filename=log_file_path,
+log_file_path = os.path.join(nc_setup_conf['NLPCRAFT_PROJ_HOME'], log_filename)
+logging.basicConfig(
+                    filename=log_file_path,
                     filemode='a',
                     format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
                     datefmt='%H:%M:%S',
