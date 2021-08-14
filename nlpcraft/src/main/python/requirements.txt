@@ -62,7 +62,6 @@ spacy-legacy==3.0.8
 srsly==2.4.1
 thinc==8.0.8
 tokenizers==0.5.2
-torch==1.6.0
 tqdm==4.62.0
 transformers==2.7.0
 typer==0.3.2
