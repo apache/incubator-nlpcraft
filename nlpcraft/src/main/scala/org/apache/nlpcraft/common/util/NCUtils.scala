@@ -370,7 +370,7 @@ object NCUtils extends LazyLogging {
      * Creates one, if necessary.
      */
     def ensurePythonDir(): Unit = {
-        val pythonHome = new File(SystemUtils.USER_DIR, ".nlpcraft-python")
+        val pythonHome = new File(SystemUtils.getUserHome, ".nlpcraft-python")
 
         if (pythonHome.exists() && pythonHome.isFile || !pythonHome.exists() )
             throw new NCException(s"NLPCraft python directory does not exist: ${pythonHome.getAbsolutePath}")

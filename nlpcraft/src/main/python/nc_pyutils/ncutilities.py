@@ -24,9 +24,9 @@ def get_nc_setup_config() -> dict:
     PYTHON_PROJ_REL_PATH = os.path.join('nlpcraft', 'src', 'main', 'python')
     CONF_REL_PATH = os.path.join('nlpcraft', 'src', 'main', 'resources', 'nlpcraft.conf')
     CONF_ABS_PATH = os.path.join(NLPCRAFT_PROJ_HOME, CONF_REL_PATH)
-    CONDA_ENV_PATH = os.path.join(NLPCRAFT_PROJ_HOME, '.nlpcraft-python', 'nlpcraft-condaenv')
+    NLPCRAFT_PYTHON_FOLDER = os.path.join(USER_HOME_DIR, '.nlpcraft-python')
+    CONDA_ENV_PATH = os.path.join(NLPCRAFT_PYTHON_FOLDER, 'nlpcraft-condaenv')
     PY_REQUIREMENTS_PATH = os.path.join(NLPCRAFT_PROJ_HOME, PYTHON_PROJ_REL_PATH, 'requirements.txt')
-    NLPCRAFT_PYTHON_FOLDER = os.path.join(NLPCRAFT_PROJ_HOME, '.nlpcraft-python')
     NLPCRAFT_PYTHON3 = os.path.join(CONDA_ENV_PATH, 'bin', 'python3')
     MIN_CONDA_VERSION = 4.08
 

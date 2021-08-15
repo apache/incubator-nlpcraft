@@ -580,7 +580,7 @@
                             <executable>mkdir</executable>
                             <arguments>
                                 <argument>-p</argument>
-                                <argument>${project.basedir}/../.nlpcraft-python</argument>
+                                <argument>${user.home}/.nlpcraft-python</argument>
                             </arguments>
                         </configuration>
                     </execution>
@@ -595,7 +595,7 @@
                             <arguments>
                                 <argument>create</argument>
                                 <argument>-p</argument>
-                                <argument>${project.basedir}/../.nlpcraft-python/nlpcraft-condaenv</argument>
+                                <argument>${user.home}/.nlpcraft-python/nlpcraft-condaenv</argument>
                                 <argument>python=${python.ver}</argument>
                                 <argument>-y</argument>
                             </arguments>
@@ -608,7 +608,7 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <executable>${project.basedir}/../.nlpcraft-python/nlpcraft-condaenv/bin/python3</executable>
+                            <executable>${user.home}/.nlpcraft-python/nlpcraft-condaenv/bin/python3</executable>
                             <arguments>
                                 <argument>-m</argument>
                                 <argument>pip</argument>
@@ -625,7 +625,7 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <executable>${project.basedir}/../.nlpcraft-python/nlpcraft-condaenv/bin/python3</executable>
+                            <executable>${user.home}/.nlpcraft-python/nlpcraft-condaenv/bin/python3</executable>
                             <arguments>
                                 <argument>-m</argument>
                                 <argument>pip</argument>
