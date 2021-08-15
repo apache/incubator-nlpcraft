@@ -32,7 +32,7 @@ models and Facebook's [FastText](https://fasttext.cc/) library.
 **Important**: You will need `conda` and Python 3.x
 
 NLPCraft by default, will use the Python [conda environment](https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html)
-located at `nlpcraft/.nlpcraft-python` . 
+located at `<USER-HOME>/.nlpcraft-python` . 
 
 All dependencies should be automatically installed in the Maven `compile` phase of the lifecycle. To re-install dependencies use:
  * `mvn compile`
@@ -45,8 +45,22 @@ All dependencies should be automatically installed in the Maven `compile` phase 
 To start 'ctxword' module REST server:
  * `$ cd nlpcraft/src/main/python/ctxword`
  * `$ bin/start_server.{sh|cmd}` 
+
+
+##### IMPORTANT
+
+Please change the following line in the `bin/start_server.{sh|cmd}` file above to the path of your `conda.sh` file.
+
+By default, it points to `~/miniconda3/etc/profile.d/conda.sh`
+
+Line you need to change:
+
+`source <enter-your-path>/miniconda3/etc/profile.d/conda.sh`
+
+*'miniconda' is for example purposes. This could be in your 'anaconda folder (if you use anaconda instead of miniconda).*
+
  
-NOTE: on the 1st start the server will try to load compressed BERT model which is not yet available. It will
+NOTE: On the first start the server will try to load compressed BERT model which is not yet available. It will
 then download this library and compress it which will take a several minutes and may require 10 GB+ of 
 available memory. Subsequent starts will skip this step, and the server will start much faster.
 
