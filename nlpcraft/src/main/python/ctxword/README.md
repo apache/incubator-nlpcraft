@@ -29,15 +29,21 @@ input sentence. This utility provides a single REST endpoint and is based on Goo
 models and Facebook's [FastText](https://fasttext.cc/) library.
 
 ### Dependencies
-To install necessary dependency:
- * **Linux/MacOS**: 
-   * `$ cd nlpcraft/src/main/python/ctxword`
-   * `$ bin/install_dependencies.sh` 
- * **Windows**: read `nlpcraft\src\main\python\ctxword\bin\WINDOWS_SETUP.md` file for manual installation.
+**Important**: You will need `conda` and Python 3.x
+
+NLPCraft by default, will use the Python [conda environment](https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html)
+located at `nlpcraft/.nlpcraft-python` . 
+
+All dependencies should be automatically installed in the Maven `compile` phase of the lifecycle. To re-install dependencies use:
+ * `mvn compile`
+
+
+
+ **Windows**: read `nlpcraft\src\main\python\ctxword\bin\WINDOWS_SETUP.md` file for manual installation.
 
 ### Start REST Server
 To start 'ctxword' module REST server:
- * `$ cd nlpcrat/src/main/python/ctxword`
+ * `$ cd nlpcraft/src/main/python/ctxword`
  * `$ bin/start_server.{sh|cmd}` 
  
 NOTE: on the 1st start the server will try to load compressed BERT model which is not yet available. It will
