@@ -178,7 +178,7 @@ object NCSuggestSynonymManager extends NCService {
                         if (mdlExs.isEmpty)
                             onError(s"Missed intents samples for: `$mdlId``")
                         else {
-                            val url = s"${Config.urlOpt.getOrElse(throw new NCE("Context word server is not configured."))}/api/v1/ctxserver/suggestions"
+                            val url = s"${Config.urlOpt.getOrElse(throw new NCE("Context word server is not configured."))}"
 
                             val allSamplesCnt = mdlExs.map { case (_, samples) => samples.size }.sum
 
