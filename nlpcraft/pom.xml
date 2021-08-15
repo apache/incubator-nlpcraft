@@ -602,6 +602,50 @@
                         </configuration>
                     </execution>
                     <execution>
+                        <id>remove-existing-fasttext</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>rm</executable>
+                            <arguments>
+                                <argument>-rf</argument>
+                                <argument>${user.home}/.nlpcraft-python/fastText</argument>
+                            </arguments>
+                        </configuration>
+                    </execution> 
+                    <execution>
+                        <id>download-fasttext</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>git</executable>
+                            <arguments>
+                                <argument>clone</argument>
+                                <argument>https://github.com/facebookresearch/fastText.git</argument>
+                                <argument>${user.home}/.nlpcraft-python/fastText</argument>
+                            </arguments>
+                        </configuration>
+                    </execution> 
+                    <execution>
+                        <id>install-fasttext</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>${user.home}/.nlpcraft-python/nlpcraft-condaenv/bin/python3</executable>
+                            <arguments>
+                                <argument>${user.home}/.nlpcraft-python/fastText/setup.py</argument>
+                                <argument>install</argument>
+                            </arguments>
+                            <workingDirectory>${user.home}/.nlpcraft-python/fastText</workingDirectory>
+                        </configuration>
+                    </execution> 
+                    <execution>
                         <id>install-py-dependencies</id>
                         <phase>compile</phase>
                         <goals>
