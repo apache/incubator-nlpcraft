@@ -564,7 +564,7 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <executable>python3</executable>
+                            <executable>python</executable>
                             <arguments>
                                 <argument>${project.basedir}/src/main/python/python_setup.py</argument>
                                 <argument>--requirements</argument>

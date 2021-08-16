@@ -20,6 +20,7 @@ import subprocess
 import time
 import argparse
 import logging
+from distutils.version import LooseVersion
 from nc_pyutils.ncutilities import get_nc_setup_config
 
 
@@ -65,16 +66,17 @@ if args.requirements:
     try:
         # Check if conda is installed
         subprocess.call(['conda', '-V'])
-        conda_version: str = subprocess.run(['conda', '-V'], stdout=subprocess.PIPE).stdout.decode('utf-8').split()[1][:4]
+        conda_version: str = subprocess.run(['conda', '-V'], stdout=subprocess.PIPE).stdout.decode('utf-8').split()[1]
         logger.debug(f'Conda version of your system is: {conda_version}')
         # Checking conda version
-        if float(conda_version) < nc_setup_conf['MIN_CONDA_VERSION']:
+        if LooseVersion(str(conda_version)) < LooseVersion(str(nc_setup_conf['MIN_CONDA_VERSION'])):
             raise SystemExit(f'[ERROR] Invalid conda version. The version you have is {float(conda_version)} .'
                                'See requirements: https://nlpcraft.apache.org/download.html')
     except FileNotFoundError:
         logger.error('Conda is not installed. See requirements: https://nlpcraft.apache.org/download.html')
         raise SystemExit('[ERROR] Conda is not installed. See requirements: https://nlpcraft.apache.org/download.html')
     except Exception as err:
+        logger.error(err)
         logger.error('Conda verification error. See requirements: https://nlpcraft.apache.org/download.html')
         raise SystemExit(f'[ERROR] Conda verification error. See requirements: https://nlpcraft.apache.org/download.html')
 
