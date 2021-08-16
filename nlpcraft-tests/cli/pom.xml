@@ -21,12 +21,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <name>NLPCraft Example Weather</name>
-    <artifactId>nlpcraft-example-weather</artifactId>
+    <name>NLPCraft CLI Tests</name>
+    <artifactId>nlpcraft-tests-cli</artifactId>
 
     <parent>
-        <artifactId>nlpcraft-parent</artifactId>
         <groupId>org.apache.nlpcraft</groupId>
+        <artifactId>nlpcraft-parent</artifactId>
         <version>0.9.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
@@ -57,14 +57,16 @@
                     <target>${java.ver}</target>
                 </configuration>
             </plugin>
-            <!--Integration tests skipped for this module. -->
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven.surefire.plugin.ver}</version>
                 <configuration>
-                    <!-- Skips all tests on phase `test`. -->
                     <skip>true</skip>
+                    <environmentVariables>
+                        <NLPCRAFT_CLI_TEST_ENABLED>true</NLPCRAFT_CLI_TEST_ENABLED>
+                    </environmentVariables>
                 </configuration>
                 <executions>
                     <!-- All tests are defined as integration. -->
@@ -75,7 +77,11 @@
                             <goal>test</goal>
                         </goals>
                         <configuration>
-                            <skip>true</skip>
+                            <skip>false</skip>
+                            <!-- Mandatory part. -->
+                            <includes>
+                                <include>**/*.*</include>
+                            </includes>
                         </configuration>
                     </execution>
                 </executions>
