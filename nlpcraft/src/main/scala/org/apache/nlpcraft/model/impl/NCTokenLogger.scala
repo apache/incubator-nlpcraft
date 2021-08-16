@@ -630,10 +630,15 @@ object NCTokenLogger extends LazyLogging {
                     }
 
                 tbl += (
-                    row
+                    (
+                        if (tok.getId == "nlpcraft:nlp")
+                            row.map(_.toString)
+                        else
+                            row.map(s => s"${ansi256Fg(183)}${s.toString}${ansiReset}")
+                    )
                     ++
                     // Token data.
-                    Seq(if (tok.getId == "nlpcraft:nlp") "" else s"<<$ansiBlueFg${tok.getId}$ansiReset>> $v") :_*
+                    Seq(if (tok.getId == "nlpcraft:nlp") "" else s"<<${ansi256Fg(183)}${tok.getId}$ansiReset>> $v") :_*
                 )
             }
         })

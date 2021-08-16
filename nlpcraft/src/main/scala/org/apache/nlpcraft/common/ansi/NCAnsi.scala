@@ -1461,7 +1461,5 @@ object NCAnsi extends NCAnsi {
      */
     def ackStatus(): Unit =
         if (isEnabled)
-            logger.info(
-                U.gradAnsi8BitBgLine("ANSI coloring is enabled. Use '-DNLPCRAFT_ANSI_COLOR_DISABLED=true' to disable it.", 130, 147)
-            )
+            logger.info(s"${U.bgRainbow4Bit("ANSI")} coloring is enabled. Use '-D${ansiCyanFg}NLPCRAFT_ANSI_COLOR_DISABLED${ansiReset}=true' to disable it.", 130, 147)
 }
