@@ -78,6 +78,8 @@ if args.requirements:
         logger.error('Conda verification error. See requirements: https://nlpcraft.apache.org/download.html')
         raise SystemExit(f'[ERROR] Conda verification error. See requirements: https://nlpcraft.apache.org/download.html')
 
+    logger.info(f'Log: {log_file_path}')
+
 
 if args.setupdir:
     user_home = os.path.expanduser("~")
@@ -89,6 +91,7 @@ if args.setupdir:
         os.mkdir(nlpcraft_python_path)
         logger.debug(f'NLPCraft Python folder created.')
 
+    logger.info(f'Log: {log_file_path}')
 
 if args.pytorch:
     """Pytorch Installation: OS Independent"""
@@ -107,9 +110,17 @@ if args.pytorch:
     logger.debug(f'Python executable at: {sys.executable}')
     logger.debug(f'NLPCraft attempting to install PyTorch for your OS {sys.platform} ......')
 
-    if sys.platform == "linux" or sys.platform == "linux2":
-        pytorch_linux_install()
-    elif sys.platform == "darwin":
-        pytorch_osx_install()
-    elif sys.platform == "win32":
-        pytorch_win_install()
+    try:
+        if sys.platform == "linux" or sys.platform == "linux2":
+            pytorch_linux_install()
+        elif sys.platform == "darwin":
+            pytorch_osx_install()
+        elif sys.platform == "win32":
+            pytorch_win_install()
+    except Exception as err:
+        logger.error(err)
+        logger.critical('PyTorch was not installed successfully. Please visit https://pytorch.org/get-started/locally/'
+                        f"and install it manually into the {os.path.join(os.path.expanduser('~'), '.nlpcraft-python')}"
+                        ' conda environment.\nFor more information see nlpcraft/src/main/python/ctxword/README.md')
+
+    logger.info(f'Log: {log_file_path}')
