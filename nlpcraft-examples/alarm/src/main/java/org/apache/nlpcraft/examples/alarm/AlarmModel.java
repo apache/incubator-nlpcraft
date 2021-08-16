@@ -62,7 +62,7 @@ public class AlarmModel extends NCModelFileAdapter {
      * @param ctx Intent solver context.
      * @return Query result.
      */
-    @NCIntentRef("alarm") // Intent is defined in JSON model file (alarm_model.json and intents.idl).
+    @NCIntentRef("alarm") // Intent is defined in JSON model file (alarm_model.json and alarm_intents.idl).
     @NCIntentSampleRef("alarm_samples.txt") // Samples supplied in an external file.
     NCResult onMatch(
         NCIntentMatch ctx,

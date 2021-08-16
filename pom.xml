@@ -635,6 +635,7 @@
         <profile>
             <id>examples</id>
             <modules>
+                <module>nlpcraft-examples/cargps</module>
                 <module>nlpcraft-examples/alarm</module>
                 <module>nlpcraft-examples/echo</module>
                 <module>nlpcraft-examples/helloworld</module>

@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,25 +15,13 @@
  * limitations under the License.
  */
 
-{
-    "id": "nlpcraft.alarm.ex",
-    "name": "Alarm Example Model",
-    "version": "1.0",
-    "description": "Alarm example model.",
-    "enabledBuiltInTokens": [
-        "nlpcraft:num"
-    ],
-    "elements": [
-        {
-            "id": "x:alarm",
-            "description": "Alarm token indicator.",
-            "synonyms": [
-                "{ping|buzz|wake|call|hit} {me|up|me up|_}",
-                "{set|_} {my|_} {wake|wake up|_} {alarm|timer|clock|buzzer|call} {clock|_} {up|_}"
-            ]
-        }
-    ],
-    "intents": [
-        "import('alarm_intents.idl')" // Import intents from external file.
-    ]
+package org.apache.nlpcraft.examples.alarm
+
+import org.apache.nlpcraft.model.NCModelFileAdapter
+
+/**
+ * See 'README.md' file in the same folder for running and testing instructions.
+ */
+class CarGpsModel extends NCModelFileAdapter("cargps_model.yaml") {
+
 }

@@ -16,24 +16,9 @@
  */
 
 {
-    "id": "nlpcraft.alarm.ex",
-    "name": "Alarm Example Model",
+    "id": "nlpcraft.cargps.ex",
+    "name": "Car GPS Example Model",
     "version": "1.0",
-    "description": "Alarm example model.",
-    "enabledBuiltInTokens": [
-        "nlpcraft:num"
-    ],
-    "elements": [
-        {
-            "id": "x:alarm",
-            "description": "Alarm token indicator.",
-            "synonyms": [
-                "{ping|buzz|wake|call|hit} {me|up|me up|_}",
-                "{set|_} {my|_} {wake|wake up|_} {alarm|timer|clock|buzzer|call} {clock|_} {up|_}"
-            ]
-        }
-    ],
-    "intents": [
-        "import('alarm_intents.idl')" // Import intents from external file.
-    ]
+    "description": "Car GPS example model.",
+    "elements": []
 }

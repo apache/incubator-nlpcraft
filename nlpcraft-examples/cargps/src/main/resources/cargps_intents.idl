@@ -14,19 +14,3 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-// Fragments (mostly for demo purposes here).
-fragment=buzz term~{tok_id() == 'x:alarm'}
-fragment=when
-    term(nums)~{
-        // Demonstrating term variables.
-        @type = meta_tok('nlpcraft:num:unittype')
-        @iseq = meta_tok('nlpcraft:num:isequalcondition') // Excludes conditional statements.
-
-        tok_id() == 'nlpcraft:num' && @type == 'datetime' && @iseq == true
-    }[1,7]
-
-// Intents (using fragments).
-intent=alarm
-    fragment(buzz)
-    fragment(when)
