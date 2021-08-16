@@ -81,7 +81,6 @@ class RestTestModelExt extends RestTestModel {
         ).asJava
     }
 }
-
 /**
   *
   */

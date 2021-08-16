@@ -453,17 +453,35 @@ object NCDateGenerator {
     }
 
     private[date] def simpleYears(df: LHM_SS): Unit = {
+        def addRange(from:String, to: String , y1: Int, y2: Int, templ: String): Unit = {
+            df += s"$from $y1 $to $y2" -> templ
+            df += s"$from $y1 y $to $y2 y" -> templ
+            df += s"$from ${y1}y $to ${y2}y" -> templ
+            df += s"$from $y1 year $to $y2 year" -> templ
+            df += s"$from ${y1}year $to ${y2}year" -> templ
+            df += s"$from $y1 $to $y2 years" -> templ
+        }
+
         // Between.
-        for (b <- BETWEEN_INCLUSIVE; y1 <- YEARS_SEQ; y2 <- YEARS_SEQ if y2 > y1)
-            df += s"${b._1} $y1 ${b._2} $y2" -> s"${y1}y:${y2}y"
-        for (b <- BETWEEN_EXCLUSIVE; y1 <- YEARS_SEQ; y2 <- YEARS_SEQ if y2 > y1)
-            df += s"${b._1} $y1 ${b._2} $y2" -> s"${y1}y:${y2-1}y"
+        for ((from, to) <- BETWEEN_INCLUSIVE; y1 <- YEARS_SEQ; y2 <- YEARS_SEQ if y2 > y1)
+            addRange(from, to, y1, y2, s"${y1}y:${y2}y")
+
+        for ((from, to) <- BETWEEN_EXCLUSIVE; y1 <- YEARS_SEQ; y2 <- YEARS_SEQ if y2 > y1)
+            addRange(from, to, y1, y2, s"${y1}y:${y2-1}y")
+
+        def add(word: String, y: Int, templ: String): Unit = {
+            s"$word $y" -> templ
+            s"$word $y y" -> templ
+            s"$word ${y}y" -> templ
+            s"$word $y year" -> templ
+            s"$word ${y}year" -> templ
+        }
 
         // From.
-        for (f <- FROM; y <- YEARS_SEQ) df += s"$f $y" -> toNow(s"${y}y")
+        for (f <- FROM; y <- YEARS_SEQ) add(f, y, toNow(s"${y}y"))
 
         // Till.
-        for (t <- TO; y <- YEARS_SEQ) df += s"$t $y" -> to(s"${y}y")
+        for (t <- TO; y <- YEARS_SEQ) add(t, y, to(s"${y}y"))
     }
 
     private[date] def simpleQuarters(df: LHM_SS): Unit = {

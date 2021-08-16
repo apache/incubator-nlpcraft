@@ -54,6 +54,8 @@ import static java.lang.annotation.RetentionPolicy.*;
  * @see NCIntentTerm
  * @see NCIntentSample
  * @see NCIntentSampleRef
+ * @see NCModelAddClasses
+ * @see NCModelAddPackage
  * @see NCIntentSkip
  * @see NCIntentMatch
  * @see NCModel#onMatchedIntent(NCIntentMatch) 

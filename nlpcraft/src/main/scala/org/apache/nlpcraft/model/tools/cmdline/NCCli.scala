@@ -2937,7 +2937,7 @@ object NCCli extends NCCliBase {
      * Prints out the version and copyright title header.
      */
     private def title(): Unit = {
-        logln(U.asciiLogo())
+        logln(U.asciiLogo8Bit())
         logln(s"$NAME ver. ${VER.version}")
         logln()
         logln(s"Docs: ${g("nlpcraft.apache.org")}")

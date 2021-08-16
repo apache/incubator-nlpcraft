@@ -281,7 +281,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                         )
 
                         logger.warn(
-                            s"Two matching intents have the ${y(bo("same weight"))} for their matches (variants weight will be used further):\n" +
+                            s"Two matching intents have the same weight for their matches (variants weight will be used further):\n" +
                             tbl.toString
                         )
 
@@ -597,7 +597,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                     )
                 else {
                     if (usedSenToks.isEmpty && usedConvToks.isEmpty)
-                        logger.warn(s"Intent '$intentId' ${bo(y("matched"))} but no tokens were used $varStr.")
+                        logger.warn(s"Intent '$intentId' matched but no tokens were used $varStr.")
 
                     // Number of remaining (unused) non-free words in the sentence is a measure of exactness of the match.
                     // The match is exact when all non-free words are used in that match.
@@ -637,7 +637,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
         convToks: Seq[IntentToken]
     ): Option[TermMatch] = {
         if (senToks.isEmpty && convToks.isEmpty)
-            logger.warn(s"No tokens available to match on for term '${term.toAnsiString}'.")
+            logger.warn(s"No tokens available to match on for the term '${term.toAnsiString}'.")
 
         try
             solvePredicate(term.pred, idlCtx, term.min, term.max, senToks, convToks) match {

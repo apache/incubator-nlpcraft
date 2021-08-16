@@ -128,7 +128,7 @@ abstract class NCService extends LazyLogging with NCOpenCensusTrace {
             "state" -> "started"
         )
 
-        val durBrkt = s"$ansiReversed$ansiGreenFg$ansiBold[${padDur(timeStampMs)}]$ansiReset"
+        val durBrkt = s"${ansi256Fg(16)}${ansi256Bg(70)}[${padDur(timeStampMs)}]$ansiReset"
 
         logger.info(s"$durBrkt $name started.")
 

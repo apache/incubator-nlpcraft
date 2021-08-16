@@ -17,6 +17,8 @@
 
 package org.apache.nlpcraft.probe.mgrs.deploy
 
+import com.google.common.reflect.ClassPath
+
 import java.io._
 import java.lang.reflect.{InvocationTargetException, Method, Modifier, ParameterizedType, Type, WildcardType}
 import java.util
@@ -39,6 +41,7 @@ import org.apache.nlpcraft.model.intent._
 import org.apache.nlpcraft.probe.mgrs.NCProbeSynonymChunkKind.{IDL, REGEX, TEXT}
 import org.apache.nlpcraft.probe.mgrs.{NCProbeModel, NCProbeModelCallback, NCProbeSynonym, NCProbeSynonymChunk, NCProbeSynonymsWrapper}
 
+import java.lang.annotation.Annotation
 import scala.util.Using
 import scala.compat.java8.OptionConverters._
 import scala.collection.mutable
@@ -58,6 +61,8 @@ object NCDeployManager extends NCService {
     private final val CLS_SLV_CTX = classOf[NCIntentMatch]
     private final val CLS_SAMPLE = classOf[NCIntentSample]
     private final val CLS_SAMPLE_REF = classOf[NCIntentSampleRef]
+    private final val CLS_MDL_CLS_REF = classOf[NCModelAddClasses]
+    private final val CLS_MDL_PKGS_REF = classOf[NCModelAddPackage]
 
     // Java and scala lists.
     private final val CLS_SCALA_SEQ = classOf[Seq[_]]
@@ -76,12 +81,15 @@ object NCDeployManager extends NCService {
         CLS_JAVA_OPT
     )
     
-    case class Callback(id: String, clsName: String, funName: String, cbFun: Function[NCIntentMatch, NCResult])
+    case class Callback(method: Method, cbFun: Function[NCIntentMatch, NCResult]) {
+        val id: String = method.toString
+        val clsName: String = method.getDeclaringClass.getName
+        val funName: String = method.getName
+    }
     type Intent = (NCIdlIntent, Callback)
     type Sample = (String/* Intent ID */, Seq[Seq[String]] /* List of list of input samples for that intent. */)
     
     private final val SEPARATORS = Seq('?', ',', '.', '-', '!')
-
     private final val SUSP_SYNS_CHARS = Seq("?", "*", "+")
 
     @volatile private var data: mutable.ArrayBuffer[NCProbeModel] = _
@@ -103,6 +111,25 @@ object NCDeployManager extends NCService {
       * @param syn Element synonym.
       */
     case class SynonymHolder(elmId: String, syn: NCProbeSynonym)
+
+    case class MethodOwner(method: Method, objClassName: String, obj: Any) {
+        require(method != null)
+        require(objClassName != null ^ obj != null)
+
+        private var lazyObj: Any = obj
+
+        def getObject: Any = {
+            if (lazyObj == null)
+                try
+                    lazyObj = U.mkObject(objClassName)
+                catch {
+                    // TODO:
+                    case e: Throwable => throw new NCE(s"Error initializing object of type: $objClassName", e)
+                }
+
+            lazyObj
+        }
+    }
 
     /**
       * Gives a list of JAR files at given path.
@@ -668,7 +695,7 @@ object NCDeployManager extends NCService {
                 val mf = makeModelFactory(mft)
 
                 mf.initialize(Config.modelFactoryProps.getOrElse(Map.empty[String, String]).asJava)
-                
+
                 mf
 
             case None => new NCBasicModelFactory
@@ -987,7 +1014,7 @@ object NCDeployManager extends NCService {
     @throws[NCE]
     private def mkChunk(mdl: NCModel, chunk: String): NCProbeSynonymChunk = {
         def stripSuffix(fix: String, s: String): String = s.slice(fix.length, s.length - fix.length)
-        
+
         val mdlId = mdl.getId
 
         // Regex synonym.
@@ -1087,14 +1114,14 @@ object NCDeployManager extends NCService {
         s"#${argIdx + (if (cxtFirstParam) 1 else 0)} of ${method2Str(mtd)}"
 
     /**
-      *
-      * @param mtd
+      * @param mo
       * @param mdl
       * @param intent
       */
     @throws[NCE]
-    private def prepareCallback(mtd: Method, mdl: NCModel, intent: NCIdlIntent): Callback = {
+    private def prepareCallback(mo: MethodOwner, mdl: NCModel, intent: NCIdlIntent): Callback = {
         val mdlId = mdl.getId
+        val mtd = mo.method
 
         // Checks method result type.
         if (mtd.getReturnType != CLS_QRY_RES)
@@ -1195,13 +1222,11 @@ object NCDeployManager extends NCService {
         checkMinMax(mdl, mtd, tokParamTypes, termIds.map(allLimits), ctxFirstParam)
 
         Callback(
-            mtd.toString,
-            mtd.getDeclaringClass.getName,
-            mtd.getName,
+            mtd,
             (ctx: NCIntentMatch) => {
                 invoke(
-                    mtd,
-                    mdl,
+                    mdl.getId,
+                    mo,
                     (
                         (if (ctxFirstParam) Seq(ctx)
                         else Seq.empty) ++
@@ -1213,29 +1238,26 @@ object NCDeployManager extends NCService {
     }
 
     /**
-      *
-      * @param mtd
-      * @param mdl
+      * @param mdlId
+      * @param mo
       * @param args
       */
     @throws[NCE]
-    private def invoke(mtd: Method, mdl: NCModel, args: Array[AnyRef]): NCResult = {
-        val mdlId = mdl.getId
+    private def invoke(mdlId: String, mo: MethodOwner, args: Array[AnyRef]): NCResult = {
+        val obj = if (Modifier.isStatic(mo.method.getModifiers)) null else mo.getObject
 
-        val obj = if (Modifier.isStatic(mtd.getModifiers)) null else mdl
-
-        var flag = mtd.canAccess(obj)
+        var flag = mo.method.canAccess(obj)
 
         try {
             if (!flag) {
-                mtd.setAccessible(true)
+                mo.method.setAccessible(true)
 
                 flag = true
             }
             else
                 flag = false
 
-            mtd.invoke(obj, args: _*).asInstanceOf[NCResult]
+            mo.method.invoke(obj, args: _*).asInstanceOf[NCResult]
         }
         catch {
             case e: InvocationTargetException => e.getTargetException match {
@@ -1245,25 +1267,25 @@ object NCDeployManager extends NCService {
                 case e: Throwable =>
                     throw new NCE(s"Intent callback invocation error [" +
                         s"mdlId=$mdlId, " +
-                        s"callback=${method2Str(mtd)}" +
+                        s"callback=${method2Str(mo.method)}" +
                     s"]", e)
             }
 
             case e: Throwable =>
                 throw new NCE(s"Unexpected intent callback invocation error [" +
                     s"mdlId=$mdlId, " +
-                    s"callback=${method2Str(mtd)}" +
+                    s"callback=${method2Str(mo.method)}" +
                 s"]", e)
         }
         finally
             if (flag)
                 try
-                    mtd.setAccessible(false)
+                    mo.method.setAccessible(false)
                 catch {
                     case e: SecurityException =>
                         throw new NCE(s"Access or security error in intent callback [" +
                             s"mdlId=$mdlId, " +
-                            s"callback=${method2Str(mtd)}" +
+                            s"callback=${method2Str(mo.method)}" +
                         s"]", e)
                 }
     }
@@ -1498,18 +1520,24 @@ object NCDeployManager extends NCService {
       * @param o Object.
       * @return Methods.
       */
-    private def getAllMethods(o: AnyRef): Set[Method] = {
-        val claxx = o.getClass
+    private def getAllMethods(o: AnyRef): Set[Method] = getAllMethods(o.getClass)
 
-        (claxx.getDeclaredMethods ++ claxx.getMethods).toSet
-    }
-    
+    /**
+      * Gets its own methods including private and accessible from parents.
+      *
+      * @param claxx Class.
+      * @return Methods.
+      */
+    private def getAllMethods(claxx: Class[_]): Set[Method] = (claxx.getDeclaredMethods ++ claxx.getMethods).toSet
+
     /**
       *
       * @param mdl
       */
     @throws[NCE]
     private def scanIntents(mdl: NCModel): Set[Intent] = {
+        val cl = Thread.currentThread().getContextClassLoader
+
         val mdlId = mdl.getId
         val intentDecls = mutable.Buffer.empty[NCIdlIntent]
         val intents = mutable.Buffer.empty[Intent]
@@ -1517,58 +1545,63 @@ object NCDeployManager extends NCService {
         // First, get intent declarations from the JSON/YAML file, if any.
         mdl match {
             case adapter: NCModelFileAdapter =>
-                intentDecls ++= adapter
-                    .getIntents
-                    .asScala
-                    .flatMap(NCIdlCompiler.compileIntents(_, mdl, mdl.getOrigin))
-
+                intentDecls ++= adapter.getIntents.asScala.flatMap(NCIdlCompiler.compileIntents(_, mdl, mdl.getOrigin))
             case _ => ()
         }
 
+        def processClass(cls: Class[_]): Unit =
+            if (cls != null)
+                try
+                    for (
+                        ann <- cls.getAnnotationsByType(CLS_INTENT);
+                        intent <- NCIdlCompiler.compileIntents(ann.value(), mdl, cls.getName)
+                    )
+                        if (intentDecls.exists(_.id == intent.id))
+                            throw new NCE(s"Duplicate intent ID [" +
+                                s"mdlId=$mdlId, " +
+                                s"origin=${mdl.getOrigin}, " +
+                                s"class=$cls, " +
+                                s"id=${intent.id}" +
+                            s"]")
+                        else
+                            intentDecls += intent
+                catch {
+                    case _: ClassNotFoundException => throw new NCE(s"Failed to scan class for @NCIntent annotation: $cls")
+                }
+
         // Second, scan class for class-level @NCIntent annotations (intent declarations).
-        val mdlCls = mdl.meta[String](MDL_META_MODEL_CLASS_KEY)
+        processClass(Class.forName(mdl.meta[String](MDL_META_MODEL_CLASS_KEY)))
 
-        if (mdlCls != null) {
-            try {
-                val cls = Class.forName(mdlCls)
+        def processMethod(mo: MethodOwner): Unit = {
+            val m = mo.method
 
-                for (ann <- cls.getAnnotationsByType(CLS_INTENT); intent <- NCIdlCompiler.compileIntents(ann.value(), mdl, mdlCls))
-                    if (intentDecls.exists(_.id == intent.id))
-                        throw new NCE(s"Duplicate intent ID [" +
-                            s"mdlId=$mdlId, " +
-                            s"origin=${mdl.getOrigin}, " +
-                            s"class=$mdlCls, " +
-                            s"id=${intent.id}" +
-                        s"]")
-                    else
-                        intentDecls += intent
-            }
-            catch {
-                case _: ClassNotFoundException => throw new NCE(s"Failed to scan class for @NCIntent annotation: $mdlCls")
-            }
-        }
-
-        // Third, scan all methods for intent-callback bindings.
-        for (m <- getAllMethods(mdl)) {
             val mtdStr = method2Str(m)
 
-            def bindIntent(intent: NCIdlIntent, cb: Callback): Unit = {
+            def bindIntent(intent: NCIdlIntent, cb: Callback): Unit =
                 if (intents.exists(i => i._1.id == intent.id && i._2.id != cb.id))
                     throw new NCE(s"The intent cannot be bound to more than one callback [" +
                         s"mdlId=$mdlId, " +
                         s"origin=${mdl.getOrigin}, " +
-                        s"class=$mdlCls, " +
+                        s"class=${mo.objClassName}, " +
                         s"intentId=${intent.id}" +
                     s"]")
                 else {
                     intentDecls += intent
-                    intents += (intent -> prepareCallback(m, mdl, intent))
+                    intents += (intent -> prepareCallback(mo, mdl, intent))
                 }
-            }
+
+            def existsForOtherMethod(id: String): Boolean =
+                intents.find(_._1.id == id) match {
+                    case Some((_, cb)) => cb.method != m
+                    case None => false
+                }
 
             // Process inline intent declarations by @NCIntent annotation.
-            for (ann <- m.getAnnotationsByType(CLS_INTENT); intent <- NCIdlCompiler.compileIntents(ann.value(), mdl, mtdStr))
-                if (intentDecls.exists(_.id == intent.id) || intents.exists(_._1.id == intent.id))
+            for (
+                ann <- m.getAnnotationsByType(CLS_INTENT);
+                intent <- NCIdlCompiler.compileIntents(ann.value(), mdl, mtdStr)
+            )
+                if (intentDecls.exists(_.id == intent.id && existsForOtherMethod(intent.id)))
                     throw new NCE(s"Duplicate intent ID [" +
                         s"mdlId=$mdlId, " +
                         s"origin=${mdl.getOrigin}, " +
@@ -1576,24 +1609,80 @@ object NCDeployManager extends NCService {
                         s"id=${intent.id}" +
                     s"]")
                 else
-                    bindIntent(intent, prepareCallback(m, mdl, intent))
+                    bindIntent(intent, prepareCallback(mo, mdl, intent))
 
             // Process intent references from @NCIntentRef annotation.
             for (ann <- m.getAnnotationsByType(CLS_INTENT_REF)) {
                 val refId = ann.value().trim
 
                 intentDecls.find(_.id == refId) match {
-                    case Some(intent) => bindIntent(intent, prepareCallback(m, mdl, intent))
+                    case Some(intent) => bindIntent(intent, prepareCallback(mo, mdl, intent))
                     case None => throw new NCE(
                         s"""@NCIntentRef("$refId") references unknown intent ID [""" +
                             s"mdlId=$mdlId, " +
                             s"origin=${mdl.getOrigin}, " +
                             s"refId=$refId, " +
                             s"callback=$mtdStr" +
-                        s"]")
+                        s"]"
+                    )
                 }
             }
         }
+
+        // Third, scan all methods for intent-callback bindings.
+        for (m <- getAllMethods(mdl))
+            processMethod(MethodOwner(method = m, objClassName = null, obj = mdl))
+
+        /**
+         *
+         * @param clazz
+         * @param getReferences
+         * @tparam T
+         */
+        def scanAdditionalClasses[T <: Annotation](clazz: Class[T], getReferences: T => Seq[Class[_]]): Unit = {
+            val anns = mdl.getClass.getAnnotationsByType(clazz)
+
+            if (anns != null && anns.nonEmpty) {
+                val refs = getReferences(anns.head)
+
+                if (refs == null || refs.isEmpty)
+                    throw new NCE(
+                        s"Additional reference in @${clazz.getSimpleName} annotation is empty [" +
+                            s"mdlId=$mdlId, " +
+                            s"origin=${mdl.getOrigin}" +
+                        s"]"
+                    )
+
+                for (ref <- refs if !Modifier.isAbstract(ref.getModifiers)) {
+                    processClass(ref)
+
+                    for (m <- getAllMethods(ref))
+                        processMethod(MethodOwner(method = m, objClassName = ref.getName, obj = null))
+                }
+            }
+        }
+
+        // Process @NCModelAddClasses annotation.
+        scanAdditionalClasses(CLS_MDL_CLS_REF, (a: NCModelAddClasses) => a.value().toIndexedSeq)
+
+        // Process @NCModelAddPackages annotation.
+        scanAdditionalClasses(
+            CLS_MDL_PKGS_REF,
+            (a: NCModelAddPackage) =>
+                a.value().toIndexedSeq.flatMap(p => {
+                    if (cl.getDefinedPackage(p) == null)
+                        throw new NCE(
+                            s"Invalid additional references in @${CLS_MDL_PKGS_REF.getSimpleName} annotation [" +
+                                s"mdlId=$mdlId, " +
+                                s"origin=${mdl.getOrigin}, " +
+                                s"package=$p" +
+                            s"]"
+                        )
+
+                    //noinspection UnstableApiUsage
+                    ClassPath.from(cl).getTopLevelClassesRecursive(p).asScala.map(_.load())
+                })
+        )
 
         val unusedIntents = intentDecls.filter(i => !intents.exists(_._1.id == i.id))
 
