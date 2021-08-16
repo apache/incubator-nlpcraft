@@ -648,6 +648,13 @@
         </profile>
 
         <profile>
+            <id>mvntests</id>
+            <modules>
+                <module>nlpcraft-tests/cli</module>
+            </modules>
+        </profile>
+
+        <profile>
             <id>release</id>
             <activation>
                 <property>
