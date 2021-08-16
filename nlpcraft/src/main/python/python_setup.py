@@ -15,10 +15,15 @@
 #
 
 import os
+import sys
 import subprocess
 import time
+import argparse
 import logging
 from nc_pyutils.ncutilities import get_nc_setup_config
+
+
+#TODO: Documentation and refactoring
 
 # getting the configuration
 nc_setup_conf = get_nc_setup_config()
@@ -35,21 +40,76 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.StreamHandler())
 
+parser = argparse.ArgumentParser(description='NLPCraft Python Setup Parameters')
+
+parser.add_argument('--requirements',
+                    help='Check if conda is installed',
+                    action='store_true')
+
+parser.add_argument('--setupdir',
+                    help='Create the <USER_HOME>/.nlpcraft-python directory',
+                    action='store_true')
+
+parser.add_argument('--pytorch',
+                    help='Install the correct PyTorch version depending on the OS',
+                    action='store_true')
+
+args = parser.parse_args()
+
 logger.debug("Starting python environment setup:\n")
 for items in nc_setup_conf.items():
     logger.debug(items)
 
+if args.requirements:
+    logger.debug('Checking system requirements for NLPCraft to run:')
+    try:
+        # Check if conda is installed
+        subprocess.call(['conda', '-V'])
+        conda_version: str = subprocess.run(['conda', '-V'], stdout=subprocess.PIPE).stdout.decode('utf-8').split()[1][:4]
+        logger.debug(f'Conda version of your system is: {conda_version}')
+        # Checking conda version
+        if float(conda_version) < nc_setup_conf['MIN_CONDA_VERSION']:
+            raise SystemExit(f'[ERROR] Invalid conda version. The version you have is {float(conda_version)} .'
+                               'See requirements: https://nlpcraft.apache.org/download.html')
+    except FileNotFoundError:
+        logger.error('Conda is not installed. See requirements: https://nlpcraft.apache.org/download.html')
+        raise SystemExit('[ERROR] Conda is not installed. See requirements: https://nlpcraft.apache.org/download.html')
+    except Exception as err:
+        logger.error('Conda verification error. See requirements: https://nlpcraft.apache.org/download.html')
+        raise SystemExit(f'[ERROR] Conda verification error. See requirements: https://nlpcraft.apache.org/download.html')
 
-try:
-    # Check if conda is installed
-    subprocess.call(['conda', '-V'])
-    conda_version: str = subprocess.run(['conda', '-V'], stdout=subprocess.PIPE).stdout.decode('utf-8').split()[1][:4]
-    # Checking conda version
-    if float(conda_version) < nc_setup_conf['MIN_CONDA_VERSION']:
-        raise SystemExit(f'[ERROR] Invalid conda version. The version you have is {float(conda_version)} .'
-                           'See requirements: https://nlpcraft.apache.org/download.html')
-except FileNotFoundError:
-    raise SystemExit('[ERROR] Conda is not installed. See requirements: https://nlpcraft.apache.org/download.html')
-except Exception as err:
-    raise SystemExit(f'[ERROR] Conda verification error. See requirements: https://nlpcraft.apache.org/download.html')
 
+if args.setupdir:
+    user_home = os.path.expanduser("~")
+    nlpcraft_python_path = os.path.join(user_home, '.nlpcraft-python')
+    logger.debug(f'Creating directory for NLPCraft Python Environment: {nlpcraft_python_path}')
+    if os.path.exists(nlpcraft_python_path):
+        logger.warning(f'NLPCraft Python folder already exists at: {nlpcraft_python_path}')
+    else:
+        os.mkdir(nlpcraft_python_path)
+        logger.debug(f'NLPCraft Python folder created.')
+
+
+if args.pytorch:
+    """Pytorch Installation: OS Independent"""
+    def pytorch_osx_install():
+        subprocess.check_call([sys.executable, "-m", "pip", "install", 'torch', 'torchvision', 'torchaudio'])
+
+    def pytorch_win_install():
+        subprocess.check_call([sys.executable, "-m", "pip", "install", 'torch==1.9.0+cu111', 'torchvision==0.10.0+cu111',
+                               'torchaudio===0.9.0', '-f', 'https://download.pytorch.org/whl/torch_stable.html'])
+
+    def pytorch_linux_install():
+        subprocess.check_call([sys.executable, "-m", "pip", "install", 'torch==1.9.0+cu111', 'torchvision==0.10.0+cu111',
+                               'torchaudio==0.9.0', '-f', 'https://download.pytorch.org/whl/torch_stable.html'])
+
+    logger.debug(f'OS detected as {sys.platform}')
+    logger.debug(f'Python executable at: {sys.executable}')
+    logger.debug(f'NLPCraft attempting to install PyTorch for your OS {sys.platform} ......')
+
+    if sys.platform == "linux" or sys.platform == "linux2":
+        pytorch_linux_install()
+    elif sys.platform == "darwin":
+        pytorch_osx_install()
+    elif sys.platform == "win32":
+        pytorch_win_install()

@@ -567,6 +567,7 @@
                             <executable>python3</executable>
                             <arguments>
                                 <argument>${project.basedir}/src/main/python/python_setup.py</argument>
+                                <argument>--requirements</argument>
                             </arguments>
                         </configuration>
                     </execution>
@@ -577,10 +578,10 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <executable>mkdir</executable>
+                            <executable>python3</executable>
                             <arguments>
-                                <argument>-p</argument>
-                                <argument>${user.home}/.nlpcraft-python</argument>
+                                <argument>${project.basedir}/src/main/python/python_setup.py</argument>
+                                <argument>--setupdir</argument>
                             </arguments>
                         </configuration>
                     </execution>
@@ -671,14 +672,8 @@
                         <configuration>
                             <executable>${user.home}/.nlpcraft-python/nlpcraft-condaenv/bin/python3</executable>
                             <arguments>
-                                <argument>-m</argument>
-                                <argument>pip</argument>
-                                <argument>install</argument>
-                                <argument>torch==1.9.0+cu111</argument>
-                                <argument>torchvision==0.10.0+cu111</argument>
-                                <argument>torchaudio==0.9.0</argument>
-                                <argument>-f</argument>
-                                <argument>https://download.pytorch.org/whl/torch_stable.html</argument>
+                                <argument>${project.basedir}/src/main/python/python_setup.py</argument>
+                                <argument>--pytorch</argument>
                             </arguments>
                         </configuration>
                     </execution>
