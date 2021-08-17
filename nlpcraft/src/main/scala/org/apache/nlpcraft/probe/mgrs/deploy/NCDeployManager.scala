@@ -156,6 +156,16 @@ object NCDeployManager extends NCService {
 
         for (makro <- macros.keys if !set.exists(_.contains(makro)))
             logger.warn(s"Unused macro detected [mdlId=${mdl.getId}, macro=$makro]")
+
+        def isSuspicious(s: String): Boolean = //s.toCharArray.toSeq.intersect(SUSP_SYNS_CHARS).nonEmpty
+            SUSP_SYNS_CHARS.exists(susp => s.contains(susp))
+
+        for (makro <- macros)
+            if (isSuspicious(makro._1) || isSuspicious(makro._2))
+                logger.warn(s"Suspicious macro definition (use of ${SUSP_SYNS_CHARS.map(s => s"'$s'").mkString(", ")} chars) [" +
+                    s"mdlId=${mdl.getId}, " +
+                    s"macro=$makro" +
+                s"]")
     }
 
     /**
@@ -236,7 +246,7 @@ object NCDeployManager extends NCService {
 
             if (susp.nonEmpty)
                 logger.warn(
-                    s"Suspicious synonyms detected [" +
+                    s"Suspicious synonyms detected (use of ${SUSP_SYNS_CHARS.map(s => s"'$s'").mkString(", ")} chars) [" +
                         s"mdlId=$mdlId, " +
                         s"elementId=$elmId, " +
                         s"synonyms=[${susp.mkString(", ")}]" +
@@ -1719,25 +1729,46 @@ object NCDeployManager extends NCService {
                 if (intAnns.isEmpty && refAnns.isEmpty)
                     throw new NCE(s"@NCIntentSample or @NCIntentSampleRef annotations without corresponding @NCIntent or @NCIntentRef annotations: $mtdStr")
                 else {
-                    def read[T](arr: Array[T], annName: String, getValue: T => Seq[String]): Seq[Seq[String]] = {
-                        val seq = arr.toSeq.map(getValue).map(_.map(_.strip).filter(s => s.nonEmpty && s.head != '#'))
+                    /**
+                     *
+                     * @param annArr
+                     * @param annName
+                     * @param getSamples
+                     * @param getSource
+                     * @tparam T
+                     * @return
+                     */
+                    def read[T](
+                        annArr: Array[T],
+                        annName: String,
+                        getSamples: T => Seq[String],
+                        getSource: Option[T => String]): Seq[Seq[String]] = {
+                            for (ann <- annArr.toSeq) yield {
+                                val samples = getSamples(ann).map(_.strip).filter(s => s.nonEmpty && s.head != '#')
 
-                        if (seq.exists(_.isEmpty))
-                            logger.warn(s"$annName annotation has no samples: $mtdStr")
+                                if (samples.isEmpty) {
+                                    getSource match {
+                                        case None => logger.warn(s"$annName annotation has no samples: $mtdStr")
+                                        case Some(f) => logger.warn(s"$annName annotation references '${f(ann)}' file that has no samples: $mtdStr")
+                                    }
 
-                        seq
-                    }
+                                    Seq.empty
+                                }
+                                else
+                                    samples
+                            }
+                    }.filter(_.nonEmpty)
 
                     val seqSeq =
                         read[NCIntentSample](
-                            smpAnns, "@NCIntentSample", _.value().toSeq
+                            smpAnns, "@NCIntentSample", _.value().toSeq, None
                         ) ++
                         read[NCIntentSampleRef](
-                            smpAnnsRef, "@NCIntentSampleRef", a => U.readAnySource(a.value())
+                            smpAnnsRef, "@NCIntentSampleRef", a => U.readAnySource(a.value()), Some(_.value())
                         )
 
                     if (U.containsDups(seqSeq.flatMap(_.toSeq).toList))
-                        logger.warn(s"@NCIntentSample and @NCIntentSampleRef annotations have duplicates (safely ignoring): $mtdStr")
+                        logger.warn(s"@NCIntentSample and @NCIntentSampleRef annotations have duplicates: $mtdStr")
 
                     val distinct = seqSeq.map(_.distinct).distinct
 

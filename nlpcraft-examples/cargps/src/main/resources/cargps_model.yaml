@@ -65,7 +65,7 @@ elements:
   - id: "x:remove-waypoint"
     description: "Remove 'waypoint' action."
     synonyms:
-      - "{skip|remove} {over|*} {last|latest|*} <WAYPOINT>"
+      - "{skip|remove} {over|_} {last|latest|_} <WAYPOINT>"
 
 intents:
   - "import('cargps_intents.idl')"

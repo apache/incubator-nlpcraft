@@ -624,8 +624,14 @@ object NCIdlCompiler extends LazyLogging {
             line: Int, // 1, 2, ...
             charPos: Int, // 1, 2, ...
             msg: String,
-            e: RecognitionException): Unit =
-            throw new NCE(mkSyntaxError(msg, recog.getInputStream.getSourceName, line, charPos - 1, dsl, origin, mdl))
+            e: RecognitionException): Unit = {
+            val aMsg = if ((msg.contains("'\"") && msg.contains("\"'")) || msg.contains("''"))
+                s"${if (msg.last == '.') msg.substring(0, msg.length - 1) else msg} - try removing quotes."
+            else
+                msg
+
+            throw new NCE(mkSyntaxError(aMsg, recog.getInputStream.getSourceName, line, charPos - 1, dsl, origin, mdl))
+        }
     }
 
     /**

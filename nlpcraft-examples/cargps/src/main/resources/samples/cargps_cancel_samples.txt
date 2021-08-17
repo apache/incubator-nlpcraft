@@ -20,3 +20,9 @@
 #
 
 Hey truck - stop the navigation!
+Howdy, car, please cancel the routing now.
+Hi car - stop the route.
+Hi car - stop the navigation...
+Howdy truck - quit navigating.
+Hi car - finish off the driving.
+Hi car - cancel the journey.
