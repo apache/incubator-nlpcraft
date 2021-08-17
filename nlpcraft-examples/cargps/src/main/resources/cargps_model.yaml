@@ -28,6 +28,8 @@ macros:
     macro: "{navigate|pilot|plot|drive|route|plan|find|head|ride|direct|steer|operate|sail} {out|*} {course|route|destination|drive|*}"
   - name: "<CANCEL>"
     macro: "{cancel|stop|abort|finish|cease|quit} {off|*}"
+  - name: "<WAYPOINT>"
+    macro: "{waypoint|location|point|stopover|stop over|way station|stop|checkpoint|stop point} {point|station|*}"
 
 #
 # Allows for multi-word synonyms in this entire model
@@ -48,6 +50,22 @@ elements:
     description: "Cancel action."
     synonyms:
       - "<CANCEL>"
+
+  - id: "x:navigate"
+    description: "Start 'navigate' action."
+    synonyms:
+      - "<NAVIGATE>"
+
+  - id: "x:add-waypoint"
+    description: "Add 'waypoint' action."
+    synonyms:
+      - "{add|make} <WAYPOINT>"
+      - "stop by"
+
+  - id: "x:remove-waypoint"
+    description: "Remove 'waypoint' action."
+    synonyms:
+      - "{skip|remove} {over|*} {last|latest|*} <WAYPOINT>"
 
 intents:
   - "import('cargps_intents.idl')"

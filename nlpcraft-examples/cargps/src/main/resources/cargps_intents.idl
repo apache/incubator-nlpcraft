@@ -20,6 +20,6 @@ fragment=hey term={tok_id() == "x:hey" && tok_is_first()}
 
 // Intents.
 intent=int:cancel fragment(hey) term={tok_id() == "x:cancel"}
-intent=int:navigate fragment(hey)
-intent=int:add:waypoint fragment(hey)
-intent=int:remove:waypoint fragment(hey)
+intent=int:navigate fragment(hey) term={tok_id() == "x:navigate"}
+intent=int:add:waypoint fragment(hey) term={tok_id() == "x:x:add-waypoint"}
+intent=int:remove:waypoint fragment(hey) term={tok_id() == "x:x:remove-waypoint"}
