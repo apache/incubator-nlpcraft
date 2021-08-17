@@ -18,5 +18,3 @@
 #
 # Set of samples (corpus) for automatic unit and regression testing.
 #
-
-

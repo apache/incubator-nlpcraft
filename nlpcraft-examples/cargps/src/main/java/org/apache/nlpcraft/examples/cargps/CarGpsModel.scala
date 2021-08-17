@@ -15,13 +15,51 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.examples.alarm
+package org.apache.nlpcraft.examples.cargps
 
-import org.apache.nlpcraft.model.NCModelFileAdapter
+import org.apache.nlpcraft.model._
 
 /**
  * See 'README.md' file in the same folder for running and testing instructions.
  */
 class CarGpsModel extends NCModelFileAdapter("cargps_model.yaml") {
+    /**
+     *
+     * @return
+     */
+    @NCIntentRef("int:navigate")
+    @NCIntentSampleRef("samples/cargps_navigate_samples.txt")
+    def onNavigation(): NCResult = {
+        NCResult.text(s"")
+    }
 
+    /**
+     *
+     * @return
+     */
+    @NCIntentRef("int:cancel")
+    @NCIntentSampleRef("samples/cargps_cancel_samples.txt")
+    def onCancel(): NCResult = {
+        NCResult.text(s"")
+    }
+
+    /**
+     *
+     * @return
+     */
+    @NCIntentRef("int:add:waypoint")
+    @NCIntentSampleRef("samples/cargps_add_waypoint_samples.txt")
+    def onAddWaypoint(): NCResult = {
+        NCResult.text(s"")
+    }
+
+    /**
+     *
+     * @return
+     */
+    @NCIntentRef("int:remove:waypoint")
+    @NCIntentSampleRef("samples/cargps_remove_waypoint_samples.txt")
+    def onRemoveWaypoint(): NCResult = {
+        NCResult.text(s"")
+    }
 }

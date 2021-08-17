@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.examples.alarm
+package org.apache.nlpcraft.examples.cargps
 
 import org.apache.nlpcraft.model.tools.test.NCTestAutoModelValidator
 import org.junit.jupiter.api.{Assertions, Test}

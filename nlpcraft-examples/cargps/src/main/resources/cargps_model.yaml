@@ -1,0 +1,53 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+id: "nlpcraft.cargps.ex"
+name: "Car GPS Example Model"
+version: "1.0"
+description: "NLI-powered car GPS-based navigation example model."
+enabledBuiltInTokens: [] # This example doesn't use any built-in tokens.
+
+macros:
+  - name: "<HEY>"
+    macro: "{hey|hi|howdy}"
+  - name: "<NAVIGATE>"
+    macro: "{navigate|pilot|plot|drive|route|plan|find|head|ride|direct|steer|operate|sail} {out|*} {course|route|destination|drive|*}"
+  - name: "<CANCEL>"
+    macro: "{cancel|stop|abort|finish|cease|quit} {off|*}"
+
+#
+# Allows for multi-word synonyms in this entire model
+# to be sparse and permutate them for better detection.
+# These two properties generally enable a free-form
+# natural language comprehension.
+#
+permutateSynonyms: true
+sparse: true
+
+elements:
+  - id: "x:hey"
+    description: "NLI prompt"
+    synonyms:
+      - "<HEY> {car|vehicle|truck}"
+
+  - id: "x:cancel"
+    description: "Cancel action."
+    synonyms:
+      - "<CANCEL>"
+
+intents:
+  - "import('cargps_intents.idl')"
