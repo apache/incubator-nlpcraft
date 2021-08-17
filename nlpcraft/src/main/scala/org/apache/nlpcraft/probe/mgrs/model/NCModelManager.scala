@@ -54,6 +54,13 @@ object NCModelManager extends NCService {
 
             logger.info(s"Models deployed: ${data.size}")
 
+            if (data.isEmpty) {
+                logger.error(s"To start the probe provide $BO${R}at least one model:$RST")
+                logger.error("  +-- Check probe configuration ('probe.conf' file) or -DNLPCRAFT_TEST_MODELS system property if using embedded probe.")
+
+                throw new NCE(s"Probe requires at least one model deployed to start.")
+            }
+
             data.values.foreach(pm => {
                 val mdl = pm.model
 
