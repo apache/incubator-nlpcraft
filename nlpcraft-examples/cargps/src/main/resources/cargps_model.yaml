@@ -25,11 +25,11 @@ macros:
   - name: "<HEY>"
     macro: "{hey|hi|howdy}"
   - name: "<NAVIGATE>"
-    macro: "{navigate|pilot|plot|drive|route|plan|find|head|ride|direct|steer|operate|sail} {out|*} {course|route|destination|drive|*}"
+    macro: "{navigate|pilot|plot|drive|route|plan|find|head|ride|direct|steer|operate|sail} {out|_} {course|route|destination|drive|_}"
   - name: "<CANCEL>"
-    macro: "{cancel|stop|abort|finish|cease|quit} {off|*}"
+    macro: "{cancel|stop|abort|finish|cease|quit} {off|_}"
   - name: "<WAYPOINT>"
-    macro: "{waypoint|location|point|stopover|stop over|way station|stop|checkpoint|stop point} {point|station|*}"
+    macro: "{waypoint|location|point|stopover|stop over|way station|stop|checkpoint|stop point} {point|station|_}"
 
 #
 # Allows for multi-word synonyms in this entire model

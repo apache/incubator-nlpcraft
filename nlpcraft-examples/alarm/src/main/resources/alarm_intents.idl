@@ -15,6 +15,10 @@
  * limitations under the License.
  */
 
+/*
+ * Read documentation: http://nlpcraft.apache.org/intent-matching.html
+ */
+
 // Fragments (mostly for demo purposes here).
 fragment=buzz term~{tok_id() == 'x:alarm'}
 fragment=when

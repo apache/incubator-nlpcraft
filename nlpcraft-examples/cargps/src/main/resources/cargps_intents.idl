@@ -15,11 +15,20 @@
  * limitations under the License.
  */
 
+ /*
+  * Read documentation: http://nlpcraft.apache.org/intent-matching.html
+  */
+
 // Reusable fragments.
 fragment=hey term={tok_id() == "x:hey" && tok_is_first()}
 
 // Intents.
-intent=int:cancel fragment(hey) term={tok_id() == "x:cancel"}
+intent=int:cancel
+    // Ignore any other user or system tokens if we found 'cancel' token.
+    options={'unused_usr_toks': true, 'unused_sys_toks': true}
+    fragment(hey)
+    term={tok_id() == "x:cancel"}
+
 intent=int:navigate fragment(hey) term={tok_id() == "x:navigate"}
-intent=int:add:waypoint fragment(hey) term={tok_id() == "x:x:add-waypoint"}
-intent=int:remove:waypoint fragment(hey) term={tok_id() == "x:x:remove-waypoint"}
+intent=int:add:waypoint fragment(hey) term={tok_id() == "x:add-waypoint"}
+intent=int:remove:waypoint fragment(hey) term={tok_id() == "x:remove-waypoint"}
