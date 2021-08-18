@@ -3260,8 +3260,8 @@ object NCCli extends NCCliBase {
             .system(true)
             .nativeSignals(true)
             .signalHandler(Terminal.SignalHandler.SIG_IGN)
-            .dumb(true)
-            .jansi(true)
+            .jansi(SystemUtils.IS_OS_UNIX)
+            .jna(SystemUtils.IS_OS_WINDOWS)
             .build()
 
         // Process 'no-ansi' and 'ansi' commands first (before ASCII title is shown).
