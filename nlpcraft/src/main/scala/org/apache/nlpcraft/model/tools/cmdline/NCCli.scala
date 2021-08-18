@@ -258,12 +258,19 @@ object NCCli extends NCCliBase {
      * @param args
      * @return
      */
-    private def getCpParams(args: Seq[Argument]): String =
-        U.splitTrimFilter(
+    private def getCpParams(args: Seq[Argument]): String = {
+        val s = U.splitTrimFilter(
             getParams( args, "cp").map(cp => normalizeCp(U.trimQuotes(cp))).mkString(CP_SEP),
             CP_SEP
         )
         .mkString(CP_SEP)
+
+        // Remove extra '\' from the end, if possible.
+        if (s.last == '\\' && !s.endsWith(":\\"))
+            s.substring(0, s.length - 1)
+        else
+            s
+    }
 
     /**
      *

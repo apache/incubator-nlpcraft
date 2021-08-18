@@ -112,6 +112,12 @@ object NCDeployManager extends NCService {
       */
     case class SynonymHolder(elmId: String, syn: NCProbeSynonym)
 
+    /**
+     *
+     * @param method
+     * @param objClassName
+     * @param obj
+     */
     case class MethodOwner(method: Method, objClassName: String, obj: Any) {
         require(method != null)
         require(objClassName != null ^ obj != null)
@@ -120,12 +126,7 @@ object NCDeployManager extends NCService {
 
         def getObject: Any = {
             if (lazyObj == null)
-                try
-                    lazyObj = U.mkObject(objClassName)
-                catch {
-                    // TODO:
-                    case e: Throwable => throw new NCE(s"Error initializing object of type: $objClassName", e)
-                }
+                lazyObj = U.mkObject(objClassName)
 
             lazyObj
         }
