@@ -310,7 +310,7 @@
                         <fileset>
                             <directory>${user.home}/.nlpcraft-python/fastText</directory>
                             <includes>
-                                <include>**/*</include>
+                                <include>**</include>
                             </includes>
                             <followSymlinks>false</followSymlinks>
                         </fileset>
