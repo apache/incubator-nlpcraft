@@ -78,6 +78,9 @@
         <java.ver>11</java.ver>
         <python.ver>3.8</python.ver>
 
+        <!-- Setting the default path for conda env Python assuming the OS is Linux -->
+        <nlpcraft.python.exec>${user.home}/.nlpcraft-python/nlpcraft-condaenv/bin/python</nlpcraft.python.exec>
+
         <maven.build.timestamp.format>yyyy-MM-dd-HH-mm</maven.build.timestamp.format>
         <timestamp>${maven.build.timestamp}</timestamp>
 
@@ -720,6 +723,40 @@
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+        <profile>
+            <id>windows-os-setup</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                </os>
+            </activation>
+            <properties>
+                <nlpcraft.python.exec>${user.home}/.nlpcraft-python/nlpcraft-condaenv/python</nlpcraft.python.exec>
+            </properties>
+        </profile>
+        <profile>
+            <id>linux-os-setup</id>
+            <activation>
+                <os>
+                    <family>unix</family>
+                    <name>Linux</name>
+                </os>
+            </activation>
+            <properties>
+                <nlpcraft.python.exec>${user.home}/.nlpcraft-python/nlpcraft-condaenv/bin/python</nlpcraft.python.exec>
+            </properties>
+        </profile>
+        <profile>
+            <id>mac-os-setup</id>
+            <activation>
+                <os>
+                    <family>mac</family>
+                </os>
+            </activation>
+            <properties>
+                <nlpcraft.python.exec>${user.home}/.nlpcraft-python/nlpcraft-condaenv/bin/python</nlpcraft.python.exec>
+            </properties>
         </profile>
     </profiles>
 </project>
