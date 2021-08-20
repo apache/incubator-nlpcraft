@@ -27,7 +27,7 @@ logging.basicConfig(level=logging.DEBUG,
                     format=f'[%(asctime)s]: {os.getpid()} %(levelname)s %(message)s',
                     datefmt='%Y-%m-%d %H:%M:%S')
 
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 CURRENT_FILE_NAME = os.path.abspath(__file__)
 CURRENT_DIR = os.path.dirname(CURRENT_FILE_NAME)

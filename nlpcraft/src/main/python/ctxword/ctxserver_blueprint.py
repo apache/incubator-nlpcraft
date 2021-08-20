@@ -14,14 +14,12 @@
 #  limitations under the License.
 #
 
-import logging
 
 from ctxword.bertft import Pipeline
 from flask import jsonify
 from flask import request
 from flask import Blueprint
 
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
 
 blueprint_ctxserver = Blueprint("blueprint_ctxserver", __name__)
 
