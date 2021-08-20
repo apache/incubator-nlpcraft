@@ -144,6 +144,8 @@
         <jline.ver>3.20.0</jline.ver>
         <jansi.ver>2.3.3</jansi.ver>
         <codehaus.mojo.ver>3.0.0</codehaus.mojo.ver>
+        <download.maven.ver>1.6.6</download.maven.ver>
+        <antrun.ver>3.0.0</antrun.ver>
 
         <!--
             Following libraries versions are compatible:
