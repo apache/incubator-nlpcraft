@@ -51,7 +51,7 @@ object NCSpaCyNerEnricher extends NCService with NCNlpNerEnricher with NCIgniteI
     private implicit val fmt: RootJsonFormat[SpacySpan] = jsonFormat7(SpacySpan)
     
     private object Config extends NCConfigurable {
-        def proxyUrl = getStringOrElse("nlpcraft.server.spacy.proxy.url", "http://localhost:5002")
+        def proxyUrl = getStringOrElse("nlpcraft.server.spacy.proxy.url", "http://localhost:5000/api/v1")
     }
 
     // NOTE: property 'vector' represented as string because Python JSON serialization requirements.
