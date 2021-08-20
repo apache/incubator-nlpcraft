@@ -307,6 +307,13 @@
                             </includes>
                             <followSymlinks>false</followSymlinks>
                         </fileset>
+                        <fileset>
+                            <directory>${user.home}/.nlpcraft-python/fastText</directory>
+                            <includes>
+                                <include>**/*</include>
+                            </includes>
+                            <followSymlinks>false</followSymlinks>
+                        </fileset>
                     </filesets>
                 </configuration>
             </plugin>
@@ -603,20 +610,6 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>remove-existing-fasttext</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>rm</executable>
-                            <arguments>
-                                <argument>-rf</argument>
-                                <argument>${user.home}/.nlpcraft-python/fastText</argument>
-                            </arguments>
-                        </configuration>
-                    </execution> 
-                    <execution>
                         <id>download-fasttext</id>
                         <phase>compile</phase>
                         <goals>
@@ -638,7 +631,7 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <executable>${user.home}/.nlpcraft-python/nlpcraft-condaenv/bin/python3</executable>
+                            <executable>${nlpcraft.python.exec}</executable>
                             <arguments>
                                 <argument>${user.home}/.nlpcraft-python/fastText/setup.py</argument>
                                 <argument>install</argument>
@@ -653,7 +646,7 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <executable>${user.home}/.nlpcraft-python/nlpcraft-condaenv/bin/python3</executable>
+                            <executable>${nlpcraft.python.exec}</executable>
                             <arguments>
                                 <argument>-m</argument>
                                 <argument>pip</argument>
@@ -670,7 +663,7 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <executable>${user.home}/.nlpcraft-python/nlpcraft-condaenv/bin/python3</executable>
+                            <executable>${nlpcraft.python.exec}</executable>
                             <arguments>
                                 <argument>${project.basedir}/src/main/python/python_setup.py</argument>
                                 <argument>--pytorch</argument>
