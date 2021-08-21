@@ -23,8 +23,7 @@ import logging
 from distutils.version import LooseVersion
 from nc_pyutils.ncutilities import get_nc_setup_config
 
-
-#TODO: Documentation and refactoring
+# TODO: Documentation and refactoring
 
 # getting the configuration
 nc_setup_conf = get_nc_setup_config()
@@ -32,11 +31,11 @@ nc_setup_conf = get_nc_setup_config()
 log_filename = f'python_setup_{time.strftime("%Y%m%d-%H%M%S")}.log'
 log_file_path = os.path.join(nc_setup_conf['NLPCRAFT_PROJ_HOME'], log_filename)
 logging.basicConfig(
-                    filename=log_file_path,
-                    filemode='a',
-                    format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
-                    datefmt='%H:%M:%S',
-                    level=logging.DEBUG)
+    filename=log_file_path,
+    filemode='a',
+    format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+    datefmt='%H:%M:%S',
+    level=logging.DEBUG)
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.StreamHandler())
@@ -76,17 +75,17 @@ if args.requirements:
         # Checking conda version
         if LooseVersion(str(conda_version)) < LooseVersion(str(nc_setup_conf['MIN_CONDA_VERSION'])):
             raise SystemExit(f'[ERROR] Invalid conda version. The version you have is {float(conda_version)} .'
-                               'See requirements: https://nlpcraft.apache.org/download.html')
+                             'See requirements: https://nlpcraft.apache.org/download.html')
     except FileNotFoundError:
         logger.error('Conda is not installed. See requirements: https://nlpcraft.apache.org/download.html')
         raise SystemExit('[ERROR] Conda is not installed. See requirements: https://nlpcraft.apache.org/download.html')
     except Exception as err:
         logger.error(err)
         logger.error('Conda verification error. See requirements: https://nlpcraft.apache.org/download.html')
-        raise SystemExit(f'[ERROR] Conda verification error. See requirements: https://nlpcraft.apache.org/download.html')
+        raise SystemExit(
+            f'[ERROR] Conda verification error. See requirements: https://nlpcraft.apache.org/download.html')
 
     print(f'Log: {log_file_path}')
-
 
 if args.setupdir:
     user_home = os.path.expanduser("~")
@@ -102,16 +101,23 @@ if args.setupdir:
 
 if args.pytorch:
     """Pytorch Installation: OS Independent"""
+
+
     def pytorch_osx_install():
         subprocess.check_call([sys.executable, "-m", "pip", "install", 'torch', 'torchvision', 'torchaudio'])
 
+
     def pytorch_win_install():
-        subprocess.check_call([sys.executable, "-m", "pip", "install", 'torch==1.9.0+cu111', 'torchvision==0.10.0+cu111',
-                               'torchaudio===0.9.0', '-f', 'https://download.pytorch.org/whl/torch_stable.html'])
+        subprocess.check_call(
+            [sys.executable, "-m", "pip", "install", 'torch==1.9.0+cu111', 'torchvision==0.10.0+cu111',
+             'torchaudio===0.9.0', '-f', 'https://download.pytorch.org/whl/torch_stable.html'])
+
 
     def pytorch_linux_install():
-        subprocess.check_call([sys.executable, "-m", "pip", "install", 'torch==1.9.0+cu111', 'torchvision==0.10.0+cu111',
-                               'torchaudio==0.9.0', '-f', 'https://download.pytorch.org/whl/torch_stable.html'])
+        subprocess.check_call(
+            [sys.executable, "-m", "pip", "install", 'torch==1.9.0+cu111', 'torchvision==0.10.0+cu111',
+             'torchaudio==0.9.0', '-f', 'https://download.pytorch.org/whl/torch_stable.html'])
+
 
     print(f'OS detected as {sys.platform}')
     print(f'Python executable at: {sys.executable}')
@@ -135,19 +141,16 @@ if args.pytorch:
 if args.autoremovecondaenv:
     if args.autoremovecondaenv in ["\"--yes\"", "\"-y\""]:
         print('Installing conda environment. Will replace existing conda environment if exists.')
-    elif args.autoremovecondaenv in ["\"False\"", "\"No\""]:
+    elif args.autoremovecondaenv == "\"\"":
+        print(args.autoremovecondaenv)
         print("****************************************************************************************************")
         print('WARNING: You have manually chosen to keep the existing conda environment.')
-        print('WARNING: The prompt text may not appear and you may need to key in an option **twice** when Maven pauses')
+        print(
+            'WARNING: The prompt text may not appear and you may need to key in an option **twice** when Maven pauses')
         print("WARNING: Press 'n' and then <Enter> to keep the current conda environment")
-        print('PROMPT: Remove existing environment (y/[n])?')
+        print('PROMPT 1: Remove existing environment (y/[n])?')
+        print('PROMPT 2: Proceed ([y]/n)?')
         print("****************************************************************************************************")
     else:
-        print("****************************************************************************************************")
-        print("AMBIGUOUS: Invalid option chosen on whether to auto remove the existing conda environment. "
-              "Valid options are 'False' or 'No'")
-        print('WARNING: Moving to conda create <env>:')
-        print('WARNING: The prompt text may not appear and you may need to key in an option **twice** when Maven pauses')
-        print("WARNING: Press 'n' and then <Enter> to keep the current conda environment")
-        print('PROMPT: Remove existing environment (y/[n])?')
-        print("****************************************************************************************************")
+        raise SystemExit("Invalid flag for 'auto-rm-existing-python-env'. The values acceptable are in ['--yes', 'y', "
+                         "<blank>]")
