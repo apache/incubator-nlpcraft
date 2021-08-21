@@ -176,6 +176,9 @@
             the end user, when required.
         -->
         <stanford.corenlp.ver>3.9.2</stanford.corenlp.ver>
+
+        <!-- To remove existing python environment -->
+        <auto-rm-existing-python-env>-y</auto-rm-existing-python-env>
     </properties>
 
     <dependencyManagement>

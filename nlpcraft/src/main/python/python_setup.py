@@ -55,19 +55,24 @@ parser.add_argument('--pytorch',
                     help='Install the correct PyTorch version depending on the OS',
                     action='store_true')
 
+parser.add_argument('--autoremovecondaenv',
+                    help='Flag to remove conda environment',
+                    default=None,
+                    required=False)
+
 args = parser.parse_args()
 
-logger.debug("Starting python environment setup:\n")
-for items in nc_setup_conf.items():
-    logger.debug(items)
+# logger.info("Starting python environment setup:\n")
+# for items in nc_setup_conf.items():
+#     logger.debug(items)
 
 if args.requirements:
-    logger.debug('Checking system requirements for NLPCraft to run:')
+    print('Checking system requirements for NLPCraft to run:')
     try:
         # Check if conda is installed
         subprocess.call(['conda', '-V'])
         conda_version: str = subprocess.run(['conda', '-V'], stdout=subprocess.PIPE).stdout.decode('utf-8').split()[1]
-        logger.debug(f'Conda version of your system is: {conda_version}')
+        print(f'Conda version of your system is: {conda_version}')
         # Checking conda version
         if LooseVersion(str(conda_version)) < LooseVersion(str(nc_setup_conf['MIN_CONDA_VERSION'])):
             raise SystemExit(f'[ERROR] Invalid conda version. The version you have is {float(conda_version)} .'
@@ -80,7 +85,7 @@ if args.requirements:
         logger.error('Conda verification error. See requirements: https://nlpcraft.apache.org/download.html')
         raise SystemExit(f'[ERROR] Conda verification error. See requirements: https://nlpcraft.apache.org/download.html')
 
-    logger.info(f'Log: {log_file_path}')
+    print(f'Log: {log_file_path}')
 
 
 if args.setupdir:
@@ -108,9 +113,9 @@ if args.pytorch:
         subprocess.check_call([sys.executable, "-m", "pip", "install", 'torch==1.9.0+cu111', 'torchvision==0.10.0+cu111',
                                'torchaudio==0.9.0', '-f', 'https://download.pytorch.org/whl/torch_stable.html'])
 
-    logger.debug(f'OS detected as {sys.platform}')
-    logger.debug(f'Python executable at: {sys.executable}')
-    logger.debug(f'NLPCraft attempting to install PyTorch for your OS {sys.platform} ......')
+    print(f'OS detected as {sys.platform}')
+    print(f'Python executable at: {sys.executable}')
+    print(f'NLPCraft attempting to install PyTorch for your OS {sys.platform} ......')
 
     try:
         if sys.platform == "linux" or sys.platform == "linux2":
@@ -125,4 +130,24 @@ if args.pytorch:
                         f"and install it manually into the {os.path.join(os.path.expanduser('~'), '.nlpcraft-python')}"
                         ' conda environment.\nFor more information see nlpcraft/src/main/python/ctxword/README.md')
 
-    logger.info(f'Log: {log_file_path}')
+    print(f'Log: {log_file_path}')
+
+if args.autoremovecondaenv:
+    if args.autoremovecondaenv in ["\"--yes\"", "\"-y\""]:
+        print('Installing conda environment. Will replace existing conda environment if exists.')
+    elif args.autoremovecondaenv in ["\"False\"", "\"No\""]:
+        print("****************************************************************************************************")
+        print('WARNING: You have manually chosen to keep the existing conda environment.')
+        print('WARNING: The prompt text may not appear and you may need to key in an option **twice** when Maven pauses')
+        print("WARNING: Press 'n' and then <Enter> to keep the current conda environment")
+        print('PROMPT: Remove existing environment (y/[n])?')
+        print("****************************************************************************************************")
+    else:
+        print("****************************************************************************************************")
+        print("AMBIGUOUS: Invalid option chosen on whether to auto remove the existing conda environment. "
+              "Valid options are 'False' or 'No'")
+        print('WARNING: Moving to conda create <env>:')
+        print('WARNING: The prompt text may not appear and you may need to key in an option **twice** when Maven pauses')
+        print("WARNING: Press 'n' and then <Enter> to keep the current conda environment")
+        print('PROMPT: Remove existing environment (y/[n])?')
+        print("****************************************************************************************************")

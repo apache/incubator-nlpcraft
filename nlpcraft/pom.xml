@@ -558,7 +558,25 @@
                     </execution>
                 </executions>
             </plugin>
-
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>${antrun.ver}</version>
+                <executions>
+                    <execution>
+                        <id>create-py-dir</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <mkdir dir="${user.home}/.nlpcraft-python"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
@@ -571,6 +589,7 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
+                            <useMavenLogger>true</useMavenLogger>
                             <executable>python</executable>
                             <arguments>
                                 <argument>${project.basedir}/src/main/python/python_setup.py</argument>
@@ -579,16 +598,18 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>create-py-dir</id>
+                        <id>CONDA-ENVIRONMENT-MESSAGE</id>
                         <phase>compile</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>
                         <configuration>
+                            <useMavenLogger>true</useMavenLogger>
                             <executable>python</executable>
                             <arguments>
                                 <argument>${project.basedir}/src/main/python/python_setup.py</argument>
-                                <argument>--setupdir</argument>
+                                <argument>--autoremovecondaenv</argument>
+                                <argument>"${auto-rm-existing-python-env}"</argument>
                             </arguments>
                         </configuration>
                     </execution>
@@ -599,13 +620,14 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
+                            <useMavenLogger>true</useMavenLogger>
                             <executable>conda</executable>
                             <arguments>
                                 <argument>create</argument>
                                 <argument>-p</argument>
                                 <argument>${user.home}/.nlpcraft-python/nlpcraft-condaenv</argument>
                                 <argument>python=${python.ver}</argument>
-                                <argument>-y</argument>
+                                <argument>${auto-rm-existing-python-env}</argument>
                             </arguments>
                         </configuration>
                     </execution>
@@ -616,6 +638,7 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
+                            <useMavenLogger>false</useMavenLogger>
                             <executable>git</executable>
                             <arguments>
                                 <argument>clone</argument>
@@ -625,12 +648,13 @@
                         </configuration>
                     </execution> 
                     <execution>
-                        <id>install-fasttext</id>
+                        <id>installing-fasttext</id>
                         <phase>compile</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>
                         <configuration>
+<!--                            <useMavenLogger>false</useMavenLogger>-->
                             <executable>${nlpcraft.python.exec}</executable>
                             <arguments>
                                 <argument>${user.home}/.nlpcraft-python/fastText/setup.py</argument>
@@ -646,6 +670,7 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
+                            <useMavenLogger>true</useMavenLogger>
                             <executable>${nlpcraft.python.exec}</executable>
                             <arguments>
                                 <argument>-m</argument>
@@ -663,6 +688,7 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
+                            <useMavenLogger>true</useMavenLogger>
                             <executable>${nlpcraft.python.exec}</executable>
                             <arguments>
                                 <argument>${project.basedir}/src/main/python/python_setup.py</argument>
