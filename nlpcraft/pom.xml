@@ -673,28 +673,28 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>com.googlecode.maven-download-plugin</groupId>
-                <artifactId>download-maven-plugin</artifactId>
-                <version>${download.maven.ver}</version>
-                <executions>
-                    <execution>
-                        <id>install-default-models</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>wget</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <url>https://dl.fbaipublicfiles.com/fasttext/vectors-crawl/cc.en.300.bin.gz</url>
-                    <outputDirectory>${project.basedir}/src/main/python/ctxword/data</outputDirectory>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>${antrun.ver}</version>
                 <executions>
+                    <execution>
+                        <id>download-model</id>
+                        <phase>compile</phase>
+                        <configuration>
+                            <target>
+                                <echo message="Downloading model file.This is a large file. The download time is
+                                dependent on your internet connection" />
+                                <mkdir dir="${project.basedir}/src/main/python/ctxword/data/"/>
+                                <get src="https://dl.fbaipublicfiles.com/fasttext/vectors-crawl/cc.en.300.bin.gz"
+                                     dest="${project.basedir}/src/main/python/ctxword/data/cc.en.300.bin.gz"
+                                     verbose="true"
+                                     usetimestamp="true"/>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
                     <execution>
                         <id>unzip-model</id>
                         <phase>compile</phase>
