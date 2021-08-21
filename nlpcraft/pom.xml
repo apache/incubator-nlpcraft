@@ -696,7 +696,7 @@
                 <version>${antrun.ver}</version>
                 <executions>
                     <execution>
-                        <id>prepare</id>
+                        <id>unzip-model</id>
                         <phase>compile</phase>
                         <configuration>
                             <target>
@@ -707,6 +707,27 @@
                         <goals>
                             <goal>run</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>${antrun.ver}</version>
+                <executions>
+                    <execution>
+                        <id>delete-fasttext-folder</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <delete
+                                        dir="${user.home}/.nlpcraft-python/fastText"
+                                        includeemptydirs="true"/>
+                            </target>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
