@@ -154,7 +154,7 @@
         <prometheus.ver>0.9.0</prometheus.ver>
         <lightstep.ver>0.0.3</lightstep.ver>
         <lightstep.grpc.ver>0.15.8</lightstep.grpc.ver>
-        <junit.ver>5.5.1</junit.ver>
+        <junit.ver>5.7.2</junit.ver>
         <jsonpath.ver>2.4.0</jsonpath.ver>
 
         <!-- Force specific encoding on text resources. -->
