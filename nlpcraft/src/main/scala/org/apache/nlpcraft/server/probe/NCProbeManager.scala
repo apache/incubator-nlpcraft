@@ -1126,16 +1126,17 @@ object NCProbeManager extends NCService {
                     )
 
                     val macros = res.remove("macros").asInstanceOf[java.util.Map[String, String]].asScala
-
                     var syns = res.remove("synonyms").asInstanceOf[java.util.List[String]].asScala
                     var vals = res.remove("values").asInstanceOf[java.util.Map[String, java.util.List[String]]].asScala
 
+                    require(macros != null)
+                    require(syns != null)
+                    require(vals != null)
+
                     val parser = NCMacroParser(macros.toList)
 
-                    var synsExp: Seq[(String, Seq[String])] =
-                        syns.map(s => s -> parser.expand(s))
-                    var valsExp: Map[String, mutable.Buffer[(String, Seq[String])]] =
-                        vals.map(v => v._1 -> v._2.asScala.map(s => s -> parser.expand(s))).toMap
+                    var synsExp = syns.map(s => s -> parser.expand(s))
+                    var valsExp = vals.map(v => v._1 -> v._2.asScala.map(s => s -> parser.expand(s))).toMap
 
                     pattern match {
                         case Some(p) =>
@@ -1154,9 +1155,15 @@ object NCProbeManager extends NCService {
                                 else
                                     None
                             }
-                            vals = vals.map { case (name, syns) => name -> syns.asScala.filter(s =>
-                                valsExp.exists { case (valExpName, valExpSyns) => name == valExpName && valExpSyns.exists(_._1 == s)}
-                            )}.filter(_._2.nonEmpty).map(p => p._1 -> p._2.asJava)
+                            vals = vals.map {
+                                case (vName, vSyns) =>
+                                    vName ->
+                                    vSyns.asScala.filter(s =>
+                                        valsExp.exists {
+                                            case (vExpName, vExpSyns) => vName == vExpName && vExpSyns.exists(_._1 == s)
+                                        }
+                                    )
+                            }.filter(_._2.nonEmpty).map(p => p._1 -> p._2.asJava)
                         case None => // No-op.
                     }
 
