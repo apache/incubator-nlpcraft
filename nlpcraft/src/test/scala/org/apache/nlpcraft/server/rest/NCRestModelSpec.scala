@@ -111,13 +111,11 @@ class NCRestModelSpec2 extends NCRestSpec {
                 ("$.valuesExp", (data: java.util.Map[Object, Object]) => assertTrue(checkValsExp(data.size())))
             )
 
-
         post0("eExt1", checkVals = _ == 0, checkValsExp = _ == 0)
         post0("eExt2", checkSyns = _ == 3, checkSynsExp = _ == 11, checkVals = _ == 3, checkValsExp = _ == 3)
 
         post0("eExt2", pattern = Some("mtest2"), checkSyns = _ == 1, checkSynsExp = _ == 8, checkVals = _ == 2, checkValsExp = _ == 2)
         post0("eExt2", pattern = Some("UNKNOWN"), checkSyns = _ == 0, checkSynsExp = _ == 0, checkVals = _ == 0, checkValsExp = _ == 0)
-
 
         postError("model/syns", 400, "NC_INVALID_FIELD", "mdlId" -> "UNKNOWN", "elmId" -> "UNKNOWN")
         postError("model/syns", 400, "NC_INVALID_FIELD", "mdlId" -> "rest.test.model", "elmId" -> "UNKNOWN")
