@@ -1111,7 +1111,9 @@ object NCProbeManager extends NCService {
       * @return
       */
     def getModelElementInfo(mdlId: String, elmId: String, pattern: Option[String], parent: Span = null): Future[JavaMeta] =
-        startScopedSpan("getModelElementInfo", parent, "mdlId" -> mdlId, "elmId" -> elmId) { _ =>
+        startScopedSpan(
+            "getModelElementInfo", parent, "mdlId" -> mdlId, "elmId" -> elmId, "pattern" -> pattern.orNull
+        ) { _ =>
             processModelInfoRequest(
                 mdlId,
                 NCProbeMessage("S2P_MODEL_ELEMENT_INFO", "mdlId" -> mdlId, "elmId" -> elmId),
