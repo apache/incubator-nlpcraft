@@ -622,12 +622,28 @@ private [cmdline] object NCCliCommands {
                     desc =
                         s"ID of the model element to get expanded synonyms and values for. " +
                         s"In REPL mode, hit ${rv(" Tab ")} to see auto-suggestion for possible element IDs."
+                ),
+                // TODO:
+                Parameter(
+                    id = "pattern",
+                    names = Seq("--pattern", "-p"),
+                    value = Some("pattern"), // TODO:
+                    optional = true,
+                    desc = s"512 length element and values synonyms patters."
                 )
             ),
             examples = Seq(
                 Example(
                     usage = Seq(
                         s"""> model-syns -m=my.model.id -e=my:elem"""
+                    ),
+                    desc =
+                        s"Issues ${y("'model/syns'")} REST call with given model and element IDs."
+                ),
+                // TODO:
+                Example(
+                    usage = Seq(
+                        s"""> model-syns -m=my.model.id -e=my:elem -p=test"""
                     ),
                     desc =
                         s"Issues ${y("'model/syns'")} REST call with given model and element IDs."

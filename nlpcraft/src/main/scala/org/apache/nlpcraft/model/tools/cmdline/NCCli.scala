@@ -1796,6 +1796,7 @@ object NCCli extends NCCliBase {
                             throw MissingOptionalParameter(cmd, "mdlId")
                 }
                 val elmId = getParam(cmd, args, "elmId")
+                val pattern = getParamOrNull(args, "pattern")
 
                 httpRest(
                     cmd,
@@ -1804,7 +1805,8 @@ object NCCli extends NCCliBase {
                        |{
                        |    "acsTok": ${jsonQuote(acsTok)},
                        |    "mdlId": ${jsonQuote(mdlId)},
-                       |    "elmId": ${jsonQuote(elmId)}
+                       |    "elmId": ${jsonQuote(elmId)},
+                       |    "pattern": ${jsonQuote(pattern)}
                        |}
                        |""".stripMargin
                 )
