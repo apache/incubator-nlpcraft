@@ -18,9 +18,9 @@
 package org.apache.nlpcraft.common.ansi
 
 import java.io.PrintWriter
-
 import org.apache.nlpcraft.common._
 import NCAnsi._
+import org.apache.commons.lang3.StringUtils
 import org.apache.nlpcraft.common.ansi.NCAnsiProgressBar._
 
 /**
@@ -44,10 +44,9 @@ class NCAnsiProgressBar(
     
     private final val mux = new Object()
 
-    //noinspection ZeroIndexToHead
-    private final val PB_LEFT = s"$B${CHAR_SET(0)}$RST"
+    private final val PB_LEFT = s"$B${CHAR_SET.head}$RST"
     private final val PB_RIGHT = s"$B${CHAR_SET(3)}$RST"
-    private final val PB_EMPTY =s"$W${CHAR_SET(2)}$RST"
+    private final val PB_EMPTY = s"$W${CHAR_SET(2)}$RST"
     private final val PB_FULL = s"$R$BO${CHAR_SET(1)}$RST"
     private final val PB_LEAD = s"$Y$BO${CHAR_SET(4)}$RST"
 
@@ -55,7 +54,7 @@ class NCAnsiProgressBar(
      *
      */
     private def clean(): Unit = {
-        out.print(ansiCursorLeft * (dispSize + 2))
+        out.print(ansiCursorLeft * (dispSize + 2/* Left & right brackets. */ + 5/* % string. */))
         out.print(ansiClearLineAfter)
         out.flush()
     }
@@ -73,6 +72,8 @@ class NCAnsiProgressBar(
             out.print(PB_LEFT)
             out.print(PB_EMPTY * dispSize)
             out.print(PB_RIGHT)
+            out.print(" ")
+            out.print(s"${W}0%  $RST")
 
             out.flush()
         }
@@ -88,7 +89,9 @@ class NCAnsiProgressBar(
             if (useAnsi) {
                 clean()
 
-                val bar = if (tick == 1) 1 else Math.round((tick.toFloat / totalTicks.toFloat) * dispSize)
+                val ratio = tick.toFloat / totalTicks.toFloat
+                val bar = if (tick == 1) 1 else Math.round(ratio * dispSize)
+                val pct = Math.round(ratio * 100)
 
                 out.print(PB_LEFT)
                 for (i <- 0 until dispSize) {
@@ -100,6 +103,8 @@ class NCAnsiProgressBar(
                         out.print(PB_EMPTY)
                 }
                 out.print(PB_RIGHT)
+                out.print(" ")
+                out.print(W + StringUtils.rightPad(s"$pct%",4) + RST)
                 out.flush()
             }
             else if (tick == 1 || tick % (totalTicks / dispSize) == 0) {
@@ -126,7 +131,7 @@ class NCAnsiProgressBar(
 
             // Show cursor.
             out.print(ansiCursorShow)
-            out.flush()
+            out.flush() 
         }
     }
 }
