@@ -44,6 +44,7 @@ import java.security.Key
 import java.util
 import java.util.Collections
 import java.util.concurrent.ConcurrentHashMap
+import java.util.regex.Pattern
 import scala.collection.mutable
 import scala.concurrent.{ExecutionContext, Future, Promise}
 import scala.jdk.CollectionConverters.{ListHasAsScala, MapHasAsJava, MapHasAsScala, SeqHasAsJava, SetHasAsScala}
@@ -1105,11 +1106,14 @@ object NCProbeManager extends NCService {
       *
       * @param mdlId
       * @param elmId
+      * @param pattern
       * @param parent
       * @return
       */
-    def getModelElementInfo(mdlId: String, elmId: String, parent: Span = null): Future[JavaMeta] =
-        startScopedSpan("getModelElementInfo", parent, "mdlId" -> mdlId, "elmId" -> elmId) { _ =>
+    def getModelElementInfo(mdlId: String, elmId: String, pattern: Option[String], parent: Span = null): Future[JavaMeta] =
+        startScopedSpan(
+            "getModelElementInfo", parent, "mdlId" -> mdlId, "elmId" -> elmId, "pattern" -> pattern.orNull
+        ) { _ =>
             processModelInfoRequest(
                 mdlId,
                 NCProbeMessage("S2P_MODEL_ELEMENT_INFO", "mdlId" -> mdlId, "elmId" -> elmId),
@@ -1124,16 +1128,51 @@ object NCProbeManager extends NCService {
                     )
 
                     val macros = res.remove("macros").asInstanceOf[java.util.Map[String, String]].asScala
-                    val syns = res.get("synonyms").asInstanceOf[java.util.List[String]].asScala
-                    val vals = res.get("values").asInstanceOf[java.util.Map[String, java.util.List[String]]].asScala
+                    var syns = res.remove("synonyms").asInstanceOf[java.util.List[String]].asScala
+                    var vals = res.remove("values").asInstanceOf[java.util.Map[String, java.util.List[String]]].asScala
+
+                    require(macros != null)
+                    require(syns != null)
+                    require(vals != null)
 
                     val parser = NCMacroParser(macros.toList)
 
-                    val synsExp = syns.flatMap(s => parser.expand(s)).sorted
-                    val valsExp = vals.map(v => v._1 -> v._2.asScala.flatMap(s => parser.expand(s)).sorted.asJava).toMap
+                    var synsExp = syns.map(s => s -> parser.expand(s))
+                    var valsExp = vals.map(v => v._1 -> v._2.asScala.map(s => s -> parser.expand(s))).toMap
 
-                    res.put("synonymsExp", synsExp.asJava)
-                    res.put("valuesExp", valsExp.asJava)
+                    pattern match {
+                        case Some(p) =>
+                            val regex = Pattern.compile(p)
+
+                            def any(s: String): Boolean = regex.matcher(s).find()
+
+                            synsExp = synsExp.map(p => p._1 -> p._2.filter(any)).filter(_._2.nonEmpty)
+                            syns = syns.filter(s => synsExp.exists(_._1 == s))
+
+                            valsExp = valsExp.flatMap { case (name, syns) =>
+                                val synsFiltered = syns.map(p => p._1 -> p._2.filter(any)).filter(_._2.nonEmpty)
+
+                                if (any(name) || synsFiltered.nonEmpty)
+                                    Some(name -> synsFiltered)
+                                else
+                                    None
+                            }
+                            vals = vals.map {
+                                case (vName, vSyns) =>
+                                    vName ->
+                                    vSyns.asScala.filter(s =>
+                                        valsExp.exists {
+                                            case (vExpName, vExpSyns) => vName == vExpName && vExpSyns.exists(_._1 == s)
+                                        }
+                                    )
+                            }.filter(_._2.nonEmpty).map(p => p._1 -> p._2.asJava)
+                        case None => // No-op.
+                    }
+
+                    res.put("synonyms", syns.asJava)
+                    res.put("values", vals.asJava)
+                    res.put("synonymsExp", synsExp.flatMap(_._2).sorted.asJava)
+                    res.put("valuesExp", valsExp.map(p => p._1 -> p._2.flatMap(_._2).sorted).asJava)
 
                     // Add statistics.
                     res.put("synonymsExpCnt", Integer.valueOf(synsExp.size))
@@ -1154,5 +1193,4 @@ object NCProbeManager extends NCService {
                 parent
             )
         }
-
 }
