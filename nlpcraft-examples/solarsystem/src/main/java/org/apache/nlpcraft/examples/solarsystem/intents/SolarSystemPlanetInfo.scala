@@ -15,10 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.examples.solarsystem
+package org.apache.nlpcraft.examples.solarsystem.intents
 
-import com.typesafe.scalalogging.LazyLogging
-import org.apache.nlpcraft.model.{NCModelAddPackage, NCModelFileAdapter}
+import org.apache.nlpcraft.model.{NCIntent, NCIntentSample, NCIntentTerm, NCResult, NCToken}
 
-@NCModelAddPackage(Array("org.apache.nlpcraft.examples.solarsystem.intents"))
-class SolarSystemModel extends NCModelFileAdapter("solarsystem_model.yaml") with LazyLogging
+class SolarSystemPlanetInfo extends SolarSystemIntentsAdapter {
+    @NCIntentSample(
+        Array(
+            "Moon!",
+            "give me information about Larissa",
+        )
+    )
+    @NCIntent(
+        "intent=planetInfo " +
+        "    options={" +
+        "        'unused_usr_toks': false " +
+        "    }" +
+        "    term(planet)={tok_id() == 'planet'}"
+    )
+    def planetInfo(@NCIntentTerm("planet") planet: NCToken): NCResult =
+        NCResult.text(api.bodyRequest().withFilter("id", "eq", planet.getNormalizedText).execute().toString())
+}

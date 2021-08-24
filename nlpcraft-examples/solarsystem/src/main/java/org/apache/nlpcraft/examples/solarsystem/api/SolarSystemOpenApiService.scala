@@ -22,9 +22,9 @@ import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.examples.solarsystem.api.SolarSystemOpenApiService.BodiesBean
 
-import java.net.{URI, URLEncoder}
 import java.net.http.HttpClient.Version
 import java.net.http.{HttpClient, HttpRequest, HttpResponse}
+import java.net.{URI, URLEncoder}
 
 object SolarSystemOpenApiService {
     case class BodiesBean(bodies: Seq[Map[String, Object]])

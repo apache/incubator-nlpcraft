@@ -49,5 +49,4 @@ class SolarSystemDiscoversValueLoader extends NCValueLoader {
 
     override def load(owner: NCElement): util.Set[NCValue] =
         SolarSystemOpenApiService.getInstance().getAllDiscovers.map(mkValue).toSet.asJava
-
 }

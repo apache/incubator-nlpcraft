@@ -15,10 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.examples.solarsystem
+package org.apache.nlpcraft.examples.solarsystem.intents
 
 import com.typesafe.scalalogging.LazyLogging
-import org.apache.nlpcraft.model.{NCModelAddPackage, NCModelFileAdapter}
+import org.apache.nlpcraft.examples.solarsystem.api.SolarSystemOpenApiService
+import org.apache.nlpcraft.model.NCLifecycle
 
-@NCModelAddPackage(Array("org.apache.nlpcraft.examples.solarsystem.intents"))
-class SolarSystemModel extends NCModelFileAdapter("solarsystem_model.yaml") with LazyLogging
+private[intents] class SolarSystemIntentsAdapter extends NCLifecycle with LazyLogging {
+    protected var api: SolarSystemOpenApiService = _
+
+    override def onInit(): Unit = {
+        api = SolarSystemOpenApiService.getInstance()
+
+        logger.info("Solar System API initialized.")
+    }
+
+    override def onDiscard(): Unit = {
+        if (api != null)
+            api.stop()
+
+        logger.info("Solar System API closed.")
+    }
+}
