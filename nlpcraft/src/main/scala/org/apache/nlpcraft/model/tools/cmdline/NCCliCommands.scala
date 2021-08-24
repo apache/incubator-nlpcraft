@@ -644,7 +644,8 @@ private [cmdline] object NCCliCommands {
                         s"""> model-syns -m=my.model.id -e=my:elem -p='^start.*'"""
                     ),
                     desc =
-                        s"Issues ${y("'model/syns'")} REST call with given model and element IDs filtered by ${y("^start.*")} regex."
+                        s"Issues ${y("'model/syns'")} REST call with given model and element IDs having the " +
+                        s"returned synonyms filtered by ${y("^start.*")} regex."
                 )
             )
         ),
