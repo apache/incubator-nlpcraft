@@ -17,9 +17,10 @@
 
 package org.apache.nlpcraft.examples.solarsystem.intents
 
+import org.apache.nlpcraft.examples.solarsystem.api.SolarSystemOpenApiService
 import org.apache.nlpcraft.model.{NCIntent, NCIntentSample, NCIntentTerm, NCResult, NCToken}
 
-class SolarSystemDiscoverer extends SolarSystemIntentsAdapter {
+class SolarSystemDiscoverer {
     @NCIntentSample(
         Array(
             "What was discovered by Asaph Hall",
@@ -36,5 +37,5 @@ class SolarSystemDiscoverer extends SolarSystemIntentsAdapter {
             "    term(discoverer)={tok_id() == 'discoverer'}"
     )
     def discoverer(@NCIntentTerm("discoverer") discoverer: NCToken): NCResult =
-        NCResult.text(api.bodyRequest().withFilter("discoveredBy", "cs", discoverer.getNormalizedText).execute().toString())
+        NCResult.text(SolarSystemOpenApiService.getInstance().bodyRequest().withFilter("discoveredBy", "cs", discoverer.getNormalizedText).execute().toString())
 }

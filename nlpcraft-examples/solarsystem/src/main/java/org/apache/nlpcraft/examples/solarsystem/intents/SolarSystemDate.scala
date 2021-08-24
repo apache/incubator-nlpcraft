@@ -17,13 +17,14 @@
 
 package org.apache.nlpcraft.examples.solarsystem.intents
 
+import org.apache.nlpcraft.examples.solarsystem.api.SolarSystemOpenApiService
 import org.apache.nlpcraft.model.{NCIntent, NCIntentSample, NCIntentTerm, NCResult, NCToken}
 
 import java.time.format.{DateTimeFormatter, DateTimeFormatterBuilder, DateTimeParseException}
 import java.time.temporal.ChronoField.{DAY_OF_MONTH, MONTH_OF_YEAR}
 import java.time.{LocalDate, ZoneOffset}
 
-class SolarSystemDate extends SolarSystemIntentsAdapter {
+class SolarSystemDate {
     @NCIntentSample(
         Array(
             "After 1900 year",
@@ -40,7 +41,7 @@ class SolarSystemDate extends SolarSystemIntentsAdapter {
     def date(@NCIntentTerm("date") date: NCToken): NCResult = {
         // API doesn't support filter by dates.
         // We do it here.
-        var res = api.bodyRequest().execute()
+        var res = SolarSystemOpenApiService.getInstance().bodyRequest().execute()
 
         val supportedFmts =
             Seq (

@@ -17,9 +17,10 @@
 
 package org.apache.nlpcraft.examples.solarsystem.intents
 
+import org.apache.nlpcraft.examples.solarsystem.api.SolarSystemOpenApiService
 import org.apache.nlpcraft.model.{NCIntent, NCIntentSample, NCIntentTerm, NCResult, NCToken}
 
-class SolarSystemPlanetInfo extends SolarSystemIntentsAdapter {
+class SolarSystemPlanetInfo {
     @NCIntentSample(
         Array(
             "Moon!",
@@ -34,5 +35,5 @@ class SolarSystemPlanetInfo extends SolarSystemIntentsAdapter {
         "    term(planet)={tok_id() == 'planet'}"
     )
     def planetInfo(@NCIntentTerm("planet") planet: NCToken): NCResult =
-        NCResult.text(api.bodyRequest().withFilter("id", "eq", planet.getNormalizedText).execute().toString())
+        NCResult.text(SolarSystemOpenApiService.getInstance().bodyRequest().withFilter("id", "eq", planet.getNormalizedText).execute().toString())
 }
