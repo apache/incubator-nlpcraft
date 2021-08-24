@@ -19,7 +19,11 @@ id: "nlpcraft.cargps.ex"
 name: "Car GPS Example Model"
 version: "1.0"
 description: "NLI-powered car GPS-based navigation example model."
-enabledBuiltInTokens: [] # This example doesn't use any built-in tokens.
+enabledBuiltInTokens:
+    - "nlpcraft:num"
+    - "nlpcraft:city"
+    - "nlpcraft:country"
+    - "nlpcraft:region"
 
 macros:
   - name: "<HEY>"
@@ -31,16 +35,26 @@ macros:
   - name: "<WAYPOINT>"
     macro: "{waypoint|location|point|stopover|stop over|way station|stop|checkpoint|stop point} {point|station|_}"
 
-#
-# Allows for multi-word synonyms in this entire model
-# to be sparse and permutate them for better detection.
-# These two properties generally enable a free-form
-# natural language comprehension.
-#
-permutateSynonyms: true
-sparse: true
-
 elements:
+  - id: "x:addr:kind"
+    # Short list from https://pe.usps.com/text/pub28/28apc_002.htm
+    synonyms:
+      # street[0,2] => {_|street|street street}
+      - "{street|drive|court|plaza|avenue|alley|anex|beach|bend|boulevard|bridge|canyon|causeway|way|circle|corner|creek|fork|harbor|highway|expressway|island|lane|lake|loop|motorway|park|path|point|ramp|route|rue|row|skyway|square|station|summit|trail|tunnel|walk|road}"
+      - "{st|str|dr|crt|plz|ave|blvd|hwy|rd}"
+
+  - id: "x:addr:num"
+    synonyms:
+      - "^^{tok_id() == 'nlpcraft:num' && meta_tok('nlpcraft:num:unit') == null && meta_tok('nlpcraft:num:isequalcondition')}^^"
+
+  - id: "x:addr:st"
+    synonyms:
+      - "{//[a-zA-Z0-9]+//}[1,3]"
+
+  - id: "x:addr"
+    synonyms:
+      - "^^[num]{tok_id() == 'x:addr:num'}^^ ^^[name]{tok_id() == 'x:addr:st'}^^ ^^[kind]{tok_id() == 'x:addr:kind'}^^"
+
   - id: "x:hey"
     description: "NLI prompt"
     synonyms:

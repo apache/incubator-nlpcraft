@@ -29,6 +29,6 @@ intent=int:cancel
     fragment(hey)
     term={tok_id() == "x:cancel"}
 
-intent=int:navigate fragment(hey) term={tok_id() == "x:navigate"}
+intent=int:navigate fragment(hey) term={tok_id() == "x:navigate"} term={tok_id() == "x:addr"}
 intent=int:add:waypoint fragment(hey) term={tok_id() == "x:add-waypoint"}
 intent=int:remove:waypoint fragment(hey) term={tok_id() == "x:remove-waypoint"}
