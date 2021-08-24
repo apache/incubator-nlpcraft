@@ -623,13 +623,12 @@ private [cmdline] object NCCliCommands {
                         s"ID of the model element to get expanded synonyms and values for. " +
                         s"In REPL mode, hit ${rv(" Tab ")} to see auto-suggestion for possible element IDs."
                 ),
-                // TODO:
                 Parameter(
                     id = "pattern",
-                    names = Seq("--pattern", "-p"),
-                    value = Some("pattern"), // TODO:
+                    names = Seq("--ptrn", "-p"),
+                    value = Some("regex"),
                     optional = true,
-                    desc = s"512 length element and values synonyms patters."
+                    desc = s"Optional regular expression pattern to filter the synonyms by."
                 )
             ),
             examples = Seq(
@@ -640,13 +639,12 @@ private [cmdline] object NCCliCommands {
                     desc =
                         s"Issues ${y("'model/syns'")} REST call with given model and element IDs."
                 ),
-                // TODO:
                 Example(
                     usage = Seq(
-                        s"""> model-syns -m=my.model.id -e=my:elem -p=test"""
+                        s"""> model-syns -m=my.model.id -e=my:elem -p='^start.*'"""
                     ),
                     desc =
-                        s"Issues ${y("'model/syns'")} REST call with given model and element IDs."
+                        s"Issues ${y("'model/syns'")} REST call with given model and element IDs filtered by ${y("^start.*")} regex."
                 )
             )
         ),

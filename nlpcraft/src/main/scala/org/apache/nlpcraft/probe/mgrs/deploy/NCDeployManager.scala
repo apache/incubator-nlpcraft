@@ -123,7 +123,6 @@ object NCDeployManager extends NCService {
                 try
                     lazyObj = U.mkObject(objClassName)
                 catch {
-                    // TODO:
                     case e: Throwable => throw new NCE(s"Error initializing object of type: $objClassName", e)
                 }
 
