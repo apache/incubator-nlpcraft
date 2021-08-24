@@ -24,7 +24,7 @@ import org.apache.nlpcraft.model.NCResult;
  *
  */
 public class NCNestedClass {
-    @NCIntent("intent=javaClass term={tok_id() == 'javaClass'}")
+    @NCIntent("intent=javaClass term={# == 'javaClass'}")
     public NCResult m() {
         return NCResult.text("OK");
     }

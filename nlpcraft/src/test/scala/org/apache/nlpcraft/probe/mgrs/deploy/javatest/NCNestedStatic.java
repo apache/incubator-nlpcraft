@@ -24,7 +24,7 @@ import org.apache.nlpcraft.model.NCResult;
  *
  */
 public class NCNestedStatic {
-    @NCIntent("intent=javaStatic term={tok_id() == 'javaStatic'}")
+    @NCIntent("intent=javaStatic term={# == 'javaStatic'}")
     public static NCResult m() {
         return NCResult.text("OK");
     }
