@@ -47,7 +47,7 @@ import org.apache.nlpcraft.common.debug.NCLogSpecModel._
 /**
   */
 class NCLogSpecModel extends NCModelAdapter(MDL_ID, "IDL Test Model", "1.0") {
-    @NCIntent("intent=i term(a)={tok_id()=='nlpcraft:nlp'}")
+    @NCIntent("intent=i term(a)={#=='nlpcraft:nlp'}")
     private def callback(ctx: NCIntentMatch): NCResult = NCResult.text(RESULT)
 }
 

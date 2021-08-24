@@ -49,6 +49,8 @@ class NCIdlFunctionsStrings extends NCIdlFunctions {
             "index_of('ab', 'b') == 1",
             "index_of('ab', 'bc') == -1",
             "substr('abc', 0, 1) == 'a'",
+            "regex('textabc', '^text.*$') == true",
+            "regex('_textabc', '^text.*$') == false",
             "substr('abc', 0, 2) == 'ab'",
             "replace('abc', 'a', 'X') == 'Xbc'",
             "replace('abc', '0',  '0') == 'abc'",

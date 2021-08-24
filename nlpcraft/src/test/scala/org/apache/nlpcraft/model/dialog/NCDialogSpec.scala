@@ -47,41 +47,41 @@ class NCDialogSpecModel extends NCModel {
 
     override def getElements: util.Set[NCElement] = Set((for (i <- 1 to 100) yield NCTestElement(s"a$i")):_*)
 
-    @NCIntent("intent=onA1 term~{tok_id() == 'a1'}")
+    @NCIntent("intent=onA1 term~{# == 'a1'}")
     def onA1(): NCResult = NCResult.text("ok")
 
-    @NCIntent("intent=onA2 flow='^(?:onA1)(^:onA1)*$' term~{tok_id() == 'a2'}")
+    @NCIntent("intent=onA2 flow='^(?:onA1)(^:onA1)*$' term~{# == 'a2'}")
     def onA2(): NCResult = NCResult.text("ok")
 
-    @NCIntent("intent=onA3 flow='onA1' term~{tok_id() == 'a3'}")
+    @NCIntent("intent=onA3 flow='onA1' term~{# == 'a3'}")
     def onA3(): NCResult = NCResult.text("ok")
 
-    @NCIntent("intent=onA4 flow='onA1 onA1' term~{tok_id() == 'a4'}")
+    @NCIntent("intent=onA4 flow='onA1 onA1' term~{# == 'a4'}")
     def onA4(): NCResult = NCResult.text("ok")
 
-    @NCIntent("intent=onA5 flow=/org.apache.nlpcraft.model.dialog.NCDialogSpecModelFlow#trueAlways/ term~{tok_id() == 'a5'}")
+    @NCIntent("intent=onA5 flow=/org.apache.nlpcraft.model.dialog.NCDialogSpecModelFlow#trueAlways/ term~{# == 'a5'}")
     def onA5(): NCResult = NCResult.text("ok")
 
-    @NCIntent("intent=onA6 flow=/org.apache.nlpcraft.model.dialog.NCDialogSpecModelFlow#falseAlways/ term~{tok_id() == 'a6'}")
+    @NCIntent("intent=onA6 flow=/org.apache.nlpcraft.model.dialog.NCDialogSpecModelFlow#falseAlways/ term~{# == 'a6'}")
     def onA6(): NCResult = NCResult.text("ok")
 
-    @NCIntent("intent=onA7 term~{tok_id() == 'a7'}")
+    @NCIntent("intent=onA7 term~{# == 'a7'}")
     def onA7(): NCResult = NCResult.text("ok")
 
-    @NCIntent("intent=onA8 flow=/org.apache.nlpcraft.model.dialog.NCDialogSpecModelFlow#trueAfterOnA7/ term~{tok_id() == 'a8'}")
+    @NCIntent("intent=onA8 flow=/org.apache.nlpcraft.model.dialog.NCDialogSpecModelFlow#trueAfterOnA7/ term~{# == 'a8'}")
     def onA8(): NCResult = NCResult.text("ok")
 
-    @NCIntent("intent=onA9 flow=/org.apache.nlpcraft.model.dialog.NCDialogSpecModelFlow#trueAfterOnA7AndA8/ term~{tok_id() == 'a9'}")
+    @NCIntent("intent=onA9 flow=/org.apache.nlpcraft.model.dialog.NCDialogSpecModelFlow#trueAfterOnA7AndA8/ term~{# == 'a9'}")
     def onA9(): NCResult = NCResult.text("ok")
 
     def trueAlwaysInternal(flow: JList[NCDialogFlowItem]): Boolean = true
 
-    @NCIntent("intent=onA10 flow=/#trueAlwaysInternal/ term~{tok_id() == 'a10'}")
+    @NCIntent("intent=onA10 flow=/#trueAlwaysInternal/ term~{# == 'a10'}")
     def onA10(): NCResult = NCResult.text("ok")
 
     def falseAlwaysInternal(flow: JList[NCDialogFlowItem]): Boolean = false
 
-    @NCIntent("intent=onA11 flow=/#falseAlwaysInternal/ term~{tok_id() == 'a11'}")
+    @NCIntent("intent=onA11 flow=/#falseAlwaysInternal/ term~{# == 'a11'}")
     def onA11(): NCResult = NCResult.text("ok")
 }
 

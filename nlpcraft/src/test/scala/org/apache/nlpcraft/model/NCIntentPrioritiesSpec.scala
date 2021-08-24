@@ -31,10 +31,10 @@ class NCIntentPrioritiesSpecModel extends NCModelAdapter(
 ) {
     override def getElements: util.Set[NCElement] = Set(NCTestElement("x"))
 
-    @NCIntent("intent=low term(x)={tok_id() == 'x'} term(city)={tok_id() == 'nlpcraft:city'}?")
+    @NCIntent("intent=low term(x)={# == 'x'} term(city)={# == 'nlpcraft:city'}?")
     private def onLow(ctx: NCIntentMatch): NCResult = NCResult.text("low")
 
-    @NCIntent("intent=high term(x)={tok_id() == 'x'} term(city)={tok_id() == 'nlpcraft:city'}")
+    @NCIntent("intent=high term(x)={# == 'x'} term(city)={# == 'nlpcraft:city'}")
     private def onHigh(ctx: NCIntentMatch): NCResult = NCResult.text("high")
 }
 

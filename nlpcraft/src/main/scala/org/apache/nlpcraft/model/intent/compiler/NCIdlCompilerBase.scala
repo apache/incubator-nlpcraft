@@ -522,10 +522,8 @@ trait NCIdlCompilerBase {
      * @param id
      * @return
      */
-    def parseCallExpr(id: TN)(implicit ctx: PRC): SI = (tok, stack: S, idlCtx) => {
+    def parseCallExpr(fun: String)(implicit ctx: PRC): SI = (tok, stack: S, idlCtx) => {
         implicit val evidence: S = stack
-
-        val fun = id.getText
 
         def popMarker(argNum: Int): Unit = if (pop1() != stack.PLIST_MARKER) throw rtTooManyParamsError(argNum, fun)
         def arg[X](argNum: Int, f: () => X): X = {
@@ -657,6 +655,18 @@ trait NCIdlCompilerBase {
                     val (v1, v2, v3, n) = extract3(x1, x2, x3)
 
                     Z(toStr(v1).substring(toInt(v2), toInt(v3)), n)
+                }
+            )
+        }
+
+        def doRegex(): Unit = {
+            val (x1, x2) = arg2()
+
+            stack.push(
+                () => {
+                    val (v1, v2, n) = extract2(x1, x2)
+
+                    Z(toStr(v1).matches(toStr(v2)), n)
                 }
             )
         }
@@ -1172,6 +1182,9 @@ trait NCIdlCompilerBase {
             case "tok_lemma" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).getLemma, 1) }) }
             case "tok_stem" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).getStem, 1) }) }
             case "tok_pos" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).getPos, 1) }) }
+            case "tok_txt" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).getOriginalText, 1) }) }
+            case "tok_norm_txt" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).getNormalizedText, 1) }) }
+            case "tok_req_id" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).getServerRequestId, 1) }) }
             case "tok_sparsity" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).getSparsity, 1) }) }
             case "tok_unid" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).getUnid, 1) }) }
 
@@ -1257,6 +1270,7 @@ trait NCIdlCompilerBase {
             case "contains" => doContains()
             case "index_of" => doIndexOf()
             case "substr" => doSubstr()
+            case "regex" => doRegex()
             case "replace" => doReplace()
             case "to_double" => doToDouble()
             case "to_int" => doToInt()

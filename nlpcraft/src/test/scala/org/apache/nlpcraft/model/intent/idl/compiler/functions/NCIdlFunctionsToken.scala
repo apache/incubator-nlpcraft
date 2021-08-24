@@ -48,27 +48,27 @@ class NCIdlFunctionsToken extends NCIdlFunctions {
     def testMainTokenProperties(): Unit =
         test(
             TestDesc(
-                truth = "tok_id() == 'a'",
+                truth = "# == 'a'",
                 token = mkToken(id = "a")
             ),
-            mkMeta(truth = s"tok_lemma() == '${meta("nlpcraft:nlp:lemma")}'"),
-            mkMeta(truth = s"tok_stem() == '${meta("nlpcraft:nlp:stem")}'"),
-            mkMeta(truth = s"tok_pos() == '${meta("nlpcraft:nlp:pos")}'"),
-            mkMeta(truth = s"tok_sparsity() == ${meta("nlpcraft:nlp:sparsity")}"),
-            mkMeta(truth = s"tok_unid() == '${meta("nlpcraft:nlp:unid")}'"),
+            mkMeta(truth = s"tok_lemma == '${meta("nlpcraft:nlp:lemma")}'"),
+            mkMeta(truth = s"tok_stem == '${meta("nlpcraft:nlp:stem")}'"),
+            mkMeta(truth = s"tok_pos == '${meta("nlpcraft:nlp:pos")}'"),
+            mkMeta(truth = s"tok_sparsity == ${meta("nlpcraft:nlp:sparsity")}"),
+            mkMeta(truth = s"tok_unid == '${meta("nlpcraft:nlp:unid")}'"),
             TestDesc(
                 truth = s"tok_is_abstract()",
                 token = mkToken(`abstract` = true)
             ),
-            mkMeta(truth = s"tok_is_abstract() == false"),
-            mkMeta(truth = s"tok_is_bracketed() == ${meta("nlpcraft:nlp:bracketed")}"),
-            mkMeta(truth = s"tok_is_direct() == ${meta("nlpcraft:nlp:direct")}"),
-            mkMeta(truth = s"tok_is_permutated() != ${meta("nlpcraft:nlp:direct")}"),
-            mkMeta(truth = s"tok_is_english() == ${meta("nlpcraft:nlp:english")}"),
-            mkMeta(truth = s"tok_is_freeword() == ${meta("nlpcraft:nlp:freeword")}"),
-            mkMeta(truth = s"tok_is_quoted() == ${meta("nlpcraft:nlp:quoted")}"),
-            mkMeta(truth = s"tok_is_stopword() == ${meta("nlpcraft:nlp:stopword")}"),
-            mkMeta(truth = s"tok_is_swear() == ${meta("nlpcraft:nlp:swear")}"),
+            mkMeta(truth = s"tok_is_abstract == false"),
+            mkMeta(truth = s"tok_is_bracketed == ${meta("nlpcraft:nlp:bracketed")}"),
+            mkMeta(truth = s"tok_is_direct == ${meta("nlpcraft:nlp:direct")}"),
+            mkMeta(truth = s"tok_is_permutated != ${meta("nlpcraft:nlp:direct")}"),
+            mkMeta(truth = s"tok_is_english == ${meta("nlpcraft:nlp:english")}"),
+            mkMeta(truth = s"tok_is_freeword == ${meta("nlpcraft:nlp:freeword")}"),
+            mkMeta(truth = s"tok_is_quoted == ${meta("nlpcraft:nlp:quoted")}"),
+            mkMeta(truth = s"tok_is_stopword == ${meta("nlpcraft:nlp:stopword")}"),
+            mkMeta(truth = s"tok_is_swear == ${meta("nlpcraft:nlp:swear")}"),
             TestDesc(
                 truth = s"tok_is_user()",
                 token = mkToken(id = "aa")
@@ -178,6 +178,22 @@ class NCIdlFunctionsToken extends NCIdlFunctions {
     }
 
     @Test
+    def testTokenText(): Unit = {
+        val tok = mkToken(id = "1", txt="txt", normTxt = "normTxt")
+
+        test(
+            TestDesc(
+                truth = "tok_txt() == 'txt'",
+                token = tok
+            ),
+            TestDesc(
+                truth = "tok_norm_txt() == 'normTxt'",
+                token = tok
+            )
+        )
+    }
+
+    @Test
     def testTokenForAll(): Unit = {
         val tok1 = mkToken(id = "1", parentId = "x")
         val tok2 = mkToken(id = "2", groups = Seq("g", "z", "w"))
@@ -200,14 +216,14 @@ class NCIdlFunctionsToken extends NCIdlFunctions {
                 idlCtx = mkIdlContext(Seq(tok1, tok2, tok3))
             ),
             TestDesc(
-                truth = "tok_count() == size(tok_all())",
+                truth = "tok_count == size(tok_all())",
                 token = tok2,
                 idlCtx = mkIdlContext(Seq(tok1, tok2, tok3))
             ),
             TestDesc(
                 truth =
                     "size(tok_all_for_group('g')) == 1 && " +
-                    "tok_id(first(tok_all_for_group('w'))) == '2' && " +
+                    "#(first(tok_all_for_group('w'))) == '2' && " +
                     "is_empty(tok_all_for_group('unknown'))",
                 token = tok2,
                 idlCtx = mkIdlContext(Seq(tok1, tok2, tok3))
