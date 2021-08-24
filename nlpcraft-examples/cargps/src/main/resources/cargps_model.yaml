@@ -35,6 +35,11 @@ macros:
   - name: "<WAYPOINT>"
     macro: "{waypoint|location|point|stopover|stop over|way station|stop|checkpoint|stop point} {point|station|_}"
 
+abstractTokens:
+  - x:addr:kind
+  - x:addr:num
+  - x:addr:st
+
 elements:
   - id: "x:addr:kind"
     # Short list from https://pe.usps.com/text/pub28/28apc_002.htm

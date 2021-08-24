@@ -18,4 +18,4 @@
 #
 # Set of samples (corpus) for automatic unit and regression testing.
 #
-hey car, drive to 21 table rock drive
+hey car, navigate to 21 table rock drive
