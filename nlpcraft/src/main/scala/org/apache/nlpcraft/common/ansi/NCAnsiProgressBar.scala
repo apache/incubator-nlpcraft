@@ -131,7 +131,7 @@ class NCAnsiProgressBar(
 
             // Show cursor.
             out.print(ansiCursorShow)
-            out.flush() 
+            out.flush()
         }
     }
 }
