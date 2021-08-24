@@ -243,7 +243,7 @@ object NCDeployManager extends NCService {
             val elmId = elm.getId
 
             // Checks before macros processing.
-            val susp = elm.getSynonyms.asScala.filter(syn => SUSP_SYNS_CHARS.exists(susp => syn.contains(susp)))
+            val susp = elm.getSynonyms.asScala.filter(syn => !syn.contains("//") && SUSP_SYNS_CHARS.exists(susp => syn.contains(susp)))
 
             if (susp.nonEmpty)
                 logger.warn(
