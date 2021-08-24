@@ -1669,6 +1669,10 @@ object NCDeployManager extends NCService {
             CLS_MDL_PKGS_REF,
             (a: NCModelAddPackage) =>
                 a.value().toIndexedSeq.flatMap(p => {
+                    //noinspection UnstableApiUsage
+                    val res = ClassPath.from(cl).getTopLevelClassesRecursive(p).asScala.map(_.load())
+
+                    // Check should be after classes loading attempt.
                     if (cl.getDefinedPackage(p) == null)
                         throw new NCE(
                             s"Invalid additional references in @${CLS_MDL_PKGS_REF.getSimpleName} annotation [" +
@@ -1678,8 +1682,7 @@ object NCDeployManager extends NCService {
                             s"]"
                         )
 
-                    //noinspection UnstableApiUsage
-                    ClassPath.from(cl).getTopLevelClassesRecursive(p).asScala.map(_.load())
+                    res
                 })
         )
 
