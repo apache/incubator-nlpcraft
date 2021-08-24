@@ -37,7 +37,7 @@ public interface NCCustomParser extends NCLifecycle {
      * Analyses user input provided as a list of {@link NCCustomWord} objects and returns a list
      * of {@link NCCustomElement} objects. Note that model elements returned from this method must
      * be defined in the model, i.e. this method only provides an additional logic of detecting these
-     * elements but they still need to be defined normally in the model.
+     * elements, but they still need to be defined normally in the model.
      *
      * @param req User request descriptor.
      * @param mdl Instance of data model this parser belongs to.

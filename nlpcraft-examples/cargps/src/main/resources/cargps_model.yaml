@@ -50,7 +50,12 @@ elements:
 
   - id: "x:addr:num"
     synonyms:
-      - "^^{tok_id() == 'nlpcraft:num' && meta_tok('nlpcraft:num:unit') == null && meta_tok('nlpcraft:num:isequalcondition')}^^"
+      - "^^{# == 'nlpcraft:num' && meta_tok('nlpcraft:num:unit') == null && meta_tok('nlpcraft:num:isequalcondition')}^^"
+
+
+  - id: addr
+    synonyms:
+      - "^^{# == 'addr:num'}^^ {^^{is_alphanum(tok_txt))}^^}[1,3] ^^{# == 'addr:kind'}^^"
 
   - id: "x:addr:st"
     synonyms:
@@ -58,7 +63,7 @@ elements:
 
   - id: "x:addr"
     synonyms:
-      - "^^[num]{tok_id() == 'x:addr:num'}^^ ^^[name]{tok_id() == 'x:addr:st'}^^ ^^[kind]{tok_id() == 'x:addr:kind'}^^"
+      - "^^[num]{# == 'x:addr:num'}^^ ^^[name]{# == 'x:addr:st'}^^ ^^[kind]{# == 'x:addr:kind'}^^"
 
   - id: "x:hey"
     description: "NLI prompt"
