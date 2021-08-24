@@ -1104,6 +1104,22 @@ trait NCIdlCompilerBase {
             })
         }
 
+        def doIsBetween(f: (NCToken, String) => Boolean): Unit = {
+            val (x1, x2) = arg2()
+
+            stack.push(() => {
+                val (a1, a2, n) = extract2(x1, x2)
+
+                Z(
+                    idlCtx.toks.exists(t => t.getIndex < tok.getIndex && f(t, toStr(a1)))
+                    &&
+                    idlCtx.toks.exists(t => t.getIndex > tok.getIndex && f(t, toStr(a2)))
+                    ,
+                    n
+                )
+            })
+        }
+
         def doForAll(f: (NCToken, String) => Boolean): Unit = {
             val x = arg1()
 
@@ -1197,6 +1213,9 @@ trait NCIdlCompilerBase {
             case "tok_is_after_id" => checkAvail(); doIsAfter((tok, id) => tok.getId == id)
             case "tok_is_after_group" => checkAvail(); doIsAfter((tok, grpId) => tok.getGroups.contains(grpId))
             case "tok_is_after_parent" => checkAvail(); doIsAfter((tok, id) => tok.getParentId == id)
+            case "tok_is_between_ids" => checkAvail(); doIsBetween((tok, id) => tok.getId == id)
+            case "tok_is_between_groups" => checkAvail(); doIsBetween((tok, grpId) => tok.getGroups.contains(grpId))
+            case "tok_is_between_parents" => checkAvail(); doIsBetween((tok, id) => tok.getParentId == id)
 
             case "tok_is_abstract" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).isAbstract, 1) }) }
             case "tok_is_bracketed" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).isBracketed, 1) }) }

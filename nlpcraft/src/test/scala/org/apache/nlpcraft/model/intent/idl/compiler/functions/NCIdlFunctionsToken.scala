@@ -164,6 +164,30 @@ class NCIdlFunctionsToken extends NCIdlFunctions {
     }
 
     @Test
+    def testTokenBetweenIds(): Unit = {
+        val tok1 = mkToken(id = "1", groups = Seq("grp1"))
+        val tok2 = mkToken(id = "2", groups = Seq("grp2"))
+        val tok3 = mkToken(id = "3", groups = Seq("grp3"))
+
+        tok1.getMetadata.put("nlpcraft:nlp:index", 0)
+        tok2.getMetadata.put("nlpcraft:nlp:index", 1)
+        tok3.getMetadata.put("nlpcraft:nlp:index", 2)
+
+        test(
+            TestDesc(
+                truth = "tok_is_between_ids('1', '3')",
+                token = tok2,
+                idlCtx = mkIdlContext(Seq(tok1, tok2, tok3))
+            ),
+            TestDesc(
+                truth = "tok_is_between_groups('grp1', 'grp3')",
+                token = tok2,
+                idlCtx = mkIdlContext(Seq(tok1, tok2, tok3))
+            )
+        )
+    }
+
+    @Test
     def testTokenCount(): Unit = {
         val tok1 = mkToken(id = "1")
         val tok2 = mkToken(id = "2")
