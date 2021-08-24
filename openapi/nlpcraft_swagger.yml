@@ -267,6 +267,10 @@ paths:
                 type: string
                 maxLength: 64
                 description: ID of the model element to get its synonyms and values.
+              pattern :
+                type: string
+                maxLength: 256
+                description: Optional JDK-compatible regex to filter returned synonyms on.
       responses:
         '200':
           description: Successful operation.
