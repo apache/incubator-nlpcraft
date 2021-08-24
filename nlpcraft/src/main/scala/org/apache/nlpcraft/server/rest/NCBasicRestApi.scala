@@ -48,6 +48,7 @@ import org.apache.nlpcraft.server.user.NCUserManager
 import spray.json.DefaultJsonProtocol._
 import spray.json.{JsObject, JsValue, RootJsonFormat}
 
+import java.util.regex.{Pattern, PatternSyntaxException}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.CollectionConverters._
 
@@ -134,7 +135,9 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
         "comment" -> 1024,
 
         "avatarUrl" -> 512000,
-        "adminAvatarUrl" -> 512000
+        "adminAvatarUrl" -> 512000,
+
+        "pattern" -> 512
     )
 
     /**
@@ -830,10 +833,11 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
         case class Req$Model$Syns(
             acsTok: String,
             mdlId: String,
-            elmId: String
+            elmId: String,
+            pattern: Option[String]
         )
 
-        implicit val reqFmt: RootJsonFormat[Req$Model$Syns] = jsonFormat3(Req$Model$Syns)
+        implicit val reqFmt: RootJsonFormat[Req$Model$Syns] = jsonFormat4(Req$Model$Syns)
 
         entity(as[Req$Model$Syns]) { req =>
             startScopedSpan(
@@ -851,7 +855,17 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                 if (!NCProbeManager.existsForModelElement(compId, req.mdlId, req.elmId))
                     throw InvalidModelOrElementId(req.mdlId, req.elmId)
 
-                val fut = NCProbeManager.getModelElementInfo(req.mdlId, req.elmId, span)
+                req.pattern match {
+                    case Some(pattern) =>
+                        try
+                            Pattern.compile(pattern)
+                        catch {
+                            case _ : PatternSyntaxException => throw InvalidField(pattern)
+                        }
+                    case None => // No-op.
+                }
+
+                val fut = NCProbeManager.getModelElementInfo(req.mdlId, req.elmId, req.pattern, span)
 
                 successWithJs(
                     fut.collect {

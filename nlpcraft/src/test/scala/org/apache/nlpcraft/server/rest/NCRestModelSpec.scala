@@ -76,7 +76,13 @@ class RestTestModelExt extends RestTestModel {
             super.getElements.asScala ++
             Set(
                 NCTestElement("eExt1", "<M1>", "<M1> more"),
-                NCTestElement("eExt2", Seq("<M1>", "<M1> more"), Map("v1"-> Seq("<M2>", "<M2> more"), "v2" -> Seq("<M2>")))
+                NCTestElement("eExt2",
+                    Seq("<M1>", "<M1> more <M2>"),
+                    Map(
+                        "v1"-> Seq("<M2>", "<M2> more"),
+                        "v2" -> Seq("<M2>"),
+                        "v3" -> Seq("<M1>"))
+                )
             )
         ).asJava
     }
@@ -89,20 +95,27 @@ class NCRestModelSpec2 extends NCRestSpec {
     @Test
     def testSyns(): Unit = {
         // Note that checked values are valid for current configuration of `RestTestModelExt` model.
-        def post0(elemId: String, valsShouldBe: Boolean): Unit =
-            post("model/syns", "mdlId" -> "rest.test.model", "elmId" -> elemId)(
+        def post0(
+            elemId: String,
+            pattern: Option[String] = None,
+            checkSyns: Integer => Boolean = _ > 0,
+            checkSynsExp: Integer => Boolean = _ > 0,
+            checkVals: Integer => Boolean = _ > 0,
+            checkValsExp: Integer => Boolean = _ > 0
+        ): Unit =
+            post("model/syns", "mdlId" -> "rest.test.model", "elmId" -> elemId, "pattern" -> pattern.orNull)(
                 ("$.status", (status: String) => assertEquals("API_OK", status)),
-                ("$.synonyms", (data: ResponseList) => assertTrue(!data.isEmpty)),
-                ("$.synonymsExp", (data: ResponseList) => assertTrue(!data.isEmpty)),
-                ("$.values", (data: java.util.Map[Object, Object]) =>
-                    if (valsShouldBe) assertTrue(!data.isEmpty) else assertTrue(data.isEmpty)),
-                ("$.valuesExp", (data: java.util.Map[Object, Object]) =>
-                    if (valsShouldBe) assertTrue(!data.isEmpty) else assertTrue(data.isEmpty)
-                )
+                ("$.synonyms", (data: ResponseList) => assertTrue(checkSyns(data.size()))),
+                ("$.synonymsExp", (data: ResponseList) => assertTrue(checkSynsExp(data.size()))),
+                ("$.values", (data: java.util.Map[Object, Object]) => assertTrue(checkVals(data.size()))),
+                ("$.valuesExp", (data: java.util.Map[Object, Object]) => assertTrue(checkValsExp(data.size())))
             )
 
-        post0("eExt1", valsShouldBe = false)
-        post0("eExt2", valsShouldBe = true)
+        post0("eExt1", checkVals = _ == 0, checkValsExp = _ == 0)
+        post0("eExt2", checkSyns = _ == 3, checkSynsExp = _ == 11, checkVals = _ == 3, checkValsExp = _ == 3)
+
+        post0("eExt2", pattern = Some("mtest2"), checkSyns = _ == 1, checkSynsExp = _ == 8, checkVals = _ == 2, checkValsExp = _ == 2)
+        post0("eExt2", pattern = Some("UNKNOWN"), checkSyns = _ == 0, checkSynsExp = _ == 0, checkVals = _ == 0, checkValsExp = _ == 0)
 
         postError("model/syns", 400, "NC_INVALID_FIELD", "mdlId" -> "UNKNOWN", "elmId" -> "UNKNOWN")
         postError("model/syns", 400, "NC_INVALID_FIELD", "mdlId" -> "rest.test.model", "elmId" -> "UNKNOWN")
