@@ -138,6 +138,8 @@ class NCMacroParserSpec  {
         checkEq("a {b|_} d", Seq("a b d", "a d"))
         checkEq("a {b|_}       d", Seq("a b d", "a d"))
         checkEq("a {b}", Seq("a b"))
+        checkEq("a {b}?", Seq("a", "a b"))
+        checkEq("a {b}[2, 3]", Seq("a b b", "a b b b"))
         checkEq("a {b} {c|_}", Seq("a b", "a b c"))
         checkEq("a {{b|c}}", Seq("a b", "a c"))
         checkEq("a {b|_|{g\\}}[1,2]}", Seq("a", "a b", "a g}", "a g} g}"))
