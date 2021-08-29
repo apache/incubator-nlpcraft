@@ -34,13 +34,13 @@ class NCIntentSampleSpecModel extends NCModelAdapter(
 
     override def getElements: util.Set[NCElement] = Set(NCTestElement("x1"), NCTestElement("x2"))
 
-    @NCIntent("intent=intent1 term~{tok_id()=='x1'}")
+    @NCIntent("intent=intent1 term~{#=='x1'}")
     @NCIntentSample(Array("x1", "x1"))
     @NCIntentSample(Array("unknown", "unknown"))
     private def onX1(ctx: NCIntentMatch): NCResult = "OK"
 
     @NCIntentSampleRef("samples.txt")
-    @NCIntent("intent=intent2 term~{tok_id()=='x2'}")
+    @NCIntent("intent=intent2 term~{#=='x2'}")
     private def onX2(ctx: NCIntentMatch): NCResult = "OK"
 }
 

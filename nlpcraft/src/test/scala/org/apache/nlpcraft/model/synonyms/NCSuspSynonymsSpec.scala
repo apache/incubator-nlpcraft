@@ -35,7 +35,7 @@ class NCSuspSynonymsSpecModel extends NCModelAdapter("nlpcraft.susp.syns.test.md
             NCTestElement("e5", "a? a+ a*"),
         )
 
-    @NCIntent("intent=onA term(t)={tok_id() == 'a'}")
+    @NCIntent("intent=onA term(t)={# == 'a'}")
     def onA(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
 }
 

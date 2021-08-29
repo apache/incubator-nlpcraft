@@ -64,15 +64,15 @@ class NCIdlFunctionsCompany extends NCIdlFunctions {
         def get(opt: Optional[String]): String = if (opt.isEmpty) null else s"'${opt.get()}'"
 
         test(
-            mkTestDesc(s"comp_name() == '${comp.getName}'"),
-            mkTestDesc(s"comp_website() == ${get(comp.getWebsite)}"),
-            mkTestDesc(s"comp_country() == ${get(comp.getCountry)}"),
-            mkTestDesc(s"comp_region() == ${get(comp.getRegion)}"),
-            mkTestDesc(s"comp_city() == ${get(comp.getCity)}"),
-            mkTestDesc(s"comp_addr() == ${get(comp.getAddress)}"),
-            mkTestDesc(s"comp_postcode() == ${get(comp.getPostalCode)}"),
-            mkTestDesc(s"comp_id() == ${comp.getId}"),
-            mkTestDesc(s"comp_id() != ${comp.getId + 1}")
+            mkTestDesc(s"comp_name == '${comp.getName}'"),
+            mkTestDesc(s"comp_website == ${get(comp.getWebsite)}"),
+            mkTestDesc(s"comp_country == ${get(comp.getCountry)}"),
+            mkTestDesc(s"comp_region == ${get(comp.getRegion)}"),
+            mkTestDesc(s"comp_city == ${get(comp.getCity)}"),
+            mkTestDesc(s"comp_addr == ${get(comp.getAddress)}"),
+            mkTestDesc(s"comp_postcode == ${get(comp.getPostalCode)}"),
+            mkTestDesc(s"comp_id == ${comp.getId}"),
+            mkTestDesc(s"comp_id != ${comp.getId + 1}")
         )
     }
 }

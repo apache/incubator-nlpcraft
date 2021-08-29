@@ -17,28 +17,28 @@ public class NCMacroDslParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		LCURLY=1, RCURLY=2, VERT=3, COMMA=4, UNDERSCORE=5, MINMAX=6, REGEX_TXT=7, 
-		IDL_TXT=8, TXT=9, WS=10, ERR_CHAR=11;
+		LCURLY=1, RCURLY=2, VERT=3, COMMA=4, UNDERSCORE=5, LBR=6, RBR=7, QUESTION=8, 
+		REGEX_TXT=9, IDL_TXT=10, TXT=11, MINMAX=12, WS=13, ERR_CHAR=14;
 	public static final int
 		RULE_makro = 0, RULE_expr = 1, RULE_item = 2, RULE_syn = 3, RULE_group = 4, 
-		RULE_list = 5;
+		RULE_list = 5, RULE_minMax = 6, RULE_minMaxShortcut = 7;
 	private static String[] makeRuleNames() {
 		return new String[] {
-			"makro", "expr", "item", "syn", "group", "list"
+			"makro", "expr", "item", "syn", "group", "list", "minMax", "minMaxShortcut"
 		};
 	}
 	public static final String[] ruleNames = makeRuleNames();
 
 	private static String[] makeLiteralNames() {
 		return new String[] {
-			null, "'{'", "'}'", "'|'", "','", "'_'"
+			null, "'{'", "'}'", "'|'", "','", "'_'", "'['", "']'", "'?'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
 	private static String[] makeSymbolicNames() {
 		return new String[] {
-			null, "LCURLY", "RCURLY", "VERT", "COMMA", "UNDERSCORE", "MINMAX", "REGEX_TXT", 
-			"IDL_TXT", "TXT", "WS", "ERR_CHAR"
+			null, "LCURLY", "RCURLY", "VERT", "COMMA", "UNDERSCORE", "LBR", "RBR", 
+			"QUESTION", "REGEX_TXT", "IDL_TXT", "TXT", "MINMAX", "WS", "ERR_CHAR"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -117,9 +117,9 @@ public class NCMacroDslParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(12);
+			setState(16);
 			expr(0);
-			setState(13);
+			setState(17);
 			match(EOF);
 			}
 		}
@@ -171,11 +171,11 @@ public class NCMacroDslParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			{
-			setState(16);
+			setState(20);
 			item();
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(22);
+			setState(26);
 			_errHandler.sync(this);
 			_alt = getInterpreter().adaptivePredict(_input,0,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
@@ -186,14 +186,14 @@ public class NCMacroDslParser extends Parser {
 					{
 					_localctx = new ExprContext(_parentctx, _parentState);
 					pushNewRecursionContext(_localctx, _startState, RULE_expr);
-					setState(18);
+					setState(22);
 					if (!(precpred(_ctx, 1))) throw new FailedPredicateException(this, "precpred(_ctx, 1)");
-					setState(19);
+					setState(23);
 					item();
 					}
 					} 
 				}
-				setState(24);
+				setState(28);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,0,_ctx);
 			}
@@ -235,7 +235,7 @@ public class NCMacroDslParser extends Parser {
 		ItemContext _localctx = new ItemContext(_ctx, getState());
 		enterRule(_localctx, 4, RULE_item);
 		try {
-			setState(27);
+			setState(31);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case REGEX_TXT:
@@ -243,14 +243,14 @@ public class NCMacroDslParser extends Parser {
 			case TXT:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(25);
+				setState(29);
 				syn();
 				}
 				break;
 			case LCURLY:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(26);
+				setState(30);
 				group();
 				}
 				break;
@@ -294,7 +294,7 @@ public class NCMacroDslParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(29);
+			setState(33);
 			_la = _input.LA(1);
 			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << REGEX_TXT) | (1L << IDL_TXT) | (1L << TXT))) != 0)) ) {
 			_errHandler.recoverInline(this);
@@ -323,7 +323,9 @@ public class NCMacroDslParser extends Parser {
 			return getRuleContext(ListContext.class,0);
 		}
 		public TerminalNode RCURLY() { return getToken(NCMacroDslParser.RCURLY, 0); }
-		public TerminalNode MINMAX() { return getToken(NCMacroDslParser.MINMAX, 0); }
+		public MinMaxContext minMax() {
+			return getRuleContext(MinMaxContext.class,0);
+		}
 		public GroupContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -344,19 +346,19 @@ public class NCMacroDslParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(31);
-			match(LCURLY);
-			setState(32);
-			list(0);
-			setState(33);
-			match(RCURLY);
 			setState(35);
+			match(LCURLY);
+			setState(36);
+			list(0);
+			setState(37);
+			match(RCURLY);
+			setState(39);
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,2,_ctx) ) {
 			case 1:
 				{
-				setState(34);
-				match(MINMAX);
+				setState(38);
+				minMax();
 				}
 				break;
 			}
@@ -411,7 +413,7 @@ public class NCMacroDslParser extends Parser {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(42);
+			setState(46);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case LCURLY:
@@ -419,17 +421,17 @@ public class NCMacroDslParser extends Parser {
 			case IDL_TXT:
 			case TXT:
 				{
-				setState(38);
+				setState(42);
 				expr(0);
 				}
 				break;
 			case UNDERSCORE:
 				{
-				setState(39);
+				setState(43);
 				match(UNDERSCORE);
-				setState(40);
+				setState(44);
 				match(VERT);
-				setState(41);
+				setState(45);
 				list(1);
 				}
 				break;
@@ -437,7 +439,7 @@ public class NCMacroDslParser extends Parser {
 				throw new NoViableAltException(this);
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(52);
+			setState(56);
 			_errHandler.sync(this);
 			_alt = getInterpreter().adaptivePredict(_input,5,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
@@ -445,18 +447,18 @@ public class NCMacroDslParser extends Parser {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
 					_prevctx = _localctx;
 					{
-					setState(50);
+					setState(54);
 					_errHandler.sync(this);
 					switch ( getInterpreter().adaptivePredict(_input,4,_ctx) ) {
 					case 1:
 						{
 						_localctx = new ListContext(_parentctx, _parentState);
 						pushNewRecursionContext(_localctx, _startState, RULE_list);
-						setState(44);
+						setState(48);
 						if (!(precpred(_ctx, 3))) throw new FailedPredicateException(this, "precpred(_ctx, 3)");
-						setState(45);
+						setState(49);
 						match(VERT);
-						setState(46);
+						setState(50);
 						expr(0);
 						}
 						break;
@@ -464,18 +466,18 @@ public class NCMacroDslParser extends Parser {
 						{
 						_localctx = new ListContext(_parentctx, _parentState);
 						pushNewRecursionContext(_localctx, _startState, RULE_list);
-						setState(47);
+						setState(51);
 						if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
-						setState(48);
+						setState(52);
 						match(VERT);
-						setState(49);
+						setState(53);
 						match(UNDERSCORE);
 						}
 						break;
 					}
 					} 
 				}
-				setState(54);
+				setState(58);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,5,_ctx);
 			}
@@ -488,6 +490,98 @@ public class NCMacroDslParser extends Parser {
 		}
 		finally {
 			unrollRecursionContexts(_parentctx);
+		}
+		return _localctx;
+	}
+
+	public static class MinMaxContext extends ParserRuleContext {
+		public MinMaxShortcutContext minMaxShortcut() {
+			return getRuleContext(MinMaxShortcutContext.class,0);
+		}
+		public TerminalNode MINMAX() { return getToken(NCMacroDslParser.MINMAX, 0); }
+		public MinMaxContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_minMax; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof NCMacroDslListener ) ((NCMacroDslListener)listener).enterMinMax(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof NCMacroDslListener ) ((NCMacroDslListener)listener).exitMinMax(this);
+		}
+	}
+
+	public final MinMaxContext minMax() throws RecognitionException {
+		MinMaxContext _localctx = new MinMaxContext(_ctx, getState());
+		enterRule(_localctx, 12, RULE_minMax);
+		try {
+			setState(61);
+			_errHandler.sync(this);
+			switch (_input.LA(1)) {
+			case QUESTION:
+				enterOuterAlt(_localctx, 1);
+				{
+				setState(59);
+				minMaxShortcut();
+				}
+				break;
+			case MINMAX:
+				enterOuterAlt(_localctx, 2);
+				{
+				setState(60);
+				match(MINMAX);
+				}
+				break;
+			default:
+				throw new NoViableAltException(this);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class MinMaxShortcutContext extends ParserRuleContext {
+		public TerminalNode QUESTION() { return getToken(NCMacroDslParser.QUESTION, 0); }
+		public MinMaxShortcutContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_minMaxShortcut; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof NCMacroDslListener ) ((NCMacroDslListener)listener).enterMinMaxShortcut(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof NCMacroDslListener ) ((NCMacroDslListener)listener).exitMinMaxShortcut(this);
+		}
+	}
+
+	public final MinMaxShortcutContext minMaxShortcut() throws RecognitionException {
+		MinMaxShortcutContext _localctx = new MinMaxShortcutContext(_ctx, getState());
+		enterRule(_localctx, 14, RULE_minMaxShortcut);
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(63);
+			match(QUESTION);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
 		}
 		return _localctx;
 	}
@@ -519,21 +613,23 @@ public class NCMacroDslParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\r:\4\2\t\2\4\3\t"+
-		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\3\2\3\2\3\2\3\3\3\3\3\3\3\3\3\3\7\3"+
-		"\27\n\3\f\3\16\3\32\13\3\3\4\3\4\5\4\36\n\4\3\5\3\5\3\6\3\6\3\6\3\6\5"+
-		"\6&\n\6\3\7\3\7\3\7\3\7\3\7\5\7-\n\7\3\7\3\7\3\7\3\7\3\7\3\7\7\7\65\n"+
-		"\7\f\7\16\78\13\7\3\7\2\4\4\f\b\2\4\6\b\n\f\2\3\3\2\t\13\29\2\16\3\2\2"+
-		"\2\4\21\3\2\2\2\6\35\3\2\2\2\b\37\3\2\2\2\n!\3\2\2\2\f,\3\2\2\2\16\17"+
-		"\5\4\3\2\17\20\7\2\2\3\20\3\3\2\2\2\21\22\b\3\1\2\22\23\5\6\4\2\23\30"+
-		"\3\2\2\2\24\25\f\3\2\2\25\27\5\6\4\2\26\24\3\2\2\2\27\32\3\2\2\2\30\26"+
-		"\3\2\2\2\30\31\3\2\2\2\31\5\3\2\2\2\32\30\3\2\2\2\33\36\5\b\5\2\34\36"+
-		"\5\n\6\2\35\33\3\2\2\2\35\34\3\2\2\2\36\7\3\2\2\2\37 \t\2\2\2 \t\3\2\2"+
-		"\2!\"\7\3\2\2\"#\5\f\7\2#%\7\4\2\2$&\7\b\2\2%$\3\2\2\2%&\3\2\2\2&\13\3"+
-		"\2\2\2\'(\b\7\1\2(-\5\4\3\2)*\7\7\2\2*+\7\5\2\2+-\5\f\7\3,\'\3\2\2\2,"+
-		")\3\2\2\2-\66\3\2\2\2./\f\5\2\2/\60\7\5\2\2\60\65\5\4\3\2\61\62\f\4\2"+
-		"\2\62\63\7\5\2\2\63\65\7\7\2\2\64.\3\2\2\2\64\61\3\2\2\2\658\3\2\2\2\66"+
-		"\64\3\2\2\2\66\67\3\2\2\2\67\r\3\2\2\28\66\3\2\2\2\b\30\35%,\64\66";
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\20D\4\2\t\2\4\3\t"+
+		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\3\2\3\2\3\2\3\3\3\3"+
+		"\3\3\3\3\3\3\7\3\33\n\3\f\3\16\3\36\13\3\3\4\3\4\5\4\"\n\4\3\5\3\5\3\6"+
+		"\3\6\3\6\3\6\5\6*\n\6\3\7\3\7\3\7\3\7\3\7\5\7\61\n\7\3\7\3\7\3\7\3\7\3"+
+		"\7\3\7\7\79\n\7\f\7\16\7<\13\7\3\b\3\b\5\b@\n\b\3\t\3\t\3\t\2\4\4\f\n"+
+		"\2\4\6\b\n\f\16\20\2\3\3\2\13\r\2B\2\22\3\2\2\2\4\25\3\2\2\2\6!\3\2\2"+
+		"\2\b#\3\2\2\2\n%\3\2\2\2\f\60\3\2\2\2\16?\3\2\2\2\20A\3\2\2\2\22\23\5"+
+		"\4\3\2\23\24\7\2\2\3\24\3\3\2\2\2\25\26\b\3\1\2\26\27\5\6\4\2\27\34\3"+
+		"\2\2\2\30\31\f\3\2\2\31\33\5\6\4\2\32\30\3\2\2\2\33\36\3\2\2\2\34\32\3"+
+		"\2\2\2\34\35\3\2\2\2\35\5\3\2\2\2\36\34\3\2\2\2\37\"\5\b\5\2 \"\5\n\6"+
+		"\2!\37\3\2\2\2! \3\2\2\2\"\7\3\2\2\2#$\t\2\2\2$\t\3\2\2\2%&\7\3\2\2&\'"+
+		"\5\f\7\2\')\7\4\2\2(*\5\16\b\2)(\3\2\2\2)*\3\2\2\2*\13\3\2\2\2+,\b\7\1"+
+		"\2,\61\5\4\3\2-.\7\7\2\2./\7\5\2\2/\61\5\f\7\3\60+\3\2\2\2\60-\3\2\2\2"+
+		"\61:\3\2\2\2\62\63\f\5\2\2\63\64\7\5\2\2\649\5\4\3\2\65\66\f\4\2\2\66"+
+		"\67\7\5\2\2\679\7\7\2\28\62\3\2\2\28\65\3\2\2\29<\3\2\2\2:8\3\2\2\2:;"+
+		"\3\2\2\2;\r\3\2\2\2<:\3\2\2\2=@\5\20\t\2>@\7\16\2\2?=\3\2\2\2?>\3\2\2"+
+		"\2@\17\3\2\2\2AB\7\n\2\2B\21\3\2\2\2\t\34!)\608:?";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

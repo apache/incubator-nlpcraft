@@ -30,13 +30,13 @@ class NCNestedTestModel21 extends NCModelAdapter("nlpcraft.nested2.test.mdl", "N
     override def getElements: util.Set[NCElement] = {
         // Note - it defines one simple and one DSL synonyms.
         // But it should be caught by long (IDL) variant (for `10 word`)
-        Set(NCTestElement("e1", "{^^{tok_id() == 'nlpcraft:num'}^^|_} word"))
+        Set(NCTestElement("e1", "{^^{# == 'nlpcraft:num'}^^|_} word"))
     }
 
-    @NCIntent("intent=onE1 term(t1)={tok_id() == 'e1'}")
+    @NCIntent("intent=onE1 term(t1)={# == 'e1'}")
     def onAB(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
 
-    @NCIntent("intent=onNumAndE1 term(t1)={tok_id() == 'nlpcraft:num'} term(t2)={tok_id() == 'e1'}")
+    @NCIntent("intent=onNumAndE1 term(t1)={# == 'nlpcraft:num'} term(t2)={# == 'e1'}")
     def onNumAndE1(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
 
     override def isPermutateSynonyms: Boolean = false

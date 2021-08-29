@@ -31,6 +31,7 @@ import scala.collection.mutable
   */
 object NCMacroCompiler extends LazyLogging {
     private final val MAX_SYN = 10000
+    private final val MAX_QTY = 100
     
     /**
       *
@@ -49,8 +50,9 @@ object NCMacroCompiler extends LazyLogging {
       */
     class FiniteStateMachine(parser: P, in: String) extends NCMacroDslBaseListener {
         private val stack = new mutable.Stack[StackItem]
-
         private var expandedSyns: Set[String] = _
+        private var min = 1
+        private var max = 1
 
         /**
          *
@@ -114,13 +116,15 @@ object NCMacroCompiler extends LazyLogging {
             }
         }
 
-        override def exitGroup(ctx: NCMacroDslParser.GroupContext): Unit = {
+        override def exitMinMax(ctx: NCMacroDslParser.MinMaxContext): Unit = {
             implicit val evidence: ParserRuleContext = ctx
 
-            var min = 1
-            var max = 1
-
-            if (ctx.MINMAX() != null) {
+            if (ctx.minMaxShortcut() != null)
+                ctx.minMaxShortcut().getText match {
+                    case "?" => min = 0; max = 1
+                    case c => throw compilerError(s"Invalid min/max shortcut '$c' in: ${ctx.getText}")
+                }
+            else if (ctx.MINMAX() != null) {
                 var s = ctx.MINMAX().getText
                 val orig = s
 
@@ -141,10 +145,14 @@ object NCMacroCompiler extends LazyLogging {
                 catch {
                     case _: NumberFormatException => throw compilerError(s"Invalid max quantifier: $orig")
                 }
-
-                if (min < 0 || max < 0 || min > max || max == 0)
-                    throw compilerError(s"[$min,$max] quantifiers should satisfy 'max >= min, min >= 0, max > 0'.")
             }
+
+            if (min < 0 || max < 0 || min > max || max == 0 || max > MAX_QTY)
+                throw compilerError(s"[$min,$max] quantifiers should be 'max >= min, min >= 0, max > 0, max <= $MAX_QTY'.")
+        }
+
+        override def exitGroup(ctx: NCMacroDslParser.GroupContext): Unit = {
+            implicit val evidence: ParserRuleContext = ctx
 
             val grp = stack.pop()
             
@@ -160,6 +168,10 @@ object NCMacroCompiler extends LazyLogging {
             prn.buffer = prn.buffer.flatMap {
                 s => (for (z <- grp.buffer; i <- min to max) yield concat(s, s"$z " * i).trim).toSet
             }
+
+            // Reset.
+            min = 1
+            max = 1
         }
 
         override def exitSyn(ctx: P.SynContext): Unit = {
@@ -228,11 +240,16 @@ object NCMacroCompiler extends LazyLogging {
         charPos: Int, // 0, 1, 2, ...
         in: String
     ): String = {
-        val hold = NCCompilerUtils.mkErrorHolder(in, charPos)
+        val hldr = NCCompilerUtils.mkErrorHolder(in, charPos)
 
-        s"Macro compiler error at line $line - $msg\n" +
-        s"  |-- ${c("Macro:")} ${hold.origStr}\n" +
-        s"  +-- ${c("Error:")} ${hold.ptrStr}"
+        val aMsg = U.decapitalize(msg) match {
+            case s: String if s.last == '.' => s
+            case s: String => s + '.'
+        }
+
+        s"Macro compiler error at line $line - $aMsg\n" +
+        s"  |-- ${c("Macro:")} ${hldr.origStr}\n" +
+        s"  +-- ${c("Error:")} ${hldr.ptrStr}"
     }
     
     /**

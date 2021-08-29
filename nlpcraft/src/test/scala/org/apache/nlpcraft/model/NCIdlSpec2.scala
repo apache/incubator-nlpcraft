@@ -31,19 +31,19 @@ class NCIdlSpecModel2 extends NCModelAdapter(
 ) {
     override def getElements: util.Set[NCElement] = Set(NCTestElement("a"))
 
-    @NCIntent("intent=a_11 term(a)={tok_id() == 'a'}")
+    @NCIntent("intent=a_11 term(a)={# == 'a'}")
     private def a11(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
 
-    @NCIntent("intent=a_23 term(a)={tok_id() == 'a'}[2,3]")
+    @NCIntent("intent=a_23 term(a)={# == 'a'}[2,3]")
     private def a23(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
 
-    @NCIntent("intent=a_15 term(a)={tok_id() == 'a'}[1,5]")
+    @NCIntent("intent=a_15 term(a)={# == 'a'}[1,5]")
     private def a15(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
 
-    @NCIntent("intent=a_plus term(a)={tok_id() == 'a'}+")
+    @NCIntent("intent=a_plus term(a)={# == 'a'}+")
     private def a1Inf(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
 
-    @NCIntent("intent=a_star term(a)={tok_id() == 'a'}*")
+    @NCIntent("intent=a_star term(a)={# == 'a'}*")
     private def a0Inf(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
 }
 

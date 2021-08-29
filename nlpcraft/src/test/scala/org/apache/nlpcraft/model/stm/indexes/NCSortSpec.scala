@@ -69,8 +69,8 @@ class NCSortSpecModel extends NCSpecModelAdapter {
 
     @NCIntent(
         "intent=onSort1 " +
-        "term(sort)~{tok_id() == 'nlpcraft:sort'} " +
-        "term(elem)~{has(tok_groups(), 'G1')}*"
+        "term(sort)~{# == 'nlpcraft:sort'} " +
+        "term(elem)~{has(tok_groups, 'G1')}*"
     )
     private def onSort1(ctx: NCIntentMatch, @NCIntentTerm("sort") sort: NCToken): NCResult =
         mkResult(intentId = "onSort1", sort = sort)
@@ -78,9 +78,9 @@ class NCSortSpecModel extends NCSpecModelAdapter {
     // `x` is mandatory (difference with `onSort3`)
     @NCIntent(
         "intent=onSort2 " +
-        "term(x)={tok_id() == 'X'} " +
-        "term(sort)~{tok_id() == 'nlpcraft:sort'} " +
-        "term(elem)~{has(tok_groups(), 'G1')}*"
+        "term(x)={# == 'X'} " +
+        "term(sort)~{# == 'nlpcraft:sort'} " +
+        "term(elem)~{has(tok_groups, 'G1')}*"
     )
     private def onSort2(ctx: NCIntentMatch, @NCIntentTerm("sort") sort: NCToken): NCResult =
         mkResult(intentId = "onSort2", sort = sort)
@@ -88,19 +88,19 @@ class NCSortSpecModel extends NCSpecModelAdapter {
     // `y` is optional (difference with `onSort2`)
     @NCIntent(
         "intent=onSort3 " +
-        "term(y)~{tok_id() == 'Y'} " +
-        "term(sort)~{tok_id() == 'nlpcraft:sort'} " +
-        "term(elem)~{has(tok_groups(), 'G1')}*"
+        "term(y)~{# == 'Y'} " +
+        "term(sort)~{# == 'nlpcraft:sort'} " +
+        "term(elem)~{has(tok_groups, 'G1')}*"
     )
     private def onSort3(ctx: NCIntentMatch, @NCIntentTerm("sort") sort: NCToken): NCResult =
         mkResult(intentId = "onSort3", sort = sort)
 
     @NCIntent(
         "intent=onSort4 " +
-        "term(z)~{tok_id() == 'Z'} " +
-        "term(elem1)~{has(tok_groups(), 'G1')}+ " +
-        "term(elem2)~{has(tok_groups(), 'G2')}+ " +
-        "term(sort)~{tok_id() == 'nlpcraft:sort'}"
+        "term(z)~{# == 'Z'} " +
+        "term(elem1)~{has(tok_groups, 'G1')}+ " +
+        "term(elem2)~{has(tok_groups, 'G2')}+ " +
+        "term(sort)~{# == 'nlpcraft:sort'}"
     )
     private def onSort4(ctx: NCIntentMatch, @NCIntentTerm("sort") sort: NCToken): NCResult =
         mkResult(intentId = "onSort4", sort = sort)

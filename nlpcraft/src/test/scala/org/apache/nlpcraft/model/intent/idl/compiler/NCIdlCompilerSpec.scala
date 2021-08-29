@@ -79,7 +79,7 @@ class NCIdlCompilerSpec {
               |intent=i1
               |     flow="a[^0-9]b"
               |     meta={'a': true, 'b': {'Москва': [1, 2, 3]}}
-              |     term(t1)={2 == 2 && size(tok_id()) != -25}
+              |     term(t1)={2 == 2 && size(#) != -25}
               |""".stripMargin
         )
         checkCompileOk(
@@ -144,7 +144,7 @@ class NCIdlCompilerSpec {
               |     options={'ordered': 1}
               |     flow="a[^0-9]b"
               |     meta={'a': true, 'b': {'Москва': [1, 2, 3]}}
-              |     term(t1)={2 == 2 && size(tok_id()) != -25}
+              |     term(t1)={2 == 2 && size(#) != -25}
               |""".stripMargin
         )
 
@@ -154,7 +154,7 @@ class NCIdlCompilerSpec {
               |     options={'ordered1': false}
               |     flow="a[^0-9]b"
               |     meta={'a': true, 'b': {'Москва': [1, 2, 3]}}
-              |     term(t1)={2 == 2 && size(tok_id()) != -25}
+              |     term(t1)={2 == 2 && size(#) != -25}
               |""".stripMargin
         )
 
@@ -164,7 +164,7 @@ class NCIdlCompilerSpec {
               |     options={'ordered': false, 'unknown': 1}
               |     flow="a[^0-9]b"
               |     meta={'a': true, 'b': {'Москва': [1, 2, 3]}}
-              |     term(t1)={2 == 2 && size(tok_id()) != -25}
+              |     term(t1)={2 == 2 && size(#) != -25}
               |""".stripMargin
         )
 
@@ -174,7 +174,7 @@ class NCIdlCompilerSpec {
               |     options={'ordered': false_1} # Broken JSON.
               |     flow="a[^0-9]b"
               |     meta={'a': true, 'b': {'Москва': [1, 2, 3]}}
-              |     term(t1)={2 == 2 && size(tok_id()) != -25}
+              |     term(t1)={2 == 2 && size(#) != -25}
               |""".stripMargin
         )
 
@@ -184,7 +184,7 @@ class NCIdlCompilerSpec {
               |     options={'ordered': null}
               |     flow="a[^0-9]b"
               |     meta={'a': true, 'b': {'Москва': [1, 2, 3]}}
-              |     term(t1)={2 == 2 && size(tok_id()) != -25}
+              |     term(t1)={2 == 2 && size(#) != -25}
               |""".stripMargin
         )
 
@@ -194,7 +194,7 @@ class NCIdlCompilerSpec {
               |     options={'ordered': false, 'ordered': true}
               |     flow="a[^0-9]b"
               |     meta={'a': true, 'b': {'Москва': [1, 2, 3]}}
-              |     term(t1)={2 == 2 && size(tok_id()) != -25}
+              |     term(t1)={2 == 2 && size(#) != -25}
               |""".stripMargin
         )
 
@@ -208,7 +208,7 @@ class NCIdlCompilerSpec {
               | */
               |     flow="a[^0-9]b"
               |     meta={{'a': true, 'b': {'arr': [1, 2, 3]}}
-              |     term(t1)={2 == 2 && size(tok_id()) != -25}
+              |     term(t1)={2 == 2 && size(#) != -25}
               |""".stripMargin
         )
         checkCompileError(
@@ -216,7 +216,7 @@ class NCIdlCompilerSpec {
               |intent=i1
               |     meta={'a': true, 'b': {'arr': [1, 2, 3]}}
               |     term(t1)={
-              |         @x == 2 && size(tok_id()) != -25
+              |         @x == 2 && size(#) != -25
               |     }
               |""".stripMargin
         )

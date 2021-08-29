@@ -30,7 +30,7 @@ class NCDefaultSpecTestModel extends NCDefaultTestModel {
     override def getElements: util.Set[NCElement] = {
         (
             super.getElements.asScala ++
-            Set(NCTestElement("wrapperA", "^^{tok_id() == 'A'}^^ ^^{tok_id() == 'A'}^^ ^^{tok_id() == 'A'}^^"))
+            Set(NCTestElement("wrapperA", "^^{# == 'A'}^^ ^^{# == 'A'}^^ ^^{# == 'A'}^^"))
         ).asJava
     }
 

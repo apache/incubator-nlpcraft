@@ -120,7 +120,6 @@ object NCIdlCompiler extends LazyLogging {
         override def exitCompExpr(ctx: IDP.CompExprContext): Unit = expr += parseCompExpr(ctx.LT(), ctx.GT(), ctx.LTEQ(), ctx.GTEQ())(ctx)
         override def exitAndOrExpr(ctx: IDP.AndOrExprContext): Unit = expr += parseAndOrExpr(ctx.AND, ctx.OR())(ctx)
         override def exitEqNeqExpr(ctx: IDP.EqNeqExprContext): Unit = expr += parseEqNeqExpr(ctx.EQ, ctx.NEQ())(ctx)
-        override def exitCallExpr(ctx: IDP.CallExprContext): Unit = expr += parseCallExpr(ctx.FUN_NAME())(ctx)
         override def exitAtom(ctx: IDP.AtomContext): Unit = expr += parseAtom(ctx.getText)(ctx)
         override def exitTermEq(ctx: IDP.TermEqContext): Unit = termConv = ctx.TILDA() != null
         override def exitFragMeta(ctx: IDP.FragMetaContext): Unit = fragMeta = json2Obj(ctx.jsonObj().getText)(ctx)
@@ -128,6 +127,16 @@ object NCIdlCompiler extends LazyLogging {
         override def exitOptDecl (ctx: IDP.OptDeclContext): Unit = intentOpts = convertToOptions(json2Obj(ctx.jsonObj().getText)(ctx))(ctx)
         override def exitIntentId(ctx: IDP.IntentIdContext): Unit =  intentId = ctx.id().getText
         override def exitAlias(ctx: IDP.AliasContext): Unit = alias = ctx.id().getText
+
+        override def exitCallExpr(ctx: IDP.CallExprContext): Unit = {
+            val fun =
+                if (ctx.FUN_NAME() != null)
+                    ctx.FUN_NAME().getText
+                else
+                    "tok_id"
+
+            expr += parseCallExpr(fun)(ctx)
+        }
 
         private def convertToOptions(json: Map[String, Object])(ctx: IDP.OptDeclContext): NCIdlIntentOptions = {
             val opts = new NCIdlIntentOptions()

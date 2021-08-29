@@ -278,14 +278,14 @@ class SqlModel extends NCModelFileAdapter("sql_model.yaml") with LazyLogging {
       */
     @NCIntent(
         "intent=commonReport " +
-        "term(tbls)~{has(tok_groups(), 'table')}[0,7] " +
-        "term(cols)~{has(list('col:date', 'col:num', 'col:varchar'), tok_id())}[0,7] " +
-        "term(condNums)~{tok_id() == 'condition:num'}[0,7] " +
-        "term(condVals)~{tok_id() == 'condition:value'}[0,7] " +
-        "term(condDates)~{tok_id() == 'condition:date'}[0,7] " +
-        "term(condFreeDate)~{tok_id() == 'nlpcraft:date'}? " +
-        "term(sort)~{tok_id() == 'nlpcraft:sort'}? " +
-        "term(limit)~{tok_id() == 'nlpcraft:limit'}?"
+        "term(tbls)~{has(tok_groups, 'table')}[0,7] " +
+        "term(cols)~{has(list('col:date', 'col:num', 'col:varchar'), #)}[0,7] " +
+        "term(condNums)~{# == 'condition:num'}[0,7] " +
+        "term(condVals)~{# == 'condition:value'}[0,7] " +
+        "term(condDates)~{# == 'condition:date'}[0,7] " +
+        "term(condFreeDate)~{# == 'nlpcraft:date'}? " +
+        "term(sort)~{# == 'nlpcraft:sort'}? " +
+        "term(limit)~{# == 'nlpcraft:limit'}?"
     )
     @NCIntentSample(Array(
         "order date, please!",
@@ -340,14 +340,14 @@ class SqlModel extends NCModelFileAdapter("sql_model.yaml") with LazyLogging {
       */
     @NCIntent(
         "intent=customSortReport " +
-            "term(sort)~{tok_id() == 'sort:best' || tok_id() == 'sort:worst'} " +
+            "term(sort)~{# == 'sort:best' || # == 'sort:worst'} " +
             "term(tbls)~{has(tok_groups(), 'table')}[0,7] " +
-            "term(cols)~{has(list('col:date', 'col:num', 'col:varchar'), tok_id())}[0,7] " +
-            "term(condNums)~{tok_id() == 'condition:num'}[0,7] " +
-            "term(condVals)~{tok_id() == 'condition:value'}[0,7] " +
-            "term(condDates)~{tok_id() == 'condition:date'}[0,7] " +
-            "term(condFreeDate)~{tok_id() == 'nlpcraft:date'}? " +
-            "term(limit)~{tok_id() == 'nlpcraft:limit'}?"
+            "term(cols)~{has(list('col:date', 'col:num', 'col:varchar'), #)}[0,7] " +
+            "term(condNums)~{# == 'condition:num'}[0,7] " +
+            "term(condVals)~{# == 'condition:value'}[0,7] " +
+            "term(condDates)~{# == 'condition:date'}[0,7] " +
+            "term(condFreeDate)~{# == 'nlpcraft:date'}? " +
+            "term(limit)~{# == 'nlpcraft:limit'}?"
     )
     @NCIntentSample(Array(
         "What are the least performing categories for the last quarter?"

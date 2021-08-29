@@ -65,14 +65,14 @@ class NCIdlFunctionsUser extends NCIdlFunctions {
         def get(opt: Optional[String]): String = if (opt.isEmpty) null else s"'${opt.get()}'"
 
         test(
-            mkTestDesc(s"user_fname() == ${get(usr.getFirstName)}"),
-            mkTestDesc(s"user_lname() == ${get(usr.getLastName)}"),
-            mkTestDesc(s"user_email() == ${get(usr.getEmail)}"),
-            mkTestDesc(s"user_admin() == ${usr.isAdmin}"),
-            mkTestDesc(s"user_signup_tstamp() == ${usr.getSignupTimestamp}"),
-            mkTestDesc(s"user_signup_tstamp() != user_signup_tstamp() + 1"),
-            mkTestDesc(s"user_id() == ${usr.getId}"),
-            mkTestDesc(s"user_id() != ${usr.getId + 1}")
+            mkTestDesc(s"user_fname == ${get(usr.getFirstName)}"),
+            mkTestDesc(s"user_lname == ${get(usr.getLastName)}"),
+            mkTestDesc(s"user_email == ${get(usr.getEmail)}"),
+            mkTestDesc(s"user_admin == ${usr.isAdmin}"),
+            mkTestDesc(s"user_signup_tstamp == ${usr.getSignupTimestamp}"),
+            mkTestDesc(s"user_signup_tstamp != user_signup_tstamp() + 1"),
+            mkTestDesc(s"user_id == ${usr.getId}"),
+            mkTestDesc(s"user_id != ${usr.getId + 1}")
         )
     }
 }

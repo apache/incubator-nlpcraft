@@ -42,10 +42,10 @@ class NCStmOnlyModel extends NCAbstractTokensModel {
             "        'unused_usr_toks': false, " +
             "        'allow_stm_only': false" +
             "    }" +
-            "    term(a)={tok_id() == 'a'}" +
-            "    term(b)={tok_id() == 'b'}" +
-            "    term(c)={tok_id() == 'c'}" +
-            "    term(d)={tok_id() == 'd'}"
+            "    term(a)={# == 'a'}" +
+            "    term(b)={# == 'b'}" +
+            "    term(c)={# == 'c'}" +
+            "    term(d)={# == 'd'}"
     )
     def before(): NCResult = NCResult.text("before")
 
@@ -58,8 +58,8 @@ class NCStmOnlyModel extends NCAbstractTokensModel {
         "        'unused_usr_toks': false, " +
         "        'allow_stm_only': true" +
         "    }" +
-        "    term(a)~{tok_id() == 'a'}" +
-        "    term(b)~{tok_id() == 'b'}"
+        "    term(a)~{# == 'a'}" +
+        "    term(b)~{# == 'b'}"
     )
     def i1(): NCResult = NCResult.text("i1")
 
@@ -72,8 +72,8 @@ class NCStmOnlyModel extends NCAbstractTokensModel {
         "        'unused_usr_toks': false, " +
         "        'allow_stm_only': false" +
         "    }" +
-        "    term(a)={tok_id() == 'c'}" +
-        "    term(b)={tok_id() == 'd'}"
+        "    term(a)={# == 'c'}" +
+        "    term(b)={# == 'd'}"
     )
     def i2(): NCResult = NCResult.text("i2")
 }

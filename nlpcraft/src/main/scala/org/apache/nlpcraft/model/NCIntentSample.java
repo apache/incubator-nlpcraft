@@ -54,7 +54,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * <p>
  * Here's an example of using this annotation (from <a target=_new href="https://nlpcraft.apache.org/examples/light_switch.html">LightSwitch</a> example):
  * <pre class="brush: java, highlight: [2]">
- * {@literal @}NCIntent("intent=act term(act)={has(tok_groups(), 'act')} term(loc)={trim(tok_id()) == 'ls:loc'}*")
+ * {@literal @}NCIntent("intent=act term(act)={has(tok_groups, 'act')} term(loc)={# == 'ls:loc'}*")
  * {@literal @}NCIntentSample(Array(
  *     "Turn the lights off in the entire house.",
  *     "Switch on the illumination in the master bedroom closet.",
