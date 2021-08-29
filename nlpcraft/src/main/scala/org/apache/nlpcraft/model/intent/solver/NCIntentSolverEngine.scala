@@ -37,6 +37,7 @@ import scala.jdk.CollectionConverters.{CollectionHasAsScala, MapHasAsScala, SeqH
  * Intent solver that finds the best matching intent given user sentence.
  */
 object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
+    private final val DNM = r("did not match")
 
     /**
      * NOTE: not thread-safe.
@@ -437,7 +438,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
             }
 
             if (!flowRegex.get.matcher(str).find(0)) {
-                x(s"${bo(r("did not match"))}")
+                x(DNM)
 
                 flowMatched = false
             }
@@ -470,7 +471,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
             }
 
             if (!res) {
-                x(s"${bo(r("did not match"))}")
+                x(DNM)
 
                 flowMatched = false
             }
@@ -532,12 +533,12 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                                 s"${y("<")}${w.head}, ${w(1)}, ${w(2)}, ${w(3)}, ${w(4)}, ${w(5)}${y(">")}"
                             )
 
-                            tbl.info(logger, Some("Term match found:"))
+                            tbl.debug(logger, Some("Term match found:"))
                         }
 
                     case None =>
                         // Term is missing. Stop further processing for this intent. This intent cannot be matched.
-                        logger.info(s"Intent '$intentId' ${bo(r("did not match"))} because of unmatched term '${term.toAnsiString}' $varStr.")
+                        logger.debug(s"Intent '$intentId' $DNM because of unmatched term '${term.toAnsiString}' $varStr.")
 
                         abort = true
                 }
@@ -556,7 +557,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
 
                 if (!opts.allowStmTokenOnly && usedSenToks.isEmpty && usedConvToks.nonEmpty)
                     logger.info(
-                        s"Intent '$intentId' ${bo(r("did not match"))} because all its matched tokens came from STM $varStr. " +
+                        s"Intent '$intentId' $DNM because all its matched tokens came from STM $varStr. " +
                         s"See intent '${c(JSON_ALLOW_STM_ONLY)}' option."
                     )
                 else if (!opts.ignoreUnusedFreeWords && unusedSenToks.exists(_.token.isFreeWord))
@@ -566,7 +567,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                     info(
                         logger,
                         Some(
-                            s"Intent '$intentId' ${bo(r("did not match"))} because of unused free words $varStr. " +
+                            s"Intent '$intentId' $DNM because of unused free words $varStr. " +
                             s"See intent '${c(JSON_UNUSED_FREE_WORDS)}' option. " +
                             s"Unused free words:"
                         )
@@ -578,7 +579,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                     info(
                         logger,
                         Some(
-                            s"Intent '$intentId' ${bo(r("did not match"))} because of unused user tokens $varStr. " +
+                            s"Intent '$intentId' $DNM because of unused user tokens $varStr. " +
                             s"See intent '${c(JSON_UNUSED_USR_TOKS)}' option. " +
                             s"Unused user tokens:"
                         )
@@ -590,7 +591,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                     info(
                         logger,
                         Some(
-                            s"Intent '$intentId' ${bo(r("did not match"))} because of unused system tokens $varStr. " +
+                            s"Intent '$intentId' $DNM because of unused system tokens $varStr. " +
                             s"See intent '${c(JSON_UNUSED_SYS_TOKS)}' option. " +
                             s"Unused system tokens:"
                         )

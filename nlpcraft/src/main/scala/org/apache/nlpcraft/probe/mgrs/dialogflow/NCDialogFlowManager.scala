@@ -177,7 +177,7 @@ object NCDialogFlowManager extends NCService {
             }
 
             val tbl = NCAsciiTable(
-                "",
+                "#",
                 "Intent ID",
                 "Sever Request ID",
                 "Text",
