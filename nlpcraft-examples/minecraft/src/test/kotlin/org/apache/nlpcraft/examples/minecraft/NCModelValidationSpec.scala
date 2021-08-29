@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.example.minecraft
+package org.apache.nlpcraft.examples.minecraft
 
 import org.apache.nlpcraft.model.tools.test.NCTestAutoModelValidator
 import org.junit.jupiter.api.{Assertions, Test}

@@ -16,7 +16,7 @@
  *
  */
 
-package org.apache.nlpcraft.example.minecraft
+package org.apache.nlpcraft.examples.minecraft
 
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
