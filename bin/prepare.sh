@@ -79,6 +79,7 @@ mkdir ${zipDir}/${tmpDir}/build
 
 rsync -avzq bin ${zipDir}/${tmpDir} --exclude '**/.DS_Store' --exclude bin/prepare.sh --exclude bin/MAVEN-RELEASE.md
 rsync -avzq openapi ${zipDir}/${tmpDir} --exclude '**/.DS_Store'
+rsync -avzq idea ${zipDir}/${tmpDir} --exclude '**/.DS_Store'
 
 function cpSrc() {
   rsync -avzq "$1"/src ${zipDir}/${tmpDir}/"$1" --exclude '**/.DS_Store' --exclude '**/*.iml'

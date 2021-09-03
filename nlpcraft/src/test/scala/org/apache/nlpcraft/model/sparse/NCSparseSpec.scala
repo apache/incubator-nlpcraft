@@ -23,7 +23,6 @@ import org.apache.nlpcraft.{NCTestContext, NCTestElement, NCTestEnvironment}
 import org.junit.jupiter.api.Test
 
 import java.util
-import scala.collection.mutable
 import scala.jdk.CollectionConverters.CollectionHasAsScala
 
 class NCSparseModel extends NCAbstractTokensModel {
