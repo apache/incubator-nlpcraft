@@ -31,11 +31,16 @@ class SolarSystemDiscoverer {
     )
     @NCIntent(
         "intent=discoverer " +
-            "    options={" +
-            "        'unused_usr_toks': true " +
-            "    }" +
-            "    term(discoverer)={tok_id() == 'discoverer'}"
+        "    options={'unused_usr_toks': true}" +
+        "    term(discoverer)={tok_id() == 'discoverer'}"
     )
     def discoverer(@NCIntentTerm("discoverer") discoverer: NCToken): NCResult =
-        NCResult.text(SolarSystemOpenApiService.getInstance().bodyRequest().withFilter("discoveredBy", "cs", discoverer.getNormalizedText).execute().toString())
+        NCResult.text(
+            SolarSystemOpenApiService.
+                getInstance().
+                bodyRequest().
+                withFilter("discoveredBy", "cs", discoverer.getNormalizedText).
+                execute().
+                toString()
+        )
 }

@@ -17,6 +17,7 @@
 
 package org.apache.nlpcraft.examples.solarsystem.intents
 
+import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.examples.solarsystem.api.SolarSystemOpenApiService
 import org.apache.nlpcraft.model.{NCIntent, NCIntentSample, NCIntentTerm, NCResult, NCToken}
 
@@ -24,7 +25,7 @@ import java.time.format.{DateTimeFormatter, DateTimeFormatterBuilder, DateTimePa
 import java.time.temporal.ChronoField.{DAY_OF_MONTH, MONTH_OF_YEAR}
 import java.time.{LocalDate, ZoneOffset}
 
-class SolarSystemDate {
+class SolarSystemDiscoveryDate extends LazyLogging {
     @NCIntentSample(
         Array(
             "After 1900 year",
@@ -32,13 +33,17 @@ class SolarSystemDate {
         )
     )
     @NCIntent(
-        "intent=date " +
-            "    options={" +
-            "        'unused_usr_toks': true " +
-            "    }" +
-            "    term(date)={tok_id() == 'nlpcraft:date'} "
+        "intent=discoveryDate " +
+        "    options={'unused_usr_toks': true}" +
+        "    term(year)={" +
+            "    tok_id() == 'nlpcraft:num' && " +
+            "    (" +
+            "       meta_tok('nlpcraft:num:unit') == 'year' || " +
+            "       meta_tok('nlpcraft:num:from') >= 1610 && meta_tok('nlpcraft:num:from') <= year" +
+            "    )" +
+            "}"
     )
-    def date(@NCIntentTerm("date") date: NCToken): NCResult = {
+    def date(@NCIntentTerm("year") year: NCToken): NCResult = {
         // API doesn't support filter by dates.
         // We do it here.
         var res = SolarSystemOpenApiService.getInstance().bodyRequest().execute()
@@ -57,18 +62,25 @@ class SolarSystemDate {
                     toFormatter()
             )
 
-        val from: Long = date.metax("nlpcraft:date:from")
-        val to: Long = date.metax("nlpcraft:date:to")
+        val from: Double = year.metax("nlpcraft:num:from")
+        val to: Double = year.metax("nlpcraft:num:to")
+
+        println("year="+year.getMetadata)
+        println("WAS="+res.size)
+        println("from="+from + ", to=" + to)
 
         res = res.filter(row => {
             val dateStr = row("discoveryDate").asInstanceOf[String]
 
+
+
+            val x =
             if (dateStr.nonEmpty)
                 supportedFmts.flatMap(p =>
                     try {
-                        val ms = LocalDate.parse(dateStr, p).atStartOfDay(ZoneOffset.UTC).toInstant.toEpochMilli
+                        val years = LocalDate.parse(dateStr, p).atStartOfDay(ZoneOffset.UTC).getYear
 
-                        Some(ms >= from && ms <= to)
+                        Some(years >= from && years <= to)
                     }
                     catch {
                         case _: DateTimeParseException => None
@@ -79,7 +91,13 @@ class SolarSystemDate {
                     getOrElse(throw new AssertionError(s"Template not found for: $dateStr"))
             else
                 false
+
+            println("dateStr="++dateStr + ", x="+x)
+
+            x
         })
+
+        logger.info(s"Request result filtered with years range ${from.toLong}-${to.toLong}, rows=${res.size}")
 
         NCResult.text(res.toString())
     }

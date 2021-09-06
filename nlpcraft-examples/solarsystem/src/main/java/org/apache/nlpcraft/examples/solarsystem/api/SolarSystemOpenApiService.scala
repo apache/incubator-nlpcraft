@@ -27,26 +27,31 @@ import java.net.http.{HttpClient, HttpRequest, HttpResponse}
 import java.net.{URI, URLEncoder}
 
 object SolarSystemOpenApiService {
+    private final val URL_BODIES = "https://api.le-systeme-solaire.net/rest/bodies"
+    private final val MAPPER = new ObjectMapper().registerModule(DefaultScalaModule)
+
     case class BodiesBean(bodies: Seq[Map[String, Object]])
 
     private var s: SolarSystemOpenApiService = _
 
-    def getInstance(): SolarSystemOpenApiService =
-        this.synchronized {
-            if (s == null) {
-                s = new SolarSystemOpenApiService
+    def getInstance(): SolarSystemOpenApiService = {
+        if (s == null)
+            this.synchronized {
+                if (s == null) {
+                    s = new SolarSystemOpenApiService
 
-                s.start()
+                    // Skips errors processing for simplifying.
+                    s.start()
+                }
             }
 
-            s
-        }
+        s
+    }
 }
 
-class SolarSystemOpenApiService extends LazyLogging {
-    private final val URL_BODIES = "https://api.le-systeme-solaire.net/rest/bodies"
-    private final val MAPPER = new ObjectMapper().registerModule(DefaultScalaModule)
+import SolarSystemOpenApiService._
 
+class SolarSystemOpenApiService extends LazyLogging {
     private var client: HttpClient = _
 
     private var planets: Map[String, String] = _
@@ -84,17 +89,23 @@ class SolarSystemOpenApiService extends LazyLogging {
             if (params != null)
                 url = s"$url${getSeparator}data=${params.mkString(",")}"
 
-            if (filter != null)
-                url = s"$url${getSeparator}filter=${filter.data},${filter.oper},${URLEncoder.encode(filter.value, "UTF-8")}"
+            if (filter != null) {
+                val v = URLEncoder.encode(filter.value, "UTF-8")
+
+                url = s"$url${getSeparator}filter=${filter.data},${filter.oper},$v"
+            }
 
             logger.info(s"Request prepared: $url")
 
             val respJs = client.sendAsync(
-                HttpRequest.newBuilder(URI.create(url)).header("Content-Type", "application/json").GET().build(),
+                HttpRequest.newBuilder(URI.create(url)).
+                    header("Content-Type", "application/json").GET().build(),
                 HttpResponse.BodyHandlers.ofString()
             ).get().body()
 
-            logger.info(s"Response received: $respJs")
+            val respLog = if (respJs.length > 100) s"${respJs.take(100)} ....." else respJs
+
+            logger.info(s"Response received: $respLog")
 
             MAPPER.readValue(respJs, classOf[BodiesBean]).bodies
         }

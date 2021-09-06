@@ -29,4 +29,12 @@ class NCSolarSystemModelSpec extends NCTestContext {
         checkIntent("moon", "planetInfo")
         checkIntent("give me information about Larissa", "planetInfo")
     }
+
+    @Test
+    def planetDate(): Unit = {
+        checkIntent("After 1900 year", "discoveryDate")
+        checkIntent("Before 1900 year", "discoveryDate")
+        checkIntent("between 1900 and 1907 years", "discoveryDate")
+        checkIntent("between 1900 and 1907", "discoveryDate")
+    }
 }

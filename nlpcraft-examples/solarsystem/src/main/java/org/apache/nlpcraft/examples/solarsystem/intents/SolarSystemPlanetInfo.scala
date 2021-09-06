@@ -29,11 +29,16 @@ class SolarSystemPlanetInfo {
     )
     @NCIntent(
         "intent=planetInfo " +
-        "    options={" +
-        "        'unused_usr_toks': false " +
-        "    }" +
+        "    options={'unused_usr_toks': false }" +
         "    term(planet)={tok_id() == 'planet'}"
     )
     def planetInfo(@NCIntentTerm("planet") planet: NCToken): NCResult =
-        NCResult.text(SolarSystemOpenApiService.getInstance().bodyRequest().withFilter("id", "eq", planet.getNormalizedText).execute().toString())
+        NCResult.text(
+            SolarSystemOpenApiService.
+                getInstance().
+                bodyRequest().
+                withFilter("id", "eq", planet.getNormalizedText).
+                execute().
+                toString()
+        )
 }

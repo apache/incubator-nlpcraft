@@ -19,7 +19,8 @@ id: "nlpcraft.solarsystem.ex"
 name: "Solar System Example Model"
 version: "1.0"
 description: "NLI-powered Solar system data chat example model."
-enabledBuiltInTokens: ["nlpcraft:num", "nlpcraft:limit", "nlpcraft:sort", "nlpcraft:relation", "nlpcraft:date"]
+# Note that "nlpcraft:date" excluded because this NER doesn't support some dates period (before 1900 year)
+enabledBuiltInTokens: ["nlpcraft:num", "nlpcraft:limit", "nlpcraft:sort", "nlpcraft:relation"]
 
 permutateSynonyms: false
 sparse: false
