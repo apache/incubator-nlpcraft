@@ -29,13 +29,14 @@ class SolarSystemDiscoveryDate extends LazyLogging {
     @NCIntentSample(
         Array(
             "After 1900 year",
-            "After 1900 year",
+            "Before 1900 year",
+            "Between 1800 and 1900 years"
         )
     )
     @NCIntent(
         "intent=discoveryDate " +
-        "    options={'unused_usr_toks': true}" +
-        "    term(year)={" +
+            "    options={'unused_usr_toks': true}" +
+            "    term(year)={" +
             "    tok_id() == 'nlpcraft:num' && " +
             "    (" +
             "       meta_tok('nlpcraft:num:unit') == 'year' || " +
@@ -49,7 +50,7 @@ class SolarSystemDiscoveryDate extends LazyLogging {
         var res = SolarSystemOpenApiService.getInstance().bodyRequest().execute()
 
         val supportedFmts =
-            Seq (
+            Seq(
                 DateTimeFormatter.ofPattern("dd/MM/yyyy"),
                 new DateTimeFormatterBuilder().
                     appendPattern("yyyy").
@@ -62,25 +63,19 @@ class SolarSystemDiscoveryDate extends LazyLogging {
                     toFormatter()
             )
 
-        val from: Double = year.metax("nlpcraft:num:from")
-        val to: Double = year.metax("nlpcraft:num:to")
-
-        println("year="+year.getMetadata)
-        println("WAS="+res.size)
-        println("from="+from + ", to=" + to)
+        val fromYear: Double = year.metax("nlpcraft:num:from")
+        val toYear: Double = year.metax("nlpcraft:num:to")
 
         res = res.filter(row => {
             val dateStr = row("discoveryDate").asInstanceOf[String]
 
-
-
-            val x =
+            // TODO: fix condition.
             if (dateStr.nonEmpty)
                 supportedFmts.flatMap(p =>
                     try {
                         val years = LocalDate.parse(dateStr, p).atStartOfDay(ZoneOffset.UTC).getYear
 
-                        Some(years >= from && years <= to)
+                        Some(years >= fromYear && years <= toYear)
                     }
                     catch {
                         case _: DateTimeParseException => None
@@ -91,13 +86,9 @@ class SolarSystemDiscoveryDate extends LazyLogging {
                     getOrElse(throw new AssertionError(s"Template not found for: $dateStr"))
             else
                 false
-
-            println("dateStr="++dateStr + ", x="+x)
-
-            x
         })
 
-        logger.info(s"Request result filtered with years range ${from.toLong}-${to.toLong}, rows=${res.size}")
+        logger.info(s"Request result filtered with years range ${fromYear.toLong}-${toYear.toLong}, rows=${res.size}")
 
         NCResult.text(res.toString())
     }
