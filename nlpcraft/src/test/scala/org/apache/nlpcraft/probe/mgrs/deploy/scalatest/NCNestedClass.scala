@@ -26,6 +26,6 @@ class NCNestedClass {
     /**
      *
      */
-    @NCIntent("intent=scalaClass term={tok_id() == 'scalaClass'}")
+    @NCIntent("intent=scalaClass term={# == 'scalaClass'}")
     def m(): NCResult = NCResult.text("OK")
 }

@@ -42,11 +42,11 @@ class NCIdlFunctionsRequest extends NCIdlFunctions {
         def mkTestDesc(truth: String): TestDesc = TestDesc(truth = truth, idlCtx = idlCtx)
 
         test(
-            mkTestDesc(s"req_id() == '$reqSrvReqId'"),
-            mkTestDesc(s"req_normtext() == '$reqNormText'"),
-            mkTestDesc(s"req_tstamp() == $reqTstamp"),
-            mkTestDesc(s"req_addr() == '$reqAddr'"),
-            mkTestDesc(s"req_agent() == '$reqAgent'")
+            mkTestDesc(s"req_id == '$reqSrvReqId'"),
+            mkTestDesc(s"req_normtext == '$reqNormText'"),
+            mkTestDesc(s"req_tstamp == $reqTstamp"),
+            mkTestDesc(s"req_addr == '$reqAddr'"),
+            mkTestDesc(s"req_agent == '$reqAgent'")
         )
     }
 }

@@ -42,8 +42,8 @@ class NCRelationSpecModel extends NCSpecModelAdapter {
 
     @NCIntent(
         "intent=rel1 " +
-        "term(rel)~{tok_id() == 'nlpcraft:relation'} " +
-        "term(elem)~{has(tok_groups(), 'G1')}*"
+        "term(rel)~{# == 'nlpcraft:relation'} " +
+        "term(elem)~{has(tok_groups, 'G1')}*"
     )
     private def onRelation1(ctx: NCIntentMatch, @NCIntentTerm("rel") rel: NCToken): NCResult =
         mkResult(intentId = "rel1", rel = rel)
@@ -51,9 +51,9 @@ class NCRelationSpecModel extends NCSpecModelAdapter {
     // `x` is mandatory (difference with `rel3`)
     @NCIntent(
         "intent=rel2 " +
-            "term(x)={tok_id() == 'X'} " +
-            "term(rel)~{tok_id() == 'nlpcraft:relation'} " +
-            "term(elem)~{has(tok_groups(), 'G1')}*"
+            "term(x)={# == 'X'} " +
+            "term(rel)~{# == 'nlpcraft:relation'} " +
+            "term(elem)~{has(tok_groups, 'G1')}*"
     )
     private def onRelation2(ctx: NCIntentMatch, @NCIntentTerm("rel") rel: NCToken): NCResult =
         mkResult(intentId = "rel2", rel = rel)
@@ -61,9 +61,9 @@ class NCRelationSpecModel extends NCSpecModelAdapter {
     // `y` is optional (difference with `rel2`)
     @NCIntent(
         "intent=rel3 " +
-        "term(y)~{tok_id() == 'Y'} " +
-        "term(rel)~{tok_id() == 'nlpcraft:relation'} " +
-        "term(elem)~{has(tok_groups(), 'G1')}*"
+        "term(y)~{# == 'Y'} " +
+        "term(rel)~{# == 'nlpcraft:relation'} " +
+        "term(elem)~{has(tok_groups, 'G1')}*"
     )
     private def onRelation3(ctx: NCIntentMatch, @NCIntentTerm("rel") rel: NCToken): NCResult =
         mkResult(intentId = "rel3", rel = rel)

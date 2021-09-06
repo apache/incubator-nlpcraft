@@ -72,4 +72,4 @@ elements:
       - "<LIGHT> {out|off|down}"
 
 intents:
-  - "intent=ls term(act)={has(tok_groups(), 'act')} term(loc)={tok_id() == 'ls:loc'}*"
+  - "intent=ls term(act)={has(tok_groups, 'act')} term(loc)={# == 'ls:loc'}*"

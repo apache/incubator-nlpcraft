@@ -53,15 +53,15 @@ class RestTestModel extends NCModelAdapter("rest.test.model", "REST test model",
             NCTestElement("valElem", Seq("valElem1"), Map("v1"-> Seq("v11", "v12"), "v2" -> Seq("v21")))
         )
 
-    @NCIntent("intent=onA term(t)={tok_id() == 'a'}")
+    @NCIntent("intent=onA term(t)={# == 'a'}")
     @NCIntentSample(Array("My A"))
     private def a(): NCResult = NCResult.text("OK")
 
-    @NCIntent("intent=onB term(t)={tok_id() == 'b'}")
+    @NCIntent("intent=onB term(t)={# == 'b'}")
     @NCIntentSample(Array("My B"))
     private def b(): NCResult = NCResult.text("OK")
 
-    @NCIntent("intent=onMeta term(t)={tok_id() == 'meta'}")
+    @NCIntent("intent=onMeta term(t)={# == 'meta'}")
     @NCIntentSample(Array("meta"))
     private def meta(): NCResult = {
         val res = NCResult.text("OK")

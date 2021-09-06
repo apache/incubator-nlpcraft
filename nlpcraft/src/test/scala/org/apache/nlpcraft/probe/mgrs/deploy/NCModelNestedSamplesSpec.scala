@@ -31,7 +31,7 @@ class NCModelNested extends NCModelAdapter("nlpcraft.samples.test.mdl", "Test Mo
      * @return
      */
     @NCIntentSample(Array("a"))
-    @NCIntent("intent=nested term={tok_id() == 'a'}*")
+    @NCIntent("intent=nested term={# == 'a'}*")
     def m(): NCResult = NCResult.text("OK")
 }
 

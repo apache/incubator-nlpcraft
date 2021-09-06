@@ -149,7 +149,7 @@ object NCPreProcessManager extends NCService {
                         s0.split(' ').toSeq,
                         spellCheck
                     )
-                        .split(' ').toSeq
+                    .split(' ').toSeq
                 
                 ),
                 spellCheck = false

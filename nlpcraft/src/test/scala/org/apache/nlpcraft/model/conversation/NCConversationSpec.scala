@@ -35,7 +35,7 @@ class NCConversationSpecModel extends NCModel {
     override def getElements: util.Set[NCElement] = Set(NCTestElement("test1"), NCTestElement("test2"))
 
     // 'test1' is mandatory, 'test2' is optional.
-    @NCIntent("intent=testIntentId term~{tok_id() == 'test1'} term~{tok_id() == 'test2'}?")
+    @NCIntent("intent=testIntentId term~{# == 'test1'} term~{# == 'test2'}?")
     def onMatch(): NCResult = NCResult.text("ok")
 }
 

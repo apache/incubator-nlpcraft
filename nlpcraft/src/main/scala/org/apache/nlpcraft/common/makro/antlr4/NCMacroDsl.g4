@@ -25,12 +25,19 @@ expr
     ;
 item: syn | group;
 syn : (TXT | REGEX_TXT | IDL_TXT);
-group: LCURLY list RCURLY MINMAX?;
+group: LCURLY list RCURLY minMax?;
 list
     : expr
     | list VERT expr
     | list VERT UNDERSCORE
     | UNDERSCORE VERT list
+    ;
+minMax
+    : minMaxShortcut
+    | MINMAX
+    ;
+minMaxShortcut
+    : QUESTION
     ;
 
 // Lexer.
@@ -39,7 +46,10 @@ RCURLY: '}';
 VERT: '|';
 COMMA: ',';
 UNDERSCORE: '_';
-fragment ESC_CHAR: [{}\\_[\]|,];
+LBR: '[';
+RBR: ']';
+QUESTION: '?';
+fragment ESC_CHAR: [{}\\_[\]|,/];
 fragment ESC: '\\' ESC_CHAR;
 fragment TXT_CHAR
     : [~!@#$%^&*?()+._]
@@ -64,9 +74,9 @@ fragment TXT_CHAR
     | '\uF900'..'\uFDCF'
     | '\uFDF0'..'\uFFFD'
     ; // Ignoring ['\u10000-'\uEFFFF].
-MINMAX: '[' [ 0-9,]+ ']';
 REGEX_TXT: '//' .*? '//';
 IDL_TXT: '^^' .*? '^^';
 TXT: (TXT_CHAR | ESC)+;
+MINMAX: '[' [ 0-9,]+ ']';
 WS: [ \r\t\u000C\n]+ -> skip ;
 ERR_CHAR: .;

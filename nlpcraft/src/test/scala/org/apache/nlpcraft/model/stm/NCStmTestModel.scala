@@ -41,15 +41,15 @@ class NCStmTestModel extends NCModelAdapter("nlpcraft.stm.test", "STM Test Model
             override def getGroups: util.List[String] = groups.asJava
         }
 
-    @NCIntent("intent=sale term~{tok_id() == 'sale'}")
+    @NCIntent("intent=sale term~{# == 'sale'}")
     private def onSale(ctx: NCIntentMatch): NCResult = NCResult.text("sale")
 
-    @NCIntent("intent=buy term~{tok_id() == 'buy'}")
+    @NCIntent("intent=buy term~{# == 'buy'}")
     private def onBuy(ctx: NCIntentMatch): NCResult = NCResult.text("buy")
 
-    @NCIntent("intent=sale_best_employee term~{tok_id() == 'sale'} term~{tok_id() == 'best_employee'}")
+    @NCIntent("intent=sale_best_employee term~{# == 'sale'} term~{# == 'best_employee'}")
     private def onBestEmployeeSale(ctx: NCIntentMatch): NCResult = NCResult.text("sale_best_employee")
 
-    @NCIntent("intent=buy_best_employee term~{tok_id() =='buy'} term~{tok_id() =='best_employee'}")
+    @NCIntent("intent=buy_best_employee term~{# =='buy'} term~{# =='best_employee'}")
     private def onBestEmployeeBuy(ctx: NCIntentMatch): NCResult = NCResult.text("buy_best_employee")
 }

@@ -37,7 +37,7 @@ intent=i1
 intent=i2
     flow="a[^0-9]b"
     meta={'a': 42, 'b': {'Москва': [1, 2, 3]}}
-    term(t1)={2 == 2 && !(tok_id()) != -25 && meta_model('a') == 42}
+    term(t1)={2 == 2 && !# != -25 && meta_model('a') == 42}
     term(t2)={
         @a = meta_model('a')
         @list = list(1, 2, 3, 4)
@@ -62,7 +62,7 @@ intent=i4 flow=/#flowModelMethod/ term(t1)=/#termModelMethod/
 intent=i5
     flow="a[^0-9]b"
     meta={'a': 42, 'b': {'Москва': [1, 2, 3]}}
-    term(t1)={month() >= 6 && !(tok_id()) != -25 && meta_model('a') == 42}
+    term(t1)={month >= 6 && !(#) != -25 && meta_model('a') == 42}
     term(t2)={
         @a = meta_model('a')
         @list = list(1, 2, 3, 4)

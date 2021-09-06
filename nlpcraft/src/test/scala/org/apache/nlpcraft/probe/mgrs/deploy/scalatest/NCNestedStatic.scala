@@ -27,6 +27,6 @@ object NCNestedStatic {
      *
      * @return
      */
-    @NCIntent("intent=scalaStatic term={tok_id() == 'scalaStatic'}")
+    @NCIntent("intent=scalaStatic term={# == 'scalaStatic'}")
     def m(): NCResult = NCResult.text("OK")
 }

@@ -50,7 +50,7 @@ class NCSynonymsValuesSpecModel extends NCModelAdapter("nlpcraft.syns.vals.test.
 
         ).asJava
 
-    @NCIntent("intent=i term(t)={tok_id() == 'elemId'}")
+    @NCIntent("intent=i term(t)={# == 'elemId'}")
     def callback(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
 }
 

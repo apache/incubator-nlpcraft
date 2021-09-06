@@ -56,7 +56,7 @@ class NCDialogSpecModel21 extends NCModel {
 
     override def getElements: util.Set[NCElement] = Set(NCTestElement("a"))
 
-    @NCIntent("intent=onA flow=/org.apache.nlpcraft.model.dialog.NCDialogSpecModelFlow2#invalidDef1/ term~{tok_id() == 'a'}")
+    @NCIntent("intent=onA flow=/org.apache.nlpcraft.model.dialog.NCDialogSpecModelFlow2#invalidDef1/ term~{# == 'a'}")
     def onA(): NCResult = NCResult.text("ok")
 }
 
@@ -73,7 +73,7 @@ class NCDialogSpec21 extends NCTestContext {
   *
   */
 class NCDialogSpecModel22 extends NCDialogSpecModel21 {
-    @NCIntent("intent=onA flow=/org.apache.nlpcraft.model.dialog.NCDialogSpecModelFlow2#invalidDef2/ term~{tok_id() == 'a'}")
+    @NCIntent("intent=onA flow=/org.apache.nlpcraft.model.dialog.NCDialogSpecModelFlow2#invalidDef2/ term~{# == 'a'}")
     override def onA(): NCResult = NCResult.text("ok")
 }
 
@@ -87,7 +87,7 @@ class NCDialogSpec22 extends NCDialogSpec21
   *
   */
 class NCDialogSpecModel23 extends NCDialogSpecModel21 {
-    @NCIntent("intent=onA flow=/org.apache.nlpcraft.model.dialog.NCDialogSpecModelFlow2#invalidDef3/ term~{tok_id() == 'a'}")
+    @NCIntent("intent=onA flow=/org.apache.nlpcraft.model.dialog.NCDialogSpecModelFlow2#invalidDef3/ term~{# == 'a'}")
     override def onA(): NCResult = NCResult.text("ok")
 }
 
@@ -101,7 +101,7 @@ class NCDialogSpec23 extends NCDialogSpec21
   *
   */
 class NCDialogSpecModel24 extends NCDialogSpecModel21 {
-    @NCIntent("intent=onA flow=/org.apache.nlpcraft.model.dialog.NCDialogSpecModelFlow2#invalidDef4/ term~{tok_id() == 'a'}")
+    @NCIntent("intent=onA flow=/org.apache.nlpcraft.model.dialog.NCDialogSpecModelFlow2#invalidDef4/ term~{# == 'a'}")
     override def onA(): NCResult = NCResult.text("ok")
 }
 
@@ -115,7 +115,7 @@ class NCDialogSpec24 extends NCDialogSpec21
   *
   */
 class NCDialogSpecModel25 extends NCDialogSpecModel21 {
-    @NCIntent("intent=onA flow=/org.apache.nlpcraft.model.dialog.NCDialogSpecModelFlow2#validDef/ term~{tok_id() == 'a'}")
+    @NCIntent("intent=onA flow=/org.apache.nlpcraft.model.dialog.NCDialogSpecModelFlow2#validDef/ term~{# == 'a'}")
     override def onA(): NCResult = NCResult.text("ok")
 }
 

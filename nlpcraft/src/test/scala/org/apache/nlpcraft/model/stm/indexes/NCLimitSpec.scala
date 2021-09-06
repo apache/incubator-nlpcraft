@@ -42,7 +42,7 @@ class NCLimitSpecModel extends NCSpecModelAdapter {
 
     @NCIntent(
         "intent=limit1 " +
-        "term(limit)~{tok_id() == 'nlpcraft:limit'} " +
+        "term(limit)~{# == 'nlpcraft:limit'} " +
         "term(elem)~{has(tok_groups(), 'G1')}"
     )
     private def onLimit1(ctx: NCIntentMatch, @NCIntentTerm("limit") limit: NCToken): NCResult =
@@ -51,9 +51,9 @@ class NCLimitSpecModel extends NCSpecModelAdapter {
     // `x` is mandatory (difference with `limit3`)
     @NCIntent(
         "intent=limit2 " +
-        "term(x)={tok_id() == 'X'} " +
-        "term(limit)~{tok_id() == 'nlpcraft:limit'} " +
-        "term(elem)~{has(tok_groups(), 'G1')}"
+        "term(x)={# == 'X'} " +
+        "term(limit)~{# == 'nlpcraft:limit'} " +
+        "term(elem)~{has(tok_groups, 'G1')}"
     )
     private def onLimit2(ctx: NCIntentMatch, @NCIntentTerm("limit") limit: NCToken): NCResult =
         mkResult(intentId = "limit2", limit = limit)
@@ -61,9 +61,9 @@ class NCLimitSpecModel extends NCSpecModelAdapter {
     // `y` is optional (difference with `limit2`)
     @NCIntent(
         "intent=limit3 " +
-            "term(y)~{tok_id() == 'Y'} " +
-            "term(limit)~{tok_id() == 'nlpcraft:limit'} " +
-            "term(elem)~{has(tok_groups(), 'G1')}"
+            "term(y)~{# == 'Y'} " +
+            "term(limit)~{# == 'nlpcraft:limit'} " +
+            "term(elem)~{has(tok_groups, 'G1')}"
     )
     private def onLimit3(ctx: NCIntentMatch, @NCIntentTerm("limit") limit: NCToken): NCResult =
         mkResult(intentId = "limit3", limit = limit)

@@ -97,7 +97,8 @@ expr
     | expr op=(EQ | NEQ) expr # eqNeqExpr
     | expr op=(AND | OR) expr # andOrExpr
     | atom # atomExpr
-    | FUN_NAME LPAR paramList? RPAR # callExpr
+    | (FUN_NAME | POUND) LPAR paramList? RPAR # callExpr
+    | (FUN_NAME | POUND) # callExpr
     | AT id # varRef
     ;
 vars
@@ -151,6 +152,9 @@ FUN_NAME
     | 'tok_id'
     | 'tok_lemma'
     | 'tok_stem'
+    | 'tok_txt'
+    | 'tok_norm_txt'
+    | 'tok_req_id'
     | 'tok_pos'
     | 'tok_sparsity'
     | 'tok_unid'
@@ -168,6 +172,9 @@ FUN_NAME
     | 'tok_index'
     | 'tok_is_first'
     | 'tok_is_last'
+    | 'tok_is_between_ids'
+    | 'tok_is_between_groups'
+    | 'tok_is_between_parents'
     | 'tok_is_before_id'
     | 'tok_is_before_group'
     | 'tok_is_before_parent'
@@ -210,6 +217,7 @@ FUN_NAME
     | 'comp_addr'
     | 'comp_postcode'
     | 'trim'
+    | 'regex'
     | 'strip'
     | 'uppercase'
     | 'lowercase'

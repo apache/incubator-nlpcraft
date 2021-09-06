@@ -45,7 +45,7 @@ import org.apache.nlpcraft.model.meta.NCMetaResultSpecModel._
 class NCMetaResultSpecModel extends NCAbstractTokensModel {
     override def getElements: util.Set[NCElement] = Set(NCTestElement("a"))
 
-    @NCIntent("intent=i term(t)={tok_id() == 'a'}")
+    @NCIntent("intent=i term(t)={# == 'a'}")
     def onIntent(): NCResult = {
         val res = NCResult.text("OK")
 

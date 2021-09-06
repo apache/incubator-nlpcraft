@@ -133,6 +133,7 @@ private[functions] trait NCIdlFunctions {
         parentId: String = null,
         value: String = null,
         txt: String = null,
+        normTxt: String = null,
         start: Int = 0,
         end: Int = 0,
         groups: Seq[String] = Seq.empty,
@@ -147,6 +148,7 @@ private[functions] trait NCIdlFunctions {
         map.putAll(meta.asJava)
 
         map.put("nlpcraft:nlp:origtext", txt)
+        map.put("nlpcraft:nlp:normtext", normTxt)
 
         new NCToken {
             override def getModel: NCModelView = MODEL
