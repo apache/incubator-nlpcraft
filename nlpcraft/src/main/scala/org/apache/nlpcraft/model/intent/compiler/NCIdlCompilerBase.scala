@@ -518,7 +518,7 @@ trait NCIdlCompilerBase {
     }
 
     /**
-      * 
+      *
       * @param fun
       * @param ctx
       * @return
