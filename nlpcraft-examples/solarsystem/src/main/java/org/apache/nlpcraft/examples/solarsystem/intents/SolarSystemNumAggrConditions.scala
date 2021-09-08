@@ -20,15 +20,16 @@ package org.apache.nlpcraft.examples.solarsystem.intents
 import org.apache.nlpcraft.examples.solarsystem.api.SolarSystemOpenApiService
 import org.apache.nlpcraft.model.{NCIntent, NCIntentSample, NCIntentTerm, NCResult, NCToken}
 
-class SolarSystemNumConditions {
+class SolarSystemNumAggrConditions {
     @NCIntentSample(
         Array(
-            "Planets with mass more 10",
+            "Planets with maximum mass",
+            "Planets with minimum radius"
         )
     )
     @NCIntent(
         "intent=aggregate " +
-        "    term(condition)={tok_group == 'propNum'}" +
+        "    term(condition)={# == 'aggr'}" +
         "    term(num)={# == 'nlpcraft:num' && meta_tok('nlpcraft:num:unit') == null}"
     )
     def discoverer(@NCIntentTerm("condition") cond: NCToken): NCResult = {

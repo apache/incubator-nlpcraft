@@ -37,12 +37,12 @@ class SolarSystemDiscoveryDate extends LazyLogging {
         "intent=discoveryDate " +
             "    options={'unused_usr_toks': true}" +
             "    term(year)={" +
-            "    tok_id() == 'nlpcraft:num' && " +
-            "    (" +
-            "       meta_tok('nlpcraft:num:unit') == 'year' || " +
-            "       meta_tok('nlpcraft:num:from') >= 1610 && meta_tok('nlpcraft:num:from') <= year" +
-            "    )" +
-            "}"
+            "        tok_id() == 'nlpcraft:num' && " +
+            "        (" +
+            "            meta_tok('nlpcraft:num:unit') == 'year' || " +
+            "            meta_tok('nlpcraft:num:from') >= 1610 && meta_tok('nlpcraft:num:from') <= year" +
+            "         )" +
+            "    }"
     )
     def date(@NCIntentTerm("year") year: NCToken): NCResult = {
         // API doesn't support filter by dates.
