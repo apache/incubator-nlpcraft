@@ -43,21 +43,29 @@ elements:
   - id: "prop:mass"
     groups:
       - "prop"
+      - "propNum"
     description: "..."
+    metadata:
+      filterName: "mass"
     synonyms:
       - "mass"
 
   - id: "prop:radius"
     groups:
       - "prop"
+      - "propNum"
     description: "..."
+    metadata:
+      filterName: "meanRadius"
     synonyms:
-      - "mass"
+      - "radius"
 
   - id: "prop:temperature"
     groups:
-      - "prop"
+      - "propNum"
     description: "..."
+    metadata:
+      filterName: "avgTemp"
     synonyms:
       - "{temperature|average temperature}"
 
