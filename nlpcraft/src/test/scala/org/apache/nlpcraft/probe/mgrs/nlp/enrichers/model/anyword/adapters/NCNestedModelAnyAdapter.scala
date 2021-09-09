@@ -15,34 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.common.nlp.numeric
+package org.apache.nlpcraft.probe.mgrs.nlp.enrichers.model.anyword.adapters
 
-import org.apache.nlpcraft.common.nlp.NCNlpSentenceToken
+import org.apache.nlpcraft.NCTestElement
+import org.apache.nlpcraft.model.NCModelAdapter
 
-/**
-  *
-  * @param name
-  * @param unitType
-  */
-case class NCNumericUnit(name: String, unitType: String)
+import java.util
+import java.util.Optional
+import scala.jdk.CollectionConverters.SetHasAsJava
 
 /**
   *
-  * @param unit
-  * @param tokens
   */
-case class NCNumericUnitData(unit: NCNumericUnit, tokens: Seq[NCNlpSentenceToken])
+abstract class NCNestedModelAnyAdapter extends NCModelAdapter("nlpcraft.test.mdl", "Test Model", "1.0") {
+    override def getEnabledBuiltInTokens: util.Set[String] = Set.empty[String].asJava
 
-/**
-  *
-  * @param tokens
-  * @param value
-  * @param isFractional
-  * @param unitData
-  */
-case class NCNumeric(
-    tokens: Seq[NCNlpSentenceToken],
-    value: Double,
-    isFractional: Boolean,
-    unitData: Option[NCNumericUnitData]
-)
+    protected def mkNotGreedy(id: String, syn: String): NCTestElement = {
+        val e = NCTestElement(id, syn)
+
+        e.greedy = Optional.of(false)
+
+        e
+    }
+
+    def anyDefinition: String
+}

@@ -64,11 +64,20 @@ case class NCTestCoordinateToken(text: String, latitude: Double, longitude: Doub
     override def toString: String = s"$text(coordinate)<lon=$longitude, lat=$longitude>"
 }
 
-case class NCTestNumericToken(text: String, from: Double, to: Double) extends NCTestToken {
+case class NCTestNumericToken(text: String, from: Double, to: Double, unit: Option[String] = None) extends NCTestToken {
     require(text != null)
 
     override def id: String = "nlpcraft:num"
-    override def toString: String = s"$text(num)<from=$from, to=$to>"
+    override def toString: String = {
+        var s = s"$text(num)<from=$from, to=$to>"
+
+        unit match {
+            case Some(u) => s = s"$s($u)"
+            case None => // No-op.
+        }
+
+        s
+    }
 }
 
 case class NCTestCityToken(text: String, city: String) extends NCTestToken {
@@ -305,10 +314,13 @@ object NCTestToken {
                     longitude = t.meta("nlpcraft:coordinate:longitude")
                 )
             case "nlpcraft:num" =>
+                val unit: Optional[String] = t.metaOpt("nlpcraft:num:unit")
+
                 NCTestNumericToken(
                     txt,
                     from = t.meta("nlpcraft:num:from"),
-                    to = t.meta("nlpcraft:num:to")
+                    to = t.meta("nlpcraft:num:to"),
+                    unit = unit.asScala
                 )
             case "nlpcraft:date" => NCTestDateToken(txt)
             case "nlpcraft:city" => NCTestCityToken(txt, city = t.meta("nlpcraft:city:city"))

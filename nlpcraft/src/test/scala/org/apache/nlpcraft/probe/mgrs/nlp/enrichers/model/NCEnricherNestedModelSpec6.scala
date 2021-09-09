@@ -17,35 +17,38 @@
 
 package org.apache.nlpcraft.probe.mgrs.nlp.enrichers.model
 
-import org.apache.nlpcraft.model.{NCElement, NCIntent, NCModelAdapter, NCResult}
+import org.apache.nlpcraft.model.{NCContext, NCElement, NCModelAdapter, NCResult}
 import org.apache.nlpcraft.{NCTestContext, NCTestElement, NCTestEnvironment}
 import org.junit.jupiter.api.Test
 
 import java.util
-import scala.jdk.CollectionConverters.SetHasAsJava
+import scala.jdk.CollectionConverters.{IterableHasAsScala, SetHasAsJava}
 
 /**
   * Nested Elements test model.
   */
-class NCNestedTestModel3 extends NCModelAdapter("nlpcraft.nested3.test.mdl", "Nested Test Model", "1.0") {
+class NCNestedTestModel6 extends NCModelAdapter("nlpcraft.nested6.test.mdl", "Nested Test Model", "1.0") {
+    override def getAbstractTokens: util.Set[String] = Set("nlpcraft:date").asJava
+
     override def getElements: util.Set[NCElement] =
-        Set(
-            NCTestElement("e1", "//[a-zA-Z0-9]+//"),
-            NCTestElement("e2", "^^{# == 'e1'}^^")
-        )
+        Set(NCTestElement("dateWrapper", "^^{# == 'nlpcraft:date'}^^"))
 
-    override def getAbstractTokens: util.Set[String] = Set("e1").asJava
-    override def getEnabledBuiltInTokens: util.Set[String] = Set.empty[String].asJava
+    override def onContext(ctx: NCContext): NCResult = {
+        require(ctx.getRequest.getNormalizedText == "today")
 
-    @NCIntent("intent=onE2 term(t1)={# == 'e2'}[12, 100]")
-    def onAB(): NCResult = NCResult.text("OK")
+        println(s"Variants:\n${ctx.getVariants.asScala.mkString("\n")}")
+
+        // `nlpcraft:date` will be deleted.
+        require(ctx.getVariants.size() == 1)
+
+        NCResult.text("OK")
+    }
 }
-
 /**
- * It shouldn't be too slow.
- */
-@NCTestEnvironment(model = classOf[NCNestedTestModel3], startClient = true)
-class NCEnricherNestedModelSpec3 extends NCTestContext {
+  *
+  */
+@NCTestEnvironment(model = classOf[NCNestedTestModel6], startClient = true)
+class NCEnricherNestedModelSpec6 extends NCTestContext {
     @Test
-    def test(): Unit = checkIntent("a " * 15, "onE2")
+    def test(): Unit = checkResult("today", "OK")
 }

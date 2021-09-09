@@ -27,9 +27,7 @@ import scala.jdk.CollectionConverters.SetHasAsJava
 /**
   * Nested Elements test model.
   */
-class NCNestedTestModel41 extends NCModelAdapter(
-    "nlpcraft.nested4.test.mdl", "Nested Data Test Model", "1.0"
-) {
+class NCNestedTestModel41 extends NCModelAdapter("nlpcraft.nested4.test.mdl", "Nested Test Model", "1.0") {
     override def getElements: util.Set[NCElement] =
         Set(
             NCTestElement("e1", "//[a-zA-Z0-9]+//"),

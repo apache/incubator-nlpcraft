@@ -357,6 +357,11 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
                             return nvl(js.isSparse(), proxy.isSparse());
                         }
 
+                        @Override
+                        public Optional<Boolean> isGreedy() {
+                            return nvl(js.isGreedy(), proxy.isGreedy());
+                        }
+
                         private<T> Optional<T> nvl(T t, T dflt) {
                             return Optional.of(t != null ? t : dflt);
                         }
@@ -481,6 +486,11 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
     @Override
     public boolean isSparse() {
         return proxy.isSparse();
+    }
+
+    @Override
+    public boolean isGreedy() {
+        return proxy.isGreedy();
     }
 
     @Override

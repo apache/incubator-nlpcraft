@@ -198,7 +198,7 @@ object NCNumericEnricher extends NCServerEnricher {
     private def toString(seq: Seq[NCNlpSentenceToken], sep: String = " ", stem: Boolean = false) =
         seq.map(t => if (stem) t.stem else t.normText).mkString(sep)
 
-    private def mkNote(
+    private def mkNotes(
         toks: Seq[NCNlpSentenceToken],
         from: Double,
         fromIncl: Boolean,
@@ -206,9 +206,10 @@ object NCNumericEnricher extends NCServerEnricher {
         to: Double,
         toIncl: Boolean,
         toFractional: Boolean,
-        unitOpt: Option[NCNumericUnit]
-    ): NCNlpSentenceNote = {
-        val params = mutable.ArrayBuffer.empty[(String, Any)] ++
+        unitDataOpt: Option[NCNumericUnitData],
+    ): Seq[NCNlpSentenceNote] = {
+        val params =
+            mutable.ArrayBuffer.empty[(String, Any)] ++
             Seq(
                 "from" -> from,
                 "fromIncl" -> fromIncl,
@@ -222,14 +223,36 @@ object NCNumericEnricher extends NCServerEnricher {
                 "isToPositiveInfinity" -> (to == MAX_VALUE)
             )
 
-        unitOpt match {
-            case Some(unit) =>
-                params += "unit" -> unit.name
-                params += "unitType" -> unit.unitType
-            case None => // No-op.
+        def mkAndAssign(toks: Seq[NCNlpSentenceToken], typ: String, params: (String, Any)*):NCNlpSentenceNote = {
+            val note = NCNlpSentenceNote(toks.map(_.index), "nlpcraft:num", params:_*)
+
+            toks.foreach(_.add(note))
+
+            note
         }
-    
-        NCNlpSentenceNote(toks.map(_.index), "nlpcraft:num", params:_*)
+
+        unitDataOpt match {
+            case Some(unitData) =>
+                def extend(): Seq[(String, Any)] = {
+                    params += "unit" -> unitData.unit.name
+                    params += "unitType" -> unitData.unit.unitType
+
+                    params
+                }
+
+                if (unitData.tokens == toks)
+                    Seq(mkAndAssign(toks, "nlpcraft:num", extend():_*))
+                else {
+                    Seq(
+                        mkAndAssign(
+                            toks.filter(t => !unitData.tokens.contains(t)), "nlpcraft:num", params.clone():_*
+                        ),
+                        mkAndAssign(toks, "nlpcraft:num", extend():_*)
+                    )
+                }
+
+            case None => Seq(mkAndAssign(toks, "nlpcraft:num", params:_*))
+        }
     }
 
     /**
@@ -274,25 +297,28 @@ object NCNumericEnricher extends NCServerEnricher {
     
                     val prepToks = Seq(getBefore(ts1)) ++ ts1 ++ Seq(getBefore(ts2)) ++ ts2
     
-                    val badRange = num1.unit.isDefined && num2.unit.isDefined && num1.unit != num2.unit
+                    val badRange =
+                        num1.unitData.isDefined &&
+                        num2.unitData.isDefined &&
+                        num1.unitData.get.unit != num2.unitData.get.unit
     
                     if (!badRange) {
                         val unit =
-                            if (num1.unit.isDefined && num2.unit.isEmpty)
-                                num1.unit
-                            else if (num1.unit.isEmpty && num2.unit.isDefined)
-                                num2.unit
-                            else if (num1.unit.isEmpty && num2.unit.isEmpty)
+                            if (num1.unitData.isDefined && num2.unitData.isEmpty)
+                                num1.unitData
+                            else if (num1.unitData.isEmpty && num2.unitData.isDefined)
+                                num2.unitData
+                            else if (num1.unitData.isEmpty && num2.unitData.isEmpty)
                                 None
-                            else{
-                                require(num1.unit == num2.unit)
-    
-                                num1.unit
+                            else {
+                                require(num1.unitData.get.unit == num2.unitData.get.unit)
+
+                                Some(NCNumericUnitData(num1.unitData.get.unit, num1.tokens ++ num2.tokens))
                             }
     
-                        val note = p._2 match {
+                        val notes = p._2 match {
                             case BETWEEN_EXCLUSIVE =>
-                                mkNote(
+                                mkNotes(
                                     prepToks,
                                     d1,
                                     fromIncl = false,
@@ -303,7 +329,7 @@ object NCNumericEnricher extends NCServerEnricher {
                                     unit
                                 )
                             case BETWEEN_INCLUSIVE =>
-                                mkNote(
+                                mkNotes(
                                     prepToks,
                                     d1,
                                     fromIncl = true,
@@ -315,9 +341,7 @@ object NCNumericEnricher extends NCServerEnricher {
                                 )
                             case _ => throw new AssertionError(s"Illegal note type: ${p._2}.")
                         }
-    
-                        prepToks.foreach(_.add(note))
-    
+
                         processed ++= ts1
                         processed ++= ts2
                     }
@@ -340,10 +364,10 @@ object NCNumericEnricher extends NCServerEnricher {
     
                             processed ++= toks
     
-                            val note =
+                            val notes =
                                 prep.prepositionType match {
                                     case MORE =>
-                                        mkNote(
+                                        mkNotes(
                                             toks,
                                             num.value,
                                             fromIncl = false,
@@ -351,10 +375,10 @@ object NCNumericEnricher extends NCServerEnricher {
                                             to = MAX_VALUE,
                                             toIncl = true,
                                             toFractional = num.isFractional,
-                                            num.unit
+                                            num.unitData
                                         )
                                     case MORE_OR_EQUAL =>
-                                        mkNote(
+                                        mkNotes(
                                             toks,
                                             num.value,
                                             fromIncl = true,
@@ -362,10 +386,10 @@ object NCNumericEnricher extends NCServerEnricher {
                                             to = MAX_VALUE,
                                             toIncl = true,
                                             toFractional = num.isFractional,
-                                            num.unit
+                                            num.unitData
                                         )
                                     case LESS =>
-                                        mkNote(
+                                        mkNotes(
                                             toks,
                                             MIN_VALUE,
                                             fromIncl = true,
@@ -373,10 +397,10 @@ object NCNumericEnricher extends NCServerEnricher {
                                             to = num.value,
                                             toIncl = false,
                                             toFractional = num.isFractional,
-                                            num.unit
+                                            num.unitData
                                         )
                                     case LESS_OR_EQUAL =>
-                                        mkNote(
+                                        mkNotes(
                                             toks,
                                             MIN_VALUE,
                                             fromIncl = true,
@@ -384,10 +408,10 @@ object NCNumericEnricher extends NCServerEnricher {
                                             to = num.value,
                                             toIncl = true,
                                             toFractional = num.isFractional,
-                                            num.unit
+                                            num.unitData
                                         )
                                     case EQUAL =>
-                                        mkNote(
+                                        mkNotes(
                                             toks,
                                             num.value,
                                             fromIncl = true,
@@ -395,10 +419,10 @@ object NCNumericEnricher extends NCServerEnricher {
                                             to = num.value,
                                             toIncl = true,
                                             toFractional = num.isFractional,
-                                            num.unit
+                                            num.unitData
                                         )
                                     case NOT_EQUAL =>
-                                        mkNote(
+                                        mkNotes(
                                             toks,
                                             num.value,
                                             fromIncl = false,
@@ -406,12 +430,13 @@ object NCNumericEnricher extends NCServerEnricher {
                                             to = num.value,
                                             toIncl = false,
                                             toFractional = num.isFractional,
-                                            num.unit
+                                            num.unitData
                                         )
                                     case _ => throw new AssertionError(s"Illegal note type: ${prep.prepositionType}.")
                                 }
-    
-                            toks.foreach(_.add(note))
+
+                            for (note <- notes)
+                                toks.foreach(_.add(note))
                         }
                 }
     
@@ -423,7 +448,7 @@ object NCNumericEnricher extends NCServerEnricher {
     
             // Numeric without conditions.
             for (num <- nums if !processed.exists(num.tokens.contains)) {
-                val note = mkNote(
+                val notes = mkNotes(
                     num.tokens,
                     num.value,
                     fromIncl = true,
@@ -431,12 +456,10 @@ object NCNumericEnricher extends NCServerEnricher {
                     num.value,
                     toIncl = true,
                     num.isFractional,
-                    num.unit
+                    num.unitData
                 )
     
                 processed ++= num.tokens
-    
-                num.tokens.foreach(_.add(note))
             }
         }
     }
