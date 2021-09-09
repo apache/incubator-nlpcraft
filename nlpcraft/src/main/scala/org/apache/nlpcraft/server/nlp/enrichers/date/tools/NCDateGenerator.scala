@@ -17,17 +17,16 @@
 
 package org.apache.nlpcraft.server.nlp.enrichers.date.tools
 
-import java.text.{DateFormat, SimpleDateFormat}
-import java.util.{Date, Locale, Calendar => C}
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.nlp.numeric.NCNumericGenerator
 import org.apache.nlpcraft.server.nlp.enrichers.date.NCDateConstants._
 import org.apache.nlpcraft.server.nlp.enrichers.date.NCDateFormatType._
+import org.apache.nlpcraft.server.nlp.enrichers.date.tools.NCDateGenerator._
 
-import scala.collection.mutable.{LinkedHashMap => LHM}
-import NCDateGenerator._
-
+import java.text.{DateFormat, SimpleDateFormat}
+import java.util.{Date, Locale, Calendar => C}
 import scala.collection.mutable
+import scala.collection.mutable.{LinkedHashMap => LHM}
 
 /**
  * Pre-built date ranges generator.
@@ -106,6 +105,7 @@ object NCDateGenerator {
     private val NUM_MONTH_MAP = zipIndexes(CAL_MONTHS)
     private val MMMM_MONTH_SEQ = CAL_MONTHS.map(month)
     private val YEARS_SEQ = for (i <- 1900 to C.getInstance().get(C.YEAR) + 5) yield i
+    private val YEARS_SEQ_EXT = for (i <- 1500 to C.getInstance().get(C.YEAR) + 5) yield i
     private val MMMM_MONTH_MAP = zipIndexes(MMMM_MONTH_SEQ)
 
     // USA week.
@@ -403,7 +403,7 @@ object NCDateGenerator {
     }
 
     private[date] def years(df: LHM_SS): Unit =
-        for (y <- YEARS_SEQ)
+        for (y <- YEARS_SEQ_EXT)
             mkYears(y).foreach(s => df += s"$s" -> s"${y}y")
 
     private[date] def months(df: LHM_SS, fmts: Seq[SimpleDateFormat]): Unit = {
@@ -463,10 +463,10 @@ object NCDateGenerator {
         }
 
         // Between.
-        for ((from, to) <- BETWEEN_INCLUSIVE; y1 <- YEARS_SEQ; y2 <- YEARS_SEQ if y2 > y1)
+        for ((from, to) <- BETWEEN_INCLUSIVE; y1 <- YEARS_SEQ_EXT; y2 <- YEARS_SEQ_EXT if y2 > y1)
             addRange(from, to, y1, y2, s"${y1}y:${y2}y")
 
-        for ((from, to) <- BETWEEN_EXCLUSIVE; y1 <- YEARS_SEQ; y2 <- YEARS_SEQ if y2 > y1)
+        for ((from, to) <- BETWEEN_EXCLUSIVE; y1 <- YEARS_SEQ_EXT; y2 <- YEARS_SEQ_EXT if y2 > y1)
             addRange(from, to, y1, y2, s"${y1}y:${y2-1}y")
 
         def add(word: String, y: Int, templ: String): Unit = {
@@ -478,10 +478,10 @@ object NCDateGenerator {
         }
 
         // From.
-        for (f <- FROM; y <- YEARS_SEQ) add(f, y, toNow(s"${y}y"))
+        for (f <- FROM; y <- YEARS_SEQ_EXT) add(f, y, toNow(s"${y}y"))
 
         // Till.
-        for (t <- TO; y <- YEARS_SEQ) add(t, y, to(s"${y}y"))
+        for (t <- TO; y <- YEARS_SEQ_EXT) add(t, y, to(s"${y}y"))
     }
 
     private[date] def simpleQuarters(df: LHM_SS): Unit = {
@@ -856,7 +856,7 @@ object NCDateGenerator {
 
 object DLDateGeneratorRunner extends App {
     private def mkPath(path: String): String = U.mkPath(s"nlpcraft/src/main/resources/date/$path")
-    private def convert(entry: (String, String)): String = s"${entry._1} | ${entry._2}"
+    private def convert(entry: (String, String)): String = s"${entry._1.strip}|${entry._2.strip}"
 
     private def process(): Unit = {
         val fileFull = mkPath("full.txt")

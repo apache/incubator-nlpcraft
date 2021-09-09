@@ -19,7 +19,8 @@ package org.apache.nlpcraft
 
 import org.apache.nlpcraft.model.{NCElement, NCValue}
 
-import java.util
+import java.{lang, util}
+import java.util.Optional
 import scala.jdk.CollectionConverters.{SeqHasAsJava, SetHasAsJava}
 import scala.language.implicitConversions
 
@@ -29,9 +30,23 @@ import scala.language.implicitConversions
 case class NCTestElement(id: String, syns: String*) extends NCElement {
     private val values = new util.ArrayList[NCValue]
 
+    var metadata: util.Map[String, AnyRef] = super.getMetadata
+    var description: String = super.getDescription
+    var parentId: String = super.getParentId
+    var permutateSynonyms: Optional[lang.Boolean] = super.isPermutateSynonyms
+    var sparse: Optional[lang.Boolean] = super.isSparse
+    var greedy: Optional[lang.Boolean] = super.isGreedy
+
     override def getId: String = id
     override def getSynonyms: util.List[String] = (syns :+ id).asJava
     override def getValues: util.List[NCValue] = values
+
+    override def getMetadata: util.Map[String, AnyRef] = metadata
+    override def getDescription: String = description
+    override def getParentId: String = parentId
+    override def isPermutateSynonyms: Optional[lang.Boolean] = permutateSynonyms
+    override def isSparse: Optional[lang.Boolean] = sparse
+    override def isGreedy: Optional[lang.Boolean] = greedy
 }
 
 /**

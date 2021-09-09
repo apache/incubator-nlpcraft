@@ -242,6 +242,7 @@ object NCCommandManager extends NCService {
                                         override def getMaxTotalSynonyms: Int = mdl.getMaxTotalSynonyms
                                         override def isNoUserTokensAllowed: Boolean = mdl.isNoUserTokensAllowed
                                         override def isSparse: Boolean = mdl.isSparse
+                                        override def isGreedy: Boolean = mdl.isGreedy
                                         override def getMetadata: util.Map[String, AnyRef] = mdl.getMetadata
                                         override def getAdditionalStopWords: util.Set[String] = mdl.getAdditionalStopWords
                                         override def getExcludedStopWords: util.Set[String] = mdl.getExcludedStopWords
@@ -269,6 +270,9 @@ object NCCommandManager extends NCService {
 
                                                 // New method instead of `isSparse`
                                                 def getSparse: lang.Boolean
+
+                                                // New method instead of `isGreedy`
+                                                def getGreedy: lang.Boolean
                                             }
 
                                             val elm: NCElement =
@@ -288,10 +292,12 @@ object NCCommandManager extends NCService {
                                                     // Hidden.
                                                     override def isPermutateSynonyms: Optional[lang.Boolean] = null
                                                     override def isSparse: Optional[lang.Boolean] = null
+                                                    override def isGreedy: Optional[lang.Boolean] = null
 
                                                     // Wrapped.
                                                     override def getPermutateSynonyms: lang.Boolean = e.isPermutateSynonyms.orElse(null)
                                                     override def getSparse: lang.Boolean = e.isSparse.orElse(null)
+                                                    override def getGreedy: lang.Boolean = e.isGreedy.orElse(null)
                                                 }
                                             elm
                                         }).asJava

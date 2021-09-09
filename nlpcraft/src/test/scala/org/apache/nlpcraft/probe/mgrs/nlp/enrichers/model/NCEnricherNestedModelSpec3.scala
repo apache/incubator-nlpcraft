@@ -17,7 +17,7 @@
 
 package org.apache.nlpcraft.probe.mgrs.nlp.enrichers.model
 
-import org.apache.nlpcraft.model.{NCElement, NCIntent, NCIntentMatch, NCModelAdapter, NCResult}
+import org.apache.nlpcraft.model.{NCElement, NCIntent, NCModelAdapter, NCResult}
 import org.apache.nlpcraft.{NCTestContext, NCTestElement, NCTestEnvironment}
 import org.junit.jupiter.api.Test
 
@@ -27,20 +27,18 @@ import scala.jdk.CollectionConverters.SetHasAsJava
 /**
   * Nested Elements test model.
   */
-class NCNestedTestModel3 extends NCModelAdapter(
-    "nlpcraft.nested3.test.mdl", "Nested Data Test Model", "1.0"
-) {
+class NCNestedTestModel3 extends NCModelAdapter("nlpcraft.nested3.test.mdl", "Nested Test Model", "1.0") {
     override def getElements: util.Set[NCElement] =
         Set(
             NCTestElement("e1", "//[a-zA-Z0-9]+//"),
-            NCTestElement("e2", "^^{# == 'e1'}^^"),
+            NCTestElement("e2", "^^{# == 'e1'}^^")
         )
 
     override def getAbstractTokens: util.Set[String] = Set("e1").asJava
     override def getEnabledBuiltInTokens: util.Set[String] = Set.empty[String].asJava
 
     @NCIntent("intent=onE2 term(t1)={# == 'e2'}[12, 100]")
-    def onAB(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
+    def onAB(): NCResult = NCResult.text("OK")
 }
 
 /**
@@ -49,5 +47,5 @@ class NCNestedTestModel3 extends NCModelAdapter(
 @NCTestEnvironment(model = classOf[NCNestedTestModel3], startClient = true)
 class NCEnricherNestedModelSpec3 extends NCTestContext {
     @Test
-    def test(): Unit = checkIntent("a " * 18, "onE2")
+    def test(): Unit = checkIntent("a " * 15, "onE2")
 }

@@ -28,14 +28,21 @@ case class NCNumericUnit(name: String, unitType: String)
 
 /**
   *
+  * @param unit
+  * @param tokens
+  */
+case class NCNumericUnitData(unit: NCNumericUnit, tokens: Seq[NCNlpSentenceToken])
+
+/**
+  *
   * @param tokens
   * @param value
   * @param isFractional
-  * @param unit
+  * @param unitData
   */
 case class NCNumeric(
     tokens: Seq[NCNlpSentenceToken],
     value: Double,
     isFractional: Boolean,
-    unit: Option[NCNumericUnit]
+    unitData: Option[NCNumericUnitData]
 )

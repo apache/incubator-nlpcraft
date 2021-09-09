@@ -169,6 +169,11 @@ public interface NCModelView extends NCMetadata {
     boolean DFLT_IS_SPARSE = false;
 
     /**
+     * Default value for {@link #isGreedy()} method.
+     */
+    boolean DFLT_IS_GREEDY = true;
+
+    /**
      * Default value for {@link #getMaxElementSynonyms()} method.
      */
     int DFLT_MAX_ELEMENT_SYNONYMS = 1000;
@@ -816,6 +821,10 @@ public interface NCModelView extends NCMetadata {
      */
     default boolean isSparse() {
         return DFLT_IS_SPARSE;
+    }
+
+    default boolean isGreedy() {
+        return DFLT_IS_GREEDY;
     }
 
     /**

@@ -518,10 +518,11 @@ trait NCIdlCompilerBase {
     }
 
     /**
-     *
-     * @param id
-     * @return
-     */
+      *
+      * @param fun
+      * @param ctx
+      * @return
+      */
     def parseCallExpr(fun: String)(implicit ctx: PRC): SI = (tok, stack: S, idlCtx) => {
         implicit val evidence: S = stack
 

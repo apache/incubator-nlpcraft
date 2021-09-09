@@ -58,6 +58,7 @@ public class NCModelJson {
     private int maxTotalSynonyms = DFLT_MAX_TOTAL_SYNONYMS;
     private boolean isPermutateSynonyms = DFLT_IS_PERMUTATE_SYNONYMS;
     private boolean isSparse = DFLT_IS_SPARSE;
+    private boolean isGreedy = DFLT_IS_GREEDY;
     private int maxElementSynonyms = DFLT_MAX_TOTAL_SYNONYMS;
     private boolean maxSynonymsThresholdError = DFLT_MAX_SYNONYMS_THRESHOLD_ERROR;
     private long conversationTimeout = DFLT_CONV_TIMEOUT_MS;
@@ -201,6 +202,12 @@ public class NCModelJson {
     }
     public boolean isSparse() {
         return isSparse;
+    }
+    public boolean isGreedy() {
+        return isGreedy;
+    }
+    public void setGreedy(boolean greedy) {
+        isGreedy = greedy;
     }
     public void setSparse(boolean sparse) {
         isSparse = sparse;

@@ -30,7 +30,7 @@ import java.util
 import java.util.{List => JList}
 import scala.collection.mutable
 import scala.collection.parallel.CollectionConverters._
-import scala.jdk.CollectionConverters.{ListHasAsScala, SeqHasAsJava, SetHasAsJava}
+import scala.jdk.CollectionConverters.{ListHasAsScala, SeqHasAsJava, SetHasAsJava, SetHasAsScala}
 import scala.language.implicitConversions
 
 /**
@@ -656,8 +656,8 @@ object NCSentenceManager extends NCService {
                         delCombs.filter(_ != note).flatMap(n => if (getPartKeys(n).contains(key)) Some(n) else None)
 
                     if (
-                        delCombOthers.exists(o => noteWordsIdxs == o.wordIndexes.toSet) ||
-                        delCombOthers.nonEmpty && !delCombOthers.exists(o => noteWordsIdxs.subsetOf(o.wordIndexes.toSet))
+                        delCombOthers.nonEmpty &&
+                        !delCombOthers.exists(o => noteWordsIdxs.subsetOf(o.wordIndexes.toSet))
                     )
                         Some(note)
                     else
@@ -732,18 +732,25 @@ object NCSentenceManager extends NCService {
             )
         )
 
+
         def notNlpNotes(s: NCNlpSentence): Seq[NCNlpSentenceNote] = s.flatten.filter(!_.isNlp)
 
         // Drops similar sentences (with same notes structure). Keeps with more found.
+        val notGreedyElems =
+            mdl.getElements.asScala.flatMap(e => if (!e.isGreedy.orElse(mdl.isGreedy)) Some(e.getId) else None).toSet
+
         sens = sens.groupBy(notNlpNotes(_).groupBy(_.noteType).keys.toSeq.sorted.distinct).
-            flatMap(p => {
-                val m: Map[NCNlpSentence, Int] = p._2.map(p => p -> notNlpNotes(p).size).toMap
+            flatMap { case (types, sensSeq) =>
+                if (types.exists(notGreedyElems.contains))
+                    sensSeq
+                else {
+                    val m: Map[NCNlpSentence, Int] = sensSeq.map(p => p -> notNlpNotes(p).size).toMap
 
-                val max = m.values.max
+                    val max = m.values.max
 
-                m.filter(_._2 == max).keys
-            }).
-            toSeq
+                    m.filter(_._2 == max).keys
+                }
+            }.toSeq
 
         sens =
             sens.filter(s => {

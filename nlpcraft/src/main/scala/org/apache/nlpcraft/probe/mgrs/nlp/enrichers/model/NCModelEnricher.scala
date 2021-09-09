@@ -151,7 +151,7 @@ object NCModelEnricher extends NCProbeEnricher {
     /**
       *
       * @param ns
-      * @param elem
+      * @param elemId
       * @param toks
       * @param direct
       * @param syn
@@ -160,7 +160,7 @@ object NCModelEnricher extends NCProbeEnricher {
       */
     private def mark(
         ns: Sentence,
-        elem: NCElement,
+        elemId: String,
         toks: Seq[NlpToken],
         direct: Boolean,
         syn: Option[Synonym] = None,
@@ -189,7 +189,7 @@ object NCModelEnricher extends NCProbeEnricher {
 
         val idxs = toks.map(_.index).sorted
 
-        val note = NlpNote(idxs, elem.getId, params: _*)
+        val note = NlpNote(idxs, elemId, params: _*)
 
         toks.foreach(_.add(note))
 
@@ -269,7 +269,7 @@ object NCModelEnricher extends NCProbeEnricher {
                         if (!alreadyMarked(ns, elmId, matchedToks, matchedToks.map(_.index).sorted))
                             mark(
                                 ns,
-                                elem = mdl.elements.getOrElse(elmId, throw new NCE(s"Custom model parser returned unknown element: $elmId")),
+                                elemId = elmId,
                                 toks = matchedToks,
                                 direct = true,
                                 metaOpt = Some(e.getMetadata.asScala.toMap)
@@ -410,27 +410,30 @@ object NCModelEnricher extends NCProbeEnricher {
         dbgType: String,
         ns: Sentence,
         contCache: Cache,
-        elem: NCElement,
+        elemId: String,
+        greedy: Boolean,
         elemToks: Seq[NlpToken],
         sliceToksIdxs: Seq[Int],
         syn: Synonym,
-        parts: Seq[TokType] = Seq.empty)
-    : Unit = {
+        parts: Seq[TokType] = Seq.empty
+    ): Unit = {
         val resIdxs = elemToks.map(_.index)
         val resIdxsSorted = resIdxs.sorted
 
         if (resIdxsSorted == sliceToksIdxs && U.isContinuous(resIdxsSorted))
-            contCache(elem.getId) += sliceToksIdxs
+            contCache(elemId) += sliceToksIdxs
 
-        val ok = !alreadyMarked(ns, elem.getId, elemToks, sliceToksIdxs)
+        val ok =
+            (!greedy || !alreadyMarked(ns, elemId, elemToks, sliceToksIdxs)) &&
+            ( parts.isEmpty || !parts.exists { case (t, _) => t.getId == elemId })
 
         if (ok)
-            mark(ns, elem, elemToks, direct = syn.isDirect && U.isIncreased(resIdxs), syn = Some(syn), parts = parts)
+            mark(ns, elemId, elemToks, direct = syn.isDirect && U.isIncreased(resIdxs), syn = Some(syn), parts = parts)
 
         if (DEEP_DEBUG)
             logger.trace(
                 s"${if (ok) "Added" else "Skipped"} element [" +
-                    s"id=${elem.getId}, " +
+                    s"id=$elemId, " +
                     s"type=$dbgType, " +
                     s"text='${elemToks.map(_.origText).mkString(" ")}', " +
                     s"indexes=${resIdxs.mkString("[", ",", "]")}, " +
@@ -466,10 +469,11 @@ object NCModelEnricher extends NCProbeEnricher {
                         toks <- combToks;
                         idxs = toks.map(_.index);
                         e <- mdl.elements.values;
-                        eId = e.getId
+                        eId = e.getId;
+                        greedy = e.isGreedy.orElse(mdl.model.isGreedy)
                         if
-                            !contCache(eId).exists(_.containsSlice(idxs)) &&
-                            !alreadyMarked(ns, eId, toks, idxs)
+                            !greedy ||
+                            !contCache(eId).exists(_.containsSlice(idxs))  && !alreadyMarked(ns, eId, toks, idxs)
                     ) {
                         // 1. SIMPLE.
                         if (simpleEnabled && (if (idlEnabled) mdl.hasIdlSynonyms(eId) else !mdl.hasIdlSynonyms(eId))) {
@@ -485,7 +489,7 @@ object NCModelEnricher extends NCProbeEnricher {
                                             syns.get(tokStems) match {
                                                 case Some(s) =>
                                                     found = true
-                                                    add("simple continuous", ns, contCache, e, toks, idxs, s)
+                                                    add("simple continuous", ns, contCache, eId, greedy, toks, idxs, s)
                                                 case None => notFound()
                                             }
 
@@ -493,7 +497,7 @@ object NCModelEnricher extends NCProbeEnricher {
                                             for (s <- syns if !found)
                                                 if (s.isMatch(toks)) {
                                                     found = true
-                                                    add("simple continuous scan", ns, contCache, e, toks, idxs, s)
+                                                    add("simple continuous scan", ns, contCache, eId, greedy, toks, idxs, s)
                                                 }
 
                                         tryMap(
@@ -512,7 +516,7 @@ object NCModelEnricher extends NCProbeEnricher {
                             if (!found && mdl.hasSparseSynonyms)
                                 for (s <- get(mdl.sparseSynonyms, eId))
                                     s.sparseMatch(toks) match {
-                                        case Some(res) => add("simple sparse", ns, contCache, e, res, idxs, s)
+                                        case Some(res) => add("simple sparse", ns, contCache, eId, greedy, res, idxs, s)
                                         case None => // No-op.
                                     }
                         }
@@ -534,7 +538,7 @@ object NCModelEnricher extends NCProbeEnricher {
                                     data = comb.map(_.data)
                                 )
                                     if (s.isMatch(data, req)) {
-                                        add("IDL continuous", ns, contCache, e, toks, idxs, s, toParts(data, s))
+                                        add("IDL continuous", ns, contCache, eId, greedy, toks, idxs, s, toParts(data, s))
 
                                         idlCache += comb
 
@@ -551,7 +555,7 @@ object NCModelEnricher extends NCProbeEnricher {
                                         case Some(res) =>
                                             val typ = if (s.sparse) "IDL sparse" else "IDL continuous"
 
-                                            add(typ, ns, contCache, e, toTokens(res, ns), idxs, s, toParts(res, s))
+                                            add(typ, ns, contCache, eId, greedy, toTokens(res, ns), idxs, s, toParts(res, s))
 
                                             idlCache += comb
                                         case None => // No-op.
