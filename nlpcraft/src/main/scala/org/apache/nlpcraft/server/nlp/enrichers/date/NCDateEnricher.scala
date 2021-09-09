@@ -27,12 +27,9 @@ import org.apache.nlpcraft.server.nlp.enrichers.date.NCDateConstants._
 import org.apache.nlpcraft.server.nlp.enrichers.date.NCDateFormatType._
 
 import java.util
-import java.util.{Calendar => C}
-import java.util.{List => JList}
-
+import java.util.{Calendar => C, List => JList}
 import scala.collection.immutable.Iterable
 import scala.collection.mutable
-import scala.collection.mutable.{LinkedHashMap => LHM}
 import scala.concurrent.ExecutionContext
 import scala.jdk.CollectionConverters.ListHasAsScala
 
@@ -40,8 +37,6 @@ import scala.jdk.CollectionConverters.ListHasAsScala
   * Date enricher.
   */
 object NCDateEnricher extends NCServerEnricher {
-    private type LHM_SS = LHM[String, String]
-
     private object Config extends NCConfigurable {
         def style: NCDateFormatType = getObject("nlpcraft.server.datesFormatStyle", NCDateFormatType.withName)
     }
@@ -55,8 +50,8 @@ object NCDateEnricher extends NCServerEnricher {
     private[date] val prepsBtwIncl = mkBetweenPrepositions(BETWEEN_INCLUSIVE)
     private[date] val prepsBtwExcl = mkBetweenPrepositions(BETWEEN_EXCLUSIVE)
     
-    @volatile private var cacheFull: LHM_SS = _
-    @volatile private var cacheParts: LHM_SS = _
+    private val cacheFull = new util.HashMap[String, String]()
+    private val cacheParts = new util.HashMap[String, String]()
 
     // Preposition data holder.
     case class P(text: String) {
@@ -121,6 +116,10 @@ object NCDateEnricher extends NCServerEnricher {
      */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
+
+        cacheFull.clear()
+        cacheParts.clear()
+
         ackStopped()
     }
 
@@ -132,18 +131,25 @@ object NCDateEnricher extends NCServerEnricher {
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span =>
         ackStarting()
 
-        def read(res: String): LHM_SS = {
+        val sep = '|'.asInstanceOf[Int]
+
+        def read(dest: util.Map[String, String], res: String): Unit =
+            U.readTextGzipResource(res, "UTF-8", logger).foreach(p => {
+                val idx = p.indexOf(sep)
+
+                // Data already trimmed.
+                dest.put(p.take(idx), p.drop(idx + 1))
+            })
+
+        def readCommon(dest: util.Map[String, String], res: String): Unit = {
             startScopedSpan("read", span, "res" -> res) { _ =>
-                val m: LHM_SS = new LHM_SS()
-             
-                val map = U.readTextGzipResource(res, "UTF-8", logger).map(p => {
-                    val idx = p.indexOf("|")
-                    p.take(idx).strip -> p.drop(idx + 1).trim
-                })
-             
-                m ++= map
-             
-                m
+                val m = new util.HashMap[String, String]()
+
+                read(m, res)
+
+                dest.synchronized {
+                    dest.putAll(m)
+                }
             }
         }
 
@@ -155,16 +161,11 @@ object NCDateEnricher extends NCServerEnricher {
             case _  => throw new AssertionError(s"Unexpected format type: ${Config.style}")
         }
 
-        var p1: LHM_SS = null
-        var p2: LHM_SS = null
-
         U.executeParallel(
-            () => cacheFull = read("date/full.txt.gz"),
-            () => p1 = read("date/parts.txt.gz"),
-            () => p2 = read(s"date/$file")
+            () => read(cacheFull, "date/full.txt.gz"),
+            () => readCommon(cacheParts, "date/parts.txt.gz"),
+            () => readCommon(cacheParts, s"date/$file")
         )
-
-        cacheParts = p1 ++ p2
 
         ackStarted()
     }
@@ -342,12 +343,13 @@ object NCDateEnricher extends NCServerEnricher {
                     }
 
                     cacheFull.get(s) match {
-                        case Some(body) => add(body, isFull = true)
-                        case None =>
+                        case null =>
                             cacheParts.get(s) match {
-                                case Some(body) => add(body, isFull = false)
-                                case None => // No-op.
+                                case null => // No-op.
+                                case body => add(body, isFull = false)
                             }
+
+                        case body => add(body, isFull = true)
                     }
                 }
             }
