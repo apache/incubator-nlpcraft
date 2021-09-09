@@ -552,7 +552,7 @@ object NCUtils extends LazyLogging {
      * @return
      */
     private def readLcTrimFilter(in: BufferedSource): List[String] =
-        in.getLines().map(_.toLowerCase.strip).filter(s => s.nonEmpty && !s.startsWith("#")).toList
+        in.getLines().map(_.toLowerCase.strip).filter(s => s.nonEmpty && s.head!= '#').toList
 
     /**
       * Reads lines from given file converting to lower case, trimming, and filtering
