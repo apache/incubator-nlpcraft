@@ -29,7 +29,7 @@ macros:
   - name: "<HEY>"
     macro: "{hey|hi|howdy}"
   - name: "<NAVIGATE>"
-    macro: "{navigate|pilot|plot|drive|route|plan|find|head|ride|direct|steer|operate|sail} {out|_} {course|route|destination|drive|_}"
+    macro: "{navigate|pilot|plot|drive|route|plan|find|head|ride|direct|steer|operate|sail} {out|_} {course|route|destination|drive|_} {to|_}"
   - name: "<CANCEL>"
     macro: "{cancel|stop|abort|finish|cease|quit} {off|_}"
   - name: "<WAYPOINT>"
@@ -41,6 +41,10 @@ abstractTokens:
   - x:addr:st
 
 elements:
+  #
+  # Address definition.
+  # ===================
+  #
   - id: "x:addr:kind"
     # Short list from https://pe.usps.com/text/pub28/28apc_002.htm
     synonyms:
@@ -50,15 +54,21 @@ elements:
 
   - id: "x:addr:num"
     synonyms:
-      - "^^{tok_id() == 'nlpcraft:num' && meta_tok('nlpcraft:num:unit') == null && meta_tok('nlpcraft:num:isequalcondition')}^^"
+      - "^^{# == 'nlpcraft:num' && meta_tok('nlpcraft:num:unit') == null && meta_tok('nlpcraft:num:isequalcondition')}^^"
 
   - id: "x:addr:st"
+    greedy: false
     synonyms:
       - "{//[a-zA-Z0-9]+//}[1,3]"
 
   - id: "x:addr"
     synonyms:
-      - "^^[num]{tok_id() == 'x:addr:num'}^^ ^^[name]{tok_id() == 'x:addr:st'}^^ ^^[kind]{tok_id() == 'x:addr:kind'}^^"
+      - "^^[num]{# == 'x:addr:num'}^^ ^^[name]{# == 'x:addr:st'}^^ ^^[kind]{# == 'x:addr:kind'}^^"
+
+  #
+  # Address definition.
+  # -------------------
+  #
 
   - id: "x:hey"
     description: "NLI prompt"

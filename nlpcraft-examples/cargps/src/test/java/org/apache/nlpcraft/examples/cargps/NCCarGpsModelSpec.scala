@@ -24,6 +24,6 @@ import org.junit.jupiter.api.Test
 class NCCarGpsModelSpec extends NCTestContext {
     @Test
     def test(): Unit = {
-        checkIntent("21 x x drive", "int:navigate")
+        checkIntent("hey truck, drive to 21 x x drive", "int:navigate")
     }
 }
