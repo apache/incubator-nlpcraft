@@ -26,9 +26,7 @@ import java.util
 /**
   * Nested Elements test model.
   */
-class NCNestedTestModel5 extends NCModelAdapter(
-    "nlpcraft.nested5.test.mdl", "Nested Data Test Model", "1.0"
-) {
+class NCNestedTestModel5 extends NCModelAdapter("nlpcraft.nested5.test.mdl", "Nested Test Model", "1.0") {
     override def getElements: util.Set[NCElement] =
         Set(
             NCTestElement("cityWrapper", "^^[cityAlias]{# == 'nlpcraft:city'}^^"),
@@ -40,7 +38,7 @@ class NCNestedTestModel5 extends NCModelAdapter(
         "    get(meta_part('cityAlias', 'nlpcraft:city:citymeta'), 'population') >= 10381222" +
         "}"
     )
-    private def onBigCity(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
+    private def onBigCity(): NCResult = NCResult.text("OK")
 }
 
 /**

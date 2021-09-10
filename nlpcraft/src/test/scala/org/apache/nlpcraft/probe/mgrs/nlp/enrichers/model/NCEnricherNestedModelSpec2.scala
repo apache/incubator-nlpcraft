@@ -69,4 +69,3 @@ class NCNestedTestModel22 extends NCNestedTestModel21 {
   */
 @NCTestEnvironment(model = classOf[NCNestedTestModel22], startClient = true)
 class NCEnricherNestedModelSpec22 extends NCEnricherNestedModelSpec21
-

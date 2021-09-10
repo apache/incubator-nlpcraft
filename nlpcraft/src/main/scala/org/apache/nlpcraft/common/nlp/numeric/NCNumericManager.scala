@@ -85,14 +85,23 @@ object NCNumericManager extends NCService {
       * @return
       */
     private def mkSolidNumUnit(t: NCNlpSentenceToken): Option[NCNumeric] = {
-        val s = t.origText
+        val s = t.normText
 
         val num = s.takeWhile(_.isDigit)
         val after = s.drop(num.length)
 
         if (num.nonEmpty && after.nonEmpty) {
-            def mkNumeric(u: NCNumericUnit): Option[NCNumeric] =
-                Some(NCNumeric(Seq(t), java.lang.Double.valueOf(num), isFractional = isFractional(num), unit = Some(u)))
+            def mkNumeric(u: NCNumericUnit): Option[NCNumeric] = {
+                val toks = Seq(t)
+
+                Some(
+                    NCNumeric(
+                        toks,
+                        java.lang.Double.valueOf(num),
+                        isFractional = isFractional(num),
+                        unitData = Some(NCNumericUnitData(u, toks)))
+                )
+            }
 
             unitsOrigs.get(after) match {
                 case Some(u) => mkNumeric(u)
@@ -123,12 +132,14 @@ object NCNumericManager extends NCService {
                 senWords.indexOfSlice(dtWords) match {
                     case -1 => None
                     case idx =>
+                        val toks = senToks.slice(idx, idx + dtWords.length)
+
                         Some(
                             NCNumeric(
-                                tokens = senToks.slice(idx, idx + dtWords.length),
+                                tokens = toks,
                                 value = dtPeriod.value,
                                 isFractional = false,
-                                unit = Some(dtPeriod.unit)
+                                unitData = Some(NCNumericUnitData(dtPeriod.unit, toks))
                             )
                         )
                 }
@@ -404,7 +415,10 @@ object NCNumericManager extends NCService {
                             None
                     }).headOption match {
                         case Some((unit, unitToks)) =>
-                            val numWithUnit = NCNumeric(seq ++ unitToks, v, isFractional = isFractional, Some(unit))
+                            val numWithUnit =
+                                NCNumeric(
+                                    seq ++ unitToks, v, isFractional = isFractional, Some(NCNumericUnitData(unit, unitToks))
+                                )
 
                             // If unit name is same as user element name,
                             // it returns both variants: numeric with unit and without.

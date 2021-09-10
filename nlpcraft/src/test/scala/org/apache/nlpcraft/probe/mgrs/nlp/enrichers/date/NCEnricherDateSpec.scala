@@ -38,7 +38,8 @@ class NCEnricherDateSpec extends NCEnricherBaseSpec {
                 "1900 year",
                 "from 1900 year",
                 "between 1900 and 1905",
-                "between 1900 and 1905 years"
+                "between 1501 and 1905 years",
+                "after 1501 year"
             ).map(txt => {
                 val f: Unit => Unit = _ => checkExists(txt, dte(text = txt))
 
