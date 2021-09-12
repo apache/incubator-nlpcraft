@@ -43,12 +43,10 @@ abstractTokens:
 elements:
   #
   # Address definition.
-  # ===================
-  #
+  # -------------------
   - id: "x:addr:kind"
     # Short list from https://pe.usps.com/text/pub28/28apc_002.htm
     synonyms:
-      # street[0,2] => {_|street|street street}
       - "{street|drive|court|plaza|avenue|alley|anex|beach|bend|boulevard|bridge|canyon|causeway|way|circle|corner|creek|fork|harbor|highway|expressway|island|lane|lake|loop|motorway|park|path|point|ramp|route|rue|row|skyway|square|station|summit|trail|tunnel|walk|road}"
       - "{st|str|dr|crt|plz|ave|blvd|hwy|rd}"
 
@@ -66,10 +64,8 @@ elements:
       - "^^[num]{# == 'x:addr:num'}^^ ^^[name]{# == 'x:addr:st'}^^ ^^[kind]{# == 'x:addr:kind'}^^"
 
   #
-  # Address definition.
-  # -------------------
-  #
-
+  # Salutation.
+  # -----------
   - id: "x:hey"
     description: "NLI prompt"
     synonyms:
@@ -94,7 +90,8 @@ elements:
   - id: "x:remove-waypoint"
     description: "Remove 'waypoint' action."
     synonyms:
-      - "{skip|remove} {over|_} {last|latest|_} <WAYPOINT>"
+      - "{skip|remove} {over|_} {last|latest|current|_} <WAYPOINT>"
+      - "<NAVIGATE> without {stopping|<WAYPOINT>}"
 
 intents:
   - "import('cargps_intents.idl')"
