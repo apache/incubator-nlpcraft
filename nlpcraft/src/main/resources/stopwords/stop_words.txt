@@ -23,13 +23,13 @@
 # - Words with wildcard, symbol `*` (processed as lemma)
 #
 # Words and POSes can me marked as excluded (symbol `~` before word)
-# Word can be marked as case sensitive (symbol `@` before word)
+# Word can be marked as case-sensitive (symbol `@` before word)
 #
 # Restrictions:
 # - POSes list cannot be defined for multiple words.
 # - Only one wildcard can be defined in the word.
 # - Wildcard cannot be applied to chunks of words.
-# - Only one case sensitive flag can be defined in the word.
+# - Only one case-sensitive flag can be defined in the word.
 #
 # Examples:
 # ========

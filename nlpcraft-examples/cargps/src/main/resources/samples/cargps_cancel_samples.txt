@@ -19,10 +19,10 @@
 # Set of samples (corpus) for automatic unit and regression testing.
 #
 
-Hey truck - stop the navigation!
+#Hey truck - stop the navigation!
 Howdy, car, please cancel the routing now.
-Hi car - stop the route.
-Hi car - stop the navigation...
+#Hi car - stop the route.
+#Hi car - stop the navigation...
 Howdy truck - quit navigating.
-Hi car - finish off the driving.
-Hi car - cancel the journey.
+#Hi car - finish off the driving.
+#Hi car - cancel the journey.

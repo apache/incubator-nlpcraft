@@ -29,7 +29,6 @@ import scala.jdk.CollectionConverters.{CollectionHasAsScala, SeqHasAsJava}
 
 /**
   * Sentence token note is a typed map of KV pairs.
-  *
   */
 class NCNlpSentenceNote(private val values: Map[String, JSerializable]) extends JSerializable with NCAsciiLike {
     import NCNlpSentenceNote._

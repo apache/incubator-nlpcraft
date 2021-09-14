@@ -35,6 +35,9 @@ macros:
   - name: "<WAYPOINT>"
     macro: "{waypoint|location|point|stopover|stop over|way station|stop|checkpoint|stop point} {point|station|_}"
 
+excludedStopWords:
+  - howdy
+
 abstractTokens:
   - x:addr:kind
   - x:addr:num
