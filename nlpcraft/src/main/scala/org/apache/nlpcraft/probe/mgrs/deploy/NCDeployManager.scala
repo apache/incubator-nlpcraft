@@ -1264,11 +1264,18 @@ object NCDeployManager extends NCService {
                     case 1 => termAnns.head.asInstanceOf[NCIntentTerm].value()
 
                     case 0 =>
-                        throw new NCE(s"Missing @NCIntentTerm annotation for [" +
-                            s"mdlId=$mdlId, " +
-                            s"intentId=${intent.id}, " +
-                            s"arg=${mkArg()}" +
-                        s"]")
+                        if (idx == 0)
+                            throw new NCE(s"Missing @NCIntentTerm annotation or wrong type of the 1st parameter (must be 'NCIntentMatch') for [" +
+                                s"mdlId=$mdlId, " +
+                                s"intentId=${intent.id}, " +
+                                s"arg=${mkArg()}" +
+                            s"]")
+                        else
+                            throw new NCE(s"Missing @NCIntentTerm annotation for [" +
+                                s"mdlId=$mdlId, " +
+                                s"intentId=${intent.id}, " +
+                                s"arg=${mkArg()}" +
+                                s"]")
 
                     case _ =>
                         throw new NCE(s"Too many @NCIntentTerm annotations for [" +
