@@ -378,6 +378,13 @@ object NCTokenLogger extends LazyLogging {
     def prepareTable(toks: Seq[NCToken]): NCAsciiTable = {
         val allFree = toks.forall(_.isFreeWord)
 
+        /**
+          *
+          * @param s
+          * @return
+          */
+        def cc(s: String): String = s"${ansi256Fg(183)}$s$ansiReset"
+
         val headers = mutable.ArrayBuffer.empty[String] ++
             Seq(
                 "idx",
@@ -385,15 +392,15 @@ object NCTokenLogger extends LazyLogging {
                 "lemma",
                 "pos",
                 "quoted",
-                "stopword",
-                "freeword",
+                r("stopword"),
+                y("freeword"),
                 "wordindexes",
                 "direct",
                 "sparsity"
             )
 
         if (!allFree)
-            headers += "token data"
+            headers += cc("token data")
 
         val tbl = NCAsciiTable(headers)
 
@@ -628,11 +635,11 @@ object NCTokenLogger extends LazyLogging {
                         if (tok.getId == "nlpcraft:nlp")
                             row.map(_.toString)
                         else
-                            row.map(s => s"${ansi256Fg(183)}${s.toString}${ansiReset}")
+                            row.map(s => cc(s.toString))
                     )
                     ++
                     // Token data.
-                    Seq(if (tok.getId == "nlpcraft:nlp") "" else s"<<${ansi256Fg(183)}${tok.getId}$ansiReset>> $v") :_*
+                    Seq(if (tok.getId == "nlpcraft:nlp") "" else s"<<${cc(tok.getId)}>> $v") :_*
                 )
             }
         })

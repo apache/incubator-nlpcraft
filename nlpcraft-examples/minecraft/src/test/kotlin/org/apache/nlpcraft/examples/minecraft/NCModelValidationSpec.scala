@@ -15,25 +15,21 @@
  * limitations under the License.
  */
 
-{
-    "id": "nlpcraft.alarm.ex",
-    "name": "Alarm Example Model",
-    "version": "1.0",
-    "description": "Alarm example model.",
-    "enabledBuiltInTokens": [
-        "nlpcraft:num"
-    ],
-    "elements": [
-        {
-            "id": "x:alarm",
-            "description": "Alarm token indicator.",
-            "synonyms": [
-                "{ping|buzz|wake|call|hit} {me|up|me up|_}",
-                "{set|_} {my|_} {wake|wake up|_} {alarm|timer|clock|buzzer|call} {clock|_} {up|_}"
-            ]
-        }
-    ],
-    "intents": [
-        "import('alarm_intents.idl')" // Import intents from external file.
-    ]
+package org.apache.nlpcraft.examples.minecraft
+
+import org.apache.nlpcraft.model.tools.test.NCTestAutoModelValidator
+import org.junit.jupiter.api.{Assertions, Test}
+
+/**
+  * JUnit model validation.
+  */
+class NCModelValidationSpec {
+    @Test
+    def test(): Unit = {
+        // Instruct auto-validator what models to test.
+        System.setProperty("NLPCRAFT_TEST_MODELS", "org.apache.nlpcraft.example.minecraft.MinecraftModel")
+
+        // Start model auto-validator.
+        Assertions.assertTrue(NCTestAutoModelValidator.isValid(),"See error logs above.")
+    }
 }

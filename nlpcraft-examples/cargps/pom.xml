@@ -21,12 +21,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <name>NLPCraft Example Minecraft</name>
-    <artifactId>nlpcraft-example-minecraft</artifactId>
+    <name>NLPCraft Example Car GPS</name>
+    <artifactId>nlpcraft-example-cargps</artifactId>
 
     <parent>
-        <groupId>org.apache.nlpcraft</groupId>
         <artifactId>nlpcraft-parent</artifactId>
+        <groupId>org.apache.nlpcraft</groupId>
         <version>0.9.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
@@ -34,30 +34,13 @@
     <properties>
         <nlpcraft.server.module>nlpcraft</nlpcraft.server.module>
         <nlpcraft.all.deps.jar>apache-${nlpcraft.server.module}-incubating-${project.version}-all-deps.jar</nlpcraft.all.deps.jar>
-
-        <kotlin.ver>1.5.0</kotlin.ver>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>com.fasterxml.jackson.module</groupId>
-            <artifactId>jackson-module-kotlin</artifactId>
-            <version>${jackson.ver}</version>
-        </dependency>
-        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>nlpcraft</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-stdlib</artifactId>
-            <version>${kotlin.ver}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-reflect</artifactId>
-            <version>${kotlin.ver}</version>
         </dependency>
 
         <!-- Test dependencies. -->
@@ -66,12 +49,7 @@
             <artifactId>junit-jupiter-engine</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-test</artifactId>
-            <version>${kotlin.ver}</version>
-            <scope>test</scope>
-        </dependency>
+
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>nlpcraft</artifactId>
@@ -84,35 +62,13 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.jetbrains.kotlin</groupId>
-                <artifactId>kotlin-maven-plugin</artifactId>
-                <version>${kotlin.ver}</version>
-                <executions>
-                    <execution>
-                        <id>compile</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                        <configuration>
-                            <sourceDirs>
-                                <sourceDir>src/main/kotlin</sourceDir>
-                            </sourceDirs>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>test-compile</id>
-                        <phase>test-compile</phase>
-                        <goals>
-                            <goal>test-compile</goal>
-                        </goals>
-                        <configuration>
-                            <sourceDirs>
-                                <sourceDir>src/test/kotlin</sourceDir>
-                            </sourceDirs>
-                        </configuration>
-                    </execution>
-                </executions>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven.compiler.plugin.ver}</version>
+                <configuration>
+                    <source>${java.ver}</source>
+                    <target>${java.ver}</target>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>com.bazaarvoice.maven.plugins</groupId>

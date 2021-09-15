@@ -15,25 +15,15 @@
  * limitations under the License.
  */
 
-{
-    "id": "nlpcraft.alarm.ex",
-    "name": "Alarm Example Model",
-    "version": "1.0",
-    "description": "Alarm example model.",
-    "enabledBuiltInTokens": [
-        "nlpcraft:num"
-    ],
-    "elements": [
-        {
-            "id": "x:alarm",
-            "description": "Alarm token indicator.",
-            "synonyms": [
-                "{ping|buzz|wake|call|hit} {me|up|me up|_}",
-                "{set|_} {my|_} {wake|wake up|_} {alarm|timer|clock|buzzer|call} {clock|_} {up|_}"
-            ]
-        }
-    ],
-    "intents": [
-        "import('alarm_intents.idl')" // Import intents from external file.
-    ]
+package org.apache.nlpcraft.examples.cargps
+
+import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
+import org.junit.jupiter.api.Test
+
+@NCTestEnvironment(model = classOf[CarGpsModel], startClient = true)
+class NCCarGpsModelSpec extends NCTestContext {
+    @Test
+    def test(): Unit = {
+        checkIntent("hey truck, drive to 21 x x drive", "int:navigate")
+    }
 }

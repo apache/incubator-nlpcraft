@@ -20,6 +20,7 @@ package org.apache.nlpcraft.model.intent.solver
 import com.typesafe.scalalogging.LazyLogging
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common._
+import org.apache.nlpcraft.common.ansi.NCAnsi._
 import org.apache.nlpcraft.common.debug.NCLogHolder
 import org.apache.nlpcraft.common.opencensus.NCOpenCensusTrace
 import org.apache.nlpcraft.common.util.NCUtils
@@ -145,7 +146,7 @@ class NCIntentSolver(intents: List[(NCIdlIntent/*Intent*/, NCIntentMatch => NCRe
                 if (cbRes.getIntentId == null)
                     cbRes.setIntentId(res.intentId)
                     
-                logger.info(s"Intent '${res.intentId}' for variant #${res.variantIdx + 1} selected as the ${g(bo("<|best match|>"))}.")
+                logger.info(s"Intent ${ansi256Fg(183)}'${res.intentId}'$ansiReset for variant #${res.variantIdx + 1} selected as the ${g(bo("<|best match|>"))}.")
 
                 NCDialogFlowManager.addMatchedIntent(
                     intentMatch,

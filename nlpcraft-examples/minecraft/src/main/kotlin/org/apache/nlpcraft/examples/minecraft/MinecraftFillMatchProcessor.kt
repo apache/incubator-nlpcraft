@@ -16,9 +16,9 @@
  *
  */
 
-package org.apache.nlpcraft.example.minecraft
+package org.apache.nlpcraft.examples.minecraft
 
-import org.apache.nlpcraft.example.minecraft.MinecraftValueLoader.Companion.dumps
+import org.apache.nlpcraft.examples.minecraft.MinecraftValueLoader.Companion.dumps
 import org.apache.nlpcraft.model.*
 import java.util.*
 

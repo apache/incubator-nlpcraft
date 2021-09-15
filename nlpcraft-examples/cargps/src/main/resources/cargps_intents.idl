@@ -15,25 +15,20 @@
  * limitations under the License.
  */
 
-{
-    "id": "nlpcraft.alarm.ex",
-    "name": "Alarm Example Model",
-    "version": "1.0",
-    "description": "Alarm example model.",
-    "enabledBuiltInTokens": [
-        "nlpcraft:num"
-    ],
-    "elements": [
-        {
-            "id": "x:alarm",
-            "description": "Alarm token indicator.",
-            "synonyms": [
-                "{ping|buzz|wake|call|hit} {me|up|me up|_}",
-                "{set|_} {my|_} {wake|wake up|_} {alarm|timer|clock|buzzer|call} {clock|_} {up|_}"
-            ]
-        }
-    ],
-    "intents": [
-        "import('alarm_intents.idl')" // Import intents from external file.
-    ]
-}
+ /*
+  * Read documentation: http://nlpcraft.apache.org/intent-matching.html
+  */
+
+// Reusable fragments.
+fragment=hey term={# == "x:hey" && tok_is_first()}
+
+// Intents.
+intent=int:cancel
+    // Ignore any other user or system tokens if we found 'cancel' token.
+    options={'unused_usr_toks': true, 'unused_sys_toks': true}
+    fragment(hey)
+    term={# == "x:cancel"}
+
+intent=int:navigate options={'ordered': true} fragment(hey) term={# == "x:navigate"} term={# == "x:addr"}
+intent=int:add:waypoint fragment(hey) term={# == "x:add-waypoint"}
+intent=int:remove:waypoint fragment(hey) term={# == "x:remove-waypoint"}
