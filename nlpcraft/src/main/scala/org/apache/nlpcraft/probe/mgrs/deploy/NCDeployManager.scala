@@ -63,7 +63,7 @@ object NCDeployManager extends NCService {
     private final val CLS_INTENT = classOf[NCIntent]
     private final val CLS_INTENT_REF = classOf[NCIntentRef]
     private final val CLS_QRY_RES = classOf[NCResult]
-    private final val CLS_SLV_CTX = classOf[NCIntentMatch]
+    private final val CLS_INTENT_MATCH = classOf[NCIntentMatch]
     private final val CLS_SAMPLE = classOf[NCIntentSample]
     private final val CLS_SAMPLE_REF = classOf[NCIntentSampleRef]
     private final val CLS_MDL_CLS_REF = classOf[NCModelAddClasses]
@@ -1229,9 +1229,9 @@ object NCDeployManager extends NCService {
 
         val allParamTypes = mtd.getParameterTypes.toSeq
 
-        val ctxFirstParam = allParamTypes.nonEmpty && allParamTypes.head == CLS_SLV_CTX
+        val ctxFirstParam = allParamTypes.nonEmpty && allParamTypes.head == CLS_INTENT_MATCH
 
-        def getTokensSeq[T](data: Seq[T]): Seq[T] =
+        def getSeq[T](data: Seq[T]): Seq[T] =
             if (data == null)
                 Seq.empty
             else if (ctxFirstParam)
@@ -1240,8 +1240,8 @@ object NCDeployManager extends NCService {
                 data
 
         val allAnns = mtd.getParameterAnnotations
-        val tokParamAnns = getTokensSeq(allAnns.toIndexedSeq).filter(_ != null)
-        val tokParamTypes = getTokensSeq(allParamTypes)
+        val tokParamAnns = getSeq(allAnns.toIndexedSeq).filter(_ != null)
+        val tokParamTypes = getSeq(allParamTypes)
 
         // Checks tokens parameters annotations count.
         if (tokParamAnns.length != tokParamTypes.length)
@@ -1254,14 +1254,14 @@ object NCDeployManager extends NCService {
 
         // Gets terms IDs.
         val termIds = tokParamAnns.toList.zipWithIndex.map {
-            case (anns, idx) =>
+            case (annArr, idx) =>
                 def mkArg(): String = arg2Str(mtd, idx, ctxFirstParam)
 
-                val annsTerms = anns.filter(_.isInstanceOf[NCIntentTerm])
+                val termAnns = annArr.filter(_.isInstanceOf[NCIntentTerm])
 
                 // Each method arguments (second and later) must have one NCIntentTerm annotation.
-                annsTerms.length match {
-                    case 1 => annsTerms.head.asInstanceOf[NCIntentTerm].value()
+                termAnns.length match {
+                    case 1 => termAnns.head.asInstanceOf[NCIntentTerm].value()
 
                     case 0 =>
                         throw new NCE(s"Missing @NCIntentTerm annotation for [" +
@@ -1304,7 +1304,7 @@ object NCDeployManager extends NCService {
             s"]")
         }
 
-        val paramGenTypes = getTokensSeq(mtd.getGenericParameterTypes.toIndexedSeq)
+        val paramGenTypes = getSeq(mtd.getGenericParameterTypes.toIndexedSeq)
 
         require(tokParamTypes.length == paramGenTypes.length)
 
