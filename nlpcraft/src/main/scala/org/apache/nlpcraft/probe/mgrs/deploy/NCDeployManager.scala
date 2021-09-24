@@ -172,15 +172,20 @@ object NCDeployManager extends NCService {
         for (makro <- macros.keys if !set.exists(_.contains(makro)))
             logger.warn(s"Unused macro detected [mdlId=${mdl.getId}, macro=$makro]")
 
-        def isSuspicious(s: String): Boolean = //s.toCharArray.toSeq.intersect(SUSP_SYNS_CHARS).nonEmpty
+        def isSuspicious(s: String): Boolean =
             SUSP_SYNS_CHARS.exists(susp => s.contains(susp))
 
-        for (makro <- macros)
-            if (isSuspicious(makro._1) || isSuspicious(makro._2))
+        for (makro <- macros) {
+            val mkName = makro._1
+            val mkVal = makro._2
+
+            // Ignore suspicious chars if regex is used in macro...
+            if (isSuspicious(mkName) || (isSuspicious(mkVal) && !mkVal.contains("//")))
                 logger.warn(s"Suspicious macro definition (use of ${SUSP_SYNS_CHARS.map(s => s"'$s'").mkString(", ")} chars) [" +
                     s"mdlId=${mdl.getId}, " +
                     s"macro=$makro" +
                 s"]")
+        }
     }
 
     /**
@@ -595,7 +600,7 @@ object NCDeployManager extends NCService {
                 logger.trace(s"  ${b("+--")} Model '$mdlId' allows duplicate synonyms but the large number may degrade the performance.")
                 logger.trace(tbl.toString)
 
-                logger.warn(s"Duplicate synonyms (${dupSyns.size}) found in '$mdlId' model - turn on TRACE logging to see them.")
+                logger.warn(s"Duplicate synonyms (${dupSyns.size}) found in '$mdlId' model - turn on TRACE logging to see if they can be ignored.")
             }
             else
                 throw new NCE(s"Duplicated synonyms found and not allowed [mdlId=$mdlId]")
