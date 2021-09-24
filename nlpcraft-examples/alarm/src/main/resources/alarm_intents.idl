@@ -27,7 +27,7 @@ fragment=when
         @type = meta_tok('nlpcraft:num:unittype')
         @isEq = meta_tok('nlpcraft:num:isequalcondition') // Excludes conditional statements.
 
-        # == 'nlpcraft:num' && @type == 'datetime' && @iseq == true
+        # == 'nlpcraft:num' && @type == 'datetime' && @isEq == true
     }[1,7]
 
 // Intents (using fragments).

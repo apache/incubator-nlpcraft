@@ -35,11 +35,11 @@ elements:
   - id: mc:item
     metadata:
       mc:type: item
-    valueLoader: org.apache.nlpcraft.example.minecraft.MinecraftValueLoader
+    valueLoader: org.apache.nlpcraft.examples.minecraft.MinecraftValueLoader
   - id: mc:block
     metadata:
       mc:type: block
-    valueLoader: org.apache.nlpcraft.example.minecraft.MinecraftValueLoader
+    valueLoader: org.apache.nlpcraft.examples.minecraft.MinecraftValueLoader
 
   # Weather intent
   - id: weather:action

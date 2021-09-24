@@ -27,7 +27,7 @@ class NCModelValidationSpec {
     @Test
     def test(): Unit = {
         // Instruct auto-validator what models to test.
-        System.setProperty("NLPCRAFT_TEST_MODELS", "org.apache.nlpcraft.example.minecraft.MinecraftModel")
+        System.setProperty("NLPCRAFT_TEST_MODELS", "org.apache.nlpcraft.examples.minecraft.MinecraftModel")
 
         // Start model auto-validator.
         Assertions.assertTrue(NCTestAutoModelValidator.isValid(),"See error logs above.")
