@@ -50,7 +50,7 @@ class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
         "start a hurricane",
         "cast super squall"
     )
-    fun onWeatherMatch(@Suppress("UNUSED_PARAMETER") ctx: NCIntentMatch, @NCIntentTerm("arg") tok: NCToken): NCResult {
+    fun onWeatherMatch(@NCIntentTerm("arg") tok: NCToken): NCResult {
         return NCResult.text("weather ${tok.id}")
     }
 
@@ -64,7 +64,7 @@ class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
         "night",
         "it's midnight"
     )
-    fun onTimeMatch(@Suppress("UNUSED_PARAMETER") ctx: NCIntentMatch, @NCIntentTerm("arg") tok: NCToken): NCResult {
+    fun onTimeMatch(@NCIntentTerm("arg") tok: NCToken): NCResult {
         val time: Int = when (tok.id) {
             "morning" -> 23000
             "day" -> 1000
@@ -90,7 +90,6 @@ class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
         "give potion to me"
     )
     fun onGiveMatch(
-        @Suppress("UNUSED_PARAMETER") ctx: NCIntentMatch,
         @NCIntentTerm("item") item: NCToken,
         @NCIntentTerm("action") target: NCToken,
         @NCIntentTerm("quantity") quantity: Optional<NCToken>
