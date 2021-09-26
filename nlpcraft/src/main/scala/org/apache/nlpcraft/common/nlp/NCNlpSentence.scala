@@ -59,7 +59,7 @@ class NCNlpSentence(
     @transient
     private var hash: java.lang.Integer = _
 
-    private def calcHash(): Int = U.mkJavaHash(srvReqId, text, enabledBuiltInToks, tokens)
+    private def calcHash(): Int = U.mkJavaHash(tokens)
 
     // Deep copy.
     override def clone(): NCNlpSentence =
@@ -72,6 +72,18 @@ class NCNlpSentence(
             initNlpNotes = initNlpNotes,
             nlpTokens = nlpTokens,
             firstProbePhase = firstProbePhase
+        )
+
+    def copy(srvReqId: Option[String]): NCNlpSentence =
+        new NCNlpSentence(
+            srvReqId = srvReqId.getOrElse(this.srvReqId),
+            text = this.text,
+            enabledBuiltInToks = this.enabledBuiltInToks,
+            tokens = this.tokens,
+            deletedNotes = this.deletedNotes,
+            initNlpNotes = this.initNlpNotes,
+            nlpTokens = this.nlpTokens,
+            firstProbePhase = this.firstProbePhase
         )
 
     /**
@@ -101,10 +113,11 @@ class NCNlpSentence(
 
     override def equals(obj: Any): Boolean = obj match {
         case x: NCNlpSentence =>
+            tokens.size == x.tokens.size &&
             tokens == x.tokens &&
-                srvReqId == x.srvReqId &&
-                text == x.text &&
-                enabledBuiltInToks == x.enabledBuiltInToks
+            srvReqId == x.srvReqId &&
+            text == x.text &&
+            enabledBuiltInToks == x.enabledBuiltInToks
 
         case _ => false
     }
@@ -139,8 +152,8 @@ class NCNlpSentence(
 
             // One possible difference - stopwords indexes.
             def wordsEqualOrSimilar0(n1: NCNlpSentenceNote, n2: NCNlpSentenceNote): Boolean = {
-                val set1 = n1.wordIndexes.toSet
-                val set2 = n2.wordIndexes.toSet
+                val set1 = n1.wordIndexesSet
+                val set2 = n2.wordIndexesSet
 
                 set1 == set2 || set1.subsetOf(set2) && set2.diff(set1).forall(stopIdxs.contains)
             }

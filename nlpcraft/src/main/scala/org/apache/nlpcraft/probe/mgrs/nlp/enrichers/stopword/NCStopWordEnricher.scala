@@ -17,8 +17,6 @@
 
 package org.apache.nlpcraft.probe.mgrs.nlp.enrichers.stopword
 
-import java.io.Serializable
-
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
 import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceToken}
@@ -26,6 +24,7 @@ import org.apache.nlpcraft.common.{NCE, NCService, U}
 import org.apache.nlpcraft.probe.mgrs.NCProbeModel
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
 
+import java.io.Serializable
 import scala.annotation.tailrec
 
 /**
@@ -225,12 +224,20 @@ object NCStopWordEnricher extends NCProbeEnricher {
         startScopedSpan(
             "enrich", parent, "srvReqId" -> ns.srvReqId, "mdlId" -> mdl.model.getId, "txt" -> ns.text
         ) { _ =>
-            mark(mdl.exclStopWordsStems, f = false)
-            mark(mdl.addStopWordsStems, f = true)
-            processGeo(ns)
-            processDate(ns)
-            processNums(ns)
-            processCommonStops(mdl, ns)
+            if (mdl.model.isStopWordsAllowed) {
+                mark(mdl.exclStopWordsStems, f = false)
+                mark(mdl.addStopWordsStems, f = true)
+
+                // If stop word swallowed by any built token (numeric, date etc) - it's stop word marking dropped.
+                ns.filter(t => t.isStopWord && !t.isNlp).foreach(t => ns.fixNote(t.getNlpNote, "stopWord" -> false))
+
+                processGeo(ns)
+                processDate(ns)
+                processNums(ns)
+                processCommonStops(mdl, ns)
+            }
+            else
+                ns.filter(_.isStopWord).foreach(t => ns.fixNote(t.getNlpNote, "stopWord" -> false))
         }
     }
 }

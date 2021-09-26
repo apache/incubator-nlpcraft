@@ -22,6 +22,7 @@ import org.apache.nlpcraft.common.nlp.{NCNlpSentence => NlpSentence, NCNlpSenten
 import org.apache.nlpcraft.common.{NCE, TOK_META_ALIASES_KEY}
 import org.apache.nlpcraft.model.NCVariant
 import org.apache.nlpcraft.model.impl.{NCTokenImpl, NCTokenLogger, NCVariantImpl}
+import org.apache.nlpcraft.probe.mgrs.synonyms.NCSynonymsManager
 
 import java.io.{Serializable => JSerializable}
 import java.util
@@ -266,6 +267,8 @@ object NCProbeVariants {
 
                 for ((tok, tokNlp) <- toks.zip(nlpSen) if tokNlp.isUser)
                     process(tok, tokNlp)
+
+                ok = ok && NCSynonymsManager.isStillValidIdl(srvReqId, toks.toSeq)
 
                 if (ok) Some(new NCVariantImpl(toks.asJava)) else None
             })

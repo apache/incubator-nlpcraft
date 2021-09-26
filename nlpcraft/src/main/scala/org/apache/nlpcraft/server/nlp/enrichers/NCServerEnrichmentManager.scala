@@ -156,7 +156,7 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
                         if (h.enabledBuiltInTokens == normEnabledBuiltInToks) {
                             prepareAsciiTable(h.sentence).info(logger, Some(s"Sentence enriched (from cache): '$normTxt'"))
 
-                            h.sentence
+                            h.sentence.copy(Some(srvReqId))
                         }
                         else
                             process(srvReqId, normTxt, enabledBuiltInToks, span)
@@ -224,7 +224,8 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
                 .getNotes(hdr.noteType)
                 .filter(_.contains(hdr.noteName))
                 .map(note => {
-                    val s = note(hdr.noteName).toString()
+                    val s = note(hdr.noteName).toString
+
                     if (isStopWord) s"${r(s)}" else s
                 })
                 .toSeq

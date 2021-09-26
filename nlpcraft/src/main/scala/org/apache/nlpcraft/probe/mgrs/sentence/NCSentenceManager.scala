@@ -43,12 +43,7 @@ object NCSentenceManager extends NCService {
     type CacheValue = Seq[Seq[NCNlpSentenceNote]]
     private val combCache = mutable.HashMap.empty[String, mutable.HashMap[CacheKey, CacheValue]]
 
-
-    /**
-      *
-      * @param notes
-      */
-    private def getLinks(notes: Seq[NCNlpSentenceNote]): Seq[NoteLink] = {
+    def getLinks(notes: Seq[NCNlpSentenceNote]): Seq[NoteLink] = {
         val noteLinks = mutable.ArrayBuffer.empty[NoteLink]
 
         for (n <- notes.filter(n => n.noteType == "nlpcraft:limit" || n.noteType == "nlpcraft:references"))
@@ -77,16 +72,31 @@ object NCSentenceManager extends NCService {
 
     /**
       *
+      * @param n
+      */
+    private def getParts(n: NCNlpSentenceNote): Option[Seq[NCTokenPartKey]] = {
+        val res: Option[JList[NCTokenPartKey]]  = n.dataOpt("parts")
+
+        res match {
+            case Some(v) => Some(v.asScala)
+            case None => None
+        }
+    }
+
+    /**
+      *
       * @param notes
       */
-    private def getPartKeys(notes: NCNlpSentenceNote*): Seq[NCTokenPartKey] =
-        notes.
-            filter(_.isUser).
-            flatMap(n => {
-                val optList: Option[JList[NCTokenPartKey]] = n.dataOpt("parts")
+    def getPartKeys(notes: Seq[NCNlpSentenceNote]): Seq[NCTokenPartKey] =
+        notes.filter(_.isUser).flatMap(getParts).flatten.distinct
 
-                optList
-            }).flatMap(_.asScala).distinct
+    /**
+      *
+      * @param note
+      * @return
+      */
+    def getPartKeys(note: NCNlpSentenceNote): Seq[NCTokenPartKey] =
+        if (note.isUser) getParts(note).getOrElse(Seq.empty) else Seq.empty
 
     /**
       *
@@ -213,7 +223,8 @@ object NCSentenceManager extends NCService {
     private def simpleCopy(
         ns: NCNlpSentence,
         history: mutable.ArrayBuffer[(Int, Int)],
-        toksCopy: NCNlpSentence, i: Int
+        toksCopy: NCNlpSentence,
+        i: Int
     ): Seq[NCNlpSentenceToken] = {
         val tokCopy = toksCopy(i)
 
@@ -279,9 +290,9 @@ object NCSentenceManager extends NCService {
     private def fixIndexes(ns: NCNlpSentence, userNoteTypes: Seq[String]): Unit = {
         // Replaces other notes indexes.
         for (t <- userNoteTypes :+ "nlpcraft:nlp"; note <- ns.getNotes(t)) {
-            val toks = ns.filter(_.contains(note)).sortBy(_.index)
+            val toks = ns.filter(_.contains(note))
 
-            val newNote = note.clone(toks.map(_.index).toSeq, toks.flatMap(_.wordIndexes).toSeq.sorted)
+            val newNote = note.clone(toks.map(_.index), toks.flatMap(_.wordIndexes).toSeq.sorted)
 
             toks.foreach(t => {
                 t.remove(note)
@@ -486,8 +497,9 @@ object NCSentenceManager extends NCService {
       *
       * @param ns Sentence.
       * @param notNlpTypes Token types.
+      * @param lastPhase Phase.
       */
-    private def collapseSentence(ns: NCNlpSentence, notNlpTypes: Seq[String]): Boolean = {
+    private def collapseSentence(ns: NCNlpSentence, notNlpTypes: Seq[String], lastPhase: Boolean): Boolean = {
         ns.
             filter(!_.isNlp).
             filter(_.isStopWord).
@@ -522,7 +534,8 @@ object NCSentenceManager extends NCService {
             fixIndexesReferencesList("nlpcraft:sort", "subjindexes", "subjnotes", ns, histSeq) &&
             fixIndexesReferencesList("nlpcraft:sort", "byindexes", "bynotes", ns, histSeq)
 
-        if (res) {
+        // On last phase - just for performance reasons.
+        if (res && lastPhase) {
             // Validation (all indexes calculated well)
             require(
                 !res ||
@@ -544,21 +557,23 @@ object NCSentenceManager extends NCService {
       * @param mdl
       * @param ns
       */
-    private def dropAbstract(mdl: NCModel, ns: NCNlpSentence): Unit =
-        if (!mdl.getAbstractTokens.isEmpty) {
-            val notes = ns.flatten
+    private def dropAbstract(mdl: NCModel, ns: NCNlpSentence): Unit = {
+        val abstractToks = mdl.getAbstractTokens
 
-            val keys = getPartKeys(notes: _*)
+        if (!abstractToks.isEmpty) {
+            val notes = ns.flatten.distinct.filter(n => abstractToks.contains(n.noteType))
+
+            val keys = getPartKeys(notes)
             val noteLinks = getLinks(notes)
 
             notes.filter(n => {
-                val noteToks = ns.tokens.filter(_.contains(n))
+                lazy val noteToks = ns.tokens.filter(t => t.index >= n.tokenFrom && t.index <= n.tokenTo)
 
-                mdl.getAbstractTokens.contains(n.noteType) &&
-                    !keys.exists(_.intersect(n.noteType, noteToks.head.startCharIndex, noteToks.last.startCharIndex)) &&
-                    !noteLinks.contains(NoteLink(n.noteType, n.tokenIndexes.sorted))
+                !noteLinks.contains(NoteLink(n.noteType, n.tokenIndexes.sorted)) &&
+                !keys.exists(_.intersect(n.noteType, noteToks.head.startCharIndex, noteToks.last.startCharIndex))
             }).foreach(ns.removeNote)
         }
+    }
 
     /**
       *
@@ -602,7 +617,7 @@ object NCSentenceManager extends NCService {
             if (lastPhase)
                 dropAbstract(mdl, ns)
 
-            if (collapseSentence(ns, getNotNlpNotes(ns.toSeq).map(_.noteType).distinct)) Some(ns) else None
+            if (collapseSentence(ns, getNotNlpNotes(ns.tokens).map(_.noteType).distinct, lastPhase)) Some(ns) else None
         }
 
         // Always deletes `similar` notes.
@@ -635,8 +650,8 @@ object NCSentenceManager extends NCService {
         redundant.foreach(sen.removeNote)
 
         var delCombs: Seq[NCNlpSentenceNote] =
-            getNotNlpNotes(sen.toSeq).
-                flatMap(note => getNotNlpNotes(note.tokenIndexes.sorted.map(i => sen(i))).filter(_ != note)).
+            getNotNlpNotes(sen.tokens).
+                flatMap(note => getNotNlpNotes(note.tokenIndexes.map(sen(_))).filter(_ != note)).
                 distinct
 
         // Optimization. Deletes all wholly swallowed notes.
@@ -647,9 +662,9 @@ object NCSentenceManager extends NCService {
                 // There aren't links on it.
                 filter(n => !links.contains(NoteLink(n.noteType, n.tokenIndexes.sorted))).
                 // It doesn't have links.
-                filter(getPartKeys(_).isEmpty).
+                filter(n => getPartKeys(n).isEmpty).
                 flatMap(note => {
-                    val noteWordsIdxs = note.wordIndexes.toSet
+                    val noteWordsIdxs = note.wordIndexesSet
                     val key = NCTokenPartKey(note, sen)
 
                     val delCombOthers =
@@ -657,7 +672,7 @@ object NCSentenceManager extends NCService {
 
                     if (
                         delCombOthers.nonEmpty &&
-                        !delCombOthers.exists(o => noteWordsIdxs.subsetOf(o.wordIndexes.toSet))
+                        !delCombOthers.exists(o => noteWordsIdxs.subsetOf(o.wordIndexesSet))
                     )
                         Some(note)
                     else
@@ -675,7 +690,7 @@ object NCSentenceManager extends NCService {
                         groupBy { case (idx, _) => idx }.
                         map { case (_, seq) => seq.map { case (_, note) => note }.toSet }.
                         toSeq.sortBy(-_.size)
-                        
+
                 def findCombinations(): Seq[Seq[NCNlpSentenceNote]] =
                     NCSentenceHelper.findCombinations(toksByIdx.map(_.asJava).asJava, pool).asScala.map(_.asScala.toSeq)
 
@@ -709,7 +724,7 @@ object NCSentenceManager extends NCService {
 
                     Holder(
                         // We have to delete some keys to have possibility to compare sentences.
-                        notes.map(_.clone().filter { case (name, _) => name != "direct" }).toSeq,
+                        notes.map(_.clone().toMap.filter { case (name, _) => name != "direct" }).toSeq,
                         sen,
                         notes.filter(_.isNlp).map(p => if (p.isDirect) 0 else 1).sum
                     )
@@ -732,7 +747,6 @@ object NCSentenceManager extends NCService {
             )
         )
 
-
         def notNlpNotes(s: NCNlpSentence): Seq[NCNlpSentenceNote] = s.flatten.filter(!_.isNlp)
 
         // Drops similar sentences (with same notes structure). Keeps with more found.
@@ -752,20 +766,38 @@ object NCSentenceManager extends NCService {
                 }
             }.toSeq
 
+        var sensWithNotes = sens.map(s => s -> s.flatten.filter(!_.isNlp).toSet)
+
+        var sensWithNotesIdxs = sensWithNotes.zipWithIndex
+
         sens =
-            sens.filter(s => {
-                def mkNotNlp(s: NCNlpSentence): Set[NCNlpSentenceNote] = s.flatten.filter(!_.isNlp).toSet
-
-                val notNlpNotes = mkNotNlp(s)
-
-                !sens.filter(_ != s).map(mkNotNlp).exists(notNlpNotes.subsetOf)
-            })
+            sensWithNotesIdxs.filter { case ((_, notNlpNotes1), idx1) =>
+                !sensWithNotesIdxs.
+                    filter { case (_, idx2) => idx2 != idx1 }.
+                    exists { case((_, notNlpNotes2), _) => notNlpNotes1.subsetOf(notNlpNotes2) }
+            }.map { case ((sen, _), _) => sen }
 
         // Drops similar sentences (with same tokens structure).
         // Among similar sentences we prefer one with minimal free words count.
-        sens.groupBy(notNlpNotes(_).map(_.getKey(withIndexes = false))).
+        sens = sens.groupBy(notNlpNotes(_).map(_.getKey(withIndexes = false))).
             map { case (_, seq) => seq.minBy(_.filter(p => p.isNlp && !p.isStopWord).map(_.wordIndexes.length).sum) }.
             toSeq
+
+        // Drops sentences if they are just subset of another.
+        sensWithNotes = sensWithNotes.filter { case (sen, _) => sens.contains(sen) }
+
+        sensWithNotesIdxs = sensWithNotes.zipWithIndex
+
+        sens = sensWithNotesIdxs.filter { case ((_, notNlpNotes1), idx1) =>
+            !sensWithNotesIdxs.exists { case ((_, notNlpNotes2), idx2) =>
+                idx1 != idx2 && {
+                    notNlpNotes2.size > notNlpNotes1.size &&
+                    notNlpNotes1.forall(t1 => notNlpNotes2.exists(_.equalsWithoutIndexes(t1)))
+                }
+            }
+        }.map { case ((sen, _), _) => sen }
+
+        sens
     }
 
     override def start(parent: Span): NCService = {
@@ -797,5 +829,5 @@ object NCSentenceManager extends NCService {
       *
       * @param srvReqId
       */
-    def clearCache(srvReqId: String): Unit = combCache -= srvReqId
+    def clearRequestData(srvReqId: String): Unit = combCache -= srvReqId
 }

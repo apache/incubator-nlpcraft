@@ -224,8 +224,7 @@ class NCEnricherSortSpec extends NCEnricherBaseSpec {
             _ => checkExists(
                 "sort A the A the A",
                 srt(text = "sort", typ = SUBJ_ONLY, note = "wrapperA", index = 1),
-                usr("A A A", "wrapperA"),
-                nlp("the the", isStop = true)
+                usr("A the A the A", "wrapperA")
             )
         )
 }

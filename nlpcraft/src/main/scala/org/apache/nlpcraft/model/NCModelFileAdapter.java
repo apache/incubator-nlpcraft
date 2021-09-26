@@ -559,6 +559,11 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
     }
 
     @Override
+    public boolean isStopWordsAllowed() {
+        return proxy.isStopWordsAllowed();
+    }
+
+    @Override
     public Map<String, Set<String>> getRestrictedCombinations() {
         return restrictedCombinations;
     }

@@ -17,17 +17,16 @@
 
 package org.apache.nlpcraft.model.impl
 
-import java.io.{Serializable => JSerializable}
-import java.util.Collections
-import java.util.{List => JList}
-
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.nlp.NCNlpSentenceToken
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.probe.mgrs.NCProbeModel
 
+import java.io.{Serializable => JSerializable}
+import java.lang
+import java.util.{Collections, List => JList}
 import scala.collection.mutable
-import scala.jdk.CollectionConverters.{CollectionHasAsScala, MapHasAsJava, MapHasAsScala, SeqHasAsJava}
+import scala.jdk.CollectionConverters.{CollectionHasAsScala, SeqHasAsJava}
 
 /**
   *
@@ -49,9 +48,9 @@ private[nlpcraft] class NCTokenImpl(
     value: String,
     startCharIndex: Int,
     endCharIndex: Int,
-    meta: Map[String, Object],
+    meta: java.util.Map[String, Object],
     isAbstractProp: Boolean
-) extends NCMetadataAdapter(new java.util.HashMap(mutable.HashMap(meta.toSeq:_ *).asJava)) with NCToken with JSerializable {
+) extends NCMetadataAdapter(meta) with NCToken with JSerializable {
     require(mdl != null)
     require(srvReqId != null)
     require(id != null)
@@ -105,20 +104,18 @@ private[nlpcraft] object NCTokenImpl {
         // nlpcraft:nlp and some optional (after collapsing).
         require(tok.size <= 2, s"Unexpected token [size=${tok.size}, token=$tok]")
 
-        val md = mutable.HashMap.empty[String, JSerializable]
+        val md = new java.util.HashMap[String, AnyRef]()
 
         tok.foreach(n => {
             val id = n.noteType.toLowerCase
 
-            n.asMetadata().foreach { case (k, v) => md += s"$id:$k" -> v}
+            n.asMetadata().foreach { case (k, v) => md.put(s"$id:$k", v.asInstanceOf[AnyRef]) }
         })
 
         val usrNotes = tok.filter(_.isUser)
 
         // No overlapping allowed at this point.
         require(usrNotes.size <= 1, s"Unexpected elements notes: $usrNotes")
-
-        def convertMeta(): ScalaMeta = md.toMap.map(p => p._1 -> p._2.asInstanceOf[AnyRef])
 
         usrNotes.headOption match {
             case Some(usrNote) =>
@@ -139,9 +136,9 @@ private[nlpcraft] object NCTokenImpl {
                 }
 
                 // Special synthetic meta data element.
-                md.put("nlpcraft:nlp:freeword", false)
+                md.put("nlpcraft:nlp:freeword", java.lang.Boolean.FALSE)
 
-                elm.getMetadata.asScala.foreach { case (k, v) => md.put(k, v.asInstanceOf[JSerializable]) }
+                md.putAll(elm.getMetadata)
 
                 new NCTokenImpl(
                     mdl.model,
@@ -153,7 +150,7 @@ private[nlpcraft] object NCTokenImpl {
                     value = usrNote.dataOpt("value").orNull,
                     startCharIndex = tok.startCharIndex,
                     endCharIndex = tok.endCharIndex,
-                    meta = convertMeta(),
+                    meta = md,
                     isAbstractProp = mdl.model.getAbstractTokens.contains(elm.getId)
                 )
 
@@ -162,10 +159,10 @@ private[nlpcraft] object NCTokenImpl {
 
                 val note = tok.toSeq.minBy(n => if (n.isNlp) 1 else 0)
 
-                val isStop: Boolean = md("nlpcraft:nlp:stopword").asInstanceOf[Boolean]
+                val isStop = md.get("nlpcraft:nlp:stopword").asInstanceOf[Boolean]
 
                 // Special synthetic meta data element.
-                md.put("nlpcraft:nlp:freeword", !isStop && note.isNlp)
+                md.put("nlpcraft:nlp:freeword", lang.Boolean.valueOf(!isStop && note.isNlp))
 
                 new NCTokenImpl(
                     mdl.model,
@@ -177,7 +174,7 @@ private[nlpcraft] object NCTokenImpl {
                     value = null,
                     startCharIndex = tok.startCharIndex,
                     endCharIndex = tok.endCharIndex,
-                    meta = convertMeta(),
+                    meta = md,
                     isAbstractProp = mdl.model.getAbstractTokens.contains(note.noteType)
                 )
         }

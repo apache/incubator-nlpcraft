@@ -383,7 +383,7 @@ public interface NCElement extends NCMetadata, Serializable {
         return Optional.empty();
     }
 
-    // TODO:
+    // TODO: add javadoc
     default Optional<Boolean> isGreedy() {
         return Optional.empty();
     }

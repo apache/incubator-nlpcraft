@@ -44,6 +44,7 @@ import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.suspicious.NCSuspiciousNouns
 import org.apache.nlpcraft.probe.mgrs.nlp.impl._
 import org.apache.nlpcraft.probe.mgrs.nlp.validate._
 import org.apache.nlpcraft.probe.mgrs.sentence.NCSentenceManager
+import org.apache.nlpcraft.probe.mgrs.synonyms.NCSynonymsManager
 import org.apache.nlpcraft.probe.mgrs.{NCProbeMessage, NCProbeVariants}
 
 import java.io.Serializable
@@ -294,6 +295,9 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
         ): Unit = {
             require(errMsg.isDefined || (resType.isDefined && resBody.isDefined))
 
+            NCSentenceManager.clearRequestData(srvReqId)
+            NCSynonymsManager.clearRequestData(srvReqId)
+
             val msg = NCProbeMessage(msgName)
 
             msg.addData("srvReqId", srvReqId)
@@ -520,8 +524,6 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                 }).mkString("-")
             )
         })
-
-        NCSentenceManager.clearCache(srvReqId)
 
         // Final validation before execution.
         try

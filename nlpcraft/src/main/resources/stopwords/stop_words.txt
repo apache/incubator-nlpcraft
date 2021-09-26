@@ -63,6 +63,7 @@
 
 # POSES list exceptions.
 ~may
+~no
 
 # Postfixes list.
 *ent | ~NN ~NNS ~NNP ~NNPS

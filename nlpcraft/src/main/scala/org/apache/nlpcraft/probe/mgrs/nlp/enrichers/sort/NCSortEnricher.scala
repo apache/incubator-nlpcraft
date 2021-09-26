@@ -17,7 +17,6 @@
 
 package org.apache.nlpcraft.probe.mgrs.nlp.enrichers.sort
 
-import java.io.Serializable
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.NCService
 import org.apache.nlpcraft.common.makro.NCMacroParser
@@ -26,6 +25,7 @@ import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote, NCNlpSe
 import org.apache.nlpcraft.probe.mgrs.NCProbeModel
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
 
+import java.io.Serializable
 import java.util.{List => JList}
 import scala.collection.mutable
 import scala.jdk.CollectionConverters._
@@ -187,59 +187,50 @@ object NCSortEnricher extends NCProbeEnricher {
       *
       * @param toksNoteData
       */
-    private def split(toks: Seq[NCNlpSentenceToken], othersRefs: Seq[NCNlpSentenceToken], toksNoteData: Seq[NoteData], nullable: Boolean): Seq[Seq[NoteData]] = {
-        val res =
-            if (toksNoteData.nonEmpty) {
-                val res = mutable.ArrayBuffer.empty[Seq[NoteData]]
+    private def split(
+        toks: Seq[NCNlpSentenceToken],
+        othersRefs: Seq[NCNlpSentenceToken],
+        toksNoteData: Seq[NoteData]
+    ): Seq[Seq[NoteData]] =
+        if (toksNoteData.nonEmpty) {
+            val res = mutable.ArrayBuffer.empty[Seq[NoteData]]
 
-                /**
-                  * Returns flag which indicates are token contiguous or not.
-                  *
-                  * @param tok1Idx First token index.
-                  * @param tok2Idx Second token index.
-                  */
-                def contiguous(tok1Idx: Int, tok2Idx: Int): Boolean = {
-                    val between = toks.filter(t => t.index > tok1Idx && t.index < tok2Idx)
+            /**
+              * Returns flag which indicates are token contiguous or not.
+              *
+              * @param tok1Idx First token index.
+              * @param tok2Idx Second token index.
+              */
+            def contiguous(tok1Idx: Int, tok2Idx: Int): Boolean = {
+                val between = toks.filter(t => t.index > tok1Idx && t.index < tok2Idx)
 
-                    between.isEmpty || between.forall(p => p.isStopWord || p.stem == stemAnd)
-                }
-
-                val toks2 = toks.filter(othersRefs.contains)
-
-                val minIdx = toks2.dropWhile(t => !isUserNotValue(t)).head.index
-                val maxIdx = toks2.reverse.dropWhile(t => !isUserNotValue(t)).head.index
-
-                require(minIdx <= maxIdx)
-
-                def fill(nd: NoteData, seq: mutable.ArrayBuffer[NoteData] = mutable.ArrayBuffer.empty[NoteData]): Unit = {
-                    seq += nd
-
-                    toksNoteData.
-                        filter(p => nd.indexes.last < p.indexes.head && contiguous(nd.indexes.last, p.indexes.head)).
-                        foreach(fill(_, mutable.ArrayBuffer.empty[NoteData] ++ seq.clone()))
-
-                    if (seq.nonEmpty && seq.head.indexes.head == minIdx && seq.last.indexes.last == maxIdx)
-                        res += seq
-                }
-
-                toksNoteData.filter(_.indexes.head == minIdx).foreach(p => fill(p))
-
-                res
+                between.isEmpty || between.forall(p => p.isStopWord || p.stem == stemAnd)
             }
-            else
-                Seq.empty
 
-        if (res.isEmpty && !nullable)
-            throw new AssertionError(s"Invalid empty result " +
-                s"[tokensTexts=[${toks.map(_.origText).mkString("|")}]" +
-                s", notes=[${toks.flatten.map(n => s"${n.noteType}:[${n.tokenIndexes.mkString(",")}]").mkString("|")}]" +
-                s", tokensIndexes=[${toks.map(_.index).mkString("|")}]" +
-                s", allData=[${toksNoteData.mkString("|")}]" +
-                s"]"
-            )
+            val toks2 = toks.filter(othersRefs.contains)
 
-        res.toSeq
-    }
+            val minIdx = toks2.dropWhile(t => !isUserNotValue(t)).head.index
+            val maxIdx = toks2.reverse.dropWhile(t => !isUserNotValue(t)).head.index
+
+            require(minIdx <= maxIdx)
+
+            def fill(nd: NoteData, seq: mutable.ArrayBuffer[NoteData] = mutable.ArrayBuffer.empty[NoteData]): Unit = {
+                seq += nd
+
+                toksNoteData.
+                    filter(p => nd.indexes.last < p.indexes.head && contiguous(nd.indexes.last, p.indexes.head)).
+                    foreach(fill(_, mutable.ArrayBuffer.empty[NoteData] ++ seq.clone()))
+
+                if (seq.nonEmpty && seq.head.indexes.head == minIdx && seq.last.indexes.last == maxIdx)
+                    res += seq
+            }
+
+            toksNoteData.filter(_.indexes.head == minIdx).foreach(p => fill(p))
+
+            res
+        }
+        else
+            Seq.empty
 
     /**
       *
@@ -346,71 +337,75 @@ object NCSortEnricher extends NCProbeEnricher {
                             if (data1.nonEmpty || data2.nonEmpty) {
                                 val seq1 =
                                     if (data1.nonEmpty)
-                                        split(part1, othersRefs, data1, nullable = false)
+                                        split(part1, othersRefs, data1)
                                     else
-                                        split(part2, othersRefs, data2, nullable = false)
-                                val seq2 =
-                                    if (data1.nonEmpty && data2.nonEmpty)
-                                        split(part2, othersRefs, data2, nullable = true)
-                                    else
-                                        Seq.empty
-                                val asc = orderOpt.flatMap(o => Some(order(o.synonymIndex)._2))
+                                        split(part2, othersRefs, data2)
 
-                                typ match {
-                                    case TYPE_SUBJ =>
-                                        require(seq1.nonEmpty)
-                                        require(seq2.isEmpty)
-                                        require(sortToks.nonEmpty)
+                                if (seq1.nonEmpty) {
+                                    val seq2 =
+                                        if (data1.nonEmpty && data2.nonEmpty)
+                                            split(part2, othersRefs, data2)
+                                        else
+                                            Seq.empty
 
-                                        // Ignores invalid cases.
-                                        if (byToks.isEmpty)
-                                            res =
-                                                Some(
+                                    val asc = orderOpt.flatMap(o => Some(order(o.synonymIndex)._2))
+
+                                    typ match {
+                                        case TYPE_SUBJ =>
+                                            require(seq1.nonEmpty)
+                                            require(seq2.isEmpty)
+                                            require(sortToks.nonEmpty)
+
+                                            // Ignores invalid cases.
+                                            if (byToks.isEmpty)
+                                                res =
+                                                    Some(
+                                                        Match(
+                                                            asc = asc,
+                                                            main = sortToks,
+                                                            stop = orderToks,
+                                                            subjSeq = seq1,
+                                                            bySeq = Seq.empty
+                                                        )
+                                                    )
+
+                                        case TYPE_SUBJ_BY =>
+                                            require(seq1.nonEmpty)
+                                            require(sortToks.nonEmpty)
+                                            require(byToks.nonEmpty)
+
+                                            if (seq2.isEmpty)
+                                                res = None
+                                            else
+                                                res = Some(
                                                     Match(
                                                         asc = asc,
                                                         main = sortToks,
-                                                        stop = orderToks,
+                                                        stop = byToks ++ orderToks,
                                                         subjSeq = seq1,
-                                                        bySeq = Seq.empty
+                                                        bySeq = seq2
                                                     )
                                                 )
 
-                                    case TYPE_SUBJ_BY =>
-                                        require(seq1.nonEmpty)
-                                        require(sortToks.nonEmpty)
-                                        require(byToks.nonEmpty)
+                                        case TYPE_BY =>
+                                            require(seq1.nonEmpty)
+                                            require(seq2.isEmpty)
+                                            require(sortToks.nonEmpty)
+                                            require(byToks.nonEmpty)
 
-                                        if (seq2.isEmpty)
-                                            res = None
-                                        else
+                                            // `Sort by` as one element, see validation.
                                             res = Some(
                                                 Match(
                                                     asc = asc,
-                                                    main = sortToks,
-                                                    stop = byToks ++ orderToks,
-                                                    subjSeq = seq1,
-                                                    bySeq = seq2
+                                                    main = sortToks ++ byToks,
+                                                    stop = orderToks,
+                                                    subjSeq = Seq.empty,
+                                                    bySeq = seq1
                                                 )
                                             )
 
-                                    case TYPE_BY =>
-                                        require(seq1.nonEmpty)
-                                        require(seq2.isEmpty)
-                                        require(sortToks.nonEmpty)
-                                        require(byToks.nonEmpty)
-
-                                        // `Sort by` as one element, see validation.
-                                        res = Some(
-                                            Match(
-                                                asc = asc,
-                                                main = sortToks ++ byToks,
-                                                stop = orderToks,
-                                                subjSeq = Seq.empty,
-                                                bySeq = seq1
-                                            )
-                                        )
-
-                                    case _ => throw new AssertionError(s"Unexpected type: $typ")
+                                        case _ => throw new AssertionError(s"Unexpected type: $typ")
+                                    }
                                 }
                             }
                         case None => // No-op.

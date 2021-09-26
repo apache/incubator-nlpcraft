@@ -60,7 +60,7 @@ elements:
   - id: "x:addr:st"
     greedy: false
     synonyms:
-      - "{//[a-zA-Z0-9]+//}[1,3]"
+      - "{^^{is_alphanum(tok_txt) && tok_is_between_ids('x:addr:num', 'x:addr:kind') == true}^^}[1,3]"
 
   - id: "x:addr"
     synonyms:

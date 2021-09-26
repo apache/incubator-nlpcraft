@@ -207,7 +207,7 @@ object NCNumericEnricher extends NCServerEnricher {
         toIncl: Boolean,
         toFractional: Boolean,
         unitDataOpt: Option[NCNumericUnitData],
-    ): Seq[NCNlpSentenceNote] = {
+    ): Unit= {
         val params =
             mutable.ArrayBuffer.empty[(String, Any)] ++
             Seq(
@@ -223,7 +223,7 @@ object NCNumericEnricher extends NCServerEnricher {
                 "isToPositiveInfinity" -> (to == MAX_VALUE)
             )
 
-        def mkAndAssign(toks: Seq[NCNlpSentenceToken], typ: String, params: (String, Any)*):NCNlpSentenceNote = {
+        def mkAndAssign(toks: Seq[NCNlpSentenceToken], params: (String, Any)*):NCNlpSentenceNote = {
             val note = NCNlpSentenceNote(toks.map(_.index), "nlpcraft:num", params:_*)
 
             toks.foreach(_.add(note))
@@ -241,17 +241,17 @@ object NCNumericEnricher extends NCServerEnricher {
                 }
 
                 if (unitData.tokens == toks)
-                    Seq(mkAndAssign(toks, "nlpcraft:num", extend():_*))
+                    Seq(mkAndAssign(toks, extend():_*))
                 else {
                     Seq(
                         mkAndAssign(
-                            toks.filter(t => !unitData.tokens.contains(t)), "nlpcraft:num", params.clone():_*
+                            toks.filter(t => !unitData.tokens.contains(t)), params.clone():_*
                         ),
-                        mkAndAssign(toks, "nlpcraft:num", extend():_*)
+                        mkAndAssign(toks, extend():_*)
                     )
                 }
 
-            case None => Seq(mkAndAssign(toks, "nlpcraft:num", params:_*))
+            case None => Seq(mkAndAssign(toks, params:_*))
         }
     }
 
@@ -316,7 +316,7 @@ object NCNumericEnricher extends NCServerEnricher {
                                 Some(NCNumericUnitData(num1.unitData.get.unit, num1.tokens ++ num2.tokens))
                             }
     
-                        val notes = p._2 match {
+                        p._2 match {
                             case BETWEEN_EXCLUSIVE =>
                                 mkNotes(
                                     prepToks,
@@ -364,79 +364,75 @@ object NCNumericEnricher extends NCServerEnricher {
     
                             processed ++= toks
     
-                            val notes =
-                                prep.prepositionType match {
-                                    case MORE =>
-                                        mkNotes(
-                                            toks,
-                                            num.value,
-                                            fromIncl = false,
-                                            fromFractional = num.isFractional,
-                                            to = MAX_VALUE,
-                                            toIncl = true,
-                                            toFractional = num.isFractional,
-                                            num.unitData
-                                        )
-                                    case MORE_OR_EQUAL =>
-                                        mkNotes(
-                                            toks,
-                                            num.value,
-                                            fromIncl = true,
-                                            fromFractional = num.isFractional,
-                                            to = MAX_VALUE,
-                                            toIncl = true,
-                                            toFractional = num.isFractional,
-                                            num.unitData
-                                        )
-                                    case LESS =>
-                                        mkNotes(
-                                            toks,
-                                            MIN_VALUE,
-                                            fromIncl = true,
-                                            fromFractional = num.isFractional,
-                                            to = num.value,
-                                            toIncl = false,
-                                            toFractional = num.isFractional,
-                                            num.unitData
-                                        )
-                                    case LESS_OR_EQUAL =>
-                                        mkNotes(
-                                            toks,
-                                            MIN_VALUE,
-                                            fromIncl = true,
-                                            fromFractional = num.isFractional,
-                                            to = num.value,
-                                            toIncl = true,
-                                            toFractional = num.isFractional,
-                                            num.unitData
-                                        )
-                                    case EQUAL =>
-                                        mkNotes(
-                                            toks,
-                                            num.value,
-                                            fromIncl = true,
-                                            fromFractional = num.isFractional,
-                                            to = num.value,
-                                            toIncl = true,
-                                            toFractional = num.isFractional,
-                                            num.unitData
-                                        )
-                                    case NOT_EQUAL =>
-                                        mkNotes(
-                                            toks,
-                                            num.value,
-                                            fromIncl = false,
-                                            fromFractional = num.isFractional,
-                                            to = num.value,
-                                            toIncl = false,
-                                            toFractional = num.isFractional,
-                                            num.unitData
-                                        )
-                                    case _ => throw new AssertionError(s"Illegal note type: ${prep.prepositionType}.")
-                                }
-
-                            for (note <- notes)
-                                toks.foreach(_.add(note))
+                            prep.prepositionType match {
+                                case MORE =>
+                                    mkNotes(
+                                        toks,
+                                        num.value,
+                                        fromIncl = false,
+                                        fromFractional = num.isFractional,
+                                        to = MAX_VALUE,
+                                        toIncl = true,
+                                        toFractional = num.isFractional,
+                                        num.unitData
+                                    )
+                                case MORE_OR_EQUAL =>
+                                    mkNotes(
+                                        toks,
+                                        num.value,
+                                        fromIncl = true,
+                                        fromFractional = num.isFractional,
+                                        to = MAX_VALUE,
+                                        toIncl = true,
+                                        toFractional = num.isFractional,
+                                        num.unitData
+                                    )
+                                case LESS =>
+                                    mkNotes(
+                                        toks,
+                                        MIN_VALUE,
+                                        fromIncl = true,
+                                        fromFractional = num.isFractional,
+                                        to = num.value,
+                                        toIncl = false,
+                                        toFractional = num.isFractional,
+                                        num.unitData
+                                    )
+                                case LESS_OR_EQUAL =>
+                                    mkNotes(
+                                        toks,
+                                        MIN_VALUE,
+                                        fromIncl = true,
+                                        fromFractional = num.isFractional,
+                                        to = num.value,
+                                        toIncl = true,
+                                        toFractional = num.isFractional,
+                                        num.unitData
+                                    )
+                                case EQUAL =>
+                                    mkNotes(
+                                        toks,
+                                        num.value,
+                                        fromIncl = true,
+                                        fromFractional = num.isFractional,
+                                        to = num.value,
+                                        toIncl = true,
+                                        toFractional = num.isFractional,
+                                        num.unitData
+                                    )
+                                case NOT_EQUAL =>
+                                    mkNotes(
+                                        toks,
+                                        num.value,
+                                        fromIncl = false,
+                                        fromFractional = num.isFractional,
+                                        to = num.value,
+                                        toIncl = false,
+                                        toFractional = num.isFractional,
+                                        num.unitData
+                                    )
+                                case _ => throw new AssertionError(s"Illegal note type: ${prep.prepositionType}.")
+                            }
                         }
                 }
     
@@ -448,7 +444,7 @@ object NCNumericEnricher extends NCServerEnricher {
     
             // Numeric without conditions.
             for (num <- nums if !processed.exists(num.tokens.contains)) {
-                val notes = mkNotes(
+                mkNotes(
                     num.tokens,
                     num.value,
                     fromIncl = true,
