@@ -34,6 +34,6 @@
         }
     ],
     "intents": [
-        "import('intents.idl')" // Import intents from external file.
+        "import('alarm_intents.idl')" // Import intents from external file.
     ]
 }

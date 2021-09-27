@@ -17,6 +17,7 @@
 
 package org.apache.nlpcraft.common.nlp
 
+import org.apache.nlpcraft.common.U
 import org.apache.nlpcraft.common.nlp.pos._
 
 import java.util.{List => JList}
@@ -56,6 +57,22 @@ case class NCNlpSentenceToken(
     def isSwearWord: Boolean = getNlpValue[Boolean]("swear")
     def isEnglish: Boolean = getNlpValue[Boolean]("english")
 
+    @transient
+    private var hash: java.lang.Integer = _
+
+    //noinspection HashCodeUsesVar
+    override def hashCode(): Int = {
+        if (hash == null)
+            hash = U.mkJavaHash(index, notes, stopsReasons)
+
+        hash
+    }
+
+    override def equals(obj: Any): Boolean = obj match {
+        case x: NCNlpSentenceToken => x.index == index && x.notes == notes && x.stopsReasons == stopsReasons
+        case _ => false
+    }
+
     /**
       *
       * @param noteType Note type.
@@ -67,17 +84,7 @@ case class NCNlpSentenceToken(
       * Shallow copy.
       */
     def clone(index: Int): NCNlpSentenceToken =
-        NCNlpSentenceToken(
-            index,
-            {
-                val m = mutable.HashSet.empty[NCNlpSentenceNote]
-
-                notes.foreach(n => m += n.clone())
-
-                m
-            },
-            stopsReasons.clone()
-        )
+        NCNlpSentenceToken(index, mutable.HashSet.empty[NCNlpSentenceNote]  ++ notes.clone(), stopsReasons.clone())
 
     /**
       * Clones note.
@@ -90,7 +97,11 @@ case class NCNlpSentenceToken(
       *
       * @param note Note.
       */
-    def remove(note: NCNlpSentenceNote): Unit = notes.remove(note)
+    def remove(note: NCNlpSentenceNote): Unit = {
+        notes.remove(note)
+
+        hash = null
+    }
 
     /**
       * Tests whether or not this token contains note.
@@ -172,6 +183,7 @@ case class NCNlpSentenceToken(
       * @param note Element.
       */
     def add(note: NCNlpSentenceNote): Unit = {
+        hash = null
         val added = notes.add(note)
 
         if (added && note.isNlp)

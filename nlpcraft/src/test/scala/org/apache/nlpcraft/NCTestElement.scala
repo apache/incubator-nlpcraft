@@ -36,10 +36,12 @@ case class NCTestElement(id: String, syns: String*) extends NCElement {
     var permutateSynonyms: Optional[lang.Boolean] = super.isPermutateSynonyms
     var sparse: Optional[lang.Boolean] = super.isSparse
     var greedy: Optional[lang.Boolean] = super.isGreedy
+    var groups: Seq[String] = Seq(id)
 
     override def getId: String = id
     override def getSynonyms: util.List[String] = (syns :+ id).asJava
     override def getValues: util.List[NCValue] = values
+    override def getGroups: util.List[String] = groups.asJava
 
     override def getMetadata: util.Map[String, AnyRef] = metadata
     override def getDescription: String = description

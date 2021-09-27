@@ -19,6 +19,8 @@ package org.apache.nlpcraft.common.nlp.core.stanford
 
 import java.io.StringReader
 import edu.stanford.nlp.process.PTBTokenizer
+import io.opencensus.trace.Span
+import org.apache.nlpcraft.common.NCService
 import org.apache.nlpcraft.common.nlp.core.{NCNlpCoreToken, NCNlpTokenizer}
 
 import scala.jdk.CollectionConverters.ListHasAsScala
@@ -27,6 +29,25 @@ import scala.jdk.CollectionConverters.ListHasAsScala
   * Stanford tokenizer implementation.
   */
 object NCStanfordTokenizer extends NCNlpTokenizer {
+    /**
+      *
+      * @param parent Optional parent span.
+      * @return
+      */
+    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ =>
+        ackStarting()
+        ackStarted()
+    }
+
+    /**
+      *
+      * @param parent Optional parent span.
+      */
+    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ =>
+        ackStopping()
+        ackStopped()
+    }
+
     override def tokenize(sen: String): Seq[NCNlpCoreToken] = {
         PTBTokenizer.newPTBTokenizer(new StringReader(sen)).
             tokenize().

@@ -50,6 +50,7 @@ import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.stopword.NCStopWordEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.suspicious.NCSuspiciousNounsEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.validate.NCValidateManager
 import org.apache.nlpcraft.probe.mgrs.sentence.NCSentenceManager
+import org.apache.nlpcraft.probe.mgrs.synonyms.NCSynonymsManager
 
 import java.io._
 import java.util.concurrent.CompletableFuture
@@ -527,6 +528,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
             startedMgrs += NCConnectionManager.start(span)
             startedMgrs += NCDialogFlowManager.start(span)
             startedMgrs += NCSentenceManager.start(span)
+            startedMgrs += NCSynonymsManager.start(span)
         }
     }
 

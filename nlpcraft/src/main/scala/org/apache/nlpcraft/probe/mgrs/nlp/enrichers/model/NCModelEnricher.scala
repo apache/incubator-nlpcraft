@@ -19,19 +19,20 @@ package org.apache.nlpcraft.probe.mgrs.nlp.enrichers.model
 
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common._
+import org.apache.nlpcraft.common.nlp.NCNlpSentence.NoteLink
 import org.apache.nlpcraft.common.nlp.{NCNlpSentence => Sentence, NCNlpSentenceNote => NlpNote, NCNlpSentenceToken => NlpToken}
 import org.apache.nlpcraft.model._
-import org.apache.nlpcraft.probe.mgrs.NCProbeSynonym.NCIdlContent
+import org.apache.nlpcraft.model.impl.NCTokenImpl
 import org.apache.nlpcraft.probe.mgrs.NCProbeSynonymChunkKind.NCSynonymChunkKind
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.impl.NCRequestImpl
 import org.apache.nlpcraft.probe.mgrs.sentence.NCSentenceManager
-import org.apache.nlpcraft.probe.mgrs.{NCProbeModel, NCProbeVariants, NCTokenPartKey, NCProbeSynonym => Synonym}
+import org.apache.nlpcraft.probe.mgrs.synonyms.NCSynonymsManager
+import org.apache.nlpcraft.probe.mgrs.{NCProbeIdlToken => IdlToken, NCProbeModel, NCProbeVariants, NCTokenPartKey, NCProbeSynonym => Synonym}
 
 import java.io.Serializable
 import java.util.{List => JList}
 import scala.collection.mutable
-import scala.collection.mutable.ArrayBuffer
 import scala.collection.parallel.CollectionConverters._
 import scala.jdk.CollectionConverters.{ListHasAsScala, MapHasAsJava, MapHasAsScala, SeqHasAsJava}
 
@@ -40,78 +41,14 @@ import scala.jdk.CollectionConverters.{ListHasAsScala, MapHasAsJava, MapHasAsSca
   */
 object NCModelEnricher extends NCProbeEnricher {
     type TokType = (NCToken, NCSynonymChunkKind)
-    type Cache = mutable.Map[String, ArrayBuffer[Seq[Int]]]
 
-    object Complex {
-        def apply(t: NCToken): Complex =
-            Complex(
-                data = Left(t),
-                isToken = true,
-                isWord = false,
-                token = t,
-                word = null,
-                origText = t.origText,
-                wordIndexes = t.wordIndexes.toSet,
-                minIndex = t.wordIndexes.head,
-                maxIndex = t.wordIndexes.last
-            )
-
-        def apply(t: NlpToken): Complex =
-            Complex(
-                data = Right(t),
-                isToken = false,
-                isWord = true,
-                token = null,
-                word = t,
-                origText = t.origText,
-                wordIndexes = t.wordIndexes.toSet,
-                minIndex = t.wordIndexes.head,
-                maxIndex = t.wordIndexes.last
-            )
+    object IdlTokensSeq {
+        def apply(all: Seq[IdlToken]): IdlTokensSeq = IdlTokensSeq(all.filter(_.isToken), all.flatMap(_.wordIndexes).toSet)
     }
 
-    case class Complex(
-        data: NCIdlContent,
-        isToken: Boolean,
-        isWord: Boolean,
-        token: NCToken,
-        word: NlpToken,
-        origText: String,
-        wordIndexes: Set[Int],
-        minIndex: Int,
-        maxIndex: Int
-    ) {
-        private final val hash = if (isToken) Seq(wordIndexes, token.getId).hashCode() else wordIndexes.hashCode()
-
-        override def hashCode(): Int = hash
-
-        def isSubsetOf(minIndex: Int, maxIndex: Int, indexes: Set[Int]): Boolean =
-            if (this.minIndex > maxIndex || this.maxIndex < minIndex)
-                false
-            else
-                wordIndexes.subsetOf(indexes)
-
-        override def equals(obj: Any): Boolean = obj match {
-            case x: Complex =>
-                hash == x.hash && (isToken && x.isToken && token == x.token || isWord && x.isWord && word == x.word)
-            case _ => false
-        }
-
-        // Added for debug reasons.
-        override def toString: String = {
-            val idxs = wordIndexes.mkString(",")
-
-            if (isToken && token.getId != "nlpcraft:nlp") s"'$origText' (${token.getId}) [$idxs]]" else s"'$origText' [$idxs]"
-        }
-    }
-
-    object ComplexSeq {
-        def apply(all: Seq[Complex]): ComplexSeq = ComplexSeq(all.filter(_.isToken), all.flatMap(_.wordIndexes).toSet)
-    }
-
-    case class ComplexSeq(tokensComplexes: Seq[Complex], wordsIndexes: Set[Int]) {
+    case class IdlTokensSeq(tokens: Seq[IdlToken], wordsIndexes: Set[Int]) {
         private val (idxsSet: Set[Int], minIndex: Int, maxIndex: Int) = {
-            val seq = tokensComplexes.flatMap(_.wordIndexes).distinct.sorted
+            val seq = tokens.flatMap(_.wordIndexes).distinct.sorted
 
             (seq.toSet, seq.head, seq.last)
         }
@@ -122,10 +59,10 @@ object NCModelEnricher extends NCProbeEnricher {
             else
                 this.idxsSet.exists(idxsSet.contains)
 
-        override def toString: String = tokensComplexes.mkString(" | ")
+        override def toString: String = tokens.mkString(" | ")
     }
 
-    case class ComplexHolder(complexesWords: Seq[Complex], complexes: Seq[ComplexSeq])
+    case class IdlTokensHolder(tokens: Seq[IdlToken], seqs: Seq[IdlTokensSeq])
 
     /**
       *
@@ -282,23 +219,65 @@ object NCModelEnricher extends NCProbeEnricher {
     }
 
     /**
-      * Gets all sequential permutations of given tokens.
       *
-      * For example, if buffer contains "a b c d" tokens, then this function will return the
-      * sequence of following token sequences in this order:
-      * "a b c d"
-      * "a b c"
-      * "b c d"
-      * "a b"
-      * "b c"
-      * "c d"
-      * "a"
-      * "b"
-      * "c"
-      * "d"
+      * 1. Prepares combination of tokens (sliding).
+      *  Example: 'A B C D' -> {'A B C', 'A B', 'B C', 'A', 'B', 'C'}
+      *  One sentence converted to 4 pieces.
+      *
+      * 2. Additionally, each piece converted into set of elements with all possible its stopwords permutations.
+      *  Example: Piece: 'x1, x2(stopword), x3(stopword), x4' will be expanded  into
+      *  {'x1, x2, x3, x4', 'x1, x2, x4', 'x1, x3, x4', 'x1, x4'}
+      *
+      *  3. All variants collected, duplicated deleted, etc.
       *
       * @param toks
-      * @return
+      */
+    private def combosTokens(toks: Seq[NlpToken]): Seq[(Seq[NlpToken], Seq[NlpToken])] =
+        combos(toks).flatMap(combo => {
+            val stops = combo.filter(s => s.isStopWord && s != combo.head && s != combo.last)
+
+            val slides = mutable.ArrayBuffer.empty[mutable.ArrayBuffer[NlpToken]]
+
+            for (stop <- stops)
+                if (slides.nonEmpty && slides.last.last.index + 1 == stop.index)
+                    slides.last += stop
+                else
+                    slides += mutable.ArrayBuffer.empty :+ stop
+
+            // Too many stopords inside skipped.
+            val bigSlides = slides.filter(_.size > 2)
+
+            var stops4Delete: Seq[Seq[NlpToken]] =
+                if (bigSlides.nonEmpty) {
+                    val allBig = bigSlides.flatten
+                    val stops4AllCombs = stops.filter(p => !allBig.contains(p))
+
+                    if (stops4AllCombs.nonEmpty)
+                        for (
+                            seq1 <- Range.inclusive(0, stops4AllCombs.size).flatMap(stops4AllCombs.combinations);
+                            seq2 <- Range.inclusive(0, bigSlides.size).flatMap(bigSlides.combinations)
+                        )
+                        yield seq1 ++ seq2.flatten
+                    else
+                        for (seq <- Range.inclusive(0, bigSlides.size).flatMap(bigSlides.combinations))
+                            yield seq.toSeq.flatten
+                }
+                else
+                    Range.inclusive(1, stops.size).flatMap(stops.combinations)
+
+            stops4Delete = stops4Delete.filter(seq => !seq.contains(combo.head) && !seq.contains(combo.last))
+
+            (Seq(combo) ++ stops4Delete.map(del => combo.filter(t => !del.contains(t)))).map(_ -> combo).distinct
+
+        }).
+            filter(_._1.nonEmpty).
+            groupBy(_._1).
+            map(p => p._1 -> p._2.map(_._2).minBy(p => (-p.size, p.head.index))).
+            sortBy { case(data, combo) => (-combo.size, -data.size, combo.head.index, data.head.index) }
+
+    /**
+      *
+      * @param toks
       */
     private def combos[T](toks: Seq[T]): Seq[Seq[T]] =
         (for (n <- toks.size until 0 by -1) yield toks.sliding(n)).flatten.map(p => p)
@@ -308,9 +287,12 @@ object NCModelEnricher extends NCProbeEnricher {
       * @param seq
       * @param s
       */
-    private def toParts(seq: Seq[NCIdlContent], s: Synonym): Seq[TokType] =
+    private def toParts(mdl: NCProbeModel, stvReqId: String, seq: Seq[IdlToken], s: Synonym): Seq[TokType] =
         seq.zip(s.map(_.kind)).flatMap {
-            case (complex, kind) => if (complex.isLeft) Some(complex.swap.toOption.get -> kind) else None
+            case (idlTok, kind) =>
+                val t = if (idlTok.isToken) idlTok.token else mkNlpToken(mdl, stvReqId, idlTok.word)
+
+                Some(t -> kind)
         }
 
     /**
@@ -318,10 +300,10 @@ object NCModelEnricher extends NCProbeEnricher {
       * @param tows
       * @param ns
       */
-    private def toTokens(tows: Seq[NCIdlContent], ns: Sentence): Seq[NlpToken] =
+    private def toTokens(tows: Seq[IdlToken], ns: Sentence): Seq[NlpToken] =
         (
-            tows.filter(_.isRight).map(_.toOption.get) ++
-                tows.filter(_.isLeft).map(_.swap.toOption.get).
+            tows.filter(_.isWord).map(_.word) ++
+                tows.filter(_.isToken).map(_.token).
                     flatMap(w => ns.filter(t => t.wordIndexes.intersect(w.wordIndexes).nonEmpty))
         ).sortBy(_.startCharIndex)
 
@@ -329,7 +311,6 @@ object NCModelEnricher extends NCProbeEnricher {
       *
       * @param m
       * @param id
-      * @return
       */
     private def get(m: Map[String , Seq[Synonym]], id: String): Seq[Synonym] = m.getOrElse(id, Seq.empty)
 
@@ -349,10 +330,10 @@ object NCModelEnricher extends NCProbeEnricher {
       * @param mdl
       * @param ns
       */
-    private def mkComplexes(mdl: NCProbeModel, ns: Sentence): ComplexHolder = {
-        val complexesWords = ns.map(Complex(_))
+    private def mkHolder(mdl: NCProbeModel, ns: Sentence): IdlTokensHolder = {
+        val toks = ns.map(IdlToken(_))
 
-        val complexes =
+        val seqs =
             NCProbeVariants.convert(ns.srvReqId, mdl, NCSentenceManager.collapse(mdl.model, ns.clone())).
                 map(_.asScala).
                 par.
@@ -371,15 +352,29 @@ object NCModelEnricher extends NCProbeEnricher {
                                 // Single word token is not split as words - token.
                                 // Partly (not strict in) token - word.
                                 if (t.wordIndexes.length == 1 || senPartComb.contains(t))
-                                    Seq(Complex(t))
+                                    Seq(IdlToken(t))
                                 else
-                                    t.wordIndexes.map(complexesWords)
+                                    t.wordIndexes.map(toks)
                             )
                             // Drops without tokens (IDL part works with tokens).
-                        }).filter(_.exists(_.isToken)).map(ComplexSeq(_)).distinct
+                        }).filter(_.exists(_.isToken)).map(IdlTokensSeq(_)).distinct
                 ).seq
 
-        ComplexHolder(complexesWords, complexes)
+        IdlTokensHolder(toks, seqs)
+    }
+
+    /**
+      *
+      * @param mdl
+      * @param srvReqId
+      * @param t
+      */
+    private def mkNlpToken(mdl: NCProbeModel, srvReqId: String, t: NlpToken): NCToken = {
+        val notes = mutable.HashSet.empty[NlpNote]
+
+        notes += t.getNlpNote
+
+        NCTokenImpl(mdl, srvReqId, NlpToken(t.index, notes, t.stopsReasons))
     }
 
     /**
@@ -387,60 +382,37 @@ object NCModelEnricher extends NCProbeEnricher {
       * @param h
       * @param toks
       */
-    private def mkCombinations(h: ComplexHolder, toks: Seq[NlpToken], cache: Set[Seq[Complex]]): Seq[Seq[Complex]] = {
+    private def mkCombinations(h: IdlTokensHolder, toks: Seq[NlpToken]): Seq[Seq[IdlToken]] = {
         val idxs = toks.flatMap(_.wordIndexes).toSet
 
-        h.complexes.par.
-            flatMap(complexSeq => {
-                val rec = complexSeq.tokensComplexes.filter(_.wordIndexes.exists(idxs.contains))
+        h.seqs.par.
+            flatMap(seq => {
+                val rec = seq.tokens.filter(_.wordIndexes.exists(idxs.contains))
 
                 // Drops without tokens (IDL part works with tokens).
-                if (rec.nonEmpty) {
-                    val data = rec ++
-                        (complexSeq.wordsIndexes.intersect(idxs) -- rec.flatMap(_.wordIndexes)).map(h.complexesWords)
-
-                    if (!cache.contains(data)) Some(data) else None
-                }
+                if (rec.nonEmpty)
+                    Some(rec ++
+                        (seq.wordsIndexes.intersect(idxs) -- rec.flatMap(_.wordIndexes)).map(h.tokens)
+                    )
                 else
                     None
             }).seq
     }
 
-    private def add(
-        dbgType: String,
-        ns: Sentence,
-        contCache: Cache,
-        elemId: String,
-        greedy: Boolean,
-        elemToks: Seq[NlpToken],
-        sliceToksIdxs: Seq[Int],
-        syn: Synonym,
-        parts: Seq[TokType] = Seq.empty
-    ): Unit = {
-        val resIdxs = elemToks.map(_.index)
-        val resIdxsSorted = resIdxs.sorted
+    /**
+      *
+      * @param matched
+      * @param toks2Match
+      */
+    private def getSparsedTokens(matched: Seq[NlpToken], toks2Match: Seq[NlpToken]): Seq[NlpToken] = {
+        require(matched.nonEmpty)
 
-        if (resIdxsSorted == sliceToksIdxs && U.isContinuous(resIdxsSorted))
-            contCache(elemId) += sliceToksIdxs
+        // Matched tokens should be already sorted.
+        val stopsInside = toks2Match.filter(t =>
+            t.isStopWord && !matched.contains(matched) && t.index > matched.head.index && t.index < matched.last.index
+        )
 
-        val ok =
-            (!greedy || !alreadyMarked(ns, elemId, elemToks, sliceToksIdxs)) &&
-            ( parts.isEmpty || !parts.exists { case (t, _) => t.getId == elemId })
-
-        if (ok)
-            mark(ns, elemId, elemToks, direct = syn.isDirect && U.isIncreased(resIdxs), syn = Some(syn), parts = parts)
-
-        if (DEEP_DEBUG)
-            logger.trace(
-                s"${if (ok) "Added" else "Skipped"} element [" +
-                    s"id=$elemId, " +
-                    s"type=$dbgType, " +
-                    s"text='${elemToks.map(_.origText).mkString(" ")}', " +
-                    s"indexes=${resIdxs.mkString("[", ",", "]")}, " +
-                    s"allTokensIndexes=${sliceToksIdxs.mkString("[", ",", "]")}, " +
-                    s"synonym=$syn" +
-                    s"]"
-            )
+        if (stopsInside.nonEmpty) (matched ++ stopsInside).sortBy(_.index) else matched
     }
 
     @throws[NCE]
@@ -451,8 +423,12 @@ object NCModelEnricher extends NCProbeEnricher {
             "enrich", parent, "srvReqId" -> ns.srvReqId, "mdlId" -> mdl.model.getId, "txt" -> ns.text
         ) { span =>
             val req = NCRequestImpl(senMeta, ns.srvReqId)
-            val combToks = combos(ns.toSeq)
-            lazy val ch = mkComplexes(mdl, ns)
+
+            lazy val ch = mkHolder(mdl, ns)
+            lazy val variantsToks =
+                ch.seqs.map(
+                    p => p.tokens.map(p => if (p.isToken) p.token else mkNlpToken(mdl, ns.srvReqId, p.word))
+                )
 
             def execute(simpleEnabled: Boolean, idlEnabled: Boolean): Unit =
                 startScopedSpan(
@@ -461,44 +437,80 @@ object NCModelEnricher extends NCProbeEnricher {
                     if (DEEP_DEBUG)
                         logger.trace(s"Execution started [simpleEnabled=$simpleEnabled, idlEnabled=$idlEnabled]")
 
-                    val contCache = mutable.HashMap.empty ++
-                        mdl.elements.keys.map(k => k -> mutable.ArrayBuffer.empty[Seq[Int]])
-                    lazy val idlCache = mutable.HashSet.empty[Seq[Complex]]
-
                     for (
-                        toks <- combToks;
+                        // 'toksExt' is piece of sentence, 'toks' is the same as 'toksExt' or without some stopwords set.
+                        (toks, toksExt) <- combosTokens(ns.toSeq);
                         idxs = toks.map(_.index);
                         e <- mdl.elements.values;
-                        eId = e.getId;
+                        elemId = e.getId;
                         greedy = e.isGreedy.orElse(mdl.model.isGreedy)
-                        if
-                            !greedy ||
-                            !contCache(eId).exists(_.containsSlice(idxs))  && !alreadyMarked(ns, eId, toks, idxs)
+                        if !greedy || !alreadyMarked(ns, elemId, toks, idxs)
                     ) {
+                        def add(
+                            dbgType: String,
+                            elemToks: Seq[NlpToken],
+                            syn: Synonym,
+                            parts: Seq[TokType] = Seq.empty
+                        ): Unit = {
+                            val resIdxs = elemToks.map(_.index)
+
+                            val ok =
+                                (!greedy || !alreadyMarked(ns, elemId, elemToks, idxs)) &&
+                                 ( parts.isEmpty || !parts.exists { case (t, _) => t.getId == elemId })
+
+                            if (ok)
+                                mark(
+                                    ns,
+                                    elemId,
+                                    elemToks,
+                                    direct = syn.isDirect && U.isIncreased(resIdxs),
+                                    syn = Some(syn),
+                                    parts = parts
+                                )
+
+                            if (DEEP_DEBUG)
+                                logger.trace(
+                                    s"${if (ok) "Added" else "Skipped"} element [" +
+                                        s"id=$elemId, " +
+                                        s"type=$dbgType, " +
+                                        s"text='${elemToks.map(_.origText).mkString(" ")}', " +
+                                        s"indexes=${resIdxs.mkString("[", ",", "]")}, " +
+                                        s"allTokensIndexes=${idxs.mkString("[", ",", "]")}, " +
+                                        s"synonym=$syn" +
+                                        s"]"
+                                )
+                        }
+
                         // 1. SIMPLE.
-                        if (simpleEnabled && (if (idlEnabled) mdl.hasIdlSynonyms(eId) else !mdl.hasIdlSynonyms(eId))) {
+                        if (simpleEnabled && (if (idlEnabled) mdl.hasIdlSynonyms(elemId) else !mdl.hasIdlSynonyms(elemId))) {
                             lazy val tokStems = toks.map(_.stem).mkString(" ")
 
                             // 1.1 Continuous.
                             var found = false
 
                             if (mdl.hasContinuousSynonyms)
-                                fastAccess(mdl.continuousSynonyms, eId, toks.length) match {
+                                fastAccess(mdl.continuousSynonyms, elemId, toks.length) match {
                                     case Some(h) =>
                                         def tryMap(syns: Map[String, Synonym], notFound: () => Unit): Unit =
                                             syns.get(tokStems) match {
                                                 case Some(s) =>
                                                     found = true
-                                                    add("simple continuous", ns, contCache, eId, greedy, toks, idxs, s)
+                                                    add("simple continuous", toksExt, s)
                                                 case None => notFound()
                                             }
 
                                         def tryScan(syns: Seq[Synonym]): Unit =
-                                            for (s <- syns if !found)
-                                                if (s.isMatch(toks)) {
-                                                    found = true
-                                                    add("simple continuous scan", ns, contCache, eId, greedy, toks, idxs, s)
-                                                }
+                                            for (syn <- syns if !found)
+                                                NCSynonymsManager.onMatch(
+                                                    ns.srvReqId,
+                                                    elemId,
+                                                    syn,
+                                                    toks,
+                                                    _ => {
+                                                        found = true
+                                                        add("simple continuous scan", toksExt, syn)
+                                                    }
+                                                )
 
                                         tryMap(
                                             h.txtDirectSynonyms,
@@ -514,52 +526,60 @@ object NCModelEnricher extends NCProbeEnricher {
 
                             // 1.2 Sparse.
                             if (!found && mdl.hasSparseSynonyms)
-                                for (s <- get(mdl.sparseSynonyms, eId))
-                                    s.sparseMatch(toks) match {
-                                        case Some(res) => add("simple sparse", ns, contCache, eId, greedy, res, idxs, s)
-                                        case None => // No-op.
-                                    }
+                                for (syn <- get(mdl.sparseSynonyms, elemId))
+                                    NCSynonymsManager.onSparseMatch(
+                                        ns.srvReqId,
+                                        elemId,
+                                        syn,
+                                        toks,
+                                        res => add("simple sparse", getSparsedTokens(res, toks), syn)
+                                    )
                         }
 
                         // 2. IDL.
                         if (idlEnabled) {
-                            val allSyns = get(mdl.idlSynonyms, eId)
-                            lazy val allCombs = mkCombinations(ch, toks, idlCache.toSet)
+                            val allSyns = get(mdl.idlSynonyms, elemId)
+                            lazy val allCombs = mkCombinations(ch, toks)
 
                             // 2.1 Continuous.
-
                             if (!mdl.hasSparseSynonyms) {
                                 var found = false
 
-                                for (
-                                    s <- allSyns;
-                                    comb <- allCombs
-                                    if !found;
-                                    data = comb.map(_.data)
-                                )
-                                    if (s.isMatch(data, req)) {
-                                        add("IDL continuous", ns, contCache, eId, greedy, toks, idxs, s, toParts(data, s))
+                                for (syn <- allSyns; comb <- allCombs;  if !found)
+                                    NCSynonymsManager.onMatch(
+                                        ns.srvReqId,
+                                        elemId,
+                                        syn,
+                                        comb,
+                                        req,
+                                        variantsToks,
+                                        _ => {
+                                            val parts = toParts(mdl, ns.srvReqId, comb, syn)
 
-                                        idlCache += comb
+                                            add("IDL continuous", toksExt, syn, parts)
 
-                                        found = true
-                                    }
+                                            found = true
+                                        }
+                                    )
                             }
                             else
                                 // 2.2 Sparse.
-                                for (
-                                    s <- allSyns;
-                                    comb <- allCombs
-                                )
-                                    s.sparseMatch(comb.map(_.data), req) match {
-                                        case Some(res) =>
-                                            val typ = if (s.sparse) "IDL sparse" else "IDL continuous"
+                                for (syn <- allSyns; comb <- allCombs)
+                                    NCSynonymsManager.onSparseMatch(
+                                        ns.srvReqId,
+                                        elemId,
+                                        syn,
+                                        comb,
+                                        req,
+                                        variantsToks,
+                                        res => {
+                                            val toks = getSparsedTokens(toTokens(res, ns), toTokens(comb, ns))
+                                            val parts = toParts(mdl, ns.srvReqId, res, syn)
+                                            val typ = if (syn.sparse) "IDL sparse"else "IDL continuous"
 
-                                            add(typ, ns, contCache, eId, greedy, toTokens(res, ns), idxs, s, toParts(res, s))
-
-                                            idlCache += comb
-                                        case None => // No-op.
-                                    }
+                                            add(typ, toks, syn, parts)
+                                        }
+                                    )
                         }
                     }
                 }
@@ -576,6 +596,43 @@ object NCModelEnricher extends NCProbeEnricher {
 
             processParsers(mdl, ns, span, req)
         }
+
+        NCSynonymsManager.clearIteration(ns.srvReqId)
+
+        normalize(ns)
+    }
+
+    /**
+      *
+      * @param ns
+      */
+    private def normalize(ns: Sentence): Unit = {
+        val usrNotes = ns.flatten.filter(_.isUser).distinct
+        val links = NCSentenceManager.getLinks(usrNotes)
+        val parts = NCSentenceManager.getPartKeys(usrNotes)
+
+        val usrNotesIdxs = usrNotes.
+            filter(n => !links.contains(NoteLink(n.noteType, n.tokenIndexes.sorted))).
+            filter(n => !parts.contains(NCTokenPartKey(n, ns))).
+            zipWithIndex
+
+        usrNotesIdxs.
+            foreach { case (n, idx) =>
+                usrNotesIdxs.find { case (candidate, candidateIdx) =>
+                    candidateIdx != idx &&
+                        candidate.noteType == n.noteType &&
+                        candidate.dataOpt("parts") == n.dataOpt("parts") &&
+                        candidate.wordIndexesSet.subsetOf(n.wordIndexesSet) &&
+                        n.wordIndexes.filter(n => !candidate.wordIndexes.contains(n)).
+                            forall(wordIdx => ns.tokens.exists(t => t.wordIndexes.contains(wordIdx) && t.isStopWord))
+                } match {
+                    case Some(better) =>
+                        ns.removeNote(n)
+
+                        logger.trace(s"Element removed: $n, better: $better")
+                    case None => // No-op.
+                }
+            }
     }
 
     // TODO: simplify, add tests, check model properties (sparse etc) for optimization.
@@ -598,9 +655,9 @@ object NCModelEnricher extends NCProbeEnricher {
                     ||
                 (
                     n.tokenIndexes == toksIdxsSorted ||
-                        n.tokenIndexes.containsSlice(toksIdxsSorted) &&
-                        U.isContinuous(toksIdxsSorted) &&
-                        U.isContinuous(n.tokenIndexes)
+                    n.tokenIndexes.containsSlice(toksIdxsSorted) &&
+                    U.isContinuous(toksIdxsSorted) &&
+                    U.isContinuous(n.tokenIndexes)
                 )
             )
         ))

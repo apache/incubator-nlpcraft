@@ -16,7 +16,7 @@
  *
  */
 
-package org.apache.nlpcraft.example.minecraft
+package org.apache.nlpcraft.examples.minecraft
 
 import org.apache.nlpcraft.NCTestContext
 import org.apache.nlpcraft.NCTestEnvironment

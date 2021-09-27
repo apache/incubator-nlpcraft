@@ -94,8 +94,7 @@ class NCEnricherNestedModelSpec2 extends NCEnricherNestedModelSpec1 {
             ),
             _ => checkExists(
                 "y the y",
-                usr(text = "y y", id = "y3"),
-                nlp(text = "the", isStop = true)
+                usr(text = "y the y", id = "y3")
             ),
             _ => checkExists(
                 "y xxx y",

@@ -63,6 +63,7 @@ public class NCModelJson {
     private boolean maxSynonymsThresholdError = DFLT_MAX_SYNONYMS_THRESHOLD_ERROR;
     private long conversationTimeout = DFLT_CONV_TIMEOUT_MS;
     private int conversationDepth = DFLT_CONV_DEPTH;
+    private boolean isStopWordsAllowed = DFLT_IS_STOPWORDS_ALLOWED;
 
     public String getId() {
         return id;
@@ -278,4 +279,10 @@ public class NCModelJson {
         return restrictedCombinations;
     }
     public void setRestrictedCombinations(Map<String, String[]> restrictedCombinations) { this.restrictedCombinations = restrictedCombinations;}
+    public boolean isStopWordsAllowed() {
+        return isStopWordsAllowed;
+    }
+    public void setStopWordsAllowed(boolean stopWordsAllowed) {
+        isStopWordsAllowed = stopWordsAllowed;
+    }
 }

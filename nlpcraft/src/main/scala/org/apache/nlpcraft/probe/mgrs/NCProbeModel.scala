@@ -45,9 +45,13 @@ case class NCProbeModel(
     solver: NCIntentSolver,
     intents: Seq[NCIdlIntent],
     callbacks: Map[String /* Intent ID */, NCProbeModelCallback],
-    continuousSynonyms: Map[String /*Element ID*/ , Map[Int /*Synonym length*/ , NCProbeSynonymsWrapper]], // Fast access map.
+    continuousSynonyms:
+        Map[
+            String /*Element ID*/,
+            /*Fast access map.*/ Map[Int /*Synonym length*/ , NCProbeSynonymsWrapper]
+        ],
     sparseSynonyms: Map[String /*Element ID*/, Seq[NCProbeSynonym]],
-    idlSynonyms: Map[String /*Element ID*/ , Seq[NCProbeSynonym]], // Fast access map.
+    idlSynonyms: Map[String /*Element ID*/ , Seq[NCProbeSynonym]],
     addStopWordsStems: Set[String],
     exclStopWordsStems: Set[String],
     suspWordsStems: Set[String],

@@ -278,6 +278,9 @@ public interface NCModelView extends NCMetadata {
      */
     boolean DFLT_IS_NO_USER_TOKENS_ALLOWED = true;
 
+    // TODO: add javadoc
+    boolean DFLT_IS_STOPWORDS_ALLOWED = true;
+
     /**
      * Default set of enabled built-in tokens. The following built-in tokens are enabled by default:
      * <ul>
@@ -1234,5 +1237,13 @@ public interface NCModelView extends NCMetadata {
      */
     default Map<String, Set<String>> getRestrictedCombinations() {
         return Collections.emptyMap();
+    }
+
+    /**
+     * // TODO: add javadoc
+     * @return
+     */
+    default boolean isStopWordsAllowed() {
+        return DFLT_IS_STOPWORDS_ALLOWED;
     }
 }

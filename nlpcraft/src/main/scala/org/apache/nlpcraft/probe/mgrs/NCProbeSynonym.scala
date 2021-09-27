@@ -17,11 +17,6 @@
 
 package org.apache.nlpcraft.probe.mgrs
 
-import org.apache.nlpcraft.common.U
-import org.apache.nlpcraft.common.nlp.{NCNlpSentenceToken, NCNlpSentenceTokenBuffer}
-import org.apache.nlpcraft.model._
-import org.apache.nlpcraft.model.intent.NCIdlContext
-import org.apache.nlpcraft.probe.mgrs.NCProbeSynonym.NCIdlContent
 import org.apache.nlpcraft.probe.mgrs.NCProbeSynonymChunkKind._
 
 import scala.collection.mutable
@@ -54,180 +49,18 @@ class NCProbeSynonym(
     lazy val hasIdl: Boolean = idlChunks != 0
     lazy val isValueSynonym: Boolean = value != null
     lazy val stems: String = map(_.wordStem).mkString(" ")
-    lazy val stemsHash: Int = stems.hashCode
 
-    /**
-      *
-      * @param kind
-      * @return
-      */
-    private def getSort(kind: NCSynonymChunkKind): Int =
-        kind match {
-            case TEXT => 0
-            case IDL => 1
-            case REGEX => 2
-            case _ => throw new AssertionError(s"Unexpected kind: $kind")
-        }
-
-    /**
-      *
-      * @param tok
-      * @param chunk
-      */
-    private def isMatch(tok: NCNlpSentenceToken, chunk: NCProbeSynonymChunk): Boolean =
-        chunk.kind match {
-            case TEXT => chunk.wordStem == tok.stem
-            case REGEX =>
-                val regex = chunk.regex
-
-                regex.matcher(tok.origText).matches() || regex.matcher(tok.normText).matches()
-            case IDL => throw new AssertionError()
-            case _ => throw new AssertionError()
-        }
-
-    /**
-      *
-      * @param toks
-      * @param isMatch
-      * @param getIndex
-      * @param shouldBeNeighbors
-      * @tparam T
-      * @return
-      */
-    private def sparseMatch0[T](
-        toks: Seq[T],
-        isMatch: (T, NCProbeSynonymChunk) => Boolean,
-        getIndex: T => Int,
-        shouldBeNeighbors: Boolean
-    ): Option[Seq[T]] =
-        if (toks.size >= this.size) {
-            lazy val res = mutable.ArrayBuffer.empty[T]
-            lazy val all = mutable.HashSet.empty[T]
-
-            var state = 0
-
-            for (chunk <- this if state != -1) {
-                val seq =
-                    if (state == 0) {
-                        state = 1
-
-                        toks.filter(t => isMatch(t, chunk))
-                    }
-                    else
-                        toks.filter(t => !res.contains(t) && isMatch(t, chunk))
-
-                if (seq.nonEmpty) {
-                    val head = seq.head
-
-                    if (!permute && res.nonEmpty && getIndex(head) <= getIndex(res.last))
-                        state = -1
-                    else {
-                        all ++= seq
-
-                        if (all.size > this.size)
-                            state = -1
-                        else
-                            res += head
-                    }
-                }
-                else
-                    state = -1
-            }
-
-            if (state != -1 && all.size == res.size && (!shouldBeNeighbors || U.isIncreased(res.map(getIndex).toSeq.sorted)))
-                Some(res.toSeq)
-            else
-                None
-        }
-        else
-            None
-
-    /**
-      *
-      * @param tow
-      * @param chunk
-      * @param req
-      */
-    private def isMatch(tow: NCIdlContent, chunk: NCProbeSynonymChunk, req: NCRequest): Boolean = {
-        def get0[T](fromToken: NCToken => T, fromWord: NCNlpSentenceToken => T): T =
-            if (tow.isLeft) fromToken(tow.swap.toOption.get) else fromWord(tow.toOption.get)
-
-        chunk.kind match {
-            case TEXT => chunk.wordStem == get0(_.stem, _.stem)
-
-            case REGEX =>
-                val r = chunk.regex
-
-                r.matcher(get0(_.origText, _.origText)).matches() || r.matcher(get0(_.normText, _.normText)).matches()
-
-            case IDL =>
-                get0(t => chunk.idlPred.apply(t, NCIdlContext(req = req)).value.asInstanceOf[Boolean], _ => false)
-
-            case _ => throw new AssertionError()
-        }
-    }
-
-    /**
-      *
-      * @param toks
-      */
-    def isMatch(toks: NCNlpSentenceTokenBuffer): Boolean = {
-        require(toks != null)
-        require(!sparse && !hasIdl)
-
-        if (toks.length == length) {
-            if (isTextOnly)
-                toks.stemsHash == stemsHash && toks.stems == stems
-            else
-                toks.zip(this).sortBy(p => getSort(p._2.kind)).forall { case (tok, chunk) => isMatch(tok, chunk) }
-        }
-        else
-            false
-    }
-
-    /**
-      *
-      * @param tows
-      * @param req
-      * @return
-      */
-    def isMatch(tows: Seq[NCIdlContent], req: NCRequest): Boolean = {
-        require(tows != null)
-
-        if (tows.length == length && tows.count(_.isLeft) >= idlChunks)
-            tows.zip(this).sortBy(p => getSort(p._2.kind)).forall { case (tow, chunk) => isMatch(tow, chunk, req) }
-        else
-            false
-    }
-    
-    /**
-      *
-      * @param toks
-      */
-    def sparseMatch(toks: NCNlpSentenceTokenBuffer): Option[Seq[NCNlpSentenceToken]] = {
-        require(toks != null)
-        require(sparse && !hasIdl)
-
-        sparseMatch0(toks.toSeq, isMatch, (t: NCNlpSentenceToken) => t.startCharIndex, shouldBeNeighbors = false)
-    }
-
-    /**
-      *
-      * @param tows
-      * @param req
-      */
-    def sparseMatch(tows: Seq[NCIdlContent], req: NCRequest): Option[Seq[NCIdlContent]] = {
-        require(tows != null)
-        require(req != null)
-        require(hasIdl)
-
-        sparseMatch0(
-            tows,
-            (t: NCIdlContent, chunk: NCProbeSynonymChunk) => isMatch(t, chunk, req),
-            (t: NCIdlContent) => if (t.isLeft) t.swap.toOption.get.getStartCharIndex else t.toOption.get.startCharIndex,
-            shouldBeNeighbors = !sparse
-        )
-    }
+    private lazy val hash =
+        Seq(
+            super.hashCode(),
+            isTextOnly,
+            regexChunks,
+            idlChunks,
+            isValueSynonym,
+            isElementId,
+            isValueName,
+            value
+        ).map(p => if (p == null) 0 else p.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
 
     override def toString(): String = mkString(" ")
 
@@ -286,41 +119,23 @@ class NCProbeSynonym(
             }
     }
 
-    override def canEqual(other: Any): Boolean = other.isInstanceOf[NCProbeSynonym]
-
     override def equals(other: Any): Boolean = other match {
         case that: NCProbeSynonym =>
-            super.equals(that) &&
-                (that canEqual this) &&
-                isTextOnly == that.isTextOnly &&
-                regexChunks == that.regexChunks &&
-                idlChunks == that.idlChunks &&
-                isValueSynonym == that.isValueSynonym &&
-                isElementId == that.isElementId &&
-                isValueName == that.isValueName &&
-                value == that.value
+            isElementId == that.isElementId &&
+            isTextOnly == that.isTextOnly &&
+            regexChunks == that.regexChunks &&
+            idlChunks == that.idlChunks &&
+            isValueSynonym == that.isValueSynonym &&
+            isValueName == that.isValueName &&
+            value == that.value &&
+            super.equals(that)
         case _ => false
     }
 
-    override def hashCode(): Int = {
-        val state = Seq(
-            super.hashCode(),
-            isTextOnly,
-            regexChunks,
-            idlChunks,
-            isValueSynonym,
-            isElementId,
-            isValueName,
-            value
-        )
-
-        state.map(p => if (p == null) 0 else p.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
-    }
+    override def hashCode(): Int = hash
 }
 
 object NCProbeSynonym {
-    type NCIdlContent = Either[NCToken, NCNlpSentenceToken]
-
     /**
       *
       * @param isElementId
@@ -341,9 +156,9 @@ object NCProbeSynonym {
         permute: Boolean
     ): NCProbeSynonym = {
         val syn = new NCProbeSynonym(isElementId, isValueName, isDirect, value, sparse, permute)
-        
+
         syn ++= chunks
-        
+
         syn
     }
 }

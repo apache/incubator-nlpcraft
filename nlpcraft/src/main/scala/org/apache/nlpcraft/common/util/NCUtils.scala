@@ -869,13 +869,6 @@ object NCUtils extends LazyLogging {
     }
 
     /**
-      * Gets resource existing flag.
-      *
-      * @param res Resource.
-      */
-    def hasResource(res: String): Boolean = getClass.getClassLoader.getResourceAsStream(res) != null
-
-    /**
       * Serializes data.
       *
       * @param obj Data.
@@ -2329,6 +2322,11 @@ object NCUtils extends LazyLogging {
         }
     }
 
+    /**
+      *
+      * @param path
+      * @return
+      */
     def isFile(path: String): Boolean = {
         val f = new File(path)
 

@@ -44,6 +44,7 @@ import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.suspicious.NCSuspiciousNouns
 import org.apache.nlpcraft.probe.mgrs.nlp.impl._
 import org.apache.nlpcraft.probe.mgrs.nlp.validate._
 import org.apache.nlpcraft.probe.mgrs.sentence.NCSentenceManager
+import org.apache.nlpcraft.probe.mgrs.synonyms.NCSynonymsManager
 import org.apache.nlpcraft.probe.mgrs.{NCProbeMessage, NCProbeVariants}
 
 import java.io.Serializable
@@ -232,7 +233,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
 
         val tbl = NCAsciiTable()
 
-        tbl += (s"${b("Text")}", nlpSens.map(s => rv(s.text)))
+        tbl += (s"${b("Text")}", nlpSens.map(s => rv(" " + s.text + " ")))
         tbl += (s"${b("Model ID")}", mdlId)
         tbl += (s"${b("User:")}", "")
         tbl += (s"${b("  ID")}", usrId)
@@ -294,6 +295,9 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
         ): Unit = {
             require(errMsg.isDefined || (resType.isDefined && resBody.isDefined))
 
+            NCSentenceManager.clearRequestData(srvReqId)
+            NCSynonymsManager.clearRequestData(srvReqId)
+
             val msg = NCProbeMessage(msgName)
 
             msg.addData("srvReqId", srvReqId)
@@ -346,28 +350,23 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
 
             val durMs = U.now() - startMs.get
 
-            if (errMsg.isEmpty)
-                logger.info(s"" +
-                    s"\n" +
-                    s"${g("|>")}\n" +
-                    s"${g("|>")} ${bo(g("SUCCESS"))} result sent back to server [" +
-                        s"srvReqId=${m(srvReqId)}, " +
-                        s"type=${resType.getOrElse("")}, " +
-                        s"dur=${durMs}ms" +
-                    s"]\n" +
-                    s"${g("|>")}"
-                )
-            else
-                logger.info(s"" +
-                    s"\n" +
-                    s"${r("|X")}\n" +
-                    s"${r("|X")} ${bo(r("REJECT"))} result sent back to server [" +
-                        s"srvReqId=${m(srvReqId)}, " +
-                        s"response=${errMsg.get}, " +
-                        s"dur=${durMs}ms" +
-                    s"]\n" +
-                    s"${r("|X")}"
-                )
+            val tbl = NCAsciiTable()
+
+            if (errMsg.isEmpty) {
+                tbl += (s"${gb(w(" SUCCESS "))}", "")
+                tbl += (s"${g("---------")}", "")
+                tbl += (s"${b("Result type")}", resType.getOrElse(""))
+            }
+            else {
+                tbl += (s"${rb(w(" REJECT "))}", "")
+                tbl += (s"${r("--------")}", "")
+                tbl += (s"${r("Error")}", s"${r(errMsg.get)}")
+            }
+
+            tbl += (s"${b("Probe duration")}", s"${durMs}ms")
+            tbl += (s"${b("Server Request ID")}", m(srvReqId))
+
+            logger.info(s"\n$tbl")
         }
 
         val mdl = NCModelManager.getModel(mdlId, span)
@@ -525,8 +524,6 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                 }).mkString("-")
             )
         })
-
-        NCSentenceManager.clearCache(srvReqId)
 
         // Final validation before execution.
         try

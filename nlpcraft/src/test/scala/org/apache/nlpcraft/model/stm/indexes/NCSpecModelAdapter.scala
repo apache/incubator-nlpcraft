@@ -19,11 +19,12 @@ package org.apache.nlpcraft.model.stm.indexes
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import org.apache.nlpcraft.NCTestElement
 import org.apache.nlpcraft.model.{NCElement, NCModelAdapter}
 
 import java.util
-import java.util.Collections
-import scala.jdk.CollectionConverters.{SeqHasAsJava, SetHasAsJava}
+import java.util.Optional
+import scala.jdk.CollectionConverters.SetHasAsJava
 
 object NCSpecModelAdapter {
     val mapper = new ObjectMapper()
@@ -34,8 +35,8 @@ object NCSpecModelAdapter {
 class NCSpecModelAdapter extends NCModelAdapter("nlpcraft.stm.idxs.test", "STM Indexes Test Model", "1.0") {
     override def getElements: util.Set[NCElement] =
         Set(
-            mkElement("A2", "G1", "a a"),
-            mkElement("B2", "G1", "b b"),
+            mkElement("A2", "G1", "a a", greedy = false),
+            mkElement("B2", "G1", "b b", greedy = false),
 
             mkElement("X", "G2", "x"),
             mkElement("Y", "G2", "y"),
@@ -43,14 +44,12 @@ class NCSpecModelAdapter extends NCModelAdapter("nlpcraft.stm.idxs.test", "STM I
             mkElement("Z", "G3", "z")
         ).asJava
 
-    private def mkElement(id: String, group: String, syns: String*): NCElement =
-        new NCElement {
-            override def getId: String = id
-            override def getSynonyms: util.List[String] = {
-                val seq: Seq[String] = syns
+    private def mkElement(id: String, group: String, syns: String, greedy: Boolean = true): NCElement = {
+        val e = NCTestElement(id, syns)
 
-                seq.asJava
-            }
-            override def getGroups: util.List[String] = Collections.singletonList(group)
-        }
+        e.greedy = Optional.of(greedy)
+        e.groups = Seq(group)
+
+        e
+    }
 }

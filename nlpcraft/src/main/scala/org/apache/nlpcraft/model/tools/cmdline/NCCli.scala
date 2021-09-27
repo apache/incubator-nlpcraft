@@ -258,12 +258,19 @@ object NCCli extends NCCliBase {
      * @param args
      * @return
      */
-    private def getCpParams(args: Seq[Argument]): String =
-        U.splitTrimFilter(
+    private def getCpParams(args: Seq[Argument]): String = {
+        val s = U.splitTrimFilter(
             getParams( args, "cp").map(cp => normalizeCp(U.trimQuotes(cp))).mkString(CP_SEP),
             CP_SEP
         )
         .mkString(CP_SEP)
+
+        // Remove extra '\' from the end, if possible.
+        if (s.last == '\\' && !s.endsWith(":\\"))
+            s.substring(0, s.length - 1)
+        else
+            s
+    }
 
     /**
      *
@@ -3262,8 +3269,8 @@ object NCCli extends NCCliBase {
             .system(true)
             .nativeSignals(true)
             .signalHandler(Terminal.SignalHandler.SIG_IGN)
-            .dumb(true)
-            .jansi(true)
+            .jansi(SystemUtils.IS_OS_UNIX)
+            .jna(SystemUtils.IS_OS_WINDOWS)
             .build()
 
         // Process 'no-ansi' and 'ansi' commands first (before ASCII title is shown).

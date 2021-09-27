@@ -35,11 +35,11 @@ elements:
   - id: mc:item
     metadata:
       mc:type: item
-    valueLoader: org.apache.nlpcraft.example.minecraft.MinecraftValueLoader
+    valueLoader: org.apache.nlpcraft.examples.minecraft.MinecraftValueLoader
   - id: mc:block
     metadata:
       mc:type: block
-    valueLoader: org.apache.nlpcraft.example.minecraft.MinecraftValueLoader
+    valueLoader: org.apache.nlpcraft.examples.minecraft.MinecraftValueLoader
 
   # Weather intent
   - id: weather:action
@@ -100,7 +100,7 @@ elements:
   # Give intent
   - id: give:action
     synonyms:
-      - "{give ^^[target]{# == 'mc:player'}^^}"
+      - "{give ^^{# == 'mc:player'}^^}"
   - id: give:block-word
     synonyms:
       - "{block|blocks}"
@@ -124,18 +124,18 @@ elements:
       - "wall"
   - id: fill:length
     synonyms:
-      - "{{size|length|diameter} {of|_} ^^[length]{# == 'nlpcraft:num'}^^}"
+      - "{{size|length|diameter} {of|_} ^^{# == 'nlpcraft:num'}^^}"
   - id: position:player
     groups:
       - fill:position
     synonyms:
-      - "{{at|near} ^^[player]{# == 'mc:player'}^^ {position|_}|where ^^[player]{# == 'mc:player'}^^}"
+      - "{{at|near} ^^{# == 'mc:player'}^^ {position|_}|where ^^{# == 'mc:player'}^^}"
 
   - id: position:front
     groups:
       - fill:position
     synonyms:
-      - "{{^^[distance]{# == 'nlpcraft:num'}^^|_} {in|_} front {of|_} ^^[player]{# == 'mc:player'}^^}"
+      - "{{^^{# == 'nlpcraft:num'}^^|_} {in|_} front {of|_} ^^{# == 'mc:player'}^^}"
 
 abstractTokens:
    - mc:player

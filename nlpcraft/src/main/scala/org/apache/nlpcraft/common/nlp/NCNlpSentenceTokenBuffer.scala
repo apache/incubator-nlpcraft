@@ -26,12 +26,6 @@ import scala.language.implicitConversions
   * @param tokens Initial buffer.
   */
 class NCNlpSentenceTokenBuffer(val tokens: ArrayBuffer[NCNlpSentenceToken] = new ArrayBuffer[NCNlpSentenceToken](16)) extends java.io.Serializable {
-    /** Stringified stems. */
-    lazy val stems: String = tokens.map(_.stem).mkString(" ")
-
-    /** Stem-based hashcode. */
-    lazy val stemsHash: Int = stems.hashCode()
-
     type SSOT = IndexedSeq[IndexedSeq[Option[NCNlpSentenceToken]]]
     type SST = IndexedSeq[IndexedSeq[NCNlpSentenceToken]]
 
@@ -113,8 +107,7 @@ class NCNlpSentenceTokenBuffer(val tokens: ArrayBuffer[NCNlpSentenceToken] = new
 
 object NCNlpSentenceTokenBuffer {
     implicit def toTokens(x: NCNlpSentenceTokenBuffer): ArrayBuffer[NCNlpSentenceToken] = x.tokens
-    implicit def toBuf( toks: Iterable[NCNlpSentenceToken]): NCNlpSentenceTokenBuffer = apply(toks)
 
-    def apply(toks: Iterable[NCNlpSentenceToken]): NCNlpSentenceTokenBuffer =
+    def apply(toks: Seq[NCNlpSentenceToken]): NCNlpSentenceTokenBuffer =
         new NCNlpSentenceTokenBuffer(new ArrayBuffer[NCNlpSentenceToken](toks.size) ++ toks)
 }

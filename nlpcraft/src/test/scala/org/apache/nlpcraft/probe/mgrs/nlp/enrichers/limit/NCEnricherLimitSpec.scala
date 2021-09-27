@@ -68,12 +68,6 @@ class NCEnricherLimitSpec extends NCEnricherBaseSpec {
                     lim(text = "handful of", limit = 5, index = 1, note = "A", asc = false),
                     usr(text = "A", id = "A"),
                     usr(text = "B", id = "B")
-                ),
-                Seq(
-                    nlp("handful"),
-                    nlp("of"),
-                    usr(text = "A", id = "A"),
-                    usr(text = "B", id = "B")
                 )
             )
         )

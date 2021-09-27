@@ -156,7 +156,7 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
                         if (h.enabledBuiltInTokens == normEnabledBuiltInToks) {
                             prepareAsciiTable(h.sentence).info(logger, Some(s"Sentence enriched (from cache): '$normTxt'"))
 
-                            h.sentence
+                            h.sentence.copy(Some(srvReqId))
                         }
                         else
                             process(srvReqId, normTxt, enabledBuiltInToks, span)
@@ -206,7 +206,10 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
             (x._1 * 100) + x._2.indexOf(hdr.noteName)
         })
 
-        val tbl = NCAsciiTable(headers.map(_.header))
+        val tbl = NCAsciiTable(headers.map(hdr => {
+            val s = hdr.header
+            if (s == "nlp:stopWord") s"${r(s)}" else s
+        }))
 
         /**
          *
@@ -214,15 +217,23 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
          * @param hdr
          * @return
          */
-        def mkNoteValue(tok: NCNlpSentenceToken, hdr: Header): Seq[String] =
+        def mkNoteValue(tok: NCNlpSentenceToken, hdr: Header): Seq[String] = {
+            val isStopWord = tok.isStopWord
+
             tok
                 .getNotes(hdr.noteType)
                 .filter(_.contains(hdr.noteName))
-                .map(_(hdr.noteName).toString())
-                .toSeq
+                .map(note => {
+                    val s = note(hdr.noteName).toString
 
-        for (tok <- s)
+                    if (isStopWord) s"${r(s)}" else s
+                })
+                .toSeq
+        }
+
+        for (tok <- s) {
             tbl += (headers.map(mkNoteValue(tok, _)): _*)
+        }
 
         tbl
     }
