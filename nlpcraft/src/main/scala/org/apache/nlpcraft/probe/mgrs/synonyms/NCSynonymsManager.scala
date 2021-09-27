@@ -76,8 +76,10 @@ object NCSynonymsManager extends NCService {
         override def toString: String = variants.toString()
     }
 
+    private case class IdlChunkKey(token: IdlToken, chunk: NCProbeSynonymChunk)
+
     private val savedIdl = mutable.HashMap.empty[String, mutable.HashMap[SavedIdlKey, mutable.ArrayBuffer[Value]]]
-    private val idlChunksCache = mutable.HashMap.empty[String, mutable.HashMap[(IdlToken, NCProbeSynonymChunk), Boolean]]
+    private val idlChunksCache = mutable.HashMap.empty[String, mutable.HashMap[IdlChunkKey, Boolean]]
     private val idlCaches = mutable.HashMap.empty[String, CacheHolder[IdlToken]]
     private val tokCaches = mutable.HashMap.empty[String, CacheHolder[Int]]
 
@@ -222,10 +224,10 @@ object NCSynonymsManager extends NCService {
     ): Boolean =
         idlChunksCache.
             getOrElseUpdate(req.getServerRequestId,
-                mutable.HashMap.empty[(IdlToken, NCProbeSynonymChunk), Boolean]
+                mutable.HashMap.empty[IdlChunkKey, Boolean]
             ).
             getOrElseUpdate(
-                (tow, chunk),
+                IdlChunkKey(tow, chunk),
                 {
                     def get0[T](fromToken: NCToken => T, fromWord: NlpToken => T): T =
                         if (tow.isToken) fromToken(tow.token) else fromWord(tow.word)
