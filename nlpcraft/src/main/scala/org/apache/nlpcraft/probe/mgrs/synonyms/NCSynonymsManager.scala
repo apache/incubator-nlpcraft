@@ -85,13 +85,11 @@ object NCSynonymsManager extends NCService {
 
     override def start(parent: Span): NCService = {
         ackStarting()
-
         ackStarted()
     }
 
     override def stop(parent: Span): Unit = {
         ackStopping()
-
         ackStopped()
     }
 
@@ -306,11 +304,13 @@ object NCSynonymsManager extends NCService {
             require(toks != null)
 
             if (
-                toks.length == s.length &&
-                    toks.count(_.isToken) >= s.idlChunks && {
-                    toks.zip(s).sortBy(p => getSort(p._2.kind)).forall {
-                        case (tow, chunk) => isMatch(tow, chunk, req, variantsToks)
-                    }
+                toks.length == s.length && // Same length.
+                toks.count(_.isToken) >= s.idlChunks && // Enough tokens.
+                toks.zip(s).sortBy { // Pre-sort by chunk kind.
+                    case (_, chunk) => getSort(chunk.kind)
+                }
+                .forall { // TODO?
+                    case (idlTok, chunk) => isMatch(idlTok, chunk, req, variantsToks)
                 }
             )
             callback(())
