@@ -311,7 +311,7 @@ object NCSynonymsManager extends NCService {
                     }
                 }
             )
-                callback(())
+            callback(())
         }
 
     /**
