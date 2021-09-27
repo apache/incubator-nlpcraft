@@ -735,8 +735,6 @@ object NCSentenceManager extends NCService {
             else
                 collapse0(sen).flatMap(p => Option(Seq(p))).getOrElse(Seq.empty)
 
-        sens = sens.distinct
-
         sens.par.foreach(sen =>
             sen.foreach(tok =>
                 tok.size match {
