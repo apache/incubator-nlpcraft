@@ -233,7 +233,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
 
         val tbl = NCAsciiTable()
 
-        tbl += (s"${b("Text")}", nlpSens.map(s => rv(" " + s.text + " ")))
+        tbl += (s"${b("Text")}", nlpSens.map(s => bo(s.text)))
         tbl += (s"${b("Model ID")}", mdlId)
         tbl += (s"${b("User:")}", "")
         tbl += (s"${b("  ID")}", usrId)
@@ -353,12 +353,12 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
             val tbl = NCAsciiTable()
 
             if (errMsg.isEmpty) {
-                tbl += (s"${gb(w(" SUCCESS "))}", "")
+                tbl += (s"${gb(w("<SUCCESS>"))}", "")
                 tbl += (s"${g("---------")}", "")
                 tbl += (s"${b("Result type")}", resType.getOrElse(""))
             }
             else {
-                tbl += (s"${rb(w(" REJECT "))}", "")
+                tbl += (s"${rb(w("<REJECT>"))}", "")
                 tbl += (s"${r("--------")}", "")
                 tbl += (s"${r("Error")}", s"${r(errMsg.get)}")
             }
