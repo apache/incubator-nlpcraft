@@ -16,7 +16,7 @@
  *
  */
 
-package org.apache.nlpcraft.example.minecraft.utils;
+package org.apache.nlpcraft.examples.minecraft.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

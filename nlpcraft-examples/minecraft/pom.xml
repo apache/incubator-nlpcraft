@@ -34,6 +34,7 @@
     <properties>
         <nlpcraft.server.module>nlpcraft</nlpcraft.server.module>
         <nlpcraft.all.deps.jar>apache-${nlpcraft.server.module}-incubating-${project.version}-all-deps.jar</nlpcraft.all.deps.jar>
+        <nlpcraft.minecraft.deps.jar>apache-nlpcraft-incubating-${project.version}-minecraft-deps.jar</nlpcraft.minecraft.deps.jar>
 
         <kotlin.ver>1.5.0</kotlin.ver>
     </properties>
@@ -186,6 +187,27 @@
                             <includes>
                                 <include>**/*.*</include>
                             </includes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!--Uber jar created here because kotlin dependencies. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>${maven.shade.plugin.ver}</version>
+                <executions>
+                    <execution>
+                        <id>jar.all.deps.minecraft</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <outputFile>
+                                target/${nlpcraft.minecraft.deps.jar}
+                            </outputFile>
                         </configuration>
                     </execution>
                 </executions>
