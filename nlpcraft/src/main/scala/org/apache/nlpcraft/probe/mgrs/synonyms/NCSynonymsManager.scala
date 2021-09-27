@@ -278,7 +278,7 @@ object NCSynonymsManager extends NCService {
                         toks.zip(syn).sortBy(p => getSort(p._2.kind)).forall { case (tok, chunk) => isMatch(tok, chunk) }
                 }
             )
-                callback()
+                callback(())
         }
 
     /**
@@ -311,7 +311,7 @@ object NCSynonymsManager extends NCService {
                     }
                 }
             )
-                callback()
+                callback(())
         }
 
     /**
