@@ -65,7 +65,7 @@ class NCCliBase extends App {
     // | MAKE SURE TO UPDATE THIS VAR WHEN NUMBER OF SERVICES IS CHANGED. |
     // +^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^+
     final val NUM_SRV_SERVICES = 31 /*services*/ + 1 /*progress start*/
-    final val NUM_PRB_SERVICES = 23 /*services*/ + 1 /*progress start*/
+    final val NUM_PRB_SERVICES = 24 /*services*/ + 1 /*progress start*/
     // +^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^+
     // | MAKE SURE TO UPDATE THIS VAR WHEN NUMBER OF SERVICES IS CHANGED. |
     // +==================================================================+
