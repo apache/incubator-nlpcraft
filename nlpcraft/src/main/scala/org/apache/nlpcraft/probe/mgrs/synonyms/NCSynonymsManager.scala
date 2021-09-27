@@ -313,7 +313,7 @@ object NCSynonymsManager extends NCService {
                     case (idlTok, chunk) => isMatch(idlTok, chunk, req, variantsToks)
                 }
             )
-            callback(())
+                callback(())
         }
 
     /**
