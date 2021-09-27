@@ -76,8 +76,10 @@ object NCSynonymsManager extends NCService {
         override def toString: String = variants.toString()
     }
 
+    private case class IdlChunkKey(token: IdlToken, chunk: NCProbeSynonymChunk)
+
     private val savedIdl = mutable.HashMap.empty[String, mutable.HashMap[SavedIdlKey, mutable.ArrayBuffer[Value]]]
-    private val idlChunksCache = mutable.HashMap.empty[String, mutable.HashMap[(IdlToken, NCProbeSynonymChunk), Boolean]]
+    private val idlChunksCache = mutable.HashMap.empty[String, mutable.HashMap[IdlChunkKey, Boolean]]
     private val idlCaches = mutable.HashMap.empty[String, CacheHolder[IdlToken]]
     private val tokCaches = mutable.HashMap.empty[String, CacheHolder[Int]]
 
@@ -222,10 +224,10 @@ object NCSynonymsManager extends NCService {
     ): Boolean =
         idlChunksCache.
             getOrElseUpdate(req.getServerRequestId,
-                mutable.HashMap.empty[(IdlToken, NCProbeSynonymChunk), Boolean]
+                mutable.HashMap.empty[IdlChunkKey, Boolean]
             ).
             getOrElseUpdate(
-                (tow, chunk),
+                IdlChunkKey(tow, chunk),
                 {
                     def get0[T](fromToken: NCToken => T, fromWord: NlpToken => T): T =
                         if (tow.isToken) fromToken(tow.token) else fromWord(tow.word)
@@ -270,14 +272,16 @@ object NCSynonymsManager extends NCService {
             require(toks != null)
             require(!syn.sparse && !syn.hasIdl)
 
-            if (
-                toks.length == syn.length && {
-                    if (syn.isTextOnly)
-                        toks.zip(syn).forall(p => p._1.stem == p._2.wordStem)
-                    else
-                        toks.zip(syn).sortBy(p => getSort(p._2.kind)).forall { case (tok, chunk) => isMatch(tok, chunk) }
-                }
-            )
+            lazy val matched =
+                if (syn.isTextOnly)
+                    toks.zip(syn).
+                        forall(p => p._1.stem == p._2.wordStem)
+                else
+                    toks.zip(syn).
+                        sortBy(p => getSort(p._2.kind)).
+                        forall { case (tok, chunk) => isMatch(tok, chunk) }
+
+            if (toks.length == syn.length && matched)
                 callback()
         }
 
@@ -303,14 +307,12 @@ object NCSynonymsManager extends NCService {
         if (isUnprocessedIdl(srvReqId, elemId, s, toks)) {
             require(toks != null)
 
-            if (
-                toks.length == s.length &&
-                    toks.count(_.isToken) >= s.idlChunks && {
-                    toks.zip(s).sortBy(p => getSort(p._2.kind)).forall {
-                        case (tow, chunk) => isMatch(tow, chunk, req, variantsToks)
-                    }
-                }
-            )
+            lazy val matched =
+                toks.zip(s).
+                    sortBy(p => getSort(p._2.kind)).
+                    forall { case (tow, chunk) => isMatch(tow, chunk, req, variantsToks) }
+
+            if (toks.length == s.length && toks.count(_.isToken) >= s.idlChunks && matched)
                 callback()
         }
 
