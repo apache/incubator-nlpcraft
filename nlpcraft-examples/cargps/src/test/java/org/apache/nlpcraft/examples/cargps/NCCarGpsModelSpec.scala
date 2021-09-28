@@ -20,10 +20,26 @@ package org.apache.nlpcraft.examples.cargps
 import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
 import org.junit.jupiter.api.Test
 
+/**
+  *
+  */
 @NCTestEnvironment(model = classOf[CarGpsModel], startClient = true)
 class NCCarGpsModelSpec extends NCTestContext {
     @Test
-    def test(): Unit = {
-        checkIntent("hey truck, drive to 21 x x drive", "int:navigate")
+    def testNavigate(): Unit = {
+        checkIntent("hey truck, drive to 21 x x drive", "navigate")
+        checkIntent("hey car, navigate to 21 table rock drive", "navigate")
+        checkIntent("howdy, truck - drive to 2121 5th avenue please", "navigate")
+    }
+
+    @Test
+    def testCancel(): Unit = {
+        checkIntent("Hey truck - stop the navigation!", "cancel")
+        checkIntent("Howdy, car, please cancel the routing now.", "cancel")
+        checkIntent("Hi car - stop the route.", "cancel")
+        checkIntent("Hi car - stop the navigation...", "cancel")
+        checkIntent("Howdy truck - quit navigating.", "cancel")
+        checkIntent("Hi car - finish off the driving.", "cancel")
+        checkIntent("Hi car - cancel the journey.", "cancel")
     }
 }

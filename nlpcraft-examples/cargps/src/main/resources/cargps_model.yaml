@@ -33,11 +33,14 @@ macros:
   - name: "<CANCEL>"
     macro: "{cancel|stop|abort|finish|cease|quit} {off|_}"
   - name: "<WAYPOINT>"
-    macro: "{waypoint|location|point|stopover|stop over|way station|stop|checkpoint|stop point} {point|station|_}"
+    macro: "{waypoint|stopover|stop over|way station|stop|checkpoint|stop point} {point|station|_}"
 
+# Make sure 'howdy' is not marked as a stopword.
 excludedStopWords:
   - howdy
 
+# Don't surface these tokens as standalone one. They are used only
+# as building blocks for other tokens.
 abstractTokens:
   - x:addr:kind
   - x:addr:num
@@ -53,24 +56,25 @@ elements:
       - "{street|drive|court|plaza|avenue|alley|anex|beach|bend|boulevard|bridge|canyon|causeway|way|circle|corner|creek|fork|harbor|highway|expressway|island|lane|lake|loop|motorway|park|path|point|ramp|route|rue|row|skyway|square|station|summit|trail|tunnel|walk|road}"
       - "{st|str|dr|crt|plz|ave|blvd|hwy|rd}"
 
+  # Street number.
   - id: "x:addr:num"
     synonyms:
+      # Straight number.
       - "^^{# == 'nlpcraft:num' && meta_tok('nlpcraft:num:unit') == null && meta_tok('nlpcraft:num:isequalcondition')}^^"
 
+  # Street name.
   - id: "x:addr:st"
     greedy: false
     synonyms:
+      # Alphanumeric and must be after street number and before street kind.
       - "{^^{is_alphanum(tok_txt) && tok_is_between_ids('x:addr:num', 'x:addr:kind') == true}^^}[1,3]"
 
   - id: "x:addr"
     synonyms:
       - "^^[num]{# == 'x:addr:num'}^^ ^^[name]{# == 'x:addr:st'}^^ ^^[kind]{# == 'x:addr:kind'}^^"
 
-  #
-  # Salutation.
-  # -----------
   - id: "x:hey"
-    description: "NLI prompt"
+    description: "NLI prompt, salutation."
     synonyms:
       - "<HEY> {car|vehicle|truck}"
 
@@ -91,8 +95,9 @@ elements:
       - "stop by"
 
   - id: "x:remove-waypoint"
-    description: "Remove 'waypoint' action."
+    description: "Remove last 'waypoint' action."
     synonyms:
+      # NOTE: assumes the LAST waypoint, if any.
       - "{skip|remove} {over|_} {last|latest|current|_} <WAYPOINT>"
       - "<NAVIGATE> without {stopping|<WAYPOINT>}"
 
