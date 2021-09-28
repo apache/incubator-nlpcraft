@@ -616,19 +616,25 @@ object NCSentenceManager extends NCService {
         }
 
         if (overlappedNotes.nonEmpty) {
-            val notesSeqs: Seq[Set[NCNlpSentenceNote]] =
+            val overlappedVars: Seq[Set[NCNlpSentenceNote]] =
                 overlappedNotes.flatMap(note => note.wordIndexes.map(_ -> note)).
                     groupBy { case (idx, _) => idx }.
                     map { case (_, seq) => seq.map { case (_, note) => note }.toSet }.
                     toSeq.
                     sortBy(-_.size)
 
-            def findCombinations(): Seq[Seq[NCNlpSentenceNote]] =
-                NCSentenceHelper.findCombinations(notesSeqs.map(_.asJava).asJava, pool).asScala.map(_.asScala.toSeq)
-
-            val delCombs: Seq[Seq[NCNlpSentenceNote]] = combCache.
-                getOrElseUpdate(sen.srvReqId, mutable.HashMap.empty[CacheKey, CacheValue]).
-                getOrElseUpdate(notesSeqs, findCombinations())
+            val delCombs: Seq[Seq[NCNlpSentenceNote]] =
+                combCache.
+                    getOrElseUpdate(
+                        sen.srvReqId,
+                        mutable.HashMap.empty[CacheKey, CacheValue]
+                    ).
+                    getOrElseUpdate(
+                        overlappedVars,
+                        NCSentenceHelper.findCombinations(
+                            overlappedVars.map(_.asJava).asJava, pool).asScala.map(_.asScala.toSeq
+                        )
+                    )
 
             val seqSens =
                 delCombs.
