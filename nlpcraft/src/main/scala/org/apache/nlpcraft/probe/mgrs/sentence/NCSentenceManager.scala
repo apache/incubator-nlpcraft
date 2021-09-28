@@ -603,10 +603,10 @@ object NCSentenceManager extends NCService {
       * @param sen
       * @param mdl
       * @param lastPhase
-      * @param delNotes
+      * @param overlappedNotes
       */
     private def mkVariants(
-        sen: NCNlpSentence, mdl: NCModel, lastPhase: Boolean, delNotes: Seq[NCNlpSentenceNote]
+        sen: NCNlpSentence, mdl: NCModel, lastPhase: Boolean, overlappedNotes: Seq[NCNlpSentenceNote]
     ): Seq[NCNlpSentence] = {
         def collapse0(ns: NCNlpSentence): Option[NCNlpSentence] = {
             if (lastPhase)
@@ -615,9 +615,9 @@ object NCSentenceManager extends NCService {
             if (collapseSentence(ns, getNotNlpNotes(ns.tokens).map(_.noteType).distinct, lastPhase)) Some(ns) else None
         }
 
-        if (delNotes.nonEmpty) {
+        if (overlappedNotes.nonEmpty) {
             val notesSeqs: Seq[Set[NCNlpSentenceNote]] =
-                delNotes.flatMap(note => note.wordIndexes.map(_ -> note)).
+                overlappedNotes.flatMap(note => note.wordIndexes.map(_ -> note)).
                     groupBy { case (idx, _) => idx }.
                     map { case (_, seq) => seq.map { case (_, note) => note }.toSet }.
                     toSeq.
@@ -708,7 +708,7 @@ object NCSentenceManager extends NCService {
 
         redundant.foreach(sen.removeNote)
 
-        var delNotes: Seq[NCNlpSentenceNote] =
+        var overlappedNotes: Seq[NCNlpSentenceNote] =
             getNotNlpNotes(sen.tokens).
                 flatMap(note => getNotNlpNotes(note.tokenIndexes.map(sen(_))).filter(_ != note)).
                 distinct
@@ -717,7 +717,7 @@ object NCSentenceManager extends NCService {
         val links = getLinks(sen.tokens.toSeq.flatten)
 
         val swallowed =
-            delNotes.
+            overlappedNotes.
                 // There aren't links on it.
                 filter(n => !links.contains(NoteLink(n.noteType, n.tokenIndexes.sorted))).
                 // It doesn't have links.
@@ -727,7 +727,7 @@ object NCSentenceManager extends NCService {
                     val key = NCTokenPartKey(note, sen)
 
                     val delCombOthers =
-                        delNotes.filter(_ != note).flatMap(n => if (getPartKeys(n).contains(key)) Some(n) else None)
+                        overlappedNotes.filter(_ != note).flatMap(n => if (getPartKeys(n).contains(key)) Some(n) else None)
 
                     if (
                         delCombOthers.nonEmpty &&
@@ -738,11 +738,11 @@ object NCSentenceManager extends NCService {
                         None
                 })
 
-        delNotes = delNotes.filter(p => !swallowed.contains(p))
+        overlappedNotes = overlappedNotes.filter(p => !swallowed.contains(p))
         addDeleted(sen, sen, swallowed)
         swallowed.foreach(sen.removeNote)
 
-        var sens = mkVariants( sen, mdl, lastPhase, delNotes)
+        var sens = mkVariants( sen, mdl, lastPhase, overlappedNotes)
 
         sens.par.foreach(sen =>
             sen.foreach(tok =>
