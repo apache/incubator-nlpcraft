@@ -62,6 +62,9 @@ case class NCProbeModel(
     lazy val hasNoIdlSynonyms: Boolean = continuousSynonyms.nonEmpty || sparseSynonyms.nonEmpty
     lazy val hasSparseSynonyms: Boolean = sparseSynonyms.nonEmpty || idlSynonyms.exists(_._2.exists(_.sparse))
     lazy val hasContinuousSynonyms: Boolean = continuousSynonyms.nonEmpty || idlSynonyms.exists(_._2.exists(!_.sparse))
+    lazy val isComplex: Boolean = hasIdlSynonyms || !model.getParsers.isEmpty
 
     def hasIdlSynonyms(elemId: String): Boolean = idlSynonyms.contains(elemId)
+
+
 }

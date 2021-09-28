@@ -26,11 +26,46 @@ import org.apache.nlpcraft.model.{NCToken, _}
   * @param word
   */
 case class NCProbeIdlToken(token: NCToken, word: NCNlpSentenceToken) {
-    val (origText: String, wordIndexes: Set[Int], minIndex: Int, maxIndex: Int, isToken: Boolean, isWord: Boolean) =
+    require(token != null ^ word != null)
+
+    val (
+        origText: String,
+        normText: String,
+        stem: String,
+        wordIndexes: Set[Int],
+        minIndex: Int,
+        maxIndex: Int,
+        startCharIndex: Int,
+        endCharIndex: Int,
+        isToken: Boolean,
+        isWord: Boolean
+        ) =
         if (token != null)
-            (token.origText, token.wordIndexes.toSet, token.wordIndexes.head, token.wordIndexes.last, true, false)
+            (
+                token.origText,
+                token.normText,
+                token.stem,
+                token.wordIndexes.toSet,
+                token.wordIndexes.head,
+                token.wordIndexes.last,
+                token.getStartCharIndex,
+                token.getEndCharIndex,
+                true,
+                false
+            )
         else
-            (word.origText, word.wordIndexes.toSet, word.wordIndexes.head, word.wordIndexes.last, false, true)
+            (
+                word.origText,
+                word.normText,
+                word.stem,
+                word.wordIndexes.toSet,
+                word.wordIndexes.head,
+                word.wordIndexes.last,
+                word.startCharIndex,
+                word.endCharIndex,
+                false,
+                true
+            )
 
     private lazy val hash = if (isToken) Seq(wordIndexes, token.getId).hashCode() else wordIndexes.hashCode()
 

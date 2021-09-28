@@ -83,8 +83,6 @@ object NCModelEnricher extends NCProbeEnricher {
         ackStopped()
     }
 
-    def isComplex(mdl: NCProbeModel): Boolean = mdl.hasIdlSynonyms || !mdl.model.getParsers.isEmpty
-
     /**
       *
       * @param ns
@@ -180,7 +178,8 @@ object NCModelEnricher extends NCProbeEnricher {
                         new NCCustomElement() {
                             override def getElementId: String = noteId
                             override def getWords: JList[NCCustomWord] = words
-                            override def getMetadata: JavaMeta = md.map(p => p._1 -> p._2.asInstanceOf[AnyRef]).asJava
+                            override def getMetadata: JavaMeta =
+                                md.map { case (k, v) => k -> v.asInstanceOf[AnyRef] }.asJava
                         }
                     }).asJava
                 )
@@ -228,7 +227,7 @@ object NCModelEnricher extends NCProbeEnricher {
       *  Example: Piece: 'x1, x2(stopword), x3(stopword), x4' will be expanded  into
       *  {'x1, x2, x3, x4', 'x1, x2, x4', 'x1, x3, x4', 'x1, x4'}
       *
-      *  3. All variants collected, duplicated deleted, etc.
+      *  3. All variants collected, duplicated sets deleted, etc.
       *
       * @param toks
       */
@@ -244,7 +243,7 @@ object NCModelEnricher extends NCProbeEnricher {
                 else
                     slides += mutable.ArrayBuffer.empty :+ stop
 
-            // Too many stopords inside skipped.
+            // Too many stopwords inside skipped.
             val bigSlides = slides.filter(_.size > 2)
 
             var stops4Delete: Seq[Seq[NlpToken]] =
@@ -255,7 +254,7 @@ object NCModelEnricher extends NCProbeEnricher {
                     if (stops4AllCombs.nonEmpty)
                         for (
                             seq1 <- Range.inclusive(0, stops4AllCombs.size).flatMap(stops4AllCombs.combinations);
-                            seq2 <- Range.inclusive(0, bigSlides.size).flatMap(bigSlides.combinations)
+                                seq2 <- Range.inclusive(0, bigSlides.size).flatMap(bigSlides.combinations)
                         )
                         yield seq1 ++ seq2.flatten
                     else
@@ -268,11 +267,10 @@ object NCModelEnricher extends NCProbeEnricher {
             stops4Delete = stops4Delete.filter(seq => !seq.contains(combo.head) && !seq.contains(combo.last))
 
             (Seq(combo) ++ stops4Delete.map(del => combo.filter(t => !del.contains(t)))).map(_ -> combo).distinct
-
         }).
-            filter(_._1.nonEmpty).
-            groupBy(_._1).
-            map(p => p._1 -> p._2.map(_._2).minBy(p => (-p.size, p.head.index))).
+            filter { case (seq, _) => seq.nonEmpty }.
+            groupBy { case (seq, _) => seq }.
+            map { case (toksKey, seq) => toksKey -> seq.map(_._2).minBy(p => (-p.size, p.head.index)) }.
             sortBy { case(data, combo) => (-combo.size, -data.size, combo.head.index, data.head.index) }
 
     /**
@@ -297,15 +295,17 @@ object NCModelEnricher extends NCProbeEnricher {
 
     /**
       *
-      * @param tows
+      * @param idlToks
       * @param ns
       */
-    private def toTokens(tows: Seq[IdlToken], ns: Sentence): Seq[NlpToken] =
-        (
-            tows.filter(_.isWord).map(_.word) ++
-                tows.filter(_.isToken).map(_.token).
-                    flatMap(w => ns.filter(t => t.wordIndexes.intersect(w.wordIndexes).nonEmpty))
-        ).sortBy(_.startCharIndex)
+    private def toNlpTokens(idlToks: Seq[IdlToken], ns: Sentence): Seq[NlpToken] = {
+        val words = idlToks.filter(_.isWord).map(_.word)
+        val suitableToks =
+            idlToks.filter(_.isToken).map(_.token).
+                flatMap(w => ns.filter(t => t.wordIndexes.intersect(w.wordIndexes).nonEmpty))
+
+        (words ++ suitableToks).sortBy(_.startCharIndex)
+    }
 
     /**
       *
@@ -378,6 +378,7 @@ object NCModelEnricher extends NCProbeEnricher {
     }
 
     /**
+      * Prepares IDL tokens based on NLP tokens.
       *
       * @param h
       * @param toks
@@ -391,9 +392,7 @@ object NCModelEnricher extends NCProbeEnricher {
 
                 // Drops without tokens (IDL part works with tokens).
                 if (rec.nonEmpty)
-                    Some(rec ++
-                        (seq.wordsIndexes.intersect(idxs) -- rec.flatMap(_.wordIndexes)).map(h.tokens)
-                    )
+                    Some(rec ++ (seq.wordsIndexes.intersect(idxs) -- rec.flatMap(_.wordIndexes)).map(h.tokens))
                 else
                     None
             }).seq
@@ -440,11 +439,11 @@ object NCModelEnricher extends NCProbeEnricher {
                     for (
                         // 'toksExt' is piece of sentence, 'toks' is the same as 'toksExt' or without some stopwords set.
                         (toks, toksExt) <- combosTokens(ns.toSeq);
-                        idxs = toks.map(_.index);
-                        e <- mdl.elements.values;
-                        elemId = e.getId;
-                        greedy = e.isGreedy.orElse(mdl.model.isGreedy)
-                        if !greedy || !alreadyMarked(ns, elemId, toks, idxs)
+                            idxs = toks.map(_.index);
+                            e <- mdl.elements.values;
+                            elemId = e.getId;
+                            greedy = e.isGreedy.orElse(mdl.model.isGreedy)
+                            if !greedy || !alreadyMarked(ns, elemId, toks, idxs)
                     ) {
                         def add(
                             dbgType: String,
@@ -456,7 +455,7 @@ object NCModelEnricher extends NCProbeEnricher {
 
                             val ok =
                                 (!greedy || !alreadyMarked(ns, elemId, elemToks, idxs)) &&
-                                 ( parts.isEmpty || !parts.exists { case (t, _) => t.getId == elemId })
+                                    ( parts.isEmpty || !parts.exists { case (tok, _) => tok.getId == elemId })
 
                             if (ok)
                                 mark(
@@ -563,7 +562,7 @@ object NCModelEnricher extends NCProbeEnricher {
                                     )
                             }
                             else
-                                // 2.2 Sparse.
+                            // 2.2 Sparse.
                                 for (syn <- allSyns; comb <- allCombs)
                                     NCSynonymsManager.onSparseMatch(
                                         ns.srvReqId,
@@ -573,7 +572,7 @@ object NCModelEnricher extends NCProbeEnricher {
                                         req,
                                         variantsToks,
                                         res => {
-                                            val toks = getSparsedTokens(toTokens(res, ns), toTokens(comb, ns))
+                                            val toks = getSparsedTokens(toNlpTokens(res, ns), toNlpTokens(comb, ns))
                                             val parts = toParts(mdl, ns.srvReqId, res, syn)
                                             val typ = if (syn.sparse) "IDL sparse"else "IDL continuous"
 
@@ -607,6 +606,9 @@ object NCModelEnricher extends NCProbeEnricher {
       * @param ns
       */
     private def normalize(ns: Sentence): Unit = {
+        // Find and removes user notes if sentence contains notes with similar structure but less count of swallowed stop-words.
+        // These stop-words can be used fro detection another user tokens and harmless if they are free words.
+        // Notes with links and with references on them - aren't touched.
         val usrNotes = ns.flatten.filter(_.isUser).distinct
         val links = NCSentenceManager.getLinks(usrNotes)
         val parts = NCSentenceManager.getPartKeys(usrNotes)
@@ -638,28 +640,34 @@ object NCModelEnricher extends NCProbeEnricher {
     // TODO: simplify, add tests, check model properties (sparse etc) for optimization.
     /**
       *
-      * @param elmId
-      * @param toks
-      * @param sliceToksIdxsSorted
+      * @param elmId Element ID.
+      * @param toks Tokens.
+      * @param idxs Indexes, note that it can be not exactly tokens indexes (sparse case)
       */
-    private def alreadyMarked(ns: Sentence, elmId: String, toks: Seq[NlpToken], sliceToksIdxsSorted: Seq[Int]): Boolean = {
+    private def alreadyMarked(ns: Sentence, elmId: String, toks: Seq[NlpToken], idxs: Seq[Int]): Boolean = {
         lazy val toksIdxsSorted = toks.map(_.index).sorted
 
-        sliceToksIdxsSorted.map(ns).forall(_.exists(n => n.noteType == elmId && n.sparsity == 0)) ||
-        toks.exists(_.exists(n =>
-            n.noteType == elmId &&
-            (
-                (n.sparsity == 0 &&
-                    (sliceToksIdxsSorted.containsSlice(n.tokenIndexes) || n.tokenIndexes.containsSlice(toksIdxsSorted))
-                )
-                    ||
-                (
-                    n.tokenIndexes == toksIdxsSorted ||
-                    n.tokenIndexes.containsSlice(toksIdxsSorted) &&
-                    U.isContinuous(toksIdxsSorted) &&
-                    U.isContinuous(n.tokenIndexes)
-                )
-            )
-        ))
+        // All tokens with given indexes found with zero sparsity.
+        val ok1 = idxs.map(ns).forall(_.exists(n => n.noteType == elmId && n.sparsity == 0))
+
+        lazy val ok2 =
+            toks.exists(_.exists(n =>
+                if (n.noteType == elmId) {
+                    val noteOk1 = n.sparsity == 0 &&
+                        (idxs.containsSlice(n.tokenIndexes) || n.tokenIndexes.containsSlice(toksIdxsSorted))
+
+                    lazy val noteOk2 =
+                        n.tokenIndexes == toksIdxsSorted ||
+                            n.tokenIndexes.containsSlice(toksIdxsSorted) &&
+                                U.isContinuous(toksIdxsSorted) &&
+                                U.isContinuous(n.tokenIndexes)
+
+                    noteOk1 || noteOk2
+                }
+                else
+                    false
+            ))
+
+        ok1 || ok2
     }
 }

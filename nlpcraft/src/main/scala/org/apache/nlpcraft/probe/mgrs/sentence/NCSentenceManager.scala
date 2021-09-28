@@ -369,7 +369,7 @@ object NCSentenceManager extends NCService {
         val t = NCNlpSentenceToken(idx)
 
         // Note, it adds stop-words too.
-        val content = nsCopyToks.zipWithIndex.filter(p => indexes.contains(p._2)).map(_._1)
+        val content = nsCopyToks.zipWithIndex.filter { case (_, idx) => indexes.contains(idx) }.map { case (tok, _) => tok}
 
         content.foreach(t => history += t.index -> idx)
 
@@ -378,15 +378,12 @@ object NCSentenceManager extends NCService {
 
             val n = content.size - 1
 
-            content.zipWithIndex.foreach(p => {
-                val t = p._1
-                val idx = p._2
-
+            content.zipWithIndex.foreach { case (t, idx) =>
                 buf += get(t)
 
                 if (idx < n && t.endCharIndex != content(idx + 1).startCharIndex)
                     buf += " "
-            })
+            }
 
             buf.mkString
         }
@@ -459,8 +456,7 @@ object NCSentenceManager extends NCService {
         for (tok <- ns.filter(_.isTypeOf(noteType)) if ok)
             tok.getNoteOpt(noteType, idxsField) match {
                 case Some(n) =>
-                    val idxs: Seq[Seq[Int]] =
-                        n.data[JList[JList[Int]]](idxsField).asScala.map(_.asScala.toSeq).toSeq
+                    val idxs: Seq[Seq[Int]] = n.data[JList[JList[Int]]](idxsField).asScala.map(_.asScala.toSeq).toSeq
                     var fixed = idxs
 
                     history.foreach {
@@ -539,8 +535,7 @@ object NCSentenceManager extends NCService {
             // Validation (all indexes calculated well)
             require(
                 !res ||
-                    !ns.flatten.
-                        exists(n => ns.filter(_.wordIndexes.exists(n.wordIndexes.contains)).exists(t => !t.contains(n))),
+                !ns.flatten.exists(n => ns.filter(_.wordIndexes.exists(n.wordIndexes.contains)).exists(t => !t.contains(n))),
                 s"Invalid sentence:\n" +
                     ns.map(t =>
                         // Human readable invalid sentence for debugging.
@@ -745,9 +740,11 @@ object NCSentenceManager extends NCService {
             )
         )
 
+        // There are optimizations below. Similar variants by some criteria deleted.
+
         def notNlpNotes(s: NCNlpSentence): Seq[NCNlpSentenceNote] = s.flatten.filter(!_.isNlp)
 
-        // Drops similar sentences (with same notes structure). Keeps with more found.
+        // Drops similar sentences with same notes structure based on greedy elements. Keeps with more notes found.
         val notGreedyElems =
             mdl.getElements.asScala.flatMap(e => if (!e.isGreedy.orElse(mdl.isGreedy)) Some(e.getId) else None).toSet
 
@@ -768,6 +765,7 @@ object NCSentenceManager extends NCService {
 
         var sensWithNotesIdxs = sensWithNotes.zipWithIndex
 
+        // Drops similar sentences if there are other sentences with superset of notes.
         sens =
             sensWithNotesIdxs.filter { case ((_, notNlpNotes1), idx1) =>
                 !sensWithNotesIdxs.
@@ -775,13 +773,12 @@ object NCSentenceManager extends NCService {
                     exists { case((_, notNlpNotes2), _) => notNlpNotes1.subsetOf(notNlpNotes2) }
             }.map { case ((sen, _), _) => sen }
 
-        // Drops similar sentences (with same tokens structure).
-        // Among similar sentences we prefer one with minimal free words count.
+        // Drops similar sentences. Among similar sentences we prefer one with minimal free words count.
         sens = sens.groupBy(notNlpNotes(_).map(_.getKey(withIndexes = false))).
             map { case (_, seq) => seq.minBy(_.filter(p => p.isNlp && !p.isStopWord).map(_.wordIndexes.length).sum) }.
             toSeq
 
-        // Drops sentences if they are just subset of another.
+        // Drops sentences if they are just subset of another (indexes ignored here)
         sensWithNotes = sensWithNotes.filter { case (sen, _) => sens.contains(sen) }
 
         sensWithNotesIdxs = sensWithNotes.zipWithIndex
