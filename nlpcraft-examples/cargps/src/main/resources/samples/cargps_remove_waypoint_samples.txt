@@ -19,3 +19,7 @@
 # Set of samples (corpus) for automatic unit and regression testing.
 #
 
+hey truck, cancel the last waypoint
+hey truck, cancel the stopover location
+Hi truck - drive without stopping at the last checkpoint
+

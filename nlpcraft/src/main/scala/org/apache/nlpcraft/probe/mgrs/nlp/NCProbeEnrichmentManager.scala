@@ -234,6 +234,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
         val tbl = NCAsciiTable()
 
         tbl += (s"${b("Text")}", nlpSens.map(s => bo(s.text)))
+        tbl += ("", bo("-") * nlpSens.maxBy(_.text.length).text.length)
         tbl += (s"${b("Model ID")}", mdlId)
         tbl += (s"${b("User:")}", "")
         tbl += (s"${b("  ID")}", usrId)

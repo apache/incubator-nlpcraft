@@ -27,7 +27,7 @@ class CarGpsModel extends NCModelFileAdapter("cargps_model.yaml") {
      *
      * @return
      */
-    @NCIntentRef("int:navigate")
+    @NCIntentRef("navigate")
     @NCIntentSampleRef("samples/cargps_navigate_samples.txt")
     def onNavigation(): NCResult = {
         NCResult.text(s"")
@@ -37,7 +37,7 @@ class CarGpsModel extends NCModelFileAdapter("cargps_model.yaml") {
      *
      * @return
      */
-    @NCIntentRef("int:cancel")
+    @NCIntentRef("cancel")
     @NCIntentSampleRef("samples/cargps_cancel_samples.txt")
     def onCancel(): NCResult = {
         NCResult.text(s"")
@@ -47,7 +47,7 @@ class CarGpsModel extends NCModelFileAdapter("cargps_model.yaml") {
      *
      * @return
      */
-    @NCIntentRef("int:add:waypoint")
+    @NCIntentRef("add:waypoint")
     @NCIntentSampleRef("samples/cargps_add_waypoint_samples.txt")
     def onAddWaypoint(): NCResult = {
         NCResult.text(s"")
@@ -57,7 +57,7 @@ class CarGpsModel extends NCModelFileAdapter("cargps_model.yaml") {
      *
      * @return
      */
-    @NCIntentRef("int:remove:waypoint")
+    @NCIntentRef("remove:waypoint")
     @NCIntentSampleRef("samples/cargps_remove_waypoint_samples.txt")
     def onRemoveWaypoint(): NCResult = {
         NCResult.text(s"")
