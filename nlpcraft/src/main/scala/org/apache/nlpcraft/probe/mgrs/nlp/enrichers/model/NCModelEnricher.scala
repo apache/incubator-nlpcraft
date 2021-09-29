@@ -607,8 +607,8 @@ object NCModelEnricher extends NCProbeEnricher {
       */
     private def normalize(ns: Sentence): Unit = {
         // Find and removes user notes if sentence contains notes with similar structure but less count of swallowed stop-words.
-        // These stop-words can be used fro detection another user tokens and harmless if they are free words.
-        // Notes with links and with references on them - aren't touched.
+        // These stop-words can be used for detection another user tokens and if they are free words it is harmless too.
+        // Ignored notes with links and with references on them.
         val usrNotes = ns.flatten.filter(_.isUser).distinct
         val links = NCSentenceManager.getLinks(usrNotes)
         val parts = NCSentenceManager.getPartKeys(usrNotes)
@@ -658,9 +658,9 @@ object NCModelEnricher extends NCProbeEnricher {
 
                     lazy val noteOk2 =
                         n.tokenIndexes == toksIdxsSorted ||
-                            n.tokenIndexes.containsSlice(toksIdxsSorted) &&
-                                U.isContinuous(toksIdxsSorted) &&
-                                U.isContinuous(n.tokenIndexes)
+                        n.tokenIndexes.containsSlice(toksIdxsSorted) &&
+                        U.isContinuous(toksIdxsSorted) &&
+                        U.isContinuous(n.tokenIndexes)
 
                     noteOk1 || noteOk2
                 }

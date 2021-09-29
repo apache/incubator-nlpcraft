@@ -684,7 +684,7 @@ object NCSentenceManager extends NCService {
       * lengths - the winning note is chosen based on this priority.
       */
     @throws[NCE]
-    private def collapseSentence(sen: NCNlpSentence, mdl: NCModel, lastPhase: Boolean = false): Seq[NCNlpSentence] = {
+    def collapse(mdl: NCModel, sen: NCNlpSentence, lastPhase: Boolean = false): Seq[NCNlpSentence] = {
         // Always deletes `similar` notes.
         // Some words with same note type can be detected various ways.
         // We keep only one variant -  with `best` direct and sparsity parameters,
@@ -762,18 +762,16 @@ object NCSentenceManager extends NCService {
 
         // There are optimizations below. Similar variants by some criteria deleted.
 
-        def notNlpNotes(s: NCNlpSentence): Seq[NCNlpSentenceNote] = s.flatten.filter(!_.isNlp)
-
         // Drops similar sentences with same notes structure based on greedy elements. Keeps with more notes found.
         val notGreedyElems =
             mdl.getElements.asScala.flatMap(e => if (!e.isGreedy.orElse(mdl.isGreedy)) Some(e.getId) else None).toSet
 
-        sens = sens.groupBy(notNlpNotes(_).groupBy(_.noteType).keys.toSeq.sorted.distinct).
+        sens = sens.groupBy(p => getNotNlpNotes(p.tokens).groupBy(_.noteType).keys.toSeq.sorted.distinct).
             flatMap { case (types, sensSeq) =>
                 if (types.exists(notGreedyElems.contains))
                     sensSeq
                 else {
-                    val m: Map[NCNlpSentence, Int] = sensSeq.map(p => p -> notNlpNotes(p).size).toMap
+                    val m: Map[NCNlpSentence, Int] = sensSeq.map(p => p -> getNotNlpNotes(p.tokens).size).toMap
 
                     val max = m.values.max
 
@@ -794,7 +792,7 @@ object NCSentenceManager extends NCService {
             }.map { case ((sen, _), _) => sen }
 
         // Drops similar sentences. Among similar sentences we prefer one with minimal free words count.
-        sens = sens.groupBy(notNlpNotes(_).map(_.getKey(withIndexes = false))).
+        sens = sens.groupBy(p => getNotNlpNotes(p.tokens).map(_.getKey(withIndexes = false))).
             map { case (_, seq) => seq.minBy(_.filter(p => p.isNlp && !p.isStopWord).map(_.wordIndexes.length).sum) }.
             toSeq
 
@@ -830,15 +828,6 @@ object NCSentenceManager extends NCService {
 
         ackStopped()
     }
-
-    /**
-      *
-      * @param mdl
-      * @param sen
-      * @param lastPhase
-      */
-    def collapse(mdl: NCModel, sen: NCNlpSentence, lastPhase: Boolean = false): Seq[NCNlpSentence] =
-        collapseSentence(sen, mdl, lastPhase)
 
     /**
       *
