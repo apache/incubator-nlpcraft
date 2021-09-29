@@ -17,7 +17,7 @@
 
 package org.apache.nlpcraft.server.rest
 
-import org.apache.nlpcraft.model.NCElement
+import org.apache.nlpcraft.model.{NCElement, NCIntent, NCIntentSample, NCResult}
 import org.apache.nlpcraft.{NCTestElement, NCTestEnvironment}
 import org.junit.jupiter.api.Assertions._
 import org.junit.jupiter.api.Test
@@ -25,10 +25,22 @@ import org.junit.jupiter.api.Test
 import java.util
 import scala.jdk.CollectionConverters.{ListHasAsScala, MapHasAsJava, SetHasAsJava, SetHasAsScala}
 
+class RestTestModelExt1 extends RestTestModel {
+    @NCIntent("intent=onX term(t)={# == 'a'}")
+    @NCIntentSample(Array(
+        "oh, cat will feel happy",
+        "oh , cat will feel happy",
+        "oh  cat will feel happy"
+    ))
+    private def x(): NCResult = NCResult.text("OK")
+
+    override def getElements: util.Set[NCElement] =
+        (super.getElements.asScala ++ Set(NCTestElement("cat", "cat", "{^^{is_alphanum(tok_txt)}^^}[1,3]"))).asJava
+}
 /**
   * Note that context word server should be started.
   */
-@NCTestEnvironment(model = classOf[RestTestModel], startClient = false)
+@NCTestEnvironment(model = classOf[RestTestModelExt1], startClient = false)
 class NCRestModelSpec1 extends NCRestSpec {
     @Test
     def testSugsyn(): Unit = {
@@ -57,13 +69,24 @@ class NCRestModelSpec1 extends NCRestSpec {
             })
         )
 
+        post("model/sugsyn", "mdlId" -> "rest.test.model", "minScore" -> 0.5)(
+            ("$.status", (status: String) => assertEquals("API_OK", status)),
+            ("$.result.suggestions[:1].cat.*", (data: JList[java.util.Map[String, Object]]) => {
+                val scores = extract(data)
+
+                assertTrue(scores.nonEmpty)
+                assertTrue(scores.forall(s => s >= 0.5 && s <= 1))
+            })
+        )
+
+
         postError("model/sugsyn", 400, "NC_INVALID_FIELD", "mdlId" -> "UNKNOWN")
         postError("model/sugsyn", 400, "NC_INVALID_FIELD", "mdlId" -> "rest.test.model", "minScore" -> 2)
         postError("model/sugsyn", 400, "NC_ERROR")
     }
 }
 
-class RestTestModelExt extends RestTestModel {
+class RestTestModelExt2 extends RestTestModel {
     override def getMacros: util.Map[String, String] = {
         Map(
             "<M1>" -> "mtest1 {x|_}",
@@ -90,7 +113,7 @@ class RestTestModelExt extends RestTestModel {
 /**
   *
   */
-@NCTestEnvironment(model = classOf[RestTestModelExt], startClient = false)
+@NCTestEnvironment(model = classOf[RestTestModelExt2], startClient = false)
 class NCRestModelSpec2 extends NCRestSpec {
     @Test
     def testSyns(): Unit = {

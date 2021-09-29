@@ -42,8 +42,8 @@ import scala.jdk.CollectionConverters._
 import scala.util.{Failure, Success}
 
 /**
- * Synonym suggestion manager.
- */
+  * Synonym suggestion manager.
+  */
 object NCSuggestSynonymManager extends NCService {
     // For context word server requests.
     private final val MAX_LIMIT: Int = 10000
@@ -82,40 +82,47 @@ object NCSuggestSynonymManager extends NCService {
 
                 case _ =>
                     throw new NCE(
-                    s"Unexpected HTTP response from `ctxword` server [" +
-                    s"code=$code, " +
-                    s"response=$js" +
-                    s"]"
-                )
+                        s"Unexpected HTTP response from `ctxword` server [" +
+                            s"code=$code, " +
+                            s"response=$js" +
+                            s"]"
+                    )
             }
         }
 
     case class Suggestion(word: String, score: Double)
     case class RequestData(sentence: String, ex: String, elmId: String, index: Int)
-    case class RestRequestSentence(text: String, indexes: util.List[Int])
+    case class RestRequestSentence(text: String, indexes: util.List[Int]) {
+        validate(text, indexes.asScala)
+
+        private def validate(text: String, indexes: Seq[Int]): Unit = {
+            val arr = splitAndNormalize(text)
+
+            require(
+                indexes.forall(i => i >= 0 && i < arr.length),
+                s"Invalid request [text=$text, indexes=${indexes.mkString(",")}"
+            )
+        }
+    }
     case class RestRequest(sentences: util.List[RestRequestSentence], limit: Int, minScore: Double)
     case class Word(word: String, stem: String) {
         require(!word.contains(" "), s"Word cannot contains spaces: $word")
-        require(
-            word.forall(ch =>
-                ch.isLetterOrDigit ||
-                ch == '\'' ||
-                SEPARATORS.contains(ch)
-            ),
-            s"Unsupported symbols: $word"
-        )
+        require(isSuitable4Suggestion(word), s"Unsupported symbols: $word")
     }
     case class SuggestionResult(synonym: String, score: Double)
 
     private def split(s: String): Seq[String] = U.splitTrimFilter(s, " ")
     private def toStem(s: String): String = split(s).map(NCNlpPorterStemmer.stem).mkString(" ")
     private def toStemWord(s: String): String = NCNlpPorterStemmer.stem(s)
+    private def splitAndNormalize(s: String) = s.split(" ").map(_.strip).filter(_.nonEmpty)
+    private def isSuitable4Suggestion(word: String): Boolean =
+        word.forall(ch => ch.isLetterOrDigit || ch == '\'' || SEPARATORS.contains(ch))
 
     /**
-     *
-     * @param seq1
-     * @param seq2
-     */
+      *
+      * @param seq1
+      * @param seq2
+      */
     private def getAllSlices(seq1: Seq[String], seq2: Seq[String]): Seq[Int] = {
         val seq = mutable.Buffer.empty[Int]
 
@@ -131,12 +138,12 @@ object NCSuggestSynonymManager extends NCService {
     }
 
     /**
-     *
-     * @param mdlId
-     * @param minScoreOpt
-     * @param parent
-     * @return
-     */
+      *
+      * @param mdlId
+      * @param minScoreOpt
+      * @param parent
+      * @return
+      */
     def suggest(mdlId: String, minScoreOpt: Option[Double], parent: Span = null): Future[NCSuggestSynonymResult] =
         startScopedSpan("inspect", parent, "mdlId" -> mdlId) { _ =>
             val now = U.now()
@@ -148,8 +155,8 @@ object NCSuggestSynonymManager extends NCService {
                     try {
                         require(
                             m.containsKey("macros") &&
-                            m.containsKey("synonyms") &&
-                            m.containsKey("samples")
+                                m.containsKey("synonyms") &&
+                                m.containsKey("samples")
                         )
 
                         val mdlMacros = m.get("macros").
@@ -187,7 +194,7 @@ object NCSuggestSynonymManager extends NCService {
                             if (allSamplesCnt < MIN_CNT_MODEL)
                                 warns +=
                                     s"Model has too few ($allSamplesCnt) intents samples. " +
-                                    s"Try to increase overall sample count to at least $MIN_CNT_MODEL."
+                                        s"Try to increase overall sample count to at least $MIN_CNT_MODEL."
 
                             else {
                                 val ids =
@@ -198,7 +205,7 @@ object NCSuggestSynonymManager extends NCService {
                                 if (ids.nonEmpty)
                                     warns +=
                                         s"Following model intent have too few samples (${ids.mkString(", ")}). " +
-                                        s"Try to increase overall sample count to at least $MIN_CNT_INTENT."
+                                            s"Try to increase overall sample count to at least $MIN_CNT_INTENT."
                             }
 
                             val parser = new NCMacroParser()
@@ -212,15 +219,18 @@ object NCSuggestSynonymManager extends NCService {
                                 flatMap { case (_, samples) => samples }.
                                 map(ex => SEPARATORS.foldLeft(ex)((s, ch) => s.replaceAll(s"\\$ch", s" $ch "))).
                                 map(ex => {
-                                    val seq = ex.split(" ")
+                                    val seq = splitAndNormalize(ex)
 
                                     seq -> seq.map(toStemWord)
                                 }).
                                 toMap
 
                             val elmSyns =
-                                mdlSyns.map { case (elmId, syns) => elmId -> syns.flatMap(parser.expand) }.
-                                    map { case (id, seq) => id -> seq.map(txt => split(txt).map(p => Word(p, toStemWord(p)))) }
+                                mdlSyns.
+                                    map { case (elmId, syns) => elmId -> syns.flatMap(parser.expand) }.
+                                    map { case (elmId, syns) => elmId -> syns.filter(isSuitable4Suggestion) }.
+                                    filter { case (_, syns) => syns.nonEmpty }.
+                                    map { case (elmId, seq) => elmId -> seq.map(txt => split(txt).map(p => Word(p, toStemWord(p)))) }
 
                             val allReqs =
                                 elmSyns.map {
@@ -276,7 +286,7 @@ object NCSuggestSynonymManager extends NCService {
                                 s"exs=${exs.size}, " +
                                 s"syns=$allSynsCnt, " +
                                 s"reqs=$allReqsCnt" +
-                            s"]")
+                                s"]")
 
                             if (allReqsCnt == 0)
                                 onError(s"Suggestions cannot be generated for model: '$mdlId'")
@@ -441,19 +451,19 @@ object NCSuggestSynonymManager extends NCService {
         }
 
     /**
-     *
-     * @param parent Optional parent span.
-     * @return
-     */
+      *
+      * @param parent Optional parent span.
+      * @return
+      */
     override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ =>
         ackStarting()
         ackStarted()
     }
 
     /**
-     *
-     * @param parent Optional parent span.
-     */
+      *
+      * @param parent Optional parent span.
+      */
     override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
         ackStopped()
