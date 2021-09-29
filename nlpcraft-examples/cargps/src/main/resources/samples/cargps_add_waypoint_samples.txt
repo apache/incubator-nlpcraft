@@ -19,3 +19,5 @@
 # Set of samples (corpus) for automatic unit and regression testing.
 #
 
+hey car, add a stopover at 21 table rock drive
+howdy, truck - add a waypoint for 2121 5th avenue please

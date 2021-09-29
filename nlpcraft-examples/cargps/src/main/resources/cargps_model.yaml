@@ -29,7 +29,7 @@ macros:
   - name: "<HEY>"
     macro: "{hey|hi|howdy}"
   - name: "<NAVIGATE>"
-    macro: "{navigate|pilot|plot|drive|route|plan|find|head|ride|direct|steer|operate|sail} {out|_} {course|route|destination|drive|_} {to|_}"
+    macro: "{navigate|pilot|journey|plot|drive|route|plan|find|head|ride|direct|steer|operate|sail} {out|_} {course|route|destination|drive|_} {to|_}"
   - name: "<CANCEL>"
     macro: "{cancel|stop|abort|finish|cease|quit} {off|_}"
   - name: "<WAYPOINT>"
@@ -81,7 +81,7 @@ elements:
   - id: "x:cancel"
     description: "Cancel action."
     synonyms:
-      - "<CANCEL>"
+      - "<CANCEL> <NAVIGATE>"
 
   - id: "x:navigate"
     description: "Start 'navigate' action."
@@ -99,6 +99,7 @@ elements:
     synonyms:
       # NOTE: assumes the LAST waypoint, if any.
       - "{skip|remove} {over|_} {last|latest|current|_} <WAYPOINT>"
+      - "<CANCEL> {last|latest|current|_} <WAYPOINT>"
       - "<NAVIGATE> without {stopping|<WAYPOINT>}"
 
 intents:

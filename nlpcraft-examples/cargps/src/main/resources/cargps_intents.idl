@@ -24,8 +24,6 @@ fragment=hey term={# == "x:hey" && tok_is_first()}
 
 // Cancel intent.
 intent=cancel
-    // Ignore any other user or system tokens if we found 'cancel' token.
-    options={'unused_usr_toks': true, 'unused_sys_toks': true}
     fragment(hey) // Always, salutation 1st.
     term={# == "x:cancel"}
 
