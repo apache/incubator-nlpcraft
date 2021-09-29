@@ -138,7 +138,7 @@
         <vertical.blank.ver>1.0.1</vertical.blank.ver>
         <fliptables.ver>1.1.0</fliptables.ver>
         <jline.ver>3.20.0</jline.ver>
-        <jansi.ver>2.3.4</jansi.ver>
+        <jansi.ver>2.3.2</jansi.ver>
 
         <!--
             Following libraries versions are compatible:
