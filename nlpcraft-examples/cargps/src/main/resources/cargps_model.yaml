@@ -76,7 +76,7 @@ elements:
   - id: "x:hey"
     description: "NLI prompt, salutation."
     synonyms:
-      - "<HEY> {car|vehicle|truck}"
+      - "<HEY> {car|vehicle|{pickup|_} truck|pickup|van|sedan|coupe|lorry}"
 
   - id: "x:cancel"
     description: "Cancel action."

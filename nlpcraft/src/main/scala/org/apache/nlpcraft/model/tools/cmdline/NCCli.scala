@@ -2611,16 +2611,28 @@ object NCCli extends NCCliBase {
                     }
 
                     // For 'help' - add additional auto-completion/suggestion candidates.
-                    if (cmd == HELP_CMD.name)
-                        candidates.addAll(CMDS.map(c => s"--cmd=${c.name}").map(s =>
-                            mkCandidate(
-                                disp = s,
-                                grp = CMDS_GRP,
-                                desc = null,
-                                completed = true
-                            ))
-                            .asJava
-                        )
+                    if (cmd == HELP_CMD.name) {
+                        if (words.exists(_.contains("-c=")))
+                            candidates.addAll(CMDS.map(c => s"-c=${c.name}").map(s =>
+                                mkCandidate(
+                                    disp = s,
+                                    grp = CMDS_GRP,
+                                    desc = null,
+                                    completed = true
+                                ))
+                                .asJava
+                            )
+                        else
+                            candidates.addAll(CMDS.map(c => s"--cmd=${c.name}").map(s =>
+                                mkCandidate(
+                                    disp = s,
+                                    grp = CMDS_GRP,
+                                    desc = null,
+                                    completed = true
+                                ))
+                                .asJava
+                            )
+                    }
 
                     // For 'rest' or 'call' - add '--path' auto-completion/suggestion candidates.
                     if (cmd == REST_CMD.name || cmd == CALL_CMD.name) {
