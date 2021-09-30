@@ -19,12 +19,14 @@ package org.apache.nlpcraft.probe.mgrs.nlp.enrichers.function
 
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.NCService
+import org.apache.nlpcraft.common.makro.NCMacroParser
 import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
 import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote, NCNlpSentenceToken}
 import org.apache.nlpcraft.probe.mgrs.NCProbeModel
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
 
 import java.util.Collections
+import scala.collection.mutable
 import scala.jdk.CollectionConverters.{MapHasAsScala, SetHasAsScala}
 
 /**
@@ -33,33 +35,48 @@ import scala.jdk.CollectionConverters.{MapHasAsScala, SetHasAsScala}
 object NCFunctionEnricher extends NCProbeEnricher {
     private final val TOK_ID = "nlpcraft:function"
 
-    private case class SingeFunc(name: String, synonyms: Seq[String])
+    private case class SingleFuncDef(name: String, synonyms: String*)
 
-    private object SingeFunc {
-        def apply(name: String, syns:String*): SingeFunc = SingeFunc(name, syns)
+    private final val FUNC_NUM_SINGLE = {
+        import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.function.NCFunctionEnricher.{SingleFuncDef => F}
+
+        Set(
+            F("sin", "sine"),
+            F("cos", "cosine"),
+            F("tan", "tangent"),
+            F("cot", "cotangent"),
+
+            F("round"),
+            F("floor"),
+
+            F("max", "{maximum|max} {of|_}"),
+            F("min", "{minimum|min} {of|_}"),
+            F("avg", "{average|avg} {of|_}"),
+            F("sum", "{summary|sum} {of|_}"),
+            F("count", "count {of|_}"),
+            F("first", "first {of|_}"),
+            F("last", "last {of|_}")
+        )
     }
 
-    private final val FUNC_NUM_SINGLE =
-        Set(
-            SingeFunc("sin", "sine"),
-            SingeFunc("cos", "cosine"),
-            SingeFunc("tan", "tangent"),
-            SingeFunc("cot", "cotangent"),
-            SingeFunc("round"),
-            SingeFunc("floor"),
-            SingeFunc("max", "maximum"),
-            SingeFunc("min", "minimum"),
-            SingeFunc("avg", "average"),
-            SingeFunc("sum", "summary")
-        )
 
-    @volatile private var funcNumSingleData: Map[String, String] = _
+    @volatile private var funcSingle: Map[String, String] = _
 
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ =>
         ackStarting()
 
-        funcNumSingleData =
-            FUNC_NUM_SINGLE.flatMap(p => (p.synonyms :+ p.name).toSet.map(NCNlpCoreManager.stem).map(_ -> p.name).toMap).toMap
+        val parser = new NCMacroParser
+
+        funcSingle =
+            FUNC_NUM_SINGLE.flatMap(
+                func =>
+                    (func.synonyms :+ func.name).
+                        toSet.flatMap(parser.expand).
+                        map(_.split(" ").map(_.strip).filter(_.nonEmpty).map(NCNlpCoreManager.stem)).
+                        map(stems => stems.mkString(" ")).
+                        map { syn => syn -> func.name }.
+                    toMap
+            ).toMap
 
         ackStarted()
     }
@@ -71,7 +88,7 @@ object NCFunctionEnricher extends NCProbeEnricher {
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ =>
         ackStopping()
 
-        funcNumSingleData = null
+        funcSingle = null
 
         ackStopped()
     }
@@ -81,34 +98,69 @@ object NCFunctionEnricher extends NCProbeEnricher {
 
         val restricted =
             mdl.model.getRestrictedCombinations.asScala.getOrElse(TOK_ID, java.util.Collections.emptySet()).
-                asScala
+                asScala.toSet
 
         startScopedSpan(
             "enrich", parent, "srvReqId" -> ns.srvReqId, "mdlId" -> mdl.model.getId, "txt" -> ns.text
-        ) { _ =>
-            val buf = collection.mutable.ArrayBuffer.empty[Seq[NCNlpSentenceToken]]
+        ) { _ => processSingleFunctions(ns, restricted)
+        }
+    }
 
-            for (toks <- ns.tokenMixWithStopWords() if toks.size > 1 && !buf.exists(_.containsSlice(toks))) {
-                funcNumSingleData.get(toks.head.stem) match {
-                    case Some(f) =>
-                        val users = toks.tail.filter(_.isUser)
+    /**
+      *
+      * @param ns
+      * @param restricted
+      */
+    private def processSingleFunctions(ns: NCNlpSentence, restricted: Set[String]): Unit = {
+        val buf = mutable.ArrayBuffer.empty[Seq[NCNlpSentenceToken]]
 
-                        if (users.size == 1 && toks.tail.forall(t => users.contains(t) || t.isStopWord)) {
-                            for (typ <- users.head.filter(_.isUser).map(_.noteType) if !restricted.contains(typ))
-                                toks.head.add(
-                                    NCNlpSentenceNote(
-                                        Seq(toks.head.index),
-                                        TOK_ID,
-                                        "type" -> f,
-                                        "indexes" -> Collections.singleton(users.head.index),
-                                        "note" -> typ
-                                    )
-                                )
+        for (toks <- ns.tokenMixWithStopWords() if !buf.exists(_.exists(toks.contains))) {
+            val stops = toks.filter(_.isStopWord)
+
+            val toksAllCombs =
+                (0 to stops.size).
+                    flatMap(i => stops.combinations(i).map(comb => toks.filter(t => !comb.contains(t)))).
+                    filter(_.nonEmpty)
+
+            toksAllCombs.to(LazyList).
+                flatMap(comb =>
+                    funcSingle.get(comb.map(_.stem).mkString(" ")) match {
+                        case Some(funName) => Some(comb -> funName)
+                        case None => None
+                    }
+                ).headOption match {
+                    case Some((comb, funName)) =>
+                        buf += toks
+
+                        val after = ns.tokens.drop(comb.last.index + 1)
+
+                        after.find(_.isUser) match {
+                            case Some(userTok) =>
+                                val betweenFuncAndUser = after.takeWhile(_ != userTok)
+
+                                if (betweenFuncAndUser.isEmpty || betweenFuncAndUser.forall(_.isStopWord)) {
+                                    val usrNoteTypes =
+                                        userTok.flatMap(n =>
+                                            if (n.isUser && !restricted.contains(n.noteType)) Some(n.noteType) else None
+                                        )
+
+                                    for (usrNoteType <- usrNoteTypes) {
+                                        val note =
+                                            NCNlpSentenceNote(
+                                                comb.map(_.index).toSeq,
+                                                TOK_ID,
+                                                "type" -> funName,
+                                                "indexes" -> Collections.singletonList(userTok.index),
+                                                "note" -> usrNoteType
+                                            )
+                                        comb.foreach(_.add(note))
+                                    }
+                                }
+
+                            case None => // No-op.
                         }
-
                     case None => // No-op.
                 }
-            }
         }
     }
 }

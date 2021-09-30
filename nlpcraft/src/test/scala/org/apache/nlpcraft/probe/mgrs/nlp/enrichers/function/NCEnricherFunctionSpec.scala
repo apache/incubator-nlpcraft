@@ -42,6 +42,23 @@ class NCEnricherFunctionSpec extends NCEnricherBaseSpec {
                 )
             ),
             _ => checkAll(
+                "max of A test",
+                Seq(
+                    fun(text = "max of", `type` = "max", index = 1, note = "A"),
+                    usr(text = "A", id = "A"),
+                    nlp(text = "test")
+                )
+            ),
+            _ => checkAll(
+                "max the of the A test",
+                Seq(
+                    fun(text = "max of", `type` = "max", index = 2, note = "A"),
+                    nlp(text = "the the", isStop = true),
+                    usr(text = "A", id = "A"),
+                    nlp(text = "test")
+                )
+            ),
+            _ => checkAll(
                 "maximum the A, maximum the the A",
                 Seq(
                     fun(text = "maximum", `type` = "max", index = 2, note = "A"),
@@ -66,7 +83,20 @@ class NCEnricherFunctionSpec extends NCEnricherBaseSpec {
                     nlp(text = "the", isStop = true),
                     usr(text = "A", id = "A")
                 )
+            ),
+            _ => checkAll(
+                "maximum of of the A the A, maximum test A",
+                Seq(
+                    fun(text = "maximum of", `type` = "max", index = 2, note = "A"),
+                    nlp(text = "of the", isStop = true),
+                    usr(text = "A", id = "A"),
+                    nlp(text = "the", isStop = true),
+                    usr(text = "A", id = "A"),
+                    nlp(text = ",", isStop = true),
+                    nlp(text = "maximum"),
+                    nlp(text = "test"),
+                    usr(text = "A", id = "A")
+                )
             )
-
         )
 }
