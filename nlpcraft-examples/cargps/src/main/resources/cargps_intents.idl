@@ -20,28 +20,28 @@
   */
 
 // Reusable fragments.
-fragment=hey term={# == "x:hey" && tok_is_first()}
+fragment=hi term={# == "x:hey" && tok_is_first()}
 
 // Cancel intent.
 intent=cancel
-    fragment(hey) // Always, salutation 1st.
+    fragment(hi) // Always, salutation 1st.
     term={# == "x:cancel"}
 
 // Navigate intent.
 intent=navigate
     options={'ordered': true} // Order of terms is important.
-    fragment(hey) // Always, salutation 1st.
+    fragment(hi) // Always, salutation 1st.
     term={# == "x:navigate"} // Then word 'navigate'.
-    term={# == "x:addr"} // Then where to navigate.
+    term(addr)={# == "x:addr"} // Then where to navigate.
 
 // Add a waypoint intent.
 intent=add:waypoint
-    fragment(hey) // Always, salutation 1st.
+    options={'ordered': true} // Order of terms is important.
+    fragment(hi) // Always, salutation 1st.
     term={# == "x:add-waypoint"}
-    term={# == "x:addr"}
+    term(addr)={# == "x:addr"} // Then where to navigate.
 
-// Remove a waypoint intent.
-// Assumes last waypoint.
+// Remove a waypoint intent (assumes last waypoint).
 intent=remove:waypoint
-    fragment(hey) // Always, salutation 1st.
+    fragment(hi) // Always, salutation 1st.
     term={# == "x:remove-waypoint"}

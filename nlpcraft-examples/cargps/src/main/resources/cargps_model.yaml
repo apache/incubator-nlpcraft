@@ -29,7 +29,7 @@ macros:
   - name: "<HEY>"
     macro: "{hey|hi|howdy}"
   - name: "<NAVIGATE>"
-    macro: "{navigate|pilot|journey|plot|drive|route|plan|find|head|ride|direct|steer|operate|sail} {out|_} {course|route|destination|drive|_} {to|_}"
+    macro: "{go|move|navigate|pilot|journey|plot|drive|route|plan|find|head|ride|direct|steer|operate|sail} {out|_} {course|route|destination|drive|_} {to|_}"
   - name: "<CANCEL>"
     macro: "{cancel|stop|abort|finish|cease|quit} {off|_}"
   - name: "<WAYPOINT>"
@@ -71,7 +71,7 @@ elements:
 
   - id: "x:addr"
     synonyms:
-      - "^^[num]{# == 'x:addr:num'}^^ ^^[name]{# == 'x:addr:st'}^^ ^^[kind]{# == 'x:addr:kind'}^^"
+      - "^^{# == 'x:addr:num'}^^ ^^{# == 'x:addr:st'}^^ ^^{# == 'x:addr:kind'}^^"
 
   - id: "x:hey"
     description: "NLI prompt, salutation."
@@ -87,12 +87,13 @@ elements:
     description: "Start 'navigate' action."
     synonyms:
       - "<NAVIGATE>"
+      - "{find|give|get|calculate} {me|_} {shortest|fastest|quickest|ideal|best|_} {navigation|route|path|drive|course|ride}"
 
   - id: "x:add-waypoint"
     description: "Add 'waypoint' action."
     synonyms:
       - "{add|make} <WAYPOINT>"
-      - "stop by"
+      - "stop {by|at}"
 
   - id: "x:remove-waypoint"
     description: "Remove last 'waypoint' action."

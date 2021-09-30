@@ -29,14 +29,15 @@ To set up `ctxword` module under Windows, you would need to repeat steps from `s
     - `python3`
     - `pip3` (included with the latest versions of python3)
     - `git`
+    - `rust` (install from [https://www.rust-lang.org/tools/install](https://www.rust-lang.org/tools/install))
  2. Download pre-trained [FastText](https://dl.fbaipublicfiles.com/fasttext/vectors-crawl/cc.en.300.bin.gz) model.
  3. Extract GZIP model into `data` folder (i.e. `/nlpcraft/src/main/python/ctxword/data`).
  4. Git clone [FastText](https://github.com/facebookresearch/fastText.git) into some temporary folder.
  5. Ensure that you have [Microsoft Windows 10 SDK](https://developer.microsoft.com/en-US/windows/downloads/windows-10-sdk/) installed. Step 6. will fail unless this SDK is installed.
- 6. Run `pip3 install fastText` (where `fastText` is root of the cloned git repository from the previous step).
- 7. Install PyTorch depending on whether you have NVIDIA CUDA support:
-    - Without CUDA support: `pip3 install torch==1.6.0+cpu -f https://download.pytorch.org/whl/torch_stable.html`
-    - With CUDA support: `pip3 install torch==1.6.0 -f https://download.pytorch.org/whl/torch_stable.html`
+ 6. Run as administrator `pip3 install fastText` (where `fastText` is root of the cloned git repository from the previous step).
+ 7. Install PyTorch depending on whether you have NVIDIA CUDA support (check the latest 'PyTorch' version):
+    - Without CUDA support: `pip3 install torch==1.9.1+cpu -f https://download.pytorch.org/whl/torch_stable.html`
+    - With CUDA support: `pip3 install torch==1.9.1 -f https://download.pytorch.org/whl/torch_stable.html`
  8. Install the rest of required python packages from `bin/py_requirements` by running `pip3 install -r bin/py_requirements`
  9. You can remove the local clone of FastText git repository after its setup is finished.
  

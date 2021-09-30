@@ -24,13 +24,17 @@ import org.apache.nlpcraft.model._
  */
 class CarGpsModel extends NCModelFileAdapter("cargps_model.yaml") {
     /**
-     *
-     * @return
-     */
+      *
+      * @param addrTok Address token from the 'navigate' intent.
+      * @return
+      */
     @NCIntentRef("navigate")
     @NCIntentSampleRef("samples/cargps_navigate_samples.txt")
-    def onNavigation(): NCResult = {
-        NCResult.text(s"")
+    def onNavigation(@NCIntentTerm("addr") addrTok: NCToken): NCResult = {
+        // Simulate actual GPS routing...
+        val msg = s"Started navigation to '${addrTok.getNormalizedText}'."
+        println(s"GPS: $msg")
+        NCResult.text(msg)
     }
 
     /**
@@ -40,17 +44,24 @@ class CarGpsModel extends NCModelFileAdapter("cargps_model.yaml") {
     @NCIntentRef("cancel")
     @NCIntentSampleRef("samples/cargps_cancel_samples.txt")
     def onCancel(): NCResult = {
-        NCResult.text(s"")
+        // Simulate actual GPS routing...
+        val msg = "Routing cancelled."
+        println(s"GPS: $msg")
+        NCResult.text(msg)
     }
 
     /**
-     *
-     * @return
-     */
+      *
+      * @param addrTok Address token from the 'add:waypoint' intent.
+      * @return
+      */
     @NCIntentRef("add:waypoint")
     @NCIntentSampleRef("samples/cargps_add_waypoint_samples.txt")
-    def onAddWaypoint(): NCResult = {
-        NCResult.text(s"")
+    def onAddWaypoint(@NCIntentTerm("addr") addrTok: NCToken): NCResult = {
+        // Simulate actual GPS routing...
+        val msg = s"Added waypoint for '${addrTok.getNormalizedText}'."
+        println(s"GPS: $msg")
+        NCResult.text(msg)
     }
 
     /**
@@ -60,6 +71,9 @@ class CarGpsModel extends NCModelFileAdapter("cargps_model.yaml") {
     @NCIntentRef("remove:waypoint")
     @NCIntentSampleRef("samples/cargps_remove_waypoint_samples.txt")
     def onRemoveWaypoint(): NCResult = {
-        NCResult.text(s"")
+        // Simulate actual GPS routing...
+        val msg = "Removing waypoint."
+        println(s"GPS: $msg")
+        NCResult.text(msg)
     }
 }

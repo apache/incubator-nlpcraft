@@ -20,5 +20,8 @@
 #
 
 hey car, navigate to 21 table rock drive
+hey car, find the best path to 21 table rock drive
+hey car, calculate the shortest navigation to 21 table rock drive
 howdy, truck - drive to 2121 5th avenue please
+howdy, truck - let's go to 11 dark sunrise plaza please
 hi lorry, how about a drive to 21 x x drive

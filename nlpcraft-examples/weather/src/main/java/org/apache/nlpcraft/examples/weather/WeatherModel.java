@@ -82,7 +82,7 @@ public class WeatherModel extends NCModelFileAdapter {
      *
      * @param ctx Intent solver context.
      * @param geoTokOpt Optional geo token.
-     * @return Geo location.
+     * @return Geo-location.
      */
     private Pair<Double, Double> prepGeo(NCIntentMatch ctx, Optional<NCToken> geoTokOpt) throws NCRejection {
         if (geoTokOpt.isPresent()) {

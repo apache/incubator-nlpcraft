@@ -22,4 +22,8 @@
 hey truck, cancel the last waypoint
 hey truck, cancel the stopover location
 Hi truck - drive without stopping at the last checkpoint
+hi truck - skip the waypoint
+hi truck - skip the latest way station
+hi truck - cancel the checkpoint
+hi car - continue routing without stopping at the last stop over
 
