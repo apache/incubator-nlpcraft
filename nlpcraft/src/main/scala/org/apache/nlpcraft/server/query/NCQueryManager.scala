@@ -262,7 +262,8 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
             startScopedSpan("future", parent, "srvReqId" -> srvReqId) { span =>
                 val tbl = NCAsciiTable()
 
-                tbl += (s"${b("Text")}", rv(" " + txt0 + " "))
+                tbl += (s"${b("Text")}", bo(txt0))
+                tbl += ("", bo("-") * txt0.length)
                 tbl += (s"${b("User ID")}", usr.id)
                 tbl += (s"${b("Model ID")}", mdlId)
                 tbl += (s"${b("Agent")}", usrAgent.getOrElse("<n/a>"))

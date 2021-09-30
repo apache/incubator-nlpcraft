@@ -55,15 +55,15 @@ class RestTestModel extends NCModelAdapter("rest.test.model", "REST test model",
 
     @NCIntent("intent=onA term(t)={# == 'a'}")
     @NCIntentSample(Array("My A"))
-    private def a(): NCResult = NCResult.text("OK")
+    def a(): NCResult = NCResult.text("OK")
 
     @NCIntent("intent=onB term(t)={# == 'b'}")
     @NCIntentSample(Array("My B"))
-    private def b(): NCResult = NCResult.text("OK")
+    def b(): NCResult = NCResult.text("OK")
 
     @NCIntent("intent=onMeta term(t)={# == 'meta'}")
     @NCIntentSample(Array("meta"))
-    private def meta(): NCResult = {
+    def meta(): NCResult = {
         val res = NCResult.text("OK")
 
         res.getMetadata.put(K1, V1)

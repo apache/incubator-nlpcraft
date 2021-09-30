@@ -38,7 +38,7 @@ object NCSynonymsManager extends NCService {
         private lazy val cache =
             mutable.HashMap.empty[String, mutable.HashMap[Int, mutable.HashMap[Seq[T], mutable.HashSet[Synonym]]]]
 
-        def isUnprocessed(elemId: String, s: Synonym, tokens: Seq[T]): Boolean =
+        def isUnprocessed(elemId: String, syn: Synonym, tokens: Seq[T]): Boolean =
             cache.
                 getOrElseUpdate(
                     elemId,
@@ -51,7 +51,7 @@ object NCSynonymsManager extends NCService {
                 getOrElseUpdate(
                     tokens,
                     mutable.HashSet.empty[Synonym]
-                ).add(s)
+                ).add(syn)
     }
 
     private case class SavedIdlKey(id: String, startCharIndex: Int, endCharIndex: Int, other: Map[String, AnyRef] = Map.empty)
@@ -72,24 +72,22 @@ object NCSynonymsManager extends NCService {
                 )
     }
 
-    private case class Value(request: NCRequest, variants: Seq[Seq[NCToken]], predicate: NCIdlFunction) {
-        override def toString: String = variants.toString()
-    }
+    private case class SavedIdlValue(request: NCRequest, variants: Seq[Seq[NCToken]], predicate: NCIdlFunction)
 
-    private val savedIdl = mutable.HashMap.empty[String, mutable.HashMap[SavedIdlKey, mutable.ArrayBuffer[Value]]]
-    private val idlChunksCache = mutable.HashMap.empty[String, mutable.HashMap[(IdlToken, NCProbeSynonymChunk), Boolean]]
+    private case class IdlChunkKey(token: IdlToken, chunk: NCProbeSynonymChunk)
+
+    private val savedIdl = mutable.HashMap.empty[String, mutable.HashMap[SavedIdlKey, mutable.ArrayBuffer[SavedIdlValue]]]
+    private val idlChunksCache = mutable.HashMap.empty[String, mutable.HashMap[IdlChunkKey, Boolean]]
     private val idlCaches = mutable.HashMap.empty[String, CacheHolder[IdlToken]]
     private val tokCaches = mutable.HashMap.empty[String, CacheHolder[Int]]
 
     override def start(parent: Span): NCService = {
         ackStarting()
-
         ackStarted()
     }
 
     override def stop(parent: Span): Unit = {
         ackStopping()
-
         ackStopped()
     }
 
@@ -120,7 +118,7 @@ object NCSynonymsManager extends NCService {
 
     /**
       *
-      * @param s
+      * @param syn
       * @param toks
       * @param isMatch
       * @param getIndex
@@ -128,19 +126,23 @@ object NCSynonymsManager extends NCService {
       * @tparam T
       */
     private def sparseMatch0[T](
-        s: Synonym,
+        syn: Synonym,
         toks: Seq[T],
         isMatch: (T, NCProbeSynonymChunk) => Boolean,
         getIndex: T => Int,
         shouldBeNeighbors: Boolean
     ): Option[Seq[T]] =
-        if (toks.size >= s.size) {
+        if (toks.size >= syn.size) {
             lazy val res = mutable.ArrayBuffer.empty[T]
             lazy val all = mutable.HashSet.empty[T]
 
+            // There are 3 states:
+            // 0 - initial working state, first step.
+            // 1 - working state, not first step.
+            // -1 - stop state.
             var state = 0
 
-            for (chunk <- s if state != -1) {
+            for (chunk <- syn if state != -1) {
                 val seq =
                     if (state == 0) {
                         state = 1
@@ -153,12 +155,12 @@ object NCSynonymsManager extends NCService {
                 if (seq.nonEmpty) {
                     val head = seq.head
 
-                    if (!s.permute && res.nonEmpty && getIndex(head) <= getIndex(res.last))
+                    if (!syn.permute && res.nonEmpty && getIndex(head) <= getIndex(res.last))
                         state = -1
                     else {
                         all ++= seq
 
-                        if (all.size > s.size)
+                        if (all.size > syn.size)
                             state = -1
                         else
                             res += head
@@ -168,7 +170,12 @@ object NCSynonymsManager extends NCService {
                     state = -1
             }
 
-            if (state != -1 && all.size == res.size && (!shouldBeNeighbors || U.isIncreased(res.map(getIndex).toSeq.sorted)))
+            if (
+                state != -1 && // State ok.
+                all.size == res.size && // There aren't excess processed tokens.
+                // `neighbors` conditions, important for simple not sparse synonyms.
+                (!shouldBeNeighbors || U.isIncreased(res.map(getIndex).toSeq.sorted))
+            )
                 Some(res.toSeq)
             else
                 None
@@ -186,69 +193,75 @@ object NCSynonymsManager extends NCService {
     private def save(req: NCRequest, tok: NCToken, pred: NCIdlFunction, variantsToks: Seq[Seq[NCToken]]): Unit = {
         savedIdl.
             getOrElseUpdate(req.getServerRequestId, mutable.HashMap.empty).
-            getOrElseUpdate(SavedIdlKey(tok), mutable.ArrayBuffer.empty) +=
-                Value(req, variantsToks, pred)
+                getOrElseUpdate(SavedIdlKey(tok), mutable.ArrayBuffer.empty) +=
+                    SavedIdlValue(req, variantsToks, pred)
     }
 
     /**
+      * Checks that given synonym is not checked yet with given NLP tokens' indexes.
       *
       * @param srvReqId
       * @param elemId
-      * @param s
+      * @param syn
       * @param tokens
       */
-    private def isUnprocessedTokens(srvReqId: String, elemId: String, s: Synonym, tokens: Seq[Int]): Boolean =
-        tokCaches.getOrElseUpdate(srvReqId, new CacheHolder[Int]).isUnprocessed(elemId, s, tokens)
+    private def isUnprocessedTokens(srvReqId: String, elemId: String, syn: Synonym, tokens: Seq[Int]): Boolean =
+        tokCaches.getOrElseUpdate(srvReqId, new CacheHolder[Int]).isUnprocessed(elemId, syn, tokens)
 
     /**
+      * Checks that given synonym is not checked yet with given IDL tokens.
       *
       * @param srvReqId
       * @param elemId
-      * @param s
+      * @param syn
       * @param tokens
       */
-    private def isUnprocessedIdl(srvReqId: String, elemId: String, s: Synonym, tokens: Seq[IdlToken]): Boolean =
-        idlCaches.getOrElseUpdate(srvReqId, new CacheHolder[IdlToken]).isUnprocessed(elemId, s, tokens)
+    private def isUnprocessedIdl(srvReqId: String, elemId: String, syn: Synonym, tokens: Seq[IdlToken]): Boolean =
+        idlCaches.getOrElseUpdate(srvReqId, new CacheHolder[IdlToken]).isUnprocessed(elemId, syn, tokens)
 
     /**
+      * Checks matching IDL token with synonym's chunk.
       *
-      * @param tow
-      * @param chunk
-      * @param req
-      * @param variantsToks
+      * @param t IDL token.
+      * @param chunk Synonym's chunk.
+      * @param req Request.
+      * @param variantsToks All possible request's variants.
       */
     private def isMatch(
-        tow: IdlToken, chunk: NCProbeSynonymChunk, req: NCRequest, variantsToks: Seq[Seq[NCToken]]
+        t: IdlToken, chunk: NCProbeSynonymChunk, req: NCRequest, variantsToks: Seq[Seq[NCToken]]
     ): Boolean =
         idlChunksCache.
-            getOrElseUpdate(req.getServerRequestId,
-                mutable.HashMap.empty[(IdlToken, NCProbeSynonymChunk), Boolean]
+            getOrElseUpdate(
+                req.getServerRequestId,
+                mutable.HashMap.empty[IdlChunkKey, Boolean]
             ).
             getOrElseUpdate(
-                (tow, chunk),
+                IdlChunkKey(t, chunk),
                 {
-                    def get0[T](fromToken: NCToken => T, fromWord: NlpToken => T): T =
-                        if (tow.isToken) fromToken(tow.token) else fromWord(tow.word)
-
                     chunk.kind match {
-                        case TEXT => chunk.wordStem == get0(_.stem, _.stem)
+                        case TEXT => chunk.wordStem == t.stem
 
                         case REGEX =>
-                            chunk.regex.matcher(get0(_.origText, _.origText)).matches() ||
-                            chunk.regex.matcher(get0(_.normText, _.normText)).matches()
+                            chunk.regex.matcher(t.origText).matches() || chunk.regex.matcher(t.normText).matches()
 
                         case IDL =>
-                            val ok =
+                            val ok = {
+                                // IDL condition just for tokens.
+                                t.isToken &&
+                                // Should be found at least one suitable variant (valid NCIdlContext) for given token.
+                                // This variant will be checked again on last processing phase.
                                 variantsToks.par.exists(vrntToks =>
-                                    get0(t =>
-                                        chunk.idlPred.apply(t, NCIdlContext(toks = vrntToks, req = req)).
-                                            value.asInstanceOf[Boolean],
-                                        _ => false
+                                    chunk.idlPred.apply(
+                                        t.token,
+                                        NCIdlContext(toks = vrntToks, req = req)).value.asInstanceOf[Boolean]
                                     )
-                                )
+                            }
 
+                            // Saves all variants for next validation.
+                            // All suitable variants can be deleted, so this positive result can be abolished
+                            // on last processing phase.
                             if (ok)
-                                save(req, tow.token, chunk.idlPred, variantsToks)
+                                save(req, t.token, chunk.idlPred, variantsToks)
 
                             ok
 
@@ -270,22 +283,29 @@ object NCSynonymsManager extends NCService {
             require(toks != null)
             require(!syn.sparse && !syn.hasIdl)
 
-            if (
-                toks.length == syn.length && {
+            if (toks.length == syn.length) { // Same length.
+                val ok =
                     if (syn.isTextOnly)
-                        toks.zip(syn).forall(p => p._1.stem == p._2.wordStem)
+                        toks.zip(syn).
+                            // Checks all synonym chunks with all tokens.
+                            forall { case (tok, chunk) => tok.stem == chunk.wordStem }
                     else
-                        toks.zip(syn).sortBy(p => getSort(p._2.kind)).forall { case (tok, chunk) => isMatch(tok, chunk) }
-                }
-            )
-                callback()
+                        toks.zip(syn).
+                            // Pre-sort by chunk kind for performance reasons, easier to compare should be first.
+                            sortBy { case (_, chunk) => getSort(chunk.kind) }.
+                            // Checks all synonym chunks with all tokens.
+                            forall { case (tok, chunk) => isMatch(tok, chunk) }
+
+                if (ok)
+                    callback(())
+            }
         }
 
     /**
       *
       * @param srvReqId
       * @param elemId
-      * @param s
+      * @param syn
       * @param toks
       * @param req
       * @param variantsToks
@@ -294,24 +314,26 @@ object NCSynonymsManager extends NCService {
     def onMatch(
         srvReqId: String,
         elemId: String,
-        s: Synonym,
+        syn: Synonym,
         toks: Seq[IdlToken],
         req: NCRequest,
         variantsToks: Seq[Seq[NCToken]],
         callback: Unit => Unit
     ): Unit =
-        if (isUnprocessedIdl(srvReqId, elemId, s, toks)) {
+        if (isUnprocessedIdl(srvReqId, elemId, syn, toks)) {
             require(toks != null)
 
             if (
-                toks.length == s.length &&
-                    toks.count(_.isToken) >= s.idlChunks && {
-                    toks.zip(s).sortBy(p => getSort(p._2.kind)).forall {
-                        case (tow, chunk) => isMatch(tow, chunk, req, variantsToks)
-                    }
+                toks.length == syn.length && // Same length.
+                toks.count(_.isToken) >= syn.idlChunks && // Enough tokens.
+                toks.zip(syn).sortBy { // Pre-sort by chunk kind for performance reasons, easier to compare should be first.
+                    case (_, chunk) => getSort(chunk.kind)
+                }.
+                forall { // Checks all synonym chunks with all tokens.
+                    case (idlTok, chunk) => isMatch(idlTok, chunk, req, variantsToks)
                 }
             )
-                callback()
+                callback(())
         }
 
     /**
@@ -363,7 +385,7 @@ object NCSynonymsManager extends NCService {
                 syn,
                 toks,
                 (t: IdlToken, chunk: NCProbeSynonymChunk) => isMatch(t, chunk, req, variantsToks),
-                (t: IdlToken) => if (t.isToken) t.token.getStartCharIndex else t.word.startCharIndex,
+                (t: IdlToken) => t.startCharIndex,
                 shouldBeNeighbors = !syn.sparse
             ) match {
                 case Some(res) => callback(res)
@@ -372,13 +394,15 @@ object NCSynonymsManager extends NCService {
         }
 
     /**
+      * Checks that suitable variant wasn't deleted and IDL condition for token is still valid.
+      * We have to check it because NCIdlContext which used in predicate based on variant.
       *
       * @param srvReqId
-      * @param senToks
+      * @param toks
       */
-    def isStillValidIdl(srvReqId: String, senToks: Seq[NCToken]): Boolean =
+    def isStillValidIdl(srvReqId: String, toks: Seq[NCToken]): Boolean =
         savedIdl.get(srvReqId) match {
-            case Some(m) =>
+            case Some(map) =>
                 lazy val allCheckedSenToks = {
                     val set = mutable.HashSet.empty[SavedIdlKey]
 
@@ -388,13 +412,13 @@ object NCSynonymsManager extends NCService {
                         t.getPartTokens.asScala.foreach(add)
                     }
 
-                    senToks.foreach(add)
+                    toks.foreach(add)
 
                     set
                 }
 
-                senToks.forall(tok =>
-                    m.get(SavedIdlKey(tok)) match {
+                toks.forall(tok =>
+                    map.get(SavedIdlKey(tok)) match {
                         case Some(vals) =>
                             vals.exists(
                                 v =>
@@ -415,6 +439,7 @@ object NCSynonymsManager extends NCService {
         }
 
     /**
+      * Called when request processing finished.
       *
       * @param srvReqId
       */
@@ -425,6 +450,7 @@ object NCSynonymsManager extends NCService {
     }
 
     /**
+      * Called on each request enrichment iteration.
       *
       * @param srvReqId
       */

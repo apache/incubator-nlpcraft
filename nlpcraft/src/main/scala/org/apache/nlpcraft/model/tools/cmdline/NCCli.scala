@@ -945,7 +945,11 @@ object NCCli extends NCCliBase {
             throw InvalidParameter(cmd, "lines")
 
         loadServerBeacon() match {
-            case Some(beacon) => tailFile(beacon.logPath, lines)
+            case Some(beacon) =>
+                if (beacon.logPath == null)
+                    throw new IllegalStateException(s"Server was started outside or its log file cannot be found.")
+                else
+                    tailFile(beacon.logPath, lines)
             case None => throw NoLocalServer()
         }
     }
@@ -962,7 +966,11 @@ object NCCli extends NCCliBase {
             throw InvalidParameter(cmd, "lines")
 
         loadProbeBeacon() match {
-            case Some(beacon) => tailFile(beacon.logPath, lines)
+            case Some(beacon) =>
+                if (beacon.logPath == null)
+                    throw new IllegalStateException(s"Probe log file cannot be found.")
+                else
+                    tailFile(beacon.logPath, lines)
             case None => throw NoLocalProbe()
         }
     }
@@ -1692,15 +1700,7 @@ object NCCli extends NCCliBase {
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
-    private [cmdline] def cmdSqlGen(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        // Mandatory parameters check (unless --help is specified).
-        if (!isParam(cmd, args, "help")) {
-            getParam(cmd, args, "driver")
-            getParam(cmd, args, "schema")
-            getParam(cmd, args, "out")
-            getParam(cmd, args, "url")
-        }
-
+    private [cmdline] def cmdGenSql(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         val addCp = getCpParams(args)
         val jvmOpts = getParamOpt(args, "jvmopts") match {
             case Some(opts) => U.splitTrimFilter(U.trimQuotes(opts), " ")
@@ -2611,16 +2611,28 @@ object NCCli extends NCCliBase {
                     }
 
                     // For 'help' - add additional auto-completion/suggestion candidates.
-                    if (cmd == HELP_CMD.name)
-                        candidates.addAll(CMDS.map(c => s"--cmd=${c.name}").map(s =>
-                            mkCandidate(
-                                disp = s,
-                                grp = CMDS_GRP,
-                                desc = null,
-                                completed = true
-                            ))
-                            .asJava
-                        )
+                    if (cmd == HELP_CMD.name) {
+                        if (words.exists(_.contains("-c=")))
+                            candidates.addAll(CMDS.map(c => s"-c=${c.name}").map(s =>
+                                mkCandidate(
+                                    disp = s,
+                                    grp = CMDS_GRP,
+                                    desc = null,
+                                    completed = true
+                                ))
+                                .asJava
+                            )
+                        else
+                            candidates.addAll(CMDS.map(c => s"--cmd=${c.name}").map(s =>
+                                mkCandidate(
+                                    disp = s,
+                                    grp = CMDS_GRP,
+                                    desc = null,
+                                    completed = true
+                                ))
+                                .asJava
+                            )
+                    }
 
                     // For 'rest' or 'call' - add '--path' auto-completion/suggestion candidates.
                     if (cmd == REST_CMD.name || cmd == CALL_CMD.name) {
@@ -3128,8 +3140,8 @@ object NCCli extends NCCliBase {
      * @param args
      * @return
      */
-    private def processParameters(cmd: Command, args: Seq[String]): Seq[Argument] =
-        args.map { arg =>
+    private def processParameters(cmd: Command, args: Seq[String]): Seq[Argument] = {
+        val seq = args.map { arg =>
             val parts = arg.split("=", 2)
 
             def mkError() = new IllegalArgumentException(s"Invalid parameter: ${c(arg)}, type $C'help --cmd=${cmd.name}'$RST to get help.")
@@ -3164,6 +3176,14 @@ object NCCli extends NCCliBase {
                     Argument(param, value)
             }
         }
+
+        for (param <- cmd.params.filter(!_.optional)) {
+            if (!seq.exists(_.parameter.id == param.id))
+                throw MissingParameter(cmd, param.id)
+        }
+
+        seq
+    }
 
     /**
      *

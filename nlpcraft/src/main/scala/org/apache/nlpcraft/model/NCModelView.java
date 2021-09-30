@@ -1241,7 +1241,7 @@ public interface NCModelView extends NCMetadata {
 
     /**
      * // TODO: add javadoc
-     * @return
+     * @return TBD
      */
     default boolean isStopWordsAllowed() {
         return DFLT_IS_STOPWORDS_ALLOWED;

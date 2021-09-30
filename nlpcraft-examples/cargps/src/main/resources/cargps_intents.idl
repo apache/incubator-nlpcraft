@@ -22,13 +22,26 @@
 // Reusable fragments.
 fragment=hey term={# == "x:hey" && tok_is_first()}
 
-// Intents.
-intent=int:cancel
-    // Ignore any other user or system tokens if we found 'cancel' token.
-    options={'unused_usr_toks': true, 'unused_sys_toks': true}
-    fragment(hey)
+// Cancel intent.
+intent=cancel
+    fragment(hey) // Always, salutation 1st.
     term={# == "x:cancel"}
 
-intent=int:navigate options={'ordered': true} fragment(hey) term={# == "x:navigate"} term={# == "x:addr"}
-intent=int:add:waypoint fragment(hey) term={# == "x:add-waypoint"}
-intent=int:remove:waypoint fragment(hey) term={# == "x:remove-waypoint"}
+// Navigate intent.
+intent=navigate
+    options={'ordered': true} // Order of terms is important.
+    fragment(hey) // Always, salutation 1st.
+    term={# == "x:navigate"} // Then word 'navigate'.
+    term={# == "x:addr"} // Then where to navigate.
+
+// Add a waypoint intent.
+intent=add:waypoint
+    fragment(hey) // Always, salutation 1st.
+    term={# == "x:add-waypoint"}
+    term={# == "x:addr"}
+
+// Remove a waypoint intent.
+// Assumes last waypoint.
+intent=remove:waypoint
+    fragment(hey) // Always, salutation 1st.
+    term={# == "x:remove-waypoint"}

@@ -351,10 +351,12 @@ private [cmdline] object NCCliCommands {
             synopsis = s"Generates NLPCraft model stub from SQL databases.",
             desc = Some(
                 s"You can choose database schema, set of tables and columns for which you want to generate NLPCraft " +
-                s"model. After the model is generated you can further configure and customize it for your specific needs. " +
+                s"model. Note that required JDBC driver class must be available on the classpath and therefore its " +
+                s"JAR should be added to the classpathAfter the model is generated you can further configure and " +
+                s"customize it for your specific needs. " +
                 s"Find more information at https://nlpcraft.apache.org/tools/sql_model_gen.html"
             ),
-            body = NCCli.cmdSqlGen,
+            body = NCCli.cmdGenSql,
             params = Seq(
                 Parameter(
                     id = "url",
@@ -508,14 +510,6 @@ private [cmdline] object NCCliCommands {
                     desc =
                         s"Flag on whether to use element's parent relationship for defining " +
                         s"SQL columns and their containing (i.e. parent) tables. Default is ${y("'false'")}."
-                ),
-                Parameter(
-                    id = "help",
-                    names = Seq("--help", "-h"),
-                    optional = true,
-                    desc =
-                        s"Gets extended help and usage information for the ${y("'gen-sql'")} command. " +
-                        s"Includes information on how to run this tool standalone in a separate process."
                 )
             ),
             examples = Seq(
@@ -713,6 +707,7 @@ private [cmdline] object NCCliCommands {
                 Parameter(
                     id = "lines",
                     names = Seq("--lines", "-l"),
+                    optional = true,
                     value = Some("20"),
                     desc =
                         s"Number of the server log lines from the end to display. Default is 20."
@@ -736,6 +731,7 @@ private [cmdline] object NCCliCommands {
             params = Seq(
                 Parameter(
                     id = "lines",
+                    optional = true,
                     names = Seq("--lines", "-l"),
                     value = Some("20"),
                     desc =

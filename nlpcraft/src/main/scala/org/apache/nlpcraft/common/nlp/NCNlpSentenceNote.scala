@@ -36,7 +36,6 @@ class NCNlpSentenceNote(private val values: Map[String, JSerializable]) extends 
     private lazy val dataWithoutIndexes = this.filter(p => !SKIP_CLONE.contains(p._1))
     private lazy val skipNlp = dataWithoutIndexes.filter { case (key, _) => key != "noteType" }
 
-
     @transient
     private lazy val hash = values.hashCode()
 

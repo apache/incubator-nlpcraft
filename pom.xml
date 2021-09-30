@@ -82,8 +82,8 @@
         <timestamp>${maven.build.timestamp}</timestamp>
 
         <!-- Versions. -->
-        <ignite.ver>2.10.0</ignite.ver>
-        <gridgain.agent.ver>2.10.0.0</gridgain.agent.ver>
+        <ignite.ver>2.11.0</ignite.ver>
+        <gridgain.agent.ver>2.11.0.0</gridgain.agent.ver>
         <scala.plugin.ver>4.3.1</scala.plugin.ver>
         <log4j.ver>2.12.0</log4j.ver>
         <scala.ver>${scala.base}.6</scala.ver>
@@ -139,7 +139,7 @@
         <vertical.blank.ver>1.0.1</vertical.blank.ver>
         <fliptables.ver>1.1.0</fliptables.ver>
         <jline.ver>3.20.0</jline.ver>
-        <jansi.ver>2.3.3</jansi.ver>
+        <jansi.ver>2.3.4</jansi.ver>
 
         <!--
             Following libraries versions are compatible:

@@ -762,7 +762,7 @@ object NCProbeManager extends NCService {
                                 errCode
                             )
                      
-                            logger.info(s"${rb(w(" REJECT "))} result processed [srvReqId=${m(srvReqId)}, error=$err, code=$errCode]")
+                            logger.info(s"${rb(w("<REJECT>"))} result processed [srvReqId=${m(srvReqId)}, error=$err, code=$errCode]")
                         }
                         else { // OK result.
                             require(resTypeOpt.isDefined && resBodyOpt.isDefined)
@@ -776,7 +776,7 @@ object NCProbeManager extends NCService {
                                 intentId
                             )
                      
-                            logger.info(s"${gb(w(" SUCCESS "))} result processed [srvReqId=${m(srvReqId)}]")
+                            logger.info(s"${gb(w("<SUCCESS>"))} result processed [srvReqId=${m(srvReqId)}]")
                         }
                     }
                     catch {

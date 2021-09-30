@@ -34,6 +34,7 @@
     <properties>
         <nlpcraft.server.module>nlpcraft</nlpcraft.server.module>
         <nlpcraft.all.deps.jar>apache-${nlpcraft.server.module}-incubating-${project.version}-all-deps.jar</nlpcraft.all.deps.jar>
+        <nlpcraft.lightswitch.deps.jar>apache-nlpcraft-incubating-${project.version}-lightswitch-deps.jar</nlpcraft.lightswitch.deps.jar>
 
         <kotlin.ver>1.5.0</kotlin.ver>
         <groovy.ver>3.0.7</groovy.ver>
@@ -202,6 +203,27 @@
                             <includes>
                                 <include>**/*.*</include>
                             </includes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!--Uber jar created here because kotlin and groovy dependencies. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>${maven.shade.plugin.ver}</version>
+                <executions>
+                    <execution>
+                        <id>jar.all.deps.lightswitch</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <outputFile>
+                                target/${nlpcraft.lightswitch.deps.jar}
+                            </outputFile>
                         </configuration>
                     </execution>
                 </executions>
