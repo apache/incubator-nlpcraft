@@ -58,7 +58,7 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
 
     private val HEADERS: Map[String, (Int, Seq[String])] =
         Seq(
-            "nlpcraft:nlp" -> Seq("origText", "index", "pos", "lemma", "stem", "bracketed", "quoted", "stopWord"),
+            "nlpcraft:nlp" -> Seq("origText", "index", "pos", "lemma", "stem", "bracketed", "quoted", "stopWord", "unid"),
             "nlpcraft:continent" -> Seq("continent"),
             "nlpcraft:subcontinent" -> Seq("continent", "subcontinent"),
             "nlpcraft:country" -> Seq("country"),
@@ -154,7 +154,7 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
                 cache(normTxt) match {
                     case Some(h) =>
                         if (h.enabledBuiltInTokens == normEnabledBuiltInToks) {
-                            prepareAsciiTable(h.sentence).info(logger, Some(s"Sentence enriched (from cache): '$normTxt'"))
+                            prepareAsciiTable(h.sentence).info(logger, Some(s"Sever-side enrichment (built-in tokens only, from cache): '$normTxt'"))
 
                             h.sentence.copy(Some(srvReqId))
                         }
@@ -181,7 +181,7 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
             val typ = n.noteType
             val prefix = typ.substring(typ.indexOf(':') + 1) // Remove 'nlpcraft:' prefix.
 
-            n.keySet
+            val hdrs = n.keySet
                 .filter(name => HEADERS.find(h => isType(typ, h._1)) match {
                     case Some((_, (_, names))) => names.contains(name)
                     case None => false
@@ -196,6 +196,12 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
                         name
                     )
                 )
+
+            hdrs + Header(
+                "nlp:unid",
+                "nlpcraft:nlp",
+                "unid"
+            )
         }
 
         val headers = s.flatten.flatMap(mkNoteHeaders).distinct.sortBy(hdr => {
