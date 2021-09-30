@@ -56,6 +56,11 @@ object NCTokenPartKey {
                             "limit" -> part.meta[Double](s"$id:limit"),
                             "note" -> part.meta[String](s"$id:note")
                         )
+                    case "nlpcraft:function" =>
+                        Map(
+                            "type" -> part.meta[String](s"$id:type"),
+                            "note" -> part.meta[String](s"$id:note")
+                        )
                     case "nlpcraft:sort" =>
                         val m = mutable.HashMap.empty[String, Any]
 

@@ -280,6 +280,7 @@ object NCNlpSentenceNote {
             case "nlpcraft:relation" => Seq("type", "note") ++ addRefs("indexes")
             case "nlpcraft:sort" => Seq("asc", "subjnotes", "bynotes") ++ addRefs("subjindexes", "byindexes")
             case "nlpcraft:limit" => Seq("limit", "note") ++ addRefs("indexes", "asc") // Asc flag has sense only with references for limit.
+            case "nlpcraft:function" => Seq("type", "note") ++ addRefs("indexes")
             case "nlpcraft:coordinate" => Seq("latitude", "longitude")
             case "nlpcraft:num" => Seq("from", "to", "unit", "unitType")
             case x if x.startsWith("google:") => Seq("meta", "mentionsBeginOffsets", "mentionsContents", "mentionsTypes")

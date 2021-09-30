@@ -1060,11 +1060,11 @@ object NCDeployManager extends NCService {
         mdl.getElements.asScala.foreach(e => checkMandatoryString(e.getId,"element.id", MODEL_ELEMENT_ID_MAXLEN))
 
         for ((elm, restrs: util.Set[String]) <- mdl.getRestrictedCombinations.asScala) {
-            if (elm != "nlpcraft:limit" && elm != "nlpcraft:sort" && elm != "nlpcraft:relation")
+            if (elm != "nlpcraft:limit" && elm != "nlpcraft:sort" && elm != "nlpcraft:relation" && elm != "nlpcraft:function")
                 throw new NCE(s"Unsupported restricting element [" +
                     s"mdlId=$mdlId, " +
                     s"elmId=$elm" +
-                s"]. Only 'nlpcraft:limit', 'nlpcraft:sort', and 'nlpcraft:relation' are allowed.")
+                s"]. Only 'nlpcraft:limit', 'nlpcraft:sort', 'nlpcraft:function' and 'nlpcraft:relation' are allowed.")
             if (restrs.contains(elm))
                 throw new NCE(s"Element cannot be restricted to itself [" +
                     s"mdlId=$mdlId, " +

@@ -52,7 +52,7 @@ object NCProbeVariants {
             )
 
         t.getId match {
-            case "nlpcraft:relation" | "nlpcraft:limit" => meta += "nlpcraft:relation:indexes" -> IDXS
+            case "nlpcraft:relation" | "nlpcraft:limit" | "nlpcraft:function" => meta += s"${t.getId}:indexes" -> IDXS
             case "nlpcraft:sort" => meta += "nlpcraft:sort:subjindexes" -> IDXS2; meta += "nlpcraft:sort:byindexes" -> IDXS2
             case _ => // No-op.
         }
@@ -95,7 +95,7 @@ object NCProbeVariants {
                                 val ps = mkNlpNoteParams()
 
                                 delNote.noteType match {
-                                    case "nlpcraft:relation" | "nlpcraft:limit" => ps += "indexes" -> IDXS
+                                    case "nlpcraft:relation" | "nlpcraft:limit" | "nlpcraft:function" => ps += "indexes" -> IDXS
                                     case "nlpcraft:sort" => ps += "subjindexes" -> IDXS2; ps += "byindexes" -> IDXS2
                                     case _ => // No-op.
                                 }

@@ -186,6 +186,8 @@ class NCNlpSentence(
                         tokensEqualOrSimilar(getList(n1, "indexes"), getList(n2, "indexes"))
                     case "nlpcraft:reference" =>
                         tokensEqualOrSimilar(getList(n1, "indexes"), getList(n2, "indexes"))
+                    case "nlpcraft:function" =>
+                        tokensEqualOrSimilar(getList(n1, "indexes"), getList(n2, "indexes"))
 
                     case _ => true
                 }

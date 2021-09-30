@@ -298,6 +298,21 @@ class NCIntentSolver(intents: List[(NCIdlIntent/*Intent*/, NCIntentMatch => NCRe
                     convTokToFix.getMetadata.put(s"nlpcraft:limit:indexes", Collections.singletonList(newRef.getIndex))
                 }
 
+            case "nlpcraft:function" =>
+                val refId = convTokToFix.meta[String]("nlpcraft:function:note")
+                val refIdxs = convTokToFix.meta[JList[Int]]("nlpcraft:function:indexes").asScala
+
+                require(refIdxs.size == 1)
+
+                val refIdx = refIdxs.head
+
+                if (!vrntNotConvToks.exists(isReference(_, refId, refIdx))) {
+                    val newRef = getNewReferences(refId, Seq(refIdx), _.size == 1).head
+
+                    convTokToFix.getMetadata.put(s"nlpcraft:function:note", newRef.getId)
+                    convTokToFix.getMetadata.put(s"nlpcraft:function:indexes", Collections.singletonList(newRef.getIndex))
+                }
+
             case "nlpcraft:relation" =>
                 val refId = convTokToFix.meta[String]("nlpcraft:relation:note")
                 val refIdxs = convTokToFix.meta[JList[Int]]("nlpcraft:relation:indexes").asScala.sorted

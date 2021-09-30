@@ -296,6 +296,7 @@ public interface NCModelView extends NCMetadata {
      * <li><code>nlpcraft:relation</code></li>
      * <li><code>nlpcraft:sort</code></li>
      * <li><code>nlpcraft:limit</code></li>
+     * <li><code>nlpcraft:function</code></li>
      * </ul>
      */
     Set<String> DFLT_ENABLED_BUILTIN_TOKENS =
@@ -312,7 +313,8 @@ public interface NCModelView extends NCMetadata {
                 "nlpcraft:coordinate",
                 "nlpcraft:relation",
                 "nlpcraft:sort",
-                "nlpcraft:limit"
+                "nlpcraft:limit",
+                "nlpcraft:function"
             )
         );
 
@@ -1046,6 +1048,7 @@ public interface NCModelView extends NCMetadata {
      * <li><code>nlpcraft:relation</code></li>
      * <li><code>nlpcraft:sort</code></li>
      * <li><code>nlpcraft:limit</code></li>
+     * <li><code>nlpcraft:function</code></li> // TODO:
      * </ul>
      * Note that this method can return an empty list if the data model doesn't need any built-in tokens
      * for its logic. See {@link NCToken} for the list of all supported built-in tokens.
@@ -1216,6 +1219,7 @@ public interface NCModelView extends NCMetadata {
      *     <li><code>nlpcraft:limit</code></li>
      *     <li><code>nlpcraft:sort</code></li>
      *     <li><code>nlpcraft:relation</code></li>
+     *     <li><code>nlpcraft:function</code></li> // TODO:
      * </ul>
      * Note that entity cannot be restricted to itself (entity ID cannot appear as key as well as a
      * part of the value's set).

@@ -248,6 +248,26 @@ case class NCTestRelationToken(text: String, `type`: String, indexes: Seq[Int], 
             s", note=$note>"
 }
 
+case class NCTestFunctionToken(text: String, `type`: String, indexes: Seq[Int], note: String) extends NCTestToken {
+    require(text != null)
+    require(`type` != null)
+    require(indexes != null)
+    require(indexes.nonEmpty)
+    require(note != null)
+
+    override def id: String = "nlpcraft:function"
+    override def toString: String =
+        s"$text(function)" +
+            s"<type=${`type`}" +
+            s", indexes=[${indexes.mkString(",")}]" +
+            s", note=$note>"
+}
+
+object NCTestFunctionToken {
+    def apply(text: String, `type`: String, index: Int, note: String):NCTestFunctionToken =
+        NCTestFunctionToken(text, `type`, Seq(index), note)
+}
+
 case class NCTestLimitToken(
     text: String,
     limit: Double,
@@ -352,7 +372,15 @@ object NCTestToken {
                     indexes = indexes.asScala.toSeq,
                     note = t.meta("nlpcraft:relation:note")
                 )
+            case "nlpcraft:function" =>
+                val indexes: JList[Int] = t.meta("nlpcraft:function:indexes")
 
+                NCTestFunctionToken(
+                    txt,
+                    `type` = t.meta("nlpcraft:function:type"),
+                    indexes = indexes.asScala.toSeq,
+                    note = t.meta("nlpcraft:function:note")
+                )
             case "nlpcraft:limit" =>
                 val indexes: JList[Int] = t.meta("nlpcraft:limit:indexes")
                 val asc: Optional[Boolean] = t.metaOpt("nlpcraft:limit:asc")

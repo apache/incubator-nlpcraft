@@ -46,7 +46,7 @@ object NCSentenceManager extends NCService {
     def getLinks(notes: Seq[NCNlpSentenceNote]): Seq[NoteLink] = {
         val noteLinks = mutable.ArrayBuffer.empty[NoteLink]
 
-        for (n <- notes.filter(n => n.noteType == "nlpcraft:limit" || n.noteType == "nlpcraft:references"))
+        for (n <- notes.filter(n => n.noteType == "nlpcraft:limit" || n.noteType == "nlpcraft:references" || n.noteType == "nlpcraft:function"))
             noteLinks += NoteLink(n("note").asInstanceOf[String], n("indexes").asInstanceOf[JList[Int]].asScala.toSeq.sorted)
 
         for (n <- notes.filter(_.noteType == "nlpcraft:sort")) {
@@ -516,6 +516,7 @@ object NCSentenceManager extends NCService {
 
         fixNoteIndexes("nlpcraft:relation", "indexes", "note", ns)
         fixNoteIndexes("nlpcraft:limit", "indexes", "note", ns)
+        fixNoteIndexes("nlpcraft:function", "indexes", "note", ns)
         fixNoteIndexesList("nlpcraft:sort", "subjindexes", "subjnotes", ns)
         fixNoteIndexesList("nlpcraft:sort", "byindexes", "bynotes", ns)
 
@@ -527,6 +528,7 @@ object NCSentenceManager extends NCService {
         val res =
             fixIndexesReferences("nlpcraft:relation", "indexes", "note", ns, histSeq) &&
             fixIndexesReferences("nlpcraft:limit", "indexes", "note", ns, histSeq) &&
+            fixIndexesReferences("nlpcraft:function", "indexes", "note", ns, histSeq) &&
             fixIndexesReferencesList("nlpcraft:sort", "subjindexes", "subjnotes", ns, histSeq) &&
             fixIndexesReferencesList("nlpcraft:sort", "byindexes", "bynotes", ns, histSeq)
 
@@ -748,7 +750,7 @@ object NCSentenceManager extends NCService {
         addDeleted(sen, sen, swallowed)
         swallowed.foreach(sen.removeNote)
 
-        var sens = mkVariants( sen, mdl, lastPhase, overlappedNotes)
+        var sens = mkVariants(sen, mdl, lastPhase, overlappedNotes)
 
         sens.par.foreach(sen =>
             sen.foreach(tok =>

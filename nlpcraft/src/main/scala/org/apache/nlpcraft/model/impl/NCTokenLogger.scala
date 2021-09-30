@@ -53,6 +53,7 @@ object NCTokenLogger extends LazyLogging {
         "nlpcraft:relation",
         "nlpcraft:sort",
         "nlpcraft:limit",
+        "nlpcraft:function",
         "nlpcraft:coordinate"
     )
 
@@ -85,7 +86,8 @@ object NCTokenLogger extends LazyLogging {
             "nlpcraft:date" -> Seq("from", "to", "periods"),
             "nlpcraft:relation" -> Seq("type", "indexes", "note"),
             "nlpcraft:sort" -> Seq("asc", "subjnotes", "subjindexes", "bynotes", "byindexes"),
-            "nlpcraft:limit" -> Seq("limit", "indexes", "asc", "note")
+            "nlpcraft:limit" -> Seq("limit", "indexes", "asc", "note"),
+            "nlpcraft:function" -> Seq("type", "indexes", "note")
         ).map(p => p._1 -> p._2.zipWithIndex.map(p => p._1 -> p._2).toMap)
 
     private def format(l: Long): String = new SimpleDateFormat("yyyy/MM/dd").format(new java.util.Date(l))
@@ -243,6 +245,12 @@ object NCTokenLogger extends LazyLogging {
                         s = s"$s, asc=${ascOpt.get}"
 
                     s
+
+                case "nlpcraft:function" =>
+                    val t = mkString("type")
+                    val note = mkString("note")
+
+                    s"type=$t, indexes=[${mkIndexes("indexes")}], note=$note"
 
                 case "nlpcraft:coordinate" => s"${getValue("latitude")} and ${getValue("longitude")}"
 
@@ -521,6 +529,12 @@ object NCTokenLogger extends LazyLogging {
                                 s = s"$s, asc=${get("asc")}"
 
                             s
+
+                        case "nlpcraft:function" =>
+                            val t = mkString("type")
+                            val note = mkString("note")
+
+                            s"type=$t, indexes=[${getIndexes("indexes")}], note=$note"
 
                         case "nlpcraft:num" =>
                             def mkValue(name: String, fractionalField: String): String = {

@@ -35,6 +35,7 @@ import org.apache.nlpcraft.probe.mgrs.conversation.NCConversationManager
 import org.apache.nlpcraft.probe.mgrs.dialogflow.NCDialogFlowManager
 import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.dictionary.NCDictionaryEnricher
+import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.function.NCFunctionEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.limit.NCLimitEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.model.NCModelEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.relation.NCRelationEnricher
@@ -433,6 +434,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                 Some(Holder(NCModelEnricher, () => nlpSen.flatten.filter(_.isUser))),
                 get("nlpcraft:sort", NCSortEnricher),
                 get("nlpcraft:limit", NCLimitEnricher),
+                get("nlpcraft:function", NCFunctionEnricher),
                 get("nlpcraft:relation", NCRelationEnricher)
             ).flatten
 
@@ -483,6 +485,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                         h.enricher match {
                             case NCSortEnricher => same = squeeze("nlpcraft:sort")
                             case NCLimitEnricher => same = squeeze("nlpcraft:limit")
+                            case NCFunctionEnricher => same = squeeze("nlpcraft:function")
                             case NCRelationEnricher => same = squeeze("nlpcraft:relation")
 
                             case _ => // No-op.
