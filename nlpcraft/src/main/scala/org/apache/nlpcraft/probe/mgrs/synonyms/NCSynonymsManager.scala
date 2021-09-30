@@ -418,22 +418,26 @@ object NCSynonymsManager extends NCService {
                 }
 
                 toks.forall(tok =>
-                    map.get(SavedIdlKey(tok)) match {
-                        case Some(vals) =>
-                            vals.exists(
-                                v =>
-                                    v.variants.exists(winHistVariant =>
-                                        v.predicate.apply(
-                                            tok, NCIdlContext(toks = winHistVariant, req = v.request)
-                                        ).value.asInstanceOf[Boolean] &&
-                                            winHistVariant.map(SavedIdlKey(_)).forall(t =>
-                                                t.id == "nlpcraft:nlp" || allCheckedSenToks.contains(t)
-                                            )
-                                    )
-                            )
+                    if (tok.isUserDefined)
+                        map.get(SavedIdlKey(tok)) match {
+                            case Some(vals) =>
+                                vals.exists(
+                                    v =>
+                                        v.variants.exists(winHistVariant =>
+                                            v.predicate.apply(
+                                                tok, NCIdlContext(toks = winHistVariant, req = v.request)
+                                            ).value.asInstanceOf[Boolean] &&
+                                                winHistVariant.map(SavedIdlKey(_)).forall(t =>
+                                                    t.id == "nlpcraft:nlp" || allCheckedSenToks.contains(t)
+                                                )
+                                        )
+                                )
 
-                        case None => true
-                    })
+                            case None => true
+                        }
+                    else
+                        true
+                )
 
             case None => true
         }
