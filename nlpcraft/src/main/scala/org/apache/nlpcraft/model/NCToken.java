@@ -82,7 +82,7 @@ public interface NCToken extends NCMetadata {
 
     /**
      * Gets the list of all parent IDs from this token up to the root. This only available
-     * for user-defined model elements = built-in tokens do not have parents and will return an empty list.
+     * for user-defined model elements - built-in tokens do not have parents and will return an empty list.
      *
      * @return List, potentially empty but never {@code null}, of all parent IDs from this token up to the root.
      * @see #getParentId()
