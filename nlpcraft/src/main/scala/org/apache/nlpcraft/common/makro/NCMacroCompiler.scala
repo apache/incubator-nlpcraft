@@ -81,7 +81,7 @@ object NCMacroCompiler extends LazyLogging:
           * @param ctx
           */
         private def checkMaxSyn(buf: mutable.Buffer[String])(implicit ctx: ParserRuleContext): Unit =
-            if (buf.size > MAX_SYN)
+            if buf.size > MAX_SYN then
                 throw compilerError(s"Exceeded max number ($MAX_SYN) of macro expansions: ${buf.size}")
 
         override def enterExpr(ctx: NCMacroDslParser.ExprContext): Unit =
@@ -96,21 +96,20 @@ object NCMacroCompiler extends LazyLogging:
             stack.push(StackItem(mutable.Buffer.empty[String], isGroup = true))
 
         override def exitExpr(ctx: NCMacroDslParser.ExprContext): Unit =
-            implicit val evidence: ParserRuleContext = ctx
+            given ParserRuleContext = ctx
 
             if stack.size > 1 then
                 val expr = stack.pop()
                 val prn = stack.top
                 checkMaxSyn(expr.buffer)
                 require(expr.buffer.nonEmpty)
-
                 if prn.isGroup then
                     prn.buffer ++= expr.buffer
                 else
                     prn.buffer = for (z <- expr.buffer; i <- prn.buffer.indices) yield concat(prn.buffer(i), z)
 
         override def exitMinMax(ctx: NCMacroDslParser.MinMaxContext): Unit =
-            implicit val evidence: ParserRuleContext = ctx
+            given ParserRuleContext = ctx
 
             if ctx.minMaxShortcut() != null then
                 ctx.minMaxShortcut().getText match
@@ -139,7 +138,7 @@ object NCMacroCompiler extends LazyLogging:
                 throw compilerError(s"[$min,$max] quantifiers should be 'max >= min, min >= 0, max > 0, max <= $MAX_QTY'.")
 
         override def exitGroup(ctx: NCMacroDslParser.GroupContext): Unit =
-            given evidence: ParserRuleContext = ctx
+            given ParserRuleContext = ctx
             val grp = stack.pop()
             // Remove dups.
             grp.buffer = grp.buffer.distinct
@@ -155,10 +154,10 @@ object NCMacroCompiler extends LazyLogging:
 
         override def exitSyn(ctx: NCMacroDslParser.SynContext): Unit =
             val syn = (
-                if (ctx.TXT() != null) ctx.TXT()
-                else if (ctx.REGEX_TXT() != null) ctx.REGEX_TXT()
+                if ctx.TXT() != null then ctx.TXT()
+                else if ctx.REGEX_TXT() != null then ctx.REGEX_TXT()
                 else ctx.IDL_TXT()
-                ).getText
+            ).getText
 
             val buf = stack.top.buffer
             require(buf.nonEmpty)
