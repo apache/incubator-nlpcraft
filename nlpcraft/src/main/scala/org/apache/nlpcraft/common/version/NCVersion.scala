@@ -36,10 +36,7 @@ object NCVersion extends LazyLogging:
       * @param version Semver-based release version of the NLPCraft.
       * @param date Date of this release.
       */
-    case class Version(
-        version: String, // Semver.
-        date: LocalDate
-    ):
+    case class Version(version: String/* Semver */, date: LocalDate):
         override def toString = s"Version [version=$version, date=$date]"
 
     // +=================================================+
