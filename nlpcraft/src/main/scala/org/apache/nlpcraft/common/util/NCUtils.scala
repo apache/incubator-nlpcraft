@@ -21,10 +21,13 @@ import com.typesafe.scalalogging.{LazyLogging, Logger}
 import org.apache.nlpcraft.common.NCException
 import org.apache.nlpcraft.common.ansi.NCAnsi.*
 
+import java.io.{IOException, InputStream, OutputStream}
+import java.net.{ServerSocket, Socket}
 import java.util.Random
 import java.util.regex.Pattern
 import scala.annotation.tailrec
 import scala.sys.SystemProperties
+import scala.util.control.Exception.ignoring
 
 /**
   *
@@ -559,3 +562,86 @@ object NCUtils extends LazyLogging:
       */
     def interruptThread(t: Thread): Unit = if t != null then t.interrupt()
 
+    /**
+      * Checks duplicated elements in collection.
+      *
+      * @param list Collection. Note, it should be list.
+      * @param seen Checked elements.
+      * @see #getDups
+      */
+    @tailrec
+    def containsDups[T](list: List[T], seen: Set[T] = Set.empty[T]): Boolean =
+        list match
+            case x :: xs => if (seen.contains(x)) true else containsDups(xs, seen + x)
+            case _ => false
+
+    /**
+      * Gets set of duplicate values from given sequence (potentially empty).
+      *
+      * @param seq Sequence to check for dups from.
+      * @tparam T
+      * @return
+      * @see #containsDups
+      */
+    def getDups[T](seq: Seq[T]): Set[T] = seq.diff(seq.distinct).toSet
+
+    /**
+      * Gets a sequence without dups. It works by checking for dups first, before creating a new
+      * sequence if dups are found. It's more efficient when dups are rare.
+      *
+      * @param seq Sequence with potential dups.
+      */
+    def distinct[T](seq: List[T]): List[T] = if containsDups(seq) then seq.distinct else seq
+
+    /**
+      * Safely and silently closes the client socket.
+      *
+      * @param sock Client socket to close.
+      */
+    def close(sock: Socket): Unit =
+        if sock != null then
+            ignoring(classOf[IOException]) {
+                sock.close()
+            }
+
+    /**
+      * Safely and silently closes the server socket.
+      *
+      * @param sock Server socket to close.
+      */
+    def close(sock: ServerSocket): Unit =
+        if sock != null then
+            ignoring(classOf[IOException]) {
+                sock.close()
+            }
+
+    /**
+      *
+      * @param in Stream.
+      */
+    def close(in: InputStream): Unit =
+        if in != null then
+            ignoring(classOf[IOException]) {
+                in.close()
+            }
+
+    /**
+      *
+      * @param out Stream.
+      */
+    def close(out: OutputStream): Unit =
+        if out != null then
+            ignoring(classOf[IOException]) {
+                out.close()
+            }
+
+    /**
+      * Closes auto-closeable ignoring any exceptions.
+      *
+      * @param a Resource to close.
+      */
+    def close(a: AutoCloseable): Unit =
+        if a != null then
+            ignoring(classOf[Exception]) {
+                a.close()
+            }
