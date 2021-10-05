@@ -17,7 +17,8 @@
 
 package org.apache.nlpcraft.common.util
 
-import com.typesafe.scalalogging.LazyLogging
+import com.typesafe.scalalogging.{LazyLogging, Logger}
+import org.apache.nlpcraft.common.NCException
 import org.apache.nlpcraft.common.ansi.NCAnsi.*
 
 import java.util.Random
@@ -410,4 +411,151 @@ object NCUtils extends LazyLogging:
                             sb += ch
 
             sb.toString()
+
+    /**
+      *
+      * @param logger
+      * @param title
+      * @param e
+      */
+    def prettyError(logger: Logger, title: String, e: Throwable): Unit =
+        // Keep the full trace in the 'trace' log level.
+        logger.trace(title, e)
+
+        prettyErrorImpl(new PrettyErrorLogger {
+            override def log(s: String): Unit = logger.error(s)
+        }, title, e)
+
+
+    /**
+      *
+      * @param title
+      * @param e
+      */
+    def prettyError(title: String, e: Throwable): Unit = prettyErrorImpl(new PrettyErrorLogger(), title, e)
+
+    sealed class PrettyErrorLogger:
+        def log(s: String): Unit = System.err.println(s)
+
+    /**
+      *
+      * @param logger
+      * @param title
+      * @param e
+      */
+    private def prettyErrorImpl(logger: PrettyErrorLogger, title: String, e: Throwable): Unit =
+        logger.log(title)
+
+        val INDENT = 2
+        var x = e
+        var indent = INDENT
+        while (x != null)
+            var first = true
+            var errMsg = x.getLocalizedMessage
+            if errMsg == null then errMsg = "<null>"
+            val exClsName = if !x.isInstanceOf[NCException] then s"$ansiRedFg[${x.getClass.getCanonicalName}]$ansiReset " else ""
+            val trace = x.getStackTrace.find(!_.getClassName.startsWith("scala.")).getOrElse(x.getStackTrace.head)
+            val fileName = trace.getFileName
+            val lineNum = trace.getLineNumber
+            val msg =
+                if fileName == null || lineNum < 0 then
+                    s"$exClsName$errMsg"
+                else
+                    s"$exClsName$errMsg $ansiCyanFg->$ansiReset ($fileName:$lineNum)"
+
+            msg.split("\n").foreach(line => {
+                val s = s"${" " * indent}${if (first) ansiBlue("+-+ ") else "   "}${bo(y(line))}"
+                logger.log(s)
+                first = false
+            })
+
+            val traces = x.getStackTrace.filter { t =>
+                val mtdName = t.getMethodName
+                val clsName = t.getClassName
+
+                // Clean up trace.
+                clsName.startsWith("org.apache.nlpcraft") &&
+                    !clsName.startsWith("org.apache.nlpcraft.common.opencensus") &&
+                    !mtdName.contains("startScopedSpan") &&
+                    !mtdName.contains('$')
+            }
+            for (trace <- traces)
+                val fileName = trace.getFileName
+                val lineNum = trace.getLineNumber
+                val mtdName = trace.getMethodName
+                val clsName = trace.getClassName.replace("org.apache.nlpcraft", "o.a.n")
+
+                logger.log(s"${" " * indent}  ${b("|")} $clsName.$mtdName $ansiCyanFg->$ansiReset ($fileName:$lineNum)")
+
+            indent += INDENT
+
+            x = x.getCause
+
+    /**
+      * Makes thread.
+      *
+      * @param name Name.
+      * @param body Thread body.
+      */
+    def mkThread(name: String)(body: Thread => Unit): Thread =
+        new Thread(name):
+            @volatile private var stopped = false
+
+            override def isInterrupted: Boolean = super.isInterrupted || stopped
+            override def interrupt(): Unit =  stopped = true; super.interrupt()
+
+            override def run(): Unit =
+                logger.trace(s"Thread started: $name")
+
+                try
+                    body(this)
+                    logger.trace(s"Thread exited: $name")
+
+                catch
+                    case _: InterruptedException => logger.trace(s"Thread interrupted: $name")
+                    case e: Throwable => prettyError(logger, s"Unexpected error during '$name' thread execution:", e)
+                finally
+                    stopped = true
+
+    /**
+      * Makes thread.
+      *
+      * @param name Name.
+      * @param body Thread body.
+      */
+    def mkThread(name: String, body: Runnable): Thread =
+        mkThread(name) { _ => body.run() }
+
+    /**
+      * Sleeps number of milliseconds properly handling exceptions.
+      *
+      * @param delay Number of milliseconds to sleep.
+      */
+    def sleep(delay: Long): Unit =
+        try
+            Thread.sleep(delay)
+        catch
+            case _: InterruptedException => Thread.currentThread().interrupt()
+            case e: Throwable => prettyError(logger, "Unhandled exception caught during sleep:", e)
+
+
+    /**
+      * Interrupts thread and waits for its finish.
+      *
+      * @param t Thread.
+      */
+    def stopThread(t: Thread): Unit =
+        if t != null then
+            t.interrupt()
+            try
+                t.join()
+            catch
+                case _: InterruptedException => logger.trace("Thread joining was interrupted (ignoring).")
+
+    /**
+      * Interrupts thread.
+      *
+      * @param t Thread.
+      */
+    def interruptThread(t: Thread): Unit = if t != null then t.interrupt()
 
