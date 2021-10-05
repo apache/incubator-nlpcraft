@@ -17,7 +17,7 @@
 
 package org.apache.nlpcraft.common.version
 
-import java.time.{LocalDate, Year}
+import java.time.*
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.common.*
 import org.apache.nlpcraft.common.util.NCUtils

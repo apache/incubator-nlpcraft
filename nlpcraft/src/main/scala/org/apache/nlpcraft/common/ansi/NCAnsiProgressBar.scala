@@ -18,10 +18,10 @@
 package org.apache.nlpcraft.common.ansi
 
 import java.io.PrintWriter
-import org.apache.nlpcraft.common._
-import NCAnsi._
+import org.apache.nlpcraft.common.*
+import NCAnsi.*
 import org.apache.commons.lang3.StringUtils
-import org.apache.nlpcraft.common.ansi.NCAnsiProgressBar._
+import org.apache.nlpcraft.common.ansi.NCAnsiProgressBar.*
 
 /**
   * Forward-only, bound ANSI-based progress bar.

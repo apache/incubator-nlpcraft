@@ -17,12 +17,12 @@
 
 package org.apache.nlpcraft.common.util
 
-import com.typesafe.scalalogging.{LazyLogging, Logger}
+import com.typesafe.scalalogging.*
 import org.apache.nlpcraft.common.NCException
 import org.apache.nlpcraft.common.ansi.NCAnsi.*
 
-import java.io.{IOException, InputStream, OutputStream}
-import java.net.{ServerSocket, Socket}
+import java.io.*
+import java.net.*
 import java.util.Random
 import java.util.regex.Pattern
 import scala.annotation.tailrec
