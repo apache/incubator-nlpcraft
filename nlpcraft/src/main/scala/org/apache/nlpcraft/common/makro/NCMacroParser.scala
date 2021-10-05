@@ -50,10 +50,7 @@ object NCMacroParser:
       * @param macros Set of macros to add.
       */
     def apply(macros: (String, String)*): NCMacroParser =
-        val obj = new NCMacroParser
-        macros.foreach(m => obj.addMacro(m._1, m._2))
-        obj
-
+        macros.foldLeft(new NCMacroParser)((parser, tup) => parser.addMacro(tup._1, tup._2))
 
 /**
   * Provides generic support for text expansion using macros and options groups.
@@ -98,10 +95,10 @@ class NCMacroParser:
       */
     private def processEscapes(s: String): String =
         val len = s.length()
-        val buf = new StringBuilder()
         var i = 0
         var isEscape = false
 
+        val buf = new StringBuilder()
         while (i < len)
             val ch = s.charAt(i)
             if ch == '\\' && !isEscape then
@@ -168,7 +165,7 @@ class NCMacroParser:
       * @param str Value of the macro (any arbitrary string).
       */
     @throws[NCException]
-    def addMacro(name: String, str: String): Unit =
+    def addMacro(name: String, str: String): NCMacroParser =
         require(name != null)
         require(str != null)
 
@@ -176,6 +173,7 @@ class NCMacroParser:
         // Check for recursion.
         if str.contains(name) then throw new NCException(s"Recursion is not supported, macro: $name")
         macros += name -> str
+        this
 
     /**
       * Removes macro.
@@ -184,9 +182,10 @@ class NCMacroParser:
       *      It must start with '<' and end with '>'.
       */
     @throws[NCException]
-    def removeMacro(name: String): Unit =
+    def removeMacro(name: String): NCMacroParser =
         require(name != null)
         macros -= name
+        this
 
     /**
       * Checks whether or not macro with given name exists or not.
