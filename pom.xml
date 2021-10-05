@@ -26,7 +26,7 @@
     <name>NLPCraft Parent</name>
     <groupId>org.apache.nlpcraft</groupId>
     <artifactId>nlpcraft-parent</artifactId>
-    <version>0.9.0</version>
+    <version>1.0.0</version>
     <packaging>pom</packaging>
 
     <url>https://nlpcraft.apache.org</url>
@@ -69,93 +69,38 @@
         <connection>scm:git:ssh://git@github.com/apache/incubator-nlpcraft.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/apache/incubator-nlpcraft.git</developerConnection>
         <!-- Set actual tag name here -->
-        <tag>v0.9.0</tag>
+        <tag>v1.0.0</tag>
     </scm>
 
     <properties>
-        <!-- Major Scala version. -->
-        <scala.base>2.13</scala.base>
+        <!-- Major Java/Scala version. -->
+        <scala.major.ver>3</scala.major.ver>
+        <scala3.ver>${scala.major.ver}.0.1</scala3.ver>
+        <scala2.ver>2.13.6</scala2.ver>
         <java.ver>11</java.ver>
-
         <maven.build.timestamp.format>yyyy-MM-dd-HH-mm</maven.build.timestamp.format>
         <timestamp>${maven.build.timestamp}</timestamp>
 
         <!-- Versions. -->
-        <ignite.ver>2.11.0</ignite.ver>
-        <gridgain.agent.ver>2.11.0.0</gridgain.agent.ver>
-        <scala.plugin.ver>4.3.1</scala.plugin.ver>
+        <scala.plugin.ver>4.5.3</scala.plugin.ver>
         <log4j.ver>2.12.0</log4j.ver>
-        <scala.ver>${scala.base}.6</scala.ver>
         <scala.config.ver>1.3.4</scala.config.ver>
-        <commons.codec.ver>1.14</commons.codec.ver>
-        <commons.io.ver>2.7</commons.io.ver>
-        <commons-lang3.ver>3.11</commons-lang3.ver>
-        <commons.validator.ver>1.7</commons.validator.ver>
-        <apache.commons.text.ver>1.9</apache.commons.text.ver>
-        <jsoup.ver>1.13.1</jsoup.ver>
-        <slf4j.ver>1.7.26</slf4j.ver>
-        <scala.logging.ver>3.9.2</scala.logging.ver>
-        <scala.arm.ver>2.0</scala.arm.ver>
-        <scala.xml.ver>1.1.1</scala.xml.ver>
-        <c3p0.ver>0.9.5.4</c3p0.ver> <!-- Upgraded to due security vulnerability. -->
-        <scalatest.ver>3.0.8</scalatest.ver>
+        <scala.logging.ver>3.9.4</scala.logging.ver>
+        <scalatest.ver>3.2.9</scalatest.ver>
         <scala.par.colections>1.0.3</scala.par.colections>
-        <lift.json.ver>3.4.3</lift.json.ver>
-        <scalaj.ver>2.4.1</scalaj.ver>
-        <spray.ver>1.3.5</spray.ver>
-        <tika.ver>1.21</tika.ver>
-        <apache.http.client.ver>4.5.12</apache.http.client.ver>
-        <javax.websocket.ver>1.1</javax.websocket.ver>
-        <paranamer.ver>2.8</paranamer.ver>
-        <zeroturnaround.ver>1.12</zeroturnaround.ver>
-        <extjwnl.ver>2.0.2</extjwnl.ver>
-        <extjwnl.data.wn31.ver>1.2</extjwnl.data.wn31.ver>
-        <maven.jar.plugin.ver>3.1.1</maven.jar.plugin.ver>
+        <maven.jar.plugin.ver>3.2.0</maven.jar.plugin.ver>
         <maven.compiler.plugin.ver>3.8.0</maven.compiler.plugin.ver>
         <maven.enforcer.plugin.ver>1.4.1</maven.enforcer.plugin.ver>
         <maven.surefire.plugin.ver>2.22.1</maven.surefire.plugin.ver>
-        <stringmetric.ver>0.27.4</stringmetric.ver>
-        <gson.ver>2.8.5</gson.ver>
-        <jackson.ver>2.11.3</jackson.ver>
-        <jackson.yaml.ver>2.11.3</jackson.yaml.ver>
-        <apache.math.ver>3.6.1</apache.math.ver>
-        <apache.common.lang.ver>3.8.1</apache.common.lang.ver>
-        <apache.httpcomponents.ver>4.5.7</apache.httpcomponents.ver>
-        <apache.opennlp.ver>1.9.1</apache.opennlp.ver>
-        <maven.javadoc.plugin.ver>3.2.0</maven.javadoc.plugin.ver>
         <maven.shade.plugin.ver>3.2.1</maven.shade.plugin.ver>
+        <maven.install.plugin.ver>2.5.2</maven.install.plugin.ver>
         <maven.source.plugin.ver>3.0.1</maven.source.plugin.ver>
-        <maven.gpg.plugin.ver>1.6</maven.gpg.plugin.ver>
-        <maven.bazaarvoice.plugin.ver>0.9</maven.bazaarvoice.plugin.ver>
         <maven.clean.plugin.ver>3.1.0</maven.clean.plugin.ver>
-        <apache.rat.plugin.ver>0.13</apache.rat.plugin.ver>
-        <org.antlr4.ver>4.9</org.antlr4.ver>
-        <akka.http.2.13.ver>10.2.4</akka.http.2.13.ver>
-        <akka.stream.2.13.ver>2.6.14</akka.stream.2.13.ver>
-        <akka.http.spray.json.2.13.ver>10.2.4</akka.http.spray.json.2.13.ver>
-        <google.guava.ver>29.0-jre</google.guava.ver>
-        <diff.utils.ver>4.7</diff.utils.ver>
-        <vertical.blank.ver>1.0.1</vertical.blank.ver>
-        <fliptables.ver>1.1.0</fliptables.ver>
         <jline.ver>3.20.0</jline.ver>
-        <jansi.ver>2.3.4</jansi.ver>
-
-        <!--
-            Following libraries versions are compatible:
-             - google.protobuf.ver 3.9.1
-             - google-cloud-language 1.76.0
-             - opencensus 0.23.0
-            If you update versions - please ensure that they are compatible too.
-         -->
-        <google.protobuf.ver>3.9.1</google.protobuf.ver>
-        <google.clould.language.ver>1.76.0</google.clould.language.ver>
-        <opencensus.ver>0.23.0</opencensus.ver>
-
-        <prometheus.ver>0.9.0</prometheus.ver>
-        <lightstep.ver>0.0.3</lightstep.ver>
-        <lightstep.grpc.ver>0.15.8</lightstep.grpc.ver>
+        <commons.lang3.ver>3.12.0</commons.lang3.ver>
+        <scala3.ref.ver>1.0.0</scala3.ref.ver>
         <junit.ver>5.7.2</junit.ver>
-        <jsonpath.ver>2.4.0</jsonpath.ver>
+        <scalatest.ver>3.2.9</scalatest.ver>
 
         <!-- Force specific encoding on text resources. -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -173,339 +118,67 @@
 
     <dependencyManagement>
         <dependencies>
+            <!--
+                Scala3 dependencies.
+                ===================
+            -->
+
+            <dependency>
+                <groupId>org.scala-lang</groupId>
+                <artifactId>scala3-library_${scala.major.ver}</artifactId>
+                <version>${scala3.ver}</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.scala-lang</groupId>
                 <artifactId>scala-library</artifactId>
-                <version>${scala.ver}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.google.protobuf</groupId>
-                <artifactId>protobuf-java</artifactId>
-                <version>${google.protobuf.ver}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.opencensus</groupId>
-                <artifactId>opencensus-api</artifactId>
-                <version>${opencensus.ver}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.opencensus</groupId>
-                <artifactId>opencensus-impl</artifactId>
-                <version>${opencensus.ver}</version>
-                <scope>runtime</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>io.opencensus</groupId>
-                <artifactId>opencensus-exporter-trace-zipkin</artifactId>
-                <version>${opencensus.ver}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.jline</groupId>
-                <artifactId>jline</artifactId>
-                <version>${jline.ver}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.fusesource.jansi</groupId>
-                <artifactId>jansi</artifactId>
-                <version>${jansi.ver}</version>
+                <version>${scala2.ver}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.scala-lang.modules</groupId>
-                <artifactId>scala-parallel-collections_${scala.base}</artifactId>
+                <artifactId>scala-parallel-collections_${scala.major.ver}</artifactId>
                 <version>${scala.par.colections}</version>
             </dependency>
 
             <dependency>
-                <groupId>io.opencensus</groupId>
-                <artifactId>opencensus-exporter-trace-jaeger</artifactId>
-                <version>${opencensus.ver}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.opencensus</groupId>
-                <artifactId>opencensus-exporter-stats-prometheus</artifactId>
-                <version>${opencensus.ver}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.opencensus</groupId>
-                <artifactId>opencensus-exporter-trace-stackdriver</artifactId>
-                <version>${opencensus.ver}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.opencensus</groupId>
-                <artifactId>opencensus-exporter-stats-stackdriver</artifactId>
-                <version>${opencensus.ver}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.prometheus</groupId>
-                <artifactId>simpleclient_httpserver</artifactId>
-                <version>${prometheus.ver}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.antlr</groupId>
-                <artifactId>antlr4-runtime</artifactId>
-                <version>${org.antlr4.ver}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-text</artifactId>
-                <version>${apache.commons.text.ver}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-math3</artifactId>
-                <version>${apache.math.ver}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-slf4j-impl</artifactId>
-                <version>${log4j.ver}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-api</artifactId>
-                <version>${log4j.ver}</version>
-            </dependency>
-
-            <dependency>
                 <groupId>com.typesafe.scala-logging</groupId>
-                <artifactId>scala-logging_${scala.base}</artifactId>
+                <artifactId>scala-logging_${scala.major.ver}</artifactId>
                 <version>${scala.logging.ver}</version>
             </dependency>
 
+            <!--
+             JLine dependencies.
+             ==================
+            -->
             <dependency>
-                <groupId>org.apache.opennlp</groupId>
-                <artifactId>opennlp-tools</artifactId>
-                <version>${apache.opennlp.ver}</version>
+                <groupId>org.jline</groupId>
+                <artifactId>jline-terminal</artifactId>
+                <version>${jline.ver}</version>
             </dependency>
 
-            <dependency>
-                <groupId>com.google.code.gson</groupId>
-                <artifactId>gson</artifactId>
-                <version>${gson.ver}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.httpcomponents</groupId>
-                <artifactId>httpclient</artifactId>
-                <version>${apache.httpcomponents.ver}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-lang3</artifactId>
-                <version>${commons-lang3.ver}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.jsoup</groupId>
-                <artifactId>jsoup</artifactId>
-                <version>${jsoup.ver}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>commons-codec</groupId>
-                <artifactId>commons-codec</artifactId>
-                <version>${commons.codec.ver}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>commons-io</groupId>
-                <artifactId>commons-io</artifactId>
-                <version>${commons.io.ver}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.tika</groupId>
-                <artifactId>tika-langdetect</artifactId>
-                <version>${tika.ver}</version>
-                <!-- Ignite contains 13 version but it contains 12. -->
-                <exclusions>
-                    <exclusion>
-                        <groupId>com.intellij</groupId>
-                        <artifactId>annotations</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-core</artifactId>
-                <version>${log4j.ver}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>commons-validator</groupId>
-                <artifactId>commons-validator</artifactId>
-                <version>${commons.validator.ver}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.typesafe</groupId>
-                <artifactId>config</artifactId>
-                <version>${scala.config.ver}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>net.liftweb</groupId>
-                <artifactId>lift-json_${scala.base}</artifactId>
-                <version>${lift.json.ver}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.ignite</groupId>
-                <artifactId>ignite-core</artifactId>
-                <version>${ignite.ver}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.ignite</groupId>
-                <artifactId>ignite-spring</artifactId>
-                <version>${ignite.ver}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.ignite</groupId>
-                <artifactId>ignite-indexing</artifactId>
-                <version>${ignite.ver}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.ignite</groupId>
-                <artifactId>ignite-log4j2</artifactId>
-                <version>${ignite.ver}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.mchange</groupId>
-                <artifactId>c3p0</artifactId>
-                <version>${c3p0.ver}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>net.sf.extjwnl</groupId>
-                <artifactId>extjwnl</artifactId>
-                <version>${extjwnl.ver}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>net.sf.extjwnl</groupId>
-                <artifactId>extjwnl-data-wn31</artifactId>
-                <version>${extjwnl.data.wn31.ver}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.typesafe.akka</groupId>
-                <artifactId>akka-http_2.13</artifactId>
-                <version>${akka.http.2.13.ver}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.typesafe.akka</groupId>
-                <artifactId>akka-stream_2.13</artifactId>
-                <version>${akka.stream.2.13.ver}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.typesafe.akka</groupId>
-                <artifactId>akka-http-spray-json_2.13</artifactId>
-                <version>${akka.http.spray.json.2.13.ver}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.fasterxml.jackson.dataformat</groupId>
-                <artifactId>jackson-dataformat-yaml</artifactId>
-                <version>${jackson.yaml.ver}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-databind</artifactId>
-                <version>${jackson.ver}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.fasterxml.jackson.module</groupId>
-                <artifactId>jackson-module-scala_2.13</artifactId>
-                <version>${jackson.ver}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.google.cloud</groupId>
-                <artifactId>google-cloud-language</artifactId>
-                <version>${google.clould.language.ver}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>guava</artifactId>
-                <version>${google.guava.ver}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.github.java-diff-utils</groupId>
-                <artifactId>java-diff-utils</artifactId>
-                <version>${diff.utils.ver}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.github.vertical-blank</groupId>
-                <artifactId>sql-formatter</artifactId>
-                <version>${vertical.blank.ver}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.jakewharton.fliptables</groupId>
-                <artifactId>fliptables</artifactId>
-                <version>${fliptables.ver}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>edu.stanford.nlp</groupId>
-                <artifactId>stanford-corenlp</artifactId>
-                <version>${stanford.corenlp.ver}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>edu.stanford.nlp</groupId>
-                <artifactId>stanford-corenlp</artifactId>
-                <version>${stanford.corenlp.ver}</version>
-                <classifier>models</classifier>
-            </dependency>
-
-            <!-- Test dependencies. -->
+            <!--
+                Test scope.
+                ===========
+            -->
             <dependency>
                 <groupId>org.scalatest</groupId>
-                <artifactId>scalatest_${scala.base}</artifactId>
+                <artifactId>scalatest_${scala.major.ver}</artifactId>
                 <version>${scalatest.ver}</version>
                 <scope>test</scope>
             </dependency>
+
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-engine</artifactId>
                 <version>${junit.ver}</version>
                 <scope>test</scope>
             </dependency>
+
             <dependency>
-                <groupId>com.jayway.jsonpath</groupId>
-                <artifactId>json-path</artifactId>
-                <version>${jsonpath.ver}</version>
-                <scope>test</scope>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>${maven.jar.plugin.ver}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -525,11 +198,11 @@
                     <args>
                         <arg>-unchecked</arg>
                         <arg>-deprecation</arg>
-                        <arg>-explaintypes</arg>
                         <arg>-feature</arg>
                     </args>
-                    <!-- Suppress warnings on release versions of Scala. -->
-                    <scalaCompatVersion>${scala.base}</scalaCompatVersion>
+                    <scalaCompatVersion>3</scalaCompatVersion>
+                    <source>${java.ver}</source>
+                    <target>${java.ver}</target>
                 </configuration>
                 <executions>
                     <execution>
@@ -606,125 +279,5 @@
     </build>
 
     <profiles>
-        <!-- Stanford CoreNLP integration is not included by default due to GPL-licensed code. -->
-        <profile>
-            <id>stanford-corenlp</id>
-            <modules>
-                <module>nlpcraft-stanford</module>
-            </modules>
-        </profile>
-
-        <profile>
-            <id>gridgain-agent</id>
-            <repositories>
-                <repository>
-                    <id>GridGain External Repository</id>
-                    <url>https://www.gridgainsystems.com/nexus/content/repositories/external</url>
-                </repository>
-            </repositories>
-
-            <dependencies>
-                <dependency>
-                    <groupId>org.gridgain</groupId>
-                    <artifactId>control-center-agent</artifactId>
-                    <version>${gridgain.agent.ver}</version>
-                </dependency>
-            </dependencies>
-        </profile>
-
-        <profile>
-            <id>examples</id>
-            <modules>
-                <module>nlpcraft-examples/cargps</module>
-                <module>nlpcraft-examples/alarm</module>
-                <module>nlpcraft-examples/echo</module>
-                <module>nlpcraft-examples/helloworld</module>
-                <module>nlpcraft-examples/lightswitch</module>
-                <module>nlpcraft-examples/minecraft</module>
-                <module>nlpcraft-examples/phone</module>
-                <module>nlpcraft-examples/time</module>
-                <module>nlpcraft-examples/weather</module>
-                <module>nlpcraft-examples/sql</module>
-            </modules>
-        </profile>
-
-        <profile>
-            <id>mvntests</id>
-            <modules>
-                <module>nlpcraft-tests/cli</module>
-            </modules>
-        </profile>
-
-        <profile>
-            <id>release</id>
-            <activation>
-                <property>
-                    <name>performRelease</name>
-                    <value>true</value>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.rat</groupId>
-                        <artifactId>apache-rat-plugin</artifactId>
-                        <version>${apache.rat.plugin.ver}</version>
-                        <configuration>
-                            <excludes>
-                                <exclude>.gitignore</exclude>
-                                <exclude>build</exclude>
-                                <exclude>.idea/**/*</exclude>
-                                <exclude>external/**/*</exclude>
-                                <exclude>javadoc/**/*</exclude>
-                                <exclude>.git/**/*</exclude>
-                                <exclude>venv</exclude>
-                                <exclude>*.iml</exclude>
-                                <exclude>**/*.txt</exclude>
-                                <exclude>src/main/resources/geo/countries/*.json</exclude>
-                                <exclude>idea/**/*</exclude>
-                                <exclude>zips/**/*</exclude>
-                                <exclude>src/main/resources/**/*.json</exclude>
-                                <exclude>src/main/resources/moby/*</exclude>
-                                <exclude>src/main/scala/org/apache/nlpcraft/model/intent/compiler/antlr4/*</exclude>
-                                <exclude>src/main/scala/org/apache/nlpcraft/common/makro/antlr4/*</exclude>
-                                <exclude>src/main/resources/opennlp/en-lemmatizer.dict</exclude>
-                                <exclude>nlpcraft-examples/minecraft-mod/build/**/*</exclude>
-                                <exclude>nlpcraft-examples/minecraft-mod/.gradle/**/*</exclude>
-                                <exclude>nlpcraft-examples/minecraft-mod/gradle/wrapper/gradle-wrapper.jar</exclude>
-                                <exclude>nlpcraft-examples/minecraft-mod/assets/nlpcraft-example-minecraft-mod-1.0.jar</exclude>
-                                <exclude>DISCLAIMER-WIP</exclude>
-                            </excludes>
-                            <numUnapprovedLicenses>0</numUnapprovedLicenses>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>check</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>${maven.gpg.plugin.ver}</version>
-                        <configuration>
-                            <keyname>${gpg.keyname}</keyname>
-                            <passphrase>${gpg.passphrase}</passphrase>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
     </profiles>
 </project>
