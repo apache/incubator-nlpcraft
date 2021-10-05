@@ -25,6 +25,7 @@
 
 ### REST API
 For more REST API information:
+ * Make sure to use stable branch **master-0.9.1**:
  * Test and explore REST API at [SwaggerHub](https://app.swaggerhub.com/apis-docs/Apache-NLPCraft/apache-nlpcraft)
  * Learn more on how to [use REST API](https://nlpcraft.apache.org/using-rest.html)
 
