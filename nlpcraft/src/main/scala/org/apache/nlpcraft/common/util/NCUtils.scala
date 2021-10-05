@@ -645,3 +645,17 @@ object NCUtils extends LazyLogging:
             ignoring(classOf[Exception]) {
                 a.close()
             }
+
+    /**
+      *
+      * @param s
+      * @return
+      */
+    def decapitalize(s: String): String = s"${s.head.toLower}${s.tail}"
+
+    /**
+      *
+      * @param s
+      * @return
+      */
+    def capitalize(s: String): String = s"${s.head.toUpper}${s.tail}"
