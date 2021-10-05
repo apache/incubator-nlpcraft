@@ -28,7 +28,7 @@ import scala.sys.SystemProperties
   */
 object NCUtils extends LazyLogging:
     final val NL = System getProperty "line.separator"
-    private final val RND = new Random()
+    private val RND = new Random()
     private val sysProps = new SystemProperties
     private val ANSI_FG_8BIT_COLORS = for (i <- 16 to 255) yield ansi256Fg(i)
     private val ANSI_BG_8BIT_COLORS = for (i <- 16 to 255) yield ansi256Bg(i)

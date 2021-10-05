@@ -204,7 +204,9 @@ sealed trait NCAnsi extends LazyLogging:
     def ansiCursorShow: String = if (isEnabled) CURSOR_SHOW else ""
     def ansiCursorHide: String = if (isEnabled) CURSOR_HIDE else ""
 
-
+/**
+  *
+  */
 object NCAnsi extends NCAnsi:
     // Enabled by default.
     // NOTE: it's not static as it can be changed at runtime.
