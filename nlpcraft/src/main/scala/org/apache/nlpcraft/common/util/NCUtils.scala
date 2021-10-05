@@ -21,6 +21,8 @@ import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.common.ansi.NCAnsi.*
 
 import java.util.Random
+import java.util.regex.Pattern
+import scala.annotation.tailrec
 import scala.sys.SystemProperties
 
 /**
@@ -30,6 +32,7 @@ object NCUtils extends LazyLogging:
     final val NL = System getProperty "line.separator"
     private val RND = new Random()
     private val sysProps = new SystemProperties
+    private final val ANSI_SEQ = Pattern.compile("\u001B\\[[?;\\d]*[a-zA-Z]")
     private val ANSI_FG_8BIT_COLORS = for (i <- 16 to 255) yield ansi256Fg(i)
     private val ANSI_BG_8BIT_COLORS = for (i <- 16 to 255) yield ansi256Bg(i)
     private val ANSI_FG_4BIT_COLORS = Seq(
@@ -279,3 +282,132 @@ object NCUtils extends LazyLogging:
       * Shortcut - current timestamp in milliseconds.
       */
     def now(): Long = System.currentTimeMillis()
+
+    /**
+      *
+      * @param v
+      * @param dflt
+      * @tparam T
+      * @return
+      */
+    def notNull[T <: AnyRef](v: T, dflt: T): T = if (v == null) dflt else v
+
+    /**
+      * Strips ANSI escape sequences from the given string.
+      *
+      * @param s
+      * @return
+      */
+    def stripAnsi(s: String): String =
+        ANSI_SEQ.matcher(s).replaceAll("")
+
+    /**
+      * Trims each sequence string and filters out empty ones.
+      *
+      * @param s String to process.
+      * @return
+      */
+    def trimFilter(s: Seq[String]): Seq[String] =
+        s.map(_.strip).filter(_.nonEmpty)
+
+    /**
+      * Splits, trims and filters empty strings for the given string.
+      *
+      * @param s String to split.
+      * @param sep Separator (regex) to split by.
+      * @return
+      */
+    def splitTrimFilter(s: String, sep: String): Seq[String] =
+        trimFilter(s.split(sep).toIndexedSeq)
+
+    /**
+      * Recursively removes quotes from given string.
+      *
+      * @param s
+      * @return
+      */
+    @tailrec
+    def trimQuotes(s: String): String =
+        val z = s.strip
+        if (z.startsWith("'") && z.endsWith("'")) || (z.startsWith("\"") && z.endsWith("\"")) then
+            trimQuotes(z.substring(1, z.length - 1))
+        else
+            z
+
+    /**
+      * Recursively removes quotes and replaces escaped quotes from given string.
+      *
+      * @param s
+      * @return
+      */
+    @tailrec
+    def trimEscapesQuotes(s: String): String =
+        val z = s.strip
+        if z.nonEmpty then
+            if z.head == '\'' && z.last == '\'' then
+                trimEscapesQuotes(z.substring(1, z.length - 1).replace("\'", "'"))
+            else if z.head == '"' && z.last == '"' then
+                trimEscapesQuotes(z.substring(1, z.length - 1).replace("\\\"", "\""))
+            else
+                z
+        else
+            z
+
+    /**
+      * Recursively removes quotes and replaces escaped quotes from given string.
+      *
+      * @param s
+      * @return
+      */
+    @tailrec
+    def escapesQuotes(s: String): String =
+        if s.nonEmpty then
+            if s.head == '\'' && s.last == '\'' then
+                escapesQuotes(s.substring(1, s.length - 1).replace("\'", "'"))
+            else if (s.head == '"' && s.last == '"')
+                escapesQuotes(s.substring(1, s.length - 1).replace("\\\"", "\""))
+            else
+                s
+        else
+            s
+
+    /**
+      *
+      * @param s
+      * @param sep
+      * @return
+      */
+    def normalize(s: String, sep: String): String =
+        splitTrimFilter(s, sep).mkString(sep)
+
+    /**
+      * Escapes given string for JSON according to RFC 4627 http://www.ietf.org/rfc/rfc4627.txt.
+      *
+      * @param s String to escape.
+      * @return Escaped string.
+      */
+    def escapeJson(s: String): String =
+        val len = s.length
+        if len == 0 then
+            ""
+        else
+            val sb = new StringBuilder
+            for (ch <- s.toCharArray)
+                ch match
+                    case '\\' | '"' => sb += '\\' += ch
+                    case '/' => sb += '\\' += ch
+                    case '\b' => sb ++= "\\b"
+                    case '\t' => sb ++= "\\t"
+                    case '\n' => sb ++= "\\n"
+                    case '\f' => sb ++= "\\f"
+                    case '\r' => sb ++= "\\r"
+                    case _ =>
+                        if ch < ' ' then
+                            val t = "000" + Integer.toHexString(ch)
+                            sb ++= "\\u" ++= t.substring(t.length - 4)
+
+                        else
+                            sb += ch
+
+            sb.toString()
+
