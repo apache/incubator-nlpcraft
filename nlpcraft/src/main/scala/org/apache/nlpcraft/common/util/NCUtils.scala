@@ -84,7 +84,6 @@ object NCUtils extends LazyLogging:
         case None => false
         case Some(v) => java.lang.Boolean.valueOf(v) == java.lang.Boolean.TRUE
 
-
     /**
       * Gets random value from given sequence.
       *
