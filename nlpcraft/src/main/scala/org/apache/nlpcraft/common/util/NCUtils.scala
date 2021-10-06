@@ -17,6 +17,7 @@
 
 package org.apache.nlpcraft.common.util
 
+import com.google.gson.GsonBuilder
 import com.typesafe.scalalogging.*
 import org.apache.nlpcraft.common.NCException
 import org.apache.nlpcraft.common.ansi.NCAnsi.*
@@ -36,6 +37,7 @@ object NCUtils extends LazyLogging:
     final val NL = System getProperty "line.separator"
     private val RND = new Random()
     private val sysProps = new SystemProperties
+    private final lazy val GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create()
     private final val ANSI_SEQ = Pattern.compile("\u001B\\[[?;\\d]*[a-zA-Z]")
     private val ANSI_FG_8BIT_COLORS = for (i <- 16 to 255) yield ansi256Fg(i)
     private val ANSI_BG_8BIT_COLORS = for (i <- 16 to 255) yield ansi256Bg(i)
@@ -73,6 +75,18 @@ object NCUtils extends LazyLogging:
       * @return
       */
     def isSysEnvSet(s: String): Boolean = sysProps.get(s).nonEmpty || sys.env.contains(s)
+
+    /**
+      * Creates object from JSON string.
+      *
+      * @param js JSON string.
+      */
+    @throws[NCException]
+    def jsonToObject(js: String): AnyRef =
+        try
+            GSON.fromJson(js, classOf[Object])
+        catch
+            case e: Exception => throw new NCException(s"Failed to convert JSON string to map: $js", e)
 
     /**
       * Returns `true` if given system property, or environment variable is provided and has value

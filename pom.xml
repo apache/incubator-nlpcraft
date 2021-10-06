@@ -102,6 +102,7 @@
         <scala3.ref.ver>1.0.0</scala3.ref.ver>
         <junit.ver>5.8.1</junit.ver>
         <scalatest.ver>3.2.9</scalatest.ver>
+        <gson.ver>2.8.5</gson.ver>
 
         <!-- Force specific encoding on text resources. -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -152,6 +153,12 @@
              Other dependencies.
              ==================
             -->
+
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${gson.ver}</version>
+            </dependency>
 
             <dependency>
                 <groupId>org.antlr</groupId>
