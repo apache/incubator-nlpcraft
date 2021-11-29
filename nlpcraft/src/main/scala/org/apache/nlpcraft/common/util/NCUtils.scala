@@ -526,7 +526,6 @@ object NCUtils extends LazyLogging:
                 try
                     body(this)
                     logger.trace(s"Thread exited: $name")
-
                 catch
                     case _: InterruptedException => logger.trace(s"Thread interrupted: $name")
                     case e: Throwable => prettyError(logger, s"Unexpected error during '$name' thread execution:", e)

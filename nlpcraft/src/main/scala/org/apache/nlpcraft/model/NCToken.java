@@ -27,7 +27,7 @@ import java.util.List;
  *
  * @see NCElement
  */
-public interface NCToken extends NCMetadata {
+public interface NCToken {
     /**
      * Gets reference to the model this token belongs to.
      *
@@ -36,11 +36,11 @@ public interface NCToken extends NCMetadata {
     NCModel getModel();
 
     /**
-     * Gets ID of the server request this token is part of.
+     * Gets ID of the request this token is part of.
      *
-     * @return ID of the server request this token is part of.
+     * @return ID of the request this token is part of.
      */
-    String getServerRequestId();
+    String getRequestId();
 
     /**
      * If this token represents user defined model element this method returns
@@ -144,9 +144,7 @@ public interface NCToken extends NCMetadata {
      *
      * @return Whether this token is a stopword.
      */
-    default boolean isStopWord() {
-        return meta("nlpcraft:nlp:stopword");
-    }
+    boolean isStopWord();
 
     /**
      * A shortcut method checking whether this token represents a free word. A free word is a
@@ -160,10 +158,7 @@ public interface NCToken extends NCMetadata {
      *
      * @return Whether this token is a freeword.
      */
-    default boolean isFreeWord() {
-        return meta("nlpcraft:nlp:freeword");
-    }
-
+    boolean isFreeWord();
     /**
      * A shortcut method that gets original user input text for this token.
      * <p>
@@ -175,9 +170,7 @@ public interface NCToken extends NCMetadata {
      *
      * @return Original user input text for this token.
      */
-    default String getOriginalText() {
-        return meta("nlpcraft:nlp:origtext");
-    }
+    String getOriginalText();
 
     /**
      * A shortcut method that gets index of this token in the sentence.
@@ -190,9 +183,7 @@ public interface NCToken extends NCMetadata {
      *
      * @return Index of this token in the sentence.
      */
-    default int getIndex() {
-        return meta("nlpcraft:nlp:index");
-    }
+    int getIndex();
 
     /**
      * A shortcut method that gets normalized user input text for this token.
@@ -205,9 +196,7 @@ public interface NCToken extends NCMetadata {
      *
      * @return Normalized user input text for this token.
      */
-    default String getNormalizedText() {
-        return meta("nlpcraft:nlp:normtext");
-    }
+    String getNormalizedText();
 
     /**
      * A shortcut method on whether this token is a swear word. NLPCraft has built-in list of
@@ -221,9 +210,7 @@ public interface NCToken extends NCMetadata {
      *
      * @return Whether this token is a swear word.
      */
-    default boolean isSwear() {
-        return meta("nlpcraft:nlp:swear");
-    }
+    boolean isSwear();
 
     /**
      * A shortcut method to get lemma of this token, i.e. a canonical form of this word. Note that
@@ -240,9 +227,7 @@ public interface NCToken extends NCMetadata {
      *
      * @return Lemma of this token, i.e. a canonical form of this word.
      */
-    default String getLemma() {
-        return meta("nlpcraft:nlp:lemma");
-    }
+    String getLemma();
 
     /**
      * A shortcut method to get stem of this token. Note that stemming and lemmatization allow to reduce
@@ -258,9 +243,7 @@ public interface NCToken extends NCMetadata {
      *
      * @return Stem of this token.
      */
-    default String getStem() {
-        return meta("nlpcraft:nlp:stem");
-    }
+    String getStem();
 
     /**
      * A shortcut method to get Penn Treebank POS tag for this token. Note that additionally to standard Penn
@@ -274,9 +257,7 @@ public interface NCToken extends NCMetadata {
      *
      * @return Penn Treebank POS tag for this token.
      */
-    default String getPos() {
-        return meta("nlpcraft:nlp:pos");
-    }
+    String getPos();
 
     /**
      * A shortcut method that gets internal globally unique system ID of the token.
@@ -288,7 +269,5 @@ public interface NCToken extends NCMetadata {
      *
      * @return Internal globally unique system ID of the token.
      */
-    default String getUnid() {
-        return meta("nlpcraft:nlp:unid");
-    }    
+    String getUnid();
 }
