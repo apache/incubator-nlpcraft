@@ -29,11 +29,11 @@ import java.util.List;
  */
 public interface NCToken {
     /**
-     * Gets reference to the model this token belongs to.
+     * Gets reference to the configuratrion of the model this token belongs to.
      *
-     * @return Model reference.
+     * @return Model configuration reference.
      */
-    NCModel getModel();
+    NCModelConfig getModelConfig();
 
     /**
      * Gets ID of the request this token is part of.

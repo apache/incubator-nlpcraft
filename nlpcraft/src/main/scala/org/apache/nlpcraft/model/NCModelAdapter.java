@@ -15,15 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.model;
+package org.apache.nlpcraft.model;/*
+   _________            ______________
+   __  ____/_______________  __ \__  /_____ _____  __
+   _  /    _  __ \_  ___/_  /_/ /_  /_  __ `/_  / / /
+   / /___  / /_/ /(__  )_  ____/_  / / /_/ /_  /_/ /
+   \____/  \____//____/ /_/     /_/  \__,_/ _\__, /
+                                            /____/
+
+          2D ASCII JVM GAME ENGINE FOR SCALA3
+              (C) 2021 Rowan Games, Inc.
+                ALl rights reserved.
+*/
 
 /**
  *
  */
-public interface NCModel {
-    /**
-     *
-     * @return
-     */
-    NCModelConfig getConfig();
+public class NCModelAdapter implements NCModel {
 }
