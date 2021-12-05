@@ -32,4 +32,8 @@ package org.apache.nlpcraft;/*
  *
  */
 public class NCModelAdapter implements NCModel {
+    @Override
+    public NCModelConfig getConfig() {
+        return null; // TODO
+    }
 }

@@ -15,35 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft;/*
-   _________            ______________
-   __  ____/_______________  __ \__  /_____ _____  __
-   _  /    _  __ \_  ___/_  /_/ /_  /_  __ `/_  / / /
-   / /___  / /_/ /(__  )_  ____/_  / / /_/ /_  /_/ /
-   \____/  \____//____/ /_/     /_/  \__,_/ _\__, /
-                                            /____/
+package org.apache.nlpcraft;
 
-          2D ASCII JVM GAME ENGINE FOR SCALA3
-              (C) 2021 Rowan Games, Inc.
-                ALl rights reserved.
-*/
+import java.util.List;
 
 /**
  *
  */
-public class NCModelConfigFileAdapter implements NCModelConfig {
-    @Override
-    public String getId() {
-        return null; // TODO
-    }
-
-    @Override
-    public String getName() {
-        return null; // TODO
-    }
-
-    @Override
-    public String getVersion() {
-        return null; // TODO
-    }
+public interface NCTokenParser {
+    /**
+     *
+     * @param req
+     * @param cfg
+     * @param words
+     * @param toks List of already parsed tokens prio to this step. Can be empty but never {@code null}.
+     * @return
+     */
+    List<NCToken> parse(NCRequest req, NCModelConfig cfg, List<NCWord> words, List<NCToken> toks);
 }

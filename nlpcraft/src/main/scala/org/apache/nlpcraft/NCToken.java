@@ -144,6 +144,7 @@ public interface NCToken {
      * @return Whether this token is a freeword.
      */
     boolean isFreeWord();
+    
     /**
      * A shortcut method that gets original user input text for this token.
      * <p>

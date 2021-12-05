@@ -15,35 +15,57 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft;/*
-   _________            ______________
-   __  ____/_______________  __ \__  /_____ _____  __
-   _  /    _  __ \_  ___/_  /_/ /_  /_  __ `/_  / / /
-   / /___  / /_/ /(__  )_  ____/_  / / /_/ /_  /_/ /
-   \____/  \____//____/ /_/     /_/  \__,_/ _\__, /
-                                            /____/
-
-          2D ASCII JVM GAME ENGINE FOR SCALA3
-              (C) 2021 Rowan Games, Inc.
-                ALl rights reserved.
-*/
+package org.apache.nlpcraft;
 
 /**
  *
  */
-public class NCModelConfigFileAdapter implements NCModelConfig {
-    @Override
-    public String getId() {
-        return null; // TODO
-    }
+public interface NCWord {
+    /**
+     *
+     * @return
+     */
+    String getOriginalText();
 
-    @Override
-    public String getName() {
-        return null; // TODO
-    }
+    /**
+     *
+     * @return
+     */
+    String getNormalizedText();
 
-    @Override
-    public String getVersion() {
-        return null; // TODO
-    }
+    /**
+     *
+     * @return
+     */
+    String getLemma();
+
+    /**
+     *
+     * @return
+     */
+    String getStem();
+
+    /**
+     *
+     * @return
+     */
+    String getPos();
+
+    /**
+     *
+     * @return
+     */
+    int getStartCharIndex();
+
+    /**
+     *
+     * @return
+     */
+    int getEndCharIndex();
+
+    /**
+     *
+     * @return
+     */
+    int getLength();
 }

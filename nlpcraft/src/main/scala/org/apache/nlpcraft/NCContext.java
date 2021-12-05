@@ -17,8 +17,39 @@
 
 package org.apache.nlpcraft;
 
+import java.util.Collection;
+import java.util.List;
+
 /**
  *
  */
 public interface NCContext {
+    /**
+     * Tests if given token is part of the query this context is associated with.
+     *
+     * @param tok Token to check.
+     * @return {@code true} if given token is associated with this context, {@code false} otherwise.
+     */
+    boolean isOwnerOf(NCToken tok);
+
+    /**
+     * Gets model configuration for this query.
+     *
+     * @return Model.
+     */
+    NCModelConfig getModelConfig();
+
+    /**
+     * Gets user request.
+     *
+     * @return User request.
+     */
+    NCRequest getRequest();
+
+    /**
+     * Gets current conversation for this context.
+     *
+     * @return Current conversation.
+     */
+    NCConversation getConversation();
 }

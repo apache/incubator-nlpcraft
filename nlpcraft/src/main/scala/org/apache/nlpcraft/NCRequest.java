@@ -69,9 +69,9 @@ public interface NCRequest {
     /**
      * Gets string representation of the user agent that made the call with this request.
      *
-     * @return User agent description (web browser, REST client, etc.).
+     * @return User agent description (web browser, REST client, etc.) or {@code null} if not available.
      */
-    Optional<String> getUserAgent();
+    String getUserAgent();
 
     /**
      * Gets optional user request data.
