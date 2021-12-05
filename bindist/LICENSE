@@ -204,7 +204,7 @@
 Files under 'nlpcraft/src/main/resources/moby' folder are public domain. See
 https://en.wikipedia.org/wiki/Moby_Project for more information.
 
-File org.apache.nlpcraft.common.util.NCIdGenerator.java is based on https://github.com/peet/hashids.java
+File org.apache.nlpcraft.internal.util.NCIdGenerator.java is based on https://github.com/peet/hashids.java
 and licensed under MIT license:
 
     Copyright (C) 2012 Ivan Akimov
@@ -223,7 +223,7 @@ and licensed under MIT license:
     CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
     DEALINGS IN THE SOFTWARE.
 
-File org.apache.nlpcraft.common.blowfish.NCBlowfishHasher.java is based on 
+File org.apache.nlpcraft.internal.blowfish.NCBlowfishHasher.java is based on
 https://github.com/jeremyh/jBCrypt/blob/master/src/main/java/org/mindrot/BCrypt.java
 and licensed as follows:
 

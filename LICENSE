@@ -201,7 +201,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 
-File org.apache.nlpcraft.common.blowfish.NCBlowfishHasher.java is based on
+File org.apache.nlpcraft.internal.blowfish.NCBlowfishHasher.java is based on
 https://github.com/jeremyh/jBCrypt/blob/master/src/main/java/org/mindrot/BCrypt.java
 and licensed as follows:
 
@@ -223,7 +223,7 @@ Files in src/main/resources/moby folder are released by Grady Ward into the publ
    - https://en.wikipedia.org/wiki/Moby_Project
    - http://cs.sru.edu/~ddailey/whence.html
 
-File org.apache.nlpcraft.common.util.NCIdGenerator.java
+File org.apache.nlpcraft.internal.util.NCIdGenerator.java
 is loosely based on https://github.com/peet/Hashids.java that is licensed under MIT license:
    - Copyright (C) Ivan Akimov
    - Copyright (C) Peet Goddard

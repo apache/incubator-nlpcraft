@@ -54,7 +54,7 @@
 			{ regex: SyntaxHighlighter.regexLib.doubleQuotedString,		css: 'string' },			// double quoted strings
 			{ regex: SyntaxHighlighter.regexLib.singleQuotedString,		css: 'string' },			// single quoted strings
 			{ regex: /\$\w+/g,											css: 'variable' },			// variables
-			{ regex: new RegExp(this.getKeywords(funcs), 'gmi'),		css: 'functions' },			// common functions
+			{ regex: new RegExp(this.getKeywords(funcs), 'gmi'),		css: 'functions' },			// internal functions
 			{ regex: new RegExp(this.getKeywords(constants), 'gmi'),	css: 'constants' },			// constants
 			{ regex: new RegExp(this.getKeywords(keywords), 'gm'),		css: 'keyword' }			// keyword
 			];

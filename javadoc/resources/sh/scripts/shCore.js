@@ -918,7 +918,7 @@ function trim(str)
 };
 
 /**
- * Unindents a block of text by the lowest common indent amount.
+ * Unindents a block of text by the lowest internal indent amount.
  * @param {String} str   Text to unindent.
  * @return {String}      Returns unindented text block.
  */
@@ -930,7 +930,7 @@ function unindent(str)
 		min = 1000
 		;
 	
-	// go through every line and check for common number of indents
+	// go through every line and check for internal number of indents
 	for (var i = 0; i < lines.length && min > 0; i++) 
 	{
 		var line = lines[i];
@@ -948,7 +948,7 @@ function unindent(str)
 		min = Math.min(matches[0].length, min);
 	}
 	
-	// trim minimum common number of white space from the begining of every line
+	// trim minimum internal number of white space from the begining of every line
 	if (min > 0) 
 		for (var i = 0; i < lines.length; i++) 
 			lines[i] = lines[i].substr(min);
@@ -1032,7 +1032,7 @@ function processUrls(code)
 			match = null
 			;
 		
-		// We include &lt; and &gt; in the URL for the common cases like <http://google.com>
+		// We include &lt; and &gt; in the URL for the internal cases like <http://google.com>
 		// The problem is that they get transformed into &lt;http://google.com&gt;
 		// Where as &gt; easily looks like part of the URL string.
 	
@@ -1569,7 +1569,7 @@ sh.Highlighter.prototype = {
 			: processTabs(code, tabSize)
 			;
 
-		// unindent code by the common indentation
+		// unindent code by the internal indentation
 		code = unindent(code);
 
 		if (gutter)

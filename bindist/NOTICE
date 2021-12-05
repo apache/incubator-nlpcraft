@@ -4,10 +4,10 @@ Copyright (C) 2021 The Apache Software Foundation
 This product includes software developed at
 The Apache Software Foundation (http://www.apache.org/).
 
-File org.apache.nlpcraft.common.util.NCIdGenerator.java.
+File org.apache.nlpcraft.internal.util.NCIdGenerator.java.
 Based on https://github.com/peet/hashids.java
 Copyright (C) 2012 Ivan Akimov
 
-File org.apache.nlpcraft.common.blowfish.NCBlowfishHasher.java.
+File org.apache.nlpcraft.internal.blowfish.NCBlowfishHasher.java.
 Based on https://github.com/jeremyh/jBCrypt/blob/master/src/main/java/org/mindrot/BCrypt.java
 Copyright (C) 2006 Damien Miller <djm@mindrot.org>
