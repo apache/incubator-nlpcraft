@@ -17,74 +17,58 @@
 
 package org.apache.nlpcraft;
 
-import java.util.List;
+import java.util.Map;
+import java.util.concurrent.*;
 
 /**
  *
  */
-public interface NCModel {
-    /**
-     *
-     * @return
-     */
-    NCModelConfig getConfig();
+public class NCModelClient {
+    private NCModel mdl;
 
     /**
      *
-     * @param var
-     * @return
+     * @param mdl
      */
-    default boolean onVariant(List<NCToken> var) {
-        return true;
+    public NCModelClient(NCModel mdl) {
+        this.mdl = mdl;
     }
 
     /**
      *
-     * @param ctx
+     * @param txt
+     * @param data
+     * @param usrId
      * @return
-     * @throws NCRejection
      */
-    default NCResult onContext(NCContext ctx) throws NCRejection {
-        return null;
+    Future<NCResult> ask(String txt, Map<String, Object> data, String usrId) {
+        return null; // TODO
     }
 
     /**
      *
-     * @param ctx
+     * @param txt
+     * @param data
+     * @param usrId
      * @return
-     * @throws NCRejection
      */
-    default boolean onMatchedIntent(NCIntentMatch ctx) throws NCRejection {
-        return true;
+    NCResult askSync(String txt, Map<String, Object> data, String usrId) {
+        return null; // TODO
     }
 
     /**
      *
-     * @param ctx
-     * @param res
-     * @return
+     * @param usrId
      */
-    default NCResult onResult(NCIntentMatch ctx, NCResult res) {
-        return null;
+    void clearConversation(String usrId) {
+        // TODO
     }
 
     /**
      *
-     * @param ctx
-     * @param e
-     * @return
+     * @param usrId
      */
-    default NCResult onRejection(NCIntentMatch ctx, NCRejection e) {
-        return null;
-    }
-
-    /**
-     *
-     * @param ctx
-     * @param e
-     * @return
-     */
-    default NCResult onError(NCContext ctx, Throwable e) {
-        return null;
+    void clearDialog(String usrId) {
+        // TODO
     }
 }
