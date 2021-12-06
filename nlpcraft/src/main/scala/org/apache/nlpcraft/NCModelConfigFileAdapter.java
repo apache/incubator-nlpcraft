@@ -46,4 +46,14 @@ public class NCModelConfigFileAdapter implements NCModelConfig {
     public String getVersion() {
         return null; // TODO
     }
+
+    @Override
+    public NCWordParser getWordParser() {
+        return null; // TODO
+    }
+
+    @Override
+    public NCTokenParser getTokenParser() {
+        return null; // TODO
+    }
 }

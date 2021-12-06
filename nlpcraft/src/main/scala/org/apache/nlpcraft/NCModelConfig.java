@@ -68,6 +68,18 @@ public interface NCModelConfig {
     boolean DFLT_IS_SWEAR_WORDS_ALLOWED = false;
 
     /**
+     *
+     * @return
+     */
+    NCWordParser getWordParser();
+
+    /**
+     *
+     * @return
+     */
+    NCTokenParser getTokenParser();
+
+    /**
      * Gets unique, <i>immutable</i> ID of this model.
      * <p>
      * Note that <b>model IDs are immutable</b> while name and version
