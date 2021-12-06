@@ -71,13 +71,13 @@ public interface NCModelConfig {
      *
      * @return
      */
-    NCWordParser getWordParser();
+    NCTokenParser getTokenParser();
 
     /**
      *
      * @return
      */
-    NCTokenParser getTokenParser();
+    NCEntityParser getEntityParser();
 
     /**
      * Gets unique, <i>immutable</i> ID of this model.

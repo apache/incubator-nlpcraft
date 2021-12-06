@@ -26,10 +26,7 @@ public interface NCTokenParser {
     /**
      *
      * @param req
-     * @param cfg
-     * @param words
-     * @param toks List of already parsed tokens prio to this step. Can be empty but never {@code null}.
      * @return
      */
-    List<NCToken> parse(NCRequest req, NCModelConfig cfg, List<NCWord> words, List<NCToken> toks);
+    List<NCToken> parse(NCRequest req);
 }

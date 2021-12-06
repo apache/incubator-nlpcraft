@@ -22,11 +22,14 @@ import java.util.List;
 /**
  *
  */
-public interface NCWordParser {
+public interface NCEntityParser {
     /**
      *
      * @param req
+     * @param cfg
+     * @param toks
+     * @param ents List of already parsed entities prio to this step. Can be empty but never {@code null}.
      * @return
      */
-    List<NCWord> parse(NCRequest req);
+    List<NCEntity> parse(NCRequest req, NCModelConfig cfg, List<NCToken> toks, List<NCEntity> ents);
 }

@@ -35,7 +35,7 @@ public interface NCConversation {
      * @return List of tokens for this conversation's STM. The list can be empty which indicates that
      *      conversation is brand new (or timed out).
      */
-    List<NCToken> getTokens();
+    List<NCEntity> getTokens();
 
     /**
      * Gets the chronologically ordered list of previously matched intents sorted from oldest to newest
@@ -55,7 +55,7 @@ public interface NCConversation {
      *
      * @param filter Token remove filter.
      */
-    void clearStm(Predicate<NCToken> filter);
+    void clearStm(Predicate<NCEntity> filter);
 
     /**
      * Removes all previously matched intents using given dialog flow item predicate.

@@ -48,12 +48,12 @@ public class NCModelConfigFileAdapter implements NCModelConfig {
     }
 
     @Override
-    public NCWordParser getWordParser() {
+    public NCTokenParser getTokenParser() {
         return null; // TODO
     }
 
     @Override
-    public NCTokenParser getTokenParser() {
+    public NCEntityParser getEntityParser() {
         return null; // TODO
     }
 }

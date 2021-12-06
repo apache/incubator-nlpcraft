@@ -34,7 +34,7 @@ public interface NCModel {
      * @param var
      * @return
      */
-    default boolean onVariant(List<NCToken> var) {
+    default boolean onVariant(List<NCEntity> var) {
         return true;
     }
 

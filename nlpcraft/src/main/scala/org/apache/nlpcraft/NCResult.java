@@ -64,7 +64,7 @@ public class NCResult implements Serializable {
     private String type;
 
     /** Sequence of tokens represents a fully parsed (see {@link NCContext#getVariants()} method) user input. */
-    private Collection<NCToken> tokens;
+    private Collection<NCEntity> tokens;
 
     /** ID of the intent. */
     private String intentId;
@@ -197,7 +197,7 @@ public class NCResult implements Serializable {
      * @return Gets tokens that were used to produce this query result.
      * @see #setTokens(Collection)
      */
-    public Collection<NCToken> getTokens() {
+    public Collection<NCEntity> getTokens() {
         return tokens;
     }
 
@@ -213,7 +213,7 @@ public class NCResult implements Serializable {
      * @param tokens Collection of tokens that was used to produce this query result.
      * @see #getTokens()
      */
-    public void setTokens(Collection<NCToken> tokens) {
+    public void setTokens(Collection<NCEntity> tokens) {
         this.tokens = tokens;
     }
 
