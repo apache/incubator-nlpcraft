@@ -15,18 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft;/*
-   _________            ______________
-   __  ____/_______________  __ \__  /_____ _____  __
-   _  /    _  __ \_  ___/_  /_/ /_  /_  __ `/_  / / /
-   / /___  / /_/ /(__  )_  ____/_  / / /_/ /_  /_/ /
-   \____/  \____//____/ /_/     /_/  \__,_/ _\__, /
-                                            /____/
-
-          2D ASCII JVM GAME ENGINE FOR SCALA3
-              (C) 2021 Rowan Games, Inc.
-                ALl rights reserved.
-*/
+package org.apache.nlpcraft;
 
 import java.util.Optional;
 
@@ -35,7 +24,7 @@ import java.util.Optional;
  */
 public interface NCParameterized {
     /**
-     * 
+     *
      * @param key
      * @param <T>
      * @return
@@ -43,7 +32,7 @@ public interface NCParameterized {
     <T> T get(String key);
 
     /**
-     * 
+     *
      * @param key
      * @param <T>
      * @return
@@ -51,14 +40,14 @@ public interface NCParameterized {
     <T> Optional<T> getOpt(String key);
 
     /**
-     * 
+     *
      * @param key
      * @param obj
      */
-    void put(String key, Object obj);
+    <T> T put(String key, Object obj);
 
     /**
-     * 
+     *
      * @param key
      * @param obj
      * @param <T>
@@ -67,16 +56,24 @@ public interface NCParameterized {
     <T> T putIfAbsent(String key, T obj);
 
     /**
-     * 
+     *
      * @param key
      * @return
      */
     boolean contains(String key);
 
     /**
-     * 
+     *
      * @param key
      * @return
      */
-    boolean remove(String key);
+    <T> T remove(String key);
+
+    /**
+     *
+     * @param key
+     * @param obj
+     * @return
+     */
+    boolean remove(String key, Object obj);
 }

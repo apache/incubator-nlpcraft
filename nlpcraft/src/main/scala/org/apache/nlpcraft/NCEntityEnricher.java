@@ -15,18 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft;/*
-   _________            ______________
-   __  ____/_______________  __ \__  /_____ _____  __
-   _  /    _  __ \_  ___/_  /_/ /_  /_  __ `/_  / / /
-   / /___  / /_/ /(__  )_  ____/_  / / /_/ /_  /_/ /
-   \____/  \____//____/ /_/     /_/  \__,_/ _\__, /
-                                            /____/
-
-          2D ASCII JVM GAME ENGINE FOR SCALA3
-              (C) 2021 Rowan Games, Inc.
-                ALl rights reserved.
-*/
+package org.apache.nlpcraft;
 
 import java.util.*;
 
@@ -40,5 +29,5 @@ public interface NCEntityEnricher {
      * @param cfg 
      * @param ents
      */
-    void enrich(NCRequest req, NCModelConfig cfg, List<NCEntity> ents);
+    void enrich(NCRequest req, NCModelConfig cfg, List<NCEntity> ents) throws NCException;
 }

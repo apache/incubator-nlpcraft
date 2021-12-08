@@ -21,8 +21,18 @@ package org.apache.nlpcraft;
  *
  */
 public class NCModelAdapter implements NCModel {
+    private final NCModelConfig cfg;
+
+    /**
+     *
+     * @param cfg
+     */
+    public NCModelAdapter(NCModelConfig cfg) {
+        this.cfg = cfg;
+    }
+
     @Override
     public NCModelConfig getConfig() {
-        return null; // TODO
+        return cfg;
     }
 }

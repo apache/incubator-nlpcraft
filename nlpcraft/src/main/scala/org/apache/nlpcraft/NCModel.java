@@ -31,10 +31,10 @@ public interface NCModel {
 
     /**
      *
-     * @param var
+     * @param vrn
      * @return
      */
-    default boolean onVariant(List<NCEntity> var) {
+    default boolean onVariant(List<NCEntity> vrn) {
         return true;
     }
 

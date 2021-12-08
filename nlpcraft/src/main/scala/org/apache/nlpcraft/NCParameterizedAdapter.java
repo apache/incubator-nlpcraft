@@ -15,18 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft;/*
-   _________            ______________
-   __  ____/_______________  __ \__  /_____ _____  __
-   _  /    _  __ \_  ___/_  /_/ /_  /_  __ `/_  / / /
-   / /___  / /_/ /(__  )_  ____/_  / / /_/ /_  /_/ /
-   \____/  \____//____/ /_/     /_/  \__,_/ _\__, /
-                                            /____/
-
-          2D ASCII JVM GAME ENGINE FOR SCALA3
-              (C) 2021 Rowan Games, Inc.
-                ALl rights reserved.
-*/
+package org.apache.nlpcraft;
 
 import java.util.HashMap;
 import java.util.Optional;
@@ -44,26 +33,31 @@ public class NCParameterizedAdapter implements NCParameterized {
 
     @Override
     public <T> Optional<T> getOpt(String key) {
-        return Optional.empty();
+        return Optional.ofNullable((T)map.get(key));
     }
 
     @Override
-    public void put(String key, Object obj) {
-
+    public <T> T put(String key, Object obj) {
+        return (T)map.put(key, obj);
     }
 
     @Override
     public <T> T putIfAbsent(String key, T obj) {
-        return null;
+        return (T)map.putIfAbsent(key, obj);
     }
 
     @Override
     public boolean contains(String key) {
-        return false;
+        return map.containsKey(key);
     }
 
     @Override
-    public boolean remove(String key) {
-        return false;
+    public <T> T remove(String key) {
+        return (T)map.remove(key);
+    }
+
+    @Override
+    public boolean remove(String key, Object obj) {
+        return map.remove(key, obj);
     }
 }
