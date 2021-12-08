@@ -15,48 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft;
+package org.apache.nlpcraft;/*
+   _________            ______________
+   __  ____/_______________  __ \__  /_____ _____  __
+   _  /    _  __ \_  ___/_  /_/ /_  /_  __ `/_  / / /
+   / /___  / /_/ /(__  )_  ____/_  / / /_/ /_  /_/ /
+   \____/  \____//____/ /_/     /_/  \__,_/ _\__, /
+                                            /____/
 
-import java.util.List;
+          2D ASCII JVM GAME ENGINE FOR SCALA3
+              (C) 2021 Rowan Games, Inc.
+                ALl rights reserved.
+*/
+
+import java.util.*;
 
 /**
  *
  */
-public interface NCEntity extends NCParameterized {
+public interface NCTokenEnricher {
     /**
      *
-     * @return
+     * @param req
+     * @param cfg
+     * @param toks
      */
-    List<NCToken> getTokens();
-
-    /**
-     * Gets ID of the request this entity is part of.
-     *
-     * @return ID of the request this entity is part of.
-     */
-    String getRequestId();
-
-    /**
-     *
-     * @return
-     */
-    String getId();
-
-    /**
-     *
-     * @return Index of this entity in the sentence.
-     */
-    int getIndex();
-
-    /**
-     * A shortcut method that gets internal globally unique system ID of the entity.
-     * <p>
-     * This method is equivalent to:
-     * <pre class="brush: java">
-     *     return meta("nlpcraft:nlp:unid");
-     * </pre>
-     *
-     * @return Internal globally unique system ID of the entity.
-     */
-    String getGuid();
+    void enrich(NCRequest req, NCModelConfig cfg, List<NCToken> toks);
 }
