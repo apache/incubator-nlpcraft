@@ -34,9 +34,14 @@ public interface NCModelConfig extends NCParameterized {
     int DFLT_MAX_TOKENS = 50;
 
     /**
-     * Default value for {@link #getMinNonStopwords()} method.
+     * Default value for {@link #getMinNonStopWords()} method.
      */
     int DFLT_MIN_NON_STOPWORDS = 0;
+
+    /**
+     * Default value for {@link #getMaxStopWords()} method.
+     */
+    int DFLT_MAX_STOPWORDS = 15;
 
     /**
      * Default value for {@link #isNotLatinCharsetAllowed()} method.
@@ -124,7 +129,13 @@ public interface NCModelConfig extends NCParameterized {
         return DFLT_MAX_TOKENS;
     }
 
-    int getMaxStopWords();
+    /**
+     *
+     * @return
+     */
+    default int getMaxStopWords() {
+        return DFLT_MAX_STOPWORDS;
+    }
 
     /**
      *

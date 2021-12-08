@@ -22,7 +22,7 @@ import java.util.*;
 /**
  *
  */
-public class NCModelConfigFileAdapter implements NCModelConfig {
+public class NCModelConfigFileAdapter extends NCParameterizedAdapter implements NCModelConfig {
     @Override
     public String getId() {
         return null; // TODO
@@ -35,6 +35,16 @@ public class NCModelConfigFileAdapter implements NCModelConfig {
 
     @Override
     public String getVersion() {
+        return null; // TODO
+    }
+
+    @Override
+    public List<NCTokenEnricher> getTokenEnrichers() {
+        return null; // TODO
+    }
+
+    @Override
+    public List<NCEntityEnricher> getEntityEnrichers() {
         return null; // TODO
     }
 
