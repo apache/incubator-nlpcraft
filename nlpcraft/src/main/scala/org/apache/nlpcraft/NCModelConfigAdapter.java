@@ -22,7 +22,7 @@ import java.util.*;
 /**
  *
  */
-public class NCModelConfigFileAdapter extends NCParameterizedAdapter implements NCModelConfig {
+public class NCModelConfigAdapter extends NCParameterizedAdapter implements NCModelConfig {
     @Override
     public String getId() {
         return null; // TODO

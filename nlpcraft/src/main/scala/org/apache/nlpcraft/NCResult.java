@@ -27,7 +27,7 @@ import java.util.Collection;
  */
 public class NCResult implements Serializable {
     /** Data Model result text. */
-    private String body;
+    private Object body;
 
     /** Data Model result type. */
     private NCResultType type;
@@ -41,7 +41,7 @@ public class NCResult implements Serializable {
      * @param body Result body.
      * @param type Result type.
      */
-    public NCResult(String body, NCResultType type) {
+    public NCResult(Object body, NCResultType type) {
         assert body != null;
         assert type != null;
 
@@ -61,7 +61,7 @@ public class NCResult implements Serializable {
      *
      * @param body Result body.
      */
-    public void setBody(String body) {
+    public void setBody(Object body) {
         this.body = body;
     }
 
@@ -88,7 +88,7 @@ public class NCResult implements Serializable {
      *
      * @return Result body.
      */
-    public String getBody() {
+    public Object getBody() {
         return body;
     }
 

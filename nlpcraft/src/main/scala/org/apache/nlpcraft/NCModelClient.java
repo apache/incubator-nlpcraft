@@ -42,7 +42,7 @@ public class NCModelClient {
      * @return
      * @throws NCException
      */
-    Future<NCResult> ask(String txt, Map<String, Object> data, String usrId) {
+    CompletableFuture<NCResult> ask(String txt, Map<String, Object> data, String usrId) {
         return null; // TODO
     }
 
