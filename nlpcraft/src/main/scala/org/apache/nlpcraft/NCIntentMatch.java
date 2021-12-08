@@ -31,13 +31,6 @@ public interface NCIntentMatch {
     String getIntentId();
 
     /**
-     * Gets context of the user request.
-     *
-     * @return Original query context.
-     */
-    NCContext getContext();
-
-    /**
      * Gets a subset of entities representing matched intent. This subset is grouped by the matched terms
      * where a {@code null} sub-list defines an optional term. Order and index of sub-lists corresponds
      * to the order and index of terms in the matching intent. Number of sub-lists will always be the same
