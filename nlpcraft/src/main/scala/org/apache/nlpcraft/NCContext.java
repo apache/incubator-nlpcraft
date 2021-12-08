@@ -17,6 +17,9 @@
 
 package org.apache.nlpcraft;
 
+import java.util.Collection;
+import java.util.List;
+
 /**
  *
  */
@@ -49,4 +52,10 @@ public interface NCContext {
      * @return Current conversation.
      */
     NCConversation getConversation();
+
+    /**
+     *
+     * @return
+     */
+    Collection<List<NCEntity>> getVariants();
 }

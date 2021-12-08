@@ -21,4 +21,22 @@ package org.apache.nlpcraft;
  *
  */
 public interface NCDialogFlowItem {
+    /**
+     *
+     * @return
+     */
+    NCIntentMatch getIntentMatch();
+
+    /**
+     *
+     * @return
+     */
+    NCRequest getRequest();
+
+    /**
+     * Gets the winning intent's result.
+     *
+     * @return Winning intent's result.
+     */
+    NCResult getResult();
 }
