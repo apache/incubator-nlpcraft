@@ -28,6 +28,7 @@ public interface NCTokenParser {
      * @param req
      * @return
      * @throws
+     * @throws NCException
      */
-    List<NCToken> parse(NCRequest req) throws NCException;
+    List<NCToken> parse(NCRequest req);
 }

@@ -28,6 +28,7 @@ public interface NCEntityEnricher {
      * @param req
      * @param cfg 
      * @param ents
+     * @throws NCException
      */
-    void enrich(NCRequest req, NCModelConfig cfg, List<NCEntity> ents) throws NCException;
+    void enrich(NCRequest req, NCModelConfig cfg, List<NCEntity> ents);
 }

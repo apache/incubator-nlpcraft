@@ -17,18 +17,22 @@
 
 package org.apache.nlpcraft;
 
-import java.util.*;
-
 /**
  *
  */
-public interface NCTokenEnricher {
+public enum NCResultType {
     /**
-     *
-     * @param req
-     * @param cfg
-     * @param toks
-     * @throws NCException
+     * Final result is produced.
      */
-    void enrich(NCRequest req, NCModelConfig cfg, List<NCToken> toks);
+    ASK_RESULT,
+
+    /**
+     * Curation is requires.
+     */
+    ASK_CURATE,
+
+    /**
+     * Ask user back, i.e. engage in dialog.
+     */
+    ASK_DIALOG
 }

@@ -29,6 +29,7 @@ public interface NCEntityParser {
      * @param cfg
      * @param toks
      * @return
+     * @throws NCException
      */
-    List<NCEntity> parse(NCRequest req, NCModelConfig cfg, List<NCToken> toks) throws NCException;
+    List<NCEntity> parse(NCRequest req, NCModelConfig cfg, List<NCToken> toks);
 }

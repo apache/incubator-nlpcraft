@@ -40,6 +40,7 @@ public class NCModelClient {
      * @param data
      * @param usrId
      * @return
+     * @throws NCException
      */
     Future<NCResult> ask(String txt, Map<String, Object> data, String usrId) {
         return null; // TODO
@@ -51,6 +52,7 @@ public class NCModelClient {
      * @param data
      * @param usrId
      * @return
+     * @throws NCException
      */
     NCResult askSync(String txt, Map<String, Object> data, String usrId) {
         return null; // TODO
@@ -59,6 +61,7 @@ public class NCModelClient {
     /**
      *
      * @param usrId
+     * @throws NCException
      */
     void clearConversation(String usrId) {
         // TODO
@@ -67,6 +70,7 @@ public class NCModelClient {
     /**
      *
      * @param usrId
+     * @throws NCException
      */
     void clearDialog(String usrId) {
         // TODO
