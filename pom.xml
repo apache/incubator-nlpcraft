@@ -83,7 +83,7 @@
 
         <!-- Versions. -->
         <scala.plugin.ver>4.5.3</scala.plugin.ver>
-        <log4j.ver>2.12.0</log4j.ver>
+        <log4j.ver>2.15.0</log4j.ver>
         <scala.config.ver>1.3.4</scala.config.ver>
         <scala.logging.ver>3.9.4</scala.logging.ver>
         <scalatest.ver>3.2.9</scalatest.ver>
