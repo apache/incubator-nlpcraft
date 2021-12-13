@@ -23,7 +23,7 @@ import java.util.concurrent.*;
 /**
  *
  */
-public class NCModelClient {
+public class NCModelClient implements NCLIfecycle {
     private NCModel mdl;
 
     /**
@@ -32,6 +32,16 @@ public class NCModelClient {
      */
     public NCModelClient(NCModel mdl) {
         this.mdl = mdl;
+    }
+
+    @Override
+    public void start() {
+        // TODO
+    }
+
+    @Override
+    public void stop() {
+        // TODO
     }
 
     /**
