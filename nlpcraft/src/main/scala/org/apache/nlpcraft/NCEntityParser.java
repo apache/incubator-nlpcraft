@@ -22,7 +22,7 @@ import java.util.List;
 /**
  *
  */
-public interface NCEntityParser {
+public interface NCEntityParser extends NCLIfecycle {
     /**
      *
      * @param req

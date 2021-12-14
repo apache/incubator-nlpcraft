@@ -17,18 +17,17 @@
 
 package org.apache.nlpcraft;
 
-import java.util.List;
-
 /**
  *
  */
-public interface NCTokenParser extends NCLIfecycle {
+public interface NCLIfecycle {
     /**
      *
-     * @param req
-     * @return
-     * @throws
-     * @throws NCException
      */
-    List<NCToken> parse(NCRequest req);
+    default void start() {}
+
+    /**
+     *
+     */
+    default void stop() {}
 }

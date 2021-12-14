@@ -22,7 +22,7 @@ import java.util.*;
 /**
  *
  */
-public interface NCEntityEnricher {
+public interface NCEntityEnricher extends NCLIfecycle {
     /**
      *
      * @param req

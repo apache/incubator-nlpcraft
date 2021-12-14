@@ -22,7 +22,7 @@ import java.util.*;
 /**
  *
  */
-public interface NCTokenEnricher {
+public interface NCTokenEnricher extends NCLIfecycle {
     /**
      *
      * @param req
