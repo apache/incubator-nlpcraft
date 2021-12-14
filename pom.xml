@@ -109,13 +109,6 @@
 
         <!-- Jar with all dependencies. -->
         <nlpcraft.all.deps.jar>apache-${project.artifactId}-incubating-${project.version}-all-deps.jar</nlpcraft.all.deps.jar>
-
-        <!--
-            NOTE: this library is NOT included in binary build and is optional
-            for NLPCraft. It is licensed under GPLv3 and has to be downloaded separately by
-            the end user, when required.
-        -->
-        <stanford.corenlp.ver>3.9.2</stanford.corenlp.ver>
     </properties>
 
     <dependencyManagement>
