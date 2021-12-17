@@ -27,6 +27,8 @@ import java.net.*
 import java.util.Random
 import java.util.regex.Pattern
 import scala.annotation.tailrec
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.sys.SystemProperties
 import scala.util.control.Exception.ignoring
 
@@ -530,6 +532,47 @@ object NCUtils extends LazyLogging:
                     case e: Throwable => prettyError(logger, s"Unexpected error during '$name' thread execution:", e)
                 finally
                     stopped = true
+
+    /**
+      * Gets resource existing flag.
+      *
+      * @param res Resource.
+      */
+    def isResource(res: String): Boolean = getClass.getClassLoader.getResourceAsStream(res) != null
+
+    /**
+      *
+      * @param url URL to check.
+      * @return
+      */
+    def isUrl(url: String): Boolean =
+        try
+            new URL(url)
+            true
+        catch
+            case _: MalformedURLException => false
+
+    /**
+      *
+      * @param path Local file path to check.
+      * @return
+      */
+    def isFile(path: String): Boolean =
+        val f = new File(path)
+        f.exists() && f.isFile
+
+    /**
+      *
+      * @param src Local filesystem path, resources file or URL.
+      */
+    def getStream(src: String): InputStream =
+        if isFile(src) then new FileInputStream(new File(src))
+        else if isResource(src) then
+            getClass.getClassLoader.getResourceAsStream(src) match
+                case in if in != null => in
+                case _ => throw new NCException(s"Resource not found: $src")
+        else if isUrl(src) then new URL(src).openStream()
+        else throw new NCException(s"Source not found or unsupported: $src")
 
     /**
       * Makes thread.

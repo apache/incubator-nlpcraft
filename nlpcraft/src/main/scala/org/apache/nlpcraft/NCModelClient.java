@@ -18,12 +18,13 @@
 package org.apache.nlpcraft;
 
 import java.util.Map;
+import java.util.List;
 import java.util.concurrent.*;
 
 /**
  *
  */
-public class NCModelClient implements NCLIfecycle {
+public class NCModelClient implements NCLifecycle {
     private NCModel mdl;
 
     /**
@@ -34,14 +35,45 @@ public class NCModelClient implements NCLIfecycle {
         this.mdl = mdl;
     }
 
+    /**
+     *
+     * @throws NCException
+     */
+    private static void verify() throws NCException {
+        // TODO:
+    }
+
+    private static void start(List<? extends NCLifecycle> list) {
+        if (list != null)
+            list.forEach(p -> p.start());
+    }
+
+    private static void stop(List<? extends NCLifecycle> list) {
+        if (list != null)
+            list.forEach(p -> p.stop());
+    }
+
     @Override
     public void start() {
-        // TODO
+        verify();
+
+        NCModelConfig cfg = mdl.getConfig();
+
+        cfg.getTokenParser().start();
+        start(cfg.getEntityParsers());
+        start(cfg.getEntityEnrichers());
+        start(cfg.getTokenEnrichers());
     }
 
     @Override
     public void stop() {
-        // TODO
+        NCModelConfig cfg = mdl.getConfig();
+
+        stop(cfg.getTokenEnrichers());
+        stop(cfg.getEntityEnrichers());
+        stop(cfg.getEntityParsers());
+        cfg.getTokenParser().stop();
+
     }
 
     /**
@@ -52,7 +84,7 @@ public class NCModelClient implements NCLIfecycle {
      * @return
      * @throws NCException
      */
-    CompletableFuture<NCResult> ask(String txt, Map<String, Object> data, String usrId) {
+    public CompletableFuture<NCResult> ask(String txt, Map<String, Object> data, String usrId) {
         return null; // TODO
     }
 
@@ -64,7 +96,7 @@ public class NCModelClient implements NCLIfecycle {
      * @return
      * @throws NCException
      */
-    NCResult askSync(String txt, Map<String, Object> data, String usrId) {
+    public NCResult askSync(String txt, Map<String, Object> data, String usrId) {
         return null; // TODO
     }
 
@@ -73,7 +105,7 @@ public class NCModelClient implements NCLIfecycle {
      * @param usrId
      * @throws NCException
      */
-    void clearConversation(String usrId) {
+    public void clearConversation(String usrId) {
         // TODO
     }
 
@@ -82,7 +114,7 @@ public class NCModelClient implements NCLIfecycle {
      * @param usrId
      * @throws NCException
      */
-    void clearDialog(String usrId) {
+    public void clearDialog(String usrId) {
         // TODO
     }
 }

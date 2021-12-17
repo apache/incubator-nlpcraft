@@ -22,39 +22,68 @@ import java.util.*;
 /**
  *
  */
+// TODO: validation for constructor and all setters.
 public class NCModelConfigAdapter extends NCParameterizedAdapter implements NCModelConfig {
+    private final String id;
+    private final String name;
+    private final String version;
+    private final NCTokenParser tokParser;
+
+    private List<NCTokenEnricher> tokenEnrichers;
+    private List<NCEntityEnricher> entityEnrichers;
+    private List<NCEntityParser> entityParsers;
+
+    public NCModelConfigAdapter(String id, String name, String version, NCTokenParser tokParser) {
+        this.id = id;
+        this.name = name;
+        this.version = version;
+        this.tokParser = tokParser;
+    }
+
     @Override
     public String getId() {
-        return null; // TODO
+        return id;
     }
 
     @Override
     public String getName() {
-        return null; // TODO
+        return name;
     }
 
     @Override
     public String getVersion() {
-        return null; // TODO
+        return version;
     }
 
     @Override
     public List<NCTokenEnricher> getTokenEnrichers() {
-        return null; // TODO
+        return tokenEnrichers;
     }
 
     @Override
     public List<NCEntityEnricher> getEntityEnrichers() {
-        return null; // TODO
+        return entityEnrichers;
     }
 
     @Override
     public NCTokenParser getTokenParser() {
-        return null; // TODO
+        return tokParser;
     }
 
     @Override
     public List<NCEntityParser> getEntityParsers() {
-        return null; // TODO
+        return entityParsers;
+    }
+
+    public void setTokenEnrichers(List<NCTokenEnricher> tokenEnrichers) {
+        this.tokenEnrichers = tokenEnrichers;
+    }
+
+    public void setEntityEnrichers(List<NCEntityEnricher> entityEnrichers) {
+        this.entityEnrichers = entityEnrichers;
+    }
+
+    public void setEntityParsers(List<NCEntityParser> entityParsers) {
+        this.entityParsers = entityParsers;
     }
 }

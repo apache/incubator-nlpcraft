@@ -22,7 +22,7 @@ import java.util.List;
 /**
  *
  */
-public interface NCTokenParser extends NCLIfecycle {
+public interface NCTokenParser extends NCLifecycle {
     /**
      *
      * @param req
