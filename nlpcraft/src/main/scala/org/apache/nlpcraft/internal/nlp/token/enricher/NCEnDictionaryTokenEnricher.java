@@ -22,10 +22,20 @@ import org.apache.nlpcraft.internal.nlp.token.enricher.impl.NCEnDictionaryImpl;
 import java.util.List;
 
 /**
- * 
+ * TODO: enriches with <code>dict:en</code> property. 
  */
 public class NCEnDictionaryTokenEnricher implements NCTokenEnricher {
-    private NCEnDictionaryImpl impl;
+    private final NCEnDictionaryImpl impl = new NCEnDictionaryImpl();
+
+    @Override
+    public void start() {
+        impl.start();
+    }
+
+    @Override
+    public void stop() {
+        impl.stop();
+    }
 
     @Override
     public void enrich(NCRequest req, NCModelConfig cfg, List<NCToken> toks) {

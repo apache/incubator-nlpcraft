@@ -17,16 +17,48 @@
 
 package org.apache.nlpcraft.internal.nlp.token.enricher.impl
 
+import com.typesafe.scalalogging.LazyLogging
+import opennlp.tools.stemmer.PorterStemmer
 import org.apache.nlpcraft.*
+import org.apache.nlpcraft.internal.nlp.token.parser.opennlp.impl.NCEnOpenNlpImpl
+import org.apache.nlpcraft.internal.util.NCUtils
+import org.apache.nlpcraft.internal.util.NCUtils.getStream
+
+import java.io.*
 
 /**
   *
   */
-class NCEnSwearWordsImpl:
+object NCEnSwearWordsImpl:
     /**
       *
-      * @param req
-      * @param cfg
-      * @param toks
+      * @param mdlFile
+      * @return
       */
-    def enrich(req: NCRequest, cfg: NCModelConfig, toks: java.util.List[NCToken]): Unit = ???
+    def apply(mdlFile: File): NCEnSwearWordsImpl = new NCEnSwearWordsImpl(
+        new BufferedInputStream(new FileInputStream(mdlFile)), mdlFile.getPath
+    )
+
+    /**
+      *
+      * @param mdlSrc
+      * @return
+      */
+    def apply(mdlSrc: String): NCEnSwearWordsImpl = new NCEnSwearWordsImpl(
+        NCUtils.getStream(mdlSrc), mdlSrc
+    )
+
+/**
+  *
+  */
+class NCEnSwearWordsImpl(is: InputStream, res: String) extends NCTokenEnricher with LazyLogging:
+    @volatile private var swearWords: Set[String] = _
+
+    override def start(): Unit =
+        val stemmer = new PorterStemmer
+        swearWords = NCUtils.readTextStream(is, "UTF-8").map(stemmer.stem).toSet
+        logger.trace(s"Loaded resource: $res")
+    override def stop(): Unit = swearWords = null
+    override def enrich(req: NCRequest, cfg: NCModelConfig, toks: java.util.List[NCToken]): Unit =
+        toks.forEach(t => t.put("swear:en", swearWords.contains(t.getStem)))
+

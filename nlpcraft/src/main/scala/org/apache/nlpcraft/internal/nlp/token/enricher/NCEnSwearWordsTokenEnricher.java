@@ -20,13 +20,48 @@ package org.apache.nlpcraft.internal.nlp.token.enricher;
 import org.apache.nlpcraft.*;
 import org.apache.nlpcraft.internal.nlp.token.enricher.impl.NCEnSwearWordsImpl;
 
+import java.io.File;
 import java.util.List;
+import java.util.Objects;
 
 /**
- *
+ * TODO: enriches with <code>dict:en</code> property.
  */
 public class NCEnSwearWordsTokenEnricher implements NCTokenEnricher {
-    private NCEnSwearWordsImpl impl;
+    private final NCEnSwearWordsImpl impl;
+
+    /**
+     *
+     * TODO: swear_words.txt
+     *
+     * @param mdlFile
+     */
+    public NCEnSwearWordsTokenEnricher(File mdlFile) {
+        Objects.requireNonNull(mdlFile, "Swear words model file cannot be null.");
+
+        impl = NCEnSwearWordsImpl.apply(mdlFile);
+    }
+
+    /**
+     * TODO: swear_words.txt
+     * 
+     * @param mdlSrc
+     */
+    public NCEnSwearWordsTokenEnricher(String mdlSrc) {
+        Objects.requireNonNull(mdlSrc, "Swear words model file cannot be null.");
+
+        impl = NCEnSwearWordsImpl.apply(mdlSrc);
+    }
+
+    @Override
+    public void start() {
+        impl.start();
+    }
+
+    @Override
+    public void stop() {
+        impl.stop();
+    }
 
     @Override
     public void enrich(NCRequest req, NCModelConfig cfg, List<NCToken> toks) {

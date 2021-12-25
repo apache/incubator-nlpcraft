@@ -17,15 +17,16 @@
 
 package org.apache.nlpcraft.internal.nlp.token.parser.opennlp;
 
-import org.apache.nlpcraft.*;
-import org.apache.nlpcraft.internal.nlp.token.parser.opennlp.impl.*;
+import org.apache.nlpcraft.NCException;
+import org.apache.nlpcraft.NCRequest;
+import org.apache.nlpcraft.NCToken;
+import org.apache.nlpcraft.NCTokenParser;
+import org.apache.nlpcraft.internal.nlp.token.parser.opennlp.impl.NCEnOpenNlpImpl;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.util.List;
-
+import java.util.Objects;
+import java.util.Set;
 
 /*
  * Models can be downloaded from the following resources:
@@ -37,8 +38,18 @@ import java.util.List;
 /**
  *
  */
-public class NCOpenNlpTokenParser implements NCTokenParser {
-    private final NCOpenNlpImpl impl;
+public class NCEnOpenNlpTokenParser implements NCTokenParser {
+    private final NCEnOpenNlpImpl impl;
+
+    @Override
+    public void start() {
+        impl.start();
+    }
+
+    @Override
+    public void stop() {
+        impl.stop();
+    }
 
     /**
      *
@@ -47,13 +58,13 @@ public class NCOpenNlpTokenParser implements NCTokenParser {
      * @param lemmaDic
      * @throws NCException
      */
-    public NCOpenNlpTokenParser(File tokMdl, File posMdl, File lemmaDic) {
+    public NCEnOpenNlpTokenParser(File tokMdl, File posMdl, File lemmaDic) {
+        Objects.requireNonNull(tokMdl, "Tonenizer model file cannot be null.");
+        Objects.requireNonNull(posMdl, "POS model file cannot be null.");
+        Objects.requireNonNull(lemmaDic, "Lemmatizer model file cannot be null.");
+
         try {
-            impl = new NCOpenNlpImpl(
-                new BufferedInputStream(new FileInputStream(tokMdl)),
-                new BufferedInputStream(new FileInputStream(posMdl)),
-                new BufferedInputStream(new FileInputStream(lemmaDic))
-            );
+            impl = NCEnOpenNlpImpl.apply(tokMdl, posMdl, lemmaDic);
         }
         catch (Exception e) {
             throw new NCException("Failed to create OpenNLP token parser.", e);
@@ -67,26 +78,24 @@ public class NCOpenNlpTokenParser implements NCTokenParser {
      * @param lemmaDicSrc Local filesystem path, resources file path or URL for OpenNLP lemmatizer dictionary.
      * @throws NCException
      */
-    public NCOpenNlpTokenParser(String tokMdlSrc, String posMdlSrc, String lemmaDicSrc) {
+    public NCEnOpenNlpTokenParser(String tokMdlSrc, String posMdlSrc, String lemmaDicSrc) {
+        Objects.requireNonNull(tokMdlSrc, "Tonenizer model path cannot be null.");
+        Objects.requireNonNull(posMdlSrc, "POS model path cannot be null.");
+        Objects.requireNonNull(lemmaDicSrc, "Lemmatizer model path cannot be null.");
+
         try {
-            impl = NCOpenNlpImpl.apply(tokMdlSrc, posMdlSrc, lemmaDicSrc);
+            impl = NCEnOpenNlpImpl.apply(tokMdlSrc, posMdlSrc, lemmaDicSrc);
         }
         catch (Exception e) {
             throw new NCException("Failed to create OpenNLP token parser.", e);
         }
     }
 
-    @Override
-    public List<NCToken> parse(NCRequest req) {
-        assert impl != null;
-        return impl.parse(req);
-    }
-
     /**
      *
      * @return
      */
-    public List<String> getAdditionalStopWords() {
+    public Set<String> getAdditionalStopWords() {
         return impl.getAdditionalStopWords();
     }
 
@@ -94,7 +103,7 @@ public class NCOpenNlpTokenParser implements NCTokenParser {
      *
      * @param addStopWords
      */
-    public void setAdditionalStopWords(List<String> addStopWords) {
+    public void setAdditionalStopWords(Set<String> addStopWords) {
         impl.setAdditionalStopWords(addStopWords);
     }
 
@@ -102,7 +111,7 @@ public class NCOpenNlpTokenParser implements NCTokenParser {
      *
      * @return
      */
-    public List<String> getExcludedStopWords() {
+    public Set<String> getExcludedStopWords() {
         return impl.getExcludedStopWords();
     }
 
@@ -110,7 +119,12 @@ public class NCOpenNlpTokenParser implements NCTokenParser {
      *
      * @param exclStopWords
      */
-    public void setExcludedStopWords(List<String> exclStopWords) {
+    public void setExcludedStopWords(Set<String> exclStopWords) {
         impl.setExcludedStopWords(exclStopWords);
+    }
+
+    @Override
+    public List<NCToken> parse(NCRequest req) {
+        return impl.parse(req);
     }
 }

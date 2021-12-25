@@ -15,24 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft;
+package org.apache.nlpcraft.internal.nlp.token.enricher.impl
 
+import org.apache.nlpcraft.*
+
+import java.io.*
 /**
- *
- */
-public enum NCResultType {
-    /**
-     * Final result is ready.
-     */
-    ASK_RESULT,
-
-    /**
-     * Curation is required.
-     */
-    ASK_CURATE,
-
-    /**
-     * Ask user back, i.e. engage in dialog.
-     */
-    ASK_DIALOG
-}
+  *
+  */
+class NCEnLanguageWordsImpl extends NCTokenEnricher:
+    override def enrich(req: NCRequest, cfg: NCModelConfig, toks: java.util.List[NCToken]): Unit =
+        toks.forEach(t => t.put("lang:en", t.getOriginalText.matches("""[\s\w\p{Punct}]+""")))

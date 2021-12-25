@@ -17,15 +17,29 @@
 
 package org.apache.nlpcraft.internal.nlp.token.enricher;
 
-import org.apache.nlpcraft.*;
-import java.util.List;
+import org.apache.nlpcraft.NCModelConfig;
+import org.apache.nlpcraft.NCRequest;
+import org.apache.nlpcraft.NCToken;
+import org.apache.nlpcraft.NCTokenEnricher;
 import org.apache.nlpcraft.internal.nlp.token.enricher.impl.NCEnQuotesImpl;
 
+import java.util.List;
+
 /**
- *
+ * TODO: enriches with <code>quotes:en</code> property.
  */
 public class NCEnQuotesTokenEnricher implements NCTokenEnricher {
-    private NCEnQuotesImpl impl;
+    private final NCEnQuotesImpl impl = new NCEnQuotesImpl();
+
+    @Override
+    public void start() {
+        impl.start();
+    }
+
+    @Override
+    public void stop() {
+        impl.stop();
+    }
 
     @Override
     public void enrich(NCRequest req, NCModelConfig cfg, List<NCToken> toks) {

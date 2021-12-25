@@ -15,24 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft;
+package org.apache.nlpcraft.internal.nlp.token.enricher;
+
+import org.apache.nlpcraft.*;
+import org.apache.nlpcraft.internal.nlp.token.enricher.impl.NCEnBracketsImpl;
+
+import java.util.List;
 
 /**
- *
+ * TODO: enriches with <code>brackets:en</code> property.
  */
-public enum NCResultType {
-    /**
-     * Final result is ready.
-     */
-    ASK_RESULT,
+public class NCEnBracketsTokenEnricher implements NCTokenEnricher {
+    private final NCEnBracketsImpl impl = new NCEnBracketsImpl();
 
-    /**
-     * Curation is required.
-     */
-    ASK_CURATE,
+    @Override
+    public void start() {
+        impl.start();
+    }
 
-    /**
-     * Ask user back, i.e. engage in dialog.
-     */
-    ASK_DIALOG
+    @Override
+    public void stop() {
+        impl.stop();
+    }
+
+    @Override
+    public void enrich(NCRequest req, NCModelConfig cfg, List<NCToken> toks) {
+        assert impl != null;
+        impl.enrich(req, cfg, toks);
+    }
 }

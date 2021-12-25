@@ -15,18 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.internal.nlp.token.enricher.impl
+package org.apache.nlpcraft.internal.nlp.util
 
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.internal.util.NCUtils
 
 /**
+  * Token test implementation.
   *
+  * @param txt
+  * @param lemma
+  * @param stem
+  * @param pos
+  * @param isStop
+  * @param start
+  * @param end
   */
-class NCEnDictionaryImpl extends NCTokenEnricher:
-    @volatile private var dict: Set[String] = _
-
-    override def start(): Unit = dict = NCUtils.readResource("moby/354984si.ngl", "iso-8859-1").toSet
-    override def stop(): Unit = dict = null
-    override def enrich(req: NCRequest, cfg: NCModelConfig, toks: java.util.List[NCToken]): Unit =
-        toks.forEach(t => t.put("dict:en", dict.contains(t.getLemma)))
+case class NCTestToken(
+    txt: String,
+    lemma: String = null,
+    stem: String = null,
+    pos: String = null,
+    isStop: Boolean = false,
+    start: Int = -1,
+    end: Int = -1
+) extends NCParameterizedAdapter with NCToken:
+    override def getOriginalText: String = txt
+    override def getNormalizedText: String = txt.toLowerCase
+    override def getLemma: String = lemma
+    override def getStem: String = stem
+    override def getPos: String = pos
+    override def isStopWord: Boolean = isStop
+    override def getStartCharIndex: Int = start
+    override def getEndCharIndex: Int = end
+    override def getLength: Int = end - start + 1

@@ -19,21 +19,26 @@ package org.apache.nlpcraft.internal.util
 
 import com.google.gson.GsonBuilder
 import com.typesafe.scalalogging.*
-import org.apache.nlpcraft.NCException
+import org.apache.nlpcraft.{NCException, NCToken}
 import org.apache.nlpcraft.internal.ansi.NCAnsi.*
 
 import java.io.*
 import java.net.*
 import java.util.Random
 import java.util.regex.Pattern
+import java.util.zip.{GZIPInputStream, GZIPOutputStream}
 import scala.annotation.tailrec
+import scala.collection.{IndexedSeq, Seq}
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.io.Source
 import scala.sys.SystemProperties
+import scala.util.Using
 import scala.util.control.Exception.ignoring
+import scala.io.BufferedSource
 
 /**
-  *
+  * 
   */
 object NCUtils extends LazyLogging:
     final val NL = System getProperty "line.separator"
@@ -308,7 +313,7 @@ object NCUtils extends LazyLogging:
       * @tparam T
       * @return
       */
-    def notNull[T <: AnyRef](v: T, dflt: T): T = if (v == null) dflt else v
+    def notNull[T <: AnyRef](v: T, dflt: T): T = if v == null then dflt else v
 
     /**
       * Strips ANSI escape sequences from the given string.
@@ -442,8 +447,7 @@ object NCUtils extends LazyLogging:
         prettyErrorImpl(new PrettyErrorLogger {
             override def log(s: String): Unit = logger.error(s)
         }, title, e)
-
-
+    
     /**
       *
       * @param title
@@ -481,7 +485,7 @@ object NCUtils extends LazyLogging:
                     s"$exClsName$errMsg $ansiCyanFg->$ansiReset ($fileName:$lineNum)"
 
             msg.split("\n").foreach(line => {
-                val s = s"${" " * indent}${if (first) ansiBlue("+-+ ") else "   "}${bo(y(line))}"
+                val s = s"${" " * indent}${if first then ansiBlue("+-+ ") else "   "}${bo(y(line))}"
                 logger.log(s)
                 first = false
             })
@@ -713,3 +717,281 @@ object NCUtils extends LazyLogging:
       * @return
       */
     def capitalize(s: String): String = s"${s.head.toUpper}${s.tail}"
+
+    /**
+      * Makes absolute path starting from working directory.
+      *
+      * @param path Path.
+      */
+    def mkPath(path: String): String = new File(s"${new File("").getAbsolutePath}/$path").getAbsolutePath
+
+    /**
+      * Generates read-only text file with given path and strings.
+      * Used by text files auto-generators.
+      *
+      * @param path Path of the output file.
+      * @param lines Text data.
+      * @param sort Whether to sort output or not.
+      */
+    def mkTextFile(path: String, lines: scala.Iterable[Any], sort: Boolean = true): Unit =
+        val file = new File(path)
+
+        Using.resource(new PrintStream(file)) {
+            ps =>
+                import java.util.*
+
+                // Could be long for large sequences...
+                val seq = if sort then lines.map(_.toString).toSeq.sorted else lines
+
+                ps.println(s"#")
+                ps.println(s"# Licensed to the Apache Software Foundation (ASF) under one or more")
+                ps.println(s"# contributor license agreements.  See the NOTICE file distributed with")
+                ps.println(s"# this work for additional information regarding copyright ownership.")
+                ps.println(s"# The ASF licenses this file to You under the Apache License, Version 2.0")
+                ps.println(s"# (the 'License'); you may not use this file except in compliance with")
+                ps.println(s"# the License.  You may obtain a copy of the License at")
+                ps.println(s"#")
+                ps.println(s"#      https://www.apache.org/licenses/LICENSE-2.0")
+                ps.println(s"#")
+                ps.println(s"# Unless required by applicable law or agreed to in writing, software")
+                ps.println(s"# distributed under the License is distributed on an 'AS IS' BASIS,")
+                ps.println(s"# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.")
+                ps.println(s"# See the License for the specific language governing permissions and")
+                ps.println(s"# limitations under the License.")
+                ps.println(s"#")
+                ps.println(s"# Auto-generated on: ${new Date()}")
+                ps.println(s"# Total lines: ${seq.size}")
+                ps.println(s"#")
+                ps.println(s"# +-------------------------+")
+                ps.println(s"# | DO NOT MODIFY THIS FILE |")
+                ps.println(s"# +-------------------------+")
+                ps.println(s"#")
+                ps.println()
+
+                seq.foreach(ps.println)
+
+                // Make the file as read-only.
+                file.setWritable(false, false)
+        }
+
+        // Ack.
+        println(s"File generated: $path")
+
+    /**
+      * Reads lines from given file.
+      *
+      * @param path Zipped file path to read from.
+      * @param enc Encoding.
+      * @param log Logger to use.
+      */
+    def readGzipPath(path: String, enc: String = "UTF-8", log: Logger = logger): List[String] =
+        readGzipFile(new File(path), enc, log)
+
+    /**
+      * Reads lines from given file.
+      *
+      * @param f Zipped file to read from.
+      * @param enc Encoding.
+      * @param log Logger to use.
+      */
+    def readGzipFile(f: File, enc: String, log: Logger = logger): List[String] =
+        try
+            Using.resource(Source.fromInputStream(new GZIPInputStream(new FileInputStream(f)), enc)) { src =>
+                getAndLog(src.getLines().map(p => p).toList, f, log)
+            }
+        catch
+            case e: IOException => throw new NCException(s"Failed to read GZIP file: ${f.getAbsolutePath}", e)
+
+    /**
+      * Reads bytes from given file.
+      *
+      * @param f File.
+      * @param log Logger.
+      */
+    def readFileBytes(f: File, log: Logger = logger): Array[Byte] =
+        try
+            val arr = new Array[Byte](f.length().toInt)
+
+            Using.resource(new FileInputStream(f)) { in =>
+                in.read(arr)
+            }
+
+            getAndLog(arr, f, log)
+        catch
+            case e: IOException => throw new NCException(s"Error reading file: $f", e)
+
+
+    /**
+      * Gzip file.
+      *
+      * @param path File path.
+      * @param log Logger.
+      */
+    def gzipPath(path: String, log: Logger = logger): Unit = gzipFile(new File(path), log)
+
+    /**
+      * Gzip file.
+      *
+      * @param f File.
+      * @param log Logger.
+      */
+    def gzipFile(f: File, log: Logger = logger): Unit =
+        val gz = s"${f.getAbsolutePath}.gz"
+
+        // Do not user BOS here - it makes files corrupted.
+        try
+            Using.resource(new GZIPOutputStream(new FileOutputStream(gz))) { stream =>
+                stream.write(readFileBytes(f))
+                stream.flush()
+            }
+        catch
+            case e: IOException => throw new NCException(s"Error gzip file: $f", e)
+
+        if !f.delete() then throw new NCException(s"Error while deleting file: $f")
+
+        logger.trace(s"File gzipped [source=$f, destination=$gz]")
+
+    /**
+      *
+      * @param data
+      * @param f
+      * @param log
+      */
+    private def getAndLog[T](data: T, f: File, log: Logger = logger): T =
+        log.trace(s"Loaded file: ${f.getAbsolutePath}")
+
+        data
+
+    /**
+      * Reads lines from given resource.
+      *
+      * @param res Resource path to read from.
+      * @param enc Encoding.
+      * @param log Logger to use.
+      */
+    def readResource(res: String, enc: String = "UTF-8", log: Logger = logger): List[String] =
+        val list = 
+            try
+                Using.resource(Source.fromInputStream(getStream(res), enc)) { src =>
+                    src.getLines().toList
+                }
+            catch
+                case e: IOException => throw new NCException(s"Failed to read stream.", e)
+    
+        log.trace(s"Loaded resource: $res")
+
+        list
+
+
+    /**
+      *
+      * @param in
+      * @return
+      */
+    private def readLcTrimFilter(in: BufferedSource): List[String] =
+        in.getLines().map(_.toLowerCase.strip).filter(s => s.nonEmpty && s.head!= '#').toList
+
+    /**
+      * Reads lines from given stream converting to lower case, trimming, and filtering
+      * out empty lines and comments (starting with '#').
+      *
+      * @param res Zipped resource to read from.
+      * @param enc Encoding.
+      * @param log Logger to use.
+      */
+    def readTextGzipResource(res: String, enc: String, log: Logger = logger): List[String] =
+        val list =
+            try
+                Using.resource(Source.fromInputStream(new GZIPInputStream(getStream(res)), enc)) { src =>
+                    readLcTrimFilter(src)
+                }
+            catch
+                case e: IOException => throw new NCException(s"Failed to read stream.", e)
+
+        log.trace(s"Loaded resource: $res")
+
+        list
+
+    /**
+      * Reads lines from given stream converting to lower case, trimming, and filtering
+      * out empty lines and comments (starting with '#').
+      *
+      * @param in Stream to read from.
+      * @param enc Encoding.
+      */
+    def readTextStream(in: InputStream, enc: String): List[String] =
+        try
+            Using.resource(Source.fromInputStream(in, enc)) { src =>
+                readLcTrimFilter(src)
+            }
+        catch
+            case e: IOException => throw new NCException(s"Failed to read stream.", e)
+
+    /**
+      *
+      * @param bodies
+      * @param ec
+      */
+    def executeParallel(bodies: (() => Any)*)(ec: ExecutionContext): Unit =
+        bodies.map(body => Future { body() } (ec)).foreach(Await.result(_, Duration.Inf))
+
+    /**
+      * Gets all sequential permutations of tokens in this NLP sentence.
+      *
+      * For example, if NLP sentence contains "a, b, c, d" tokens, then
+      * this function will return the sequence of following token sequences in this order:
+      * "a b c d"
+      * "a b c"
+      * "b c d"
+      * "a b"
+      * "b c"
+      * "c d"
+      * "a"
+      * "b"
+      * "c"
+      * "d"
+      *
+      * NOTE: this method will not return any permutations with a quoted token.
+      *
+      * @param tokens Tokens.
+      * @param stopWords Whether or not include tokens marked as stop words.
+      * @param maxLen Maximum number of tokens in the sequence.
+      */
+    def tokenMix(tokens: Seq[NCToken], stopWords: Boolean = false, maxLen: Int = Integer.MAX_VALUE): Seq[Seq[NCToken]] =
+        val toks = tokens.filter(t => stopWords || (!stopWords && !t.isStopWord))
+
+        (for (n <- toks.length until 0 by -1 if n <= maxLen) yield toks.sliding(n)).flatten
+
+    /**
+      * Gets all sequential permutations of tokens in this NLP sentence.
+      * This method is like a 'tokenMix', but with all combinations of stop-words (with and without)
+      *
+      * @param tokens Tokens.
+      * @param maxLen Maximum number of tokens in the sequence.
+      */
+    def tokenMixWithStopWords(tokens: Seq[NCToken], maxLen: Int = Integer.MAX_VALUE): Seq[Seq[NCToken]] =
+        /**
+          * Gets all combinations for sequence of mandatory tokens with stop-words and without.
+          *
+          * Example:
+          * 'A (stop), B, C(stop) -> [A, B, C]; [A, B]; [B, C], [B]
+          * 'A, B(stop), C(stop) -> [A, B, C]; [A, B]; [A, C], [A].
+          *
+          * @param toks Tokens.
+          */
+        def permutations(toks: Seq[NCToken]): Seq[Seq[NCToken]] = 
+            def multiple(seq: Seq[Seq[Option[NCToken]]], t: NCToken): Seq[Seq[Option[NCToken]]] =
+                if seq.isEmpty then
+                    if t.isStopWord then IndexedSeq(IndexedSeq(Some(t)), IndexedSeq(None)) else IndexedSeq(IndexedSeq(Some(t)))
+                else
+                    (for (subSeq <- seq) yield subSeq :+ Some(t)) ++ (if t.isStopWord then for (subSeq <- seq) yield subSeq :+ None else Seq.empty)
+
+            var res: Seq[Seq[Option[NCToken]]] = Seq.empty
+            for (t <- toks) res = multiple(res, t)
+            res.map(_.flatten).filter(_.nonEmpty)
+
+        tokenMix(tokens, stopWords = true, maxLen).
+            flatMap(permutations).
+            filter(_.nonEmpty).
+            distinct.
+            sortBy(seq => (-seq.length, seq.head.getStartCharIndex))

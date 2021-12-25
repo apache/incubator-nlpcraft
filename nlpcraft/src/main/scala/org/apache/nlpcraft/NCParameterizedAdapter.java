@@ -17,14 +17,13 @@
 
 package org.apache.nlpcraft;
 
-import java.util.HashMap;
-import java.util.Optional;
+import java.util.*;
 
 /**
  *
  */
 public class NCParameterizedAdapter implements NCParameterized {
-    private HashMap<String, Object> map = new HashMap<>();
+    private final Map<String, Object> map = new HashMap<>();
 
     @Override
     public <T> T get(String key) {
