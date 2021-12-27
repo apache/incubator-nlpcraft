@@ -403,7 +403,7 @@ class NCAsciiTable:
       */
     private def mkString: String =
         // Make sure table is not empty.
-        if (hdr.isEmpty && rows.isEmpty) then return ""
+        if hdr.isEmpty && rows.isEmpty then return ""
 
         var colsNum = -1
         val isHdr = hdr.nonEmpty
