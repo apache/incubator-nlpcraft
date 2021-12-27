@@ -45,7 +45,7 @@ class NCAsciiTable:
     ):
         /** Gets overall padding (left + right). */
         def padding: Int = leftPad + rightPad
-    
+
     /**
       * Cell style.
       */
@@ -395,12 +395,12 @@ class NCAsciiTable:
             case "right" => space(d - sty.rightPad) + txt + space(sty.rightPad)
             case _ => throw new AssertionError(s"Invalid align option: $sty")
 
-    override def toString: String = mkString
+    override def toString: String = mkString()
 
     /**
       * Prepares output string.
       */
-    private def mkString: String =
+    private def mkString(): String =
         // Make sure table is not empty.
         if hdr.isEmpty && rows.isEmpty then return ""
 
@@ -522,7 +522,7 @@ class NCAsciiTable:
       * Prepares table string representation for logger.
       * @param header Optional header.
       */
-    private def mkLogString(header: Option[String] = None): String = s"${header.getOrElse("")}\n$mkString"
+    private def mkLogString(header: Option[String] = None): String = s"${header.getOrElse("")}\n${mkString()}"
 
     /**
       * Renders this table to log as debug.
@@ -569,7 +569,7 @@ class NCAsciiTable:
       *
       * @param ps Output stream.
       */
-    def render(ps: PrintStream = System.out): Unit = ps.println(mkString)
+    def render(ps: PrintStream = System.out): Unit = ps.println(mkString())
 
     /**
       * Renders this table to file.
@@ -588,7 +588,7 @@ class NCAsciiTable:
     private def renderPrintStream(f: => PrintStream, file: String): Unit =
         try
             Using.resource(f) { ps =>
-                ps.print(mkString)
+                ps.print(mkString())
             }
         catch
             case e: IOException => throw new NCException(s"Error outputting table into file: $file", e)
