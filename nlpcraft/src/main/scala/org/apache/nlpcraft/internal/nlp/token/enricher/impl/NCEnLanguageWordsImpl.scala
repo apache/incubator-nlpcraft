@@ -20,6 +20,7 @@ package org.apache.nlpcraft.internal.nlp.token.enricher.impl
 import org.apache.nlpcraft.*
 
 import java.io.*
+
 /**
   *
   */

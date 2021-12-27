@@ -54,6 +54,9 @@ object NCVersion extends LazyLogging:
         Version("0.7.5", LocalDate.of(2021, 4, 30)),
         Version("0.8.0", LocalDate.of(2021, 5, 30)),
         Version("0.9.0", LocalDate.of(2021, 7, 10)),
+
+        // Version '1.0.0+' is incompatible with previous versions.
+        Version("1.0.0", LocalDate.of(2022, 3, 1)),
     ).sortBy(_.version)
     // +=================================================+
     // | UPDATE THIS SEQUENCE FOR EACH RELEASE MANUALLY. |

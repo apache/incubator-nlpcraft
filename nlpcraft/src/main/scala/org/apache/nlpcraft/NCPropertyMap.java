@@ -22,7 +22,7 @@ import java.util.Optional;
 /**
  *
  */
-public interface NCParameterized {
+public interface NCPropertyMap {
     /**
      *
      * @param key

@@ -17,16 +17,11 @@
 
 package org.apache.nlpcraft.internal.nlp.token.parser.opennlp;
 
-import org.apache.nlpcraft.NCException;
-import org.apache.nlpcraft.NCRequest;
-import org.apache.nlpcraft.NCToken;
-import org.apache.nlpcraft.NCTokenParser;
+import org.apache.nlpcraft.*;
 import org.apache.nlpcraft.internal.nlp.token.parser.opennlp.impl.NCEnOpenNlpImpl;
 
-import java.io.File;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.io.*;
+import java.util.*;
 
 /*
  * Models can be downloaded from the following resources:
@@ -59,7 +54,7 @@ public class NCEnOpenNlpTokenParser implements NCTokenParser {
      * @throws NCException
      */
     public NCEnOpenNlpTokenParser(File tokMdl, File posMdl, File lemmaDic) {
-        Objects.requireNonNull(tokMdl, "Tonenizer model file cannot be null.");
+        Objects.requireNonNull(tokMdl, "Tokenizer model file cannot be null.");
         Objects.requireNonNull(posMdl, "POS model file cannot be null.");
         Objects.requireNonNull(lemmaDic, "Lemmatizer model file cannot be null.");
 
@@ -79,7 +74,7 @@ public class NCEnOpenNlpTokenParser implements NCTokenParser {
      * @throws NCException
      */
     public NCEnOpenNlpTokenParser(String tokMdlSrc, String posMdlSrc, String lemmaDicSrc) {
-        Objects.requireNonNull(tokMdlSrc, "Tonenizer model path cannot be null.");
+        Objects.requireNonNull(tokMdlSrc, "Tokenizer model path cannot be null.");
         Objects.requireNonNull(posMdlSrc, "POS model path cannot be null.");
         Objects.requireNonNull(lemmaDicSrc, "Lemmatizer model path cannot be null.");
 

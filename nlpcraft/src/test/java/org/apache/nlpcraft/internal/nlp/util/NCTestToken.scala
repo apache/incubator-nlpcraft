@@ -38,7 +38,7 @@ case class NCTestToken(
     isStop: Boolean = false,
     start: Int = -1,
     end: Int = -1
-) extends NCParameterizedAdapter with NCToken:
+) extends NCPropertyMapAdapter with NCToken:
     override def getOriginalText: String = txt
     override def getNormalizedText: String = txt.toLowerCase
     override def getLemma: String = lemma

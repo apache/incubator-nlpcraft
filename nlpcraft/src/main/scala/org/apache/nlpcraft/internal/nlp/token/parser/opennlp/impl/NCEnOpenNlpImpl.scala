@@ -76,7 +76,7 @@ class NCEnOpenNlpImpl(
     private var exclStopWords: JSet[String] = _
 
     override def start(): Unit =
-        NCUtils.executeParallel(
+        NCUtils.execPar(
             () => tokenizer = new TokenizerME(new TokenizerModel(tokMdlIn)),
             () => tagger = new POSTaggerME(new POSModel(posMdlIn)),
             () => lemmatizer = new DictionaryLemmatizer(lemmaDicIn),
@@ -162,7 +162,7 @@ class NCEnOpenNlpImpl(
                 }
 
             val res: Seq[NCToken] = holders.zip(posTags).zip(lemmas).toIndexedSeq.map { case ((h, pos), lemma) =>
-                new NCParameterizedAdapter with NCToken:
+                new NCPropertyMapAdapter with NCToken:
                     override def getOriginalText: String = h.origin
                     override def getNormalizedText: String = h.normalized
                     override def getLemma: String = lemma
@@ -178,7 +178,7 @@ class NCEnOpenNlpImpl(
 
             res.map(tok =>
                 if stops.contains(tok) then
-                    new NCParameterizedAdapter with NCToken:
+                    new NCPropertyMapAdapter with NCToken:
                         override def getOriginalText: String = tok.getOriginalText
                         override def getNormalizedText: String = tok.getNormalizedText
                         override def getLemma: String = tok.getLemma

@@ -22,7 +22,7 @@ import java.util.List;
 /**
  *
  */
-public interface NCEntity extends NCParameterized {
+public interface NCEntity extends NCPropertyMap {
     /**
      *
      * @return

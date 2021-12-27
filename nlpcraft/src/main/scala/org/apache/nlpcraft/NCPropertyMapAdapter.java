@@ -22,7 +22,7 @@ import java.util.*;
 /**
  *
  */
-public class NCParameterizedAdapter implements NCParameterized {
+public class NCPropertyMapAdapter implements NCPropertyMap {
     private final Map<String, Object> map = new HashMap<>();
 
     @Override

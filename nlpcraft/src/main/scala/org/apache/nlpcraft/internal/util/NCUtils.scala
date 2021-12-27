@@ -812,9 +812,7 @@ object NCUtils extends LazyLogging:
         try
             val arr = new Array[Byte](f.length().toInt)
 
-            Using.resource(new FileInputStream(f)) { in =>
-                in.read(arr)
-            }
+            Using.resource(new FileInputStream(f))(_.read(arr))
 
             getAndLog(arr, f, log)
         catch
@@ -870,18 +868,15 @@ object NCUtils extends LazyLogging:
       * @param log Logger to use.
       */
     def readResource(res: String, enc: String = "UTF-8", log: Logger = logger): List[String] =
-        val list = 
+        val list =
             try
-                Using.resource(Source.fromInputStream(getStream(res), enc)) { src =>
-                    src.getLines().toList
-                }
+                Using.resource(Source.fromInputStream(getStream(res), enc))(_.getLines()).toList
             catch
                 case e: IOException => throw new NCException(s"Failed to read stream.", e)
     
         log.trace(s"Loaded resource: $res")
 
         list
-
 
     /**
       *
@@ -902,9 +897,7 @@ object NCUtils extends LazyLogging:
     def readTextGzipResource(res: String, enc: String, log: Logger = logger): List[String] =
         val list =
             try
-                Using.resource(Source.fromInputStream(new GZIPInputStream(getStream(res)), enc)) { src =>
-                    readLcTrimFilter(src)
-                }
+                Using.resource(Source.fromInputStream(new GZIPInputStream(getStream(res)), enc))(readLcTrimFilter)
             catch
                 case e: IOException => throw new NCException(s"Failed to read stream.", e)
 
@@ -932,7 +925,7 @@ object NCUtils extends LazyLogging:
       * @param bodies
       * @param ec
       */
-    def executeParallel(bodies: (() => Any)*)(ec: ExecutionContext): Unit =
+    def execPar(bodies: (() => Any)*)(ec: ExecutionContext): Unit =
         bodies.map(body => Future { body() } (ec)).foreach(Await.result(_, Duration.Inf))
 
     /**

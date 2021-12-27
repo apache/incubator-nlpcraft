@@ -22,7 +22,7 @@ import java.util.*;
 /**
  *
  */
-public interface NCModelConfig extends NCParameterized {
+public interface NCModelConfig extends NCPropertyMap {
     /**
      * Default value for {@link #getMinTokens()} method.
      */

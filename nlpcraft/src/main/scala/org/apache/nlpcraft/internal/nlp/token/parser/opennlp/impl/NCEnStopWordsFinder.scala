@@ -208,7 +208,7 @@ private[impl] class NCEnStopWordsFinder(addStems: Set[String], exclStems: Set[St
     @volatile private var nounWords: Set[String] = _
 
     // Stemmatization is done already by generator.
-    NCUtils.executeParallel(
+    NCUtils.execPar(
         () => firstWords = read("stopwords/first_words.txt.gz"),
         () => nounWords = read("stopwords/noun_words.txt.gz")
     )(ExecutionContext.Implicits.global)

@@ -23,7 +23,7 @@ import java.util.*;
  *
  */
 // TODO: validation for constructor and all setters.
-public class NCModelConfigAdapter extends NCParameterizedAdapter implements NCModelConfig {
+public class NCModelConfigAdapter extends NCPropertyMapAdapter implements NCModelConfig {
     private final String id;
     private final String name;
     private final String version;
