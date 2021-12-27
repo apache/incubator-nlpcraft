@@ -45,8 +45,7 @@ class NCAsciiTable:
     ):
         /** Gets overall padding (left + right). */
         def padding: Int = leftPad + rightPad
-
-
+    
     /**
       * Cell style.
       */
