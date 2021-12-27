@@ -211,7 +211,6 @@ class NCAsciiTable:
         endRow()
         this
 
-
     /**
       * Adds header (one or more header cells).
       *
