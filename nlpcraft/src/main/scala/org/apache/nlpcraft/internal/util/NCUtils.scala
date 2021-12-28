@@ -872,7 +872,7 @@ object NCUtils extends LazyLogging:
             try
                 Using.resource(Source.fromInputStream(getStream(res), enc))(_.getLines()).toList
             catch
-                case e: IOException => throw new NCException(s"Failed to read stream.", e)
+                case e: IOException => throw new NCException(s"Failed to read stream: $res", e)
     
         log.trace(s"Loaded resource: $res")
 
@@ -899,7 +899,7 @@ object NCUtils extends LazyLogging:
             try
                 Using.resource(Source.fromInputStream(new GZIPInputStream(getStream(res)), enc))(readLcTrimFilter)
             catch
-                case e: IOException => throw new NCException(s"Failed to read stream.", e)
+                case e: IOException => throw new NCException(s"Failed to read stream: $res", e)
 
         log.trace(s"Loaded resource: $res")
 
