@@ -179,8 +179,8 @@ private[impl] object NCEnStopWordsFinder:
     private def isQuote(t: NCToken): Boolean = Q_POS.contains(t.getPos)
     private def toStemKey(toks: Seq[NCToken]): String = toks.map(_.getStem).mkString(" ")
     private def toLemmaKey(toks: Seq[NCToken]): String = toks.map(_.getLemma).mkString(" ")
-    private def toValueKey(toks: Seq[NCToken]): String = toks.map(_.getOriginalText.toLowerCase).mkString(" ")
-    private def toOriginalKey(toks: Seq[NCToken]): String = toks.map(_.getOriginalText).mkString(" ")
+    private def toValueKey(toks: Seq[NCToken]): String = toks.map(_.getText.toLowerCase).mkString(" ")
+    private def toOriginalKey(toks: Seq[NCToken]): String = toks.map(_.getText).mkString(" ")
 
 /**
   *
@@ -562,8 +562,8 @@ private[impl] class NCEnStopWordsFinder(addStems: Set[String], exclStems: Set[St
         def mark(t: NCToken): Unit = if (!stack.isEmpty) set += t
 
         for (t <- toks if ok)
-            t.getOriginalText match
-                case "(" | "{" | "[" | "<" => mark(t); stack.push(t.getOriginalText)
+            t.getText match
+                case "(" | "{" | "[" | "<" => mark(t); stack.push(t.getText)
                 case ")" => check("("); mark(t)
                 case "}" => check("{"); mark(t)
                 case "]" => check("["); mark(t)

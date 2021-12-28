@@ -89,10 +89,10 @@ class NCEnOpenNlpTokenParserSpec:
         test(
             // Invalid brackets.
             "A ( A A A",
-            toks => toks.filter(_.getNormalizedText != "(").forall(_.isStopWord)
+            toks => toks.filter(_.getText != "(").forall(_.isStopWord)
         )
         test(
             // Nested brackets.
             "< < [ A ] > >",
-            toks => require(!toks.find(_.getNormalizedText == "a").get.isStopWord)
+            toks => require(!toks.find(_.getText == "a").get.isStopWord)
         )

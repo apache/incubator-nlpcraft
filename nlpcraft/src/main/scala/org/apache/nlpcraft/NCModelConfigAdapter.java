@@ -27,17 +27,69 @@ public class NCModelConfigAdapter extends NCPropertyMapAdapter implements NCMode
     private final String id;
     private final String name;
     private final String version;
-    private final NCTokenParser tokParser;
 
-    private List<NCTokenEnricher> tokenEnrichers;
-    private List<NCEntityEnricher> entityEnrichers;
-    private List<NCEntityParser> entityParsers;
+    private List<NCTokenParser> tokParsers = new ArrayList<>();
+    private List<NCTokenEnricher> tokEnrichers = new ArrayList<>();
+    private List<NCEntityEnricher> entEnrichers = new ArrayList<>();
+    private List<NCEntityParser> entParsers = new ArrayList<>();
 
-    public NCModelConfigAdapter(String id, String name, String version, NCTokenParser tokParser) {
+    /**
+     *
+     * @param id
+     * @param name
+     * @param version
+     * @param tokParser
+     */
+    public NCModelConfigAdapter(String id, String name, String version, NCTokenParser tokParser, NCEntityParser entParser) {
+        Objects.requireNonNull(tokParser, "Token parser cannot be null.");
+        Objects.requireNonNull(entParser, "Entity parser cannot be null.");
+
         this.id = id;
         this.name = name;
         this.version = version;
-        this.tokParser = tokParser;
+
+        tokParsers.add(tokParser);
+        entParsers.add(entParser);
+    }
+
+    /**
+     *
+     * @param tokParser
+     */
+    public void addTokenParser(NCTokenParser tokParser) {
+        Objects.requireNonNull(tokParser, "Token parser cannot be null.");
+
+        tokParsers.add(tokParser);
+    }
+
+    /**
+     *
+     * @param entParser
+     */
+    public void addEntityParser(NCEntityParser entParser) {
+        Objects.requireNonNull(entParser, "Entity parser cannot be null.");
+
+        entParsers.add(entParser);
+    }
+
+    /**
+     *
+     * @param tokEnricher
+     */
+    public void addTokenEnricher(NCTokenEnricher tokEnricher) {
+        Objects.requireNonNull(tokEnricher, "Token enricher cannot be null.");
+
+        tokEnrichers.add(tokEnricher);
+    }
+
+    /**
+     *
+     * @param entEnricher
+     */
+    public void addEntityEnricher(NCEntityEnricher entEnricher) {
+        Objects.requireNonNull(entEnricher, "Entity enricher cannot be null.");
+
+        entEnrichers.add(entEnricher);
     }
 
     @Override
@@ -57,33 +109,21 @@ public class NCModelConfigAdapter extends NCPropertyMapAdapter implements NCMode
 
     @Override
     public List<NCTokenEnricher> getTokenEnrichers() {
-        return tokenEnrichers;
+        return tokEnrichers;
     }
 
     @Override
     public List<NCEntityEnricher> getEntityEnrichers() {
-        return entityEnrichers;
+        return entEnrichers;
     }
 
     @Override
-    public NCTokenParser getTokenParser() {
-        return tokParser;
+    public List<NCTokenParser> getTokenParsers() {
+        return tokParsers;
     }
 
     @Override
     public List<NCEntityParser> getEntityParsers() {
-        return entityParsers;
-    }
-
-    public void setTokenEnrichers(List<NCTokenEnricher> tokenEnrichers) {
-        this.tokenEnrichers = tokenEnrichers;
-    }
-
-    public void setEntityEnrichers(List<NCEntityEnricher> entityEnrichers) {
-        this.entityEnrichers = entityEnrichers;
-    }
-
-    public void setEntityParsers(List<NCEntityParser> entityParsers) {
-        this.entityParsers = entityParsers;
+        return entParsers;
     }
 }

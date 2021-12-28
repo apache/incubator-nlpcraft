@@ -37,8 +37,8 @@ class NCEnBracketsImpl extends NCTokenEnricher with LazyLogging:
         def mark(t: NCToken): Unit = map += t -> !stack.isEmpty
 
         for (t <- toks.asScala if ok)
-            t.getOriginalText match
-                case "(" | "{" | "[" | "<" => mark(t); stack.push(t.getOriginalText)
+            t.getText match
+                case "(" | "{" | "[" | "<" => mark(t); stack.push(t.getText)
                 case ")" => check("("); mark(t)
                 case "}" => check("{"); mark(t)
                 case "]" => check("["); mark(t)
@@ -47,4 +47,4 @@ class NCEnBracketsImpl extends NCTokenEnricher with LazyLogging:
 
         if ok && stack.isEmpty then map.foreach { (tok, b) => tok.put("brackets:en", b) }
         else
-            logger.trace(s"Invalid brackets: ${req.getOriginalText}")
+            logger.trace(s"Invalid brackets: ${req.getText}")

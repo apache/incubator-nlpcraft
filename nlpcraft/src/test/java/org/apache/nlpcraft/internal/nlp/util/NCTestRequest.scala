@@ -41,8 +41,7 @@ case class NCTestRequest(
 ) extends NCRequest:
     override def getUserId: String = userId
     override def getRequestId: String = reqId
-    override def getNormalizedText: String = txt.toLowerCase
-    override def getOriginalText: String = txt
+    override def getText: String = txt
     override def getReceiveTimestamp: Long = ts
     override def getUserAgent: String = userAgent
     override def getRequestData: util.Map[String, AnyRef] = data

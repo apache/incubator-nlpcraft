@@ -123,7 +123,7 @@ class NCEnOpenNlpImpl(
     override def parse(req: NCRequest, cfg: NCModelConfig): JList[NCToken] =
         // OpenNLP classes are not thread-safe.
         this.synchronized {
-            val sen = req.getNormalizedText
+            val sen = req.getText
 
             case class TokenHolder(origin: String, normalized: String, start: Int, end: Int, length: Int)
 
@@ -158,8 +158,7 @@ class NCEnOpenNlpImpl(
 
             val res: Seq[NCToken] = holders.zip(posTags).zip(lemmas).toIndexedSeq.map { case ((h, pos), lemma) =>
                 new NCPropertyMapAdapter with NCToken:
-                    override def getOriginalText: String = h.origin
-                    override def getNormalizedText: String = h.normalized
+                    override def getText: String = h.origin
                     override def getLemma: String = lemma
                     override def getStem: String = stemmer.stem(h.normalized)
                     override def getPos: String = pos
@@ -174,8 +173,7 @@ class NCEnOpenNlpImpl(
             res.map(tok =>
                 if stops.contains(tok) then
                     new NCPropertyMapAdapter with NCToken:
-                        override def getOriginalText: String = tok.getOriginalText
-                        override def getNormalizedText: String = tok.getNormalizedText
+                        override def getText: String = tok.getText
                         override def getLemma: String = tok.getLemma
                         override def getStem: String = tok.getStem
                         override def getPos: String = tok.getPos

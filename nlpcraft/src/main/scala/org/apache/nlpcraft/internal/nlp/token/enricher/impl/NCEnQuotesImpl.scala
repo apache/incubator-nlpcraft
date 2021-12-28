@@ -52,4 +52,4 @@ class NCEnQuotesImpl extends NCTokenEnricher with LazyLogging:
                 tok.put("quoted:en", pairs.exists { case (from, to) => from > idx && to < idx })
             }
         else
-            logger.warn(s"Invalid quotes: ${req.getOriginalText}")
+            logger.warn(s"Invalid quotes: ${req.getText}")

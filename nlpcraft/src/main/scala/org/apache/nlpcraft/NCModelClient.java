@@ -57,7 +57,7 @@ public class NCModelClient implements NCLifecycle {
     public void start(NCModelConfig cfg) {
         verify();
 
-        cfg.getTokenParser().start(cfg);
+        start(cfg.getTokenParsers(), cfg);
         start(cfg.getEntityParsers(), cfg);
         start(cfg.getEntityEnrichers(), cfg);
         start(cfg.getTokenEnrichers(), cfg);
@@ -70,7 +70,7 @@ public class NCModelClient implements NCLifecycle {
         stop(cfg.getTokenEnrichers());
         stop(cfg.getEntityEnrichers());
         stop(cfg.getEntityParsers());
-        cfg.getTokenParser().stop();
+        stop(cfg.getTokenParsers());
 
     }
 

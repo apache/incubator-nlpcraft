@@ -26,4 +26,4 @@ import java.io.*
   */
 class NCEnLanguageWordsImpl extends NCTokenEnricher:
     override def enrich(req: NCRequest, cfg: NCModelConfig, toks: java.util.List[NCToken]): Unit =
-        toks.forEach(t => t.put("lang:en", t.getOriginalText.matches("""[\s\w\p{Punct}]+""")))
+        toks.forEach(t => t.put("lang:en", t.getText.matches("""[\s\w\p{Punct}]+""")))

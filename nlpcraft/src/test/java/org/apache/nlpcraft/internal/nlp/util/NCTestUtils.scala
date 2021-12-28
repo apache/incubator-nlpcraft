@@ -26,7 +26,6 @@ import org.apache.nlpcraft.*
 object NCTestUtils:
     /**
       *
-      * @param req
       * @param toks
       * @param props
       */
@@ -34,14 +33,13 @@ object NCTestUtils:
         val tbl = new NCAsciiTable()
 
         if props.isEmpty
-            then tbl #= ("Text", "Normalized", "POS", "Stem", "Lemma", "Start", "End", "Length", "Stopword")
-            else tbl #= ("Text", "Normalized", "POS", "Stem", "Lemma", "Start", "End", "Length", "Stopword", "Properties")
+            then tbl #= ("Text", "POS", "Stem", "Lemma", "Start", "End", "Length", "Stopword")
+            else tbl #= ("Text", "POS", "Stem", "Lemma", "Start", "End", "Length", "Stopword", "Properties")
 
         toks.foreach(t =>
             if props.isEmpty then
                 tbl += (
-                    t.getOriginalText,
-                    t.getNormalizedText,
+                    t.getText,
                     t.getPos,
                     t.getStem,
                     t.getLemma,
@@ -52,8 +50,7 @@ object NCTestUtils:
                 )
             else
                 tbl += (
-                    t.getOriginalText,
-                    t.getNormalizedText,
+                    t.getText,
                     t.getPos,
                     t.getStem,
                     t.getLemma,
@@ -65,7 +62,7 @@ object NCTestUtils:
                 )
         )
 
-        println(s"Request: ${toks.map(_.getOriginalText).mkString(" ")}")
+        println(s"Request: ${toks.map(_.getText).mkString(" ")}")
         println(tbl.toString)
 
     /**

@@ -52,7 +52,7 @@ public interface NCModelConfig extends NCPropertyMap {
      *
      * @return
      */
-    NCTokenParser getTokenParser();
+    List<NCTokenParser> getTokenParsers();
 
     /**
      *

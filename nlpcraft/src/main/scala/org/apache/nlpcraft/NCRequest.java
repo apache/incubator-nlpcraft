@@ -18,7 +18,6 @@
 package org.apache.nlpcraft;
 
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Information about the user request.
@@ -47,17 +46,10 @@ public interface NCRequest {
     String getRequestId();
 
     /**
-     * Gets normalized text of the user input.
-     *
-     * @return Normalized text of the user input.
-     */
-    String getNormalizedText();
-
-    /**
      *
      * @return
      */
-    String getOriginalText();
+    String getText();
 
     /**
      * Gets UTC/GMT timestamp in millis when user input was received.

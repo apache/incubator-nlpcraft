@@ -25,13 +25,7 @@ public interface NCToken extends NCPropertyMap {
      *
      * @return
      */
-    String getOriginalText();
-
-    /**
-     *
-     * @return
-     */
-    String getNormalizedText();
+    String getText();
 
     /**
      *
