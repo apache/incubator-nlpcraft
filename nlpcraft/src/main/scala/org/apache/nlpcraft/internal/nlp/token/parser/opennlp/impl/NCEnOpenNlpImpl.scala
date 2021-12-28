@@ -120,12 +120,7 @@ class NCEnOpenNlpImpl(
     private def stem(set: JSet[String]): Set[String] =
         if set == null then Set.empty else set.asScala.toSet.map(stemmer.stem)
 
-    /**
-      *
-      * @param req
-      * @return
-      */
-    override def parse(req: NCRequest): JList[NCToken] =
+    override def parse(req: NCRequest, cfg: NCModelConfig): JList[NCToken] =
         // OpenNLP classes are not thread-safe.
         this.synchronized {
             val sen = req.getNormalizedText

@@ -119,7 +119,7 @@ public class NCEnOpenNlpTokenParser implements NCTokenParser {
     }
 
     @Override
-    public List<NCToken> parse(NCRequest req) {
-        return impl.parse(req);
+    public List<NCToken> parse(NCRequest req, NCModelConfig cfg) {
+        return impl.parse(req, cfg);
     }
 }

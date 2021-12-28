@@ -48,7 +48,7 @@ class NCEnQuotesTokenEnricherSpec:
       * @param quotes
       */
     private def check(txt: String, quotes: Set[Integer]): Unit =
-        val toks = parser.parse(NCTestRequest(txt))
+        val toks = parser.parse(NCTestRequest(txt), null)
         val toksSeq = toks.asScala.toSeq
         enricher.enrich(NCTestRequest(txt), null, toks)
         NCTestUtils.printTokens(toksSeq, "quoted:en")

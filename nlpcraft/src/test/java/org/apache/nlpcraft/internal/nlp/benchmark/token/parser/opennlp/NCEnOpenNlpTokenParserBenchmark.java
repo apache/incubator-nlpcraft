@@ -44,7 +44,7 @@ public class NCEnOpenNlpTokenParserBenchmark extends NCBenchmarkAdapter  {
 
     @Benchmark
     public void testParse(Blackhole bh, NCBenchmarkAdapterState state) {
-        bh.consume(parser.parse(state.request));
+        bh.consume(parser.parse(state.request, null));
     }
 
     /**

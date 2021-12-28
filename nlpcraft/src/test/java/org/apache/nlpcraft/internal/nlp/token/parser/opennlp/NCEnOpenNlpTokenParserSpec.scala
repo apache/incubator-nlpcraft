@@ -43,7 +43,7 @@ class NCEnOpenNlpTokenParserSpec:
         )
 
     private def test(txt: String, validate: Seq[NCToken] => _): Unit =
-        val toks = parser.parse(nlp.util.NCTestRequest(txt)).asScala.toSeq
+        val toks = parser.parse(nlp.util.NCTestRequest(txt), null).asScala.toSeq
         assert(toks.nonEmpty)
         NCTestUtils.printTokens(toks)
         validate(toks)

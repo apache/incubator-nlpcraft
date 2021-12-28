@@ -26,9 +26,10 @@ public interface NCTokenParser extends NCLifecycle {
     /**
      *
      * @param req
+     * @param cfg
      * @return
      * @throws
      * @throws NCException
      */
-    List<NCToken> parse(NCRequest req);
+    List<NCToken> parse(NCRequest req, NCModelConfig cfg);
 }

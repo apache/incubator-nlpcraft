@@ -48,7 +48,7 @@ class NCEnBracketsTokenEnricherSpec:
       * @param brackets
       */
     private def check(txt: String, brackets: Set[Integer]): Unit =
-        val toks = parser.parse(NCTestRequest(txt))
+        val toks = parser.parse(NCTestRequest(txt), null)
         enricher.enrich(NCTestRequest(txt), null, toks)
         val seq = toks.asScala.toSeq
         NCTestUtils.printTokens(seq, "brackets:en")
