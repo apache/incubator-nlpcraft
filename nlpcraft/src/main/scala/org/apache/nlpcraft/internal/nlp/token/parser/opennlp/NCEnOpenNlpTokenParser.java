@@ -37,8 +37,8 @@ public class NCEnOpenNlpTokenParser implements NCTokenParser {
     private final NCEnOpenNlpImpl impl;
 
     @Override
-    public void start() {
-        impl.start();
+    public void start(NCModelConfig cfg) {
+        impl.start(cfg);
     }
 
     @Override

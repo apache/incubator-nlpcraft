@@ -81,6 +81,6 @@ object NCTestUtils:
         val t = make
         val started = now()
         
-        t.start()
+        t.start(null) // TODO: fix it.
         println(s"'${t.getClass.getSimpleName}' created with time=${started - start} ms and started=${now() - started} ms.")
         t

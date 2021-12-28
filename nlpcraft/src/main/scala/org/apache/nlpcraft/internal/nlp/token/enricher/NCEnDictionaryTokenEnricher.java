@@ -28,8 +28,8 @@ public class NCEnDictionaryTokenEnricher implements NCTokenEnricher {
     private final NCEnDictionaryImpl impl = new NCEnDictionaryImpl();
 
     @Override
-    public void start() {
-        impl.start();
+    public void start(NCModelConfig cfg) {
+        impl.start(cfg);
     }
 
     @Override

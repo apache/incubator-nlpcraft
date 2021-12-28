@@ -54,7 +54,7 @@ object NCEnSwearWordsImpl:
 class NCEnSwearWordsImpl(is: InputStream, res: String) extends NCTokenEnricher with LazyLogging:
     @volatile private var swearWords: Set[String] = _
 
-    override def start(): Unit =
+    override def start(cfg: NCModelConfig): Unit =
         val stemmer = new PorterStemmer
         swearWords = NCUtils.readTextStream(is, "UTF-8").map(stemmer.stem).toSet
         logger.trace(s"Loaded resource: $res")

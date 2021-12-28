@@ -29,8 +29,8 @@ public class NCEnBracketsTokenEnricher implements NCTokenEnricher {
     private final NCEnBracketsImpl impl = new NCEnBracketsImpl();
 
     @Override
-    public void start() {
-        impl.start();
+    public void start(NCModelConfig cfg) {
+        impl.start(cfg);
     }
 
     @Override

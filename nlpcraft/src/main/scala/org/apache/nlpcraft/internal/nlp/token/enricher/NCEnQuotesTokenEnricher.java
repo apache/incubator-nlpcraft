@@ -32,8 +32,8 @@ public class NCEnQuotesTokenEnricher implements NCTokenEnricher {
     private final NCEnQuotesImpl impl = new NCEnQuotesImpl();
 
     @Override
-    public void start() {
-        impl.start();
+    public void start(NCModelConfig cfg) {
+        impl.start(cfg);
     }
 
     @Override

@@ -75,7 +75,7 @@ class NCEnOpenNlpImpl(
     private var addStopWords: JSet[String] = _
     private var exclStopWords: JSet[String] = _
 
-    override def start(): Unit =
+    override def start(cfg: NCModelConfig): Unit =
         NCUtils.execPar(
             () => tokenizer = new TokenizerME(new TokenizerModel(tokMdlIn)),
             () => tagger = new POSTaggerME(new POSModel(posMdlIn)),

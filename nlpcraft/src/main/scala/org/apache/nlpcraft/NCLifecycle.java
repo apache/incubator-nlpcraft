@@ -26,7 +26,7 @@ public interface NCLifecycle {
     /**
      *
      */
-    default void start() {}
+    default void start(NCModelConfig cfg) {}
 
     /**
      *

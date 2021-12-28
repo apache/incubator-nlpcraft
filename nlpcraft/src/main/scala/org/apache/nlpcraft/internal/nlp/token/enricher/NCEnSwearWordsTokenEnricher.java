@@ -54,8 +54,8 @@ public class NCEnSwearWordsTokenEnricher implements NCTokenEnricher {
     }
 
     @Override
-    public void start() {
-        impl.start();
+    public void start(NCModelConfig cfg) {
+        impl.start(cfg);
     }
 
     @Override

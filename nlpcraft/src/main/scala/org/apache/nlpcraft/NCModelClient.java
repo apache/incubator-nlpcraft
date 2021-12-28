@@ -43,9 +43,9 @@ public class NCModelClient implements NCLifecycle {
         // TODO:
     }
 
-    private static void start(List<? extends NCLifecycle> list) {
+    private static void start(List<? extends NCLifecycle> list, NCModelConfig cfg) {
         if (list != null)
-            list.forEach(p -> p.start());
+            list.forEach(p -> p.start(cfg));
     }
 
     private static void stop(List<? extends NCLifecycle> list) {
@@ -54,15 +54,13 @@ public class NCModelClient implements NCLifecycle {
     }
 
     @Override
-    public void start() {
+    public void start(NCModelConfig cfg) {
         verify();
 
-        NCModelConfig cfg = mdl.getConfig();
-
-        cfg.getTokenParser().start();
-        start(cfg.getEntityParsers());
-        start(cfg.getEntityEnrichers());
-        start(cfg.getTokenEnrichers());
+        cfg.getTokenParser().start(cfg);
+        start(cfg.getEntityParsers(), cfg);
+        start(cfg.getEntityEnrichers(), cfg);
+        start(cfg.getTokenEnrichers(), cfg);
     }
 
     @Override

@@ -29,8 +29,8 @@ public class NCEnLanguageTokenEnricher implements NCTokenEnricher {
     private final NCEnLanguageWordsImpl impl = new NCEnLanguageWordsImpl();
 
     @Override
-    public void start() {
-        impl.start();
+    public void start(NCModelConfig cfg) {
+        impl.start(cfg);
     }
 
     @Override

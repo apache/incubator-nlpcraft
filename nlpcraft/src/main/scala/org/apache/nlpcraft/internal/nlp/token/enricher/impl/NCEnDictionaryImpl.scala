@@ -26,7 +26,7 @@ import org.apache.nlpcraft.internal.util.NCUtils
 class NCEnDictionaryImpl extends NCTokenEnricher:
     @volatile private var dict: Set[String] = _
 
-    override def start(): Unit = dict = NCUtils.readResource("moby/354984si.ngl", "iso-8859-1").toSet
+    override def start(cfg: NCModelConfig): Unit = dict = NCUtils.readResource("moby/354984si.ngl", "iso-8859-1").toSet
     override def stop(): Unit = dict = null
     override def enrich(req: NCRequest, cfg: NCModelConfig, toks: java.util.List[NCToken]): Unit =
         toks.forEach(t => t.put("dict:en", dict.contains(t.getLemma)))

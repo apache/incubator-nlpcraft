@@ -58,7 +58,7 @@ public class NCEnOpenNlpTokenParserBenchmark extends NCBenchmarkAdapter  {
             "opennlp/en-lemmatizer.dict"
         );
 
-        p.start();
+        p.start(null); // TODO: fix it.
 
         return p;
     }
