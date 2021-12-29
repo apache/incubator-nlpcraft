@@ -21,7 +21,7 @@ import java.io.PrintWriter
 import org.apache.nlpcraft.internal.*
 import NCAnsi.*
 import org.apache.commons.lang3.StringUtils
-import org.apache.nlpcraft.internal.ansi.NCAnsiProgressBar.*
+import NCAnsiProgressBar.*
 
 /**
   * Forward-only, bound ANSI-based progress bar.

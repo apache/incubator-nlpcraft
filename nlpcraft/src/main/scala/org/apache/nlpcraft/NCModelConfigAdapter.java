@@ -28,10 +28,10 @@ public class NCModelConfigAdapter extends NCPropertyMapAdapter implements NCMode
     private final String name;
     private final String version;
 
-    private List<NCTokenParser> tokParsers = new ArrayList<>();
-    private List<NCTokenEnricher> tokEnrichers = new ArrayList<>();
-    private List<NCEntityEnricher> entEnrichers = new ArrayList<>();
-    private List<NCEntityParser> entParsers = new ArrayList<>();
+    private final List<NCTokenParser> tokParsers = new ArrayList<>();
+    private final List<NCTokenEnricher> tokEnrichers = new ArrayList<>();
+    private final List<NCEntityEnricher> entEnrichers = new ArrayList<>();
+    private final List<NCEntityParser> entParsers = new ArrayList<>();
 
     /**
      *

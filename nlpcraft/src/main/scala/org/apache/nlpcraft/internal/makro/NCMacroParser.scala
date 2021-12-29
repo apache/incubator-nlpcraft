@@ -17,8 +17,7 @@
 
 package org.apache.nlpcraft.internal.makro
 
-import org.apache.nlpcraft.NCException
-import org.apache.nlpcraft.internal.*
+import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.util.NCUtils
 
 import scala.jdk.CollectionConverters.*

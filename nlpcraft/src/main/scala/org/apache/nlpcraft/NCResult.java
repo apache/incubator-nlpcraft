@@ -17,10 +17,7 @@
 
 package org.apache.nlpcraft;
 
-import org.apache.nlpcraft.internal.util.*;
-
 import java.io.Serializable;
-import java.util.Collection;
 
 /**
  *

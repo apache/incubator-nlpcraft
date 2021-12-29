@@ -20,7 +20,7 @@ package org.apache.nlpcraft.internal.ansi
 import java.io.PrintWriter
 import NCAnsi.*
 import org.apache.nlpcraft.internal.*
-import org.apache.nlpcraft.internal.ansi.NCAnsiSpinner.*
+import NCAnsiSpinner.*
 import org.apache.nlpcraft.internal.util.NCUtils
 
 /**

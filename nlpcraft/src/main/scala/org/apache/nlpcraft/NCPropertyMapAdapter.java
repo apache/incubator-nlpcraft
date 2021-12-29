@@ -59,4 +59,9 @@ public class NCPropertyMapAdapter implements NCPropertyMap {
     public boolean remove(String key, Object obj) {
         return map.remove(key, obj);
     }
+
+    @Override
+    public Set<String> keysSet() {
+        return map.keySet();
+    }
 }

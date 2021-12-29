@@ -20,13 +20,14 @@ package org.apache.nlpcraft.internal.makro
 import com.typesafe.scalalogging.LazyLogging
 import org.antlr.v4.runtime.tree.ParseTreeWalker
 import org.antlr.v4.runtime.*
-import org.apache.nlpcraft.NCException
 import org.apache.nlpcraft.internal.*
 import org.apache.nlpcraft.internal.ansi.NCAnsi.*
-import org.apache.nlpcraft.internal.antlr4.*
-import org.apache.nlpcraft.internal.makro.NCMacroCompiler.FiniteStateMachine
+import org.apache.nlpcraft.internal.antlr4.{NCCompilerUtils, *}
+import NCMacroCompiler.FiniteStateMachine
 import org.apache.nlpcraft.internal.makro.antlr4.*
 import org.apache.nlpcraft.internal.util.NCUtils
+import org.apache.nlpcraft.NCException
+import org.apache.nlpcraft.internal.makro.antlr4.NCMacroDslLexer
 
 import scala.collection.mutable
 

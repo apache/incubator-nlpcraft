@@ -17,7 +17,7 @@
 
 package org.apache.nlpcraft;
 
-import java.util.Optional;
+import java.util.*;
 
 /**
  *
@@ -76,4 +76,10 @@ public interface NCPropertyMap {
      * @return
      */
     boolean remove(String key, Object obj);
+
+    /**
+     *
+     * @return
+     */
+    Set<String> keysSet();
 }

@@ -25,7 +25,7 @@ import java.util.concurrent.*;
  *
  */
 public class NCModelClient implements NCLifecycle {
-    private NCModel mdl;
+    private final NCModel mdl;
 
     /**
      *
@@ -43,35 +43,64 @@ public class NCModelClient implements NCLifecycle {
         // TODO:
     }
 
-    private static void start(List<? extends NCLifecycle> list, NCModelConfig cfg) {
+    private static void start(ExecutorService s, List<? extends NCLifecycle> list, NCModelConfig cfg) {
+        assert s != null;
+
         if (list != null)
-            list.forEach(p -> p.start(cfg));
+            list.forEach(p -> s.execute(() -> p.start(cfg)));
     }
 
-    private static void stop(List<? extends NCLifecycle> list) {
+    private static void stop(ExecutorService s, List<? extends NCLifecycle> list) {
+        assert s != null;
+
         if (list != null)
-            list.forEach(p -> p.stop());
+            list.forEach(p -> s.execute(() -> p.stop()));
+    }
+
+    private static void stopExecutorService(ExecutorService s) {
+        try {
+            s.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
+        }
+        catch (InterruptedException e) {
+            throw new NCException("Thread interrupted.", e);
+        }
+    }
+
+    private static ExecutorService getExecutorService() {
+        return Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     }
 
     @Override
     public void start(NCModelConfig cfg) {
         verify();
 
-        start(cfg.getTokenParsers(), cfg);
-        start(cfg.getEntityParsers(), cfg);
-        start(cfg.getEntityEnrichers(), cfg);
-        start(cfg.getTokenEnrichers(), cfg);
+        ExecutorService s = getExecutorService();
+
+        try {
+            start(s, cfg.getTokenParsers(), cfg);
+            start(s, cfg.getEntityParsers(), cfg);
+            start(s, cfg.getEntityEnrichers(), cfg);
+            start(s, cfg.getTokenEnrichers(), cfg);
+        }
+        finally {
+            stopExecutorService(s);
+        }
     }
 
     @Override
     public void stop() {
         NCModelConfig cfg = mdl.getConfig();
+        ExecutorService s = getExecutorService();
 
-        stop(cfg.getTokenEnrichers());
-        stop(cfg.getEntityEnrichers());
-        stop(cfg.getEntityParsers());
-        stop(cfg.getTokenParsers());
-
+        try {
+            stop(s, cfg.getTokenEnrichers());
+            stop(s, cfg.getEntityEnrichers());
+            stop(s, cfg.getEntityParsers());
+            stop(s, cfg.getTokenEnrichers());
+        }
+        finally {
+            stopExecutorService(s);
+        }
     }
 
     /**

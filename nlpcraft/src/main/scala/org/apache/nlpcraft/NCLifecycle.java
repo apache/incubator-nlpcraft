@@ -17,8 +17,6 @@
 
 package org.apache.nlpcraft;
 
-import java.io.FileNotFoundException;
-
 /**
  *
  */

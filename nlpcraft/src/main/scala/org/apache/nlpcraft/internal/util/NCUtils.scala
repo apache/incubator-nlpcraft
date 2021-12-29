@@ -19,18 +19,19 @@ package org.apache.nlpcraft.internal.util
 
 import com.google.gson.GsonBuilder
 import com.typesafe.scalalogging.*
-import org.apache.nlpcraft.{NCException, NCToken}
+import org.apache.nlpcraft.NCToken
+import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.ansi.NCAnsi.*
 
 import java.io.*
 import java.net.*
-import java.util.Random
+import java.util.{Random, UUID}
 import java.util.regex.Pattern
-import java.util.zip.{GZIPInputStream, GZIPOutputStream}
+import java.util.zip.*
 import scala.annotation.tailrec
 import scala.collection.{IndexedSeq, Seq}
 import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.concurrent.*
 import scala.io.Source
 import scala.sys.SystemProperties
 import scala.util.Using
@@ -870,7 +871,7 @@ object NCUtils extends LazyLogging:
     def readResource(res: String, enc: String = "UTF-8", log: Logger = logger): List[String] =
         val list =
             try
-                Using.resource(Source.fromInputStream(getStream(res), enc))(_.getLines()).toList
+                Using.resource(Source.fromInputStream(getStream(res), enc))(_.getLines().toSeq).toList
             catch
                 case e: IOException => throw new NCException(s"Failed to read stream: $res", e)
     
@@ -927,6 +928,12 @@ object NCUtils extends LazyLogging:
       */
     def execPar(bodies: (() => Any)*)(ec: ExecutionContext): Unit =
         bodies.map(body => Future { body() } (ec)).foreach(Await.result(_, Duration.Inf))
+
+    /**
+      *
+      * @return
+      */
+    def genUUID(): UUID = UUID.randomUUID()
 
     /**
       * Gets all sequential permutations of tokens in this NLP sentence.

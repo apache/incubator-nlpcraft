@@ -20,11 +20,10 @@ package org.apache.nlpcraft.internal.ascii
 import java.io.{IOException, PrintStream}
 import java.util.List as JList
 import com.typesafe.scalalogging.Logger
-import org.apache.nlpcraft.NCException
-import org.apache.nlpcraft.internal.*
-import org.apache.nlpcraft.internal.ascii.NCAsciiTable.*
-import org.apache.nlpcraft.internal.ansi.NCAnsi.*
+import org.apache.nlpcraft.*
+import NCAsciiTable.*
 import org.apache.nlpcraft.internal.util.NCUtils
+import org.apache.nlpcraft.internal.ansi.NCAnsi.*
 
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.CollectionHasAsScala
@@ -555,6 +554,12 @@ class NCAsciiTable:
       * @param header Optional header.
       */
     def error(log: Logger, header: Option[String] = None): Unit = log.error(mkLogString(header))
+
+    /**
+      *
+      * @param header
+      */
+    def print(header: String): Unit = println(mkLogString(Some(header)))
 
     /**
       * Renders this table to log as trace.

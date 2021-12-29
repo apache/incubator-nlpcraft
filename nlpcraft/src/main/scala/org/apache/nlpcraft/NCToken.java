@@ -68,4 +68,10 @@ public interface NCToken extends NCPropertyMap {
      * @return
      */
     int getLength();
+
+    /**
+     *
+     * @return
+     */
+    int getIndex();
 }

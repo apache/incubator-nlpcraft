@@ -17,6 +17,8 @@
 
 package org.apache.nlpcraft;
 
+import org.apache.nlpcraft.internal.util.NCUtils;
+
 import java.util.List;
 
 /**
@@ -43,20 +45,9 @@ public interface NCEntity extends NCPropertyMap {
     String getId();
 
     /**
-     *
-     * @return Index of this entity in the sentence.
-     */
-    int getIndex();
-
-    /**
-     * A shortcut method that gets internal globally unique system ID of the entity.
-     * <p>
-     * This method is equivalent to:
-     * <pre class="brush: java">
-     *     return meta("nlpcraft:nlp:unid");
-     * </pre>
-     *
      * @return Internal globally unique system ID of the entity.
      */
-    String getGuid();
+    default String getGuid() {
+        return NCUtils.genUUID().toString();
+    }
 }
