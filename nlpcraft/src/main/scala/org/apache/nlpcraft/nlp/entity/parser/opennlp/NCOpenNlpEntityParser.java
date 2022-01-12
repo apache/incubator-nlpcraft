@@ -17,15 +17,19 @@
 
 package org.apache.nlpcraft.nlp.entity.parser.opennlp;
 
-import org.apache.nlpcraft.*;
+import org.apache.nlpcraft.NCEntity;
+import org.apache.nlpcraft.NCEntityParser;
+import org.apache.nlpcraft.NCModelConfig;
+import org.apache.nlpcraft.NCRequest;
+import org.apache.nlpcraft.NCToken;
 import org.apache.nlpcraft.nlp.entity.parser.opennlp.impl.NCOpenNlpEntityParserImpl;
 
-import java.io.File;
 import java.util.List;
 import java.util.Objects;
 
 /**
- * TODO
+ * TODO: make javadoc based on comments below.
+ *
  * Generates entities with
  *  - ID `opennlp:{name}` where 'name' is element model name (from trained file or resource) and
  *  - one property `opennlp:{name}:probability`, where probability is double value between 0 and 1.
@@ -40,35 +44,37 @@ public class NCOpenNlpEntityParser implements NCEntityParser {
     private final NCOpenNlpEntityParserImpl impl;
 
     /**
-     * @param modelSrc
+     * @param mdlSrc
      */
-    public NCOpenNlpEntityParser(String modelSrc) {
-        Objects.requireNonNull(modelSrc, "Model source cannot be null.");
+    public NCOpenNlpEntityParser(String mdlSrc) {
+        // TODO: error texts.
+        Objects.requireNonNull(mdlSrc, "Model source cannot be null.");
 
-        this.impl = NCOpenNlpEntityParserImpl.apply(modelSrc);
+        this.impl = new NCOpenNlpEntityParserImpl(java.util.Collections.singletonList(mdlSrc));
     }
 
     /**
-     * @param modelFile
+     * @param mdlSrcs
      */
-    public NCOpenNlpEntityParser(File modelFile) {
-        Objects.requireNonNull(modelFile, "Model file cannot be null.");
+    public NCOpenNlpEntityParser(List<String> mdlSrcs) {
+        // TODO: error texts.
+        Objects.requireNonNull(mdlSrcs, "Model sources cannot be null.");
 
-        this.impl = NCOpenNlpEntityParserImpl.apply(modelFile);
-    }
-
-    @Override
-    public void start(NCModelConfig cfg) {
-        impl.start(cfg);
-    }
-
-    @Override
-    public void stop() {
-        impl.stop();
+        this.impl = new NCOpenNlpEntityParserImpl(mdlSrcs);
     }
 
     @Override
     public List<NCEntity> parse(NCRequest req, NCModelConfig cfg, List<NCToken> toks) {
         return impl.parse(req, cfg, toks);
+    }
+
+    @Override
+    public void onStart(NCModelConfig cfg) {
+        impl.onStart(cfg);
+    }
+
+    @Override
+    public void onStop(NCModelConfig cfg) {
+        impl.onStop(cfg);
     }
 }

@@ -17,22 +17,36 @@
 
 package org.apache.nlpcraft;
 
+import java.util.Objects;
+
 /**
  *
  */
 public class NCModelAdapter implements NCModel {
     private final NCModelConfig cfg;
+    private final NCModelPipeline pipeline;
 
     /**
      *
      * @param cfg
+     * @param pipeline
      */
-    public NCModelAdapter(NCModelConfig cfg) {
+    public NCModelAdapter(NCModelConfig cfg, NCModelPipeline pipeline) {
+        // TODO: error texts.
+        Objects.requireNonNull(cfg, "Config cannot be null.");
+        Objects.requireNonNull(pipeline, "Pipeline cannot be null.");
+
         this.cfg = cfg;
+        this.pipeline = pipeline;
     }
 
     @Override
     public NCModelConfig getConfig() {
         return cfg;
+    }
+
+    @Override
+    public NCModelPipeline getPipeline() {
+        return pipeline;
     }
 }

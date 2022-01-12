@@ -21,50 +21,59 @@ import com.typesafe.scalalogging.LazyLogging
 import opennlp.tools.namefind.*
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.util.NCUtils
-import org.apache.nlpcraft.nlp.token.enricher.impl.en.NCEnQuotesImpl.*
 
 import java.io.*
 import java.util
 import java.util.{Optional, List as JList, Map as JMap}
 import scala.Option.*
+import scala.collection.mutable
 import scala.concurrent.ExecutionContext
 import scala.jdk.CollectionConverters.*
 import scala.language.postfixOps
 import scala.util.Using
-import scala.util.control.Exception.catching
-
-object NCOpenNlpEntityParserImpl:
-    def apply(res: String): NCOpenNlpEntityParserImpl = new NCOpenNlpEntityParserImpl(NCUtils.getStream(res), res)
-    def apply(f: File): NCOpenNlpEntityParserImpl = new NCOpenNlpEntityParserImpl(new FileInputStream(f), f.getAbsolutePath)
 
 /**
   *
+  * @param resources
   */
-class NCOpenNlpEntityParserImpl(is: InputStream, res: String) extends NCEntityParser with LazyLogging :
-    @volatile private var finder: NameFinderME = _
+class NCOpenNlpEntityParserImpl(resources: JList[String]) extends NCEntityParser with LazyLogging :
+    require(resources != null)
+
+    private var finders: Seq[NameFinderME] = _
+
+    init()
 
     private case class Holder(start: Int, end: Int, name: String, probability: Double)
 
-    override def start(cfg: NCModelConfig): Unit =
-        finder = new NameFinderME(new TokenNameFinderModel(NCUtils.getStream(res)))
-        logger.trace(s"Loaded resource: $res")
+    private def init(): Unit =
+        val finders = mutable.ArrayBuffer.empty[NameFinderME]
 
-    override def stop(): Unit = finder = null
+        NCUtils.execPar(
+            resources.asScala.toSeq.map(res => () => {
+                val f = new NameFinderME(new TokenNameFinderModel(NCUtils.getStream(res)))
 
-    private def find(words: Array[String]): Array[Holder] =
-        this.synchronized {
+                logger.trace(s"Loaded resource: $res")
+
+                finders.synchronized { finders += f }
+            })*)(ExecutionContext.Implicits.global)
+
+        this.finders = finders.toSeq
+
+    private def find(finder: NameFinderME, words: Array[String]): Array[Holder] =
+        finder.synchronized {
             try
                 finder.find(words).map(p => Holder(p.getStart, p.getEnd - 1, p.getType, p.getProb))
             finally
                 finder.clearAdaptiveData()
-        }
+       }
 
-    override def parse(req: NCRequest, cfg: NCModelConfig, toks: JList[NCToken]): JList[NCEntity] =
-        val toksSeq = toks.asScala
+    override def parse(req: NCRequest, cfg: NCModelConfig, toksList: JList[NCToken]): JList[NCEntity] =
+        val toks = toksList.asScala
+        val txtArr = toks.map(_.getText).toArray
 
-        find(toksSeq.map(_.getText).toArray).flatMap(h =>
+        finders.flatMap(find(_, txtArr)).flatMap(h => {
             def calcIndex(getHolderIndex: Holder => Int): Int =
-                toksSeq.find(_.getIndex == getHolderIndex(h)) match
+                toks.find(_.getIndex == getHolderIndex(h)) match
                     case Some(t) => t.getIndex
                     case None => -1
 
@@ -72,12 +81,12 @@ class NCOpenNlpEntityParserImpl(is: InputStream, res: String) extends NCEntityPa
             lazy val i2 = calcIndex(_.end)
 
             Option.when(i1 != -1 && i2 != -1)(
-                new NCPropertyMapAdapter with NCEntity {
+                new NCPropertyMapAdapter with NCEntity:
                     put(s"opennlp:${h.name}:probability", h.probability)
 
-                    override def getTokens: JList[NCToken] = toksSeq.flatMap(t => Option.when(t.getIndex >= i1 && t.getIndex <= i2)(t)).asJava
-                    override def getRequestId: String = req.getRequestId
-                    override def getId: String = s"opennlp:${h.name}"
-                }
+                    override val getTokens: JList[NCToken] =
+                        toks.flatMap(t => Option.when(t.getIndex >= i1 && t.getIndex <= i2)(t)).asJava
+                    override val getRequestId: String = req.getRequestId
+                    override val getId: String = s"opennlp:${h.name}"
             )
-        ).toSeq.asJava
+        }).asJava

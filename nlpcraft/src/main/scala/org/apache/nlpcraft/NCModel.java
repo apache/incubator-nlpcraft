@@ -17,8 +17,6 @@
 
 package org.apache.nlpcraft;
 
-import java.util.List;
-
 /**
  *
  */
@@ -31,10 +29,16 @@ public interface NCModel {
 
     /**
      *
+     * @return
+     */
+    NCModelPipeline getPipeline();
+
+    /**
+     *
      * @param vrn
      * @return
      */
-    default boolean onVariant(List<NCEntity> vrn) {
+    default boolean onVariant(NCVariant vrn) {
         return true;
     }
 

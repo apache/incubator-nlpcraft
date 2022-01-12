@@ -17,8 +17,6 @@
 
 package org.apache.nlpcraft;
 
-import org.apache.nlpcraft.internal.util.NCUtils;
-
 import java.util.List;
 
 /**
@@ -43,11 +41,4 @@ public interface NCEntity extends NCPropertyMap {
      * @return
      */
     String getId();
-
-    /**
-     * @return Internal globally unique system ID of the entity.
-     */
-    default String getGuid() {
-        return NCUtils.genUUID().toString();
-    }
 }

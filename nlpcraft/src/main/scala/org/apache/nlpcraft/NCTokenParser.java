@@ -22,14 +22,12 @@ import java.util.List;
 /**
  *
  */
-public interface NCTokenParser extends NCLifecycle {
+public interface NCTokenParser {
     /**
      *
-     * @param req
      * @param cfg
+     * @param text
      * @return
-     * @throws
-     * @throws NCException
      */
-    List<NCToken> parse(NCRequest req, NCModelConfig cfg);
+    List<NCToken> tokenize(String text);
 }

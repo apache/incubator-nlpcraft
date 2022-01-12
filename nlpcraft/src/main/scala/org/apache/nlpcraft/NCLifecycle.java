@@ -18,16 +18,22 @@
 package org.apache.nlpcraft;
 
 /**
- *
+ * TODO:
  */
 public interface NCLifecycle {
     /**
      *
+     * @param cfg
      */
-    default void start(NCModelConfig cfg) {}
+    default void onStart(NCModelConfig cfg) {
+        // No-op.
+    }
 
     /**
      *
+     * @param cfg
      */
-    default void stop() {}
+    default void onStop(NCModelConfig cfg) {
+        // No-op.
+    }
 }

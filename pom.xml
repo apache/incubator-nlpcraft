@@ -40,6 +40,7 @@
 
     <modules>
         <module>nlpcraft</module>
+        <module>nlpcraft-stanford</module>
     </modules>
 
     <developers>
@@ -101,18 +102,26 @@
         <commons.io.ver>2.11.0</commons.io.ver>
         <commons.lang3.ver>3.12.0</commons.lang3.ver>
         <commons.codec.ver>1.15</commons.codec.ver>
-        <scala3.ref.ver>1.0.0</scala3.ref.ver>
+        <scala3.ref.ver>1.1.1</scala3.ref.ver>
         <junit.ver>5.8.2</junit.ver>
         <scalatest.ver>3.2.9</scalatest.ver>
-        <gson.ver>2.8.5</gson.ver>
+        <jackson.ver>2.13.1</jackson.ver>
+        <jackson.yaml.ver>2.13.1</jackson.yaml.ver>
         <apache.opennlp.ver>1.9.4</apache.opennlp.ver>
-        <jmh.version>1.33</jmh.version>
+        <jmh.version>1.34</jmh.version>
 
         <!-- Force specific encoding on text resources. -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- Jar with all dependencies. -->
         <nlpcraft.all.deps.jar>apache-${project.artifactId}-incubating-${project.version}-all-deps.jar</nlpcraft.all.deps.jar>
+
+        <!--
+            NOTE: this library is NOT included in binary build and is optional
+            for NLPCraft. It is licensed under GPLv3 and has to be downloaded separately by
+            the end user, when required.
+        -->
+        <stanford.corenlp.ver>4.3.2</stanford.corenlp.ver>
     </properties>
 
     <dependencyManagement>
@@ -164,9 +173,21 @@
             </dependency>
 
             <dependency>
-                <groupId>com.google.code.gson</groupId>
-                <artifactId>gson</artifactId>
-                <version>${gson.ver}</version>
+                <groupId>com.fasterxml.jackson.dataformat</groupId>
+                <artifactId>jackson-dataformat-yaml</artifactId>
+                <version>${jackson.ver}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.ver}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.module</groupId>
+                <artifactId>jackson-module-scala_3</artifactId>
+                <version>${jackson.ver}</version>
             </dependency>
 
             <dependency>
@@ -201,6 +222,24 @@
                 <groupId>org.jline</groupId>
                 <artifactId>jline-terminal</artifactId>
                 <version>${jline.ver}</version>
+            </dependency>
+
+            <!--
+             Stanford dependencies.
+             ==================
+            -->
+
+            <dependency>
+                <groupId>edu.stanford.nlp</groupId>
+                <artifactId>stanford-corenlp</artifactId>
+                <version>${stanford.corenlp.ver}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>edu.stanford.nlp</groupId>
+                <artifactId>stanford-corenlp</artifactId>
+                <version>${stanford.corenlp.ver}</version>
+                <classifier>models</classifier>
             </dependency>
 
             <!--
@@ -325,5 +364,12 @@
     </build>
 
     <profiles>
+        <!-- Stanford CoreNLP integration is not included by default due to GPL-licensed code. -->
+        <profile>
+            <id>stanford-corenlp</id>
+            <modules>
+                <module>nlpcraft-stanford</module>
+            </modules>
+        </profile>
     </profiles>
 </project>

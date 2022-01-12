@@ -24,12 +24,12 @@ import java.util.*;
  */
 public interface NCContext {
     /**
-     * Tests if given token is part of the query this context is associated with.
+     * Tests if given entity is part of the query this context is associated with.
      *
-     * @param tok Token to check.
-     * @return {@code true} if given token is associated with this context, {@code false} otherwise.
+     * @param ent Entity to check.
+     * @return {@code true} if given entity is associated with this context, {@code false} otherwise.
      */
-    boolean isOwnerOf(NCEntity tok);
+    boolean isOwnerOf(NCEntity ent);
 
     /**
      * Gets model configuration for this query.
@@ -56,5 +56,5 @@ public interface NCContext {
      *
      * @return
      */
-    Collection<List<NCEntity>> getVariants();
+    Collection<NCVariant> getVariants();
 }

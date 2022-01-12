@@ -17,7 +17,7 @@
 
 package org.apache.nlpcraft;
 
-import java.util.Map;
+import java.util.*;
 
 /**
  * Information about the user request.
@@ -57,13 +57,6 @@ public interface NCRequest {
      * @return UTC/GMT timestamp in ms when user input was received.
      */
     long getReceiveTimestamp();
-
-    /**
-     * Gets string representation of the user agent that made the call with this request.
-     *
-     * @return User agent description (web browser, REST client, etc.) or {@code null} if not available.
-     */
-    String getUserAgent();
 
     /**
      * Gets optional user request data.

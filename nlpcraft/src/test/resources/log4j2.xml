@@ -40,11 +40,5 @@
             <AppenderRef ref="stdout"/>
             <AppenderRef ref="stderr"/>
         </Logger>
-        <Logger name="com.mchange" level="WARN" additivity="false">
-            <AppenderRef ref="stderr"/>
-        </Logger>
-        <Logger name="org.apache.ignite" level="WARN" additivity="false">
-            <AppenderRef ref="stderr"/>
-        </Logger>
     </Loggers>
 </Configuration>

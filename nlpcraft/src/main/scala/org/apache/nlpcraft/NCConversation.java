@@ -25,17 +25,9 @@ import java.util.function.Predicate;
  */
 public interface NCConversation {
     /**
-     * Gets an ordered list of tokens stored in the conversation's STM (short-term memory) for the current
-     * user. Tokens in the returned list are ordered by their conversational depth, i.e.
-     * the tokens from more recent requests appear before tokens from older requests.
-     * <p>
-     * Note also that rules by which STM operates are undefined for the purpose of this function (i.e. callers
-     * should not rely on any observed behavior of how STM stores and evicts its content).
-     *
-     * @return List of tokens for this conversation's STM. The list can be empty which indicates that
-     *      conversation is brand new (or timed out).
+     * 
      */
-    List<NCEntity> getTokens();
+    List<NCEntity> getEntities();
 
     /**
      * Gets the chronologically ordered list of previously matched intents sorted from oldest to newest
@@ -46,14 +38,8 @@ public interface NCConversation {
     List<NCDialogFlowItem> getDialogFlow();
 
     /**
-     * Removes all tokens satisfying given token predicate from the conversation's STM.
-     * <p>
-     * This is particularly useful when the logic processing the user input makes an implicit
-     * assumption not present in the user input itself. Such assumption may alter the conversation (without
-     * having an explicit token responsible for it) and therefore this method can be used to remove "stale" tokens
-     * from conversation's STM.
-     *
-     * @param filter Token remove filter.
+     * 
+     * @param filter Entity remove filter.
      */
     void clearStm(Predicate<NCEntity> filter);
 

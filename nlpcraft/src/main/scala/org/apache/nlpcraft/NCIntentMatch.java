@@ -77,5 +77,5 @@ public interface NCIntentMatch {
      * @return Parsing variant that produced the matching for this intent.
      * @see #getIntentEntities()
      */
-    List<NCEntity> getVariant();
+    NCVariant getVariant();
 }

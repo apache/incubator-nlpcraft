@@ -28,26 +28,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * The corpus of intent samples that is used for documentaiton and model auto-validation.
- * <p>
- * This annotation allows to load these samples from the external sources like local file or URL and
- * should be used together with {@link NCIntent} or {@link NCIntentRef} annotations on the callback
- * methods. Method can have multiple annotations of this type and each annotation can define multiple input
- * examples. See similar {@link NCIntentSample} annotation that allows to define samples in place.
- * <p>
- * Here's an example of using this annotation:
- * <pre class="brush: java, highlight: [2]">
- * {@literal @}NCIntentRef("alarm")
- * {@literal @}NCIntentSampleRef("alarm_samples.txt")
- * NCResult onMatch(
- *      NCIntentMatch ctx,
- *      {@literal @}NCIntentTerm("nums") List&lt;NCToken&gt; numToks
- * ) {
- *     ...
- * }
- * </pre>
- * <p>
- * Read full documentation in <a target=_ href="https://nlpcraft.apache.org/intent-matching.html#binding">Intent Matching</a> section and review
- * <a target=_ href="https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft-examples">examples</a>.
  *
  * @see NCIntentSample
  * @see NCIntent

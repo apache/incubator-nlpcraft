@@ -22,76 +22,68 @@ import java.util.*;
 /**
  *
  */
-public interface NCModelConfig extends NCPropertyMap {
-    /**
-     * Default value for {@link #getMinTokens()} method.
-     */
-    int DFLT_MIN_TOKENS = 0;
+public class NCModelConfig extends NCPropertyMapAdapter {
+    private final String id, name, version;
+    private String desc, origin;
 
     /**
-     * Default value for {@link #getMaxTokens()} method.
+     * TODO:
+     * @param id
+     * @param name
+     * @param version
      */
-    int DFLT_MAX_TOKENS = 50;
+    public NCModelConfig(String id, String name, String version) {
+        // TODO: error texts.
+        Objects.requireNonNull(id, "Id cannot be null.");
+        Objects.requireNonNull(name, "Name cannot be null.");
+        Objects.requireNonNull(version, "Version cannot be null.");
+
+        this.id = id;
+        this.name = name;
+        this.version = version;
+    }
 
     /**
-     * Default value for {@link #getMinNonStopWords()} method.
+     * TODO:
+     * @param id
+     * @param name
+     * @param version
+     * @param desc
+     * @param origin
      */
-    int DFLT_MIN_NON_STOPWORDS = 0;
+    public NCModelConfig(String id, String name, String version, String desc, String origin) {
+        this(id, name, version);
 
-    /**
-     * Default value for {@link #getMaxStopWords()} method.
-     */
-    int DFLT_MAX_STOPWORDS = 15;
-
-    /**
-     * Default value for {@link #isNotLatinCharsetAllowed()} method.
-     */
-    boolean DFLT_IS_NOT_LATIN_CHARSET_ALLOWED = false;
-
-    /**
-     *
-     * @return
-     */
-    List<NCTokenParser> getTokenParsers();
-
-    /**
-     *
-     * @return
-     */
-    List<NCTokenEnricher> getTokenEnrichers();
-
-    /**
-     *
-     * @return
-     */
-    List<NCEntityEnricher> getEntityEnrichers();
-
-    /**
-     *
-     * @return
-     */
-    List<NCEntityParser> getEntityParsers();
+        this.desc = desc;
+        this.origin = origin != null ? origin : getClass().getCanonicalName();
+    }
 
     /**
      * Gets unique, <i>immutable</i> ID of this model.
      *
      * @return Unique, <i>immutable</i> ID of this model.
      */
-    String getId();
+    public String getId() {
+        return id;
+    }
 
     /**
      * Gets descriptive name of this model.
      *
      * @return Descriptive name for this model.
      */
-    String getName();
+    public String getName() {
+        return name;
+    }
 
     /**
      * Gets the version of this model using semantic versioning.
      *
      * @return A version compatible with (<a href="http://www.semver.org">www.semver.org</a>) specification.
      */
-    String getVersion();
+    public String getVersion() {
+        return version;
+    }
 
     /**
      * Gets optional short model description. This can be displayed by the management tools.
@@ -99,57 +91,18 @@ public interface NCModelConfig extends NCPropertyMap {
      *
      * @return Optional short model description. Can return <code>null</code>.
      */
-    default String getDescription() {
-        return null;
+    public String getDescription() {
+        return desc;
     }
 
     /**
+     * TODO: text (Default implementation ?)
      * Gets the origin of this model like name of the class, file path or URL.
      * Default implementation return current class name.
      *
      * @return Origin of this model like name of the class, file path or URL.
      */
-    default String getOrigin() {
-        return getClass().getCanonicalName();
-    }
-
-    /**
-     *
-     * @return
-     */
-    default int getMinTokens() {
-        return DFLT_MIN_TOKENS;
-    }
-
-    /**
-     *
-     * @return
-     */
-    default int getMaxTokens() {
-        return DFLT_MAX_TOKENS;
-    }
-
-    /**
-     *
-     * @return
-     */
-    default int getMaxStopWords() {
-        return DFLT_MAX_STOPWORDS;
-    }
-
-    /**
-     *
-     * @return
-     */
-    default int getMinNonStopWords() {
-        return DFLT_MIN_NON_STOPWORDS;
-    }
-
-    /**
-     *
-     * @return
-     */
-    default boolean isNotLatinCharsetAllowed() {
-        return DFLT_IS_NOT_LATIN_CHARSET_ALLOWED;
+    public String getOrigin() {
+        return origin;
     }
 }

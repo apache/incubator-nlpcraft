@@ -84,17 +84,14 @@ class NCAnsiProgressBar(
             if useAnsi then
                 clean()
                 val ratio = tick.toFloat / totalTicks.toFloat
-                val bar = if (tick == 1) 1 else Math.round(ratio * dispSize)
+                val bar = if tick == 1 then 1 else Math.round(ratio * dispSize)
                 val pct = Math.round(ratio * 100)
                 out.print(PB_LEFT)
-                for (i <- 0 until dispSize) {
-                    if (i < bar)
-                        out.print(PB_FULL)
-                    else if (i == bar)
-                        out.print(PB_LEAD)
-                    else
-                        out.print(PB_EMPTY)
-                }
+                for (i <- 0 until dispSize)
+                    if i < bar then out.print(PB_FULL)
+                    else if i == bar then out.print(PB_LEAD)
+                    else out.print(PB_EMPTY)
+
                 out.print(PB_RIGHT)
                 out.print(" ")
                 out.print(W + StringUtils.rightPad(s"$pct%",4) + RST)

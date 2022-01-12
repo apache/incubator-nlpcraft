@@ -65,7 +65,7 @@ object NCMacroCompiler extends LazyLogging:
           * @param s
           * @return
           */
-        private def concat(optS: String, s: String): String = if (optS.isEmpty) s else optS + " " + s
+        private def concat(optS: String, s: String): String = if optS.isEmpty then s else optS + " " + s
 
         /**
           *

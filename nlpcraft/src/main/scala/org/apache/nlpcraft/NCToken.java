@@ -31,25 +31,7 @@ public interface NCToken extends NCPropertyMap {
      *
      * @return
      */
-    String getLemma();
-
-    /**
-     *
-     * @return
-     */
-    String getStem();
-
-    /**
-     *
-     * @return
-     */
-    String getPos();
-
-    /**
-     *
-     * @return
-     */
-    boolean isStopWord();
+    int getIndex();
 
     /**
      *
@@ -67,11 +49,11 @@ public interface NCToken extends NCPropertyMap {
      *
      * @return
      */
-    int getLength();
+    String getLemma();
 
     /**
      *
      * @return
      */
-    int getIndex();
+    String getPos();
 }

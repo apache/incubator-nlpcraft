@@ -43,14 +43,14 @@ class NCAnsiSpinner(out: PrintWriter, useAnsi: Boolean = true):
       * @param p
       */
     def setSuffix(p: String): Unit =
-        this.suffix = if (p == null) "" else p
+        this.suffix = if p == null then "" else p
 
     /**
       *
       * @param p
       */
     def setPrefix(p: String): Unit =
-        this.prefix = if (p == null) "" else p
+        this.prefix = if p == null then "" else p
 
     /**
       *

@@ -85,7 +85,7 @@ class NCAsciiTable:
       */
     private sealed case class Cell(style: Style, lines: Seq[String]):
         // Cell's calculated width including padding.
-        lazy val width: Int = style.padding + (if (height > 0) lines.map(NCUtils.stripAnsi(_).length).max else 0)
+        lazy val width: Int = style.padding + (if height > 0 then lines.map(NCUtils.stripAnsi(_).length).max else 0)
         // Gets height of the cell.
         lazy val height: Int = lines.length
 
@@ -285,11 +285,11 @@ class NCAsciiTable:
                 var curr = 0
                 val len = line.length
 
-                def addLine(s: String): Unit = buf += (if (buf.isEmpty) s else space(leader) + s)
+                def addLine(s: String): Unit = buf += (if buf.isEmpty then s else space(leader) + s)
 
                 while (curr < len)
                     if curr - start > maxWidth then
-                        val end = if (lastSpace == -1) curr else lastSpace + 1 /* Keep space at the end of the line. */
+                        val end = if lastSpace == -1 then curr else lastSpace + 1 /* Keep space at the end of the line. */
                         addLine(line.substring(start, end))
                         start = end
                     if line.charAt(curr) == ' ' then
@@ -506,7 +506,7 @@ class NCAsciiTable:
                     // Right margin.
                     tbl ++= s"${space(margin.right)}\n"
 
-                if (i < rows.size - 1 && ((rowH > 1 && multiLineAutoBorder) || insideBorder))
+                if i < rows.size - 1 && ((rowH > 1 && multiLineAutoBorder) || insideBorder) then
                     addHorLine(i)
 
             tbl ++= tblWidthLine
@@ -559,7 +559,7 @@ class NCAsciiTable:
       *
       * @param header
       */
-    def print(header: String): Unit = println(mkLogString(Some(header)))
+    def print(header: String): Unit = println(mkLogString(Option(header)))
 
     /**
       * Renders this table to log as trace.

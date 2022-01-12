@@ -17,26 +17,23 @@
 
 package org.apache.nlpcraft.internal.util
 
-import com.google.gson.GsonBuilder
 import com.typesafe.scalalogging.*
-import org.apache.nlpcraft.NCToken
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.ansi.NCAnsi.*
 
 import java.io.*
 import java.net.*
-import java.util.{Random, UUID}
+import java.util.concurrent.{CopyOnWriteArrayList, ExecutorService, TimeUnit}
 import java.util.regex.Pattern
 import java.util.zip.*
+import java.util.{Random, UUID}
 import scala.annotation.tailrec
-import scala.collection.{IndexedSeq, Seq}
-import scala.concurrent.duration.Duration
+import scala.collection.{IndexedSeq, Seq, mutable}
 import scala.concurrent.*
-import scala.io.Source
+import scala.concurrent.duration.Duration
+import scala.io.*
 import scala.sys.SystemProperties
 import scala.util.Using
-import scala.util.control.Exception.ignoring
-import scala.io.BufferedSource
 
 /**
   * 
@@ -45,7 +42,6 @@ object NCUtils extends LazyLogging:
     final val NL = System getProperty "line.separator"
     private val RND = new Random()
     private val sysProps = new SystemProperties
-    private final lazy val GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create()
     private final val ANSI_SEQ = Pattern.compile("\u001B\\[[?;\\d]*[a-zA-Z]")
     private val ANSI_FG_8BIT_COLORS = for (i <- 16 to 255) yield ansi256Fg(i)
     private val ANSI_BG_8BIT_COLORS = for (i <- 16 to 255) yield ansi256Bg(i)
@@ -85,17 +81,6 @@ object NCUtils extends LazyLogging:
     def isSysEnvSet(s: String): Boolean = sysProps.get(s).nonEmpty || sys.env.contains(s)
 
     /**
-      * Creates object from JSON string.
-      *
-      * @param js JSON string.
-      */
-    def jsonToObject(js: String): AnyRef =
-        try
-            GSON.fromJson(js, classOf[Object])
-        catch
-            case e: Exception => throw new NCException(s"Failed to convert JSON string to map: $js", e)
-
-    /**
       * Returns `true` if given system property, or environment variable is provided and has value
       * 'true'. In all other cases returns `false`.
       *
@@ -121,8 +106,8 @@ object NCUtils extends LazyLogging:
     def getRandomSeq[T](seq: Seq[T], n: Int): Seq[T] =
         require(seq.lengthCompare(n) >= 0)
 
-        val src = scala.collection.mutable.ArrayBuffer.empty[T] ++ seq
-        val dest = scala.collection.mutable.ArrayBuffer.empty[T]
+        val src = mutable.ArrayBuffer.empty[T] ++ seq
+        val dest = mutable.ArrayBuffer.empty[T]
 
         (0 until n).foreach(_ => dest += src.remove(RND.nextInt(src.size)))
 
@@ -353,7 +338,7 @@ object NCUtils extends LazyLogging:
     @tailrec
     def trimQuotes(s: String): String =
         val z = s.strip
-        if (z.startsWith("'") && z.endsWith("'")) || (z.startsWith("\"") && z.endsWith("\"")) then
+        if z.startsWith("'") && z.endsWith("'") || z.startsWith("\"") && z.endsWith("\"") then
             trimQuotes(z.substring(1, z.length - 1))
         else
             z
@@ -388,7 +373,7 @@ object NCUtils extends LazyLogging:
         if s.nonEmpty then
             if s.head == '\'' && s.last == '\'' then
                 escapesQuotes(s.substring(1, s.length - 1).replace("\'", "'"))
-            else if (s.head == '"' && s.last == '"')
+            else if s.head == '"' && s.last == '"' then
                 escapesQuotes(s.substring(1, s.length - 1).replace("\\\"", "\""))
             else
                 s
@@ -609,10 +594,8 @@ object NCUtils extends LazyLogging:
     def stopThread(t: Thread): Unit =
         if t != null then
             t.interrupt()
-            try
-                t.join()
-            catch
-                case _: InterruptedException => logger.trace("Thread joining was interrupted (ignoring).")
+            try t.join()
+            catch case _: InterruptedException => logger.trace("Thread joining was interrupted (ignoring).")
 
     /**
       * Interrupts thread.
@@ -631,7 +614,7 @@ object NCUtils extends LazyLogging:
     @tailrec
     def containsDups[T](list: List[T], seen: Set[T] = Set.empty[T]): Boolean =
         list match
-            case x :: xs => if (seen.contains(x)) true else containsDups(xs, seen + x)
+            case x :: xs => if seen.contains(x) then true else containsDups(xs, seen + x)
             case _ => false
 
     /**
@@ -659,9 +642,8 @@ object NCUtils extends LazyLogging:
       */
     def close(sock: Socket): Unit =
         if sock != null then
-            ignoring(classOf[IOException]) {
-                sock.close()
-            }
+            try sock.close()
+            catch case _: Exception => ()
 
     /**
       * Safely and silently closes the server socket.
@@ -670,9 +652,8 @@ object NCUtils extends LazyLogging:
       */
     def close(sock: ServerSocket): Unit =
         if sock != null then
-            ignoring(classOf[IOException]) {
-                sock.close()
-            }
+            try sock.close()
+            catch case _: Exception => ()
 
     /**
       *
@@ -680,9 +661,8 @@ object NCUtils extends LazyLogging:
       */
     def close(in: InputStream): Unit =
         if in != null then
-            ignoring(classOf[IOException]) {
-                in.close()
-            }
+            try in.close()
+            catch case _: Exception => ()
 
     /**
       *
@@ -690,9 +670,8 @@ object NCUtils extends LazyLogging:
       */
     def close(out: OutputStream): Unit =
         if out != null then
-            ignoring(classOf[IOException]) {
-                out.close()
-            }
+            try out.close()
+            catch case _: Exception => ()
 
     /**
       * Closes auto-closeable ignoring any exceptions.
@@ -701,9 +680,8 @@ object NCUtils extends LazyLogging:
       */
     def close(a: AutoCloseable): Unit =
         if a != null then
-            ignoring(classOf[Exception]) {
-                a.close()
-            }
+            try a.close()
+            catch case _: Exception => ()
 
     /**
       *
@@ -812,9 +790,7 @@ object NCUtils extends LazyLogging:
     def readFileBytes(f: File, log: Logger = logger): Array[Byte] =
         try
             val arr = new Array[Byte](f.length().toInt)
-
             Using.resource(new FileInputStream(f))(_.read(arr))
-
             getAndLog(arr, f, log)
         catch
             case e: IOException => throw new NCException(s"Error reading file: $f", e)
@@ -870,10 +846,8 @@ object NCUtils extends LazyLogging:
       */
     def readResource(res: String, enc: String = "UTF-8", log: Logger = logger): List[String] =
         val list =
-            try
-                Using.resource(Source.fromInputStream(getStream(res), enc))(_.getLines().toSeq).toList
-            catch
-                case e: IOException => throw new NCException(s"Failed to read stream: $res", e)
+            try Using.resource(Source.fromInputStream(getStream(res), enc))(_.getLines().toSeq).toList
+            catch case e: IOException => throw new NCException(s"Failed to read stream: $res", e)
     
         log.trace(s"Loaded resource: $res")
 
@@ -897,10 +871,8 @@ object NCUtils extends LazyLogging:
       */
     def readTextGzipResource(res: String, enc: String, log: Logger = logger): List[String] =
         val list =
-            try
-                Using.resource(Source.fromInputStream(new GZIPInputStream(getStream(res)), enc))(readLcTrimFilter)
-            catch
-                case e: IOException => throw new NCException(s"Failed to read stream: $res", e)
+            try Using.resource(Source.fromInputStream(new GZIPInputStream(getStream(res)), enc))(readLcTrimFilter)
+            catch case e: IOException => throw new NCException(s"Failed to read stream: $res", e)
 
         log.trace(s"Loaded resource: $res")
 
@@ -927,71 +899,30 @@ object NCUtils extends LazyLogging:
       * @param ec
       */
     def execPar(bodies: (() => Any)*)(ec: ExecutionContext): Unit =
-        bodies.map(body => Future { body() } (ec)).foreach(Await.result(_, Duration.Inf))
+        val errs = new CopyOnWriteArrayList[Throwable]()
+
+        bodies.map(body => Future {
+            try
+                body()
+            catch
+                case e: Throwable => errs.add(e)
+
+        } (ec)).foreach(Await.result(_, Duration.Inf))
+
+        if !errs.isEmpty then
+            errs.forEach(e => logger.error("Error during service starting.", e)) // TODO: error message.
+            throw new NCException("Some service cannot be started.")  // TODO: error message.
 
     /**
+      * Shuts down executor service and waits for its finish.
       *
-      * @return
+      * @param es Executor service.
       */
-    def genUUID(): UUID = UUID.randomUUID()
+    def shutdownPool(es: ExecutorService): Unit =
+        if es != null then
+            es.shutdown()
 
-    /**
-      * Gets all sequential permutations of tokens in this NLP sentence.
-      *
-      * For example, if NLP sentence contains "a, b, c, d" tokens, then
-      * this function will return the sequence of following token sequences in this order:
-      * "a b c d"
-      * "a b c"
-      * "b c d"
-      * "a b"
-      * "b c"
-      * "c d"
-      * "a"
-      * "b"
-      * "c"
-      * "d"
-      *
-      * NOTE: this method will not return any permutations with a quoted token.
-      *
-      * @param tokens Tokens.
-      * @param stopWords Whether or not include tokens marked as stop words.
-      * @param maxLen Maximum number of tokens in the sequence.
-      */
-    def tokenMix(tokens: Seq[NCToken], stopWords: Boolean = false, maxLen: Int = Integer.MAX_VALUE): Seq[Seq[NCToken]] =
-        val toks = tokens.filter(t => stopWords || (!stopWords && !t.isStopWord))
-
-        (for (n <- toks.length until 0 by -1 if n <= maxLen) yield toks.sliding(n)).flatten
-
-    /**
-      * Gets all sequential permutations of tokens in this NLP sentence.
-      * This method is like a 'tokenMix', but with all combinations of stop-words (with and without)
-      *
-      * @param tokens Tokens.
-      * @param maxLen Maximum number of tokens in the sequence.
-      */
-    def tokenMixWithStopWords(tokens: Seq[NCToken], maxLen: Int = Integer.MAX_VALUE): Seq[Seq[NCToken]] =
-        /**
-          * Gets all combinations for sequence of mandatory tokens with stop-words and without.
-          *
-          * Example:
-          * 'A (stop), B, C(stop) -> [A, B, C]; [A, B]; [B, C], [B]
-          * 'A, B(stop), C(stop) -> [A, B, C]; [A, B]; [A, C], [A].
-          *
-          * @param toks Tokens.
-          */
-        def permutations(toks: Seq[NCToken]): Seq[Seq[NCToken]] = 
-            def multiple(seq: Seq[Seq[Option[NCToken]]], t: NCToken): Seq[Seq[Option[NCToken]]] =
-                if seq.isEmpty then
-                    if t.isStopWord then IndexedSeq(IndexedSeq(Some(t)), IndexedSeq(None)) else IndexedSeq(IndexedSeq(Some(t)))
-                else
-                    (for (subSeq <- seq) yield subSeq :+ Some(t)) ++ (if t.isStopWord then for (subSeq <- seq) yield subSeq :+ None else Seq.empty)
-
-            var res: Seq[Seq[Option[NCToken]]] = Seq.empty
-            for (t <- toks) res = multiple(res, t)
-            res.map(_.flatten).filter(_.nonEmpty)
-
-        tokenMix(tokens, stopWords = true, maxLen).
-            flatMap(permutations).
-            filter(_.nonEmpty).
-            distinct.
-            sortBy(seq => (-seq.length, seq.head.getStartCharIndex))
+            try
+                es.awaitTermination(Long.MaxValue, TimeUnit.MILLISECONDS)
+            catch
+                case _: InterruptedException => () // Safely ignore.
