@@ -14,3 +14,4 @@ model.json
 **/__pycache__
 **/data
 **/.ipynb_checkpoints/
+.DS_Store
