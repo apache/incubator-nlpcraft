@@ -17,11 +17,7 @@
 
 package org.apache.nlpcraft.nlp.entity.parser.semantic;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import java.util.*;
 /**
  *
  */

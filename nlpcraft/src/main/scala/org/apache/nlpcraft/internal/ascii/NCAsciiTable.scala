@@ -119,18 +119,22 @@ class NCAsciiTable:
       * between individual rows.
       */
     var insideBorder = false
+
     /**
       * Global Flag indicating whether of not to automatically draw horizontal lines
       * for multiline rows.
       */
     var multiLineAutoBorder = true
+
     /**
       * If lines exceeds the style's maximum width it will be broken up
       * either by nearest space (by whole words) or mid-word.
       */
     var breakUpByWords = true
+
     /** Default row style. */
     var defaultRowStyle: String = DFLT_ROW_STYLE
+
     /** Default header style. */
     var defaultHeaderStyle: String = DFLT_HEADER_STYLE
 

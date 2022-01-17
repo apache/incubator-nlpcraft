@@ -17,7 +17,6 @@
 
 package org.apache.nlpcraft;
 
-import java.util.Collections;
 import java.util.*;
 
 /**
