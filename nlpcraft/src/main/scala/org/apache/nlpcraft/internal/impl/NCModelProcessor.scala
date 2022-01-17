@@ -15,14 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.nlp.util.opennlp
+package org.apache.nlpcraft.internal.impl
+
+import com.typesafe.scalalogging.LazyLogging
+import org.apache.nlpcraft.*
 
 /**
   *
+  * @param mdl
   */
-final val CFG = NCTestConfigJava.CFG
+object NCModelProcessor extends LazyLogging:
+    def makeIntents(mdl: NCModel): Unit = () // TODO:
 
-/**
-  *
-  */
-final val EN_PIPELINE = NCTestConfigJava.EN_PIPELINE

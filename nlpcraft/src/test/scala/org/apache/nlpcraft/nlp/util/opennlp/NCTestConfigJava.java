@@ -15,14 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.nlp.util.opennlp
+package org.apache.nlpcraft.nlp.util.opennlp;
+
+import org.apache.nlpcraft.NCModelConfig;
+import org.apache.nlpcraft.nlp.token.parser.opennlp.NCOpenNlpTokenParser;
+import org.apache.nlpcraft.nlp.util.NCTestPipeline;
 
 /**
-  *
-  */
-final val CFG = NCTestConfigJava.CFG
+ *
+ */
+public class NCTestConfigJava {
+    /**
+     *
+     */
+    public static final NCModelConfig CFG = new NCModelConfig("testId", "test", "1.0");
 
-/**
-  *
-  */
-final val EN_PIPELINE = NCTestConfigJava.EN_PIPELINE
+    /**
+     *
+     */
+    public static final NCTestPipeline EN_PIPELINE = new NCTestPipeline(
+        new NCOpenNlpTokenParser(
+            "opennlp/en-token.bin",
+            "opennlp/en-pos-maxent.bin",
+            "opennlp/en-lemmatizer.dict"
+        )
+    );
+}
