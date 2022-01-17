@@ -65,7 +65,7 @@ private[impl] object NCSemanticSourceReader:
     )
     case class Source(macros: Map[String, String], elements: Seq[Element])
 
-    private def nvl[T](seq: Seq[T]): JList[T] = if seq == null then null else seq.asJava
+    private def nvl[T](seq: Seq[T]): JSet[T] = if seq == null then null else new util.HashSet[T](seq.asJava)
     private def nvl[T](set: Set[T]): JSet[T] = if set == null then null else set.asJava
     private def nvl[T, R](seq: Seq[T], to: T => R): Seq[R] = if seq == null then null else seq.map(to)
     private def nvlValues(m: Map[String, Set[String]]): JMap[String, JSet[String]] =
@@ -78,7 +78,7 @@ private[impl] object NCSemanticSourceReader:
         else
             new NCPropertyMapAdapter with NCSemanticElement:
                 override val getId: String = e.id
-                override val getGroups: JSet[String] = nvl(e.groups.toSet)
+                override val getGroups: JSet[String] = nvl(e.groups)
                 override val getValues: JMap[String, JSet[String]] = nvlValues(e.values)
                 override val getSynonyms: JSet[String] = nvl(e.synonyms)
                 override val getProperties: JMap[String, AnyRef] = nvlProperties(e.properties)
