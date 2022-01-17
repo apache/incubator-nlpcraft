@@ -22,11 +22,11 @@ import org.apache.nlpcraft.NCIntentRef;
 import org.apache.nlpcraft.NCIntentSample;
 import org.apache.nlpcraft.NCIntentSampleRef;
 import org.apache.nlpcraft.NCIntentTerm;
+import org.apache.nlpcraft.NCModel;
 import org.apache.nlpcraft.NCModelAdapter;
 import org.apache.nlpcraft.NCResult;
 import org.apache.nlpcraft.NCToken;
 import org.apache.nlpcraft.nlp.util.opennlp.NCTestConfigJava;
-import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,33 +34,32 @@ import java.util.Optional;
 /**
  *
  */
-public class NCModelScanSpecJava {
-    @Test
-    public void testScan() {
-        new NCModelAdapter(NCTestConfigJava.CFG, NCTestConfigJava.EN_PIPELINE) {
-            @NCIntent(
-                "intent=intent1 term(single)~{# == 'id1'} term(list)~{# == 'id2'}}[0,7] term(opt)~{# == 'id3'}?"
-            )
-            @NCIntentSample("What are the least performing categories for the last quarter?")
-            NCResult intent1(
-                @NCIntentTerm("single") NCToken single,
-                @NCIntentTerm("list") List<NCToken> list,
-                @NCIntentTerm("opt") Optional<NCToken> opt
-            ) {
-                return null;
-            }
+public class NCTestModelJava {
+    public static NCModel mkModel() {
+        return
+            new NCModelAdapter(NCTestConfigJava.CFG, NCTestConfigJava.EN_PIPELINE) {
+                @NCIntent(
+                    "intent=intent1 term(single)~{# == 'id1'} term(list)~{# == 'id2'}}[0,7] term(opt)~{# == 'id3'}?"
+                )
+                @NCIntentSample("What are the least performing categories for the last quarter?")
+                NCResult intent1(
+                    @NCIntentTerm("single") NCToken single,
+                    @NCIntentTerm("list") List<NCToken> list,
+                    @NCIntentTerm("opt") Optional<NCToken> opt
+                ) {
+                    return new NCResult();
+                }
 
-
-            // TODO:
-            @NCIntentRef("scan/idl.idl/intent2")
-            @NCIntentSampleRef("scan/samples.txt")
-            NCResult intent2(
-                @NCIntentTerm("single") NCToken single,
-                @NCIntentTerm("list") List<NCToken> list,
-                @NCIntentTerm("opt") Optional<NCToken> opt
-            ) {
-                return null;
-            }
-        };
+                // TODO:
+                @NCIntentRef("scan/idl.idl/intent2")
+                @NCIntentSampleRef("scan/samples.txt")
+                NCResult intent2(
+                    @NCIntentTerm("single") NCToken single,
+                    @NCIntentTerm("list") List<NCToken> list,
+                    @NCIntentTerm("opt") Optional<NCToken> opt
+                ) {
+                    return new NCResult();
+                }
+            };
     }
 }

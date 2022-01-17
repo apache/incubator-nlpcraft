@@ -45,9 +45,7 @@ class NCStopWordsImplSpec:
 
         toks.zip(words).foreach { (t, w) => t.put("stopword", w.stop) }
 
-        val mix = NCStopWordsImpl.tokenMixWithStopWords(toks)
-
-        val resSorted = mix.map(_.map(_.getText).mkString).sorted
+        val resSorted = NCStopWordsImpl.tokenMixWithStopWords(toks).map(_.map(_.getText).mkString).sorted
         val expectedSorted = expected.sorted
 
         require(expectedSorted == resSorted, s"Expected=$expectedSorted, result=$resSorted")

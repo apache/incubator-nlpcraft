@@ -17,13 +17,8 @@
 
 package org.apache.nlpcraft.internal.impl
 
-import com.typesafe.scalalogging.LazyLogging
-import org.apache.nlpcraft.*
-
 /**
   *
-  * @param mdl
   */
-object NCModelProcessor extends LazyLogging:
-    def makeIntents(mdl: NCModel): Unit = () // TODO:
-
+class NCIntentsHolder: // TODO:
+    ()
