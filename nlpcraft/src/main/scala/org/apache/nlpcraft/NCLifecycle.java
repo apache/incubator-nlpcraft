@@ -18,7 +18,7 @@
 package org.apache.nlpcraft;
 
 /**
- * TODO:
+ *
  */
 public interface NCLifecycle {
     /**
