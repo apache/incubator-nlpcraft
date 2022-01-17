@@ -75,8 +75,8 @@ private[impl] object NCSemanticSynonymsProcessor extends LazyLogging:
         require(elements != null)
 
         if macros != null then
-            if hasNullOrEmpty(macros.keySet) then throw new NCException("Some macro names are null or empty.") // TODO: error text.
-            if hasNullOrEmpty(macros.values) then throw new NCException("Some macro bodies are null or empty.") // TODO: error text.
+            if hasNullOrEmpty(macros.keySet) then E("Some macro names are null or empty.")
+            if hasNullOrEmpty(macros.values) then E("Some macro bodies are null or empty.")
 
             val set = elements.filter(_.getSynonyms != null).flatMap(_.getSynonyms.asScala) ++ macros.values
 
@@ -87,10 +87,9 @@ private[impl] object NCSemanticSynonymsProcessor extends LazyLogging:
 
             // Ignore suspicious chars if regex is used in macro...
             for ((name, value) <- macros if isSuspicious(name) || (isSuspicious(value) && !value.contains("//")))
-                // TODO: error text.
                 logger.warn(
                     s"Suspicious macro definition (use of ${SUSP_SYNS_CHARS.map(s => s"'$s'").mkString(", ")} chars) [" +
-                    s"macro=$name" +
+                        s"macro=$name" +
                     s"]"
                 )
 
@@ -103,16 +102,12 @@ private[impl] object NCSemanticSynonymsProcessor extends LazyLogging:
     private def checkSynonyms(syns: JSet[String], elemId: String, valueName: Option[String] = None): Unit =
         def mkDesc: String =
             val valuePart = if valueName.isDefined then s", value=${valueName.get}" else ""
-
             s"[id=$elemId$valuePart]"
 
         if syns != null then
-            if hasNullOrEmpty(syns.asScala) then throw new NCException(s"Some synonyms are null or empty $mkDesc") // TODO: error text.
-
+            if hasNullOrEmpty(syns.asScala) then E(s"Some synonyms are null or empty $mkDesc")
             val susp = syns.asScala.filter(syn => !syn.contains("//") && SUSP_SYNS_CHARS.exists(susp => syn.contains(susp)))
-
             if susp.nonEmpty then
-                // TODO: error text.
                 logger.warn(
                     s"Suspicious synonyms detected (use of ${SUSP_SYNS_CHARS.map(s => s"'$s'").mkString(", ")} chars) $mkDesc"
                 )
@@ -121,34 +116,28 @@ private[impl] object NCSemanticSynonymsProcessor extends LazyLogging:
       * @param elems
       */
     private def checkElements(elems: Seq[NCSemanticElement]): Unit =
-        if elems == null || elems.isEmpty then throw new NCException("Elements cannot be null or empty.") // TODO: error text.
-        if elems.contains(null) then throw new NCException("Some elements are null.") // TODO: error text.
+        if elems == null || elems.isEmpty then E("Elements cannot be null or empty.")
+        if elems.contains(null) then E("Some elements are null.")
 
         // Duplicates.
         val ids = mutable.HashSet.empty[String]
 
         for (id <- elems.map(_.getId))
-            if ids.contains(id) then throw new NCException(s"Duplicate element ID [element=$id]") // TODO: error text.
+            if ids.contains(id) then E(s"Duplicate element ID [element=$id]")
             else ids += id
 
         for (e <- elems)
             val elemId = e.getId
 
-            if elemId == null || elemId.isEmpty then
-                throw new NCException(s"Some element IDs are not provided or empty.") // TODO: error text.
-            else if !elemId.matches(ID_REGEX) then
-                throw new NCException(s"Element ID does not match regex [element=$elemId, regex=$ID_REGEX]") // TODO: error text.
-            else if elemId.exists(_.isWhitespace) then
-                throw new NCException(s"Element ID cannot have whitespaces [element=$elemId]") // TODO: error text.
+            if elemId == null || elemId.isEmpty then E(s"Some element IDs are not provided or empty.")
+            else if !elemId.matches(ID_REGEX) then E(s"Element ID does not match regex [element=$elemId, regex=$ID_REGEX]")
+            else if elemId.exists(_.isWhitespace) then E(s"Element ID cannot have whitespaces [element=$elemId]")
 
             checkSynonyms(e.getSynonyms, elemId)
 
             val vals = e.getValues
-
             if vals != null then
-                if hasNullOrEmpty(vals.keySet().asScala) then
-                    throw new NCException(s"Some values names are null or empty [element=$elemId]") // TODO: error text.
-
+                if hasNullOrEmpty(vals.keySet().asScala) then E(s"Some values names are null or empty [element=$elemId]")
                 for ((name, syns) <- vals.asScala)
                     checkSynonyms(syns, elemId, Some(name))
 
@@ -175,22 +164,15 @@ private[impl] object NCSemanticSynonymsProcessor extends LazyLogging:
                 val ptrn = stripSuffix(REGEX_FIX, text)
 
                 if ptrn.nonEmpty then
-                    try
-                        NCSemanticSynonymChunk(REGEX, text, regex = Pattern.compile(ptrn))
-                    catch
-                        case e: PatternSyntaxException =>
-                            // TODO: error text.
-                            throw new NCException(s"Invalid regex synonym syntax detected [element=$elemId, chunk=$text]", e)
-                else
-                    throw new NCException(s"Empty regex synonym detected [element=$elemId]") // TODO: error text.
+                    try NCSemanticSynonymChunk(REGEX, text, regex = Pattern.compile(ptrn))
+                    catch case e: PatternSyntaxException => E(s"Invalid regex synonym syntax detected [element=$elemId, chunk=$text]", e)
+                else E(s"Empty regex synonym detected [element=$elemId]")
 
         val regexes = mutable.HashMap.empty[Int, RegexHolder]
 
         def findRegex(t: NCToken): Option[RegexHolder] =
-            if regexes.nonEmpty then
-                (t.getStartCharIndex to t.getEndCharIndex).flatMap(regexes.get).to(LazyList).headOption
-            else
-                None
+            if regexes.nonEmpty then (t.getStartCharIndex to t.getEndCharIndex).flatMap(regexes.get).to(LazyList).headOption
+            else None
 
         syns.asScala.flatMap(macroParser.expand).
             map(syn => {
@@ -208,15 +190,13 @@ private[impl] object NCSemanticSynonymsProcessor extends LazyLogging:
 
                     if ch.startsWith(REGEX_FIX) && ch.endsWith(REGEX_FIX) then
                         val r = RegexHolder(ch)
-
                         (start to end).foreach(regexes += _ -> r)
 
                 // Tokenizes synonym without regex chunks. Regex chunks are used as is, without tokenization.
                 tokParser.tokenize(normSyn.mkString(" ")).asScala.flatMap(tok =>
                     findRegex(tok) match
                         case Some(regex) =>
-                            if regex.used then
-                                None
+                            if regex.used then None
                             else
                                 regex.used = true
                                 Some(regex.mkChunk())
@@ -246,8 +226,7 @@ private[impl] object NCSemanticSynonymsProcessor extends LazyLogging:
 
         val macroParser = new NCMacroParser
 
-        if macros != null then
-            for ((name, body) <- macros) macroParser.addMacro(name, body)
+        if macros != null then for ((name, body) <- macros) macroParser.addMacro(name, body)
 
         case class Holder(synonym: NCSemanticSynonym, elementId: String) {
             lazy val root: String = synonym.chunks.map(p => if p.isText then p.stem else p.text).mkString(" ")
@@ -282,16 +261,14 @@ private[impl] object NCSemanticSynonymsProcessor extends LazyLogging:
 
             if elemIds.size > 1 then
                 for (s <- hs.map(_.synonym).distinct)
-                    // TODO: error text.
                     logger.warn(
-                        s"Synonym is related to various elements " +
-                        s"[synonym='${s.chunks.mkString(" ")}'" +
-                        s", elements=${elemIds.mkString("{", ",", "}")}" +
+                        s"Synonym appears in multiple elements [" +
+                            s"synonym='${s.chunks.mkString(" ")}', " +
+                            s"elements=${elemIds.mkString("{", ",", "}")}" +
                         s"]")
         })
 
         val txtBuf = buf.filter(_.synonym.isText)
-
         val txtSyns =
             txtBuf.groupBy(_.synonym.stem).
             map { (stem, hs) =>

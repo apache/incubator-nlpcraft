@@ -45,6 +45,11 @@ class NCOpenNlpEntityParserSpec:
         ).asJava
     )
 
+    /**
+      *
+      * @param txt
+      * @param expected
+      */
     private def check(txt: String, expected: String): Unit =
         val req = NCTestRequest(txt)
         val toks = EN_PIPELINE.getTokenParser.tokenize(txt)
@@ -55,6 +60,9 @@ class NCOpenNlpEntityParserSpec:
         require(ents.sizeIs == 1)
         require(ents.exists(_.getOpt(s"opennlp:$expected:probability").isPresent))
 
+    /**
+      *
+      */
     @Test
     def test(): Unit =
         check("today", "date")

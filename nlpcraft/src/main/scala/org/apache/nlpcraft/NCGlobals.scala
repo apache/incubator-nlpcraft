@@ -15,45 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft;
+package org.apache.nlpcraft
 
-import java.util.*;
+import org.apache.nlpcraft.NCException
 
 /**
- *
- */
-public interface NCContext {
-    /**
-     * Tests if given entity is part of the query this context is associated with.
-     *
-     * @param ent Entity to check.
-     */
-    boolean isOwnerOf(NCEntity ent);
-
-    /**
-     * Gets model configuration for this query.
-     *
-     * @return Model.
-     */
-    NCModelConfig getModelConfig();
-
-    /**
-     * Gets user request.
-     *
-     * @return User request.
-     */
-    NCRequest getRequest();
-
-    /**
-     * Gets current conversation for this context.
-     *
-     * @return Current conversation.
-     */
-    NCConversation getConversation();
-
-    /**
-     *
-     * @return
-     */
-    Collection<NCVariant> getVariants();
-}
+  * Global syntax sugar for throwing [[NCException]].
+  *
+  * @param msg Exception message.
+  * @param cause Optional cause.
+  */
+def E[T](msg: String, cause: Throwable = null): T = throw new NCException(msg, cause)

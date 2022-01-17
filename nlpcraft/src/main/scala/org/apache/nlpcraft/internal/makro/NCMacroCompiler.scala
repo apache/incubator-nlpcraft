@@ -17,15 +17,16 @@
 
 package org.apache.nlpcraft.internal.makro
 
+import org.apache.nlpcraft.*
 import com.typesafe.scalalogging.LazyLogging
 import org.antlr.v4.runtime.tree.ParseTreeWalker
 import org.antlr.v4.runtime.*
 import org.apache.nlpcraft.internal.*
 import org.apache.nlpcraft.internal.ansi.NCAnsi.*
-import org.apache.nlpcraft.internal.antlr4.{NCCompilerUtils, *}
+import org.apache.nlpcraft.internal.antlr4.*
 import NCMacroCompiler.FiniteStateMachine
 import org.apache.nlpcraft.internal.makro.antlr4.*
-import org.apache.nlpcraft.internal.util.NCUtils
+import org.apache.nlpcraft.internal.util.*
 import org.apache.nlpcraft.NCException
 import org.apache.nlpcraft.internal.makro.antlr4.NCMacroDslLexer
 
@@ -195,7 +196,7 @@ object NCMacroCompiler extends LazyLogging:
             line: Int, // 1, 2, ...
             charPos: Int, // 1, 2, ...
             msg: String,
-            e: RecognitionException): Unit = throw new NCException(mkCompilerError(msg, line, charPos - 1, in))
+            e: RecognitionException): Unit = E(mkCompilerError(msg, line, charPos - 1, in))
 
     /**
       *

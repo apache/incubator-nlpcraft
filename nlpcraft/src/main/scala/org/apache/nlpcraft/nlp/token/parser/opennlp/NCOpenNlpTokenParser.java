@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Objects;
 
 /*
- * TODO: add javadoc based on comment below.
  *
  * Models can be downloaded from the following resources:
  *  - tokenizer: http://opennlp.sourceforge.net/models-1.5/en-token.bin
@@ -37,7 +36,7 @@ public class NCOpenNlpTokenParser implements NCTokenParser {
     private final NCOpenNlpImpl impl;
 
     /**
-     * TODO: check javadoc
+     *
      *
      * @param tokMdlSrc Local filesystem path, resources file path or URL for OpenNLP tokenizer model.
      * @param posMdlSrc Local filesystem path, resources file path or URL for OpenNLP tagger model.

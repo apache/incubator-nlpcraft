@@ -42,6 +42,12 @@ class NCSemanticEntityParserJsonSpec:
         "models/alarm_model.json"
     )
 
+    /**
+      * 
+      * @param txt
+      * @param id
+      * @param elemData
+      */
     private def check(txt: String, id: String, elemData: Option[Map[String, Any]] = None): Unit =
         val req = NCTestRequest(txt)
         val ents = parser.parse(
@@ -59,6 +65,9 @@ class NCSemanticEntityParserJsonSpec:
             case Some(m) => m.foreach { (k, v) => require(tok.get[Any](s"$id:$k") == v) }
             case None => // No-op.
 
+    /**
+      * 
+      */
     @Test
     def test(): Unit =
         check(

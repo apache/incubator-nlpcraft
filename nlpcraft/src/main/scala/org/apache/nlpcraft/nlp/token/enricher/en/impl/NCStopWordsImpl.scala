@@ -98,6 +98,69 @@ object NCStopWordsImpl:
         "percent"
     )
 
+    private def isQuote(t: NCToken): Boolean = Q_POS.contains(t.getPos)
+    private def toLemmaKey(toks: Seq[NCToken]): String = toks.map(_.getLemma).mkString(" ")
+    private def toValueKey(toks: Seq[NCToken]): String = toks.map(_.getText.toLowerCase).mkString(" ")
+    private def toOriginalKey(toks: Seq[NCToken]): String = toks.map(_.getText).mkString(" ")
+    private def isStopWord(t: NCToken): Boolean = t.getOpt[Boolean]("stopword").orElse(false)
+
+    /**
+      * Gets all sequential permutations of tokens in this NLP sentence.
+      * This method is like a 'tokenMix', but with all combinations of stop-words (with and without)
+      *
+      * @param tokens Tokens.
+      * @param maxLen Maximum number of tokens in the sequence.
+      */
+    private[impl] def tokenMixWithStopWords(tokens: Seq[NCToken], maxLen: Int = Integer.MAX_VALUE): Seq[Seq[NCToken]] =
+        /**
+          * Gets all combinations for sequence of mandatory tokens with stop-words and without.
+          *
+          * Example:
+          * 'A (stop), B, C(stop) -> [A, B, C]; [A, B]; [B, C], [B]
+          * 'A, B(stop), C(stop) -> [A, B, C]; [A, B]; [A, C], [A].
+          *
+          * @param toks Tokens.
+          */
+        def permutations(toks: Seq[NCToken]): Seq[Seq[NCToken]] =
+            def multiple(seq: Seq[Seq[Option[NCToken]]], t: NCToken): Seq[Seq[Option[NCToken]]] =
+                if seq.isEmpty then
+                    if isStopWord(t) then IndexedSeq(IndexedSeq(Option(t)), IndexedSeq(None)) else IndexedSeq(IndexedSeq(Option(t)))
+                else
+                    (for (subSeq <- seq) yield subSeq :+ Option(t)) ++ (if isStopWord(t) then for (subSeq <- seq) yield subSeq :+ None else Seq.empty)
+
+            var res: Seq[Seq[Option[NCToken]]] = Seq.empty
+            for (t <- toks) res = multiple(res, t) 
+            res.map(_.flatten).filter(_.nonEmpty)
+
+        tokenMix(tokens, maxLen).
+            flatMap(permutations).
+            filter(_.nonEmpty).
+            distinct.
+            sortBy(seq => (-seq.length, seq.head.getIndex))
+
+    /**
+      * Gets all sequential permutations of tokens in this NLP sentence.
+      *
+      * For example, if NLP sentence contains "a, b, c, d" tokens, then
+      * this function will return the sequence of following token sequences in this order:
+      * "a b c d"
+      * "a b c"
+      * "b c d"
+      * "a b"
+      * "b c"
+      * "c d"
+      * "a"
+      * "b"
+      * "c"
+      * "d"
+      *
+      * NOTE: this method will not return any permutations with a quoted token.
+      *
+      * @param toks Tokens.
+      * @param maxLen Maximum number of tokens in the sequence.
+      */
+    private def tokenMix(toks: Seq[NCToken], maxLen: Int = Integer.MAX_VALUE): Seq[Seq[NCToken]] =
+        (for (n <- toks.length until 0 by -1 if n <= maxLen) yield toks.sliding(n)).flatten
 
 import org.apache.nlpcraft.nlp.token.enricher.en.impl.NCStopWordsImpl.*
 
@@ -120,14 +183,8 @@ class NCStopWordsImpl(addStopsSet: JSet[String], exclStopsSet: JSet[String]) ext
     init()
 
     private def read(path: String): Set[String] = NCUtils.readTextGzipResource(path, "UTF-8", logger).toSet
-
     private def stem(s: String): String = stemmer.stem(s.toLowerCase)
-    private def isQuote(t: NCToken): Boolean = Q_POS.contains(t.getPos)
     private def toStemKey(toks: Seq[NCToken]): String = toks.map(_.getText).map(stem).mkString(" ")
-    private def toLemmaKey(toks: Seq[NCToken]): String = toks.map(_.getLemma).mkString(" ")
-    private def toValueKey(toks: Seq[NCToken]): String = toks.map(_.getText.toLowerCase).mkString(" ")
-    private def toOriginalKey(toks: Seq[NCToken]): String = toks.map(_.getText).mkString(" ")
-    private def isStopWord(t: NCToken): Boolean = t.getOpt[Boolean]("stopword").orElse(false)
 
     /**
       * Stop words holder, used for hash search.
@@ -185,7 +242,7 @@ class NCStopWordsImpl(addStopsSet: JSet[String], exclStopsSet: JSet[String]) ext
                                     matches(s, any) ||
                                     matches(s, includes.getOrElse(pos, Set.empty))
                                 )
-                    case _ => throw new AssertionError(s"Unexpected missed POS.")
+                    case _ => throw new AssertionError("Unexpected POS.")
 
     /**
       * Stop words data holder.
@@ -218,67 +275,6 @@ class NCStopWordsImpl(addStopsSet: JSet[String], exclStopsSet: JSet[String]) ext
                 wildcardsOrigins.matches(toOriginalKey(toks), posOpt)
 
     /**
-      * Gets all sequential permutations of tokens in this NLP sentence.
-      * This method is like a 'tokenMix', but with all combinations of stop-words (with and without)
-      *
-      * @param tokens Tokens.
-      * @param maxLen Maximum number of tokens in the sequence.
-      */
-    private def tokenMixWithStopWords(tokens: Seq[NCToken], maxLen: Int = Integer.MAX_VALUE): Seq[Seq[NCToken]] =
-        /**
-          * Gets all combinations for sequence of mandatory tokens with stop-words and without.
-          *
-          * Example:
-          * 'A (stop), B, C(stop) -> [A, B, C]; [A, B]; [B, C], [B]
-          * 'A, B(stop), C(stop) -> [A, B, C]; [A, B]; [A, C], [A].
-          *
-          * @param toks Tokens.
-          */
-        def permutations(toks: Seq[NCToken]): Seq[Seq[NCToken]] =
-            def multiple(seq: Seq[Seq[Option[NCToken]]], t: NCToken): Seq[Seq[Option[NCToken]]] =
-                if seq.isEmpty then
-                    if isStopWord(t) then IndexedSeq(IndexedSeq(Option(t)), IndexedSeq(None)) else IndexedSeq(IndexedSeq(Option(t)))
-                else
-                    (for (subSeq <- seq) yield subSeq :+ Option(t)) ++ (if isStopWord(t) then for (subSeq <- seq) yield subSeq :+ None else Seq.empty)
-
-            var res: Seq[Seq[Option[NCToken]]] = Seq.empty
-            for (t <- toks) res = multiple(res, t)
-            res.map(_.flatten).filter(_.nonEmpty)
-
-        tokenMix(tokens, stopWords = true, maxLen).
-            flatMap(permutations).
-            filter(_.nonEmpty).
-            distinct.
-            sortBy(seq => (-seq.length, seq.head.getIndex))
-
-    /**
-      * Gets all sequential permutations of tokens in this NLP sentence.
-      *
-      * For example, if NLP sentence contains "a, b, c, d" tokens, then
-      * this function will return the sequence of following token sequences in this order:
-      * "a b c d"
-      * "a b c"
-      * "b c d"
-      * "a b"
-      * "b c"
-      * "c d"
-      * "a"
-      * "b"
-      * "c"
-      * "d"
-      *
-      * NOTE: this method will not return any permutations with a quoted token.
-      *
-      * @param tokens Tokens.
-      * @param stopWords Whether or not include tokens marked as stop words.
-      * @param maxLen Maximum number of tokens in the sequence.
-      */
-    private def tokenMix(tokens: Seq[NCToken], stopWords: Boolean = false, maxLen: Int = Integer.MAX_VALUE): Seq[Seq[NCToken]] =
-        val toks = tokens.filter(t => stopWords || (!stopWords && !isStopWord(t)))
-
-        (for (n <- toks.length until 0 by -1 if n <= maxLen) yield toks.sliding(n)).flatten
-
-    /**
       * 
       */
     private def init(): Unit =
@@ -286,18 +282,13 @@ class NCStopWordsImpl(addStopsSet: JSet[String], exclStopsSet: JSet[String]) ext
         exclStems = if exclStopsSet == null then Set.empty else exclStopsSet.asScala.toSet.map(stem)
 
         def check(name: String, set: Set[String]): Unit =
-            if set.exists(_.exists(_.isWhitespace)) then
-                throw new NCException(s"$name contain a strings with whitespaces.") // TODO: error texts.
+            if set.exists(_.exists(_.isWhitespace)) then E(s"$name contain a string with whitespaces.")
 
-        check("Additional synonyms", addStems) // TODO: error texts.
-        check("Excluded synonyms", exclStems) // TODO: error texts.
+        check("Additional synonyms", addStems)
+        check("Excluded synonyms", exclStems)
 
         val dups = addStems.intersect(exclStems)
-
-        if dups.nonEmpty then
-            throw new NCException(
-                s"Duplicate stems detected between additional and excluded stopwords [dups=${dups.mkString(",")}]"
-            )
+        if dups.nonEmpty then E(s"Duplicate stems detected between additional and excluded stopwords [dups=${dups.mkString(",")}]")
 
         percents = PERCENTS.map(stem)
 
@@ -308,11 +299,10 @@ class NCStopWordsImpl(addStopsSet: JSet[String], exclStopsSet: JSet[String]) ext
         )(ExecutionContext.Implicits.global)
 
         // Case sensitive.
-        val m =
-            readStopWords(
-                NCUtils.readResource("stopwords/stop_words.txt", "UTF-8", logger).
-                    map(_.strip).filter(s => s.nonEmpty && !s.startsWith("#"))
-            )
+        val m = readStopWords(
+            NCUtils.readResource("stopwords/stop_words.txt", "UTF-8", logger)
+            .map(_.strip).filter(s => s.nonEmpty && !s.startsWith("#"))
+        )
 
         stopWords = m(false)
         exceptions = m(true)
@@ -332,8 +322,8 @@ class NCStopWordsImpl(addStopsSet: JSet[String], exclStopsSet: JSet[String]) ext
 
         class Condition[T]:
             val any = mutable.HashSet.empty[T]
-            val includes = mutable.HashMap.empty[String, mutable.HashSet[T]]
-            val excludes = mutable.HashMap.empty[String, mutable.HashSet[T]]
+            val incls = mutable.HashMap.empty[String, mutable.HashSet[T]]
+            val excls = mutable.HashMap.empty[String, mutable.HashSet[T]]
 
             def addCondition(cond: T, poses: Map[String, Boolean]): Any =
                 if poses.isEmpty then
@@ -349,8 +339,8 @@ class NCStopWordsImpl(addStopsSet: JSet[String], exclStopsSet: JSet[String]) ext
                                         m += pos -> set
                         )
 
-                    add(includes, incl = true)
-                    add(excludes, incl = false)
+                    add(incls, incl = true)
+                    add(excls, incl = false)
 
         type Key = (Boolean, WordForm)
         def mkMap[T](mkT: Unit => T): Map[Key, T] =
@@ -370,8 +360,7 @@ class NCStopWordsImpl(addStopsSet: JSet[String], exclStopsSet: JSet[String]) ext
 
         // 2. Accumulates data of each parsed line.
         for (line <- lines)
-            def throwError(msg: String): Unit =
-                throw new NCException(s"Invalid stop word configuration [line=$line, reason=$msg]") // TODO: error texts.
+            def throwError(msg: String): Unit = E(s"Invalid stop word configuration [line=$line, reason=$msg]") 
 
             var s = line.trim
 
@@ -439,8 +428,8 @@ class NCStopWordsImpl(addStopsSet: JSet[String], exclStopsSet: JSet[String]) ext
                 mkInstance: (Set[T], Map[String, Set[T]], Map[String, Set[T]]) => R
             ): R =
                 val any = m((isExc, form)).any.toSet
-                val incl = toImmutable(m((isExc, form)).includes)
-                val excl = toImmutable(m((isExc, form)).excludes)
+                val incl = toImmutable(m((isExc, form)).incls)
+                val excl = toImmutable(m((isExc, form)).excls)
 
                     mkInstance(any ++ excl.values.flatten, incl, excl)
             end mkHolder
@@ -460,7 +449,7 @@ class NCStopWordsImpl(addStopsSet: JSet[String], exclStopsSet: JSet[String]) ext
       * @param stopPoses Stop POSes.
       * @param lastIdx Last index.
       * @param isException Function which return `stop word exception` flag.
-      *  @param stops Stopwords tokens.
+      * @param stops Stopwords tokens.
       */
     @tailrec
     private def markBefore(

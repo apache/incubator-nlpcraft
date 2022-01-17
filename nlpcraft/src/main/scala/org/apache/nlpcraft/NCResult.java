@@ -23,10 +23,10 @@ import java.io.Serializable;
  *
  */
 public class NCResult implements Serializable {
-    /** Data Model result text. */
+    /** Rresult text. */
     private Object body;
 
-    /** Data Model result type. */
+    /** Result type. */
     private NCResultType type;
 
     /** ID of the intent. */

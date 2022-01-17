@@ -40,35 +40,35 @@ object NCSemanticEntityParserImpl:
       * @param stemmer
       * @param parser
       * @param macros
-      * @param elems
+      * @param elms
       * @return
       */
     def apply(
         stemmer: NCSemanticStemmer,
         parser: NCTokenParser,
         macros: Jmap[String, String],
-        elems: JList[NCSemanticElement]
+        elms: JList[NCSemanticElement]
     ): NCSemanticEntityParserImpl =
-        require(elems != null)
+        require(elms != null)
 
         new NCSemanticEntityParserImpl(
             stemmer,
             parser,
             macros = if macros == null then null else macros.asScala.toMap,
-            elements = elems.asScala.toSeq
+            elements = elms.asScala.toSeq
         )
 
     /**
       *
       * @param stemmer
       * @param parser
-      * @param mdlSrc
+      * @param src
       * @return
       */
-    def apply(stemmer: NCSemanticStemmer, parser: NCTokenParser, mdlSrc: String): NCSemanticEntityParserImpl =
-        require(mdlSrc != null)
+    def apply(stemmer: NCSemanticStemmer, parser: NCTokenParser, src: String): NCSemanticEntityParserImpl =
+        require(src != null)
 
-        new NCSemanticEntityParserImpl(stemmer, parser, mdlSrc = mdlSrc, scrType = NCSemanticSourceType.detect(mdlSrc))
+        new NCSemanticEntityParserImpl(stemmer, parser, mdlSrc = src, scrType = NCSemanticSourceType.detect(src))
 
     /**
       * @param baseTokens Tokens.
@@ -161,6 +161,9 @@ class NCSemanticEntityParserImpl(
 
     init()
 
+    /**
+      *
+      */
     private def init(): Unit =
         val (macros, elements, elemsMap) =
             def toMap(elems: Seq[NCSemanticElement]): Map[String, NCSemanticElement] = elems.map(p => p.getId -> p).toMap
@@ -182,7 +185,7 @@ class NCSemanticEntityParserImpl(
         val stems = toks.map(p => p -> stemmer.stem(p.getText)).toMap
 
         if toks.exists(_.getOpt[Boolean]("stopword").isEmpty) then
-            logger.warn("Stopwords tokens enricher isn't configured.") // TODO: warning text.
+            logger.warn("'stopword' property not found. Is stopword token enricher configured?")
 
         val cache = mutable.HashSet.empty[Seq[Int]] // Variants (tokens without stopwords) can be repeated.
 

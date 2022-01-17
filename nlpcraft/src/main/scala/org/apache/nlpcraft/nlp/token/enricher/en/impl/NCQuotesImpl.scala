@@ -23,27 +23,18 @@ import org.apache.nlpcraft.*
 import java.util.List as JList
 import scala.jdk.CollectionConverters.*
 
-object NCQuotesImpl:
-    private final val Q_POS: Set[String] = Set("``", "''")
-    private def isQuote(t: NCToken): Boolean = Q_POS.contains(t.getPos)
-
-import org.apache.nlpcraft.nlp.token.enricher.en.impl.NCQuotesImpl.*
-
 /**
   *
   */
 class NCQuotesImpl extends NCTokenEnricher with LazyLogging:
-    /**
-      *
-      * @param req
-      * @param cfg
-      * @param toksList
-      */
-    def enrich(req: NCRequest, cfg: NCModelConfig, toksList: JList[NCToken]): Unit =
+    private final val Q_POS: Set[String] = Set("``", "''")
+    private def isQuote(t: NCToken): Boolean = Q_POS.contains(t.getPos)
+
+    override def enrich(req: NCRequest, cfg: NCModelConfig, toksList: JList[NCToken]): Unit =
         val toks = toksList.asScala
         val quotes = toks.filter(isQuote)
 
-        // Start and end quote mustn't be same ("a` processed as valid)
+        // Start and end quote can be different ("a` processed as valid)
         if quotes.nonEmpty && quotes.size % 2 == 0 then
             val m = toks.zipWithIndex.toMap
             val pairs = quotes.zipWithIndex.drop(1).flatMap { (t, idx) =>
@@ -53,4 +44,4 @@ class NCQuotesImpl extends NCTokenEnricher with LazyLogging:
                 tok.put("quoted", pairs.exists { (from, to) => from > idx && to < idx })
             }
         else
-            logger.warn(s"Invalid quotes: ${req.getText}")
+            logger.warn(s"Detected invalid quotes in: ${req.getText}")

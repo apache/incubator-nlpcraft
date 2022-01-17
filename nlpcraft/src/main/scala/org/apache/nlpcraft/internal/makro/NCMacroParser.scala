@@ -126,7 +126,7 @@ class NCMacroParser:
         // Expand macros including nested ones.
         while (m.isDefined)
             val ms = m.get.toString()
-            if !macros.keySet.contains(ms) then throw new NCException(s"Unknown macro [macro=$ms, txt=$txt]")
+            if !macros.keySet.contains(ms) then E(s"Unknown macro [macro=$ms, txt=$txt]")
             // Expand all registered macros.
             for ((k, v) <- macros) s = s.replace(k, v)
             // Grab another macro match, if any.
@@ -134,7 +134,7 @@ class NCMacroParser:
 
         // Check for potentially invalid macros syntax.
         if BROKEN_MACRO_REGEX1.findFirstIn(s).isDefined || BROKEN_MACRO_REGEX2.findFirstIn(s).isDefined then
-            throw new NCException(s"Suspicious or invalid macro in: $txt")
+            E(s"Suspicious or invalid macro in: $txt")
 
         NCUtils.distinct(NCMacroCompiler.compile(s).toList map trimDupSpaces map processEscapes)
 
@@ -152,8 +152,8 @@ class NCMacroParser:
       * @param name Macro name.
       */
     private def checkName(name: String): Unit =
-        if name.head != '<' then throw new NCException(s"Missing macro '<' opening: $name")
-        if name.last != '>' then throw new NCException(s"Missing macro '>' closing: $name")
+        if name.head != '<' then E(s"Missing macro '<' opening: $name")
+        if name.last != '>' then E(s"Missing macro '>' closing: $name")
 
     /**
       * Adds or overrides given macro.
@@ -168,7 +168,7 @@ class NCMacroParser:
 
         checkName(name)
         // Check for recursion.
-        if str.contains(name) then throw new NCException(s"Recursion is not supported, macro: $name")
+        if str.contains(name) then E(s"Recursion is not supported, macro: $name")
         macros += name -> str
         this
 

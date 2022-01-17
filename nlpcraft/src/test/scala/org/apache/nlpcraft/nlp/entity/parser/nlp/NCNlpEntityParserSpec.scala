@@ -36,6 +36,9 @@ import scala.jdk.OptionConverters.RichOptional
 class NCNlpEntityParserSpec:
     private val parser = new NCNlpEntityParser()
 
+    /**
+      *
+      */
     @Test
     def test(): Unit =
         val req = NCTestRequest("I had the lunch")

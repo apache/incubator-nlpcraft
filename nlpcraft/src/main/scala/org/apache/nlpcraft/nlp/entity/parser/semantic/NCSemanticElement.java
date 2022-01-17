@@ -36,24 +36,8 @@ public interface NCSemanticElement {
      *
      * @return
      */
-    default List<String> getGroups() {
-        return Collections.singletonList(getId());
-    }
-
-    /**
-     * TODO: why do we need it?
-     * @return
-     */
-    default boolean isMemberOf(String grp) {
-        return getGroups().contains(grp);
-    }
-
-    /**
-     * TODO: why do we need it?
-     * @return
-     */
-    default String getDescription() {
-        return null;
+    default Set<String> getGroups() {
+        return Collections.singleton(getId());
     }
 
     /**

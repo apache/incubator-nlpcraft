@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.nlp.entity.parser.semantic;
 
 /**
- * TODO:
+ * 
  */
 public interface NCSemanticStemmer {
     /**

@@ -17,7 +17,8 @@
 
 package org.apache.nlpcraft;
 
-import java.util.List;
+import java.util.Collections;
+import java.util.*;
 
 /**
  *
@@ -35,6 +36,12 @@ public interface NCEntity extends NCPropertyMap {
      * @return ID of the request this entity is part of.
      */
     String getRequestId();
+
+    /**
+     *
+     * @return
+     */
+    default Set<String> getGroups() { return Collections.singleton(getId()); }
 
     /**
      *

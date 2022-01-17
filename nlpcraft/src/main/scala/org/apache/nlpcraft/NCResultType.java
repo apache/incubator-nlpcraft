@@ -27,12 +27,7 @@ public enum NCResultType {
     ASK_RESULT,
 
     /**
-     * Curation is required.
-     */
-    ASK_CURATE,
-
-    /**
-     * Ask user back, i.e. engage in dialog.
+     * Ask user back engaging in dialog.
      */
     ASK_DIALOG
 }

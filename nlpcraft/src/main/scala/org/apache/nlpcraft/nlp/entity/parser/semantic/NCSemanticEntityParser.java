@@ -17,12 +17,7 @@
 
 package org.apache.nlpcraft.nlp.entity.parser.semantic;
 
-import org.apache.nlpcraft.NCEntity;
-import org.apache.nlpcraft.NCEntityParser;
-import org.apache.nlpcraft.NCModelConfig;
-import org.apache.nlpcraft.NCRequest;
-import org.apache.nlpcraft.NCToken;
-import org.apache.nlpcraft.NCTokenParser;
+import org.apache.nlpcraft.*;
 import org.apache.nlpcraft.nlp.entity.parser.semantic.impl.NCSemanticEntityParserImpl;
 
 import java.util.Collections;
@@ -40,15 +35,15 @@ public class NCSemanticEntityParser implements NCEntityParser {
      *
      * @param stemmer
      * @param parser
-     * @param elems
+     * @param elms
      */
-    public NCSemanticEntityParser(NCSemanticStemmer stemmer, NCTokenParser parser, List<NCSemanticElement> elems) {
-        // TODO: error texts.
+    public NCSemanticEntityParser(NCSemanticStemmer stemmer, NCTokenParser parser, List<NCSemanticElement> elms) {
         Objects.requireNonNull(stemmer, "Stemmer cannot be null.");
         Objects.requireNonNull(parser, "Parser cannot be null.");
-        Objects.requireNonNull(elems, "Elements cannot be null.");
+        Objects.requireNonNull(elms, "Elements cannot be null.");
+        if (elms.size() == 0) throw new NCException("Element list cannot be empty.");
 
-        impl = NCSemanticEntityParserImpl.apply(stemmer, parser, Collections.emptyMap(), elems);
+        impl = NCSemanticEntityParserImpl.apply(stemmer, parser, Collections.emptyMap(), elms);
     }
 
     /**
@@ -56,31 +51,28 @@ public class NCSemanticEntityParser implements NCEntityParser {
      * @param stemmer
      * @param parser
      * @param macros
-     * @param elems
+     * @param elms
      */
-    public NCSemanticEntityParser(
-        NCSemanticStemmer stemmer, NCTokenParser parser, Map<String, String> macros, List<NCSemanticElement> elems
-    ) {
-        // TODO: error texts.
+    public NCSemanticEntityParser(NCSemanticStemmer stemmer, NCTokenParser parser, Map<String, String> macros, List<NCSemanticElement> elms) {
         Objects.requireNonNull(stemmer, "Stemmer cannot be null.");
         Objects.requireNonNull(parser, "Parser cannot be null.");
-        Objects.requireNonNull(elems, "Elements cannot be null.");
+        Objects.requireNonNull(elms, "Elements cannot be null.");
+        if (elms.size() == 0) throw new NCException("Element list cannot be empty.");
 
-        impl = NCSemanticEntityParserImpl.apply(stemmer, parser, macros, elems);
+        impl = NCSemanticEntityParserImpl.apply(stemmer, parser, macros, elms);
     }
 
     /**
      *
      * @param stemmer
-     * @param mdlSrc
+     * @param src
      */
-    public NCSemanticEntityParser(NCSemanticStemmer stemmer, NCTokenParser parser, String mdlSrc) {
-        // TODO: error texts.
+    public NCSemanticEntityParser(NCSemanticStemmer stemmer, NCTokenParser parser, String src) {
         Objects.requireNonNull(stemmer, "Stemmer cannot be null.");
         Objects.requireNonNull(parser, "Parser cannot be null.");
-        Objects.requireNonNull(mdlSrc, "Source cannot be null.");
+        Objects.requireNonNull(src, "Source cannot be null.");
 
-        impl = NCSemanticEntityParserImpl.apply(stemmer, parser, mdlSrc);
+        impl = NCSemanticEntityParserImpl.apply(stemmer, parser, src);
     }
 
     @Override

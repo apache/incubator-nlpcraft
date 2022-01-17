@@ -40,6 +40,11 @@ class NCSemanticEntityParserYamlSpec:
         "models/lightswitch_model.yaml"
     )
 
+    /**
+      * 
+      * @param txt
+      * @param id
+      */
     private def check(txt: String, id: String): Unit =
         val req = NCTestRequest(txt)
         val ents = parser.parse(
@@ -54,6 +59,9 @@ class NCSemanticEntityParserYamlSpec:
         
         require(tok.getId == id)
 
+    /**
+      * 
+      */
     @Test
     def test(): Unit =
         check("Turn the lights off in the entire house.", "ls:off")

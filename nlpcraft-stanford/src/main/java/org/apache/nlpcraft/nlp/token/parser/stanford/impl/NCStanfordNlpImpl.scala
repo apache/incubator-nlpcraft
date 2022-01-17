@@ -41,9 +41,7 @@ class NCStanfordNlpImpl(stanford: StanfordCoreNLP) extends NCTokenParser:
         val doc = new CoreDocument(text)
         stanford.annotate(doc)
         val ann = doc.annotation().get(classOf[SentencesAnnotation])
-
-        if ann == null then
-            throw new NCException("Sentence annotation not found.") // TODO: error text.
+        if ann == null then E("Sentence annotation not found.") // TODO: error text.
 
         val toks = ann.asScala.flatMap(_.asInstanceOf[ArrayCoreMap].get(classOf[TokensAnnotation]).asScala).
             zipWithIndex.map { (t, idx) =>

@@ -20,7 +20,7 @@ package org.apache.nlpcraft;
 import java.util.List;
 
 /**
- * TODO:
+ * 
  */
 public interface NCVariant {
     /**

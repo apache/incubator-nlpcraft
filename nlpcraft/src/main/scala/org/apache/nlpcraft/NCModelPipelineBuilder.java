@@ -17,32 +17,27 @@
 
 package org.apache.nlpcraft;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
- * TODO:
+ *
  */
 public class NCModelPipelineBuilder {
     private final NCTokenParser tokParser;
     private final List<NCTokenEnricher> tokEnrichers = new ArrayList<>();
     private final List<NCEntityEnricher> entEnrichers = new ArrayList<>();
     private final List<NCEntityParser> entParsers = new ArrayList<>();
-    private final List<NCTokenValidator> tokenValidators = new ArrayList<>();
-    private final List<NCEntityValidator> entityValidators = new ArrayList<>();
-    private final List<NCVariantValidator> variantValidators = new ArrayList<>();
+    private final List<NCTokenValidator> tokVals = new ArrayList<>();
+    private final List<NCEntityValidator> entVals = new ArrayList<>();
+    private Optional<NCVariantFilter> varFilter = Optional.empty();
 
     /**
-     * TODO:
-     * 
+     *
      * @param id
      * @param name
      * @param version
      */
     public NCModelPipelineBuilder(NCTokenParser tokParser, List<NCEntityParser> entParsers) {
-        // TODO: error texts.
         Objects.requireNonNull(tokParser, "Token parser cannot be null.");
         Objects.requireNonNull(entParsers, "Entity parsers cannot be null.");
         if (entParsers.isEmpty())
@@ -64,12 +59,11 @@ public class NCModelPipelineBuilder {
 
     /**
      * @param tokEnrichers
-     * @return
+     * @return This instance for call chaining.
      */
     public NCModelPipelineBuilder withTokenEnrichers(List<NCTokenEnricher> tokEnrichers) {
-        // TODO: error texts.
-        Objects.requireNonNull(tokEnrichers, "Enrichers cannot be null.");
-        tokEnrichers.forEach(p -> Objects.requireNonNull(p, "Enrichers cannot be null."));
+        Objects.requireNonNull(tokEnrichers, "List of token enrichers cannot be null.");
+        tokEnrichers.forEach(p -> Objects.requireNonNull(p, "Token enricher cannot be null."));
 
         this.tokEnrichers.addAll(tokEnrichers);
 
@@ -78,11 +72,10 @@ public class NCModelPipelineBuilder {
 
     /**
      * @param tokEnricher
-     * @return
+     * @return This instance for call chaining.
      */
     public NCModelPipelineBuilder withTokenEnricher(NCTokenEnricher tokEnricher) {
-        // TODO: error texts.
-        Objects.requireNonNull(tokEnricher, "Enricher cannot be null.");
+        Objects.requireNonNull(tokEnricher, "Token enricher cannot be null.");
 
         this.tokEnrichers.add(tokEnricher);
 
@@ -91,12 +84,11 @@ public class NCModelPipelineBuilder {
 
     /**
      * @param entEnrichers
-     * @return
+     * @return This instance for call chaining.
      */
     public NCModelPipelineBuilder withEntityEnrichers(List<NCEntityEnricher> entEnrichers) {
-        // TODO: error texts.
-        Objects.requireNonNull(entEnrichers, "Enrichers cannot be null.");
-        entEnrichers.forEach(p -> Objects.requireNonNull(p, "Enrichers cannot be null."));
+        Objects.requireNonNull(entEnrichers, "List of entity enrichers cannot be null.");
+        entEnrichers.forEach(p -> Objects.requireNonNull(p, "Entity enrichers cannot be null."));
 
         this.entEnrichers.addAll(entEnrichers);
 
@@ -105,11 +97,10 @@ public class NCModelPipelineBuilder {
 
     /**
      * @param entEnricher
-     * @return
+     * @return This instance for call chaining.
      */
     public NCModelPipelineBuilder withEntityEnricher(NCEntityEnricher entEnricher) {
-        // TODO: error texts.
-        Objects.requireNonNull(entEnricher, "Enricher cannot be null.");
+        Objects.requireNonNull(entEnricher, "Entity enricher cannot be null.");
 
         this.entEnrichers.add(entEnricher);
 
@@ -118,12 +109,11 @@ public class NCModelPipelineBuilder {
 
     /**
      * @param entParsers
-     * @return
+     * @return This instance for call chaining.
      */
     public NCModelPipelineBuilder withEntityParsers(List<NCEntityParser> entParsers) {
-        // TODO: error texts.
-        Objects.requireNonNull(entParsers, "Parsers cannot be null.");
-        entParsers.forEach(p -> Objects.requireNonNull(p, "Parsers cannot be null."));
+        Objects.requireNonNull(entParsers, "List of entity parsers cannot be null.");
+        entParsers.forEach(p -> Objects.requireNonNull(p, "Entity parser cannot be null."));
 
         this.entParsers.addAll(entParsers);
 
@@ -132,11 +122,10 @@ public class NCModelPipelineBuilder {
 
     /**
      * @param entParser
-     * @return
+     * @return This instance for call chaining.
      */
     public NCModelPipelineBuilder withEntityParser(NCEntityParser entParser) {
-        // TODO: error texts.
-        Objects.requireNonNull(entParser, "Parser cannot be null.");
+        Objects.requireNonNull(entParser, "Entity parser cannot be null.");
 
         this.entParsers.add(entParser);
 
@@ -144,79 +133,61 @@ public class NCModelPipelineBuilder {
     }
 
     /**
-     * @param tokenValidators
-     * @return
+     * @param tokVals
+     * @return This instance for call chaining.
      */
-    public NCModelPipelineBuilder withTokenValidators(List<NCTokenValidator> tokenValidators) {
-        // TODO: error texts.
-        Objects.requireNonNull(tokenValidators, "Validators cannot be null.");
-        tokenValidators.forEach(p -> Objects.requireNonNull(p, "Validators cannot be null."));
+    public NCModelPipelineBuilder withTokenValidators(List<NCTokenValidator> tokVals) {
+        Objects.requireNonNull(tokVals, "List of token validators cannot be null.");
+        tokVals.forEach(p -> Objects.requireNonNull(p, "Token validator cannot be null."));
 
-        this.tokenValidators.addAll(tokenValidators);
+        this.tokVals.addAll(tokVals);
 
         return this;
     }
 
     /**
-     * @param tokenValidator
-     * @return
+     * @param tokVal
+     * @return This instance for call chaining.
      */
-    public NCModelPipelineBuilder withTokenValidator(NCTokenValidator tokenValidator) {
-        // TODO: error texts.
-        Objects.requireNonNull(tokenValidator, "Validator cannot be null.");
+    public NCModelPipelineBuilder withTokenValidator(NCTokenValidator tokVal) {
+        Objects.requireNonNull(tokVal, "Token validator cannot be null.");
 
-        this.tokenValidators.add(tokenValidator);
+        this.tokVals.add(tokVal);
 
         return this;
     }
 
     /**
-     * @param entityValidators
-     * @return
+     * @param entVals
+     * @return This instance for call chaining.
      */
-    public NCModelPipelineBuilder withEntityValidators(List<NCEntityValidator> entityValidators) {
-        // TODO: error texts.
-        Objects.requireNonNull(entityValidators, "Validators cannot be null.");
-        entityValidators.forEach(p -> Objects.requireNonNull(p, "Validators cannot be null."));
+    public NCModelPipelineBuilder withEntityValidators(List<NCEntityValidator> entVals) {
+        Objects.requireNonNull(entVals, "List of entity validators cannot be null.");
+        entVals.forEach(p -> Objects.requireNonNull(p, "Entity validators cannot be null."));
 
-        this.entityValidators.addAll(entityValidators);
+        this.entVals.addAll(entVals);
 
         return this;
     }
 
     /**
-     * @param entityValidator
-     * @return
+     * @param entVal
+     * @return This instance for call chaining.
      */
-    public NCModelPipelineBuilder withEntityValidator(NCEntityValidator entityValidator) {
-        Objects.requireNonNull(entityValidator, "Validators cannot be null.");
+    public NCModelPipelineBuilder withEntityValidator(NCEntityValidator entVal) {
+        Objects.requireNonNull(entVal, "Entity validator cannot be null.");
 
-        this.entityValidators.add(entityValidator);
+        this.entVals.add(entVal);
 
         return this;
     }
 
     /**
-     * @param variantValidators
-     * @return
+     * @param varFilter
+     * @return This instance for call chaining.
      */
-    public NCModelPipelineBuilder withVariantValidators(List<NCVariantValidator> variantValidators) {
-        Objects.requireNonNull(variantValidators, "Validators cannot be null.");
-        variantValidators.forEach(p -> Objects.requireNonNull(p, "Validators cannot be null."));
-
-        this.variantValidators.addAll(variantValidators);
-
-        return this;
-    }
-
-    /**
-     * @param variantValidator
-     * @return
-     */
-    public NCModelPipelineBuilder withVariantValidator(NCVariantValidator variantValidator) {
-        Objects.requireNonNull(variantValidator, "Validator cannot be null.");
-
-        this.variantValidators.add(variantValidator);
+    public NCModelPipelineBuilder withVariantFilter(NCVariantFilter varFilter) {
+        this.varFilter = Optional.of(varFilter);
 
         return this;
     }
@@ -226,39 +197,26 @@ public class NCModelPipelineBuilder {
      */
     public NCModelPipeline build() {
         return new NCModelPipeline() {
-            @Override
-            public NCTokenParser getTokenParser() {
+            @Override public NCTokenParser getTokenParser() {
                 return tokParser;
             }
-
-            @Override
-            public List<NCTokenEnricher> getTokenEnrichers() {
+            @Override public List<NCTokenEnricher> getTokenEnrichers() {
                 return tokEnrichers;
             }
-
-            @Override
-            public List<NCEntityEnricher> getEntityEnrichers() {
+            @Override public List<NCEntityEnricher> getEntityEnrichers() {
                 return entEnrichers;
             }
-
-            @Override
-            public List<NCEntityParser> getEntityParsers() {
+            @Override public List<NCEntityParser> getEntityParsers() {
                 return entParsers;
             }
-
-            @Override
-            public List<NCTokenValidator> getTokenValidators() {
-                return tokenValidators;
+            @Override public List<NCTokenValidator> getTokenValidators() {
+                return tokVals;
             }
-
-            @Override
-            public List<NCEntityValidator> getEntityValidators() {
-                return entityValidators;
+            @Override public List<NCEntityValidator> getEntityValidators() {
+                return entVals;
             }
-
-            @Override
-            public List<NCVariantValidator> getVariantValidators() {
-                return variantValidators;
+            @Override public Optional<NCVariantFilter> getVariantFilter() {
+                return varFilter;
             }
         };
     }

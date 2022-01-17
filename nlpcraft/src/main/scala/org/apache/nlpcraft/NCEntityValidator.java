@@ -20,11 +20,10 @@ package org.apache.nlpcraft;
 import java.util.List;
 
 /**
- * TODO:
+ *
  */
 public interface NCEntityValidator extends NCLifecycle {
     /**
-     * TODO: Checks parsed entities and throws exceptions, if necessary.
      *
      * @param req
      * @param cfg

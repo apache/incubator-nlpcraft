@@ -20,11 +20,10 @@ package org.apache.nlpcraft;
 import java.util.List;
 
 /**
- * TODO:
+ * 
  */
 public interface NCTokenValidator extends NCLifecycle {
     /**
-     * TODO: Checks parsed tokens and throws exceptions, if necessary.
      *
      * @param req
      * @param cfg

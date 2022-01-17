@@ -15,16 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.nlp.token.enricher.en.impl
+package org.apache.nlpcraft;
 
-import org.apache.nlpcraft.*
-
-import java.io.*
-import java.util.List as JList
+import java.util.List;
 
 /**
-  *
-  */
-class NCLanguageWordsImpl extends NCTokenEnricher:
-    override def enrich(req: NCRequest, cfg: NCModelConfig, toks: JList[NCToken]): Unit =
-        toks.forEach(t => t.put("lang:en", t.getText.matches("""[\s\w\p{Punct}]+""")))
+ *
+ */
+public interface NCVariantFilter extends NCLifecycle {
+    /**
+     * 
+     * @param req
+     * @param cfg
+     * @param vars
+     */
+    List<NCVariant> filter(NCRequest req, NCModelConfig cfg, List<NCVariant> vars);
+}

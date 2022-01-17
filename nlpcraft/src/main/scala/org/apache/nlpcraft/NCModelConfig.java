@@ -23,37 +23,33 @@ import java.util.*;
  *
  */
 public class NCModelConfig extends NCPropertyMapAdapter {
-    private final String id, name, version;
-    private String desc, origin;
+    private final String id, name, ver, desc, origin;
 
     /**
-     * TODO:
      * @param id
      * @param name
-     * @param version
+     * @param ver
      */
-    public NCModelConfig(String id, String name, String version) {
-        // TODO: error texts.
-        Objects.requireNonNull(id, "Id cannot be null.");
-        Objects.requireNonNull(name, "Name cannot be null.");
-        Objects.requireNonNull(version, "Version cannot be null.");
-
-        this.id = id;
-        this.name = name;
-        this.version = version;
+    public NCModelConfig(String id, String name, String ver) {
+        this(id, name, ver, null, null);
     }
 
     /**
-     * TODO:
+     *
      * @param id
      * @param name
-     * @param version
+     * @param ver
      * @param desc
      * @param origin
      */
-    public NCModelConfig(String id, String name, String version, String desc, String origin) {
-        this(id, name, version);
+    public NCModelConfig(String id, String name, String ver, String desc, String origin) {
+        Objects.requireNonNull(id, "Model ID cannot be null.");
+        Objects.requireNonNull(name, "Model name cannot be null.");
+        Objects.requireNonNull(ver, "Model version cannot be null.");
 
+        this.id = id;
+        this.name = name;
+        this.ver = ver;
         this.desc = desc;
         this.origin = origin != null ? origin : getClass().getCanonicalName();
     }
@@ -82,7 +78,7 @@ public class NCModelConfig extends NCPropertyMapAdapter {
      * @return A version compatible with (<a href="http://www.semver.org">www.semver.org</a>) specification.
      */
     public String getVersion() {
-        return version;
+        return ver;
     }
 
     /**
@@ -96,7 +92,6 @@ public class NCModelConfig extends NCPropertyMapAdapter {
     }
 
     /**
-     * TODO: text (Default implementation ?)
      * Gets the origin of this model like name of the class, file path or URL.
      * Default implementation return current class name.
      *

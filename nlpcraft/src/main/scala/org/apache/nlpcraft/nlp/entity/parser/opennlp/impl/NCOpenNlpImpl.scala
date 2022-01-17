@@ -34,38 +34,40 @@ import scala.util.Using
 
 /**
   *
-  * @param resources
+  * @param srcs
   */
-class NCOpenNlpEntityParserImpl(resources: JList[String]) extends NCEntityParser with LazyLogging :
-    require(resources != null)
+class NCOpenNlpImpl(srcs: JList[String]) extends NCEntityParser with LazyLogging :
+    require(srcs != null)
 
     private var finders: Seq[NameFinderME] = _
+    private case class Holder(start: Int, end: Int, name: String, probability: Double)
 
     init()
 
-    private case class Holder(start: Int, end: Int, name: String, probability: Double)
-
+    /**
+      *
+      */
     private def init(): Unit =
         val finders = mutable.ArrayBuffer.empty[NameFinderME]
-
         NCUtils.execPar(
-            resources.asScala.toSeq.map(res => () => {
+            srcs.asScala.toSeq.map(res => () => {
                 val f = new NameFinderME(new TokenNameFinderModel(NCUtils.getStream(res)))
-
                 logger.trace(s"Loaded resource: $res")
-
                 finders.synchronized { finders += f }
             })*)(ExecutionContext.Implicits.global)
 
         this.finders = finders.toSeq
 
-    private def find(finder: NameFinderME, words: Array[String]): Array[Holder] =
-        finder.synchronized {
-            try
-                finder.find(words).map(p => Holder(p.getStart, p.getEnd - 1, p.getType, p.getProb))
-            finally
-                finder.clearAdaptiveData()
-       }
+    /**
+      *
+      * @param finder
+      * @param words
+      * @return
+      */
+    private def find(finder: NameFinderME, words: Array[String]): Array[Holder] = finder.synchronized {
+        try finder.find(words).map(p => Holder(p.getStart, p.getEnd - 1, p.getType, p.getProb))
+        finally finder.clearAdaptiveData()
+    }
 
     override def parse(req: NCRequest, cfg: NCModelConfig, toksList: JList[NCToken]): JList[NCEntity] =
         val toks = toksList.asScala
@@ -84,8 +86,7 @@ class NCOpenNlpEntityParserImpl(resources: JList[String]) extends NCEntityParser
                 new NCPropertyMapAdapter with NCEntity:
                     put(s"opennlp:${h.name}:probability", h.probability)
 
-                    override val getTokens: JList[NCToken] =
-                        toks.flatMap(t => Option.when(t.getIndex >= i1 && t.getIndex <= i2)(t)).asJava
+                    override val getTokens: JList[NCToken] = toks.flatMap(t => Option.when(t.getIndex >= i1 && t.getIndex <= i2)(t)).asJava
                     override val getRequestId: String = req.getRequestId
                     override val getId: String = s"opennlp:${h.name}"
             )

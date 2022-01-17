@@ -33,10 +33,10 @@ public class NCStopWordsTokenEnricher implements NCTokenEnricher {
     private final NCStopWordsImpl impl;
 
     /**
-     * TODO: shoud we check single words?
+     *
      */
-    public NCStopWordsTokenEnricher(Set<String> addStops, Set<String> exclStops) {
-        impl = new NCStopWordsImpl(addStops, exclStops);
+    public NCStopWordsTokenEnricher(Set<String> addSw, Set<String> exclSw) {
+        impl = new NCStopWordsImpl(addSw, exclSw);
     }
 
     public NCStopWordsTokenEnricher() {

@@ -21,7 +21,7 @@ import org.apache.nlpcraft.nlp.token.parser.opennlp.NCOpenNlpTokenParser
 import org.apache.nlpcraft.nlp.util.NCTestPipeline.*
 import org.apache.nlpcraft.*
 
-import java.util.{Optional, ArrayList as JAList, List as JList}
+import java.util.{Optional, ArrayList as JList}
 
 /**
   *
@@ -31,12 +31,12 @@ case class NCTestPipeline(tokParser: NCTokenParser) extends NCPropertyMapAdapter
     require(tokParser != null)
 
     override val getTokenParser: NCTokenParser = tokParser
-    override val getTokenEnrichers = new JAList[NCTokenEnricher]()
-    override val getEntityEnrichers = new JAList[NCEntityEnricher]()
-    override val getEntityParsers = new JAList[NCEntityParser]()
-    override val getTokenValidators = new JAList[NCTokenValidator]()
-    override val getEntityValidators = new JAList[NCEntityValidator]()
-    override val getVariantValidators = new JAList[NCVariantValidator]()
+    override val getTokenEnrichers = new JList[NCTokenEnricher]()
+    override val getEntityEnrichers = new JList[NCEntityEnricher]()
+    override val getEntityParsers = new JList[NCEntityParser]()
+    override val getTokenValidators = new JList[NCTokenValidator]()
+    override val getEntityValidators = new JList[NCEntityValidator]()
+    override val getVariantFilter: Optional[NCVariantFilter] = Optional.empty[NCVariantFilter]()
 
     override def clone(): NCTestPipeline =
         val copy = NCTestPipeline(this.tokParser)
@@ -46,7 +46,8 @@ case class NCTestPipeline(tokParser: NCTokenParser) extends NCPropertyMapAdapter
         copy.getEntityParsers.addAll(this.getEntityParsers)
         copy.getTokenValidators.addAll(this.getTokenValidators)
         copy.getEntityValidators.addAll(this.getEntityValidators)
-        copy.getVariantValidators.addAll(this.getVariantValidators)
+
+        // TODO: variant filter?
 
         copy
 

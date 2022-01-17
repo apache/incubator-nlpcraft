@@ -38,7 +38,7 @@ private[impl] object NCSemanticSourceType:
 
         if lc.endsWith(".json") || lc.endsWith(".js") then JSON
         else if lc.endsWith(".yaml") || lc.endsWith(".yml") then YAML
-        else throw new NCException("Unexpected data type. Expected `yaml` or `json` formats.") // TODO: error text.
+        else E(s"Expected `yaml` or `json` formats, but got: $src")
 
 /**
   *
@@ -78,8 +78,7 @@ private[impl] object NCSemanticSourceReader:
         else
             new NCPropertyMapAdapter with NCSemanticElement:
                 override val getId: String = e.id
-                override val getGroups: JList[String] = nvl(e.groups)
-                override val getDescription: String = e.description
+                override val getGroups: JSet[String] = nvl(e.groups.toSet)
                 override val getValues: JMap[String, JSet[String]] = nvlValues(e.values)
                 override val getSynonyms: JSet[String] = nvl(e.synonyms)
                 override val getProperties: JMap[String, AnyRef] = nvlProperties(e.properties)

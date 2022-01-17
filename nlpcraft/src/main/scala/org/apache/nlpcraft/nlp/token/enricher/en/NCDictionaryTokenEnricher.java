@@ -21,15 +21,24 @@ import org.apache.nlpcraft.NCModelConfig;
 import org.apache.nlpcraft.NCRequest;
 import org.apache.nlpcraft.NCToken;
 import org.apache.nlpcraft.NCTokenEnricher;
+<<<<<<< HEAD:nlpcraft/src/main/scala/org/apache/nlpcraft/nlp/token/enricher/en/NCLanguageTokenEnricher.java
+import org.apache.nlpcraft.nlp.token.enricher.en.impl.NCLanguageWordsImpl;
+=======
 import org.apache.nlpcraft.nlp.token.enricher.en.impl.NCDictionaryImpl;
+>>>>>>> NLPCRAFT-472:nlpcraft/src/main/scala/org/apache/nlpcraft/nlp/token/enricher/en/NCDictionaryTokenEnricher.java
 
 import java.util.List;
 
 /**
  * TODO: enriches with <code>dict</code> property.
  */
+<<<<<<< HEAD:nlpcraft/src/main/scala/org/apache/nlpcraft/nlp/token/enricher/en/NCLanguageTokenEnricher.java
+public class NCLanguageTokenEnricher implements NCTokenEnricher {
+    private final NCLanguageWordsImpl impl = new NCLanguageWordsImpl();
+=======
 public class NCDictionaryTokenEnricher implements NCTokenEnricher {
     private final NCDictionaryImpl impl = new NCDictionaryImpl();
+>>>>>>> NLPCRAFT-472:nlpcraft/src/main/scala/org/apache/nlpcraft/nlp/token/enricher/en/NCDictionaryTokenEnricher.java
 
     @Override
     public void enrich(NCRequest req, NCModelConfig cfg, List<NCToken> toks) {

@@ -25,9 +25,15 @@ import java.util.function.Predicate;
  */
 public interface NCConversation {
     /**
+     *
+     * @return
+     */
+    NCPropertyMap getSession();
+
+    /**
      * 
      */
-    List<NCEntity> getEntities();
+    List<NCEntity> getStm();
 
     /**
      * Gets the chronologically ordered list of previously matched intents sorted from oldest to newest

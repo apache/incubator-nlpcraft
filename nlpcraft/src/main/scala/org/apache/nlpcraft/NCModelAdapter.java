@@ -32,9 +32,8 @@ public class NCModelAdapter implements NCModel {
      * @param pipeline
      */
     public NCModelAdapter(NCModelConfig cfg, NCModelPipeline pipeline) {
-        // TODO: error texts.
-        Objects.requireNonNull(cfg, "Config cannot be null.");
-        Objects.requireNonNull(pipeline, "Pipeline cannot be null.");
+        Objects.requireNonNull(cfg, "Model config cannot be null.");
+        Objects.requireNonNull(pipeline, "Model pipeline cannot be null.");
 
         this.cfg = cfg;
         this.pipeline = pipeline;

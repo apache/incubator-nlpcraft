@@ -15,30 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.nlp.token.enricher.en
-
-import org.apache.nlpcraft.nlp.token.enricher.en.*
-import org.apache.nlpcraft.nlp.util.*
-import org.apache.nlpcraft.nlp.util.opennlp.*
-import org.junit.jupiter.api.*
-
-import scala.jdk.CollectionConverters.*
+package org.apache.nlpcraft;
 
 /**
-  *
-  */
-class NCLanguageTokenEnricherSpec:
-    private val enricher = new NCLanguageTokenEnricher
+ *
+ */
+public class NCCuration extends NCRejection {
+    /**
+     * Creates new curation exception with given message.
+     *
+     * @param msg Curation message.
+     */
+    public NCCuration(String msg) {
+        super(msg);
+    }
 
-    @Test
-    def test(): Unit =
-        val toks = EN_PIPELINE.getTokenParser.tokenize("english русский").asScala.toSeq
-
-        require(toks.head.getOpt[Boolean]("lang:en").isEmpty)
-        require(toks.last.getOpt[Boolean]("lang:en").isEmpty)
-
-        enricher.enrich(null, null, toks.asJava)
-        NCTestUtils.printTokens(toks)
-
-        require(toks.head.get[Boolean]("lang:en"))
-        require(!toks.last.get[Boolean]("lang:en"))
+    /**
+     * Creates new curation exception with given message and cause.
+     *
+     * @param msg Curation message.
+     * @param cause Cause of this exception.
+     */
+    public NCCuration(String msg, Throwable cause) {
+        super(msg, cause);
+    }
+}

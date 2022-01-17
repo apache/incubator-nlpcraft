@@ -19,6 +19,7 @@ package org.apache.nlpcraft;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 /**
  *
@@ -72,7 +73,7 @@ public interface NCModelPipeline {
      *
      * @return
      */
-    default List<NCVariantValidator> getVariantValidators() {
-        return Collections.emptyList();
+    default Optional<NCVariantFilter> getVariantFilter() {
+        return Optional.empty();
     }
 }

@@ -47,4 +47,4 @@ class NCBracketsImpl extends NCTokenEnricher with LazyLogging:
                 case _ => mark(t)
 
         if ok && stack.isEmpty then map.foreach { (tok, b) => tok.put("brackets", b) }
-        else logger.trace(s"Invalid brackets: ${req.getText}")
+        else logger.warn(s"Detected invalid brackets in: ${req.getText}")

@@ -21,7 +21,7 @@ import opennlp.tools.stemmer.PorterStemmer;
 import org.apache.nlpcraft.nlp.entity.parser.semantic.NCSemanticStemmer;
 
 /**
- * TODO:
+ * 
  */
 public class NCEnPorterStemmer implements NCSemanticStemmer {
     /** */

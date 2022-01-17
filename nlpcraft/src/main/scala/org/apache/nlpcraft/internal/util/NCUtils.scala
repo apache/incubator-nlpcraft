@@ -560,9 +560,9 @@ object NCUtils extends LazyLogging:
         else if isResource(src) then
             getClass.getClassLoader.getResourceAsStream(src) match
                 case in if in != null => in
-                case _ => throw new NCException(s"Resource not found: $src")
+                case _ => E(s"Resource not found: $src")
         else if isUrl(src) then new URL(src).openStream()
-        else throw new NCException(s"Source not found or unsupported: $src")
+        else E(s"Source not found or unsupported: $src")
 
     /**
       * Makes thread.
@@ -779,7 +779,7 @@ object NCUtils extends LazyLogging:
                 getAndLog(src.getLines().map(p => p).toList, f, log)
             }
         catch
-            case e: IOException => throw new NCException(s"Failed to read GZIP file: ${f.getAbsolutePath}", e)
+            case e: IOException => E(s"Failed to read GZIP file: ${f.getAbsolutePath}", e)
 
     /**
       * Reads bytes from given file.
@@ -793,7 +793,7 @@ object NCUtils extends LazyLogging:
             Using.resource(new FileInputStream(f))(_.read(arr))
             getAndLog(arr, f, log)
         catch
-            case e: IOException => throw new NCException(s"Error reading file: $f", e)
+            case e: IOException => E(s"Error reading file: $f", e)
 
 
     /**
@@ -820,9 +820,9 @@ object NCUtils extends LazyLogging:
                 stream.flush()
             }
         catch
-            case e: IOException => throw new NCException(s"Error gzip file: $f", e)
+            case e: IOException => E(s"Error gzip file: $f", e)
 
-        if !f.delete() then throw new NCException(s"Error while deleting file: $f")
+        if !f.delete() then E(s"Error while deleting file: $f")
 
         logger.trace(s"File gzipped [source=$f, destination=$gz]")
 
@@ -847,7 +847,7 @@ object NCUtils extends LazyLogging:
     def readResource(res: String, enc: String = "UTF-8", log: Logger = logger): List[String] =
         val list =
             try Using.resource(Source.fromInputStream(getStream(res), enc))(_.getLines().toSeq).toList
-            catch case e: IOException => throw new NCException(s"Failed to read stream: $res", e)
+            catch case e: IOException => E(s"Failed to read stream: $res", e)
     
         log.trace(s"Loaded resource: $res")
 
@@ -872,7 +872,7 @@ object NCUtils extends LazyLogging:
     def readTextGzipResource(res: String, enc: String, log: Logger = logger): List[String] =
         val list =
             try Using.resource(Source.fromInputStream(new GZIPInputStream(getStream(res)), enc))(readLcTrimFilter)
-            catch case e: IOException => throw new NCException(s"Failed to read stream: $res", e)
+            catch case e: IOException => E(s"Failed to read stream: $res", e)
 
         log.trace(s"Loaded resource: $res")
 
@@ -891,7 +891,7 @@ object NCUtils extends LazyLogging:
                 readLcTrimFilter(src)
             }
         catch
-            case e: IOException => throw new NCException(s"Failed to read stream.", e)
+            case e: IOException => E(s"Failed to read stream.", e)
 
     /**
       *
@@ -911,7 +911,7 @@ object NCUtils extends LazyLogging:
 
         if !errs.isEmpty then
             errs.forEach(e => logger.error("Error during service starting.", e)) // TODO: error message.
-            throw new NCException("Some service cannot be started.")  // TODO: error message.
+            E("Some service cannot be started.")  // TODO: error message.
 
     /**
       * Shuts down executor service and waits for its finish.

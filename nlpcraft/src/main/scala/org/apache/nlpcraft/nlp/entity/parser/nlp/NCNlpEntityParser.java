@@ -22,22 +22,17 @@ import org.apache.nlpcraft.NCEntityParser;
 import org.apache.nlpcraft.NCModelConfig;
 import org.apache.nlpcraft.NCRequest;
 import org.apache.nlpcraft.NCToken;
-import org.apache.nlpcraft.nlp.entity.parser.nlp.impl.NCNlpEntityParserImpl;
+import org.apache.nlpcraft.nlp.entity.parser.nlp.impl.NCNlpImpl;
 
 import java.util.List;
 
 /**
  * TODO: add javadoc based on comments below.
  *
- * Umbrella for NLP tokens.
- *
- * Each entity with ID 'nlp:token' contans one token and have following properties copied from its token:
- * nlp:token:lemma, nlp:token:pos, nlp:token:text, nlp:token:index
- *
  * Component is language independent.
  */
 public class NCNlpEntityParser implements NCEntityParser {
-    private final NCNlpEntityParserImpl impl = new NCNlpEntityParserImpl();
+    private final NCNlpImpl impl = new NCNlpImpl();
 
     @Override
     public List<NCEntity> parse(NCRequest req, NCModelConfig cfg, List<NCToken> toks) {

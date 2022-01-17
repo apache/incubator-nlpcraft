@@ -25,7 +25,6 @@ import java.util.List;
 public interface NCTokenParser {
     /**
      *
-     * @param cfg
      * @param text
      * @return
      */

@@ -591,12 +591,8 @@ class NCAsciiTable:
     def render(file: java.io.File): Unit = renderPrintStream(new PrintStream(file), file.getAbsolutePath)
 
     private def renderPrintStream(f: => PrintStream, file: String): Unit =
-        try
-            Using.resource(f) { ps =>
-                ps.print(mkString())
-            }
-        catch
-            case e: IOException => throw new NCException(s"Error outputting table into file: $file", e)
+        try Using.resource(f)(_.print(mkString()))
+        catch case e: IOException => E(s"Error outputting table into file: $file", e)
 
 /**
   * Static context.

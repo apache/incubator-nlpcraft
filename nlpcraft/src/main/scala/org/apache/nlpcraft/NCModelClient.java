@@ -17,7 +17,7 @@
 
 package org.apache.nlpcraft;
 
-import org.apache.nlpcraft.internal.NCModelClientImpl;
+import org.apache.nlpcraft.internal.impl.NCModelClientImpl;
 
 import java.util.Map;
 import java.util.concurrent.*;
@@ -26,7 +26,6 @@ import java.util.concurrent.*;
  *
  */
 public class NCModelClient {
-    // TODO: move NCModelClientImpl under rigth package.
     private final NCModelClientImpl impl;
 
     /**

@@ -48,14 +48,17 @@ case class NCSemanticTestElement(
     props: Map[String, AnyRef] = Map.empty
 ) extends NCSemanticElement:
     override def getId: String = id
-    override def getGroups: JList[String] = groups.asJava
+    override def getGroups: JSet[String] = groups.toSet.asJava
     override def getValues: JMap[String, JSet[String]] = values.map { (k, v) => k -> v.asJava}.asJava
     override def getSynonyms: JSet[String] = synonyms.asJava
     override def getProperties: JMap[String, Object] = props.asJava
 
-object NCSemanticTestElement {
+/**
+  *
+  */
+object NCSemanticTestElement:
     def apply(id: String, synonyms: String*) = new NCSemanticTestElement(id, synonyms = synonyms.toSet)
-}
+
 /**
   *
   */
@@ -92,9 +95,7 @@ class NCSemanticEntityParserSpec:
       * @param value
       * @param elemData
       */
-    private def check(
-        txt: String, id: String, value: Option[String] = None, elemData: Option[Map[String, Any]] = None
-    ): Unit =
+    private def check(txt: String, id: String, value: Option[String] = None, elemData: Option[Map[String, Any]] = None): Unit =
         val req = NCTestRequest(txt)
         val toks = EN_PIPELINE.getTokenParser.tokenize(txt)
 
@@ -136,6 +137,9 @@ class NCSemanticEntityParserSpec:
         require(ents.sizeIs == ids.size)
         ents.map(_.getId).sorted.zip(ids.sorted).foreach { case (eId, id) => require(eId == id) }
 
+    /**
+      *
+      */
     @Test
     def test(): Unit =
         check("t1", "t1")

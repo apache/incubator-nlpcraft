@@ -63,26 +63,6 @@ sealed trait NCAnsi extends LazyLogging:
     private final val REVERSED = s"${CSI}7m"
     private final val INVISIBLE = s"${CSI}8m"
 
-    // Erase functions.
-    private final val CLEAR_SCREEN = s"${CSI}J"
-    private final val CLEAR_SCREEN_AFTER = s"${CSI}0J"
-    private final val CLEAR_SCREEN_BEFORE = s"${CSI}1J"
-    private final val CLEAR_LINE = s"${CSI}K"
-    private final val CLEAR_LINE_AFTER = s"${CSI}0K"
-    private final val CLEAR_LINE_BEFORE = s"${CSI}1K"
-
-    // Cursor moves.
-    private final val CURSOR_UP = s"${CSI}1A"
-    private final val CURSOR_DOWN = s"${CSI}1B"
-    private final val CURSOR_LEFT = s"${CSI}1D"
-    private final val CURSOR_RIGHT = s"${CSI}1C"
-    private final val CURSOR_POS_SAVE= s"${CSI}s"
-    private final val CURSOR_POS_RESTORE = s"${CSI}u"
-    private final val CURSOR_LINE_HOME = s"${CSI}0G"
-    private final val CURSOR_SCREEN_HOME = s"${CSI}H"
-    private final val CURSOR_HIDE = s"$CSI?25l"
-    private final val CURSOR_SHOW = s"$CSI?25h"
-
     def isEnabled: Boolean = !NCUtils.isSysEnvTrue(PROP)
 
 
@@ -183,26 +163,6 @@ sealed trait NCAnsi extends LazyLogging:
     def ansiBlue(s: Any): String = s"$ansiBlueFg${s.toString}$ansiReset"
     def ansiMagenta(s: Any): String = s"$ansiMagentaFg${s.toString}$ansiReset"
     def ansiBold(s: Any): String = s"$ansiBold${s.toString}$ansiReset"
-
-    // Erase functions.
-    def ansiClearScreen: String = if isEnabled then CLEAR_SCREEN else ""
-    def ansiClearScreenAfter: String = if isEnabled then CLEAR_SCREEN_AFTER else ""
-    def ansiClearScreenBefore: String = if isEnabled then CLEAR_SCREEN_BEFORE else ""
-    def ansiClearLine: String = if isEnabled then CLEAR_LINE else ""
-    def ansiClearLineAfter: String = if isEnabled then CLEAR_LINE_AFTER else ""
-    def ansiClearLineBefore: String = if isEnabled then CLEAR_LINE_BEFORE else ""
-
-    // Cursor movement functions.
-    def ansiCursorUp: String = if isEnabled then CURSOR_UP else ""
-    def ansiCursorDown: String = if isEnabled then CURSOR_DOWN else ""
-    def ansiCursorLeft: String = if isEnabled then CURSOR_LEFT else ""
-    def ansiCursorRight: String = if isEnabled then CURSOR_RIGHT else ""
-    def ansiCursorLineHome: String = if isEnabled then CURSOR_LINE_HOME else ""
-    def ansiCursorScreenHome: String = if isEnabled then CURSOR_SCREEN_HOME else ""
-    def ansiCursorPosSave: String = if isEnabled then CURSOR_POS_SAVE else ""
-    def ansiCursorPosRestore: String = if isEnabled then CURSOR_POS_RESTORE else ""
-    def ansiCursorShow: String = if isEnabled then CURSOR_SHOW else ""
-    def ansiCursorHide: String = if isEnabled then CURSOR_HIDE else ""
 
 /**
   *
