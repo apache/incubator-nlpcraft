@@ -18,21 +18,31 @@
 package org.apache.nlpcraft.internal.impl
 
 import com.typesafe.scalalogging.LazyLogging
+import dotty.tools.io.ClassPath
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.makro.NCMacroParser
 import org.apache.nlpcraft.internal.util.NCUtils
 import org.apache.nlpcraft.internal.impl.intent.*
 import org.apache.nlpcraft.internal.impl.intent.compiler.*
 
+import java.io.PrintStream
 import java.lang.annotation.Annotation
 import java.lang.reflect.*
 import java.util
 import java.util.function.Function
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
+import scala.util.Using
+import java.io.*
+import java.util.stream.Collectors
+import scala.language.postfixOps
 
+/**
+  *
+  */
 object NCIntentsProcessor:
-    private case class Callback(method: Method, cbFun: Function[NCIntentMatch, NCResult]):
+    // TODO: private
+    case class Callback(method: Method, cbFun: Function[NCIntentMatch, NCResult]):
         val id: String = method.toString
         val clsName: String = method.getDeclaringClass.getName
         val funName: String = method.getName
@@ -118,7 +128,7 @@ object NCIntentsProcessor:
             // Single token.
             if paramCls == CLS_TOKEN then
                 if toksCnt != 1 then
-                    throw new NCException(s"Expected single token (found $toksCnt) in @NCIntentTerm annotated argument [mdlId=$mdlId, arg=${mkArg()}]")
+                    E(s"Expected single token (found $toksCnt) in @NCIntentTerm annotated argument [mdlId=$mdlId, arg=${mkArg()}]")
 
                 argList.get(0)
             // Array of tokens.
@@ -136,14 +146,12 @@ object NCIntentsProcessor:
                 toksCnt match
                     case 0 => None
                     case 1 => Option(argList.get(0))
-                    case _ =>
-                        throw new NCException(s"Too many tokens ($toksCnt) for scala.Option[_] @NCIntentTerm annotated argument [mdlId$mdlId, arg=${mkArg()}]")
+                    case _ => E(s"Too many tokens ($toksCnt) for scala.Option[_] @NCIntentTerm annotated argument [mdlId$mdlId, arg=${mkArg()}]")
             else if paramCls == CLS_JAVA_OPT then
                 toksCnt match
                     case 0 => util.Optional.empty()
                     case 1 => util.Optional.of(argList.get(0))
-                    case _ =>
-                        throw new NCException(s"Too many tokens ($toksCnt) for java.util.Optional @NCIntentTerm annotated argument [mdlId$mdlId, arg=${mkArg()}]")
+                    case _ => E(s"Too many tokens ($toksCnt) for java.util.Optional @NCIntentTerm annotated argument [mdlId$mdlId, arg=${mkArg()}]")
             else
             // All allowed arguments types already checked...
                 throw new AssertionError(s"Unexpected callback @NCIntentTerm argument type [mdlId=$mdlId, type=$paramCls, arg=${mkArg()}]")
@@ -176,18 +184,15 @@ object NCIntentsProcessor:
                     case cause: NCIntentSkip => throw cause
                     case cause: NCRejection => throw cause
                     case cause: NCException => throw cause
-                    case cause: Throwable =>
-                        throw new NCException(s"Intent callback invocation error [mdlId=$mdlId, callback=${method2Str(mo.method)}]", cause)
+                    case cause: Throwable => E(s"Intent callback invocation error [mdlId=$mdlId, callback=${method2Str(mo.method)}]", cause)
 
-            case e: Throwable =>
-                throw new NCException(s"Unexpected intent callback invocation error [mdlId=$mdlId, callback=${method2Str(mo.method)}]", e)
+            case e: Throwable => E(s"Unexpected intent callback invocation error [mdlId=$mdlId, callback=${method2Str(mo.method)}]", e)
         finally
             if flag then
                 try
                     mo.method.setAccessible(false)
                 catch
-                    case e: SecurityException =>
-                        throw new NCException(s"Access or security error in intent callback [mdlId=$mdlId, callback=${method2Str(mo.method)}]", e)
+                    case e: SecurityException => E(s"Access or security error in intent callback [mdlId=$mdlId, callback=${method2Str(mo.method)}]", e)
 
     /**
       *
@@ -259,22 +264,35 @@ class NCIntentsProcessor(mdl: NCModel) extends LazyLogging:
     private val intentDecls = mutable.Buffer.empty[NCIdlIntent]
     private val intents = mutable.Buffer.empty[Intent]
 
-    def scan(): NCIntentsHolder = null // TODO:
-
     /**
       *
-      * @param mdl
+      * @return
+      */
+    def scan(): Seq[(NCIdlIntent, Callback)] =
+        intentDecls.clear()
+        intents.clear()
+
+        scanIntents()
+
+        if (intents.nonEmpty) {
+            // Check the uniqueness of intent IDs.
+            NCUtils.getDups(intents.map(_._1).toSeq.map(_.id)) match
+                case ids if ids.nonEmpty => E(s"Duplicate intent IDs [mdlId=$id, origin=$origin, ids=${ids.mkString(",")}]")
+                case _ => ()
+        }
+        else
+            logger.warn(s"Model has no intent: $id")
+
+        intents.toSeq
+    
+    /**
+      *
       * @param mtd
       * @param paramCls
       * @param paramGenTypes
       * @param ctxFirstParam
       */
-    private def checkTypes(
-        mdl: NCModel,
-        mtd: Method,
-        paramCls: Seq[Class[_]],
-        paramGenTypes: Seq[Type],
-        ctxFirstParam: Boolean): Unit =
+    private def checkTypes(mtd: Method, paramCls: Seq[Class[_]], paramGenTypes: Seq[Type], ctxFirstParam: Boolean): Unit =
         require(paramCls.sizeIs == paramGenTypes.length)
 
         paramCls.zip(paramGenTypes).zipWithIndex.foreach { case ((pClass, pGenType), i) =>
@@ -286,17 +304,16 @@ class NCIntentsProcessor(mdl: NCModel) extends LazyLogging:
                 val compType = pClass.getComponentType
 
                 if compType != CLS_TOKEN then
-                    throw new NCException(s"Unexpected array element type for @NCIntentTerm annotated argument [mdlId=$id, origin=$origin, type=${class2Str(compType)}, arg=${mkArg()}]")
+                    E(s"Unexpected array element type for @NCIntentTerm annotated argument [mdlId=$id, origin=$origin, type=${class2Str(compType)}, arg=${mkArg()}]")
             // Tokens collection and optionals.
             else if COMP_CLS.contains(pClass) then
                 pGenType match
                     case pt: ParameterizedType =>
                         val actTypes = pt.getActualTypeArguments
-                        val compTypes = if (actTypes == null) Seq.empty else actTypes.toSeq
+                        val compTypes = if actTypes == null then Seq.empty else actTypes.toSeq
 
                         if compTypes.sizeIs != 1 then
-                            throw new NCException(
-                                s"Unexpected generic types count for @NCIntentTerm annotated argument [mdlId=$id, origin=$origin, count=${compTypes.length}, arg=${mkArg()}]")
+                            E(s"Unexpected generic types count for @NCIntentTerm annotated argument [mdlId=$id, origin=$origin, count=${compTypes.length}, arg=${mkArg()}]")
 
                         val compType = compTypes.head
 
@@ -306,7 +323,7 @@ class NCIntentsProcessor(mdl: NCModel) extends LazyLogging:
                                 val genClass = compTypes.head.asInstanceOf[Class[_]]
 
                                 if genClass != CLS_TOKEN then
-                                    throw new NCException(s"Unexpected generic type for @NCIntentTerm annotated argument [mdlId=$id, origin=$origin, type=${class2Str(genClass)}, arg=${mkArg()}]")
+                                    E(s"Unexpected generic type for @NCIntentTerm annotated argument [mdlId=$id, origin=$origin, type=${class2Str(genClass)}, arg=${mkArg()}]")
                             // Kotlin.
                             case _: WildcardType =>
                                 val wildcardType = compTypes.head.asInstanceOf[WildcardType]
@@ -315,15 +332,13 @@ class NCIntentsProcessor(mdl: NCModel) extends LazyLogging:
                                 val upBounds = wildcardType.getUpperBounds
 
                                 if lowBounds.nonEmpty || upBounds.size != 1 || upBounds(0) != CLS_TOKEN then
-                                    throw new NCException(
-                                        s"Unexpected Kotlin generic type for @NCIntentTerm annotated argument [mdlId=$id, origin=$origin, type=${wc2Str(wildcardType)}, arg=${mkArg()}]")
-                            case _ =>
-                                throw new NCException(s"Unexpected generic type for @NCIntentTerm annotated argument [mdlId=$id, origin=$origin, type=${compType.getTypeName}, arg=${mkArg()}]")
+                                    E(s"Unexpected Kotlin generic type for @NCIntentTerm annotated argument [mdlId=$id, origin=$origin, type=${wc2Str(wildcardType)}, arg=${mkArg()}]")
+                            case _ =>E(s"Unexpected generic type for @NCIntentTerm annotated argument [mdlId=$id, origin=$origin, type=${compType.getTypeName}, arg=${mkArg()}]")
 
-                    case _ => throw new NCException(s"Unexpected parameter type for @NCIntentTerm annotated argument [mdlId=$id, origin=$origin, type=${pGenType.getTypeName}, arg=${mkArg()}]")
+                    case _ => E(s"Unexpected parameter type for @NCIntentTerm annotated argument [mdlId=$id, origin=$origin, type=${pGenType.getTypeName}, arg=${mkArg()}]")
             // Other types.
             else
-                throw new NCException(s"Unexpected parameter type for @NCIntentTerm annotated argument [mdlId=$id, origin=$origin, type=${class2Str(pClass)}, arg=${mkArg()}]")
+                E(s"Unexpected parameter type for @NCIntentTerm annotated argument [mdlId=$id, origin=$origin, type=${class2Str(pClass)}, arg=${mkArg()}]")
         }
 
     /**
@@ -334,13 +349,7 @@ class NCIntentsProcessor(mdl: NCModel) extends LazyLogging:
       * @param limits
       * @param ctxFirstParam
       */
-    private def checkMinMax(
-        mdl: NCModel,
-        mtd: Method,
-        paramCls: Seq[Class[_]],
-        limits: Seq[(Int, Int)],
-        ctxFirstParam: Boolean
-    ): Unit =
+    private def checkMinMax(mtd: Method, paramCls: Seq[Class[_]], limits: Seq[(Int, Int)], ctxFirstParam: Boolean): Unit =
         require(paramCls.sizeIs == limits.length)
 
         paramCls.zip(limits).zipWithIndex.foreach { case ((cls, (min, max)), i) =>
@@ -351,16 +360,16 @@ class NCIntentsProcessor(mdl: NCModel) extends LazyLogging:
 
             // Argument is single token but defined as not single token.
             if cls == CLS_TOKEN && (min != 1 || max != 1) then
-                throw new NCException(s"Intent term must have [1,1] quantifier because $p1 is a single value $p2")
+                E(s"Intent term must have [1,1] quantifier because $p1 is a single value $p2")
             // Argument is not single token but defined as single token.
             else if cls != CLS_TOKEN && (min == 1 && max == 1) then
-                throw new NCException(s"Intent term has [1,1] quantifier but $p1 is not a single value $p2")
+                E(s"Intent term has [1,1] quantifier but $p1 is not a single value $p2")
             // Argument is optional but defined as not optional.
             else if (cls == CLS_SCALA_OPT || cls == CLS_JAVA_OPT) && (min != 0 || max != 1) then
-                throw new NCException(s"Intent term must have [0,1] quantifier because $p1 is optional $p2")
+                E(s"Intent term must have [0,1] quantifier because $p1 is optional $p2")
             // Argument is not optional but defined as optional.
             else if (cls != CLS_SCALA_OPT && cls != CLS_JAVA_OPT) && (min == 0 && max == 1) then
-                throw new NCException(s"Intent term has [0,1] quantifier but $p1 is not optional $p2")
+                E(s"Intent term has [0,1] quantifier but $p1 is not optional $p2")
         }
 
     /**
@@ -380,7 +389,7 @@ class NCIntentsProcessor(mdl: NCModel) extends LazyLogging:
 
         def bindIntent(intent: NCIdlIntent, cb: Callback): Unit =
             if intents.exists(i => i._1.id == intent.id && i._2.id != cb.id) then
-                throw new NCException(s"The intent cannot be bound to more than one callback [mdlId=$id, origin=$origin, class=${mo.objClassName}, intentId=${intent.id}]")
+                E(s"The intent cannot be bound to more than one callback [mdlId=$id, origin=$origin, class=${mo.objClassName}, intentId=${intent.id}]")
             else
                 intentDecls += intent
                 intents += (intent -> prepareCallback(mo, intent))
@@ -396,7 +405,7 @@ class NCIntentsProcessor(mdl: NCModel) extends LazyLogging:
             intent <- NCIdlCompiler.compileIntents(ann.value(), mdl, mtdStr)
         )
             if intentDecls.exists(_.id == intent.id && existsForOtherMethod(intent.id)) then
-                throw new NCException(s"Duplicate intent ID [mdlId=$id, origin=$origin, callback=$mtdStr, id=${intent.id}]")
+                E(s"Duplicate intent ID [mdlId=$id, origin=$origin, callback=$mtdStr, id=${intent.id}]")
             else
                 bindIntent(intent, prepareCallback(mo, intent))
 
@@ -406,9 +415,7 @@ class NCIntentsProcessor(mdl: NCModel) extends LazyLogging:
 
             intentDecls.find(_.id == refId) match
                 case Some(intent) => bindIntent(intent, prepareCallback(mo, intent))
-                case None => throw new NCException(
-                    s"@NCIntentRef(\"$refId\") references unknown intent ID [mdlId=$id, origin=$origin, refId=$refId, callback=$mtdStr]"
-                )
+                case None => E(s"@NCIntentRef(\"$refId\") references unknown intent ID [mdlId=$id, origin=$origin, refId=$refId, callback=$mtdStr]")
 
     /**
       *
@@ -421,7 +428,7 @@ class NCIntentsProcessor(mdl: NCModel) extends LazyLogging:
 
         // Checks method result type.
         if mtd.getReturnType != CLS_QRY_RES then
-            throw new NCException(s"Unexpected result type for @NCIntent annotated method [mdlId=$id, intentId=${intent.id}, type=${class2Str(mtd.getReturnType)}, callback=${method2Str(mtd)}]")
+            E(s"Unexpected result type for @NCIntent annotated method [mdlId=$id, intentId=${intent.id}, type=${class2Str(mtd.getReturnType)}, callback=${method2Str(mtd)}]")
 
         val allParamTypes = mtd.getParameterTypes.toSeq
 
@@ -441,7 +448,7 @@ class NCIntentsProcessor(mdl: NCModel) extends LazyLogging:
 
         // Checks tokens parameters annotations count.
         if tokParamAnns.sizeIs != tokParamTypes.length then
-            throw new NCException(s"Unexpected annotations count for @NCIntent annotated method [mdlId=$id, intentId=${intent.id}, count=${tokParamAnns.size}, callback=${method2Str(mtd)}]")
+            E(s"Unexpected annotations count for @NCIntent annotated method [mdlId=$id, intentId=${intent.id}, count=${tokParamAnns.size}, callback=${method2Str(mtd)}]")
 
         // Gets terms IDs.
         val termIds = tokParamAnns.toList.zipWithIndex.map {
@@ -456,16 +463,15 @@ class NCIntentsProcessor(mdl: NCModel) extends LazyLogging:
 
                     case 0 =>
                         if idx == 0 then
-                            throw new NCException(s"Missing @NCIntentTerm annotation or wrong type of the 1st parameter (must be 'NCIntentMatch') for [mdlId=$id, intentId=${intent.id}, arg=${mkArg()}]")
+                            E(s"Missing @NCIntentTerm annotation or wrong type of the 1st parameter (must be 'NCIntentMatch') for [mdlId=$id, intentId=${intent.id}, arg=${mkArg()}]")
                         else
-                            throw new NCException(s"Missing @NCIntentTerm annotation for [mdlId=$id, intentId=${intent.id}, arg=${mkArg()}]")
+                            E(s"Missing @NCIntentTerm annotation for [mdlId=$id, intentId=${intent.id}, arg=${mkArg()}]")
 
-                    case _ =>
-                        throw new NCException(s"Too many @NCIntentTerm annotations for [mdlId=$id, intentId=${intent.id}, arg=${mkArg()}]")
+                    case _ => E(s"Too many @NCIntentTerm annotations for [mdlId=$id, intentId=${intent.id}, arg=${mkArg()}]")
             }
 
         if NCUtils.containsDups(termIds) then
-            throw new NCException(s"Duplicate term IDs in @NCIntentTerm annotations [mdlId=$id, intentId=${intent.id}, dups=${NCUtils.getDups(termIds).mkString(", ")}, callback=${method2Str(mtd)}]")
+            E(s"Duplicate term IDs in @NCIntentTerm annotations [mdlId=$id, intentId=${intent.id}, dups=${NCUtils.getDups(termIds).mkString(", ")}, callback=${method2Str(mtd)}]")
 
         val terms = intent.terms
 
@@ -476,19 +482,19 @@ class NCIntentsProcessor(mdl: NCModel) extends LazyLogging:
 
         if invalidIds.nonEmpty then
             // Report only the first one for simplicity & clarity.
-            throw new NCException(s"Unknown term ID in @NCIntentTerm annotation [mdlId=$id, intentId=${intent.id}, termId=${invalidIds.head}, callback=${method2Str(mtd)}]")
+            E(s"Unknown term ID in @NCIntentTerm annotation [mdlId=$id, intentId=${intent.id}, termId=${invalidIds.head}, callback=${method2Str(mtd)}]")
 
         val paramGenTypes = getSeq(mtd.getGenericParameterTypes.toIndexedSeq)
 
         require(tokParamTypes.sizeIs == paramGenTypes.length)
 
         // Checks parameters.
-        checkTypes(mdl, mtd, tokParamTypes, paramGenTypes, ctxFirstParam)
+        checkTypes(mtd, tokParamTypes, paramGenTypes, ctxFirstParam)
 
         // Checks limits.
         val allLimits = terms.map(t => t.id.orNull -> (t.min, t.max)).toMap
 
-        checkMinMax(mdl, mtd, tokParamTypes, termIds.map(allLimits), ctxFirstParam)
+        checkMinMax(mtd, tokParamTypes, termIds.map(allLimits), ctxFirstParam)
 
         Callback(mtd,
             (ctx: NCIntentMatch) =>
@@ -503,23 +509,6 @@ class NCIntentsProcessor(mdl: NCModel) extends LazyLogging:
                 invoke(id, mo, args.toArray)
         )
 
-    /**
-      *
-      * @param cls
-      */
-    private def processClass(cls: Class[_]): Unit =
-        if cls != null then
-            try
-                for (
-                    ann <- cls.getAnnotationsByType(CLS_INTENT);
-                    intent <- NCIdlCompiler.compileIntents(ann.value(), mdl, cls.getName)
-                )
-                    if intentDecls.exists(_.id == intent.id) then
-                        throw new NCException(s"Duplicate intent ID [mdlId=$id, origin=$origin, class=$cls, id=${intent.id}]")
-                    else
-                        intentDecls += intent
-            catch
-                case _: ClassNotFoundException => throw new NCException(s"Failed to scan class for @NCIntent annotation: $cls")
 
     /**
       *
@@ -534,9 +523,7 @@ class NCIntentsProcessor(mdl: NCModel) extends LazyLogging:
             val refs = getReferences(anns.head)
 
             if refs == null || refs.isEmpty then
-                throw new NCException(
-                    s"Additional reference in @${clazz.getSimpleName} annotation is empty [mdlId=$id, origin=$origin]"
-                )
+                E(s"Additional reference in @${clazz.getSimpleName} annotation is empty [mdlId=$id, origin=$origin]")
 
             for (ref <- refs if !Modifier.isAbstract(ref.getModifiers))
                 processClass(ref)
@@ -549,8 +536,7 @@ class NCIntentsProcessor(mdl: NCModel) extends LazyLogging:
       * @param mdl
       * @return
       */
-    private def scanSamples(mdl: NCModel): Set[Sample] =
-        val mdlId = mdl.getConfig.getId
+    private def scanSamples(): Set[Sample] =
         val samples = mutable.Buffer.empty[Sample]
 
         for (m <- getAllMethods(mdl))
@@ -562,7 +548,7 @@ class NCIntentsProcessor(mdl: NCModel) extends LazyLogging:
 
             if smpAnns.nonEmpty || smpAnnsRef.nonEmpty then
                 if intAnns.isEmpty && refAnns.isEmpty then
-                    throw new NCException(s"@NCIntentSample or @NCIntentSampleRef annotations without corresponding @NCIntent or @NCIntentRef annotations: $mtdStr")
+                    E(s"@NCIntentSample or @NCIntentSampleRef annotations without corresponding @NCIntent or @NCIntentRef annotations: $mtdStr")
                 else
                     def read[T](
                         annArr: scala.Array[T],
@@ -604,3 +590,68 @@ class NCIntentsProcessor(mdl: NCModel) extends LazyLogging:
                 logger.warn(s"@NCIntentSample or @NCIntentSampleRef annotations are missing for: $mtdStr")
 
         samples.toSet
+
+    private def getPackageClasses(pack: String): Set[Class[_]] =
+        val classes =
+            Using.resource(new BufferedReader(
+                new InputStreamReader(ClassLoader.getSystemClassLoader.getResourceAsStream(
+                    pack.replaceAll("[.]", "/")))
+            )) {
+                reader =>
+                    val lines: util.List[String] = reader.lines().collect(Collectors.toList)
+
+                    lines.asScala.filter(_.endsWith(".class")).
+                        flatMap(className =>
+                            def make(name: String): Option[Class[_]] =
+                                try
+                                    Option(Class.forName(name))
+                                catch
+                                    case e: ClassNotFoundException =>
+                                        logger.warn(s"Class cannot loaded: $name", e)
+
+                                        None
+                            make(s"$pack.${className.substring(0, className.lastIndexOf('.'))}")
+                        )
+            }
+
+        // Check should be after classes loading attempt.
+        if Thread.currentThread().getContextClassLoader.getDefinedPackage(pack) == null then
+            E(s"Invalid additional references in @${CLS_MDL_PKGS_REF.getSimpleName} annotation [mdlId=$id, origin=$origin, package=$pack]")
+
+        classes.toSet
+
+    private def processClass(cls: Class[_]): Unit =
+        if cls != null then
+            try
+                for (
+                    ann <- cls.getAnnotationsByType(CLS_INTENT);
+                        intent <- NCIdlCompiler.compileIntents(ann.value(), mdl, cls.getName)
+                )
+                    if intentDecls.exists(_.id == intent.id) then
+                        E(s"Duplicate intent ID [mdlId=$id, origin=$origin, class=$cls, id=${intent.id}]")
+                    else
+                        intentDecls += intent
+            catch
+                case _: ClassNotFoundException => E(s"Failed to scan class for @NCIntent annotation: $cls")
+
+    /**
+      *
+      * @return
+      */
+    private def scanIntents(): Unit =
+        // Third, scan all methods for intent-callback bindings.
+        for (m <- getAllMethods(mdl))
+            processMethod(MethodOwner(method = m, objClassName = null, obj = mdl))
+
+        // Process @NCModelAddClasses annotation.
+        scanAdditionalClasses(CLS_MDL_CLS_REF, (a: NCModelAddClasses) => a.value().toIndexedSeq)
+
+        // Process @NCModelAddPackages annotation.
+        scanAdditionalClasses(
+            CLS_MDL_PKGS_REF, (a: NCModelAddPackage) => a.value().toIndexedSeq.flatMap(getPackageClasses)
+        )
+
+        val unusedIntents = intentDecls.filter(i => !intents.exists(_._1.id == i.id))
+
+        if unusedIntents.nonEmpty then
+            logger.warn(s"Intents are unused (have no callback): [mdlId=$id, origin=$origin, intentIds=${unusedIntents.map(_.id).mkString("(", ", ", ")")}]")

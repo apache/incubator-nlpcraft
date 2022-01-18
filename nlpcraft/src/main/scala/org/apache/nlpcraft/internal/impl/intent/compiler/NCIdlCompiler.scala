@@ -31,4 +31,4 @@ object NCIdlCompiler:
       * @param origin
       * @return
       */
-    def compileIntents(idl: String, mdl: NCModel, origin: String): Set[NCIdlIntent] = ??? // TODO:
+    def compileIntents(idl: String, mdl: NCModel, origin: String): Set[NCIdlIntent] = Set.empty // TODO:
