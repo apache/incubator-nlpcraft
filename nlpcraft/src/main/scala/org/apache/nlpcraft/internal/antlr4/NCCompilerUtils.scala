@@ -37,11 +37,11 @@ object NCCompilerUtils:
         val in0 = in.strip()
         val pos = Math.max(0, charPos0)
         val dash = "-" * in0.length
-        var ptrStr = dash.substring(0, pos) + r("^")
+        var ptrStr = s"${dash.substring(0, pos)}${r("^")}"
 
-        if pos < dash.length - 1 then ptrStr = ptrStr + y("~") + y(dash.substring(pos + 2))
-        else ptrStr = ptrStr + y(dash.substring(pos + 1))
+        if pos < dash.length - 1 then ptrStr = s"$ptrStr${y("~")}${y(dash.substring(pos + 2))}"
+        else ptrStr = s"$ptrStr${y(dash.substring(pos + 1))}"
 
-        val origStr = in0.substring(0, pos) + r(in0.charAt(pos)) + y(in0.substring(pos + 1))
+        val origStr = s"${in0.substring(0, pos)}${r(in0.charAt(pos))}${y(in0.substring(pos + 1))}"
 
         CompilerErrorHolder(ptrStr, origStr)

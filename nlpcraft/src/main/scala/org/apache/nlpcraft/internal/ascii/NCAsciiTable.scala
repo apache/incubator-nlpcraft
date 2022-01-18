@@ -119,18 +119,22 @@ class NCAsciiTable:
       * between individual rows.
       */
     var insideBorder = false
+
     /**
       * Global Flag indicating whether of not to automatically draw horizontal lines
       * for multiline rows.
       */
     var multiLineAutoBorder = true
+
     /**
       * If lines exceeds the style's maximum width it will be broken up
       * either by nearest space (by whole words) or mid-word.
       */
     var breakUpByWords = true
+
     /** Default row style. */
     var defaultRowStyle: String = DFLT_ROW_STYLE
+
     /** Default header style. */
     var defaultHeaderStyle: String = DFLT_HEADER_STYLE
 
@@ -285,7 +289,7 @@ class NCAsciiTable:
                 var curr = 0
                 val len = line.length
 
-                def addLine(s: String): Unit = buf += (if buf.isEmpty then s else space(leader) + s)
+                def addLine(s: String): Unit = buf += (if buf.isEmpty then s else s"${space(leader)}$s")
 
                 while (curr < len)
                     if curr - start > maxWidth then
@@ -389,9 +393,9 @@ class NCAsciiTable:
     private def aligned(txt: String, width: Int, sty: Style): String =
         val d = width - NCUtils.stripAnsi(txt).length
         sty.align match
-            case "center" => space(d / 2) + txt + space(d / 2 + d % 2)
-            case "left" => space(sty.leftPad) + txt + space(d - sty.leftPad)
-            case "right" => space(d - sty.rightPad) + txt + space(sty.rightPad)
+            case "center" => s"${space(d / 2)}$txt${space(d / 2 + d % 2)}"
+            case "left" => s"${space(sty.leftPad)}$txt${space(d - sty.leftPad)}"
+            case "right" => s"${space(d - sty.rightPad)}$txt${space(sty.rightPad)}"
             case _ => throw new AssertionError(s"Invalid align option: $sty")
 
     override def toString: String = mkString()

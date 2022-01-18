@@ -66,7 +66,7 @@ object NCMacroCompiler extends LazyLogging:
           * @param s
           * @return
           */
-        private def concat(optS: String, s: String): String = if optS.isEmpty then s else optS + " " + s
+        private def concat(optS: String, s: String): String = if optS.isEmpty then s else s"$optS $s"
 
         /**
           *
@@ -84,7 +84,7 @@ object NCMacroCompiler extends LazyLogging:
           * @param ctx
           */
         private def checkMaxSyn(buf: mutable.Buffer[String])(implicit ctx: ParserRuleContext): Unit =
-            if buf.size > MAX_SYN then
+            if buf.sizeIs > MAX_SYN then
                 throw compilerError(s"Exceeded max number ($MAX_SYN) of macro expansions: ${buf.size}")
 
         override def enterExpr(ctx: NCMacroDslParser.ExprContext): Unit =
@@ -214,10 +214,10 @@ object NCMacroCompiler extends LazyLogging:
         val hldr = NCCompilerUtils.mkErrorHolder(in, charPos)
         val aMsg = NCUtils.decapitalize(msg) match
             case s: String if s.last == '.' => s
-            case s: String => s + '.'
-        s"Macro compiler error at line $line - $aMsg\n" +
-            s"  |-- ${c("Macro:")} ${hldr.origStr}\n" +
-            s"  +-- ${c("Error:")} ${hldr.ptrStr}"
+            case s: String => s"$s."
+        s"""Macro compiler error at line $line - $aMsg
+            |-- ${c("Macro:")} ${hldr.origStr}
+            +-- ${c("Error:")} ${hldr.ptrStr}"""
 
     /**
       *

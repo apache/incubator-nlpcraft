@@ -87,11 +87,9 @@ private[impl] object NCSemanticSynonymsProcessor extends LazyLogging:
 
             // Ignore suspicious chars if regex is used in macro...
             for ((name, value) <- macros if isSuspicious(name) || (isSuspicious(value) && !value.contains("//")))
-                logger.warn(
-                    s"Suspicious macro definition (use of ${SUSP_SYNS_CHARS.map(s => s"'$s'").mkString(", ")} chars) [" +
-                        s"macro=$name" +
-                    s"]"
-                )
+                logger.warn(s"Suspicious macro definition (use of ${SUSP_SYNS_CHARS.map(s => s"'$s'").mkString(", ")} chars) [" +
+                    s"macro=$name" +
+                s"]")
 
     /**
       *
@@ -139,7 +137,7 @@ private[impl] object NCSemanticSynonymsProcessor extends LazyLogging:
             if vals != null then
                 if hasNullOrEmpty(vals.keySet().asScala) then E(s"Some values names are null or empty [element=$elemId]")
                 for ((name, syns) <- vals.asScala)
-                    checkSynonyms(syns, elemId, Some(name))
+                    checkSynonyms(syns, elemId, Option(name))
 
     /**
       *
