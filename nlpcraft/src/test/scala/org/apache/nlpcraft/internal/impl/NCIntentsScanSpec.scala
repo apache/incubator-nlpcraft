@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test
   *
   */
 class NCIntentsScanSpec:
+    // Different ways for preparing model instances.
     private val mdls = Seq(
         NCTestModelJava.mkModel,
         NCTestModelScala.mkModel,
