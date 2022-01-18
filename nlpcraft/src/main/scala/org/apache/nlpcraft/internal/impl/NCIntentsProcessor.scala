@@ -18,24 +18,21 @@
 package org.apache.nlpcraft.internal.impl
 
 import com.typesafe.scalalogging.LazyLogging
-import dotty.tools.io.ClassPath
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.internal.makro.NCMacroParser
-import org.apache.nlpcraft.internal.util.NCUtils
 import org.apache.nlpcraft.internal.impl.intent.*
 import org.apache.nlpcraft.internal.impl.intent.compiler.*
+import org.apache.nlpcraft.internal.makro.NCMacroParser
+import org.apache.nlpcraft.internal.util.NCUtils
 
-import java.io.PrintStream
+import java.io.*
 import java.lang.annotation.Annotation
 import java.lang.reflect.*
 import java.util
 import java.util.function.Function
+import java.util.stream.Collectors
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
 import scala.util.Using
-import java.io.*
-import java.util.stream.Collectors
-import scala.language.postfixOps
 
 /**
   *
@@ -251,7 +248,7 @@ object NCIntentsProcessor:
 
             lazyObj
 
-import org.apache.nlpcraft.internal.impl.NCIntentsProcessor._
+import org.apache.nlpcraft.internal.impl.NCIntentsProcessor.*
 
 /**
   *
@@ -284,7 +281,7 @@ class NCIntentsProcessor(mdl: NCModel) extends LazyLogging:
             logger.warn(s"Model has no intent: $id")
 
         intents.toSeq
-    
+
     /**
       *
       * @param mtd
@@ -625,7 +622,7 @@ class NCIntentsProcessor(mdl: NCModel) extends LazyLogging:
             try
                 for (
                     ann <- cls.getAnnotationsByType(CLS_INTENT);
-                        intent <- NCIdlCompiler.compileIntents(ann.value(), mdl, cls.getName)
+                    intent <- NCIdlCompiler.compileIntents(ann.value(), mdl, cls.getName)
                 )
                     if intentDecls.exists(_.id == intent.id) then
                         E(s"Duplicate intent ID [mdlId=$id, origin=$origin, class=$cls, id=${intent.id}]")
