@@ -18,6 +18,7 @@
 package org.apache.nlpcraft.internal.impl;
 
 import org.apache.nlpcraft.NCIntent;
+import org.apache.nlpcraft.NCIntentImport;
 import org.apache.nlpcraft.NCIntentRef;
 import org.apache.nlpcraft.NCIntentSample;
 import org.apache.nlpcraft.NCIntentSampleRef;
@@ -38,6 +39,7 @@ public class NCTestModelJava {
     public static NCModel mkModel() {
         return
             new NCModelAdapter(NCTestConfigJava.CFG, NCTestConfigJava.EN_PIPELINE) {
+                @NCIntentImport({"scan/idl.idl"})
                 @NCIntent(
                     "intent=intent1 term(single)~{# == 'id1'} term(list)~{# == 'id2'}}[0,7] term(opt)~{# == 'id3'}?"
                 )
@@ -50,8 +52,7 @@ public class NCTestModelJava {
                     return new NCResult();
                 }
 
-                // TODO:
-                @NCIntentRef("scan/idl.idl/intent2")
+                @NCIntentRef("intent2")
                 @NCIntentSampleRef("scan/samples.txt")
                 NCResult intent2(
                     @NCIntentTerm("single") NCToken single,

@@ -17,13 +17,19 @@
 
 package org.apache.nlpcraft.internal.impl
 
+import org.apache.nlpcraft.NCModel
 import org.junit.jupiter.api.Test
 
 /**
   *
   */
 class NCIntentsScanSpec:
+    private val mdls = Seq(
+        NCTestModelJava.mkModel,
+        NCTestModelScala.mkModel,
+        NCTestModelScala.NCTestModelScalaObj,
+        new NCTestModelScala.NCTestModelScalaClass
+    )
+
     @Test
-    def test(): Unit =
-        new NCIntentsProcessor(NCTestModelScala.mkModel).scan()
-        new NCIntentsProcessor(NCTestModelJava.mkModel).scan()
+    def test(): Unit = for (mdl <- mdls) new NCIntentsProcessor(mdl).scan()

@@ -373,7 +373,21 @@ class NCIntentsProcessor(mdl: NCModel) extends LazyLogging:
       *
       * @return
       */
-    private def scanImports(): Set[Sample] = null // TODO:
+    private def scanImports(): Unit =
+        def add(anns: scala.Array[NCIntentImport]): Unit =
+            if anns != null then
+                for (
+                    ann <- anns;
+                    res <- ann.value();
+                    intent <- NCIdlCompiler.compileIntents(NCUtils.readResource(res).mkString, mdl, res)
+                )
+                    if intentDecls.exists(_.id == intent.id) then
+                        E(s"Duplicate intent ID [mdlId=$id, origin=$origin, resource=$res, id=${intent.id}]")
+                    else
+                        intentDecls += intent
+
+        add(mdl.getClass.getAnnotationsByType(CLS_INTENT_IMPORT))
+        for (m <- getAllMethods(mdl)) add(m.getAnnotationsByType(CLS_INTENT_IMPORT))
 
     /**
       *
@@ -381,7 +395,6 @@ class NCIntentsProcessor(mdl: NCModel) extends LazyLogging:
       */
     private def processMethod(mo: MethodOwner): Unit =
         val m = mo.method
-
         val mtdStr = method2Str(m)
 
         def bindIntent(intent: NCIdlIntent, cb: Callback): Unit =
@@ -636,6 +649,8 @@ class NCIntentsProcessor(mdl: NCModel) extends LazyLogging:
       * @return
       */
     private def scanIntents(): Unit =
+        scanImports()
+
         // Third, scan all methods for intent-callback bindings.
         for (m <- getAllMethods(mdl))
             processMethod(MethodOwner(method = m, objClassName = null, obj = mdl))
