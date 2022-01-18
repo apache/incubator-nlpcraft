@@ -15,15 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.internal.impl
+package org.apache.nlpcraft.internal.impl.intent.compiler
 
-import org.junit.jupiter.api.Test
+import org.apache.nlpcraft.*
+import org.apache.nlpcraft.internal.impl.intent.*
 
 /**
   *
   */
-class NCIntentsScanSpec:
-    @Test
-    def test(): Unit =
-        new NCIntentsProcessor(NCTestModelScala.mkModel).scan()
-        new NCIntentsProcessor(NCTestModelJava.mkModel).scan()
+object NCIdlCompiler:
+    /**
+      *
+      * @param idl
+      * @param mdl
+      * @param origin
+      * @return
+      */
+    def compileIntents(idl: String, mdl: NCModel, origin: String): Set[NCIdlIntent] = ??? // TODO:

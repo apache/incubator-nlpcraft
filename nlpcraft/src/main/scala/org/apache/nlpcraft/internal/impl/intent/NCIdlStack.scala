@@ -15,15 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.internal.impl
+package org.apache.nlpcraft.internal.impl.intent
 
-import org.junit.jupiter.api.Test
+import scala.collection.mutable
 
 /**
   *
   */
-class NCIntentsScanSpec:
-    @Test
-    def test(): Unit =
-        new NCIntentsProcessor(NCTestModelScala.mkModel).scan()
-        new NCIntentsProcessor(NCTestModelJava.mkModel).scan()
+case class NCIdlStackItem (
+    value: Object,
+    tokUse: Int
+)
+
+object NCIdlStackItem:
+    def apply(v: Boolean, f: Int): NCIdlStackItem = new NCIdlStackItem(Boolean.box(v), f)
+    def apply(v: Long, f: Int): NCIdlStackItem = new NCIdlStackItem(Long.box(v), f)
+    def apply(v: Double, f: Int): NCIdlStackItem = new NCIdlStackItem(Double.box(v), f)
+/**
+  *
+  */
+trait NCIdlStackType extends (() => NCIdlStackItem)
+/**
+  *
+  */
+class NCIdlStack extends mutable.Stack[NCIdlStackType]:
+    /**
+      * Special marker for stack frames.
+      */
+    final val PLIST_MARKER: NCIdlStackType = () => NCIdlStackItem(null, 0)

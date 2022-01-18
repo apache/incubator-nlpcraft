@@ -15,15 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.internal.impl
+package org.apache.nlpcraft.internal.impl.intent
 
-import org.junit.jupiter.api.Test
+import org.apache.nlpcraft.NCToken
 
 /**
-  *
-  */
-class NCIntentsScanSpec:
-    @Test
-    def test(): Unit =
-        new NCIntentsProcessor(NCTestModelScala.mkModel).scan()
-        new NCIntentsProcessor(NCTestModelJava.mkModel).scan()
+ *
+ */
+trait NCIdlFunction extends ((NCToken, NCIdlContext) => NCIdlStackItem)

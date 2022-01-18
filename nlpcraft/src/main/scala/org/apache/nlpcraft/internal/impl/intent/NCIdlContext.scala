@@ -15,15 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.internal.impl
+package org.apache.nlpcraft.internal.impl.intent
 
-import org.junit.jupiter.api.Test
+import org.apache.nlpcraft.*
+
+import scala.collection.mutable
 
 /**
-  *
-  */
-class NCIntentsScanSpec:
-    @Test
-    def test(): Unit =
-        new NCIntentsProcessor(NCTestModelScala.mkModel).scan()
-        new NCIntentsProcessor(NCTestModelJava.mkModel).scan()
+ *
+ * @param toks User input tokens.
+ * @param intentMeta Intent metadata.
+ * @param convMeta Conversation metadata.
+ * @param fragMeta Fragment (argument) metadata passed during intent fragment reference.
+ * @param req Server request holder.
+ * @param vars Intent variable storage.
+ */
+case class NCIdlContext(
+    toks: Seq[NCToken] = Seq.empty,
+    intentMeta: Map[String, Object] = Map.empty,
+    convMeta: Map[String, Object] = Map.empty,
+    fragMeta: Map[String, Object] = Map.empty,
+    req: NCRequest,
+    vars: mutable.Map[String, NCIdlFunction] = mutable.HashMap.empty
+)
+
