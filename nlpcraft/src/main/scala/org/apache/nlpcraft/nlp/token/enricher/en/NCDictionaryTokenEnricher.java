@@ -21,7 +21,7 @@ import org.apache.nlpcraft.NCModelConfig;
 import org.apache.nlpcraft.NCRequest;
 import org.apache.nlpcraft.NCToken;
 import org.apache.nlpcraft.NCTokenEnricher;
-import org.apache.nlpcraft.nlp.token.enricher.en.impl.NCDictionaryImpl;
+import org.apache.nlpcraft.nlp.token.enricher.en.impl.NCDictionaryTokenEnricherImpl;
 
 import java.util.List;
 
@@ -29,7 +29,7 @@ import java.util.List;
  * TODO: enriches with <code>dict</code> property.
  */
 public class NCDictionaryTokenEnricher implements NCTokenEnricher {
-    private final NCDictionaryImpl impl = new NCDictionaryImpl();
+    private final NCDictionaryTokenEnricherImpl impl = new NCDictionaryTokenEnricherImpl();
 
     @Override
     public void enrich(NCRequest req, NCModelConfig cfg, List<NCToken> toks) {

@@ -18,33 +18,29 @@
 package org.apache.nlpcraft.nlp.token.enricher.en.impl
 
 import com.typesafe.scalalogging.LazyLogging
+import opennlp.tools.stemmer.PorterStemmer
 import org.apache.nlpcraft.*
+import org.apache.nlpcraft.internal.util.NCUtils
 
 import java.io.*
 import java.util.List as JList
-import scala.collection.mutable
-import scala.jdk.CollectionConverters.CollectionHasAsScala
 
 /**
-  *
+  * 
+  * @param res
   */
-class NCBracketsImpl extends NCTokenEnricher with LazyLogging:
+class NCSwearWordsTokenEnricherImpl(res: String) extends NCTokenEnricher with LazyLogging:
+    require(res != null)
+
+    private final val stemmer = new PorterStemmer
+    private var swearWords: Set[String] = _
+
+    init()
+
+    private def init(): Unit =
+        swearWords = NCUtils.readTextStream(NCUtils.getStream(res), "UTF-8").
+            map(p => stemmer.stem(p.toLowerCase)).toSet
+        logger.trace(s"Loaded resource: $res")
     override def enrich(req: NCRequest, cfg: NCModelConfig, toks: JList[NCToken]): Unit =
-        val stack = new java.util.Stack[String]()
-        val map = mutable.HashMap.empty[NCToken, Boolean]
-        var ok = true
+        toks.forEach(t => t.put("swear", swearWords.contains(stemmer.stem(t.getText.toLowerCase))))
 
-        def check(expected: String): Unit = if stack.empty() || stack.pop() != expected then ok = false
-        def mark(t: NCToken): Unit = map += t -> !stack.isEmpty
-
-        for (t <- toks.asScala if ok)
-            t.getText match
-                case "(" | "{" | "[" | "<" => mark(t); stack.push(t.getText)
-                case ")" => check("("); mark(t)
-                case "}" => check("{"); mark(t)
-                case "]" => check("["); mark(t)
-                case ">" => check("<"); mark(t)
-                case _ => mark(t)
-
-        if ok && stack.isEmpty then map.foreach { (tok, b) => tok.put("brackets", b) }
-        else logger.warn(s"Detected invalid brackets in: ${req.getText}")

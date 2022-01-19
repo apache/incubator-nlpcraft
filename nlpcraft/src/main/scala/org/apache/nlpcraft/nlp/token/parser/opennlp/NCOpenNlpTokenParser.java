@@ -20,7 +20,7 @@ package org.apache.nlpcraft.nlp.token.parser.opennlp;
 import org.apache.nlpcraft.NCException;
 import org.apache.nlpcraft.NCToken;
 import org.apache.nlpcraft.NCTokenParser;
-import org.apache.nlpcraft.nlp.token.parser.opennlp.impl.NCOpenNlpImpl;
+import org.apache.nlpcraft.nlp.token.parser.opennlp.impl.NCOpenNlpTokenParserImpl;
 
 import java.util.List;
 import java.util.Objects;
@@ -33,7 +33,7 @@ import java.util.Objects;
  *  - lemmatizer: https://raw.githubusercontent.com/richardwilly98/elasticsearch-opennlp-auto-tagging/master/src/main/resources/models/en-lemmatizer.dict
  */
 public class NCOpenNlpTokenParser implements NCTokenParser {
-    private final NCOpenNlpImpl impl;
+    private final NCOpenNlpTokenParserImpl impl;
 
     /**
      *
@@ -48,7 +48,7 @@ public class NCOpenNlpTokenParser implements NCTokenParser {
         Objects.requireNonNull(posMdlSrc, "POS model path cannot be null.");
         Objects.requireNonNull(lemmaDicSrc, "Lemmatizer model path cannot be null.");
 
-        impl = new NCOpenNlpImpl(tokMdlSrc, posMdlSrc, lemmaDicSrc);
+        impl = new NCOpenNlpTokenParserImpl(tokMdlSrc, posMdlSrc, lemmaDicSrc);
     }
 
     @Override

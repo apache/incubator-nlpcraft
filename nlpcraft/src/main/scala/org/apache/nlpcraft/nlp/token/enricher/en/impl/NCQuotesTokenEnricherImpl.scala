@@ -26,7 +26,7 @@ import scala.jdk.CollectionConverters.*
 /**
   *
   */
-class NCQuotesImpl extends NCTokenEnricher with LazyLogging:
+class NCQuotesTokenEnricherImpl extends NCTokenEnricher with LazyLogging:
     private final val Q_POS: Set[String] = Set("``", "''")
     private def isQuote(t: NCToken): Boolean = Q_POS.contains(t.getPos)
 

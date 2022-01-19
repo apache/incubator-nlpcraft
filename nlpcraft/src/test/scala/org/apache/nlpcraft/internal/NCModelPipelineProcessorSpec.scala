@@ -19,9 +19,9 @@ package org.apache.nlpcraft.internal
 
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.impl.NCModelPipelineProcessor
-import org.apache.nlpcraft.nlp.entity.parser.nlp.impl.NCNlpImpl
+import org.apache.nlpcraft.nlp.entity.parser.nlp.impl.NCNlpEntityParserImpl
 import org.apache.nlpcraft.nlp.entity.parser.semantic.*
-import org.apache.nlpcraft.nlp.entity.parser.semantic.impl.en.NCEnPorterStemmer
+import org.apache.nlpcraft.nlp.entity.parser.semantic.impl.en.NCEnSemanticPorterStemmer
 import org.apache.nlpcraft.nlp.util.*
 import org.apache.nlpcraft.nlp.util.opennlp.*
 import org.junit.jupiter.api.*
@@ -45,7 +45,7 @@ class NCModelPipelineProcessorSpec:
         def test(txt: String, variantCnt: Int, elements: NCSemanticElement*): Unit =
             val pipeline = EN_PIPELINE.clone()
 
-            val parser = new NCSemanticEntityParser(new NCEnPorterStemmer, pipeline.getTokenParser, elements.asJava)
+            val parser = new NCSemanticEntityParser(new NCEnSemanticPorterStemmer, pipeline.getTokenParser, elements.asJava)
             pipeline.getEntityParsers.clear()
             pipeline.getEntityParsers.add(parser)
 

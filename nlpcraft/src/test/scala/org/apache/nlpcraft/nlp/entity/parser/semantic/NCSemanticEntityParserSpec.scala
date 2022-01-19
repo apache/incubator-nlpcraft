@@ -20,7 +20,7 @@ package org.apache.nlpcraft.nlp.entity.parser.semantic
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.util.NCUtils
 import org.apache.nlpcraft.nlp.entity.parser.opennlp.NCOpenNlpEntityParser
-import org.apache.nlpcraft.nlp.entity.parser.semantic.impl.en.NCEnPorterStemmer
+import org.apache.nlpcraft.nlp.entity.parser.semantic.impl.en.NCEnSemanticPorterStemmer
 import org.apache.nlpcraft.nlp.token.enricher.en.NCStopWordsTokenEnricher
 import org.apache.nlpcraft.nlp.util.*
 import org.apache.nlpcraft.nlp.util.opennlp.*
@@ -65,7 +65,7 @@ object NCSemanticTestElement:
 class NCSemanticEntityParserSpec:
     private val parser =
         new NCSemanticEntityParser(
-            new NCEnPorterStemmer,
+            new NCEnSemanticPorterStemmer,
             EN_PIPELINE.getTokenParser,
             Seq(
                 // Standard.

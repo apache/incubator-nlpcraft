@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.nlp.entity.parser.opennlp;
 
 import org.apache.nlpcraft.*;
-import org.apache.nlpcraft.nlp.entity.parser.opennlp.impl.NCOpenNlpImpl;
+import org.apache.nlpcraft.nlp.entity.parser.opennlp.impl.NCOpenNlpEntityParserImpl;
 
 import java.util.List;
 import java.util.Objects;
@@ -37,7 +37,7 @@ import java.util.Objects;
  * <p>
  */
 public class NCOpenNlpEntityParser implements NCEntityParser {
-    private final NCOpenNlpImpl impl;
+    private final NCOpenNlpEntityParserImpl impl;
 
     /**
      * @param mdlSrc
@@ -45,7 +45,7 @@ public class NCOpenNlpEntityParser implements NCEntityParser {
     public NCOpenNlpEntityParser(String mdlSrc) {
         Objects.requireNonNull(mdlSrc, "Model source cannot be null.");
 
-        this.impl = new NCOpenNlpImpl(java.util.Collections.singletonList(mdlSrc));
+        this.impl = new NCOpenNlpEntityParserImpl(java.util.Collections.singletonList(mdlSrc));
     }
 
     /**
@@ -55,7 +55,7 @@ public class NCOpenNlpEntityParser implements NCEntityParser {
         Objects.requireNonNull(mdlSrcs, "Model sources cannot be null.");
         if (mdlSrcs.size() == 0) throw new NCException("Model sources cannot be empty.");
 
-        this.impl = new NCOpenNlpImpl(mdlSrcs);
+        this.impl = new NCOpenNlpEntityParserImpl(mdlSrcs);
     }
 
     @Override

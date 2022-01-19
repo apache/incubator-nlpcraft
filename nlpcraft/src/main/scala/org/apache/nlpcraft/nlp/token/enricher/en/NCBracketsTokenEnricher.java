@@ -21,7 +21,7 @@ import org.apache.nlpcraft.NCModelConfig;
 import org.apache.nlpcraft.NCRequest;
 import org.apache.nlpcraft.NCToken;
 import org.apache.nlpcraft.NCTokenEnricher;
-import org.apache.nlpcraft.nlp.token.enricher.en.impl.NCBracketsImpl;
+import org.apache.nlpcraft.nlp.token.enricher.en.impl.NCBracketsTokenEnricherImpl;
 
 import java.util.List;
 
@@ -29,7 +29,7 @@ import java.util.List;
  * TODO: enriches with <code>brackets</code> property.
  */
 public class NCBracketsTokenEnricher implements NCTokenEnricher {
-    private final NCBracketsImpl impl = new NCBracketsImpl();
+    private final NCBracketsTokenEnricherImpl impl = new NCBracketsTokenEnricherImpl();
 
     @Override
     public void enrich(NCRequest req, NCModelConfig cfg, List<NCToken> toks) {
