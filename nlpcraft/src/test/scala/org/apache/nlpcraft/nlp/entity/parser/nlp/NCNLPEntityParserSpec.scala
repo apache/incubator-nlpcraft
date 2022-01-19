@@ -33,7 +33,7 @@ import scala.jdk.OptionConverters.RichOptional
 /**
   *
   */
-class NCNlpEntityParserSpec:
+class NCNLPEntityParserSpec:
     private val parser = new NCNLPEntityParser()
 
     /**

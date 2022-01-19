@@ -28,7 +28,7 @@ import scala.jdk.CollectionConverters.*
 /**
   *
   */
-class NCStanfordTokenParserSpec:
+class NCStanfordNLPTokenParserSpec:
     @Test
     def test(): Unit =
         val toks =

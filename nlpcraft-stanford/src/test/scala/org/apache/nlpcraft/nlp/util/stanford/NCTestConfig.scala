@@ -7,8 +7,6 @@ import org.apache.nlpcraft.nlp.util.NCTestPipeline
 
 import java.util.Properties
 
-/**TODO: add test with configured models for various languages. */
-
 final val CFG = new NCModelConfig("testId", "test", "1.0")
 
 /**

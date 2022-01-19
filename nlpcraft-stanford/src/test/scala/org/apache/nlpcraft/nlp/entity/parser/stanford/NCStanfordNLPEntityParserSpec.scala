@@ -26,7 +26,7 @@ import scala.jdk.CollectionConverters.*
 /**
   *
   */
-class NCStanfordEntityParserSpec:
+class NCStanfordNLPEntityParserSpec:
     private val parser = NCStanfordNLPEntityParser(STANFORD, Set("city", "date", "number", "email").asJava)
 
     @Test
