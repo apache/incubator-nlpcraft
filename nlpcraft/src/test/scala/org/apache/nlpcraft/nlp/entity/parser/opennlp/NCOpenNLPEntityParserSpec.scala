@@ -19,7 +19,6 @@ package org.apache.nlpcraft.nlp.entity.parser.opennlp
 
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.util.NCUtils
-import org.apache.nlpcraft.nlp.entity.parser.opennlp.NCOpenNlpEntityParser
 import org.apache.nlpcraft.nlp.util.*
 import org.apache.nlpcraft.nlp.util.opennlp.*
 import org.junit.jupiter.api.*
@@ -33,8 +32,8 @@ import scala.jdk.OptionConverters.RichOptional
 /**
   *
   */
-class NCOpenNlpEntityParserSpec:
-    private val parser = new NCOpenNlpEntityParser(
+class NCOpenNLPEntityParserSpec:
+    private val parser = new NCOpenNLPEntityParser(
         Seq(
             "opennlp/en-ner-location.bin",
             "opennlp/en-ner-money.bin",

@@ -23,7 +23,7 @@ import org.apache.nlpcraft.NCEntityParser;
 import org.apache.nlpcraft.NCModelConfig;
 import org.apache.nlpcraft.NCRequest;
 import org.apache.nlpcraft.NCToken;
-import org.apache.nlpcraft.nlp.entity.parser.stanford.impl.NCStanfordEntityParserImpl;
+import org.apache.nlpcraft.nlp.entity.parser.stanford.impl.NCStanfordNLPEntityParserImpl;
 
 import java.util.Collections;
 import java.util.List;
@@ -31,18 +31,16 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * TODO: add javadoc based on comments below.
  *
  * Generates entities with
  *  - ID `stanford:{name}` where 'name' is element name from configured StanfordCoreNLP instance, from supported set
  *  - property `stanford:{name}:confidence`, where confidence is double value between 0 and 1. Optional.
  *  - property `stanford:{name}:nne`, where nne is normalized value. Optional.
  */
-public class NCStanfordEntityParser implements NCEntityParser {
-    private final NCStanfordEntityParserImpl impl;
+public class NCStanfordNLPEntityParser implements NCEntityParser {
+    private final NCStanfordNLPEntityParserImpl impl;
 
     /**
-     * TODO: add javadoc based on comments below.
      *
      * Requires configured StanfordCoreNLP instance.
      * Example:
@@ -53,12 +51,11 @@ public class NCStanfordEntityParser implements NCEntityParser {
      * @param stanford
      * @param supported
      */
-    public NCStanfordEntityParser(StanfordCoreNLP stanford, Set<String> supported) {
-        // TODO: error texts.
+    public NCStanfordNLPEntityParser(StanfordCoreNLP stanford, Set<String> supported) {
         Objects.requireNonNull(stanford, "Stanford instance cannot be null.");
         Objects.requireNonNull(supported, "Supported elements set cannot be null.");
 
-        this.impl = new NCStanfordEntityParserImpl(stanford, supported);
+        this.impl = new NCStanfordNLPEntityParserImpl(stanford, supported);
     }
 
     /**
@@ -66,12 +63,11 @@ public class NCStanfordEntityParser implements NCEntityParser {
      * @param stanford
      * @param supported
      */
-    public NCStanfordEntityParser(StanfordCoreNLP stanford, String supported) {
-        // TODO: error texts.
+    public NCStanfordNLPEntityParser(StanfordCoreNLP stanford, String supported) {
         Objects.requireNonNull(stanford, "Stanford instance cannot be null.");
         Objects.requireNonNull(supported, "Supported element cannot be null.");
 
-        this.impl = new NCStanfordEntityParserImpl(stanford, Collections.singleton(supported));
+        this.impl = new NCStanfordNLPEntityParserImpl(stanford, Collections.singleton(supported));
     }
 
     @Override

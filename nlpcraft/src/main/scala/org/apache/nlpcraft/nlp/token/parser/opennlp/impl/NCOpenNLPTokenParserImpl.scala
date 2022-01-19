@@ -38,7 +38,7 @@ import scala.jdk.CollectionConverters.*
   * @param posMdlSrc
   * @param lemmaDicSrc
   */
-class NCOpenNlpTokenParserImpl(tokMdl: String,  posMdlSrc: String, lemmaDicSrc: String) extends NCTokenParser with LazyLogging:
+class NCOpenNLPTokenParserImpl(tokMdl: String,  posMdlSrc: String, lemmaDicSrc: String) extends NCTokenParser with LazyLogging:
     require(tokMdl != null)
     require(posMdlSrc != null)
     require(lemmaDicSrc != null)

@@ -22,7 +22,7 @@ import org.apache.nlpcraft.NCEntityParser;
 import org.apache.nlpcraft.NCModelConfig;
 import org.apache.nlpcraft.NCRequest;
 import org.apache.nlpcraft.NCToken;
-import org.apache.nlpcraft.nlp.entity.parser.nlp.impl.NCNlpEntityParserImpl;
+import org.apache.nlpcraft.nlp.entity.parser.nlp.impl.NCNLPEntityParserImpl;
 
 import java.util.List;
 
@@ -31,8 +31,8 @@ import java.util.List;
  *
  * Component is language independent.
  */
-public class NCNlpEntityParser implements NCEntityParser {
-    private final NCNlpEntityParserImpl impl = new NCNlpEntityParserImpl();
+public class NCNLPEntityParser implements NCEntityParser {
+    private final NCNLPEntityParserImpl impl = new NCNLPEntityParserImpl();
 
     @Override
     public List<NCEntity> parse(NCRequest req, NCModelConfig cfg, List<NCToken> toks) {

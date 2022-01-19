@@ -2,7 +2,7 @@ package org.apache.nlpcraft.nlp.util.stanford
 
 import edu.stanford.nlp.pipeline.StanfordCoreNLP
 import org.apache.nlpcraft.NCModelConfig
-import org.apache.nlpcraft.nlp.token.parser.stanford.NCStanfordTokenParser
+import org.apache.nlpcraft.nlp.token.parser.stanford.NCStanfordNLPTokenParser
 import org.apache.nlpcraft.nlp.util.NCTestPipeline
 
 import java.util.Properties
@@ -22,4 +22,4 @@ final val STANFORD =
 /**
   *
   */
-final val EN_STANFORD_PIPELINE = NCTestPipeline(new NCStanfordTokenParser(STANFORD))
+final val EN_STANFORD_PIPELINE = NCTestPipeline(new NCStanfordNLPTokenParser(STANFORD))

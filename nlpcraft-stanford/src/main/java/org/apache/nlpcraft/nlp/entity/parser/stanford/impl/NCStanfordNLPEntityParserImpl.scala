@@ -32,7 +32,7 @@ import scala.jdk.CollectionConverters.*
   * @param stanford
   * @param supported
   */
-class NCStanfordEntityParserImpl(stanford: StanfordCoreNLP, supported: JSet[String]) extends NCEntityParser:
+class NCStanfordNLPEntityParserImpl(stanford: StanfordCoreNLP, supported: JSet[String]) extends NCEntityParser:
     require(stanford != null)
     require(supported != null)
 
@@ -57,7 +57,7 @@ class NCStanfordEntityParserImpl(stanford: StanfordCoreNLP, supported: JSet[Stri
                     val nne = e.coreMap().get(classOf[NormalizedNamedEntityTagAnnotation])
                     if nne != null then props += "nne" -> nne
 
-                    // Key ignored because it can be category with higher level (`location` for type `country`)
+                    // Key ignored because it can be category with higher level (`location` for type `country`).
                     val conf = e.entityTypeConfidences()
                     if conf != null && conf.size() == 1 then props += "confidence" -> conf.asScala.head._2
 

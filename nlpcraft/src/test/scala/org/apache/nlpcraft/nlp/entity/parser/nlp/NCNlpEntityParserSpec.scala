@@ -19,7 +19,7 @@ package org.apache.nlpcraft.nlp.entity.parser.nlp
 
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.util.NCUtils
-import org.apache.nlpcraft.nlp.entity.parser.opennlp.NCOpenNlpEntityParser
+import org.apache.nlpcraft.nlp.entity.parser.opennlp.NCOpenNLPEntityParser
 import org.apache.nlpcraft.nlp.util.*
 import org.apache.nlpcraft.nlp.util.opennlp.*
 import org.junit.jupiter.api.*
@@ -34,7 +34,7 @@ import scala.jdk.OptionConverters.RichOptional
   *
   */
 class NCNlpEntityParserSpec:
-    private val parser = new NCNlpEntityParser()
+    private val parser = new NCNLPEntityParser()
 
     /**
       *

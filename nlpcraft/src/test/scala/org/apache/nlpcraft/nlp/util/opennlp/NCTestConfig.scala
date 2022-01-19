@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.nlp.util.opennlp
 
 import org.apache.nlpcraft.NCModelConfig
-import org.apache.nlpcraft.nlp.token.parser.opennlp.NCOpenNlpTokenParser
+import org.apache.nlpcraft.nlp.token.parser.opennlp.NCOpenNLPTokenParser
 import org.apache.nlpcraft.nlp.util.*
 
 /**
@@ -30,7 +30,7 @@ final val CFG = new NCModelConfig("testId", "test", "1.0")
   *
   */
 final val EN_PIPELINE = NCTestPipeline(
-    new NCOpenNlpTokenParser(
+    new NCOpenNLPTokenParser(
         "opennlp/en-token.bin",
         "opennlp/en-pos-maxent.bin",
         "opennlp/en-lemmatizer.dict"

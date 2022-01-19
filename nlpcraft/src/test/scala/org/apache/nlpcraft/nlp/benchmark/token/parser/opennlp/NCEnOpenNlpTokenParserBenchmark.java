@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.nlp.benchmark.token.parser.opennlp;
 
 import org.apache.nlpcraft.NCRequest;
-import org.apache.nlpcraft.nlp.token.parser.opennlp.NCOpenNlpTokenParser;
+import org.apache.nlpcraft.nlp.token.parser.opennlp.NCOpenNLPTokenParser;
 import org.apache.nlpcraft.nlp.util.NCTestRequest;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
@@ -54,11 +54,11 @@ public class NCEnOpenNlpTokenParserBenchmark {
         );
     }
 
-    private NCOpenNlpTokenParser parser;
+    private NCOpenNLPTokenParser parser;
 
     @Setup
     public void setUp() {
-        parser = new NCOpenNlpTokenParser(
+        parser = new NCOpenNLPTokenParser(
             "opennlp/en-token.bin",
             "opennlp/en-pos-maxent.bin",
             "opennlp/en-lemmatizer.dict"

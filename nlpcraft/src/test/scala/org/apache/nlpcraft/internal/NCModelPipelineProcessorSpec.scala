@@ -19,7 +19,7 @@ package org.apache.nlpcraft.internal
 
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.impl.NCModelPipelineProcessor
-import org.apache.nlpcraft.nlp.entity.parser.nlp.impl.NCNlpEntityParserImpl
+import org.apache.nlpcraft.nlp.entity.parser.nlp.impl.NCNLPEntityParserImpl
 import org.apache.nlpcraft.nlp.entity.parser.semantic.*
 import org.apache.nlpcraft.nlp.entity.parser.semantic.impl.en.NCEnSemanticPorterStemmer
 import org.apache.nlpcraft.nlp.util.*
