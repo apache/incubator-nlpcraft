@@ -217,6 +217,22 @@ object NCIntentsProcessor:
     private def getAllMethods(claxx: Class[_]): Set[Method] = (claxx.getDeclaredMethods ++ claxx.getMethods).toSet
 
     /**
+      * Gets its own fields including private and accessible from parents.
+      *
+      * @param claxx Class
+      * @return Fields.
+      */
+    private def getAllFields(claxx: Class[_]): Set[Field] = (claxx.getDeclaredFields ++ claxx.getFields).toSet
+
+    /**
+      * Gets its own fields including private and accessible from parents.
+      *
+      * @param o Object.
+      * @return Fields.
+      */
+    private def getAllFields(o: AnyRef): Set[Field] = getAllFields(o.getClass)
+
+    /**
       *
       * @param method
       * @param objClassName
@@ -540,6 +556,7 @@ class NCIntentsProcessor(mdl: NCModel) extends LazyLogging:
 
                 for (m <- getAllMethods(ref))
                     processMethod(MethodOwner(method = m, objClassName = ref.getName, obj = null))
+
 
     /**
       *
