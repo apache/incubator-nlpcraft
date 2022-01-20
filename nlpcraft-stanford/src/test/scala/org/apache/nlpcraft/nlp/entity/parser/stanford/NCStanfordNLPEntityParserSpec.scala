@@ -17,8 +17,6 @@
 
 package org.apache.nlpcraft.nlp.entity.parser.stanford
 
-import org.apache.nlpcraft.nlp.entity.parser.stanford.NCStanfordEntityParser
-import org.apache.nlpcraft.nlp.token.parser.stanford.NCStanfordTokenParser
 import org.apache.nlpcraft.nlp.util.*
 import org.apache.nlpcraft.nlp.util.stanford.*
 import org.junit.jupiter.api.Test
@@ -28,8 +26,8 @@ import scala.jdk.CollectionConverters.*
 /**
   *
   */
-class NCStanfordEntityParserSpec:
-    private val parser = NCStanfordEntityParser(STANFORD, Set("city", "date", "number", "email").asJava)
+class NCStanfordNLPEntityParserSpec:
+    private val parser = NCStanfordNLPEntityParser(STANFORD, Set("city", "date", "number", "email").asJava)
 
     @Test
     def test(): Unit =

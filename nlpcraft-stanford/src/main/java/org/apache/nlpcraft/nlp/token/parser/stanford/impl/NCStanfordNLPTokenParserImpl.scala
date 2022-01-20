@@ -34,14 +34,14 @@ import scala.jdk.CollectionConverters.*
   *
   * @param stanford
   */
-class NCStanfordNlpImpl(stanford: StanfordCoreNLP) extends NCTokenParser:
+class NCStanfordNLPTokenParserImpl(stanford: StanfordCoreNLP) extends NCTokenParser:
     require(stanford != null)
 
     override def tokenize(text: String): JList[NCToken] =
         val doc = new CoreDocument(text)
         stanford.annotate(doc)
         val ann = doc.annotation().get(classOf[SentencesAnnotation])
-        if ann == null then E("Sentence annotation not found.") // TODO: error text.
+        if ann == null then E("Sentence annotation not found.")
 
         val toks = ann.asScala.flatMap(_.asInstanceOf[ArrayCoreMap].get(classOf[TokensAnnotation]).asScala).
             zipWithIndex.map { (t, idx) =>

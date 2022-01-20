@@ -21,7 +21,7 @@ import org.apache.nlpcraft.NCModelConfig;
 import org.apache.nlpcraft.NCRequest;
 import org.apache.nlpcraft.NCToken;
 import org.apache.nlpcraft.NCTokenEnricher;
-import org.apache.nlpcraft.nlp.token.enricher.en.impl.NCStopWordsImpl;
+import org.apache.nlpcraft.nlp.token.enricher.en.impl.NCStopWordsTokenEnricherImpl;
 
 import java.util.List;
 import java.util.Set;
@@ -30,17 +30,17 @@ import java.util.Set;
  * TODO: enriches with <code>stopword</code> property.
  */
 public class NCStopWordsTokenEnricher implements NCTokenEnricher {
-    private final NCStopWordsImpl impl;
+    private final NCStopWordsTokenEnricherImpl impl;
 
     /**
      *
      */
     public NCStopWordsTokenEnricher(Set<String> addSw, Set<String> exclSw) {
-        impl = new NCStopWordsImpl(addSw, exclSw);
+        impl = new NCStopWordsTokenEnricherImpl(addSw, exclSw);
     }
 
     public NCStopWordsTokenEnricher() {
-        impl = new NCStopWordsImpl(null, null);
+        impl = new NCStopWordsTokenEnricherImpl(null, null);
     }
 
     @Override

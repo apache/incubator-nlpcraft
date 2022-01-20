@@ -21,7 +21,7 @@ import org.apache.nlpcraft.NCModelConfig;
 import org.apache.nlpcraft.NCRequest;
 import org.apache.nlpcraft.NCToken;
 import org.apache.nlpcraft.NCTokenEnricher;
-import org.apache.nlpcraft.nlp.token.enricher.en.impl.NCQuotesImpl;
+import org.apache.nlpcraft.nlp.token.enricher.en.impl.NCQuotesTokenEnricherImpl;
 
 import java.util.List;
 
@@ -29,7 +29,7 @@ import java.util.List;
  * TODO: enriches with <code>quoted</code> property.
  */
 public class NCQuotesTokenEnricher implements NCTokenEnricher {
-    private final NCQuotesImpl impl = new NCQuotesImpl();
+    private final NCQuotesTokenEnricherImpl impl = new NCQuotesTokenEnricherImpl();
 
     @Override
     public void enrich(NCRequest req, NCModelConfig cfg, List<NCToken> toks) {

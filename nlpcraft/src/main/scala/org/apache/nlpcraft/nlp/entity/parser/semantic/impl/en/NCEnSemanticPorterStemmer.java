@@ -15,21 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.nlp.token.enricher.en.impl
+package org.apache.nlpcraft.nlp.entity.parser.semantic.impl.en;
 
-import org.apache.nlpcraft.*
-import org.apache.nlpcraft.internal.util.NCUtils
-
-import java.util.List as JList
+import opennlp.tools.stemmer.PorterStemmer;
+import org.apache.nlpcraft.nlp.entity.parser.semantic.NCSemanticStemmer;
 
 /**
-  *
-  */
-class NCDictionaryImpl extends NCTokenEnricher:
-    private var dict: Set[String] = _
+ * 
+ */
+public class NCEnSemanticPorterStemmer implements NCSemanticStemmer {
+    /** */
+    private final PorterStemmer stemmer = new PorterStemmer();
 
-    init()
-
-    private def init(): Unit = dict = NCUtils.readResource("moby/354984si.ngl", "iso-8859-1").toSet
-    override def enrich(req: NCRequest, cfg: NCModelConfig, toks: JList[NCToken]): Unit =
-        toks.forEach(t => t.put("dict", dict.contains(t.getLemma)))
+    @Override
+    public synchronized String stem(String s) {
+        return stemmer.stem(s.toLowerCase());
+    }
+}

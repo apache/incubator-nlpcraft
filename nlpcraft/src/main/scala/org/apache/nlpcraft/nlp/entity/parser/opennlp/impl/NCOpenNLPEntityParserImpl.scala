@@ -36,7 +36,7 @@ import scala.util.Using
   *
   * @param srcs
   */
-class NCOpenNlpImpl(srcs: JList[String]) extends NCEntityParser with LazyLogging :
+class NCOpenNLPEntityParserImpl(srcs: JList[String]) extends NCEntityParser with LazyLogging :
     require(srcs != null)
 
     private var finders: Seq[NameFinderME] = _

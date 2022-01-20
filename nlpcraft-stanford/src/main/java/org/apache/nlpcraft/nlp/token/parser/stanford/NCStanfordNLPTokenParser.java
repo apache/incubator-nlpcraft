@@ -20,19 +20,18 @@ package org.apache.nlpcraft.nlp.token.parser.stanford;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import org.apache.nlpcraft.NCToken;
 import org.apache.nlpcraft.NCTokenParser;
-import org.apache.nlpcraft.nlp.token.parser.stanford.impl.NCStanfordNlpImpl;
+import org.apache.nlpcraft.nlp.token.parser.stanford.impl.NCStanfordNLPTokenParserImpl;
 
 import java.util.List;
 import java.util.Objects;
 
 /**
- * TODO:
+ *
  */
-public class NCStanfordTokenParser implements NCTokenParser {
-    private final NCStanfordNlpImpl impl;
+public class NCStanfordNLPTokenParser implements NCTokenParser {
+    private final NCStanfordNLPTokenParserImpl impl;
 
     /**
-     * TODO: add javadoc based on comments below.
      *
      * Requires configured StanfordCoreNLP instance.
      * Example:
@@ -43,11 +42,10 @@ public class NCStanfordTokenParser implements NCTokenParser {
      *
      * @param stanford
      */
-    public NCStanfordTokenParser(StanfordCoreNLP stanford) {
-        // TODO: error texts.
+    public NCStanfordNLPTokenParser(StanfordCoreNLP stanford) {
         Objects.requireNonNull(stanford, "Stanford instance cannot be null.");
 
-        impl = new NCStanfordNlpImpl(stanford);
+        impl = new NCStanfordNLPTokenParserImpl(stanford);
     }
 
     @Override

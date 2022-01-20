@@ -18,13 +18,12 @@
 package org.apache.nlpcraft.nlp.entity.parser.opennlp;
 
 import org.apache.nlpcraft.*;
-import org.apache.nlpcraft.nlp.entity.parser.opennlp.impl.NCOpenNlpImpl;
+import org.apache.nlpcraft.nlp.entity.parser.opennlp.impl.NCOpenNLPEntityParserImpl;
 
 import java.util.List;
 import java.util.Objects;
 
 /**
- * TODO: make javadoc based on comments below.
  *
  * Generates entities with
  *  - ID `opennlp:{name}` where 'name' is element model name (from trained file or resource) and
@@ -36,26 +35,26 @@ import java.util.Objects;
  * Component is language independent.
  * <p>
  */
-public class NCOpenNlpEntityParser implements NCEntityParser {
-    private final NCOpenNlpImpl impl;
+public class NCOpenNLPEntityParser implements NCEntityParser {
+    private final NCOpenNLPEntityParserImpl impl;
 
     /**
      * @param mdlSrc
      */
-    public NCOpenNlpEntityParser(String mdlSrc) {
+    public NCOpenNLPEntityParser(String mdlSrc) {
         Objects.requireNonNull(mdlSrc, "Model source cannot be null.");
 
-        this.impl = new NCOpenNlpImpl(java.util.Collections.singletonList(mdlSrc));
+        this.impl = new NCOpenNLPEntityParserImpl(java.util.Collections.singletonList(mdlSrc));
     }
 
     /**
      * @param mdlSrcs
      */
-    public NCOpenNlpEntityParser(List<String> mdlSrcs) {
+    public NCOpenNLPEntityParser(List<String> mdlSrcs) {
         Objects.requireNonNull(mdlSrcs, "Model sources cannot be null.");
         if (mdlSrcs.size() == 0) throw new NCException("Model sources cannot be empty.");
 
-        this.impl = new NCOpenNlpImpl(mdlSrcs);
+        this.impl = new NCOpenNLPEntityParserImpl(mdlSrcs);
     }
 
     @Override

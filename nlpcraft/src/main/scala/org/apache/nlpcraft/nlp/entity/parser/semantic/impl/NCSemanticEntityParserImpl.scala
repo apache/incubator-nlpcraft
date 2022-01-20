@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.nlpcraft.nlp.entity.parser.semantic.impl
 
 
@@ -170,9 +171,7 @@ class NCSemanticEntityParserImpl(
 
             if mdlSrc != null then
                 val src = NCSemanticSourceReader.read(new BufferedInputStream(NCUtils.getStream(mdlSrc)), scrType)
-
                 logger.trace(s"Loaded resource: $mdlSrc")
-
                 (src.macros, src.elements, toMap(src.elements))
             else
                 (this.macros, this.elements, toMap(this.elements))
@@ -188,39 +187,32 @@ class NCSemanticEntityParserImpl(
             logger.warn("'stopword' property not found. Is stopword token enricher configured?")
 
         val cache = mutable.HashSet.empty[Seq[Int]] // Variants (tokens without stopwords) can be repeated.
-
         case class Holder(elemId: String, tokens: Seq[NCToken], value: Option[String]):
             private val idxs = tokens.map(_.getIndex).toSet
             def isSuperSet(toks: Seq[NCToken]): Boolean = idxs.size > toks.size && toks.map(_.getIndex).toSet.subsetOf(idxs)
-
         val hs = mutable.ArrayBuffer.empty[Holder]
 
-        for (
-            piece <- getPieces(toks) if !hs.exists(_.isSuperSet(piece.baseTokens));
-            variant <- Seq(piece.baseTokens) ++ piece.variants
-        )
+        for (piece <- getPieces(toks) if !hs.exists(_.isSuperSet(piece.baseTokens));
+            variant <- Seq(piece.baseTokens) ++ piece.variants)
             def add(elemId: String, value: Option[String]): Unit = hs += Holder(elemId, variant, value)
 
             val idxs = variant.map(_.getIndex)
-
             if cache.add(idxs) then
                 synsHolder.textSynonyms.get(variant.map(t => stems(t)).mkString(" ")) match
                     case Some(elems) => elems.foreach(elem => add(elem.elementId, elem.value))
                     case None =>
                         for ((elemId, syns) <- synsHolder.mixedSynonyms.getOrElse(variant.size, Seq.empty))
                             var found = false
-
                             for (s <- syns if !found)
-                                found =
-                                    s.chunks.zip(variant).
-                                        sortBy { (chunk, _) => if chunk.isText then 0 else 1 }.
-                                        forall { (chunk, tok) =>
-                                            if chunk.isText then
-                                                chunk.stem == stems(tok)
-                                            else
-                                                def match0(txt: String) = chunk.regex.matcher(txt).matches()
-                                                match0(tok.getText) || match0(tok.getText.toLowerCase)
-                                        }
+                                found = s.chunks.zip(variant).
+                                    sortBy { (chunk, _) => if chunk.isText then 0 else 1 }.
+                                    forall { (chunk, tok) =>
+                                        if chunk.isText then
+                                            chunk.stem == stems(tok)
+                                        else
+                                            def match0(txt: String) = chunk.regex.matcher(txt).matches()
+                                            match0(tok.getText) || match0(tok.getText.toLowerCase)
+                                    }
 
                                 if found then add(elemId, Option.when(s.value != null)(s.value))
 

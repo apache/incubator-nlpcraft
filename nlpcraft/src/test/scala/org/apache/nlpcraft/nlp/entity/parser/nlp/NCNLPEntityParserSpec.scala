@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.nlp.entity.parser.opennlp
+package org.apache.nlpcraft.nlp.entity.parser.nlp
 
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.util.NCUtils
-import org.apache.nlpcraft.nlp.entity.parser.opennlp.NCOpenNlpEntityParser
+import org.apache.nlpcraft.nlp.entity.parser.opennlp.NCOpenNLPEntityParser
 import org.apache.nlpcraft.nlp.util.*
 import org.apache.nlpcraft.nlp.util.opennlp.*
 import org.junit.jupiter.api.*
@@ -33,41 +33,22 @@ import scala.jdk.OptionConverters.RichOptional
 /**
   *
   */
-class NCOpenNlpEntityParserSpec:
-    private val parser = new NCOpenNlpEntityParser(
-        Seq(
-            "opennlp/en-ner-location.bin",
-            "opennlp/en-ner-money.bin",
-            "opennlp/en-ner-person.bin",
-            "opennlp/en-ner-organization.bin",
-            "opennlp/en-ner-date.bin",
-            "opennlp/en-ner-percentage.bin"
-        ).asJava
-    )
-
-    /**
-      *
-      * @param txt
-      * @param expected
-      */
-    private def check(txt: String, expected: String): Unit =
-        val req = NCTestRequest(txt)
-        val toks = EN_PIPELINE.getTokenParser.tokenize(txt)
-        val ents = parser.parse(req, CFG, toks).asScala.toSeq
-
-        NCTestUtils.printEntities(txt, ents)
-
-        require(ents.sizeIs == 1)
-        require(ents.exists(_.getOpt(s"opennlp:$expected:probability").isPresent))
+class NCNLPEntityParserSpec:
+    private val parser = new NCNLPEntityParser()
 
     /**
       *
       */
     @Test
     def test(): Unit =
-        check("today", "date")
-        check("Moscow", "location")
-        check("10 is 5 % from 200", "percentage")
-        check("Tim Cook", "person")
-        check("Microsoft", "organization")
-        check("Current price is higher for 20 USA dollars", "money")
+        val req = NCTestRequest("I had the lunch")
+        val toks = EN_PIPELINE.getTokenParser.tokenize(req.txt)
+        val entities = parser.parse(req, CFG, toks).asScala.toSeq
+
+        NCTestUtils.printEntities(req.txt, entities)
+
+        require(entities.sizeIs == toks.size())
+        entities.zipWithIndex.foreach { (ent, idx) =>
+            require(ent.getTokens.size() == 1)
+            require(ent.getTokens.get(0) == toks.get(idx))
+        }

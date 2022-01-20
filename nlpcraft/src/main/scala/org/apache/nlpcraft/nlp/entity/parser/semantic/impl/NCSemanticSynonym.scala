@@ -45,6 +45,11 @@ private[impl] case class NCSemanticSynonymChunk(
     override def toString = s"($text|$kind)"
 }
 
+/**
+  *
+  * @param chunks
+  * @param value
+  */
 private[impl] case class NCSemanticSynonym(
     chunks: Seq[NCSemanticSynonymChunk], value: String = null
 ) extends Comparable[NCSemanticSynonym]:

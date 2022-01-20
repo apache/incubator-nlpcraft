@@ -20,7 +20,7 @@ package org.apache.nlpcraft.nlp.token.parser.opennlp;
 import org.apache.nlpcraft.NCException;
 import org.apache.nlpcraft.NCToken;
 import org.apache.nlpcraft.NCTokenParser;
-import org.apache.nlpcraft.nlp.token.parser.opennlp.impl.NCOpenNlpImpl;
+import org.apache.nlpcraft.nlp.token.parser.opennlp.impl.NCOpenNLPTokenParserImpl;
 
 import java.util.List;
 import java.util.Objects;
@@ -32,8 +32,8 @@ import java.util.Objects;
  *  - tagger: http://opennlp.sourceforge.net/models-1.5/en-pos-maxent.bin
  *  - lemmatizer: https://raw.githubusercontent.com/richardwilly98/elasticsearch-opennlp-auto-tagging/master/src/main/resources/models/en-lemmatizer.dict
  */
-public class NCOpenNlpTokenParser implements NCTokenParser {
-    private final NCOpenNlpImpl impl;
+public class NCOpenNLPTokenParser implements NCTokenParser {
+    private final NCOpenNLPTokenParserImpl impl;
 
     /**
      *
@@ -43,12 +43,12 @@ public class NCOpenNlpTokenParser implements NCTokenParser {
      * @param lemmaDicSrc Local filesystem path, resources file path or URL for OpenNLP lemmatizer dictionary.
      * @throws NCException
      */
-    public NCOpenNlpTokenParser(String tokMdlSrc, String posMdlSrc, String lemmaDicSrc) {
+    public NCOpenNLPTokenParser(String tokMdlSrc, String posMdlSrc, String lemmaDicSrc) {
         Objects.requireNonNull(tokMdlSrc, "Tokenizer model path cannot be null.");
         Objects.requireNonNull(posMdlSrc, "POS model path cannot be null.");
         Objects.requireNonNull(lemmaDicSrc, "Lemmatizer model path cannot be null.");
 
-        impl = new NCOpenNlpImpl(tokMdlSrc, posMdlSrc, lemmaDicSrc);
+        impl = new NCOpenNLPTokenParserImpl(tokMdlSrc, posMdlSrc, lemmaDicSrc);
     }
 
     @Override

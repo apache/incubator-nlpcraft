@@ -19,9 +19,9 @@ package org.apache.nlpcraft.nlp.entity.parser.semantic
 
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.util.NCUtils
-import org.apache.nlpcraft.nlp.entity.parser.opennlp.NCOpenNlpEntityParser
-import org.apache.nlpcraft.nlp.entity.parser.semantic.impl.en.NCEnPorterStemmer
-import org.apache.nlpcraft.nlp.token.parser.opennlp.NCOpenNlpTokenParser
+import org.apache.nlpcraft.nlp.entity.parser.opennlp.NCOpenNLPEntityParser
+import org.apache.nlpcraft.nlp.entity.parser.semantic.impl.en.NCEnSemanticPorterStemmer
+import org.apache.nlpcraft.nlp.token.parser.opennlp.NCOpenNLPTokenParser
 import org.apache.nlpcraft.nlp.util.*
 import org.apache.nlpcraft.nlp.util.opennlp.*
 import org.junit.jupiter.api.*
@@ -37,7 +37,7 @@ import scala.jdk.OptionConverters.RichOptional
   */
 class NCSemanticEntityParserJsonSpec:
     private val parser = new NCSemanticEntityParser(
-        new NCEnPorterStemmer(),
+        new NCEnSemanticPorterStemmer(),
         EN_PIPELINE.getTokenParser,
         "models/alarm_model.json"
     )

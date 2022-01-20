@@ -15,28 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.nlp.token.parser.stanford
+package org.apache.nlpcraft.nlp.token.enricher.en.impl
 
-import edu.stanford.nlp.pipeline.StanfordCoreNLP
-import org.apache.nlpcraft.nlp.util.*
-import org.apache.nlpcraft.nlp.util.stanford.*
-import org.junit.jupiter.api.*
+import org.apache.nlpcraft.*
+import org.apache.nlpcraft.internal.util.NCUtils
 
-import java.util.Properties
-import scala.jdk.CollectionConverters.*
+import java.util.List as JList
 
 /**
   *
   */
-class NCStanfordTokenParserSpec:
-    @Test
-    def test(): Unit =
-        val toks =
-            EN_STANFORD_PIPELINE.getTokenParser.tokenize("I had a lunch with brand names 'AAA'").asScala.toSeq
+class NCDictionaryTokenEnricherImpl extends NCTokenEnricher:
+    private var dict: Set[String] = _
 
-        require(toks.sizeIs > 1)
-        NCTestUtils.printTokens(toks)
+    init()
 
-        val words = toks.map(_.getText)
-        require(toks.map(_.getPos).distinct.sizeIs > 1)
-        require(toks.map(_.getLemma).zip(words).exists {_ != _})
+    private def init(): Unit = dict = NCUtils.readResource("moby/354984si.ngl", "iso-8859-1").toSet
+    override def enrich(req: NCRequest, cfg: NCModelConfig, toks: JList[NCToken]): Unit =
+        toks.forEach(t => t.put("dict", dict.contains(t.getLemma)))

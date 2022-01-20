@@ -15,20 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.nlp.entity.parser.semantic.impl.en;
+package org.apache.nlpcraft.nlp.token.parser.stanford
 
-import opennlp.tools.stemmer.PorterStemmer;
-import org.apache.nlpcraft.nlp.entity.parser.semantic.NCSemanticStemmer;
+import edu.stanford.nlp.pipeline.StanfordCoreNLP
+import org.apache.nlpcraft.nlp.util.*
+import org.apache.nlpcraft.nlp.util.stanford.*
+import org.junit.jupiter.api.*
+
+import java.util.Properties
+import scala.jdk.CollectionConverters.*
 
 /**
- * 
- */
-public class NCEnPorterStemmer implements NCSemanticStemmer {
-    /** */
-    private final PorterStemmer stemmer = new PorterStemmer();
+  *
+  */
+class NCStanfordNLPTokenParserSpec:
+    @Test
+    def test(): Unit =
+        val toks =
+            EN_STANFORD_PIPELINE.getTokenParser.tokenize("I had a lunch with brand names 'AAA'").asScala.toSeq
 
-    @Override
-    public synchronized String stem(String s) {
-        return stemmer.stem(s.toLowerCase());
-    }
-}
+        require(toks.sizeIs > 1)
+        NCTestUtils.printTokens(toks)
+
+        val words = toks.map(_.getText)
+        require(toks.map(_.getPos).distinct.sizeIs > 1)
+        require(toks.map(_.getLemma).zip(words).exists {_ != _})

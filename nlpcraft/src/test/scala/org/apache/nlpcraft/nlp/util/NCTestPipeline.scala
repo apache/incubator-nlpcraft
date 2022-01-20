@@ -17,9 +17,9 @@
 
 package org.apache.nlpcraft.nlp.util
 
-import org.apache.nlpcraft.nlp.token.parser.opennlp.NCOpenNlpTokenParser
 import org.apache.nlpcraft.nlp.util.NCTestPipeline.*
 import org.apache.nlpcraft.*
+import org.apache.nlpcraft.nlp.token.parser.opennlp.NCOpenNLPTokenParser
 
 import java.util.{Optional, ArrayList as JList}
 

@@ -26,15 +26,15 @@ import java.util.stream.Collectors
 /**
   *
   */
-object NCNlpImpl:
+object NCNLPEntityParserImpl:
     private def id = "nlp:token"
 
-import org.apache.nlpcraft.nlp.entity.parser.nlp.impl.NCNlpImpl.*
+import org.apache.nlpcraft.nlp.entity.parser.nlp.impl.NCNLPEntityParserImpl.*
 
 /**
   *
   */
-class NCNlpImpl extends NCEntityParser:
+class NCNLPEntityParserImpl extends NCEntityParser:
     override def parse(req: NCRequest, cfg: NCModelConfig, toks: JList[NCToken]): JList[NCEntity] =
         toks.stream().map(t =>
             new NCPropertyMapAdapter with NCEntity:

@@ -34,7 +34,7 @@ import scala.jdk.CollectionConverters.*
 /**
   *
   */
-object NCStopWordsImpl:
+object NCStopWordsTokenEnricherImpl:
     // Condition types.
     type Wildcard = (String, String)
     type Word = String
@@ -162,14 +162,14 @@ object NCStopWordsImpl:
     private def tokenMix(toks: Seq[NCToken], maxLen: Int = Integer.MAX_VALUE): Seq[Seq[NCToken]] =
         (for (n <- toks.length until 0 by -1 if n <= maxLen) yield toks.sliding(n)).flatten
 
-import org.apache.nlpcraft.nlp.token.enricher.en.impl.NCStopWordsImpl.*
+import org.apache.nlpcraft.nlp.token.enricher.en.impl.NCStopWordsTokenEnricherImpl.*
 
 /**
   * 
   * @param addStopsSet
   * @param exclStopsSet
   */
-class NCStopWordsImpl(addStopsSet: JSet[String], exclStopsSet: JSet[String]) extends NCTokenEnricher with LazyLogging:
+class NCStopWordsTokenEnricherImpl(addStopsSet: JSet[String], exclStopsSet: JSet[String]) extends NCTokenEnricher with LazyLogging:
     private final val stemmer = new PorterStemmer
 
     private var addStems: Set[String] = _
