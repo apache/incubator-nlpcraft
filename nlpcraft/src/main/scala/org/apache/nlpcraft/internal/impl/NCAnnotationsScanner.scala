@@ -244,19 +244,19 @@ object NCAnnotationsScanner extends LazyLogging:
 
     /**
       *
-      * @param ts
+      * @param anns
       * @param getValues
       * @param src
       * @tparam T
       * @tparam K
       */
-    private def checkAnnotations[T, K](ts: Iterable[T], getValues: T => Iterable[K], src: Class[_]): Unit =
-        require(ts != null)
+    private def checkAnnotations[T, K](anns: Iterable[T], getValues: T => Iterable[K], src: Class[_]): Unit =
+        require(anns != null)
 
-        for (t <- ts)
-            lazy val vals = getValues(t)
+        for (ann <- anns)
+            lazy val vals = getValues(ann)
             val err =
-                t == null ||
+                ann == null ||
                 vals == null ||
                 vals.isEmpty ||
                 vals.exists(v =>
@@ -265,8 +265,7 @@ object NCAnnotationsScanner extends LazyLogging:
                         case a: _ => a == null
                 )
 
-            if err then E(s"Unexpected empty annotation definition @${ts.head.getClass.getSimpleName} in class: $src") // TODO: text
-
+            if err then E(s"Unexpected empty annotation definition @${anns.head.getClass.getSimpleName} in class: $src") // TODO: text
 
 import org.apache.nlpcraft.internal.impl.NCAnnotationsScanner.*
 
@@ -452,7 +451,7 @@ class NCAnnotationsScanner(mdl: NCModel) extends LazyLogging:
     private def processMethod(intentDecls: mutable.Buffer[NCIdlIntent], intents: mutable.Buffer[NCIntentData], mo: MethodOwner): Unit =
         val m = mo.method
         val mtdStr = method2Str(m)
-        val samples = scanSamples(mo.method)
+        lazy val samples = scanSamples(mo.method)
 
         def bindIntent(intent: NCIdlIntent, cb: NCCallback): Unit =
             if intents.exists(i => i._1.id == intent.id && i._2.id != cb.id) then
@@ -467,6 +466,8 @@ class NCAnnotationsScanner(mdl: NCModel) extends LazyLogging:
                 case None => false
 
         // 1. Process inline intent declarations by @NCIntent annotation.
+        val anns = m.getAnnotationsByType(CLS_INTENT)
+
         for (
             ann <- m.getAnnotationsByType(CLS_INTENT);
             intent <- NCIdlCompiler.compileIntents(ann.value(), mdl, mtdStr)
