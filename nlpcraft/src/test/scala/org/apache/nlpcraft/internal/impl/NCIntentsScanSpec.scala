@@ -33,4 +33,4 @@ class NCIntentsScanSpec:
     )
 
     @Test
-    def test(): Unit = for (mdl <- mdls) new NCIntentsProcessor(mdl).scan()
+    def test(): Unit = for (mdl <- mdls) new NCAnnotationsScanner(mdl).scan()
