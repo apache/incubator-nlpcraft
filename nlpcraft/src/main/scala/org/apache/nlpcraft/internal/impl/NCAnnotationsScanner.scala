@@ -30,6 +30,7 @@ import java.lang.reflect.*
 import java.util
 import java.util.function.Function
 import java.util.stream.Collectors
+import javax.lang.model.util.Elements.Origin
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
 import scala.util.Using
@@ -244,28 +245,46 @@ object NCAnnotationsScanner extends LazyLogging:
 
     /**
       *
+      * @param s
+      * @return
+      */
+    private def isNullOrEmpty(a: Any): Boolean =
+        a == null ||
+        (a match
+            case s: String => s.strip.isEmpty
+            case _ => false
+        )
+
+    /**
+      *
+      * @param it
+      * @return
+      */
+    private def isNullOrEmpty(it: Iterable[_]): Boolean = it == null || it.isEmpty || it.exists(isNullOrEmpty)
+
+    /**
+      *
       * @param anns
       * @param getValues
       * @param src
       * @tparam T
       * @tparam K
       */
-    private def checkAnnotations[T, K](anns: Iterable[T], getValues: T => Iterable[K], src: Class[_]): Unit =
-        require(anns != null)
+    private def checkAnnotationsMulti[T, K](anns: Iterable[T], getValues: T => Iterable[K], origin: String): Unit =
+        if anns.exists(a => a == null || isNullOrEmpty(getValues(a)))
+            then E(s"Unexpected empty annotation definition @${anns.head.getClass.getSimpleName} in $origin") // TODO: text
 
-        for (ann <- anns)
-            lazy val vals = getValues(ann)
-            val err =
-                ann == null ||
-                vals == null ||
-                vals.isEmpty ||
-                vals.exists(v =>
-                    v match
-                        case s: String => s == null || s.strip.isEmpty
-                        case a: _ => a == null
-                )
-
-            if err then E(s"Unexpected empty annotation definition @${anns.head.getClass.getSimpleName} in class: $src") // TODO: text
+    /**
+      *
+      * @param anns
+      * @param getValue
+      * @param src
+      * @tparam T
+      * @tparam K
+      */
+    private def checkAnnotationsSingle[T, K](anns: Iterable[T], getValue: T => K, src: Class[_]): Unit =
+        if anns.exists(a => a == null || isNullOrEmpty(getValue(a))) then
+            E(s"Unexpected empty annotation definition @${anns.head.getClass.getSimpleName} in class: $src") // TODO: text
 
 import org.apache.nlpcraft.internal.impl.NCAnnotationsScanner.*
 
@@ -286,16 +305,15 @@ class NCAnnotationsScanner(mdl: NCModel) extends LazyLogging:
         val intentDecls = mutable.Buffer.empty[NCIdlIntent]
 
         def addImports(anns: scala.Array[NCIntentImport], src: Class[_]): Unit =
-            if anns != null then
-                checkAnnotations(anns, (a: NCIntentImport) => a.value(), src)
-                for (
-                    ann <- anns;
-                    res <- ann.value();
-                    intent <- NCIdlCompiler.compileIntents(NCUtils.readResource(res.strip).mkString("\n"), mdl, res)
-                )
-                    if intentDecls.exists(_.id == intent.id) then
-                        E(s"Duplicate intent ID [mdlId=$id, origin=$origin, resource=$res, id=${intent.id}]")
-                    intentDecls += intent
+            checkAnnotationsMulti(anns, (a: NCIntentImport) => a.value(), src.getSimpleName)
+            for (
+                ann <- anns;
+                res <- ann.value();
+                intent <- NCIdlCompiler.compileIntents(NCUtils.readResource(res.strip).mkString("\n"), mdl, res)
+            )
+                if intentDecls.exists(_.id == intent.id) then
+                    E(s"Duplicate intent ID [mdlId=$id, origin=$origin, resource=$res, id=${intent.id}]")
+                intentDecls += intent
 
         def addClasses(classes: Iterable[Class[_]], src: Class[_]): Unit =
             for (claxx <- classes)
@@ -308,9 +326,8 @@ class NCAnnotationsScanner(mdl: NCModel) extends LazyLogging:
                 scanClass(claxx)
 
         def addRefsClasses(anns: scala.Array[NCModelAddClasses], src: Class[_]): Unit =
-            if anns != null then
-                checkAnnotations(anns, (a: NCModelAddClasses) => a.value(), src)
-                for (a <- anns) addClasses(a.value, src)
+            checkAnnotationsMulti(anns, (a: NCModelAddClasses) => a.value(), src.getSimpleName)
+            for (a <- anns) addClasses(a.value, src)
 
         def scanClass(src: Class[_]): Unit =
             addRefsClasses(mdl.getClass.getAnnotationsByType(CLS_MDL_CLS_REF), src)
@@ -318,9 +335,8 @@ class NCAnnotationsScanner(mdl: NCModel) extends LazyLogging:
             getAllFields(mdl.getClass).foreach(f => addRefsClasses(f.getAnnotationsByType(CLS_MDL_CLS_REF), src))
 
             val packs = mdl.getClass.getAnnotationsByType(CLS_MDL_PKGS_REF)
-            if packs != null then
-                checkAnnotations(packs, (a: NCModelAddPackage) => a.value(), src)
-                for (p <- packs.flatMap(_.value().map(_.strip))) addClasses(getPackageClasses(p), src)
+            checkAnnotationsMulti(packs, (a: NCModelAddPackage) => a.value(), src.getSimpleName)
+            for (p <- packs.flatMap(_.value().map(_.strip))) addClasses(getPackageClasses(p), src)
 
         scanClass(mdl.getClass)
 
@@ -468,17 +484,19 @@ class NCAnnotationsScanner(mdl: NCModel) extends LazyLogging:
         // 1. Process inline intent declarations by @NCIntent annotation.
         val anns = m.getAnnotationsByType(CLS_INTENT)
 
-        for (
-            ann <- m.getAnnotationsByType(CLS_INTENT);
-            intent <- NCIdlCompiler.compileIntents(ann.value(), mdl, mtdStr)
-        )
+        checkAnnotationsSingle(anns, (a:NCIntent) => a.value(), mo.claxx)
+
+        for (ann <- anns; intent <- NCIdlCompiler.compileIntents(ann.value, mdl, mtdStr))
             if intentDecls.exists(_.id == intent.id && existsForOtherMethod(intent.id)) then
                 E(s"Duplicate intent ID [mdlId=$id, origin=$origin, callback=$mtdStr, id=${intent.id}]")
             else
                 bindIntent(intent, prepareCallback(mo, intent))
 
         // 2. Process intent references from @NCIntentRef annotation.
-        for (ann <- m.getAnnotationsByType(CLS_INTENT_REF))
+        val ann2s = m.getAnnotationsByType(CLS_INTENT_REF)
+        checkAnnotationsSingle(ann2s, (a:NCIntentRef) => a.value(), mo.claxx)
+
+        for (ann <- ann2s)
             val refId = ann.value().trim
 
             intentDecls.find(_.id == refId) match
