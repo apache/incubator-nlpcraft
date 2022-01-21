@@ -44,7 +44,7 @@ private[internal] case class NCIntentData(intent: NCIdlIntent, callback: NCCallb
 /**
   *
   */
-object NCAnnotationsScanner:
+object NCAnnotationsScanner extends LazyLogging:
     private final val SEPARATORS = Seq('?', ',', '.', '-', '!')
 
     private final val CLS_INTENT = classOf[NCIntent]
@@ -267,6 +267,7 @@ object NCAnnotationsScanner:
 
             if err then E(s"Unexpected empty annotation definition @${ts.head.getClass.getSimpleName} in class: $src") // TODO: text
 
+
 import org.apache.nlpcraft.internal.impl.NCAnnotationsScanner.*
 
 /**
@@ -291,7 +292,7 @@ class NCAnnotationsScanner(mdl: NCModel) extends LazyLogging:
                 for (
                     ann <- anns;
                     res <- ann.value();
-                    intent <- NCIdlCompiler.compileIntents(NCUtils.readResource(nvlResource(res)).mkString("\n"), mdl, res)
+                    intent <- NCIdlCompiler.compileIntents(NCUtils.readResource(res.strip).mkString("\n"), mdl, res)
                 )
                     if intentDecls.exists(_.id == intent.id) then
                         E(s"Duplicate intent ID [mdlId=$id, origin=$origin, resource=$res, id=${intent.id}]")
@@ -299,20 +300,20 @@ class NCAnnotationsScanner(mdl: NCModel) extends LazyLogging:
 
         def addClasses(classes: Iterable[Class[_]], src: Class[_]): Unit =
             for (claxx <- classes)
-                if m.getOrElse(claxx, null) == src then E(s"Cyclical reference found key=$src, value=$claxx") // TODO: text
+                if m.getOrElse(claxx, null) == src then E(s"Cyclical reference found first class=$src, second=$claxx") // TODO: text
 
                 m += claxx -> src
                 addImports(claxx.getAnnotationsByType(CLS_INTENT_IMPORT), src)
                 for (m <- getAllMethods(claxx) ++ getAllFields(claxx)) addImports(m.getAnnotationsByType(CLS_INTENT_IMPORT), src)
 
-                scanClasses(claxx)
+                scanClass(claxx)
 
         def addRefsClasses(anns: scala.Array[NCModelAddClasses], src: Class[_]): Unit =
             if anns != null then
                 checkAnnotations(anns, (a: NCModelAddClasses) => a.value(), src)
                 for (a <- anns) addClasses(a.value, src)
 
-        def scanClasses(src: Class[_]): Unit =
+        def scanClass(src: Class[_]): Unit =
             addRefsClasses(mdl.getClass.getAnnotationsByType(CLS_MDL_CLS_REF), src)
             getAllMethods(mdl.getClass).foreach(m => addRefsClasses(m.getAnnotationsByType(CLS_MDL_CLS_REF), src))
             getAllFields(mdl.getClass).foreach(f => addRefsClasses(f.getAnnotationsByType(CLS_MDL_CLS_REF), src))
@@ -322,7 +323,7 @@ class NCAnnotationsScanner(mdl: NCModel) extends LazyLogging:
                 checkAnnotations(packs, (a: NCModelAddPackage) => a.value(), src)
                 for (p <- packs.flatMap(_.value().map(_.strip))) addClasses(getPackageClasses(p), src)
 
-        scanClasses(mdl.getClass)
+        scanClass(mdl.getClass)
 
         (intentDecls, m.keys)
 
@@ -443,13 +444,6 @@ class NCAnnotationsScanner(mdl: NCModel) extends LazyLogging:
             else if (cls != CLS_SCALA_OPT && cls != CLS_JAVA_OPT) && (min == 0 && max == 1) then
                 E(s"Intent term has [0,1] quantifier but $p1 is not optional $p2")
         }
-
-    private def nvlResource(res: String): String =
-        if res == null then E("Invalid null resource found.")
-        val s = res.strip
-        if s.isEmpty then E("Invalid empty resource found.")
-        s
-
 
     /**
       *
