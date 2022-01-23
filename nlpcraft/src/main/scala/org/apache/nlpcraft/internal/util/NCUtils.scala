@@ -19,17 +19,18 @@ package org.apache.nlpcraft.internal.util
 
 import com.typesafe.scalalogging.*
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.internal.ansi.NCAnsi.*
-
+import org.apache.nlpcraft.internal.ansi.*
+import com.google.gson.*
 import java.io.*
 import java.net.*
-import java.util.concurrent.{CopyOnWriteArrayList, ExecutorService, TimeUnit}
+import java.util.concurrent.{CopyOnWriteArrayList, ExecutorService, TimeUnit} // Avoids conflicts.
 import java.util.regex.Pattern
 import java.util.zip.*
 import java.util.{Random, UUID}
 import scala.annotation.tailrec
 import scala.collection.{IndexedSeq, Seq, mutable}
 import scala.concurrent.*
+import scala.jdk.CollectionConverters.*
 import scala.concurrent.duration.Duration
 import scala.io.*
 import scala.sys.SystemProperties
@@ -42,26 +43,27 @@ object NCUtils extends LazyLogging:
     final val NL = System getProperty "line.separator"
     private val RND = new Random()
     private val sysProps = new SystemProperties
+    private final lazy val GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create()
     private final val ANSI_SEQ = Pattern.compile("\u001B\\[[?;\\d]*[a-zA-Z]")
-    private val ANSI_FG_8BIT_COLORS = for (i <- 16 to 255) yield ansi256Fg(i)
-    private val ANSI_BG_8BIT_COLORS = for (i <- 16 to 255) yield ansi256Bg(i)
+    private val ANSI_FG_8BIT_COLORS = for (i <- 16 to 255) yield NCAnsi.ansi256Fg(i)
+    private val ANSI_BG_8BIT_COLORS = for (i <- 16 to 255) yield NCAnsi.ansi256Bg(i)
     private val ANSI_FG_4BIT_COLORS = Seq(
-        ansiRedFg,
-        ansiGreenFg,
-        ansiBlueFg,
-        ansiYellowFg,
-        ansiWhiteFg,
-        ansiBlackFg,
-        ansiCyanFg
+        NCAnsi.ansiRedFg,
+        NCAnsi.ansiGreenFg,
+        NCAnsi.ansiBlueFg,
+        NCAnsi.ansiYellowFg,
+        NCAnsi.ansiWhiteFg,
+        NCAnsi.ansiBlackFg,
+        NCAnsi.ansiCyanFg
     )
     private val ANSI_BG_4BIT_COLORS = Seq(
-        ansiRedBg,
-        ansiGreenBg,
-        ansiBlueBg,
-        ansiYellowBg,
-        ansiWhiteBg,
-        ansiBlackBg,
-        ansiCyanBg
+        NCAnsi.ansiRedBg,
+        NCAnsi.ansiGreenBg,
+        NCAnsi.ansiBlueBg,
+        NCAnsi.ansiYellowBg,
+        NCAnsi.ansiWhiteBg,
+        NCAnsi.ansiBlackBg,
+        NCAnsi.ansiCyanBg
     )
     private val ANSI_4BIT_COLORS = for (fg <- ANSI_FG_4BIT_COLORS; bg <- ANSI_BG_4BIT_COLORS) yield s"$fg$bg"
 
@@ -117,6 +119,7 @@ object NCUtils extends LazyLogging:
       * Prints 4-bit ASCII-logo.
       */
     def asciiLogo4Bit(): String =
+        import NCAnsi.*
         raw"$ansiBlueFg    _   ____     $ansiCyanFg ______           ______   $ansiReset$NL" +
         raw"$ansiBlueFg   / | / / /___  $ansiCyanFg/ ____/________ _/ __/ /_  $ansiReset$NL" +
         raw"$ansiBlueFg  /  |/ / / __ \$ansiCyanFg/ /   / ___/ __ `/ /_/ __/  $ansiReset$NL" +
@@ -128,6 +131,7 @@ object NCUtils extends LazyLogging:
       * Prints 8-bit ASCII-logo.
       */
     def asciiLogo8Bit1(): String =
+        import NCAnsi.*
         fgRainbow4Bit(
             raw"${ansi256Fg(28)}    _   ____      ______           ______   $ansiReset$NL" +
             raw"${ansi256Fg(64)}   / | / / /___  / ____/________ _/ __/ /_  $ansiReset$NL" +
@@ -174,9 +178,9 @@ object NCUtils extends LazyLogging:
             val idx = zip._2
             val color = startColor + idx % (endColor - startColor + 1)
 
-            buf ++= s"${ansi256Fg(color)}$ch"
+            buf ++= s"${NCAnsi.ansi256Fg(color)}$ch"
         })
-        .toString + ansiReset
+        .toString + NCAnsi.ansiReset
 
     /**
       *
@@ -191,9 +195,9 @@ object NCUtils extends LazyLogging:
             val idx = zip._2
             val color = startColor + idx % (endColor - startColor + 1)
 
-            buf ++= s"${ansi256Bg(color)}$ch"
+            buf ++= s"${NCAnsi.ansi256Bg(color)}$ch"
         })
-        .toString + ansiReset
+        .toString + NCAnsi.ansiReset
 
     /**
       *
@@ -241,7 +245,7 @@ object NCUtils extends LazyLogging:
         s.zipWithIndex.foldLeft(new StringBuilder())((buf, zip) => {
             buf ++= s"${colors(RND.nextInt(colors.size))}$addOn${zip._1}"
         })
-        .toString + ansiReset
+        .toString + NCAnsi.ansiReset
 
     /**
       *
@@ -254,7 +258,99 @@ object NCUtils extends LazyLogging:
         s.zipWithIndex.foldLeft(new StringBuilder())((buf, zip) => {
             buf ++= s"${colors(zip._2 % colors.size)}$addOn${zip._1}"
         })
-        .toString + ansiReset
+        .toString + NCAnsi.ansiReset
+
+    /**
+      *
+      * @param json
+      * @return
+      */
+    def prettyJson(json: String): String =
+        if json == null || json.isEmpty then ""
+        else
+            try
+                GSON.toJson(GSON.getAdapter(classOf[JsonElement]).fromJson(json))
+                    // Fix the problem with escaping '<' and '>' which is only
+                    // a theoretical problem for browsers displaying JSON.
+                    .replace("\\u003c", "<")
+                    .replace("\\u003e", ">")
+            catch case _: Exception => ""
+
+    /**
+      *
+      * @param json
+      * @return
+      */
+    def isValidJson(json: String): Boolean =
+        scala.util.Try(GSON.getAdapter(classOf[JsonElement]).fromJson(json)).isSuccess
+
+    /**
+      *
+      * @param json
+      * @param field
+      * @return
+      */
+    @throws[Exception]
+    def getJsonStringField(json: String, field: String): String =
+        GSON.getAdapter(classOf[JsonElement]).fromJson(json).getAsJsonObject.get(field).getAsString
+
+    /**
+      *
+      * @param json
+      * @param field
+      * @return
+      */
+    @throws[Exception]
+    def getJsonIntField(json: String, field: String): Int =
+        GSON.getAdapter(classOf[JsonElement]).fromJson(json).getAsJsonObject.get(field).getAsInt
+
+    /**
+      *
+      * @param json
+      * @tparam T
+      * @return
+      */
+    def jsonToObject[T](json: String, typ: java.lang.reflect.Type): T =
+        GSON.fromJson(json, typ)
+
+    /**
+      *
+      * @param json
+      * @tparam T
+      * @return
+      */
+    def jsonToObject[T](json: String, cls: Class[T]): T =
+        GSON.fromJson(json, cls)
+
+    /**
+      * Shortcut to convert given JSON to Scala map with default mapping.
+      *
+      * @param json JSON to convert.
+      * @return
+      */
+    @throws[Exception]
+    def jsonToScalaMap(json: String): Map[String, Object] =
+        GSON.fromJson(json, classOf[java.util.HashMap[String, Object]]).asScala.toMap
+
+    /**
+      * Shortcut to convert given JSON to Java map with default mapping.
+      *
+      * @param json JSON to convert.
+      * @return
+      */
+    def jsonToJavaMap(json: String): java.util.Map[String, Object] =
+        try GSON.fromJson(json, classOf[java.util.HashMap[String, Object]])
+        catch case e: Exception => E(s"Cannot deserialize JSON to map: '$json'", e)
+
+    /**
+      *
+      * @param json
+      * @param field
+      * @return
+      */
+    def getJsonBooleanField(json: String, field: String): Boolean =
+        try GSON.getAdapter(classOf[JsonElement]).fromJson(json).getAsJsonObject.get(field).getAsBoolean
+        catch case e: Exception => E(s"Cannot extract JSON field '$field' from: '$json'", e)
 
     /**
       * ANSI color JSON string.
@@ -271,13 +367,13 @@ object NCUtils extends LazyLogging:
             ch match
                 case ':' if !inQuotes => buf ++= r(":"); isValue = true
                 case '[' | ']' | '{' | '}' if !inQuotes => buf ++= y(s"$ch"); isValue = false
-                case ',' if !inQuotes => buf ++= ansi256Fg(213, s"$ch"); isValue = false
+                case ',' if !inQuotes => buf ++= NCAnsi.ansi256Fg(213, s"$ch"); isValue = false
                 case '"' =>
                     if inQuotes then
-                        buf ++= ansi256Fg(105, s"$ch")
+                        buf ++= NCAnsi.ansi256Fg(105, s"$ch")
                     else
-                        buf ++= s"${ansi256Fg(105)}$ch"
-                        buf ++= (if isValue then G else ansiCyanFg)
+                        buf ++= s"${NCAnsi.ansi256Fg(105)}$ch"
+                        buf ++= (if isValue then G else NCAnsi.ansiCyanFg)
 
                     inQuotes = !inQuotes
 
@@ -451,6 +547,7 @@ object NCUtils extends LazyLogging:
       * @param e
       */
     private def prettyErrorImpl(logger: PrettyErrorLogger, title: String, e: Throwable): Unit =
+        import NCAnsi.*
         logger.log(title)
 
         val INDENT = 2

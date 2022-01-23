@@ -22,7 +22,6 @@ import com.typesafe.scalalogging.LazyLogging
 import org.antlr.v4.runtime.tree.ParseTreeWalker
 import org.antlr.v4.runtime.*
 import org.apache.nlpcraft.internal.*
-import org.apache.nlpcraft.internal.ansi.NCAnsi.*
 import org.apache.nlpcraft.internal.antlr4.*
 import NCMacroCompiler.FiniteStateMachine
 import org.apache.nlpcraft.internal.makro.antlr4.*

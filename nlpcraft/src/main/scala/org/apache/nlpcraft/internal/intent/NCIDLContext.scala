@@ -23,7 +23,7 @@ import scala.collection.mutable
 
 /**
   *
-  * @param toks User input tokens.
+  * @param ents Entities.
   * @param intentMeta Intent metadata.
   * @param convMeta Conversation metadata.
   * @param fragMeta Fragment (argument) metadata passed during intent fragment reference.
@@ -31,7 +31,7 @@ import scala.collection.mutable
   * @param vars Intent variable storage.
   */
 case class NCIDLContext(
-    toks: Seq[NCEntity] = Seq.empty,
+    ents: Seq[NCEntity] = Seq.empty,
     intentMeta: Map[String, Object] = Map.empty,
     convMeta: Map[String, Object] = Map.empty,
     fragMeta: Map[String, Object] = Map.empty,
