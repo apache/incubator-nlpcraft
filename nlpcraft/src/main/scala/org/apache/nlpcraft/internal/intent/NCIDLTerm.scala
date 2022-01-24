@@ -62,5 +62,3 @@ case class NCIDLTerm(
         )
 
     override def toString: String = idl
-
-    def toAnsiString: String = g(idl)

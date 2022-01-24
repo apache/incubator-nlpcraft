@@ -19,7 +19,6 @@ package org.apache.nlpcraft.internal.util
 
 import com.typesafe.scalalogging.*
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.internal.ansi.*
 import com.google.gson.*
 import java.io.*
 import java.net.*
@@ -44,28 +43,6 @@ object NCUtils extends LazyLogging:
     private val RND = new Random()
     private val sysProps = new SystemProperties
     private final lazy val GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create()
-    private final val ANSI_SEQ = Pattern.compile("\u001B\\[[?;\\d]*[a-zA-Z]")
-    private val ANSI_FG_8BIT_COLORS = for (i <- 16 to 255) yield NCAnsi.ansi256Fg(i)
-    private val ANSI_BG_8BIT_COLORS = for (i <- 16 to 255) yield NCAnsi.ansi256Bg(i)
-    private val ANSI_FG_4BIT_COLORS = Seq(
-        NCAnsi.ansiRedFg,
-        NCAnsi.ansiGreenFg,
-        NCAnsi.ansiBlueFg,
-        NCAnsi.ansiYellowFg,
-        NCAnsi.ansiWhiteFg,
-        NCAnsi.ansiBlackFg,
-        NCAnsi.ansiCyanFg
-    )
-    private val ANSI_BG_4BIT_COLORS = Seq(
-        NCAnsi.ansiRedBg,
-        NCAnsi.ansiGreenBg,
-        NCAnsi.ansiBlueBg,
-        NCAnsi.ansiYellowBg,
-        NCAnsi.ansiWhiteBg,
-        NCAnsi.ansiBlackBg,
-        NCAnsi.ansiCyanBg
-    )
-    private val ANSI_4BIT_COLORS = for (fg <- ANSI_FG_4BIT_COLORS; bg <- ANSI_BG_4BIT_COLORS) yield s"$fg$bg"
 
     /**
       * Gets system property, or environment variable (in that order), or `None` if none exists.
@@ -116,149 +93,18 @@ object NCUtils extends LazyLogging:
         dest.toSeq
 
     /**
-      * Prints 4-bit ASCII-logo.
+      * Prints ASCII-logo.
       */
-    def asciiLogo4Bit(): String =
-        import NCAnsi.*
-        raw"$ansiBlueFg    _   ____     $ansiCyanFg ______           ______   $ansiReset$NL" +
-        raw"$ansiBlueFg   / | / / /___  $ansiCyanFg/ ____/________ _/ __/ /_  $ansiReset$NL" +
-        raw"$ansiBlueFg  /  |/ / / __ \$ansiCyanFg/ /   / ___/ __ `/ /_/ __/  $ansiReset$NL" +
-        raw"$ansiBlueFg / /|  / / /_/ /$ansiCyanFg /___/ /  / /_/ / __/ /_    $ansiReset$NL" +
-        raw"$ansiBold$ansiRedFg/_/ |_/_/ .___/$ansiRedFg\____/_/   \__,_/_/  \__/      $ansiReset$NL" +
-        raw"$ansiBold$ansiRedFg       /_/                                              $ansiReset$NL"
-
-    /**
-      * Prints 8-bit ASCII-logo.
-      */
-    def asciiLogo8Bit1(): String =
-        import NCAnsi.*
-        fgRainbow4Bit(
-            raw"${ansi256Fg(28)}    _   ____      ______           ______   $ansiReset$NL" +
-            raw"${ansi256Fg(64)}   / | / / /___  / ____/________ _/ __/ /_  $ansiReset$NL" +
-            raw"${ansi256Fg(100)}  /  |/ / / __ \/ /   / ___/ __ `/ /_/ __/  $ansiReset$NL" +
-            raw"${ansi256Fg(136)} / /|  / / /_/ / /___/ /  / /_/ / __/ /_    $ansiReset$NL" +
-            raw"${ansi256Fg(172)}/_/ |_/_/ .___/\____/_/   \__,_/_/  \__/    $ansiReset$NL" +
-            raw"${ansi256Fg(208)}       /_/                                  $ansiReset$NL"
-        )
-
-    /**
-      * Prints 8-bit ASCII-logo.
-      */
-    def asciiLogo8Bit(): String =
-        val startColor = getRandom(Seq(16, 22, 28, 34, 40, 46))
-        val range = 6
-
-        (for (lineIdx <- Seq(
+    def asciiLogo(): String =
+        Seq(
             raw"    _   ____      ______           ______   $NL",
             raw"   / | / / /___  / ____/________ _/ __/ /_  $NL",
             raw"  /  |/ / / __ \/ /   / ___/ __ `/ /_/ __/  $NL",
             raw" / /|  / / /_/ / /___/ /  / /_/ / __/ /_    $NL",
             raw"/_/ |_/_/ .___/\____/_/   \__,_/_/  \__/    $NL",
             raw"       /_/                                  $NL"
-        ).zipWithIndex) yield {
-            val line = lineIdx._1
-            val idx = lineIdx._2
-            val start = startColor + (36 * idx)
-            val end = start + range - 1
-
-            gradAnsi8BitFgLine(line, start, end)
-        })
+        )
         .mkString("")
-
-    /**
-      *
-      * @param line
-      * @param startColor Inclusive.
-      * @param endColor Inclusive.
-      * @return
-      */
-    def gradAnsi8BitFgLine(line: String, startColor: Int, endColor: Int): String =
-        line.zipWithIndex.foldLeft(new StringBuilder())((buf, zip) => {
-            val ch = zip._1
-            val idx = zip._2
-            val color = startColor + idx % (endColor - startColor + 1)
-
-            buf ++= s"${NCAnsi.ansi256Fg(color)}$ch"
-        })
-        .toString + NCAnsi.ansiReset
-
-    /**
-      *
-      * @param line
-      * @param startColor Inclusive.
-      * @param endColor Inclusive.
-      * @return
-      */
-    def gradAnsi8BitBgLine(line: String, startColor: Int, endColor: Int): String =
-        line.zipWithIndex.foldLeft(new StringBuilder())((buf, zip) => {
-            val ch = zip._1
-            val idx = zip._2
-            val color = startColor + idx % (endColor - startColor + 1)
-
-            buf ++= s"${NCAnsi.ansi256Bg(color)}$ch"
-        })
-        .toString + NCAnsi.ansiReset
-
-    /**
-      *
-      * @param s
-      * @return
-      */
-    def fgRainbow4Bit(s: String, addOn: String = ""): String = rainbowImpl(s, ANSI_FG_4BIT_COLORS, addOn)
-
-    /**
-      *
-      * @param s
-      * @return
-      */
-    def fgRainbow8Bit(s: String, addOn: String = ""): String = rainbowImpl(s, ANSI_FG_8BIT_COLORS, addOn)
-
-    /**
-      *
-      * @param s
-      * @return
-      */
-    def bgRainbow4Bit(s: String, addOn: String = ""): String = rainbowImpl(s, ANSI_BG_4BIT_COLORS, addOn)
-
-    /**
-      *
-      * @param s
-      * @return
-      */
-    def bgRainbow8Bit(s: String, addOn: String = ""): String = rainbowImpl(s, ANSI_BG_8BIT_COLORS, addOn)
-
-    /**
-      *
-      * @param s
-      * @return
-      */
-    def rainbow4Bit(s: String, addOn: String = ""): String = randomRainbowImpl(s, ANSI_4BIT_COLORS, addOn)
-
-    /**
-      *
-      * @param s
-      * @param colors
-      * @param addOn
-      * @return
-      */
-    private def randomRainbowImpl(s: String, colors: Seq[String], addOn: String): String =
-        s.zipWithIndex.foldLeft(new StringBuilder())((buf, zip) => {
-            buf ++= s"${colors(RND.nextInt(colors.size))}$addOn${zip._1}"
-        })
-        .toString + NCAnsi.ansiReset
-
-    /**
-      *
-      * @param s
-      * @param colors
-      * @param addOn
-      * @return
-      */
-    private def rainbowImpl(s: String, colors: Seq[String], addOn: String): String =
-        s.zipWithIndex.foldLeft(new StringBuilder())((buf, zip) => {
-            buf ++= s"${colors(zip._2 % colors.size)}$addOn${zip._1}"
-        })
-        .toString + NCAnsi.ansiReset
 
     /**
       *
@@ -353,37 +199,6 @@ object NCUtils extends LazyLogging:
         catch case e: Exception => E(s"Cannot extract JSON field '$field' from: '$json'", e)
 
     /**
-      * ANSI color JSON string.
-      *
-      * @param json JSON string to color.
-      * @return
-      */
-    def colorJson(json: String): String =
-        val buf = new StringBuilder
-        var inQuotes = false
-        var isValue = false
-
-        for (ch <- json)
-            ch match
-                case ':' if !inQuotes => buf ++= r(":"); isValue = true
-                case '[' | ']' | '{' | '}' if !inQuotes => buf ++= y(s"$ch"); isValue = false
-                case ',' if !inQuotes => buf ++= NCAnsi.ansi256Fg(213, s"$ch"); isValue = false
-                case '"' =>
-                    if inQuotes then
-                        buf ++= NCAnsi.ansi256Fg(105, s"$ch")
-                    else
-                        buf ++= s"${NCAnsi.ansi256Fg(105)}$ch"
-                        buf ++= (if isValue then G else NCAnsi.ansiCyanFg)
-
-                    inQuotes = !inQuotes
-
-                case _ => buf ++= s"$ch"
-
-
-        buf.append(RST)
-        buf.toString()
-
-    /**
       * Shortcut - current timestamp in milliseconds.
       */
     def now(): Long = System.currentTimeMillis()
@@ -396,15 +211,6 @@ object NCUtils extends LazyLogging:
       * @return
       */
     def notNull[T <: AnyRef](v: T, dflt: T): T = if v == null then dflt else v
-
-    /**
-      * Strips ANSI escape sequences from the given string.
-      *
-      * @param s
-      * @return
-      */
-    def stripAnsi(s: String): String =
-        ANSI_SEQ.matcher(s).replaceAll("")
 
     /**
       * Trims each sequence string and filters out empty ones.
@@ -547,7 +353,6 @@ object NCUtils extends LazyLogging:
       * @param e
       */
     private def prettyErrorImpl(logger: PrettyErrorLogger, title: String, e: Throwable): Unit =
-        import NCAnsi.*
         logger.log(title)
 
         val INDENT = 2
@@ -557,7 +362,7 @@ object NCUtils extends LazyLogging:
             var first = true
             var errMsg = x.getLocalizedMessage
             if errMsg == null then errMsg = "<null>"
-            val exClsName = if !x.isInstanceOf[NCException] then s"$ansiRedFg[${x.getClass.getCanonicalName}]$ansiReset " else ""
+            val exClsName = if !x.isInstanceOf[NCException] then s"[${x.getClass.getCanonicalName}] " else ""
             val trace = x.getStackTrace.find(!_.getClassName.startsWith("scala.")).getOrElse(x.getStackTrace.head)
             val fileName = trace.getFileName
             val lineNum = trace.getLineNumber
@@ -565,10 +370,10 @@ object NCUtils extends LazyLogging:
                 if fileName == null || lineNum < 0 then
                     s"$exClsName$errMsg"
                 else
-                    s"$exClsName$errMsg $ansiCyanFg->$ansiReset ($fileName:$lineNum)"
+                    s"$exClsName$errMsg -> ($fileName:$lineNum)"
 
             msg.split("\n").foreach(line => {
-                val s = s"${" " * indent}${if first then ansiBlue("+-+ ") else "   "}${bo(y(line))}"
+                val s = s"${" " * indent}${if first then "+-+ " else "   "}$line}"
                 logger.log(s)
                 first = false
             })
@@ -589,7 +394,7 @@ object NCUtils extends LazyLogging:
                 val mtdName = trace.getMethodName
                 val clsName = trace.getClassName.replace("org.apache.nlpcraft", "o.a.n")
 
-                logger.log(s"${" " * indent}  ${b("|")} $clsName.$mtdName $ansiCyanFg->$ansiReset ($fileName:$lineNum)")
+                logger.log(s"${" " * indent}  | ${clsName}.$mtdName -> ($fileName:$lineNum)")
 
             indent += INDENT
 
