@@ -42,5 +42,4 @@ object NCCompilerUtils:
         else ptrStr = s"$ptrStr${dash.substring(pos + 1)}"
 
         val origStr = s"${in0.substring(0, pos)}${in0.charAt(pos)}${in0.substring(pos + 1)}"
-
         CompilerErrorHolder(ptrStr, origStr)

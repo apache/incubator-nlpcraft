@@ -27,13 +27,12 @@ import org.apache.nlpcraft.internal.intent.*
 import org.apache.nlpcraft.internal.intent.{NCIDLStackItem => Z}
 
 import java.lang.{Byte => JByte, Double => JDouble, Float => JFloat, Integer => JInt, Long => JLong, Short => JShort}
+import java.util.{Calendar, Collections, Collection => JColl, List => JList, Map => JMap}
 import java.time.temporal.IsoFields
 import java.time.{LocalDate, LocalTime}
 import java.util
-import java.util.{Calendar, Collections, Collection => JColl, List => JList, Map => JMap}
 
-import scala.jdk.CollectionConverters.CollectionHasAsScala
-import scala.jdk.CollectionConverters.SeqHasAsJava
+import scala.jdk.CollectionConverters.*
 
 trait NCIDLCodeGenerator:
     type S = NCIDLStack
