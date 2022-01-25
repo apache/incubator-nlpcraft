@@ -19,21 +19,15 @@ package org.apache.nlpcraft.internal.intent
 
 import org.apache.nlpcraft.*
 import scala.jdk.CollectionConverters.*
-import java.util
-//import java.util.{Collections, List, Set}
 
 /**
   *
   * @param ent
   * @param idx
   */
-class NCIDLEntity(ent: NCEntity, idx: Int) extends NCPropertyMapAdapter with NCEntity:
+class NCIDLEntity(ent: NCEntity, idx: Int):
     private lazy val txt = ent.getTokens.asScala.map(_.getText).mkString(" ")
 
-    override def getTokens: util.List[NCToken] = ent.getTokens
-    override def getRequestId: String = ent.getRequestId
-    override def getGroups: util.Set[String] = ent.getGroups
-    override def getId: String = ent.getId
-
+    def getImpl: NCEntity = ent
     def getText: String = txt
     def getIndex: Int = idx

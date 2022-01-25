@@ -38,7 +38,7 @@ import scala.jdk.CollectionConverters.SeqHasAsJava
 trait NCIDLCodeGenerator:
     type S = NCIDLStack
     type ST = NCIDLStackType
-    type SI = (NCToken, S, NCIDLContext) => Unit
+    type SI = (NCIDLEntity, S, NCIDLContext) => Unit
 
     def syntaxError(errMsg: String, srcName: String, line: Int, pos: Int): NCException
     def runtimeError(errMsg: String, srcName: String, line: Int, pos: Int, cause: Exception = null): NCException
@@ -160,6 +160,8 @@ trait NCIDLCodeGenerator:
         newRuntimeError(s"Runtime error in IDL function: $fun()", cause)
     def rtUnavailFunError(fun: String)(implicit ctx: PRC): NCException =
         newRuntimeError(s"Function '$fun()' is unavailable in this IDL context.")
+    def rtEmptyListError(fun: String)(implicit ctx: PRC): NCException =
+        newRuntimeError(s"Unexpected empty list in IDL function: $fun()")
 
     /**
       *
@@ -484,7 +486,7 @@ trait NCIDLCodeGenerator:
       * @param ctx
       * @return
       */
-    def parseCallExpr(fun: String)(implicit ctx: PRC): SI = (ent, stack: S, idlCtx) =>
+    def parseCallExpr(fun: String)(implicit ctx: PRC): SI = (ent: NCIDLEntity, stack: S, idlCtx) =>
         implicit val evidence: S = stack
 
         def popMarker(argNum: Int): Unit = if pop1() != stack.PLIST_MARKER then throw rtTooManyParamsError(argNum, fun)
@@ -643,7 +645,7 @@ trait NCIDLCodeGenerator:
                 val Z(v, n) = x()
                 val lst = toList(v).asInstanceOf[util.List[Object]]
                 try
-                    if lst.isEmpty then throw newRuntimeError(s"Unexpected empty list in IDL function: $fun()")
+                    if lst.isEmpty then throw rtEmptyListError(fun)
                     else Z(Collections.min(lst, null), n)
                 catch case e: Exception => throw rtListTypeError(fun, e)
             })
@@ -654,7 +656,7 @@ trait NCIDLCodeGenerator:
                 val Z(v, n) = x()
                 val lst = toList(v).asInstanceOf[util.List[Object]]
                 try
-                    if lst.isEmpty then throw newRuntimeError(s"Unexpected empty list in IDL function: $fun()")
+                    if lst.isEmpty then throw rtEmptyListError(fun)
                     else
                         val seq: Seq[Double] = lst.asScala.map(p => JDouble.valueOf(p.toString).doubleValue()).toSeq
                         Z(seq.sum / seq.length, n)
@@ -667,7 +669,7 @@ trait NCIDLCodeGenerator:
                 val Z(v, n) = x()
                 val lst = toList(v).asInstanceOf[util.List[Object]]
                 try
-                    if lst.isEmpty then throw newRuntimeError(s"Unexpected empty list in IDL function: $fun()")
+                    if lst.isEmpty then throw rtEmptyListError(fun)
                     else
                         val seq: Seq[Double] = lst.asScala.map(p => JDouble.valueOf(p.toString).doubleValue()).toSeq
                         val mean = seq.sum / seq.length
@@ -718,7 +720,7 @@ trait NCIDLCodeGenerator:
                 val Z(v, n) = x()
                 val lst = toList(v).asInstanceOf[util.List[Object]]
                 try
-                    if lst.isEmpty then throw newRuntimeError(s"Unexpected empty list in IDL function: $fun()")
+                    if lst.isEmpty then throw rtEmptyListError(fun)
                     else Z(Collections.max(lst, null), n)
                 catch case e: Exception => throw rtListTypeError(fun, e)
             })
@@ -893,7 +895,7 @@ trait NCIDLCodeGenerator:
         try
             fun match
                 // Metadata access.
-                case "meta_ent" => ???
+                case "meta_ent" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(ent.getImpl.get[Object](toStr(v))), 0) })
                 case "meta_cfg" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(idlCtx.mdlCf.get[Object](toStr(v))), 0) })
                 case "meta_req" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(idlCtx.req.getRequestData.get(toStr(v))), 0) })
                 case "meta_intent" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(idlCtx.intentMeta.get(toStr(v)).orNull), 0) })
@@ -909,59 +911,23 @@ trait NCIDLCodeGenerator:
                 case "or_else" => doOrElse()
 
                 // Entity functions.
-                case "ent_id" => arg1Tok() match { case x => stack.push(() => Z(toEntity(x().value).getId, 1)) }
+                case "ent_id" => arg1Tok() match { case x => stack.push(() => Z(toEntity(x().value).getImpl.getId, 1)) }
                 case "ent_index" => arg1Tok() match { case x => stack.push(() => Z(toEntity(x().value).getIndex, 1)) }
                 case "ent_text" => arg1Tok() match { case x => stack.push(() => Z(toEntity(x().value).getText, 1)) }
                 case "ent_count" => checkAvail(); z0(() => Z(idlCtx.entities.size, 0))
-                case "ent_groups" => arg1Tok() match { case x => stack.push(() => Z(toEntity(x().value).getGroups, 1)) }
+                case "ent_groups" => arg1Tok() match { case x => stack.push(() => Z(toEntity(x().value).getImpl.getGroups, 1)) }
                 case "ent_all" => checkAvail(); z0(() => Z(idlCtx.entities.asJava, 0))
-                case "ent_all_for_id" => checkAvail(); doForAll((ent, id) => ent.getId == id)
-                case "ent_all_for_group" => checkAvail(); doForAll((ent, grp) => ent.getGroups.contains(grp))
-
-//                case "tok_lemma" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).getLemma, 1) }) }
-//                case "tok_stem" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).getStem, 1) }) }
-//                case "tok_pos" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).getPos, 1) }) }
-//                case "tok_txt" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).getOriginalText, 1) }) }
-//                case "tok_norm_txt" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).getNormalizedText, 1) }) }
-//                case "tok_req_id" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).getServerRequestId, 1) }) }
-//                case "tok_sparsity" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).getSparsity, 1) }) }
-//                case "tok_unid" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).getUnid, 1) }) }
-//
-//                case "tok_index" => checkAvail(); arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).getIndex, 1) }) }
-//                case "tok_is_last" => checkAvail(); arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).getIndex == idlCtx.entities.size - 1, 1) }) }
-//                case "tok_is_first" => checkAvail(); arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).getIndex == 0, 1) }) }
-//                case "tok_is_before_id" => checkAvail(); doIsBefore((tok, id) => ent.getId == id)
-//                case "tok_is_before_group" => checkAvail(); doIsBefore((tok, grpId) => ent.getGroups.contains(grpId))
-//                case "tok_is_before_parent" => checkAvail(); doIsBefore((tok, id) => ent.getParentId == id)
-//                case "tok_is_after_id" => checkAvail(); doIsAfter((tok, id) => ent.getId == id)
-//                case "tok_is_after_group" => checkAvail(); doIsAfter((tok, grpId) => ent.getGroups.contains(grpId))
-//                case "tok_is_after_parent" => checkAvail(); doIsAfter((tok, id) => ent.getParentId == id)
-//                case "tok_is_between_ids" => checkAvail(); doIsBetween((tok, id) => ent.getId == id)
-//                case "tok_is_between_groups" => checkAvail(); doIsBetween((tok, grpId) => ent.getGroups.contains(grpId))
-//                case "tok_is_between_parents" => checkAvail(); doIsBetween((tok, id) => ent.getParentId == id)
-//
-//                case "tok_is_abstract" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).isAbstract, 1) }) }
-//                case "tok_is_bracketed" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).isBracketed, 1) }) }
-//                case "tok_is_direct" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).isDirect, 1) }) }
-//                case "tok_is_permutated" => arg1Tok() match { case x => stack.push(() => { Z(!toToken(x().value).isDirect, 1) }) }
-//                case "tok_is_english" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).isEnglish, 1) }) }
-//                case "tok_is_freeword" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).isFreeWord, 1) }) }
-//                case "tok_is_quoted" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).isQuoted, 1) }) }
-//                case "tok_is_stopword" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).isStopWord, 1) }) }
-//                case "tok_is_swear" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).isSwear, 1) }) }
-//                case "tok_is_user" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).isUserDefined, 1) }) }
-//                case "tok_is_wordnet" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).isWordnet, 1) }) }
-//                case "tok_ancestors" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).getAncestors, 1) }) }
-//                case "tok_parent" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).getParentId, 1) }) }
-//                case "tok_value" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).getValue, 1) }) }
-//                case "tok_aliases" => arg1Tok() match { case x => stack.push(() => { Z(box(toToken(x().value).getAliases), 1) }) }
-//                case "tok_start_idx" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).getStartCharIndex, 1) }) }
-//                case "tok_end_idx" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).getEndCharIndex, 1) }) }
-//                case "tok_this" => z0(() => Z(tok, 1))
-//                case "tok_has_part" => doHasPart()
-//                case "tok_find_part" => doFindPart()
-//                case "tok_find_parts" => doFindParts()
-//
+                case "ent_all_for_id" => checkAvail(); doForAll((ent, id) => ent.getImpl.getId == id)
+                case "ent_all_for_group" => checkAvail(); doForAll((ent, grp) => ent.getImpl.getGroups.contains(grp))
+                case "ent_this" => z0(() => Z(ent, 1))
+                case "ent_is_last" => checkAvail(); arg1Tok() match { case x => stack.push(() => { Z(toEntity(x().value).getIndex == idlCtx.entities.size - 1, 1) }) }
+                case "ent_is_first" => checkAvail(); arg1Tok() match { case x => stack.push(() => { Z(toEntity(x().value).getIndex == 0, 1) }) }
+                case "ent_is_before_id" => checkAvail(); doIsBefore((tok, id) => ent.getImpl.getId == id)
+                case "ent_is_before_group" => checkAvail(); doIsBefore((tok, grpId) => ent.getImpl.getGroups.contains(grpId))
+                case "ent_is_after_id" => checkAvail(); doIsAfter((tok, id) => ent.getImpl.getId == id)
+                case "ent_is_after_group" => checkAvail(); doIsAfter((tok, grpId) => ent.getImpl.getGroups.contains(grpId))
+                case "ent_is_between_ids" => checkAvail(); doIsBetween((tok, id) => ent.getImpl.getId == id)
+                case "ent_is_between_groups" => checkAvail(); doIsBetween((tok, grpId) => ent.getImpl.getGroups.contains(grpId))
 
                 // Request data.
                 case "req_id" => z0(() => Z(idlCtx.req.getRequestId, 0))

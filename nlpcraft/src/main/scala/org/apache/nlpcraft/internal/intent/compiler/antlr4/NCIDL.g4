@@ -3,13 +3,13 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
+ * (the '
  * the License.  You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
+ * distributed under the License is distributed on an '
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
@@ -152,6 +152,15 @@ FUN_NAME
     | 'ent_all'
     | 'ent_all_for_id'
     | 'ent_all_for_group'
+    | 'ent_this'
+    | 'ent_is_last'
+    | 'ent_is_first'
+    | 'ent_is_before_id'
+    | 'ent_is_before_group'
+    | 'ent_is_after_id'
+    | 'ent_is_after_group'
+    | 'ent_is_between_ids'
+    | 'ent_is_between_groups'
     | 'req_id'
     | 'req_text'
     | 'req_tstamp'
@@ -255,7 +264,7 @@ META : 'meta' ;
 TERM : 'term' ;
 FRAG: 'fragment'; // To resolve ambiguity with ANTLR4 keyword.
 SQSTRING: SQUOTE ((~'\'') | ('\\''\''))* SQUOTE; // Allow for \' (escaped single quote) in the string.
-DQSTRING: DQUOTE ((~'"') | ('\\''"'))* DQUOTE; // Allow for \" (escape double quote) in the string.
+DQSTRING: DQUOTE ((~''
 BOOL: 'true' | 'false';
 NULL: 'null';
 EQ: '==';
@@ -273,7 +282,7 @@ RPAR: ')';
 LBRACE: '{';
 RBRACE: '}';
 SQUOTE: '\'';
-DQUOTE: '"';
+DQUOTE: ''
 TILDA: '~';
 LBR: '[';
 RBR: ']';
