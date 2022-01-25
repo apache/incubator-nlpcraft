@@ -73,7 +73,7 @@ class NCIdlFunctionsMeta extends NCIdlFunctions:
 
     // Simplified test.
     @Test
-    def testMetaModel(): Unit = testNoValue("meta_model", mkIdlContext())
+    def testMetaConfig(): Unit = testNoValue("meta_cfg", mkIdlContext())
 
     // Simplified test.
     @Test

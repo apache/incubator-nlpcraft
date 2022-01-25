@@ -35,7 +35,7 @@ class NCIdlFunctionsOther extends NCIdlFunctions:
             TestDesc(truth = "if(false, 1, 0) == 0"),
             TestDesc(truth = "or_else(null, false) == false"),
             TestDesc(truth = "or_else('s', list(1, 2, 3)) == 's'"),
-            TestDesc(truth = "or_else(meta_model('unknown_prop'), list(1, 2, 3)) == list(1, 2, 3)")
+            TestDesc(truth = "or_else(meta_cfg('unknown_prop'), list(1, 2, 3)) == list(1, 2, 3)")
         )
     
     @Test
