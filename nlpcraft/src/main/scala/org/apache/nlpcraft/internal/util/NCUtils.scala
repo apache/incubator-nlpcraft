@@ -740,6 +740,42 @@ object NCUtils extends LazyLogging:
         data
 
     /**
+      * Reads lines from given file.
+      *
+      * @param f File to read from.
+      * @param enc Encoding.
+      * @param log Logger to use.
+      */
+    def readFile(f: File, enc: String = "UTF-8", log: Logger = logger): List[String] =
+        try
+            Using.resource(Source.fromFile(f, enc)) { src =>
+                getAndLog(src.getLines().map(p => p).toList, f, log)
+            }
+        catch case e: IOException => E(s"Failed to read file: ${f.getAbsolutePath}", e)
+
+    /**
+      * Maps lines from the given stream to an object.
+      *
+      * @param in Stream to read from.
+      * @param enc Encoding.
+      * @param log Logger to use.
+      * @param mapper Function to read lines.
+      */
+    def mapStream[T](in: InputStream, enc: String, log: Logger = logger, mapper: Iterator[String] => T): T =
+        try Using.resource(Source.fromInputStream(in, enc)) { src => mapper(src.getLines()) }
+        catch case e: IOException => E(s"Failed to read stream.", e)
+
+    /**
+      * Reads lines from given stream.
+      *
+      * @param in Stream to read from.
+      * @param enc Encoding.
+      * @param log Logger to use.
+      */
+    def readStream(in: InputStream, enc: String = "UTF-8", log: Logger = logger): List[String] =
+        mapStream(in, enc, log, _.map(p => p).toList)
+
+    /**
       * Reads lines from given resource.
       *
       * @param res Resource path to read from.

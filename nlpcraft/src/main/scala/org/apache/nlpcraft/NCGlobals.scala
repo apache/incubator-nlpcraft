@@ -30,6 +30,10 @@ def E[T](msg: String, cause: Throwable = null): T = throw new NCException(msg, c
 // Internal deep debug flag (more verbose tracing).
 final val DEEP_DEBUG = false
 
+extension[T](opt: Option[T])
+    def === (x: Option[T]): Boolean = opt.isDefined && x.isDefined && opt.get == x.get
+    def === (x: T): Boolean = opt.isDefined && opt.get == x
+
 extension(v: Int)
     def MS: Int = v
     def SECS: Int = v * 1000

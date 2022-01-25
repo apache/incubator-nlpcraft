@@ -136,18 +136,6 @@ public class NCIDLBaseListener implements NCIDLListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterMtdDecl(NCIDLParser.MtdDeclContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitMtdDecl(NCIDLParser.MtdDeclContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterFlowDecl(NCIDLParser.FlowDeclContext ctx) { }
 	/**
 	 * {@inheritDoc}

@@ -39,8 +39,6 @@ case class NCIDLIntent(
     options: NCIDLIntentOptions,
     meta: Map[String, Object],
     flow: Option[String],
-    flowClsName: Option[String],
-    flowMtdName: Option[String],
     terms: List[NCIDLTerm]
 ):
     require(id != null)
@@ -54,6 +52,6 @@ case class NCIDLIntent(
         case Some(r) => Some(Pattern.compile(r))
         case None => None
 
-    lazy val isFlowDefined: Boolean = flow.isDefined || flowMtdName.isDefined
+    lazy val isFlowDefined: Boolean = flow.isDefined
 
     override def toString: String = idl

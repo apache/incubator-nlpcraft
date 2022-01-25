@@ -35,8 +35,7 @@ fragRef: FRAG LPAR id fragMeta? RPAR;
 fragMeta: COMMA jsonObj;
 intent: intentId optDecl? flowDecl? metaDecl? termDecls;
 intentId: 'intent' ASSIGN id;
-mtdDecl: DIV mtdRef DIV;
-flowDecl: 'flow' ASSIGN (qstring | mtdDecl);
+flowDecl: 'flow' ASSIGN qstring;
 metaDecl: 'meta' ASSIGN jsonObj;
 optDecl: 'options' ASSIGN jsonObj;
 jsonObj
@@ -67,7 +66,7 @@ termEq
     : ASSIGN // Do not use conversation.
     | TILDA // Use conversation.
     ;
-term: 'term' termId? termEq ((LBRACE vars? expr RBRACE) | mtdDecl) minMax?;
+term: 'term' termId? termEq LBRACE vars? expr RBRACE minMax?;
 mtdRef: javaFqn? POUND id;
 javaFqn
     : javaClass
@@ -264,7 +263,7 @@ META : 'meta' ;
 TERM : 'term' ;
 FRAG: 'fragment'; // To resolve ambiguity with ANTLR4 keyword.
 SQSTRING: SQUOTE ((~'\'') | ('\\''\''))* SQUOTE; // Allow for \' (escaped single quote) in the string.
-DQSTRING: DQUOTE ((~''
+DQSTRING: DQUOTE ((~'"') | ('\\''"'))* DQUOTE; // Allow for \" (escape double quote) in the string.
 BOOL: 'true' | 'false';
 NULL: 'null';
 EQ: '==';
@@ -282,7 +281,7 @@ RPAR: ')';
 LBRACE: '{';
 RBRACE: '}';
 SQUOTE: '\'';
-DQUOTE: ''
+DQUOTE: '"';
 TILDA: '~';
 LBR: '[';
 RBR: ']';

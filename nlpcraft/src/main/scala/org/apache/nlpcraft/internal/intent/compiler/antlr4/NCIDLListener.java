@@ -108,16 +108,6 @@ public interface NCIDLListener extends ParseTreeListener {
 	 */
 	void exitIntentId(NCIDLParser.IntentIdContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link NCIDLParser#mtdDecl}.
-	 * @param ctx the parse tree
-	 */
-	void enterMtdDecl(NCIDLParser.MtdDeclContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link NCIDLParser#mtdDecl}.
-	 * @param ctx the parse tree
-	 */
-	void exitMtdDecl(NCIDLParser.MtdDeclContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link NCIDLParser#flowDecl}.
 	 * @param ctx the parse tree
 	 */

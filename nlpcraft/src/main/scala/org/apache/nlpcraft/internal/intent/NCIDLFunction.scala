@@ -22,4 +22,4 @@ import org.apache.nlpcraft.*
 /**
   *
   */
-trait NCIDLFunction extends ((NCEntity, NCIDLContext) => NCIDLStackItem)
+trait NCIDLFunction extends ((NCIDLEntity, NCIDLContext) => NCIDLStackItem)
