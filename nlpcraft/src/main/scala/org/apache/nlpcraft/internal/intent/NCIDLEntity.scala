@@ -18,27 +18,22 @@
 package org.apache.nlpcraft.internal.intent
 
 import org.apache.nlpcraft.*
-
-import scala.collection.mutable
+import scala.jdk.CollectionConverters.*
+import java.util
+//import java.util.{Collections, List, Set}
 
 /**
   *
-  * @param mdlCf Model configuration.
-  * @param ents Detected entities.
-  * @param intentMeta Intent metadata.
-  * @param convMeta Conversation metadata.
-  * @param fragMeta Fragment (argument) metadata passed during intent fragment reference.
-  * @param req Server request holder.
-  * @param vars Intent variable storage.
+  * @param ent
+  * @param idx
   */
-case class NCIDLContext(
-    mdlCf: NCModelConfig,
-    private val ents: Seq[NCEntity] = Seq.empty,
-    intentMeta: Map[String, Object] = Map.empty,
-    convMeta: Map[String, Object] = Map.empty,
-    fragMeta: Map[String, Object] = Map.empty,
-    req: NCRequest,
-    vars: mutable.Map[String, NCIDLFunction] = mutable.HashMap.empty
-):
-    lazy val entities: Seq[NCIDLEntity] = ents.zipWithIndex.map((ent, idx) => NCIDLEntity(ent, idx))
+class NCIDLEntity(ent: NCEntity, idx: Int) extends NCPropertyMapAdapter with NCEntity:
+    private lazy val txt = ent.getTokens.asScala.map(_.getText).mkString(" ")
 
+    override def getTokens: util.List[NCToken] = ent.getTokens
+    override def getRequestId: String = ent.getRequestId
+    override def getGroups: util.Set[String] = ent.getGroups
+    override def getId: String = ent.getId
+
+    def getText: String = txt
+    def getIndex: Int = idx

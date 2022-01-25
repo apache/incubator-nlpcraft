@@ -22,7 +22,7 @@ import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.util.*
 import org.antlr.v4.runtime.{ParserRuleContext => PRC}
 import org.antlr.v4.runtime.tree.{TerminalNode => TN}
-import org.apache.commons.collections.CollectionUtils
+import org.apache.commons.collections4.CollectionUtils
 import org.apache.nlpcraft.internal.intent.*
 import org.apache.nlpcraft.internal.intent.{NCIDLStackItem => Z}
 
@@ -130,13 +130,13 @@ trait NCIDLCodeGenerator:
     def isJColl(v: Object): Boolean = v.isInstanceOf[JColl[_]]
     def isMap(v: Object): Boolean = v.isInstanceOf[JMap[_, _]]
     def isStr(v: Object): Boolean = v.isInstanceOf[String]
-    def isToken(v: Object): Boolean = v.isInstanceOf[NCToken]
+    def isEntity(v: Object): Boolean = v.isInstanceOf[NCIDLEntity]
 
     def asList(v: Object): JList[_] = v.asInstanceOf[JList[_]]
     def asJColl(v: Object): JColl[_] = v.asInstanceOf[JColl[_]]
     def asMap(v: Object): JMap[_, _] = v.asInstanceOf[JMap[_, _]]
     def asStr(v: Object): String = v.asInstanceOf[String]
-    def asToken(v: Object): NCToken = v.asInstanceOf[NCToken]
+    def asEntity(v: Object): NCIDLEntity = v.asInstanceOf[NCIDLEntity]
     def asBool(v: Object): Boolean = v.asInstanceOf[Boolean]
 
     // Runtime errors.
@@ -343,24 +343,16 @@ trait NCIDLCodeGenerator:
         val (x1, x2) = pop2()(stack, ctx)
 
         stack.push(() => {
-            val (op, flag) = if (and != null) ("&&", false) else ("||", true)
-
+            val (op, flag) = if and != null then ("&&", false) else ("||", true)
             val Z(v1, n1) = x1()
-
-            if (!isBool(v1))
-                throw rtBinaryOpError(op, v1, x2().value)
+            if !isBool(v1) then throw rtBinaryOpError(op, v1, x2().value)
 
             // NOTE: check v1 first and only if it is {true|false} check the v2.
-            if (asBool(v1) == flag)
-                Z(flag, n1)
-            else {
+            if asBool(v1) == flag then Z(flag, n1)
+            else
                 val Z(v2, n2) = x2()
-
-                if (!isBool(v2))
-                    throw rtBinaryOpError(op, v2, v1)
-
+                if !isBool(v2) then throw rtBinaryOpError(op, v2, v1)
                 Z(asBool(v2), n1 + n2)
-            }
         })
     }
 
@@ -373,32 +365,28 @@ trait NCIDLCodeGenerator:
     def parseEqNeqExpr(eq: TN, neq: TN)(implicit ctx: PRC): SI = (_, stack: S, _) => {
         val (x1, x2) = pop2()(stack, ctx)
 
-        def doEq(v1: Object, v2: Object): Boolean = {
+        def doEq(v1: Object, v2: Object): Boolean =
             //noinspection ComparingUnrelatedTypes
-            if (v1 eq v2) true
-            else if (v1 == null && v2 == null) true
-            else if ((v1 == null && v2 != null) || (v1 != null && v2 == null)) false
-            else if (isInt(v1) && isInt(v2)) asInt(v1) == asInt(v2)
-            else if (isReal(v1) && isReal(v2)) asReal(v1) == asReal(v2)
-            else if (isBool(v1) && isBool(v2)) asBool(v1) == asBool(v2)
-            else if (isStr(v1) && isStr(v2)) asStr(v1) == asStr(v2)
-            else if (isList(v1) && isList(v2)) CollectionUtils.isEqualCollection(asList(v1), asList(v2))
-            else if ((isInt(v1) && isReal(v2)) || (isReal(v1) && isInt(v2))) asReal(v1) == asReal(v2)
+            if v1 eq v2 then true
+            else if v1 == null && v2 == null then true
+            else if (v1 == null && v2 != null) || (v1 != null && v2 == null) then false
+            else if isInt(v1) && isInt(v2) then asInt(v1) == asInt(v2)
+            else if isReal(v1) && isReal(v2) then asReal(v1) == asReal(v2)
+            else if isBool(v1) && isBool(v2) then asBool(v1) == asBool(v2)
+            else if isStr(v1) && isStr(v2) then asStr(v1) == asStr(v2)
+            else if isList(v1) && isList(v2) then CollectionUtils.isEqualCollection(asList(v1), asList(v2))
+            else if (isInt(v1) && isReal(v2)) || (isReal(v1) && isInt(v2)) then asReal(v1) == asReal(v2)
             else
                 v1.equals(v2)
-        }
 
         stack.push(() => {
             val (v1, v2, n) = extract2(x1, x2)
 
             val f =
-                if (eq != null)
-                    doEq(v1, v2)
-                else {
+                if eq != null then doEq(v1, v2)
+                else
                     assert(neq != null)
-
                     !doEq(v1, v2)
-                }
 
             Z(f, n)
         })
@@ -412,32 +400,31 @@ trait NCIDLCodeGenerator:
     def parsePlusMinusExpr(plus: TN, minus: TN)(implicit ctx: PRC): SI = (_, stack: S, _) => {
         val (x1, x2) = pop2()(stack, ctx)
 
-        if (plus != null)
+        if plus != null then
             stack.push(() => {
                 val (v1, v2, n) = extract2(x1, x2)
 
-                if (isStr(v1) && isStr(v2)) Z(asStr(v1) + asStr(v2), n)
-                else if (isInt(v1) && isInt(v2)) Z(asInt(v1) + asInt(v2), n)
-                else if (isInt(v1) && isReal(v2)) Z(asInt(v1) + asReal(v2), n)
-                else if (isReal(v1) && isInt(v2)) Z(asReal(v1) + asInt(v2), n)
-                else if (isReal(v1) && isReal(v2)) Z(asReal(v1) + asReal(v2), n)
+                if isStr(v1) && isStr(v2) then Z(asStr(v1) + asStr(v2), n)
+                else if isInt(v1) && isInt(v2) then Z(asInt(v1) + asInt(v2), n)
+                else if isInt(v1) && isReal(v2) then Z(asInt(v1) + asReal(v2), n)
+                else if isReal(v1) && isInt(v2) then Z(asReal(v1) + asInt(v2), n)
+                else if isReal(v1) && isReal(v2) then Z(asReal(v1) + asReal(v2), n)
                 else
                     throw rtBinaryOpError("+", v1, v2)
             })
-        else {
+        else
             assert(minus != null)
 
             stack.push(() => {
                 val (v1, v2, n) = extract2(x1, x2)
 
-                if (isInt(v1) && isInt(v2)) Z(asInt(v1) - asInt(v2), n)
-                else if (isInt(v1) && isReal(v2)) Z(asInt(v1) - asReal(v2), n)
-                else if (isReal(v1) && isInt(v2)) Z(asReal(v1) - asInt(v2), n)
-                else if (isReal(v1) && isReal(v2)) Z(asReal(v1) - asReal(v2), n)
+                if isInt(v1) && isInt(v2) then Z(asInt(v1) - asInt(v2), n)
+                else if isInt(v1) && isReal(v2) then Z(asInt(v1) - asReal(v2), n)
+                else if isReal(v1) && isInt(v2) then Z(asReal(v1) - asInt(v2), n)
+                else if isReal(v1) && isReal(v2) then Z(asReal(v1) - asReal(v2), n)
                 else
                     throw rtBinaryOpError("-", v1, v2)
             })
-        }
     }
 
     /**
@@ -448,26 +435,23 @@ trait NCIDLCodeGenerator:
     def parseUnaryExpr(minus: TN, not: TN)(implicit ctx: PRC): SI = (_, stack: S, _) => {
         val x = pop1()(stack, ctx)
 
-        if (minus != null)
+        if minus != null then
             stack.push(() => {
                 val Z(v, n) = x()
 
-                if (isReal(v)) Z(-asReal(v), n)
-                else if (isInt(v)) Z(-asInt(v), n)
-                else
-                    throw rtUnaryOpError("-", v)
+                if isReal(v) then Z(-asReal(v), n)
+                else if isInt(v) then Z(-asInt(v), n)
+                else throw rtUnaryOpError("-", v)
             })
-        else {
+        else
             assert(not != null)
 
             stack.push(() => {
                 val Z(v, n) = x()
 
-                if (isBool(v)) Z(!asBool(v), n)
-                else
-                    throw rtUnaryOpError("!", v)
+                if isBool(v) then Z(!asBool(v), n)
+                else throw rtUnaryOpError("!", v)
             })
-        }
     }
 
     /**
@@ -477,25 +461,19 @@ trait NCIDLCodeGenerator:
       */
     def parseAtom(txt: String)(implicit ctx: PRC): SI = {
         val atom =
-            if (txt == "null") null // Try 'null'.
-            else if (txt == "true") Boolean.box(true) // Try 'boolean'.
-            else if (txt == "false") Boolean.box(false) // Try 'boolean'.
+            if txt == "null" then null // Try 'null'.
+            else if txt == "true" then Boolean.box(true) // Try 'boolean'.
+            else if txt == "false" then Boolean.box(false) // Try 'boolean'.
             // Only numeric or string values below...
-            else {
+            else
                 // Strip '_' from numeric values.
                 val num = txt.replaceAll("_", "")
 
-                try
-                    Long.box(JLong.parseLong(num)) // Try 'long'.
-                catch {
-                    case _: NumberFormatException =>
-                        try
-                            Double.box(JDouble.parseDouble(num)) // Try 'double'.
-                        catch {
-                            case _: NumberFormatException => NCUtils.escapesQuotes(txt) // String in the end.
-                        }
-                }
-            }
+                try Long.box(JLong.parseLong(num)) // Try 'long'.
+                catch case _: NumberFormatException =>
+                    try Double.box(JDouble.parseDouble(num)) // Try 'double'.
+                    catch case _: NumberFormatException => NCUtils.escapesQuotes(txt) // String in the end.
+
 
         (_, stack, _) => stack.push(() => Z(atom, 0))
     }
@@ -506,597 +484,418 @@ trait NCIDLCodeGenerator:
       * @param ctx
       * @return
       */
-    def parseCallExpr(fun: String)(implicit ctx: PRC): SI = (tok, stack: S, idlCtx) => {
+    def parseCallExpr(fun: String)(implicit ctx: PRC): SI = (ent, stack: S, idlCtx) =>
         implicit val evidence: S = stack
 
-        def popMarker(argNum: Int): Unit = if (pop1() != stack.PLIST_MARKER) throw rtTooManyParamsError(argNum, fun)
-        def arg[X](argNum: Int, f: () => X): X = {
-            if (stack.size < argNum + 1) // +1 for stack frame marker.
-                throw rtMissingParamError(argNum, fun)
+        def popMarker(argNum: Int): Unit = if pop1() != stack.PLIST_MARKER then throw rtTooManyParamsError(argNum, fun)
+        def arg[X](argNum: Int, f: () => X): X =
+            // +1 for stack frame marker.
+            if stack.size < argNum + 1 then throw rtMissingParamError(argNum, fun)
 
             val x = f()
-
-            x match {
+            x match
                 case p: Product =>
                     for (e <- p.productIterator)
-                        if (e == stack.PLIST_MARKER)
-                            rtMissingParamError(argNum, fun)
-                case _ =>
-                    if (x.asInstanceOf[ST] == stack.PLIST_MARKER)
-                        rtMissingParamError(argNum, fun)
-            }
+                        if e == stack.PLIST_MARKER then rtMissingParamError(argNum, fun)
+                case _ => if x.asInstanceOf[ST] == stack.PLIST_MARKER then rtMissingParamError(argNum, fun)
 
             // Make sure to pop up the parameter list stack frame marker.
             popMarker(argNum)
 
             x
-        }
+
         def arg1(): ST = arg(1, pop1)
         def arg2(): (ST, ST) = arg(2, pop2)
         def arg3(): (ST, ST, ST) = arg(3, pop3)
         def arg1Tok(): ST =
-            if (stack.nonEmpty && stack.top == stack.PLIST_MARKER) {
+            if stack.nonEmpty && stack.top == stack.PLIST_MARKER then
                 popMarker(1)
-
-                () => Z(tok, 1)
-            }
+                () => Z(ent, 1)
             else
                 arg1()
 
-        def toX[T](typ: String, v: Object, is: Object => Boolean, as: Object => T): T = {
-            if (v == null)
-                throw rtParamNullError(fun)
-            else if (!is(v))
-                throw rtParamTypeError(fun, v, typ)
-
+        def toX[T](typ: String, v: Object, is: Object => Boolean, as: Object => T): T =
+            if v == null then throw rtParamNullError(fun)
+            else if !is(v) then throw rtParamTypeError(fun, v, typ)
             as(v)
-        }
+
         def toStr(v: Object): String = toX("string", v, isStr, asStr)
         def toInt(v: Object): JInt = toX("int", v, isInt, asInt).toInt
         def toList(v: Object): JList[_] = toX("list", v, isList, asList)
         def toMap(v: Object): JMap[_, _] = toX("map", v, isMap, asMap)
-        def toToken(v: Object): NCToken = toX("token", v, isToken, asToken)
+        def toEntity(v: Object): NCIDLEntity = toX("entity", v, isEntity, asEntity)
         def toBool(v: Object): Boolean = toX("boolean", v, isBool, asBool)
         def toDouble(v: Object): JDouble = toX("double or int", v, x => isInt(x) || isReal(x), asReal)
 
-        def doSplit(): Unit = {
+        def doSplit(): Unit =
             val (x1, x2) = arg2()
-
             stack.push(
                 () => {
                     val (v1, v2, n) = extract2(x1, x2)
-
                     Z(util.Arrays.asList(toStr(v1).split(toStr(v2)):_*), n)
                 }
             )
-        }
 
-        def doSplitTrim(): Unit = {
+        def doSplitTrim(): Unit =
             val (x1, x2) = arg2()
-
             stack.push(
                 () => {
                     val (v1, v2, n) = extract2(x1, x2)
-
                     Z(util.Arrays.asList(toStr(v1).split(toStr(v2)).toList.map(_.strip):_*), n)
                 }
             )
-        }
 
-        def doStartsWith(): Unit = {
+        def doStartsWith(): Unit =
             val (x1, x2) = arg2()
-
             stack.push(
                 () => {
                     val (v1, v2, n) = extract2(x1, x2)
-
                     Z(toStr(v1).startsWith(toStr(v2)), n)
                 }
             )
-        }
 
-        def doEndsWith(): Unit = {
+        def doEndsWith(): Unit =
             val (x1, x2) = arg2()
-
             stack.push(
                 () => {
                     val (v1, v2, n) = extract2(x1, x2)
-
                     Z(toStr(v1).endsWith(toStr(v2)), n)
                 }
             )
-        }
 
-        def doContains(): Unit = {
+        def doContains(): Unit =
             val (x1, x2) = arg2()
-
             stack.push(
                 () => {
                     val (v1, v2, n) = extract2(x1, x2)
-
                     Z(toStr(v1).contains(toStr(v2)),n)
                 }
             )
-        }
 
-        def doIndexOf(): Unit = {
+        def doIndexOf(): Unit =
             val (x1, x2) = arg2()
-
             stack.push(
                 () => {
                     val (v1, v2, n) = extract2(x1, x2)
-
                     Z(toStr(v1).indexOf(toStr(v2)), n)
                 }
             )
-        }
 
-        def doSubstr(): Unit = {
+        def doSubstr(): Unit =
             val (x1, x2, x3) = arg3()
-
             stack.push(
                 () => {
                     val (v1, v2, v3, n) = extract3(x1, x2, x3)
-
                     Z(toStr(v1).substring(toInt(v2), toInt(v3)), n)
                 }
             )
-        }
 
-        def doRegex(): Unit = {
+        def doRegex(): Unit =
             val (x1, x2) = arg2()
-
             stack.push(
                 () => {
                     val (v1, v2, n) = extract2(x1, x2)
-
                     Z(toStr(v1).matches(toStr(v2)), n)
                 }
             )
-        }
 
-        def doReplace(): Unit = {
+
+        def doReplace(): Unit =
             val (x1, x2, x3) = arg3()
-
             stack.push(
                 () => {
                     val (v1, v2, v3, n) = extract3(x1, x2, x3)
-
                     Z(toStr(v1).replaceAll(toStr(v2), toStr(v3)), n)
                 }
             )
-        }
 
-        def doList(): Unit = {
+        def doList(): Unit =
             val dump = new S() // Empty list is allowed.
-
-            while (stack.nonEmpty && stack.top != stack.PLIST_MARKER)
-                dump += stack.pop()
+            while (stack.nonEmpty && stack.top != stack.PLIST_MARKER) dump += stack.pop()
 
             require(stack.nonEmpty)
 
             // Pop frame marker.
             pop1()
-
             stack.push(() => {
                 val jl = new util.ArrayList[Object]()
                 var z = 0
-
                 dump.toSeq.reverse.foreach { x =>
                     val Z(v, n) = x()
-
                     z += n
-
                     jl.add(v)
                 }
-
                 Z(jl, z)
             })
-        }
 
-        def doReverse(): Unit = {
+        def doReverse(): Unit =
             val x = arg1()
-
             stack.push(() => {
                 val Z(v, n) = x()
-
                 val jl = toList(v)
-
                 Collections.reverse(jl)
-
                 Z(jl, n)
             })
-        }
 
-        def doMin(): Unit = {
+        def doMin(): Unit =
             val x = arg1()
-
             stack.push(() => {
                 val Z(v, n) = x()
-
                 val lst = toList(v).asInstanceOf[util.List[Object]]
-
                 try
-                    if (lst.isEmpty)
-                        throw newRuntimeError(s"Unexpected empty list in IDL function: $fun()")
+                    if lst.isEmpty then throw newRuntimeError(s"Unexpected empty list in IDL function: $fun()")
+                    else Z(Collections.min(lst, null), n)
+                catch case e: Exception => throw rtListTypeError(fun, e)
+            })
+
+        def doAvg(): Unit =
+            val x = arg1()
+            stack.push(() => {
+                val Z(v, n) = x()
+                val lst = toList(v).asInstanceOf[util.List[Object]]
+                try
+                    if lst.isEmpty then throw newRuntimeError(s"Unexpected empty list in IDL function: $fun()")
                     else
-                        Z(Collections.min(lst, null), n)
-                catch {
-                    case e: Exception => throw rtListTypeError(fun, e)
-                }
-            })
-        }
-
-        def doAvg(): Unit = {
-            val x = arg1()
-
-            stack.push(() => {
-                val Z(v, n) = x()
-
-                val lst = toList(v).asInstanceOf[util.List[Object]]
-
-                try
-                    if (lst.isEmpty)
-                        throw newRuntimeError(s"Unexpected empty list in IDL function: $fun()")
-                    else {
                         val seq: Seq[Double] = lst.asScala.map(p => JDouble.valueOf(p.toString).doubleValue()).toSeq
-
                         Z(seq.sum / seq.length, n)
-                    }
-                catch {
-                    case e: Exception => throw rtListTypeError(fun, e)
-                }
+                catch case e: Exception => throw rtListTypeError(fun, e)
             })
-        }
 
-        def doStdev(): Unit = {
+        def doStdev(): Unit =
             val x = arg1()
-
             stack.push(() => {
                 val Z(v, n) = x()
-
                 val lst = toList(v).asInstanceOf[util.List[Object]]
-
                 try
-                    if (lst.isEmpty)
-                        throw newRuntimeError(s"Unexpected empty list in IDL function: $fun()")
-                    else {
+                    if lst.isEmpty then throw newRuntimeError(s"Unexpected empty list in IDL function: $fun()")
+                    else
                         val seq: Seq[Double] = lst.asScala.map(p => JDouble.valueOf(p.toString).doubleValue()).toSeq
-
                         val mean = seq.sum / seq.length
                         val stdDev = Math.sqrt(seq.map( _ - mean).map(t => t * t).sum / seq.length)
-
                         Z(stdDev, n)
-                    }
-                catch {
-                    case e: Exception => throw rtListTypeError(fun, e)
-                }
+                catch case e: Exception => throw rtListTypeError(fun, e)
             })
-        }
 
-        def doToString(): Unit = {
+        def doToString(): Unit =
             val x = arg1()
-
             stack.push(() => {
                 val Z(v, n) = x()
-
-                if (isList(v)) {
+                if isList(v) then
                     val jl = new util.ArrayList[Object]()
-
-                    for (d <- toList(v).asScala.map(_.toString))
-                        jl.add(d)
-
+                    for (d <- toList(v).asScala.map(_.toString)) jl.add(d)
                     Z(jl, n)
-                }
                 else
                     Z(v.toString, n)
             })
-        }
 
-        def doToDouble(): Unit = {
+        def doToDouble(): Unit =
             val x = arg1()
-
             stack.push(() => {
                 val Z(v, n) = x()
-
-                if (isInt(v))
-                    Z(asInt(v).toDouble, n)
-                else if (isStr(v))
-                    try
-                        Z(toStr(v).toDouble, n)
-                    catch {
-                        case e: Exception => throw newRuntimeError(s"Invalid double value '$v' in IDL function: $fun()", e)
-                    }
+                if isInt(v) then Z(asInt(v).toDouble, n)
+                else if isStr(v) then
+                    try Z(toStr(v).toDouble, n)
+                    catch case e: Exception => throw newRuntimeError(s"Invalid double value '$v' in IDL function: $fun()", e)
                 else
                     throw rtParamTypeError(fun, v, "int or string")
             })
-        }
 
-        def doToInt(): Unit = {
+        def doToInt(): Unit =
             val x = arg1()
-
             stack.push(() => {
                 val Z(v, n) = x()
-
-                if (isReal(v))
-                    Z(Math.round(asReal(v)), n)
-                else if (isStr(v))
-                    try
-                        Z(toStr(v).toLong, n)
-                    catch {
-                        case e: Exception => throw newRuntimeError(s"Invalid int value '$v' in IDL function: $fun()", e)
-                    }
+                if isReal(v) then Z(Math.round(asReal(v)), n)
+                else if isStr(v) then
+                    try Z(toStr(v).toLong, n)
+                    catch case e: Exception => throw newRuntimeError(s"Invalid int value '$v' in IDL function: $fun()", e)
                 else
                     throw rtParamTypeError(fun, v, "double or string")
             })
-        }
 
-        def doMax(): Unit = {
+        def doMax(): Unit =
             val x = arg1()
-
             stack.push(() => {
                 val Z(v, n) = x()
-
                 val lst = toList(v).asInstanceOf[util.List[Object]]
-
                 try
-                    if (lst.isEmpty)
-                        throw newRuntimeError(s"Unexpected empty list in IDL function: $fun()")
-                    else
-                        Z(Collections.max(lst, null), n)
-                catch {
-                    case e: Exception => throw rtListTypeError(fun, e)
-                }
+                    if lst.isEmpty then throw newRuntimeError(s"Unexpected empty list in IDL function: $fun()")
+                    else Z(Collections.max(lst, null), n)
+                catch case e: Exception => throw rtListTypeError(fun, e)
             })
-        }
 
-        def doSort(): Unit = {
+        def doSort(): Unit =
             val x = arg1()
-
             stack.push(() => {
                 val Z(v, n) = x()
-
                 val jl = toList(v)
-
-                try
-                    jl.sort(null) // Use natural order.
-                catch {
-                    case e: Exception => throw rtListTypeError(fun, e)
-                }
+                try jl.sort(null) // Use natural order.
+                catch case e: Exception => throw rtListTypeError(fun, e)
 
                 Z(jl, n)
             })
-        }
 
-        def doDistinct(): Unit = {
+        def doDistinct(): Unit =
             val x = arg1()
-
             stack.push(() => {
                 val Z(v, n) = x()
-
                 val jl = new util.ArrayList[Object]()
-
                 for (d <- toList(v).asScala.toSeq.distinct)
                     jl.add(d.asInstanceOf[Object])
-
                 Z(jl, n)
             })
-        }
 
-        def doConcat(): Unit = {
+        def doConcat(): Unit =
             val (x1, x2) = arg2()
-
             stack.push(() => {
                 val (lst1, lst2, n) = extract2(x1, x2)
-
                 val jl = new util.ArrayList[Object]()
-
                 for (d <- toList(lst1).asScala ++ toList(lst2).asScala)
                     jl.add(d.asInstanceOf[Object])
-
                 Z(jl, n)
             })
-        }
 
-        def doHas(): Unit = {
+        def doHas(): Unit =
             val (x1, x2) = arg2()
-
             stack.push(() => {
                 val (lst, obj, n) = extract2(x1, x2)
-
                 Z(toList(lst).contains(box(obj)), n)
             })
-        }
 
-        def doHasAll(): Unit = {
+        def doHasAll(): Unit =
             val (x1, x2) = arg2()
-
             stack.push(() => {
                 val (lst1, lst2, n) = extract2(x1, x2)
-
                 Z(toList(lst1).containsAll(toList(lst2)), n)
             })
-        }
 
-        def doHasAny(): Unit = {
+        def doHasAny(): Unit =
             val (x1, x2) = arg2()
-
             stack.push(() => {
                 val (lst1, lst2, n) = extract2(x1, x2)
-
                 Z(CollectionUtils.containsAny(toList(lst1), toList(lst2)), n)
             })
-        }
 
-        def doGet(): Unit = {
+        def doGet(): Unit =
             val (x1, x2) = arg2()
-
             stack.push(() => {
                 val (col, key, n) = extract2(x1, x2)
-
-                if (isList(col)) {
-                    if (isInt(key))
-                        Z(asList(col).get(asInt(key).intValue()).asInstanceOf[Object], n)
-                    else
-                        throw rtParamTypeError(fun, key, "numeric")
-                }
-                else if (isMap(col))
-                    Z(asMap(col).get(box(key)).asInstanceOf[Object], n)
-                else
-                    throw rtParamTypeError(fun, col, "list or map")
+                if isList(col) then
+                    if isInt(key) then Z(asList(col).get(asInt(key).intValue()).asInstanceOf[Object], n)
+                    else throw rtParamTypeError(fun, key, "numeric")
+                else if isMap(col) then Z(asMap(col).get(box(key)).asInstanceOf[Object], n)
+                else throw rtParamTypeError(fun, col, "list or map")
             })
-        }
 
-        def doAbs(): Unit = arg1() match {
+        def doAbs(): Unit = arg1() match
             case x => stack.push(() => {
                 val Z(v, n) = x()
-
-                v match {
+                v match
                     case a: JLong => Z(Math.abs(a), n)
                     case a: JDouble => Z(Math.abs(a), n)
                     case _ => throw rtParamTypeError(fun, v, "numeric")
-                }
             })
-        }
 
-        def doSquare(): Unit = arg1() match {
+        def doSquare(): Unit = arg1() match
             case x => stack.push(() => {
                 val Z(v, n) = x()
-
-                v match {
+                v match
                     case a: JLong => Z(a * a, n)
                     case a: JDouble => Z(a * a, n)
                     case _ => throw rtParamTypeError(fun, v, "numeric")
-                }
             })
-        }
 
-        def doIf(): Unit = {
+
+        def doIf(): Unit =
             val (x1, x2, x3) = arg3()
 
             stack.push(() => {
                 val Z(v1, n1) = x1()
-
-                if (toBool(v1)) {
+                if toBool(v1) then
                     val Z(v2, n2) = x2()
-
                     Z(v2, n1 + n2)
-                }
-                else {
+                else
                     val Z(v3, n3) = x3()
-
                     Z(v3, n1 + n3)
-                }
             })
-        }
 
-        def doOrElse(): Unit = {
+        def doOrElse(): Unit =
             val (x1, x2) = arg2()
-
             stack.push(() => {
                 val Z(v1, n1) = x1()
-
-                if (v1 != null)
-                    Z(v1, n1)
-                else
-                    x2()
+                if v1 != null then Z(v1, n1)
+                else x2()
             })
-        }
 
-        def doIsBefore(f: (NCToken, String) => Boolean): Unit = {
+        def doIsBefore(f: (NCIDLEntity, String) => Boolean): Unit =
             val x = arg1()
-
             stack.push(() => {
                 val Z(arg, n) = x()
-
-                Z(idlCtx.ents.exists(t => t.getIndex > tok.getIndex && f(t, toStr(arg))), n)
+                Z(idlCtx.entities.exists(t => t.getIndex > ent.getIndex && f(t, toStr(arg))), n)
             })
-        }
 
-        def doIsAfter(f: (NCToken, String) => Boolean): Unit = {
+        def doIsAfter(f: (NCIDLEntity, String) => Boolean): Unit =
             val x = arg1()
-
             stack.push(() => {
                 val Z(arg, n) = x()
-
-                Z(idlCtx.ents.exists(t => t.getIndex < tok.getIndex && f(t, toStr(arg))), n)
+                Z(idlCtx.entities.exists(t => t.getIndex < ent.getIndex && f(t, toStr(arg))), n)
             })
-        }
 
-        def doIsBetween(f: (NCToken, String) => Boolean): Unit = {
+        def doIsBetween(f: (NCIDLEntity, String) => Boolean): Unit =
             val (x1, x2) = arg2()
-
             stack.push(() => {
                 val (a1, a2, n) = extract2(x1, x2)
-
                 Z(
-                    idlCtx.ents.exists(t => t.getIndex < tok.getIndex && f(t, toStr(a1)))
-                        &&
-                        idlCtx.ents.exists(t => t.getIndex > tok.getIndex && f(t, toStr(a2)))
+                    idlCtx.entities.exists(t => t.getIndex < ent.getIndex && f(t, toStr(a1)))
+                    &&
+                    idlCtx.entities.exists(t => t.getIndex > ent.getIndex && f(t, toStr(a2)))
                     ,
                     n
                 )
             })
-        }
 
-        def doForAll(f: (NCToken, String) => Boolean): Unit = {
+        def doForAll(f: (NCIDLEntity, String) => Boolean): Unit =
             val x = arg1()
-
             stack.push(() => {
                 val Z(arg, n) = x()
-
-                Z(idlCtx.ents.filter(f(_, toStr(arg))).asJava, n)
+                Z(idlCtx.entities.filter(f(_, toStr(arg))).asJava, n)
             })
-        }
 
-        def doLength(): Unit = {
+        def doLength(): Unit =
             val x = arg1()
-
             stack.push(() => {
                 val Z(v, n) = x()
-
-                if (isList(v))
-                    Z(asList(v).size(), n)
-                else if (isMap(v))
-                    Z(asMap(v).size(), n)
-                else if (isStr(v))
-                    Z(asStr(v).length, n)
-                else
-                    throw rtParamTypeError(fun, v, "string or list")
+                if isList(v) then Z(asList(v).size(), n)
+                else if isMap(v) then Z(asMap(v).size(), n)
+                else if isStr(v) then Z(asStr(v).length, n)
+                else throw rtParamTypeError(fun, v, "string or list")
             })
-        }
 
-        def doIsEmpty(empty: Boolean): Unit = {
+        def doIsEmpty(empty: Boolean): Unit =
             val x = arg1()
-
             stack.push(() => {
                 val Z(v, n) = x()
-
-                if (isList(v))
-                    Z(asList(v).isEmpty == empty, n)
-                else if (isMap(v))
-                    Z(asMap(v).isEmpty == empty, n)
-                else if (isStr(v))
-                    Z(asStr(v).isEmpty == empty, n)
-                else
-                    throw rtParamTypeError(fun, v, "string or list")
+                if isList(v) then Z(asList(v).isEmpty == empty, n)
+                else if isMap(v) then Z(asMap(v).isEmpty == empty, n)
+                else if isStr(v) then Z(asStr(v).isEmpty == empty, n)
+                else throw rtParamTypeError(fun, v, "string or list")
             })
-        }
 
-        def z[Y](args: () => Y, body: Y => Z): Unit = { val x = args(); stack.push(() => body(x)) }
-        def z0(body: () => Z): Unit = { popMarker(0); stack.push(() => body()) }
+        def z[Y](args: () => Y, body: Y => Z): Unit =
+            val x = args()
+            stack.push(() => body(x))
 
-        def checkAvail(): Unit =
-            if (idlCtx.ents.isEmpty)
-                throw rtUnavailFunError(fun)
+        def z0(body: () => Z): Unit =
+            popMarker(0)
+            stack.push(() => body())
+
+        def checkAvail(): Unit = if idlCtx.entities.isEmpty then throw rtUnavailFunError(fun)
 
         try
-            fun match {
+            fun match
                 // Metadata access.
-                case "meta_model" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(tok.getModel.meta[Object](toStr(v))), 0) })
+                case "meta_ent" => ???
+                case "meta_cfg" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(idlCtx.mdlCf.get[Object](toStr(v))), 0) })
                 case "meta_req" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(idlCtx.req.getRequestData.get(toStr(v))), 0) })
-                case "meta_user" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(idlCtx.req.getUser.meta(toStr(v))), 0) })
-                case "meta_company" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(idlCtx.req.getCompany.meta(toStr(v))), 0) })
                 case "meta_intent" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(idlCtx.intentMeta.get(toStr(v)).orNull), 0) })
                 case "meta_conv" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(idlCtx.convMeta.get(toStr(v)).orNull), 0) })
                 case "meta_frag" => z[ST](arg1, { x => val Z(v, f) = x(); Z(box(idlCtx.fragMeta.get(toStr(v)).orNull), f) })
@@ -1107,11 +906,18 @@ trait NCIDLCodeGenerator:
 
                 // Inline if-statement.
                 case "if" => doIf()
-
                 case "or_else" => doOrElse()
 
-//                // Token functions.
-//                case "tok_id" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).getId, 1) }) }
+                // Entity functions.
+                case "ent_id" => arg1Tok() match { case x => stack.push(() => Z(toEntity(x().value).getId, 1)) }
+                case "ent_index" => arg1Tok() match { case x => stack.push(() => Z(toEntity(x().value).getIndex, 1)) }
+                case "ent_text" => arg1Tok() match { case x => stack.push(() => Z(toEntity(x().value).getText, 1)) }
+                case "ent_count" => checkAvail(); z0(() => Z(idlCtx.entities.size, 0))
+                case "ent_groups" => arg1Tok() match { case x => stack.push(() => Z(toEntity(x().value).getGroups, 1)) }
+                case "ent_all" => checkAvail(); z0(() => Z(idlCtx.entities.asJava, 0))
+                case "ent_all_for_id" => checkAvail(); doForAll((ent, id) => ent.getId == id)
+                case "ent_all_for_group" => checkAvail(); doForAll((ent, grp) => ent.getGroups.contains(grp))
+
 //                case "tok_lemma" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).getLemma, 1) }) }
 //                case "tok_stem" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).getStem, 1) }) }
 //                case "tok_pos" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).getPos, 1) }) }
@@ -1122,17 +928,17 @@ trait NCIDLCodeGenerator:
 //                case "tok_unid" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).getUnid, 1) }) }
 //
 //                case "tok_index" => checkAvail(); arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).getIndex, 1) }) }
-//                case "tok_is_last" => checkAvail(); arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).getIndex == idlCtx.ents.size - 1, 1) }) }
+//                case "tok_is_last" => checkAvail(); arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).getIndex == idlCtx.entities.size - 1, 1) }) }
 //                case "tok_is_first" => checkAvail(); arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).getIndex == 0, 1) }) }
-//                case "tok_is_before_id" => checkAvail(); doIsBefore((tok, id) => tok.getId == id)
-//                case "tok_is_before_group" => checkAvail(); doIsBefore((tok, grpId) => tok.getGroups.contains(grpId))
-//                case "tok_is_before_parent" => checkAvail(); doIsBefore((tok, id) => tok.getParentId == id)
-//                case "tok_is_after_id" => checkAvail(); doIsAfter((tok, id) => tok.getId == id)
-//                case "tok_is_after_group" => checkAvail(); doIsAfter((tok, grpId) => tok.getGroups.contains(grpId))
-//                case "tok_is_after_parent" => checkAvail(); doIsAfter((tok, id) => tok.getParentId == id)
-//                case "tok_is_between_ids" => checkAvail(); doIsBetween((tok, id) => tok.getId == id)
-//                case "tok_is_between_groups" => checkAvail(); doIsBetween((tok, grpId) => tok.getGroups.contains(grpId))
-//                case "tok_is_between_parents" => checkAvail(); doIsBetween((tok, id) => tok.getParentId == id)
+//                case "tok_is_before_id" => checkAvail(); doIsBefore((tok, id) => ent.getId == id)
+//                case "tok_is_before_group" => checkAvail(); doIsBefore((tok, grpId) => ent.getGroups.contains(grpId))
+//                case "tok_is_before_parent" => checkAvail(); doIsBefore((tok, id) => ent.getParentId == id)
+//                case "tok_is_after_id" => checkAvail(); doIsAfter((tok, id) => ent.getId == id)
+//                case "tok_is_after_group" => checkAvail(); doIsAfter((tok, grpId) => ent.getGroups.contains(grpId))
+//                case "tok_is_after_parent" => checkAvail(); doIsAfter((tok, id) => ent.getParentId == id)
+//                case "tok_is_between_ids" => checkAvail(); doIsBetween((tok, id) => ent.getId == id)
+//                case "tok_is_between_groups" => checkAvail(); doIsBetween((tok, grpId) => ent.getGroups.contains(grpId))
+//                case "tok_is_between_parents" => checkAvail(); doIsBetween((tok, id) => ent.getParentId == id)
 //
 //                case "tok_is_abstract" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).isAbstract, 1) }) }
 //                case "tok_is_bracketed" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).isBracketed, 1) }) }
@@ -1147,7 +953,6 @@ trait NCIDLCodeGenerator:
 //                case "tok_is_wordnet" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).isWordnet, 1) }) }
 //                case "tok_ancestors" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).getAncestors, 1) }) }
 //                case "tok_parent" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).getParentId, 1) }) }
-//                case "tok_groups" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).getGroups, 1) }) }
 //                case "tok_value" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).getValue, 1) }) }
 //                case "tok_aliases" => arg1Tok() match { case x => stack.push(() => { Z(box(toToken(x().value).getAliases), 1) }) }
 //                case "tok_start_idx" => arg1Tok() match { case x => stack.push(() => { Z(toToken(x().value).getStartCharIndex, 1) }) }
@@ -1157,36 +962,12 @@ trait NCIDLCodeGenerator:
 //                case "tok_find_part" => doFindPart()
 //                case "tok_find_parts" => doFindParts()
 //
-//                case "tok_count" => checkAvail(); z0(() => Z(idlCtx.ents.size, 0))
-//                case "tok_all" => checkAvail(); z0(() => Z(idlCtx.ents.asJava, 0))
-//                case "tok_all_for_id" => checkAvail(); doForAll((tok, id) => tok.getId == id)
-//                case "tok_all_for_parent" => checkAvail(); doForAll((tok, id) => tok.getParentId == id)
-//                case "tok_all_for_group" => checkAvail(); doForAll((tok, grp) => tok.getGroups.contains(grp))
 
                 // Request data.
-                case "req_id" => z0(() => Z(idlCtx.req.getServerRequestId, 0))
-                case "req_normtext" => z0(() => Z(idlCtx.req.getNormalizedText, 0))
+                case "req_id" => z0(() => Z(idlCtx.req.getRequestId, 0))
+                case "req_text" => z0(() => Z(idlCtx.req.getText, 0))
                 case "req_tstamp" => z0(() => Z(idlCtx.req.getReceiveTimestamp, 0))
-                case "req_addr" => z0(() => Z(idlCtx.req.getRemoteAddress.orElse(null), 0))
-                case "req_agent" => z0(() => Z(idlCtx.req.getClientAgent.orElse(null), 0))
-
-                // User data.
-                case "user_id" => z0(() => Z(idlCtx.req.getUser.getId, 0))
-                case "user_fname" => z0(() => Z(idlCtx.req.getUser.getFirstName.orElse(null), 0))
-                case "user_lname" => z0(() => Z(idlCtx.req.getUser.getLastName.orElse(null), 0))
-                case "user_email" => z0(() => Z(idlCtx.req.getUser.getEmail.orElse(null), 0))
-                case "user_admin" => z0(() => Z(idlCtx.req.getUser.isAdmin, 0))
-                case "user_signup_tstamp" => z0(() => Z(idlCtx.req.getUser.getSignupTimestamp, 0))
-
-                // Company data.
-                case "comp_id" => z0(() => Z(idlCtx.req.getCompany.getId, 0))
-                case "comp_name" => z0(() => Z(idlCtx.req.getCompany.getName, 0))
-                case "comp_website" => z0(() => Z(idlCtx.req.getCompany.getWebsite.orElse(null), 0))
-                case "comp_country" => z0(() => Z(idlCtx.req.getCompany.getCountry.orElse(null), 0))
-                case "comp_region" => z0(() => Z(idlCtx.req.getCompany.getRegion.orElse(null), 0))
-                case "comp_city" => z0(() => Z(idlCtx.req.getCompany.getCity.orElse(null), 0))
-                case "comp_addr" => z0(() => Z(idlCtx.req.getCompany.getAddress.orElse(null), 0))
-                case "comp_postcode" => z0(() => Z(idlCtx.req.getCompany.getPostalCode.orElse(null), 0))
+                case "user_id" => z0(() => Z(idlCtx.req.getUserId, 0))
 
                 // String functions.
                 case "trim" | "strip" => z[ST](arg1, { x => val Z(v, f) = x(); Z(toStr(v).trim, f) })
@@ -1288,10 +1069,8 @@ trait NCIDLCodeGenerator:
                 case "now" => z0(() => Z(NCUtils.now(), 0)) // Epoc time.
 
                 case _ => throw rtUnknownFunError(fun) // Assertion.
-            }
-        catch {
+
+        catch
             case e: NCException => throw e // Rethrow.
             case e: Exception => throw rtFunError(fun, e)
-        }
-    }
 
