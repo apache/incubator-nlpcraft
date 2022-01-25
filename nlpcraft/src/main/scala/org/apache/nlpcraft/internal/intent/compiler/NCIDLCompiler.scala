@@ -364,7 +364,7 @@ object NCIDLCompiler extends LazyLogging:
             s"  |-- Model ID: ${mdlCfg.getId}\n" +
             s"  |-- Model origin: ${mdlCfg.getOrigin}\n" +
             s"  |-- Intent origin: $origin\n" +
-            s"  |--<\n" +
+            s"  |--\n" +
             s"  |-- Line:  ${hold.origStr}\n" +
             s"  +-- Error: ${hold.ptrStr}"
     }

@@ -21,19 +21,17 @@
 
 // Re-usable predicate #1.
 fragment=p1
-    term={tok_id(tok_find_part(tok_this(), "alias")) == 2}
+    term={ent_id == 2}
     term={meta_frag('a') && has_any(get(meta_frag('b'), 'Москва'), list(1, 2))}
-    term(userDefined)=/org.apache.MyShit#myMethod/
+    term(alias)={mdl_id == "test.mdl.id"}
 
-// Intent #1.
 intent=i1
-    flow=/org.package#method1/ // User-code flow predicate.
-    fragment(p1, {'a': true, 'b': {'Москва': [1, 2, 3]}}) /*  Macro-expansion. */
-    term~{length("some text") > 0} // Normal term.
+    flow="a[^0-9]b"
+    fragment(p1, {'a': true, 'b': {'Москва': [1, 2, 3]}})
+    term~{length("some text") > 0}
     term={has_all(list(1, 2, 3, 4, 5), list(3, 5))}
     term={if(2==2, "string", list(1, 2, 3))}
 
-// Intent #2.
 intent=i2
     flow="a[^0-9]b"
     meta={'a': 42, 'b': {'Москва': [1, 2, 3]}}
@@ -57,8 +55,6 @@ intent=i3
         )
     }
 
-intent=i4 flow=/#flowModelMethod/ term(t1)=/#termModelMethod/
-
 intent=i5
     flow="a[^0-9]b"
     meta={'a': 42, 'b': {'Москва': [1, 2, 3]}}
@@ -71,8 +67,7 @@ intent=i5
     }
 
 intent=i6
-    flow=/#flowModelMethod/
-    term(t1)=/org.mypackage.MyClass#termMethod/
+    term(t1)={# == "1"}
     term(t2)={
         @x = 2
         @xx = ((@x * @x) / 2) * 3

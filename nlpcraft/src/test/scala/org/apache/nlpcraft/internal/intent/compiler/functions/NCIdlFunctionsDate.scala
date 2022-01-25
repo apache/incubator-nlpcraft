@@ -53,9 +53,6 @@ class NCIdlFunctionsDate extends NCIdlFunctions:
                 s"now() - ${NCUtils.now()} < 5000"
             )
 
-        try
-            test0()
-        catch
-            case _: AssertionError =>
-                // Some field more than `second` can be changed. One more attempt.
-                test0()
+        try test0()
+        // Some field more than `second` can be changed. One more attempt.
+        catch case _: AssertionError => test0()

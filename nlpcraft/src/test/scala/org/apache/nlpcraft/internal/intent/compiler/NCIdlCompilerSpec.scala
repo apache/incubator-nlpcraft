@@ -34,10 +34,8 @@ class NCIdlCompilerSpec:
     private def checkCompileOk(idl: String): Unit =
         try
             NCIDLCompiler.compile(idl, CFG, MODEL_ID)
-
             assert(true)
-        catch
-            case e: Exception => assert(assertion = false, e)
+        catch case e: Exception => assert(assertion = false, e)
 
     /**
      *
@@ -46,7 +44,6 @@ class NCIdlCompilerSpec:
     private def checkCompileError(txt: String): Unit =
         try
             NCIDLCompiler.compile(txt, CFG, MODEL_ID)
-
             assert(false)
         catch
             case e: NCException =>
@@ -83,7 +80,7 @@ class NCIdlCompilerSpec:
               |// Some comments.
               |fragment=f1
               |     term(ft1)={2==2} /* Term block comment. */
-              |     term~/class#method/
+              |     term~{# == "1"}
               |/*
               | * +=====================+
               | * | block comments......|
@@ -93,8 +90,7 @@ class NCIdlCompilerSpec:
               |     options={
               |         'ordered': false,
               |         'unused_free_words': true,
-              |         'unused_sys_toks': true,
-              |         'unused_usr_toks': false,
+              |         'unused_entities': true,
               |         'allow_stm_only': false
               |     }
               |     flow="a[^0-9]b" // Flow comment.
@@ -106,12 +102,12 @@ class NCIdlCompilerSpec:
             """
               |fragment=f21
               |     term(f21_t1)={2==2}
-              |     term~/class#method/
+              |     term~{# == "1"}
               |
               |fragment=f22
               |     term(f22_t1)={2==2_000_000.23}
               |     fragment(f21)
-              |     term~/class#method/
+              |     term~{# == "1"}
               |
               |intent=i1
               |     options={}
@@ -273,7 +269,7 @@ class NCIdlCompilerSpec:
             """
               |fragment=f1
               |     term(t1)={2==2}
-              |     term~/class#method/
+              |     term~{# == "1"}
               |
               |intent=i1
               |     flow="a[^0-9]b"
@@ -286,7 +282,7 @@ class NCIdlCompilerSpec:
               |fragment=f111
               |     options={'ordered': 1}
               |     term(t1)={2==2}
-              |     term~/class#method/
+              |     term~{# == "1"}
               |
               |intent=i1
               |     flow="a[^0-9]b"
