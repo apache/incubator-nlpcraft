@@ -23,7 +23,7 @@ import scala.collection.mutable
 
 /**
   *
-  * @param mdlCf Model configuration.
+  * @param mdlCfg Model configuration.
   * @param ents Detected entities.
   * @param intentMeta Intent metadata.
   * @param convMeta Conversation metadata.
@@ -32,7 +32,7 @@ import scala.collection.mutable
   * @param vars Intent variable storage.
   */
 case class NCIDLContext(
-    mdlCf: NCModelConfig,
+    mdlCfg: NCModelConfig,
     private val ents: Seq[NCEntity] = Seq.empty,
     intentMeta: Map[String, Object] = Map.empty,
     convMeta: Map[String, Object] = Map.empty,

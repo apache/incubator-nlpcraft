@@ -52,9 +52,6 @@ object NCIDLCompiler extends LazyLogging:
         // Accumulators for parsed objects.
         private val intents = mutable.ArrayBuffer.empty[NCIDLIntent]
 
-        // Synonym.
-        private var alias: String = _
-
         // Fragment components.
         private var fragId: String = _
         private var fragMeta: Map[String, Any] = _
@@ -92,11 +89,8 @@ object NCIDLCompiler extends LazyLogging:
           */
         private def json2Obj(json: String)(ctx: ParserRuleContext): Map[String, Object] =
             try NCUtils.jsonToScalaMap(json)
-            catch case e: Exception => throw newSyntaxError(s"Invalid JSON (${e.getMessage})")(ctx)
+            catch case e: Exception => SE(s"Invalid JSON (${e.getMessage})")(ctx)
 
-        /*
-         * Shared/common implementation.
-         */
         override def exitUnaryExpr(ctx: IDP.UnaryExprContext): Unit = expr += parseUnaryExpr(ctx.MINUS(), ctx.NOT())(ctx)
         override def exitMultDivModExpr(ctx: IDP.MultDivModExprContext): Unit = expr += parseMultDivModExpr(ctx.MULT(), ctx.MOD(), ctx.DIV())(ctx)
         override def exitPlusMinusExpr(ctx: IDP.PlusMinusExprContext): Unit = expr += parsePlusMinusExpr(ctx.PLUS(), ctx.MINUS())(ctx)
@@ -122,7 +116,7 @@ object NCIDLCompiler extends LazyLogging:
             def boolVal(k: String, v: Object): Boolean =
                 v match
                     case b: java.lang.Boolean if b != null => b
-                    case _ => throw newSyntaxError(s"Expecting boolean value for intent option: $k")(ctx)
+                    case _ => SE(s"Expecting boolean value for intent option: $k")(ctx)
 
             import NCIDLIntentOptions._
 
@@ -131,8 +125,7 @@ object NCIDLCompiler extends LazyLogging:
                 else if k == JSON_UNUSED_FREE_WORDS then opts.ignoreUnusedFreeWords = boolVal(k, v)
                 else if k == JSON_UNUSED_ENTS then opts.ignoreUnusedEntities = boolVal(k, v)
                 else if k == JSON_ALLOW_STM_ONLY then opts.allowStmEntityOnly = boolVal(k, v)
-                else
-                    throw newSyntaxError(s"Unknown intent option: $k")(ctx)
+                else SE(s"Unknown intent option: $k")(ctx)
 
             opts
 
@@ -150,13 +143,13 @@ object NCIDLCompiler extends LazyLogging:
 
         override def exitVarRef(ctx: IDP.VarRefContext): Unit =
             val varName = ctx.id().getText
-            if !vars.contains(varName) then throw newSyntaxError(s"Undefined variable: @$varName")(ctx)
+            if !vars.contains(varName) then SE(s"Undefined variable: @$varName")(ctx)
             val instr: SI = (ent: NCIDLEntity, stack: S, idlCtx: NCIDLContext) => stack.push(() => idlCtx.vars(varName)(ent, idlCtx))
             expr += instr
 
         override def exitVarDecl(ctx: IDP.VarDeclContext): Unit =
             val varName = ctx.id().getText
-            if vars.contains(varName) then throw newSyntaxError(s"Duplicate variable: @$varName")(ctx)
+            if vars.contains(varName) then SE(s"Duplicate variable: @$varName")(ctx)
             vars += varName -> exprToFunction("Variable declaration", _ => true)(ctx)
             expr.clear()
 
@@ -174,9 +167,9 @@ object NCIDLCompiler extends LazyLogging:
                 val min = java.lang.Integer.parseInt(minStr)
                 val max = java.lang.Integer.parseInt(maxStr)
 
-                if min < 0 then throw newSyntaxError(s"Min value cannot be negative: $min")(ctx)
-                if min > max then throw newSyntaxError(s"Min value '$min' cannot be greater than max value '$max'.")(ctx)
-                if max > MINMAX_MAX then throw newSyntaxError(s"Max value '$max' cannot be greater than '$MINMAX_MAX'.")(ctx)
+                if min < 0 then SE(s"Min value cannot be negative: $min")(ctx)
+                if min > max then SE(s"Min value '$min' cannot be greater than max value '$max'.")(ctx)
+                if max > MINMAX_MAX then SE(s"Max value '$max' cannot be greater than '$MINMAX_MAX'.")(ctx)
 
                 setMinMax(min, max)
             // Errors should be caught during compilation phase.
@@ -184,11 +177,11 @@ object NCIDLCompiler extends LazyLogging:
 
         override def exitTermId(ctx: IDP.TermIdContext): Unit =
             termId = ctx.id().getText
-            if terms.exists(t => t.id === termId) then throw newSyntaxError(s"Duplicate intent term ID: $termId")(ctx.id())
+            if terms.exists(t => t.id === termId) then SE(s"Duplicate intent term ID: $termId")(ctx.id())
 
         override def exitFragId(ctx: IDP.FragIdContext): Unit =
             fragId = ctx.id().getText
-            if NCIDLCompilerGlobal.getFragment(mdlCfg.getId, fragId).isDefined then throw newSyntaxError(s"Duplicate fragment ID: $fragId")(ctx.id())
+            if NCIDLCompilerGlobal.getFragment(mdlCfg.getId, fragId).isDefined then SE(s"Duplicate fragment ID: $fragId")(ctx.id())
 
         override def exitFragRef(ctx: IDP.FragRefContext): Unit =
             val id = ctx.id().getText
@@ -197,9 +190,9 @@ object NCIDLCompiler extends LazyLogging:
                 case Some(frag) =>
                     val meta = if fragMeta == null then Map.empty[String, Any] else fragMeta
                     for (fragTerm <- frag.terms)
-                        if terms.exists(t => t.id === fragTerm.id) then throw newSyntaxError(s"Duplicate term ID '${fragTerm.id.get}' in fragment '$id'.")(ctx.id())
+                        if terms.exists(t => t.id === fragTerm.id) then SE(s"Duplicate term ID '${fragTerm.id.get}' in fragment '$id'.")(ctx.id())
                         else terms += fragTerm.cloneWithFragMeta(meta)
-                case None => throw newSyntaxError(s"Unknown intent fragment ID: $id")(ctx.id())
+                case None => SE(s"Unknown intent fragment ID: $id")(ctx.id())
 
             fragMeta = null
 
@@ -209,11 +202,11 @@ object NCIDLCompiler extends LazyLogging:
             if regex != null && regex.length > 2 then flowRegex = if (regex.nonEmpty) Some(regex) else None
             if flowRegex.isDefined then // Pre-check.
                 try Pattern.compile(flowRegex.get)
-                catch case e: PatternSyntaxException => throw newSyntaxError(s"${e.getDescription} in intent flow regex '${e.getPattern}' near index ${e.getIndex}.")(ctx.qstring())
+                catch case e: PatternSyntaxException => SE(s"${e.getDescription} in intent flow regex '${e.getPattern}' near index ${e.getIndex}.")(ctx.qstring())
 
         override def exitTerm(ctx: IDP.TermContext): Unit =
-            if min < 0 || min > max then throw newSyntaxError(s"Invalid intent term min quantifiers: $min (must be min >= 0 && min <= max).")(ctx.minMax())
-            if max < 1 then throw newSyntaxError(s"Invalid intent term max quantifiers: $max (must be max >= 1).")(ctx.minMax())
+            if min < 0 || min > max then SE(s"Invalid intent term min quantifiers: $min (must be min >= 0 && min <= max).")(ctx.minMax())
+            if max < 1 then SE(s"Invalid intent term max quantifiers: $max (must be max >= 1).")(ctx.minMax())
 
             val pred: NCIDLFunction = exprToFunction("Intent term", isBool)(ctx.expr())
 
@@ -257,7 +250,7 @@ object NCIDLCompiler extends LazyLogging:
                 val v = x.value
 
                 // Check final value's type.
-                if !check(v) then throw newRuntimeError(s"$subj returned value of unexpected type '$v' in: ${ctx.getText}")
+                if !check(v) then RE(s"$subj returned value of unexpected type '$v' in: ${ctx.getText}")
 
                 Z(v, x.entUse)
             }
@@ -274,7 +267,7 @@ object NCIDLCompiler extends LazyLogging:
           */
         private def addIntent(intent: NCIDLIntent)(implicit ctx: ParserRuleContext): Unit =
             val intentId = intent.id
-            if intents.exists(_.id == intentId) then throw newSyntaxError(s"Duplicate intent ID: $intentId")
+            if intents.exists(_.id == intentId) then SE(s"Duplicate intent ID: $intentId")
             intents += intent
 
         override def exitIntent(ctx: IDP.IntentContext): Unit =
@@ -462,7 +455,7 @@ object NCIDLCompiler extends LazyLogging:
       * map keyed by model ID. Only intents are returned, if any.
       *
       * @param idl Intent IDL to compile.
-      * @param mdlCfg Model IDL belongs to.
+      * @param mdlCfg Model configuration.
       * @param origin Optional source name.
       * @return
       */

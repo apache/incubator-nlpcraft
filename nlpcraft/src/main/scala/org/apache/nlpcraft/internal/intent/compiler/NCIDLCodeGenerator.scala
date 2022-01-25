@@ -42,6 +42,9 @@ trait NCIDLCodeGenerator:
     def syntaxError(errMsg: String, srcName: String, line: Int, pos: Int): NCException
     def runtimeError(errMsg: String, srcName: String, line: Int, pos: Int, cause: Exception = null): NCException
 
+    protected def SE[T](msg: String)(implicit ctx: PRC): T = throw newSyntaxError(msg)(ctx)
+    protected def RE[T](msg: String, cause: Exception = null)(implicit ctx: PRC): T = throw newRuntimeError(msg, cause)(ctx)
+
     /**
       *
       * @param errMsg
@@ -69,7 +72,6 @@ trait NCIDLCodeGenerator:
       * @param v
       * @return
       */
-    //noinspection ComparingUnrelatedTypes
     def isInt(v: Object): Boolean =
         v.isInstanceOf[JLong] || v.isInstanceOf[JInt] || v.isInstanceOf[JByte] || v.isInstanceOf[JShort]
 
@@ -79,7 +81,6 @@ trait NCIDLCodeGenerator:
       * @param v
       * @return
       */
-    //noinspection ComparingUnrelatedTypes
     def isReal(v: Object): Boolean = v.isInstanceOf[JDouble] || v.isInstanceOf[JFloat]
 
     /**
@@ -696,7 +697,7 @@ trait NCIDLCodeGenerator:
                 if isInt(v) then Z(asInt(v).toDouble, n)
                 else if isStr(v) then
                     try Z(toStr(v).toDouble, n)
-                    catch case e: Exception => throw newRuntimeError(s"Invalid double value '$v' in IDL function: $fun()", e)
+                    catch case e: Exception => RE(s"Invalid double value '$v' in IDL function: $fun()", e)
                 else
                     throw rtParamTypeError(fun, v, "int or string")
             })
@@ -708,7 +709,7 @@ trait NCIDLCodeGenerator:
                 if isReal(v) then Z(Math.round(asReal(v)), n)
                 else if isStr(v) then
                     try Z(toStr(v).toLong, n)
-                    catch case e: Exception => throw newRuntimeError(s"Invalid int value '$v' in IDL function: $fun()", e)
+                    catch case e: Exception => RE(s"Invalid int value '$v' in IDL function: $fun()", e)
                 else
                     throw rtParamTypeError(fun, v, "double or string")
             })
@@ -895,7 +896,7 @@ trait NCIDLCodeGenerator:
             fun match
                 // Metadata access.
                 case "meta_ent" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(ent.getImpl.get[Object](toStr(v))), 0) })
-                case "meta_cfg" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(idlCtx.mdlCf.get[Object](toStr(v))), 0) })
+                case "meta_cfg" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(idlCtx.mdlCfg.get[Object](toStr(v))), 0) })
                 case "meta_req" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(idlCtx.req.getRequestData.get(toStr(v))), 0) })
                 case "meta_intent" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(idlCtx.intentMeta.get(toStr(v)).orNull), 0) })
                 case "meta_conv" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(idlCtx.convMeta.get(toStr(v)).orNull), 0) })
@@ -908,6 +909,12 @@ trait NCIDLCodeGenerator:
                 // Inline if-statement.
                 case "if" => doIf()
                 case "or_else" => doOrElse()
+
+                // Model configuration.
+                case "mdl_id" => z0(() => Z(idlCtx.mdlCfg.getId, 0))
+                case "mdl_name" => z0(() => Z(idlCtx.mdlCfg.getName, 0))
+                case "mdl_ver" => z0(() => Z(idlCtx.mdlCfg.getVersion, 0))
+                case "mdl_origin" => z0(() => Z(idlCtx.mdlCfg.getOrigin, 0))
 
                 // Entity functions.
                 case "ent_id" => arg1Tok() match { case x => stack.push(() => Z(toEntity(x().value).getImpl.getId, 1)) }
