@@ -19,8 +19,8 @@ package org.apache.nlpcraft.internal.impl
 
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.internal.impl.intent.*
-import org.apache.nlpcraft.internal.impl.intent.compiler.*
+import org.apache.nlpcraft.internal.intent.*
+import org.apache.nlpcraft.internal.intent.compiler.*
 import org.apache.nlpcraft.internal.makro.NCMacroParser
 import org.apache.nlpcraft.internal.util.NCUtils
 
@@ -40,7 +40,7 @@ private[internal] case class NCCallback(method: Method, cbFun: Function[NCIntent
     val clsName: String = method.getDeclaringClass.getName
     val funName: String = method.getName
 
-private[internal] case class NCIntentData(intent: NCIdlIntent, callback: NCCallback, samples: Seq[Seq[String]])
+private[internal] case class NCIntentData(intent: NCIDLIntent, callback: NCCallback, samples: Seq[Seq[String]])
 
 /**
   *
@@ -313,23 +313,24 @@ import org.apache.nlpcraft.internal.impl.NCAnnotationsScanner.*
   * @param mdl
   */
 class NCAnnotationsScanner(mdl: NCModel) extends LazyLogging:
-    private val id = mdl.getConfig.getId
-    private val origin = mdl.getConfig.getOrigin
+    private val cfg = mdl.getConfig
+    private val id = cfg.getId
+    private val origin = cfg.getOrigin
 
     /**
       *
       * @return
       */
-    private def scanClasses(): (mutable.Buffer[NCIdlIntent], Iterable[Class[_]]) =
+    private def scanClasses(): (mutable.Buffer[NCIDLIntent], Iterable[Class[_]]) =
         val m = mutable.HashMap.empty[Class[_], Class[_]]
-        val intentDecls = mutable.Buffer.empty[NCIdlIntent]
+        val intentDecls = mutable.Buffer.empty[NCIDLIntent]
 
         def addImports(anns: scala.Array[NCIntentImport], orig: => String): Unit =
             checkMultiple(anns, (a: NCIntentImport) => a.value, orig)
             for (
                 ann <- anns;
                 res <- ann.value;
-                intent <- NCIdlCompiler.compileIntents(NCUtils.readResource(res.strip).mkString("\n"), mdl, res)
+                intent <- NCIDLCompiler.compile(NCUtils.readResource(res.strip).mkString("\n"), cfg, res)
             )
                 if intentDecls.exists(_.id == intent.id) then
                     E(s"Duplicate intent ID [mdlId=$id, origin=$origin, resource=$res, id=${intent.id}]")
@@ -369,7 +370,7 @@ class NCAnnotationsScanner(mdl: NCModel) extends LazyLogging:
       * @return
       */
     def scan(): Seq[NCIntentData] =
-        val (intentDecls: mutable.Buffer[NCIdlIntent], classes: Iterable[Class[_]]) = scanClasses()
+        val (intentDecls: mutable.Buffer[NCIDLIntent], classes: Iterable[Class[_]]) = scanClasses()
 
         val intents = mutable.Buffer.empty[NCIntentData]
 
@@ -486,12 +487,12 @@ class NCAnnotationsScanner(mdl: NCModel) extends LazyLogging:
       *
       * @param mo
       */
-    private def processMethod(intentDecls: mutable.Buffer[NCIdlIntent], intents: mutable.Buffer[NCIntentData], mo: MethodOwner): Unit =
+    private def processMethod(intentDecls: mutable.Buffer[NCIDLIntent], intents: mutable.Buffer[NCIntentData], mo: MethodOwner): Unit =
         val m = mo.method
         val mtdStr = method2Str(m)
         lazy val samples = scanSamples(mo.method)
 
-        def bindIntent(intent: NCIdlIntent, cb: NCCallback): Unit =
+        def bindIntent(intent: NCIDLIntent, cb: NCCallback): Unit =
             if intents.exists(i => i._1.id == intent.id && i._2.id != cb.id) then
                 E(s"The intent cannot be bound to more than one callback [mdlId=$id, origin=$origin, class=${mo.className}, intentId=${intent.id}]")
             else
@@ -507,7 +508,7 @@ class NCAnnotationsScanner(mdl: NCModel) extends LazyLogging:
         val annsIntents = m.getAnnotationsByType(CLS_INTENT)
         checkSingle(annsIntents, (a:NCIntent) => a.value, mtdStr)
 
-        for (ann <- annsIntents; intent <- NCIdlCompiler.compileIntents(ann.value, mdl, mtdStr))
+        for (ann <- annsIntents; intent <- NCIDLCompiler.compile(ann.value, cfg, mtdStr))
             if intentDecls.exists(_.id == intent.id && existsForOtherMethod(intent.id)) then
                 E(s"Duplicate intent ID [mdlId=$id, origin=$origin, callback=$mtdStr, id=${intent.id}]")
             else
@@ -530,7 +531,7 @@ class NCAnnotationsScanner(mdl: NCModel) extends LazyLogging:
       * @param intent
       * @return
       */
-    private def prepareCallback(mo: MethodOwner, intent: NCIdlIntent): NCCallback =
+    private def prepareCallback(mo: MethodOwner, intent: NCIDLIntent): NCCallback =
         val mtd = mo.method
 
         // Checks method result type.
@@ -651,7 +652,7 @@ class NCAnnotationsScanner(mdl: NCModel) extends LazyLogging:
 
                 val distinct = seqSeq.map(_.distinct).distinct
 
-                for (ann <- intAnns; intent <- NCIdlCompiler.compileIntents(ann.value, mdl, mtdStr))
+                for (ann <- intAnns; intent <- NCIDLCompiler.compile(ann.value, cfg, mtdStr))
                     samples += intent.id -> distinct
 
                 for (ann <- refAnns) samples += (ann.value -> distinct)

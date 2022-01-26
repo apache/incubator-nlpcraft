@@ -28,7 +28,7 @@ public class NCTestConfigJava {
     /**
      *
      */
-    public static final NCModelConfig CFG = new NCModelConfig("testId", "test", "1.0");
+    public static final NCModelConfig CFG = new NCModelConfig("testId", "test", "1.0", "Test description", "Test origin");
 
     /**
      *
