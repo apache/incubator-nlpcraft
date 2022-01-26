@@ -15,31 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.internal.antlr4
+package org.apache.nlpcraft.internal.intent
 
-import org.apache.nlpcraft.internal.*
+import scala.collection.mutable
 
-case class CompilerErrorHolder(
-    ptrStr: String,
-    origStr: String
+/**
+  *
+  */
+case class NCIDLStackItem (
+    value: Object,
+    entUse: Int
 )
 
-object NCCompilerUtils:
+/**
+  *
+  */
+object NCIDLStackItem {
+    def apply(v: Boolean, f: Int): NCIDLStackItem = new NCIDLStackItem(Boolean.box(v), f)
+    def apply(v: Long, f: Int): NCIDLStackItem = new NCIDLStackItem(Long.box(v), f)
+    def apply(v: Double, f: Int): NCIDLStackItem = new NCIDLStackItem(Double.box(v), f)
+}
+
+/**
+  *
+  */
+trait NCIDLStackType extends (() => NCIDLStackItem)
+
+/**
+  *
+  */
+class NCIDLStack extends mutable.Stack[NCIDLStackType]:
     /**
-      *
-      * @param in
-      * @param charPos
-      * @return
+      * Special marker for stack frames.
       */
-    def mkErrorHolder(in: String, charPos: Int): CompilerErrorHolder =
-        val charPos0 = charPos - (in.length - in.stripLeading().length)
-        val in0 = in.strip()
-        val pos = Math.max(0, charPos0)
-        val dash = "-" * in0.length
+    final val PLIST_MARKER: NCIDLStackType = () => { NCIDLStackItem(null, 0) }
 
-        var ptrStr = s"${dash.substring(0, pos)}^"
-        if pos < dash.length - 1 then ptrStr = s"$ptrStr${dash.substring(pos + 1)}"
-        else ptrStr = s"$ptrStr${dash.substring(pos + 1)}"
-
-        val origStr = s"${in0.substring(0, pos)}${in0.charAt(pos)}${in0.substring(pos + 1)}"
-        CompilerErrorHolder(ptrStr, origStr)

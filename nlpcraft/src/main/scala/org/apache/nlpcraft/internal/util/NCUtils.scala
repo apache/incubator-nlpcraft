@@ -19,17 +19,17 @@ package org.apache.nlpcraft.internal.util
 
 import com.typesafe.scalalogging.*
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.internal.ansi.NCAnsi.*
-
+import com.google.gson.*
 import java.io.*
 import java.net.*
-import java.util.concurrent.{CopyOnWriteArrayList, ExecutorService, TimeUnit}
+import java.util.concurrent.{CopyOnWriteArrayList, ExecutorService, TimeUnit} // Avoids conflicts.
 import java.util.regex.Pattern
 import java.util.zip.*
 import java.util.{Random, UUID}
 import scala.annotation.tailrec
 import scala.collection.{IndexedSeq, Seq, mutable}
 import scala.concurrent.*
+import scala.jdk.CollectionConverters.*
 import scala.concurrent.duration.Duration
 import scala.io.*
 import scala.sys.SystemProperties
@@ -42,28 +42,7 @@ object NCUtils extends LazyLogging:
     final val NL = System getProperty "line.separator"
     private val RND = new Random()
     private val sysProps = new SystemProperties
-    private final val ANSI_SEQ = Pattern.compile("\u001B\\[[?;\\d]*[a-zA-Z]")
-    private val ANSI_FG_8BIT_COLORS = for (i <- 16 to 255) yield ansi256Fg(i)
-    private val ANSI_BG_8BIT_COLORS = for (i <- 16 to 255) yield ansi256Bg(i)
-    private val ANSI_FG_4BIT_COLORS = Seq(
-        ansiRedFg,
-        ansiGreenFg,
-        ansiBlueFg,
-        ansiYellowFg,
-        ansiWhiteFg,
-        ansiBlackFg,
-        ansiCyanFg
-    )
-    private val ANSI_BG_4BIT_COLORS = Seq(
-        ansiRedBg,
-        ansiGreenBg,
-        ansiBlueBg,
-        ansiYellowBg,
-        ansiWhiteBg,
-        ansiBlackBg,
-        ansiCyanBg
-    )
-    private val ANSI_4BIT_COLORS = for (fg <- ANSI_FG_4BIT_COLORS; bg <- ANSI_BG_4BIT_COLORS) yield s"$fg$bg"
+    private final lazy val GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create()
 
     /**
       * Gets system property, or environment variable (in that order), or `None` if none exists.
@@ -114,178 +93,110 @@ object NCUtils extends LazyLogging:
         dest.toSeq
 
     /**
-      * Prints 4-bit ASCII-logo.
+      * Prints ASCII-logo.
       */
-    def asciiLogo4Bit(): String =
-        raw"$ansiBlueFg    _   ____     $ansiCyanFg ______           ______   $ansiReset$NL" +
-        raw"$ansiBlueFg   / | / / /___  $ansiCyanFg/ ____/________ _/ __/ /_  $ansiReset$NL" +
-        raw"$ansiBlueFg  /  |/ / / __ \$ansiCyanFg/ /   / ___/ __ `/ /_/ __/  $ansiReset$NL" +
-        raw"$ansiBlueFg / /|  / / /_/ /$ansiCyanFg /___/ /  / /_/ / __/ /_    $ansiReset$NL" +
-        raw"$ansiBold$ansiRedFg/_/ |_/_/ .___/$ansiRedFg\____/_/   \__,_/_/  \__/      $ansiReset$NL" +
-        raw"$ansiBold$ansiRedFg       /_/                                              $ansiReset$NL"
-
-    /**
-      * Prints 8-bit ASCII-logo.
-      */
-    def asciiLogo8Bit1(): String =
-        fgRainbow4Bit(
-            raw"${ansi256Fg(28)}    _   ____      ______           ______   $ansiReset$NL" +
-            raw"${ansi256Fg(64)}   / | / / /___  / ____/________ _/ __/ /_  $ansiReset$NL" +
-            raw"${ansi256Fg(100)}  /  |/ / / __ \/ /   / ___/ __ `/ /_/ __/  $ansiReset$NL" +
-            raw"${ansi256Fg(136)} / /|  / / /_/ / /___/ /  / /_/ / __/ /_    $ansiReset$NL" +
-            raw"${ansi256Fg(172)}/_/ |_/_/ .___/\____/_/   \__,_/_/  \__/    $ansiReset$NL" +
-            raw"${ansi256Fg(208)}       /_/                                  $ansiReset$NL"
-        )
-
-    /**
-      * Prints 8-bit ASCII-logo.
-      */
-    def asciiLogo8Bit(): String =
-        val startColor = getRandom(Seq(16, 22, 28, 34, 40, 46))
-        val range = 6
-
-        (for (lineIdx <- Seq(
+    def asciiLogo(): String =
+        Seq(
             raw"    _   ____      ______           ______   $NL",
             raw"   / | / / /___  / ____/________ _/ __/ /_  $NL",
             raw"  /  |/ / / __ \/ /   / ___/ __ `/ /_/ __/  $NL",
             raw" / /|  / / /_/ / /___/ /  / /_/ / __/ /_    $NL",
             raw"/_/ |_/_/ .___/\____/_/   \__,_/_/  \__/    $NL",
             raw"       /_/                                  $NL"
-        ).zipWithIndex) yield {
-            val line = lineIdx._1
-            val idx = lineIdx._2
-            val start = startColor + (36 * idx)
-            val end = start + range - 1
-
-            gradAnsi8BitFgLine(line, start, end)
-        })
+        )
         .mkString("")
 
     /**
       *
-      * @param line
-      * @param startColor Inclusive.
-      * @param endColor Inclusive.
+      * @param json
       * @return
       */
-    def gradAnsi8BitFgLine(line: String, startColor: Int, endColor: Int): String =
-        line.zipWithIndex.foldLeft(new StringBuilder())((buf, zip) => {
-            val ch = zip._1
-            val idx = zip._2
-            val color = startColor + idx % (endColor - startColor + 1)
-
-            buf ++= s"${ansi256Fg(color)}$ch"
-        })
-        .toString + ansiReset
+    def prettyJson(json: String): String =
+        if json == null || json.isEmpty then ""
+        else
+            try
+                GSON.toJson(GSON.getAdapter(classOf[JsonElement]).fromJson(json))
+                    // Fix the problem with escaping '<' and '>' which is only
+                    // a theoretical problem for browsers displaying JSON.
+                    .replace("\\u003c", "<")
+                    .replace("\\u003e", ">")
+            catch case _: Exception => ""
 
     /**
       *
-      * @param line
-      * @param startColor Inclusive.
-      * @param endColor Inclusive.
+      * @param json
       * @return
       */
-    def gradAnsi8BitBgLine(line: String, startColor: Int, endColor: Int): String =
-        line.zipWithIndex.foldLeft(new StringBuilder())((buf, zip) => {
-            val ch = zip._1
-            val idx = zip._2
-            val color = startColor + idx % (endColor - startColor + 1)
-
-            buf ++= s"${ansi256Bg(color)}$ch"
-        })
-        .toString + ansiReset
+    def isValidJson(json: String): Boolean =
+        scala.util.Try(GSON.getAdapter(classOf[JsonElement]).fromJson(json)).isSuccess
 
     /**
       *
-      * @param s
+      * @param json
+      * @param field
       * @return
       */
-    def fgRainbow4Bit(s: String, addOn: String = ""): String = rainbowImpl(s, ANSI_FG_4BIT_COLORS, addOn)
+    @throws[Exception]
+    def getJsonStringField(json: String, field: String): String =
+        GSON.getAdapter(classOf[JsonElement]).fromJson(json).getAsJsonObject.get(field).getAsString
 
     /**
       *
-      * @param s
+      * @param json
+      * @param field
       * @return
       */
-    def fgRainbow8Bit(s: String, addOn: String = ""): String = rainbowImpl(s, ANSI_FG_8BIT_COLORS, addOn)
+    @throws[Exception]
+    def getJsonIntField(json: String, field: String): Int =
+        GSON.getAdapter(classOf[JsonElement]).fromJson(json).getAsJsonObject.get(field).getAsInt
 
     /**
       *
-      * @param s
+      * @param json
+      * @tparam T
       * @return
       */
-    def bgRainbow4Bit(s: String, addOn: String = ""): String = rainbowImpl(s, ANSI_BG_4BIT_COLORS, addOn)
+    def jsonToObject[T](json: String, typ: java.lang.reflect.Type): T =
+        GSON.fromJson(json, typ)
 
     /**
       *
-      * @param s
+      * @param json
+      * @tparam T
       * @return
       */
-    def bgRainbow8Bit(s: String, addOn: String = ""): String = rainbowImpl(s, ANSI_BG_8BIT_COLORS, addOn)
+    def jsonToObject[T](json: String, cls: Class[T]): T =
+        GSON.fromJson(json, cls)
+
+    /**
+      * Shortcut to convert given JSON to Scala map with default mapping.
+      *
+      * @param json JSON to convert.
+      * @return
+      */
+    @throws[Exception]
+    def jsonToScalaMap(json: String): Map[String, Object] =
+        GSON.fromJson(json, classOf[java.util.HashMap[String, Object]]).asScala.toMap
+
+    /**
+      * Shortcut to convert given JSON to Java map with default mapping.
+      *
+      * @param json JSON to convert.
+      * @return
+      */
+    def jsonToJavaMap(json: String): java.util.Map[String, Object] =
+        try GSON.fromJson(json, classOf[java.util.HashMap[String, Object]])
+        catch case e: Exception => E(s"Cannot deserialize JSON to map: '$json'", e)
 
     /**
       *
-      * @param s
+      * @param json
+      * @param field
       * @return
       */
-    def rainbow4Bit(s: String, addOn: String = ""): String = randomRainbowImpl(s, ANSI_4BIT_COLORS, addOn)
-
-    /**
-      *
-      * @param s
-      * @param colors
-      * @param addOn
-      * @return
-      */
-    private def randomRainbowImpl(s: String, colors: Seq[String], addOn: String): String =
-        s.zipWithIndex.foldLeft(new StringBuilder())((buf, zip) => {
-            buf ++= s"${colors(RND.nextInt(colors.size))}$addOn${zip._1}"
-        })
-        .toString + ansiReset
-
-    /**
-      *
-      * @param s
-      * @param colors
-      * @param addOn
-      * @return
-      */
-    private def rainbowImpl(s: String, colors: Seq[String], addOn: String): String =
-        s.zipWithIndex.foldLeft(new StringBuilder())((buf, zip) => {
-            buf ++= s"${colors(zip._2 % colors.size)}$addOn${zip._1}"
-        })
-        .toString + ansiReset
-
-    /**
-      * ANSI color JSON string.
-      *
-      * @param json JSON string to color.
-      * @return
-      */
-    def colorJson(json: String): String =
-        val buf = new StringBuilder
-        var inQuotes = false
-        var isValue = false
-
-        for (ch <- json)
-            ch match
-                case ':' if !inQuotes => buf ++= r(":"); isValue = true
-                case '[' | ']' | '{' | '}' if !inQuotes => buf ++= y(s"$ch"); isValue = false
-                case ',' if !inQuotes => buf ++= ansi256Fg(213, s"$ch"); isValue = false
-                case '"' =>
-                    if inQuotes then
-                        buf ++= ansi256Fg(105, s"$ch")
-                    else
-                        buf ++= s"${ansi256Fg(105)}$ch"
-                        buf ++= (if isValue then G else ansiCyanFg)
-
-                    inQuotes = !inQuotes
-
-                case _ => buf ++= s"$ch"
-
-
-        buf.append(RST)
-        buf.toString()
+    def getJsonBooleanField(json: String, field: String): Boolean =
+        try GSON.getAdapter(classOf[JsonElement]).fromJson(json).getAsJsonObject.get(field).getAsBoolean
+        catch case e: Exception => E(s"Cannot extract JSON field '$field' from: '$json'", e)
 
     /**
       * Shortcut - current timestamp in milliseconds.
@@ -300,15 +211,6 @@ object NCUtils extends LazyLogging:
       * @return
       */
     def notNull[T <: AnyRef](v: T, dflt: T): T = if v == null then dflt else v
-
-    /**
-      * Strips ANSI escape sequences from the given string.
-      *
-      * @param s
-      * @return
-      */
-    def stripAnsi(s: String): String =
-        ANSI_SEQ.matcher(s).replaceAll("")
 
     /**
       * Trims each sequence string and filters out empty ones.
@@ -412,91 +314,13 @@ object NCUtils extends LazyLogging:
                     case '\r' => sb ++= "\\r"
                     case _ =>
                         if ch < ' ' then
-                            val t = "000" + Integer.toHexString(ch)
+                            val t = s"000${Integer.toHexString(ch)}"
                             sb ++= "\\u" ++= t.substring(t.length - 4)
 
                         else
                             sb += ch
 
             sb.toString()
-
-    /**
-      *
-      * @param logger
-      * @param title
-      * @param e
-      */
-    def prettyError(logger: Logger, title: String, e: Throwable): Unit =
-        // Keep the full trace in the 'trace' log level.
-        logger.trace(title, e)
-
-        prettyErrorImpl(new PrettyErrorLogger {
-            override def log(s: String): Unit = logger.error(s)
-        }, title, e)
-    
-    /**
-      *
-      * @param title
-      * @param e
-      */
-    def prettyError(title: String, e: Throwable): Unit = prettyErrorImpl(new PrettyErrorLogger(), title, e)
-
-    sealed class PrettyErrorLogger:
-        def log(s: String): Unit = System.err.println(s)
-
-    /**
-      *
-      * @param logger
-      * @param title
-      * @param e
-      */
-    private def prettyErrorImpl(logger: PrettyErrorLogger, title: String, e: Throwable): Unit =
-        logger.log(title)
-
-        val INDENT = 2
-        var x = e
-        var indent = INDENT
-        while (x != null)
-            var first = true
-            var errMsg = x.getLocalizedMessage
-            if errMsg == null then errMsg = "<null>"
-            val exClsName = if !x.isInstanceOf[NCException] then s"$ansiRedFg[${x.getClass.getCanonicalName}]$ansiReset " else ""
-            val trace = x.getStackTrace.find(!_.getClassName.startsWith("scala.")).getOrElse(x.getStackTrace.head)
-            val fileName = trace.getFileName
-            val lineNum = trace.getLineNumber
-            val msg =
-                if fileName == null || lineNum < 0 then
-                    s"$exClsName$errMsg"
-                else
-                    s"$exClsName$errMsg $ansiCyanFg->$ansiReset ($fileName:$lineNum)"
-
-            msg.split("\n").foreach(line => {
-                val s = s"${" " * indent}${if first then ansiBlue("+-+ ") else "   "}${bo(y(line))}"
-                logger.log(s)
-                first = false
-            })
-
-            val traces = x.getStackTrace.filter { t =>
-                val mtdName = t.getMethodName
-                val clsName = t.getClassName
-
-                // Clean up trace.
-                clsName.startsWith("org.apache.nlpcraft") &&
-                    !clsName.startsWith("org.apache.nlpcraft.internal.opencensus") &&
-                    !mtdName.contains("startScopedSpan") &&
-                    !mtdName.contains('$')
-            }
-            for (trace <- traces)
-                val fileName = trace.getFileName
-                val lineNum = trace.getLineNumber
-                val mtdName = trace.getMethodName
-                val clsName = trace.getClassName.replace("org.apache.nlpcraft", "o.a.n")
-
-                logger.log(s"${" " * indent}  ${b("|")} $clsName.$mtdName $ansiCyanFg->$ansiReset ($fileName:$lineNum)")
-
-            indent += INDENT
-
-            x = x.getCause
 
     /**
       * Makes thread.
@@ -519,7 +343,7 @@ object NCUtils extends LazyLogging:
                     logger.trace(s"Thread exited: $name")
                 catch
                     case _: InterruptedException => logger.trace(s"Thread interrupted: $name")
-                    case e: Throwable => prettyError(logger, s"Unexpected error during '$name' thread execution:", e)
+                    case e: Throwable => logger.warn(s"Unexpected error during '$name' thread execution:", e)
                 finally
                     stopped = true
 
@@ -583,7 +407,7 @@ object NCUtils extends LazyLogging:
             Thread.sleep(delay)
         catch
             case _: InterruptedException => Thread.currentThread().interrupt()
-            case e: Throwable => prettyError(logger, "Unhandled exception caught during sleep:", e)
+            case e: Throwable => logger.warn("Unhandled exception caught during sleep:", e)
 
 
     /**
@@ -836,6 +660,42 @@ object NCUtils extends LazyLogging:
         log.trace(s"Loaded file: ${f.getAbsolutePath}")
 
         data
+
+    /**
+      * Reads lines from given file.
+      *
+      * @param f File to read from.
+      * @param enc Encoding.
+      * @param log Logger to use.
+      */
+    def readFile(f: File, enc: String = "UTF-8", log: Logger = logger): List[String] =
+        try
+            Using.resource(Source.fromFile(f, enc)) { src =>
+                getAndLog(src.getLines().map(p => p).toList, f, log)
+            }
+        catch case e: IOException => E(s"Failed to read file: ${f.getAbsolutePath}", e)
+
+    /**
+      * Maps lines from the given stream to an object.
+      *
+      * @param in Stream to read from.
+      * @param enc Encoding.
+      * @param log Logger to use.
+      * @param mapper Function to read lines.
+      */
+    def mapStream[T](in: InputStream, enc: String, log: Logger = logger, mapper: Iterator[String] => T): T =
+        try Using.resource(Source.fromInputStream(in, enc)) { src => mapper(src.getLines()) }
+        catch case e: IOException => E(s"Failed to read stream.", e)
+
+    /**
+      * Reads lines from given stream.
+      *
+      * @param in Stream to read from.
+      * @param enc Encoding.
+      * @param log Logger to use.
+      */
+    def readStream(in: InputStream, enc: String = "UTF-8", log: Logger = logger): List[String] =
+        mapStream(in, enc, log, _.map(p => p).toList)
 
     /**
       * Reads lines from given resource.

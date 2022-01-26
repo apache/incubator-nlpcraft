@@ -87,9 +87,7 @@ private[impl] object NCSemanticSynonymsProcessor extends LazyLogging:
 
             // Ignore suspicious chars if regex is used in macro...
             for ((name, value) <- macros if isSuspicious(name) || (isSuspicious(value) && !value.contains("//")))
-                logger.warn(s"Suspicious macro definition (use of ${SUSP_SYNS_CHARS.map(s => s"'$s'").mkString(", ")} chars) [" +
-                    s"macro=$name" +
-                s"]")
+                logger.warn(s"Suspicious macro definition (use of ${SUSP_SYNS_CHARS.map(s => s"'$s'").mkString(", ")} chars) [macro=$name]")
 
     /**
       *
@@ -198,7 +196,7 @@ private[impl] object NCSemanticSynonymsProcessor extends LazyLogging:
                             else
                                 regex.used = true
                                 Some(regex.mkChunk())
-                        case None => Some(NCSemanticSynonymChunk(TEXT, tok.getText, stemmer.stem(tok.getText)))
+                        case None => Option(NCSemanticSynonymChunk(TEXT, tok.getText, stemmer.stem(tok.getText)))
                 ).toSeq
             }).toSeq
 
@@ -259,11 +257,7 @@ private[impl] object NCSemanticSynonymsProcessor extends LazyLogging:
 
             if elemIds.size > 1 then
                 for (s <- hs.map(_.synonym).distinct)
-                    logger.warn(
-                        s"Synonym appears in multiple elements [" +
-                            s"synonym='${s.chunks.mkString(" ")}', " +
-                            s"elements=${elemIds.mkString("{", ",", "}")}" +
-                        s"]")
+                    logger.warn(s"Synonym appears in multiple elements [synonym='${s.chunks.mkString(" ")}', elements=${elemIds.mkString("{", ",", "}")}]")
         })
 
         val txtBuf = buf.filter(_.synonym.isText)

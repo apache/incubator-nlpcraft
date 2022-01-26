@@ -15,43 +15,50 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.nlp.util
+package org.apache.nlpcraft.internal.intent
 
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.nlp.util.NCTestPipeline.*
-import scala.jdk.CollectionConverters.*
-import java.util
-import java.util.Map as JMap
 
 /**
-  * Request test implementation.
+  * IDL term.
   *
-  * @param txt
-  * @param userId
-  * @param reqId
-  * @param ts
-  * @param data
+  * @param idl
+  * @param id Optional ID of this term.
+  * @param decls Term optional declarations.
+  * @param pred Term predicate.
+  * @param min
+  * @param max
+  * @param conv Whether or not this term support conversation context.
+  * @param fragMeta
   */
-case class NCTestRequest(
-    txt: String,
-    userId: String = null,
-    reqId: String = null,
-    ts: Long = -1,
-    data: Map[String, AnyRef] = null
-) extends NCRequest:
-    override def getUserId: String = userId
-    override def getRequestId: String = reqId
-    override def getText: String = txt
-    override def getReceiveTimestamp: Long = ts
-    override def getRequestData: JMap[String, AnyRef] = data.asJava
+case class NCIDLTerm(
+    idl: String,
+    id: Option[String],
+    decls: Map[String, NCIDLFunction],
+    pred: NCIDLFunction,
+    min: Int,
+    max: Int,
+    conv: Boolean,
+    fragMeta: Map[String, Any] = Map.empty
+):
+    require(pred != null)
+    require(min >= 0 && max >= min)
 
-/**
-  * Java side helper.
-  */
-object NCTestRequest:
     /**
       *
-      * @param txt
+      * @param meta
       * @return
       */
-    def apply(txt: String): NCTestRequest = new NCTestRequest(txt)
+    def cloneWithFragMeta(meta: Map[String, Any]): NCIDLTerm =
+        NCIDLTerm(
+            idl,
+            id,
+            decls,
+            pred,
+            min,
+            max,
+            conv,
+            meta
+        )
+
+    override def toString: String = idl

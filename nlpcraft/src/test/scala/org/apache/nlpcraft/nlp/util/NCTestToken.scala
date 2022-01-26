@@ -19,9 +19,10 @@ package org.apache.nlpcraft.nlp.util
 
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.nlp.util.NCTestPipeline.*
-import scala.jdk.CollectionConverters.*
+
 import java.util
 import java.util.Map as JMap
+import scala.jdk.CollectionConverters.*
 
 /**
   * Request test implementation.
@@ -32,26 +33,21 @@ import java.util.Map as JMap
   * @param ts
   * @param data
   */
-case class NCTestRequest(
-    txt: String,
-    userId: String = null,
-    reqId: String = null,
-    ts: Long = -1,
-    data: Map[String, AnyRef] = null
-) extends NCRequest:
-    override def getUserId: String = userId
-    override def getRequestId: String = reqId
-    override def getText: String = txt
-    override def getReceiveTimestamp: Long = ts
-    override def getRequestData: JMap[String, AnyRef] = data.asJava
+case class NCTestToken(
+    txt: String = "<text:undefined>",
+    idx: Int = -1,
+    start: Int = -1,
+    end: Int = -1,
+    lemma: String = null,
+    pos: String = null,
+    data: JMap[String, AnyRef] = null
+) extends NCPropertyMapAdapter with NCToken:
+    if data != null then data.asScala.foreach { (k, v) => put(k, v)}
 
-/**
-  * Java side helper.
-  */
-object NCTestRequest:
-    /**
-      *
-      * @param txt
-      * @return
-      */
-    def apply(txt: String): NCTestRequest = new NCTestRequest(txt)
+    override def getText: String = txt
+    override def getIndex: Int = idx
+    override def getStartCharIndex: Int = start
+    override def getEndCharIndex: Int = end
+    override def getLemma: String = if lemma  != null then lemma else txt
+    override def getPos: String = if pos  != null then pos else "undefined"
+

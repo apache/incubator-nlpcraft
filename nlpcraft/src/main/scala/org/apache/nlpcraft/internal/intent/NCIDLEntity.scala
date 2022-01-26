@@ -15,43 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.nlp.util
+package org.apache.nlpcraft.internal.intent
 
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.nlp.util.NCTestPipeline.*
 import scala.jdk.CollectionConverters.*
-import java.util
-import java.util.Map as JMap
 
 /**
-  * Request test implementation.
   *
-  * @param txt
-  * @param userId
-  * @param reqId
-  * @param ts
-  * @param data
+  * @param ent
+  * @param idx
   */
-case class NCTestRequest(
-    txt: String,
-    userId: String = null,
-    reqId: String = null,
-    ts: Long = -1,
-    data: Map[String, AnyRef] = null
-) extends NCRequest:
-    override def getUserId: String = userId
-    override def getRequestId: String = reqId
-    override def getText: String = txt
-    override def getReceiveTimestamp: Long = ts
-    override def getRequestData: JMap[String, AnyRef] = data.asJava
+class NCIDLEntity(ent: NCEntity, idx: Int):
+    private lazy val txt = ent.getTokens.asScala.map(_.getText).mkString(" ")
 
-/**
-  * Java side helper.
-  */
-object NCTestRequest:
-    /**
-      *
-      * @param txt
-      * @return
-      */
-    def apply(txt: String): NCTestRequest = new NCTestRequest(txt)
+    def getImpl: NCEntity = ent
+    def getText: String = txt
+    def getIndex: Int = idx

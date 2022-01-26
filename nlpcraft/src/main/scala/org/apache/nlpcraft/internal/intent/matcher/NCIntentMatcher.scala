@@ -15,31 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.internal.antlr4
+package org.apache.nlpcraft.internal.intent.matcher
 
-import org.apache.nlpcraft.internal.*
-
-case class CompilerErrorHolder(
-    ptrStr: String,
-    origStr: String
-)
-
-object NCCompilerUtils:
+/**
+  *
+  */
+object NCIntentMatcher:
     /**
       *
-      * @param in
-      * @param charPos
-      * @return
       */
-    def mkErrorHolder(in: String, charPos: Int): CompilerErrorHolder =
-        val charPos0 = charPos - (in.length - in.stripLeading().length)
-        val in0 = in.strip()
-        val pos = Math.max(0, charPos0)
-        val dash = "-" * in0.length
-
-        var ptrStr = s"${dash.substring(0, pos)}^"
-        if pos < dash.length - 1 then ptrStr = s"$ptrStr${dash.substring(pos + 1)}"
-        else ptrStr = s"$ptrStr${dash.substring(pos + 1)}"
-
-        val origStr = s"${in0.substring(0, pos)}${in0.charAt(pos)}${in0.substring(pos + 1)}"
-        CompilerErrorHolder(ptrStr, origStr)
+    def bestMatch(): Unit = ???
