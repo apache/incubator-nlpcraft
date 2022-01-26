@@ -314,91 +314,13 @@ object NCUtils extends LazyLogging:
                     case '\r' => sb ++= "\\r"
                     case _ =>
                         if ch < ' ' then
-                            val t = "000" + Integer.toHexString(ch)
+                            val t = s"000${Integer.toHexString(ch)}"
                             sb ++= "\\u" ++= t.substring(t.length - 4)
 
                         else
                             sb += ch
 
             sb.toString()
-
-    /**
-      *
-      * @param logger
-      * @param title
-      * @param e
-      */
-    def prettyError(logger: Logger, title: String, e: Throwable): Unit =
-        // Keep the full trace in the 'trace' log level.
-        logger.trace(title, e)
-
-        prettyErrorImpl(new PrettyErrorLogger {
-            override def log(s: String): Unit = logger.error(s)
-        }, title, e)
-    
-    /**
-      *
-      * @param title
-      * @param e
-      */
-    def prettyError(title: String, e: Throwable): Unit = prettyErrorImpl(new PrettyErrorLogger(), title, e)
-
-    sealed class PrettyErrorLogger:
-        def log(s: String): Unit = System.err.println(s)
-
-    /**
-      *
-      * @param logger
-      * @param title
-      * @param e
-      */
-    private def prettyErrorImpl(logger: PrettyErrorLogger, title: String, e: Throwable): Unit =
-        logger.log(title)
-
-        val INDENT = 2
-        var x = e
-        var indent = INDENT
-        while (x != null)
-            var first = true
-            var errMsg = x.getLocalizedMessage
-            if errMsg == null then errMsg = "<null>"
-            val exClsName = if !x.isInstanceOf[NCException] then s"[${x.getClass.getCanonicalName}] " else ""
-            val trace = x.getStackTrace.find(!_.getClassName.startsWith("scala.")).getOrElse(x.getStackTrace.head)
-            val fileName = trace.getFileName
-            val lineNum = trace.getLineNumber
-            val msg =
-                if fileName == null || lineNum < 0 then
-                    s"$exClsName$errMsg"
-                else
-                    s"$exClsName$errMsg -> ($fileName:$lineNum)"
-
-            msg.split("\n").foreach(line => {
-                val s = s"${" " * indent}${if first then "+-+ " else "   "}$line}"
-                logger.log(s)
-                first = false
-            })
-
-            val traces = x.getStackTrace.filter { t =>
-                val mtdName = t.getMethodName
-                val clsName = t.getClassName
-
-                // Clean up trace.
-                clsName.startsWith("org.apache.nlpcraft") &&
-                    !clsName.startsWith("org.apache.nlpcraft.internal.opencensus") &&
-                    !mtdName.contains("startScopedSpan") &&
-                    !mtdName.contains('$')
-            }
-            for (trace <- traces)
-                val fileName = trace.getFileName
-                val lineNum = trace.getLineNumber
-                val mtdName = trace.getMethodName
-                val clsName = trace.getClassName.replace("org.apache.nlpcraft", "o.a.n")
-
-                logger.log(s"${" " * indent}  | ${clsName}.$mtdName -> ($fileName:$lineNum)")
-
-            indent += INDENT
-
-            x = x.getCause
 
     /**
       * Makes thread.
@@ -421,7 +343,7 @@ object NCUtils extends LazyLogging:
                     logger.trace(s"Thread exited: $name")
                 catch
                     case _: InterruptedException => logger.trace(s"Thread interrupted: $name")
-                    case e: Throwable => prettyError(logger, s"Unexpected error during '$name' thread execution:", e)
+                    case e: Throwable => logger.warn(s"Unexpected error during '$name' thread execution:", e)
                 finally
                     stopped = true
 
@@ -485,7 +407,7 @@ object NCUtils extends LazyLogging:
             Thread.sleep(delay)
         catch
             case _: InterruptedException => Thread.currentThread().interrupt()
-            case e: Throwable => prettyError(logger, "Unhandled exception caught during sleep:", e)
+            case e: Throwable => logger.warn("Unhandled exception caught during sleep:", e)
 
 
     /**

@@ -406,7 +406,7 @@ trait NCIDLCodeGenerator:
             stack.push(() => {
                 val (v1, v2, n) = extract2(x1, x2)
 
-                if isStr(v1) && isStr(v2) then Z(asStr(v1) + asStr(v2), n)
+                if isStr(v1) && isStr(v2) then Z(s"${asStr(v1)}${asStr(v2)}", n)
                 else if isInt(v1) && isInt(v2) then Z(asInt(v1) + asInt(v2), n)
                 else if isInt(v1) && isReal(v2) then Z(asInt(v1) + asReal(v2), n)
                 else if isReal(v1) && isInt(v2) then Z(asReal(v1) + asInt(v2), n)
