@@ -24,7 +24,7 @@ import org.apache.nlpcraft.nlp.util.*
 /**
   *
   */
-final val CFG = new NCModelConfig("testId", "test", "1.0")
+final val CFG = new NCModelConfig("testId", "test", "1.0", "Test description", "Test origin")
 
 /**
   *

@@ -17,7 +17,7 @@
 
 package org.apache.nlpcraft.internal.intent.compiler.functions
 
-import org.apache.nlpcraft.internal.intent.compiler.functions.NCIdlFunctions.*
+import org.apache.nlpcraft.internal.intent.compiler.functions.NCIDLFunctions.*
 import org.junit.jupiter.api.Test
 
 import scala.language.implicitConversions
@@ -25,7 +25,7 @@ import scala.language.implicitConversions
 /**
   * Tests for 'strings' functions.
   */
-class NCIdlFunctionsStrings extends NCIdlFunctions:
+class NCIDLFunctionsStrings extends NCIDLFunctions:
     @Test
     def test(): Unit =
         test(

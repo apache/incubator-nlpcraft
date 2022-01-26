@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.internal.intent.compiler.functions
 
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.internal.intent.compiler.functions.NCIdlFunctions.*
+import org.apache.nlpcraft.internal.intent.compiler.functions.NCIDLFunctions.*
 import org.apache.nlpcraft.internal.util.NCUtils
 import org.junit.jupiter.api.Test
 
@@ -30,7 +30,7 @@ import scala.language.implicitConversions
 /**
   * Tests for 'dates' functions.
   */
-class NCIdlFunctionsDate extends NCIdlFunctions:
+class NCIDLFunctionsDate extends NCIDLFunctions:
     @Test
     def test(): Unit =
         def test0(): Unit =

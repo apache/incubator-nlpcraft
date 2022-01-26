@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test
 /**
  * Tests for IDL compiler.
  */
-class NCIdlCompilerSpec:
+class NCIDLCompilerSpec:
     private final val MODEL_ID = "test.mdl.id"
 
     /**

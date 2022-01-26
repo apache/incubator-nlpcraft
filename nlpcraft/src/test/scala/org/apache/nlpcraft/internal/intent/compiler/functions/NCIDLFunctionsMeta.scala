@@ -19,7 +19,8 @@ package org.apache.nlpcraft.internal.intent.compiler.functions
 
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.intent.NCIDLContext
-import org.apache.nlpcraft.internal.intent.compiler.functions.NCIdlFunctions.*
+import org.apache.nlpcraft.internal.intent.compiler.functions.NCIDLFunctions.*
+import org.apache.nlpcraft.nlp.util.NCTestToken
 import org.junit.jupiter.api.Test
 
 import java.util
@@ -31,7 +32,7 @@ import scala.sys.SystemProperties
 /**
   * Tests for 'meta' functions.
   */
-class NCIdlFunctionsMeta extends NCIdlFunctions:
+class NCIDLFunctionsMeta extends NCIDLFunctions:
     @Test
     def testMetaSys(): Unit =
         val sys = new SystemProperties
@@ -44,10 +45,10 @@ class NCIdlFunctionsMeta extends NCIdlFunctions:
             sys.remove("k1")
 
     @Test
-    def testMetaToken(): Unit =
+    def testMetaEntity(): Unit =
         testValue(
-            "meta_tok",
-            entity = Option(mkEntity(meta = Map("k1" -> "v1")))
+            "meta_ent",
+            entity = Option(mkEntity(meta = Map("k1" -> "v1"), NCTestToken()))
         )
 
     @Test

@@ -25,7 +25,7 @@ import scala.language.implicitConversions
 /**
   * Tests for 'collections' functions.
   */
-class NCIdlFunctionsCollections extends NCIdlFunctions:
+class NCIDLFunctionsCollections extends NCIDLFunctions:
     private final val js = "{\"k1\": \"v1\"}"
 
     @Test

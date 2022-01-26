@@ -17,37 +17,25 @@
 
 package org.apache.nlpcraft.internal.intent.compiler.functions
 
-import org.apache.nlpcraft.internal.intent.compiler.functions.NCIdlFunctions.*
+import org.apache.nlpcraft.internal.intent.compiler.functions.NCIDLFunctions.*
 import org.junit.jupiter.api.Test
+import org.apache.nlpcraft.nlp.util.opennlp.*
 
 import scala.language.implicitConversions
 
 /**
-  * Tests for 'stat' functions.
+  * Tests for 'requests' functions.
   */
-class NCIdlFunctionsStat extends NCIdlFunctions:
-    @Test
-    def testError(): Unit =
-        expectError(
-            "avg(list()) == 2",
-            "avg(list('A')) == 2",
-            "stdev(list()) == 2",
-            "stdev(list('A')) == 2"
-        )
-
+class NCIDLFunctionsModel extends NCIDLFunctions:
     @Test
     def test(): Unit =
+        val idlCtx = mkIdlContext(cfg = CFG)
+
+        def mkTestDesc(truth: String): TestDesc = TestDesc(truth = truth, idlCtx = idlCtx)
+
         test(
-            "max(list(1, 2, 3)) == 3",
-            "max(list(1.0, 2.0, 3.0)) == 3.0",
-            "min(list(1, 2, 3)) == 1",
-            "min(list(1.0, 2.0, 3.0)) == 1.0",
-            "avg(list(1.0, 2.0, 3.0)) == 2.0",
-            "avg(list(1, 2, 3)) == 2.0",
-            "avg(list(1.2, 2.2, 3.2)) == 2.2",
-            "avg(list(1, 2.2, 3.1)) == 2.1",
-            "stdev(list(1, 2.2, 3.1)) > 0",
-            "stdev(list(1, 2, 3)) > 0",
-            "stdev(list(0.0, 0.0, 0.0)) == 0.0",
-            "stdev(list(0, 0, 0)) == 0.0"
+            mkTestDesc(s"mdl_id == '${idlCtx.mdlCfg.getId}'"),
+            mkTestDesc(s"mdl_name == '${idlCtx.mdlCfg.getName}'"),
+            mkTestDesc(s"mdl_ver == '${idlCtx.mdlCfg.getVersion}'"),
+            mkTestDesc(s"mdl_origin == '${idlCtx.mdlCfg.getOrigin}'")
         )

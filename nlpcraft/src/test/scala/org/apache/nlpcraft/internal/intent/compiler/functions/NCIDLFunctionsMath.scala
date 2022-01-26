@@ -18,7 +18,7 @@
 
 package org.apache.nlpcraft.internal.intent.compiler.functions
 
-import org.apache.nlpcraft.internal.intent.compiler.functions.NCIdlFunctions.*
+import org.apache.nlpcraft.internal.intent.compiler.functions.NCIDLFunctions.*
 import org.junit.jupiter.api.Test
 
 import scala.language.implicitConversions
@@ -26,7 +26,7 @@ import scala.language.implicitConversions
 /**
   * Tests for 'math' functions.
   */
-class NCIdlFunctionsMath extends NCIdlFunctions:
+class NCIDLFunctionsMath extends NCIDLFunctions:
     @Test
     def testError(): Unit =
         expectError(
@@ -56,8 +56,9 @@ class NCIdlFunctionsMath extends NCIdlFunctions:
             "signum(-1.8) == -1.0",
             "sqrt(4) - 2 < 0.001",
             "cbrt(8) - 2 < 0.001",
-            "acos(8.1) != acos(9.1)",
-            "asin(8.1) != asin(9)",
+            "acos(0.1) != acos(0.2)",
+            "acos(0.1) == acos(0.1)",
+            "asin(0.1) != asin(0.5)",
             "atan(8) != atan(9.1)",
             "cos(1.5708) < 0.001",
             "cos(1.5708) < 0.001",
@@ -88,5 +89,7 @@ class NCIdlFunctionsMath extends NCIdlFunctions:
             "to_double(2) - 2.0 < 0.01",
             "1.1 == 1.1",
             "1.0 == 1",
-            "1 == 1.0"
+            "1 == 1.0",
+            // Special case. acos(100) == Nan and Nan != Nan
+            "acos(100) != acos(100)"
         )

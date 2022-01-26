@@ -21,28 +21,38 @@ import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.intent.*
 import org.apache.nlpcraft.internal.intent.compiler.*
 import org.apache.nlpcraft.internal.intent.compiler.functions.*
+import org.apache.nlpcraft.nlp.util.{NCTestRequest, NCTestToken}
 import org.apache.nlpcraft.nlp.util.opennlp.*
 import org.junit.jupiter.api.BeforeEach
 
+import java.util
+import java.util.UUID
 import scala.jdk.CollectionConverters.*
 import scala.language.implicitConversions
 
-private[functions] object NCIdlFunctions:
+/**
+  *
+  */
+private[functions] object NCIDLFunctions:
     private final val MODEL_ID = "test.mdl.id"
 
+    /**
+      *
+      * @param truth
+      * @param entity
+      * @param idlCtx
+      * @param expectedRes
+      * @param entitiesUsed
+      */
     case class TestDesc(
         truth: String,
         entity: Option[NCEntity] = None,
         idlCtx: NCIDLContext,
-        isCustom: Boolean = false,
         expectedRes: Boolean = true,
-        tokensUsed: Option[Int] = None
+        entitiesUsed: Option[Int] = None
     ):
-        // It should be lazy for errors verification methods.
         lazy val term: NCIDLTerm =
-            val (s1, s2) = if isCustom then ('/', '/') else ('{', '}')
-
-            val intents = NCIDLCompiler.compile(s"intent=i term(t)=$s1$truth$s2", CFG, MODEL_ID)
+            val intents = NCIDLCompiler.compile(s"intent=i term(t)={$truth}", idlCtx.mdlCfg, MODEL_ID)
 
             require(intents.size == 1)
             require(intents.head.terms.sizeIs == 1)
@@ -51,95 +61,116 @@ private[functions] object NCIdlFunctions:
 
         override def toString: String =
             entity match
-                case Some(e) => s"Predicate [body='$truth', token=${e2s(e)}]"
+                case Some(e) => s"Predicate [body='$truth', entity=${e2s(e)}]"
                 case None => s"Predicate '$truth'"
 
     object TestDesc:
+        /**
+          *
+          * @param truth
+          * @return
+          */
         def apply(truth: String): TestDesc =
             new TestDesc(truth = truth, idlCtx = mkIdlContext())
 
+        /**
+          *
+          * @param truth
+          * @param entity
+          * @param idlCtx
+          * @return
+          */
         def apply(truth: String, entity: NCEntity, idlCtx: NCIDLContext): TestDesc =
             new TestDesc(truth = truth, entity = Option(entity), idlCtx = idlCtx)
 
+        /**
+          *
+          * @param truth
+          * @param entity
+          * @return
+          */
         def apply(truth: String, entity: NCEntity): TestDesc =
             new TestDesc(truth = truth, entity = Option(entity), idlCtx = mkIdlContext(entities = Seq(entity)))
 
     given Conversion[String, TestDesc] with
-        def apply(s: String): TestDesc = TestDesc(s)
+        def apply(truth: String): TestDesc = TestDesc(truth)
 
-    private def e2s(t: NCEntity): String =
-        // TODO:
-        t.toString
+    /**
+      *
+      * @param e
+      * @return
+      */
+    private def e2s(e: NCEntity): String = s"${e.getId} (${e.getTokens.asScala.map(_.getText).mkString(" ")})"
 
-    //        def nvl(s: String, name: String): String = if s != null then s else s"$name (not set)"
-    //
-    //        s"text=${nvl(t.getOriginalText, "text")} [${nvl(t.getId, "id")}]"
-
+    /**
+      *
+      * @param entities
+      * @param cfg
+      * @param reqId
+      * @param txt
+      * @param ts
+      * @param userId
+      * @param reqData
+      * @param intentMeta
+      * @param convMeta
+      * @param fragMeta
+      * @return
+      */
     def mkIdlContext(
         entities: Seq[NCEntity] = Seq.empty,
-        reqSrvReqId: String = null,
-        reqNormText: String = null,
-        reqTstamp: Long = 0,
-        reqAddr: String = null,
-        reqAgent: String = null,
+        cfg: NCModelConfig = CFG,
+        reqId: String = null,
+        txt: String = null,
+        ts: Long = 0,
+        userId: String = null,
         reqData: Map[String, AnyRef] = Map.empty,
         intentMeta: Map[String, AnyRef] = Map.empty,
         convMeta: Map[String, AnyRef] = Map.empty,
         fragMeta: Map[String, AnyRef] = Map.empty
     ): NCIDLContext =
         NCIDLContext(
-            CFG,
+            cfg,
             entities,
             intentMeta = intentMeta,
             convMeta = convMeta,
             fragMeta = fragMeta,
-            req = new NCRequest:
-                override def getUserId: String = "userID" // TODO:
-                override def getRequestId: String = reqSrvReqId
-                override def getText: String = reqNormText
-                override def getReceiveTimestamp: Long = reqTstamp
-                override def getRequestData: java.util.Map[String, AnyRef] = reqData.asJava
+            req = NCTestRequest(txt = txt, userId = userId, reqId = reqId, ts = ts, data = reqData)
         )
 
-    // TODO:
+    /**
+      *
+      * @param id
+      * @param srvReqId
+      * @param value
+      * @param groups
+      * @param meta
+      * @param tokens
+      * @return
+      */
     def mkEntity(
-        id: String = null,
-        srvReqId: String = null,
-        parentId: String = null,
+        id: String = UUID.randomUUID().toString,
+        srvReqId: String = UUID.randomUUID().toString,
         value: String = null,
-        txt: String = null,
-        normTxt: String = null,
-        start: Int = 0,
-        end: Int = 0,
-        groups: Seq[String] = Seq.empty,
-        ancestors: Seq[String] = Seq.empty,
-        aliases: Set[String] = Set.empty,
-        partTokens: Seq[NCToken] = Seq.empty,
-        `abstract`: Boolean = false,
-        meta: Map[String, AnyRef] = Map.empty[String, AnyRef]
+        groups: Set[String] = null,
+        meta: Map[String, AnyRef] = Map.empty[String, AnyRef],
+        tokens: NCTestToken*
     ): NCEntity =
-    // TODO:
-        null
-//        val map = new util.HashMap[String, AnyRef]
-//
-//        map.putAll(meta.asJava)
-//
-//        map.put("nlpcraft:nlp:origtext", txt)
-//        map.put("nlpcraft:nlp:normtext", normTxt)
-//
-//        new NCPropertyMapAdapter with NCEntity():
-//            override def getTokens: util.List[NCToken] = ???
-//            override def getRequestId: String = ???
-//            override def getId: String = ???
-//
+        require(tokens.nonEmpty)
 
+        new NCPropertyMapAdapter with NCEntity():
+            meta.foreach { (k, v) => put(k, v) }
 
-import org.apache.nlpcraft.internal.intent.compiler.functions.NCIdlFunctions.*
+            override def getTokens: java.util.List[NCToken] = tokens.asJava
+            override def getRequestId: String = srvReqId
+            override def getGroups: util.Set[String] = if groups != null then groups.asJava else super.getGroups
+            override def getId: String = id
+
+import org.apache.nlpcraft.internal.intent.compiler.functions.NCIDLFunctions.*
 
 /**
   * Tests for IDL functions.
   */
-private[functions] trait NCIdlFunctions:
+private[functions] trait NCIDLFunctions:
     @BeforeEach
     def before(): Unit = NCIDLCompilerGlobal.clearCache(MODEL_ID)
 
@@ -155,8 +186,16 @@ private[functions] trait NCIdlFunctions:
                     f.idlCtx.vars ++= f.term.decls
 
                     // Execute term's predicate.
-                    // TODO: index
-                    f.term.pred.apply(NCIDLEntity(f.entity.getOrElse(mkEntity()), 0), f.idlCtx)
+                    val ent = f.entity.orNull
+                    val idEnt =
+                        if ent != null then
+                            require(ent.getTokens != null && !ent.getTokens.isEmpty)
+
+                            NCIDLEntity(ent, ent.getTokens.asScala.minBy(_.getIndex).getIndex)
+                        else
+                            null
+
+                    f.term.pred.apply(idEnt, f.idlCtx)
                 catch
                     case e: NCException => throw e
                     case e: Exception => throw new Exception(s"Execution error processing: $f", e)
@@ -172,7 +211,7 @@ private[functions] trait NCIdlFunctions:
                         }, resValue=${item.value}, function=$f]"
                     )
 
-            f.tokensUsed match
+            f.entitiesUsed match
                 case Some(exp) =>
                     require(
                         exp == item.entUse,

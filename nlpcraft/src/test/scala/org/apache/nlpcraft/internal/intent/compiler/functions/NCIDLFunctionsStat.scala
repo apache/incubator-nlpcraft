@@ -17,37 +17,37 @@
 
 package org.apache.nlpcraft.internal.intent.compiler.functions
 
-import org.apache.nlpcraft.internal.intent.compiler.functions.NCIdlFunctions.*
+import org.apache.nlpcraft.internal.intent.compiler.functions.NCIDLFunctions.*
 import org.junit.jupiter.api.Test
 
 import scala.language.implicitConversions
 
 /**
-  * Tests for 'requests' functions.
+  * Tests for 'stat' functions.
   */
-class NCIdlFunctionsRequest extends NCIdlFunctions:
+class NCIDLFunctionsStat extends NCIDLFunctions:
     @Test
-    def test(): Unit =
-        val reqSrvReqId = "id"
-        val reqNormText = "some text"
-        val reqTstamp: java.lang.Long = 123
-        val reqAddr = "address"
-        val reqAgent = "agent"
-
-        val idlCtx = mkIdlContext(
-            reqSrvReqId = reqSrvReqId,
-            reqNormText = reqNormText,
-            reqTstamp = reqTstamp,
-            reqAddr = reqAddr,
-            reqAgent = reqAgent
+    def testError(): Unit =
+        expectError(
+            "avg(list()) == 2",
+            "avg(list('A')) == 2",
+            "stdev(list()) == 2",
+            "stdev(list('A')) == 2"
         )
 
-        def mkTestDesc(truth: String): TestDesc = TestDesc(truth = truth, idlCtx = idlCtx)
-
+    @Test
+    def test(): Unit =
         test(
-            mkTestDesc(s"req_id == '$reqSrvReqId'"),
-            mkTestDesc(s"req_normtext == '$reqNormText'"),
-            mkTestDesc(s"req_tstamp == $reqTstamp"),
-            mkTestDesc(s"req_addr == '$reqAddr'"),
-            mkTestDesc(s"req_agent == '$reqAgent'")
+            "max(list(1, 2, 3)) == 3",
+            "max(list(1.0, 2.0, 3.0)) == 3.0",
+            "min(list(1, 2, 3)) == 1",
+            "min(list(1.0, 2.0, 3.0)) == 1.0",
+            "avg(list(1.0, 2.0, 3.0)) == 2.0",
+            "avg(list(1, 2, 3)) == 2.0",
+            "avg(list(1.2, 2.2, 3.2)) == 2.2",
+            "avg(list(1, 2.2, 3.1)) == 2.1",
+            "stdev(list(1, 2.2, 3.1)) > 0",
+            "stdev(list(1, 2, 3)) > 0",
+            "stdev(list(0.0, 0.0, 0.0)) == 0.0",
+            "stdev(list(0, 0, 0)) == 0.0"
         )

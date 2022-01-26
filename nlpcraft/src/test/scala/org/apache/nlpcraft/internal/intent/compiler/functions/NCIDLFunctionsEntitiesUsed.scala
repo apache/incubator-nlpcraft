@@ -17,45 +17,47 @@
 
 package org.apache.nlpcraft.internal.intent.compiler.functions
 
-import org.apache.nlpcraft.internal.intent.compiler.functions.NCIdlFunctions.*
+import org.apache.nlpcraft.internal.intent.compiler.functions.NCIDLFunctions.*
+import org.apache.nlpcraft.nlp.util.NCTestToken
 import org.junit.jupiter.api.Test
 
 /**
-  * Tests for 'tokens used' result.
+  * Tests for 'entities used' result.
   */
-class NCIdlFunctionsTokensUsed extends NCIdlFunctions:
+class NCIDLFunctionsEntitiesUsed extends NCIDLFunctions:
     @Test
     def test(): Unit =
-        val entityIdA = mkEntity(id = "a")
-        val entityAb = mkEntity(id = "a", parentId = "b")
+        val e1 = mkEntity(id = "a", tokens = NCTestToken())
+        val e2 = mkEntity(id = "b", tokens = NCTestToken())
+
         test(
             TestDesc(
                 truth = "1 == 1",
                 idlCtx = mkIdlContext(),
-                tokensUsed = Option(0)
+                entitiesUsed = Option(0)
             ),
             TestDesc(
                 truth = "# == 'a'",
-                entity = Option(entityIdA),
-                idlCtx = mkIdlContext(Seq(entityIdA)),
-                tokensUsed = Option(1)
+                entity = Option(e1),
+                idlCtx = mkIdlContext(Seq(e1)),
+                entitiesUsed = Option(1)
             ),
             TestDesc(
                 truth = "# == 'a' && # == 'a'",
-                entity = Option(entityIdA),
-                idlCtx = mkIdlContext(Seq(entityIdA)),
-                tokensUsed = Option(2)
+                entity = Option(e1),
+                idlCtx = mkIdlContext(Seq(e1)),
+                entitiesUsed = Option(2)
             ),
             TestDesc(
-                truth = "# == 'a' && tok_parent == 'b'",
-                entity = Option(entityAb),
-                idlCtx = mkIdlContext(Seq(entityAb)),
-                tokensUsed = Option(2)
+                truth = "ent_text == '*' || # == 'a'",
+                entity = Option(e1),
+                idlCtx = mkIdlContext(Seq(e1, e2)),
+                entitiesUsed = Option(2)
             ),
             TestDesc(
-                truth = "# == 'a' && # == 'a' && tok_parent == 'b'",
-                entity = Option(entityAb),
-                idlCtx = mkIdlContext(Seq(entityAb)),
-                tokensUsed = Option(3)
+                truth = "# == 'a' && # == 'a' && ent_text != '*'",
+                entity = Option(e1),
+                idlCtx = mkIdlContext(Seq(e1)),
+                entitiesUsed = Option(3)
             )
         )
