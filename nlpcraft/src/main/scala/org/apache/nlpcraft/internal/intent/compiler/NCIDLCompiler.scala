@@ -199,7 +199,7 @@ object NCIDLCompiler extends LazyLogging:
         override def exitFlowDecl(ctx: IDP.FlowDeclContext): Unit =
             val regex = NCUtils.trimQuotes(ctx.qstring().getText)
 
-            if regex != null && regex.length > 2 then flowRegex = if (regex.nonEmpty) Some(regex) else None
+            if regex != null && regex.length > 2 then flowRegex = if (regex.nonEmpty) Option(regex) else None
             if flowRegex.isDefined then // Pre-check.
                 try Pattern.compile(flowRegex.get)
                 catch case e: PatternSyntaxException => SE(s"${e.getDescription} in intent flow regex '${e.getPattern}' near index ${e.getIndex}.")(ctx.qstring())
@@ -358,15 +358,15 @@ object NCIDLCompiler extends LazyLogging:
         val hold = NCCompilerUtils.mkErrorHolder(idlLine, charPos)
         val aMsg = NCUtils.decapitalize(msg) match
             case s: String if s.last == '.' => s
-            case s: String => s + '.'
+            case s: String => s"$s."
 
-        s"IDL $kind error in '$srcName' at line $line - $aMsg\n" +
-            s"  |-- Model ID: ${mdlCfg.getId}\n" +
-            s"  |-- Model origin: ${mdlCfg.getOrigin}\n" +
-            s"  |-- Intent origin: $origin\n" +
-            s"  |--\n" +
-            s"  |-- Line:  ${hold.origStr}\n" +
-            s"  +-- Error: ${hold.ptrStr}"
+        s"""IDL $kind error in '$srcName' at line $line - $aMsg
+          |-- Model ID: ${mdlCfg.getId}
+          |-- Model origin: ${mdlCfg.getOrigin}
+          |-- Intent origin: $origin
+          |--
+          |-- Line:  ${hold.origStr}
+          +-- Error: ${hold.ptrStr}"""
     }
 
     /**

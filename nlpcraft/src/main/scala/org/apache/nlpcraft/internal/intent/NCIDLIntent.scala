@@ -49,7 +49,7 @@ case class NCIDLIntent(
     // Flow regex as a compiled pattern.
     // Regex validity check is already done during intent compilation.
     lazy val flowRegex: Option[Pattern] = flow match
-        case Some(r) => Some(Pattern.compile(r))
+        case Some(r) => Option(Pattern.compile(r))
         case None => None
 
     lazy val isFlowDefined: Boolean = flow.isDefined
