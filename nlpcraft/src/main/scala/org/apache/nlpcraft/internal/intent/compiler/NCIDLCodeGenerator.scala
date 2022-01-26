@@ -119,21 +119,21 @@ trait NCIDLCodeGenerator:
         else if isInt(v) then asInt(v)
         else if isReal(v) then asReal(v)
         else if isList(v) || isMap(v) then v
-        else if isJColl(v) then // Convert any other Java collections to ArrayList.
-            new java.util.ArrayList(asJColl(v)).asInstanceOf[Object]
+        else if isColl(v) then // Convert any other Java collections to ArrayList.
+            new java.util.ArrayList(asColl(v)).asInstanceOf[Object]
         else
             v
 
     //noinspection ComparingUnrelatedTypes
     def isBool(v: Object): Boolean = v.isInstanceOf[Boolean]
     def isList(v: Object): Boolean = v.isInstanceOf[JList[_]]
-    def isJColl(v: Object): Boolean = v.isInstanceOf[JColl[_]]
+    def isColl(v: Object): Boolean = v.isInstanceOf[JColl[_]]
     def isMap(v: Object): Boolean = v.isInstanceOf[JMap[_, _]]
     def isStr(v: Object): Boolean = v.isInstanceOf[String]
     def isEntity(v: Object): Boolean = v.isInstanceOf[NCIDLEntity]
 
     def asList(v: Object): JList[_] = v.asInstanceOf[JList[_]]
-    def asJColl(v: Object): JColl[_] = v.asInstanceOf[JColl[_]]
+    def asColl(v: Object): JColl[_] = v.asInstanceOf[JColl[_]]
     def asMap(v: Object): JMap[_, _] = v.asInstanceOf[JMap[_, _]]
     def asStr(v: Object): String = v.asInstanceOf[String]
     def asEntity(v: Object): NCIDLEntity = v.asInstanceOf[NCIDLEntity]
@@ -378,7 +378,7 @@ trait NCIDLCodeGenerator:
                 if r1.isNaN || r2.isNaN then false else r1 == r2
             else if isBool(v1) && isBool(v2) then asBool(v1) == asBool(v2)
             else if isStr(v1) && isStr(v2) then asStr(v1) == asStr(v2)
-            else if isList(v1) && isList(v2) then CollectionUtils.isEqualCollection(asList(v1), asList(v2))
+            else if isColl(v1) && isColl(v2) then CollectionUtils.isEqualCollection(asColl(v1), asColl(v2))
             else if (isInt(v1) && isReal(v2)) || (isReal(v1) && isInt(v2)) then asReal(v1) == asReal(v2)
             else
                 v1.equals(v2)
