@@ -378,14 +378,16 @@ class NCAnnotationsScanner(mdl: NCModel) extends LazyLogging:
       * @return
       */
     def scan(): Seq[NCIntentData] =
-        val (intentDecls: mutable.Buffer[NCIDLIntent], classes: Iterable[Class[_]]) = scanClasses()
+        val (intentDecls: mutable.Buffer[NCIDLIntent], refs: Iterable[Class[_]]) = scanClasses()
 
         val intents = mutable.Buffer.empty[NCIntentData]
 
+        // Model instance methods processed.
         for (m <- getAllMethods(mdl))
             processMethod(intentDecls, intents, MethodOwner(method = m, claxx = null, obj = mdl))
 
-        for (claxx <- classes; m <- getAllMethods(claxx))
+        // References classes. We can use static methods or try to initialize class instance using default constructor.
+        for (claxx <- refs; m <- getAllMethods(claxx))
             processMethod(intentDecls, intents, MethodOwner(method = m, claxx = claxx, obj = null))
 
         val unusedIntents = intentDecls.filter(i => !intents.exists(_._1.id == i.id))
@@ -397,7 +399,7 @@ class NCAnnotationsScanner(mdl: NCModel) extends LazyLogging:
             // Check the uniqueness of intent IDs.
             NCUtils.getDups(intents.map(_._1).toSeq.map(_.id)) match
                 case ids if ids.nonEmpty => E(s"Duplicate intent IDs [mdlId=$id, origin=$origin, ids=${ids.mkString(",")}]")
-                case _ => ()
+                case _ => // No-op.
         }
         else
             logger.warn(s"Model has no intent: $id")
