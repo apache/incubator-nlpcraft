@@ -54,8 +54,7 @@ object NCAnnotationsScanner extends LazyLogging:
     private final val CLS_INTENT_MATCH = classOf[NCIntentMatch]
     private final val CLS_SAMPLE = classOf[NCIntentSample]
     private final val CLS_SAMPLE_REF = classOf[NCIntentSampleRef]
-    private final val CLS_MDL_CLS_REF = classOf[NCModelAddClasses]
-    private final val CLS_MDL_PKGS_REF = classOf[NCModelAddPackage]
+    private final val CLS_INTENT_OBJ = classOf[NCIntentObject]
     private final val CLS_INTENT_IMPORT = classOf[NCIntentImport]
 
     // Java and scala lists.
@@ -81,17 +80,9 @@ object NCAnnotationsScanner extends LazyLogging:
       * @param claxx
       * @param obj
       */
-    private case class MethodOwner(method: Method, claxx: Class[_], obj: Any):
-        require(method != null)
-        require(claxx != null ^ obj != null)
-
-        lazy val (data, className) =
-            if obj != null then (obj, obj.getClass.getSimpleName)
-            else
-                try
-                    (claxx.getDeclaredConstructor().newInstance(), claxx.getSimpleName) // Try java reflection  first.
-                catch
-                    case e: Throwable => throw e // TODO: implement and test scala classes and objects.
+    private case class MethodOwner(method: Method, obj: Any):
+        require(method != null && obj != null)
+        lazy val className: Class[_] = obj.getClass
 
     /**
       *
@@ -173,8 +164,8 @@ object NCAnnotationsScanner extends LazyLogging:
                     case 1 => util.Optional.of(argList.get(0))
                     case _ => E(s"Too many entities ($entsCnt) for java.util.Optional @NCIntentTerm annotated argument [mdlId$mdlId, arg=${mkArg()}]")
             else
-                // All allowed arguments types already checked...
-                throw new AssertionError(s"Unexpected callback @NCIntentTerm argument type [mdlId=$mdlId, type=$paramCls, arg=${mkArg()}]")
+                // All allowed arguments types already checked, but // TODO: (spec case)
+                throw new NCException(s"Unexpected callback @NCIntentTerm argument type [mdlId=$mdlId, type=$paramCls, arg=${mkArg()}]")
         }
 
     /**
@@ -185,7 +176,7 @@ object NCAnnotationsScanner extends LazyLogging:
       * @return
       */
     private def invoke(mdlId: String, mo: MethodOwner, args: scala.Array[AnyRef]): NCResult =
-        val obj = if Modifier.isStatic(mo.method.getModifiers) then null else mo.data
+        val obj = if Modifier.isStatic(mo.method.getModifiers) then null else mo.obj
         var flag = mo.method.canAccess(obj)
 
         try
@@ -321,8 +312,8 @@ class NCAnnotationsScanner(mdl: NCModel) extends LazyLogging:
       *
       * @return
       */
-    private def scanClasses(): (mutable.Buffer[NCIDLIntent], Iterable[Class[_]]) =
-        val m = mutable.HashMap.empty[Class[_], Class[_]]
+    private def scanClasses(): (mutable.Buffer[NCIDLIntent], mutable.Buffer[Object]) =
+        val objs = mutable.Buffer.empty[Object]
         val intentDecls = mutable.Buffer.empty[NCIDLIntent]
 
         def processImports(anns: scala.Array[NCIntentImport], orig: => String): Unit =
@@ -337,58 +328,41 @@ class NCAnnotationsScanner(mdl: NCModel) extends LazyLogging:
                     E(s"Duplicate intent ID [mdlId=$id, origin=$origin, resource=$res, id=${intent.id}]")
                 intentDecls += intent
 
-        def processAddClasses0(classes: Iterable[Class[_]], src: Class[_]): Unit =
-            for (claxx <- classes)
-                // TODO: text
-                if m.getOrElse(claxx, null) == src then E(s"Cyclical reference found first class=$src, second=$claxx")
+        def scanClass(obj: Object): Unit =
+            val claxx = obj.getClass
 
-                m += claxx -> src
-
-                scanClass(claxx)
-
-        def processAddClass(classesAdd: scala.Array[NCModelAddClasses], src: Class[_]): Unit =
-            checkMultiple(classesAdd, (a: NCModelAddClasses) => a.value, src.getSimpleName)
-            processAddClasses0(classesAdd.flatMap(_.value()), src)
-
-        def processAddPackage(packsAdd: scala.Array[NCModelAddPackage], src: Class[_]): Unit =
-            checkMultiple(packsAdd, (a: NCModelAddPackage) => a.value, src.getSimpleName)
-            for (pack <- packsAdd.flatMap(_.value.map(_.strip))) processAddClasses0(getPackageClasses(pack), src)
-
-        def scanClass(claxx: Class[_]): Unit =
             processImports(claxx.getAnnotationsByType(CLS_INTENT_IMPORT), claxx.getSimpleName)
-            processAddClass(claxx.getAnnotationsByType(CLS_MDL_CLS_REF), claxx)
-            processAddPackage(claxx.getAnnotationsByType(CLS_MDL_PKGS_REF), claxx)
 
             for (m <- getAllMethods(claxx))
                 processImports(m.getAnnotationsByType(CLS_INTENT_IMPORT), method2Str(m))
-                processAddClass(m.getAnnotationsByType(CLS_MDL_CLS_REF), claxx)
-                processAddPackage(m.getAnnotationsByType(CLS_MDL_PKGS_REF), claxx)
 
             for (f <- getAllFields(claxx))
                 processImports(f.getAnnotationsByType(CLS_INTENT_IMPORT), field2Str(f))
-                processAddClass(f.getAnnotationsByType(CLS_MDL_CLS_REF), claxx)
-                processAddPackage(f.getAnnotationsByType(CLS_MDL_PKGS_REF), claxx)
+                if (f.isAnnotationPresent(CLS_INTENT_OBJ))
+                    val ref = f.get(obj)
+                    objs += ref
+                    scanClass(ref)
 
-        scanClass(mdl.getClass)
+        scanClass(mdl)
 
-        (intentDecls, m.keys)
+        (intentDecls, objs)
 
     /**
       *
       * @return
       */
     def scan(): Seq[NCIntentData] =
-        val (intentDecls: mutable.Buffer[NCIDLIntent], refs: Iterable[Class[_]]) = scanClasses()
+        val (intentDecls: mutable.Buffer[NCIDLIntent], refs: mutable.Buffer[Object]) = scanClasses()
 
         val intents = mutable.Buffer.empty[NCIntentData]
 
         // Model instance methods processed.
         for (m <- getAllMethods(mdl))
-            processMethod(intentDecls, intents, MethodOwner(method = m, claxx = null, obj = mdl))
+            processMethod(intentDecls, intents, MethodOwner(m, mdl))
 
         // References classes. We can use static methods or try to initialize class instance using default constructor.
-        for (claxx <- refs; m <- getAllMethods(claxx))
-            processMethod(intentDecls, intents, MethodOwner(method = m, claxx = claxx, obj = null))
+        for (ref <- refs; m <- getAllMethods(ref))
+            processMethod(intentDecls, intents, MethodOwner(m, ref))
 
         val unusedIntents = intentDecls.filter(i => !intents.exists(_._1.id == i.id))
 
@@ -457,10 +431,10 @@ class NCAnnotationsScanner(mdl: NCModel) extends LazyLogging:
                                     E(s"Unexpected Kotlin generic type for @NCIntentTerm annotated argument [mdlId=$id, origin=$origin, type=${wc2Str(wildcardType)}, arg=${mkArg()}]")
                             case _ => E(s"Unexpected generic type for @NCIntentTerm annotated argument [mdlId=$id, origin=$origin, type=${compType.getTypeName}, arg=${mkArg()}]")
 
-                    // TODO: scala 3 ParameterizedType doesn't here.
-                    case  _ : Any if pGenType.getTypeName == "scala.collection.immutable.Seq" ||
-                                     pGenType.getTypeName == "scala.collection.immutable.List" ||
-                                     pGenType.getTypeName == "scala.Option"  => // No-op.
+//                    // TODO: scala 3 ParameterizedType doesn't here.
+//                    case  _ : Any if pGenType.getTypeName == "scala.collection.immutable.Seq" ||
+//                                     pGenType.getTypeName == "scala.collection.immutable.List" ||
+//                                     pGenType.getTypeName == "scala.Option"  => // No-op.
                     case _ =>
                         E(s"Unexpected parameter type for @NCIntentTerm annotated argument [mdlId=$id, origin=$origin, type=${pGenType.getTypeName}, arg=${mkArg()}]")
             // Other types.
@@ -676,37 +650,3 @@ class NCAnnotationsScanner(mdl: NCModel) extends LazyLogging:
             logger.warn(s"@NCIntentSample or @NCIntentSampleRef annotations are missing for: $mtdStr")
 
         samples.toMap
-
-    /**
-      *
-      * @param pack
-      * @return
-      */
-    private def getPackageClasses(pack: String): Set[Class[_]] =
-        val classes =
-            Using.resource(new BufferedReader(
-                new InputStreamReader(ClassLoader.getSystemClassLoader.getResourceAsStream(
-                    pack.replaceAll("[.]", "/")))
-            )) {
-                reader =>
-                    val lines: util.List[String] = reader.lines().collect(Collectors.toList)
-
-                    lines.asScala.filter(_.endsWith(".class")).
-                        flatMap(className =>
-                            def make(name: String): Option[Class[_]] =
-                                try
-                                    Option(Class.forName(name))
-                                catch
-                                    case e: ClassNotFoundException =>
-                                        logger.warn(s"Class cannot loaded: $name", e)
-
-                                        None
-                            make(s"$pack.${className.substring(0, className.lastIndexOf('.'))}")
-                        )
-            }
-
-        // Check should be after classes loading attempt.
-        if Thread.currentThread().getContextClassLoader.getDefinedPackage(pack) == null then
-            E(s"Invalid additional references in @${CLS_MDL_PKGS_REF.getSimpleName} annotation [mdlId=$id, origin=$origin, package=$pack]")
-
-        classes.toSet
