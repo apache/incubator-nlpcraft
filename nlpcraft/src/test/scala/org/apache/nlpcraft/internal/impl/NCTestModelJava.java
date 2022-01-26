@@ -26,7 +26,7 @@ import org.apache.nlpcraft.NCIntentTerm;
 import org.apache.nlpcraft.NCModel;
 import org.apache.nlpcraft.NCModelAdapter;
 import org.apache.nlpcraft.NCResult;
-import org.apache.nlpcraft.NCToken;
+import org.apache.nlpcraft.NCEntity;
 import org.apache.nlpcraft.nlp.util.opennlp.NCTestConfigJava;
 
 import java.util.List;
@@ -41,13 +41,13 @@ public class NCTestModelJava {
             new NCModelAdapter(NCTestConfigJava.CFG, NCTestConfigJava.EN_PIPELINE) {
                 @NCIntentImport({"scan/idl.idl"})
                 @NCIntent(
-                    "intent=intent1 term(single)~{# == 'id1'} term(list)~{# == 'id2'}}[0,7] term(opt)~{# == 'id3'}?"
+                    "intent=intent1 term(single)~{# == 'id1'} term(list)~{# == 'id2'}[0,10] term(opt)~{# == 'id3'}?"
                 )
                 @NCIntentSample("What are the least performing categories for the last quarter?")
                 NCResult intent1(
-                    @NCIntentTerm("single") NCToken single,
-                    @NCIntentTerm("list") List<NCToken> list,
-                    @NCIntentTerm("opt") Optional<NCToken> opt
+                    @NCIntentTerm("single") NCEntity single,
+                    @NCIntentTerm("list") List<NCEntity> list,
+                    @NCIntentTerm("opt") Optional<NCEntity> opt
                 ) {
                     return new NCResult();
                 }
@@ -55,9 +55,9 @@ public class NCTestModelJava {
                 @NCIntentRef("intent2")
                 @NCIntentSampleRef("scan/samples.txt")
                 NCResult intent2(
-                    @NCIntentTerm("single") NCToken single,
-                    @NCIntentTerm("list") List<NCToken> list,
-                    @NCIntentTerm("opt") Optional<NCToken> opt
+                    @NCIntentTerm("single") NCEntity single,
+                    @NCIntentTerm("list") List<NCEntity> list,
+                    @NCIntentTerm("opt") Optional<NCEntity> opt
                 ) {
                     return new NCResult();
                 }

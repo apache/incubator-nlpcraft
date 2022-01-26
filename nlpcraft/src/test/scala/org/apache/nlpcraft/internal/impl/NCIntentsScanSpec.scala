@@ -33,4 +33,8 @@ class NCIntentsScanSpec:
     )
 
     @Test
-    def test(): Unit = for (mdl <- mdls) new NCAnnotationsScanner(mdl).scan()
+    def test(): Unit =
+        for (mdl <- mdls)
+            val data = new NCAnnotationsScanner(mdl).scan()
+
+            println(s"Data=$data")

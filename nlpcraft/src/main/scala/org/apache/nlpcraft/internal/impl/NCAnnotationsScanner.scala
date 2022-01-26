@@ -65,7 +65,7 @@ object NCAnnotationsScanner extends LazyLogging:
     private final val CLS_JAVA_LST = classOf[util.List[_]]
     private final val CLS_JAVA_OPT = classOf[util.Optional[_]]
 
-    private final val CLS_TOKEN = classOf[NCToken]
+    private final val CLS_ENTITY = classOf[NCEntity]
 
     private final val COMP_CLS: Set[Class[_]] = Set(
         CLS_SCALA_SEQ,
@@ -145,23 +145,23 @@ object NCAnnotationsScanner extends LazyLogging:
 
             val entsCnt = argList.size()
 
-            // Single token.
-            if paramCls == CLS_TOKEN then
+            // Single entity.
+            if paramCls == CLS_ENTITY then
                 if entsCnt != 1 then
                     E(s"Expected single entity (found $entsCnt) in @NCIntentTerm annotated argument [mdlId=$mdlId, arg=${mkArg()}]")
 
                 argList.get(0)
-            // Array of tokens.
+            // Array of entities.
             else if paramCls.isArray then
                 argList.asScala.toArray
-            // Scala and Java list of tokens.
+            // Scala and Java list of entities.
             else if paramCls == CLS_SCALA_SEQ then
                 argList.asScala.toSeq
             else if paramCls == CLS_SCALA_LST then
                 argList.asScala.toList
             else if paramCls == CLS_JAVA_LST then
                 argList
-            // Scala and java optional token.
+            // Scala and java optional entity.
             else if paramCls == CLS_SCALA_OPT then
                 entsCnt match
                     case 0 => None
@@ -325,8 +325,9 @@ class NCAnnotationsScanner(mdl: NCModel) extends LazyLogging:
         val m = mutable.HashMap.empty[Class[_], Class[_]]
         val intentDecls = mutable.Buffer.empty[NCIDLIntent]
 
-        def addImports(anns: scala.Array[NCIntentImport], orig: => String): Unit =
+        def processImports(anns: scala.Array[NCIntentImport], orig: => String): Unit =
             checkMultiple(anns, (a: NCIntentImport) => a.value, orig)
+
             for (
                 ann <- anns;
                 res <- ann.value;
@@ -336,30 +337,37 @@ class NCAnnotationsScanner(mdl: NCModel) extends LazyLogging:
                     E(s"Duplicate intent ID [mdlId=$id, origin=$origin, resource=$res, id=${intent.id}]")
                 intentDecls += intent
 
-        def addClasses(classes: Iterable[Class[_]], src: Class[_]): Unit =
+        def processAddClasses0(classes: Iterable[Class[_]], src: Class[_]): Unit =
             for (claxx <- classes)
-                if m.getOrElse(claxx, null) == src then E(s"Cyclical reference found first class=$src, second=$claxx") // TODO: text
+                // TODO: text
+                if m.getOrElse(claxx, null) == src then E(s"Cyclical reference found first class=$src, second=$claxx")
 
                 m += claxx -> src
 
-                addImports(claxx.getAnnotationsByType(CLS_INTENT_IMPORT), claxx.getSimpleName)
-                for (m <- getAllMethods(claxx)) addImports(m.getAnnotationsByType(CLS_INTENT_IMPORT), method2Str(m))
-                for (m <- getAllFields(claxx)) addImports(m.getAnnotationsByType(CLS_INTENT_IMPORT), field2Str(m))
-
                 scanClass(claxx)
 
-        def addRefsClasses(anns: scala.Array[NCModelAddClasses], src: Class[_]): Unit =
-            checkMultiple(anns, (a: NCModelAddClasses) => a.value, src.getSimpleName)
-            for (a <- anns) addClasses(a.value, src)
+        def processAddClass(classesAdd: scala.Array[NCModelAddClasses], src: Class[_]): Unit =
+            checkMultiple(classesAdd, (a: NCModelAddClasses) => a.value, src.getSimpleName)
+            processAddClasses0(classesAdd.flatMap(_.value()), src)
 
-        def scanClass(src: Class[_]): Unit =
-            addRefsClasses(mdl.getClass.getAnnotationsByType(CLS_MDL_CLS_REF), src)
-            getAllMethods(mdl.getClass).foreach(m => addRefsClasses(m.getAnnotationsByType(CLS_MDL_CLS_REF), src))
-            getAllFields(mdl.getClass).foreach(f => addRefsClasses(f.getAnnotationsByType(CLS_MDL_CLS_REF), src))
+        def processAddPackage(packsAdd: scala.Array[NCModelAddPackage], src: Class[_]): Unit =
+            checkMultiple(packsAdd, (a: NCModelAddPackage) => a.value, src.getSimpleName)
+            for (pack <- packsAdd.flatMap(_.value.map(_.strip))) processAddClasses0(getPackageClasses(pack), src)
 
-            val packs = mdl.getClass.getAnnotationsByType(CLS_MDL_PKGS_REF)
-            checkMultiple(packs, (a: NCModelAddPackage) => a.value, src.getSimpleName)
-            for (p <- packs.flatMap(_.value.map(_.strip))) addClasses(getPackageClasses(p), src)
+        def scanClass(claxx: Class[_]): Unit =
+            processImports(claxx.getAnnotationsByType(CLS_INTENT_IMPORT), claxx.getSimpleName)
+            processAddClass(claxx.getAnnotationsByType(CLS_MDL_CLS_REF), claxx)
+            processAddPackage(claxx.getAnnotationsByType(CLS_MDL_PKGS_REF), claxx)
+
+            for (m <- getAllMethods(claxx))
+                processImports(m.getAnnotationsByType(CLS_INTENT_IMPORT), method2Str(m))
+                processAddClass(m.getAnnotationsByType(CLS_MDL_CLS_REF), claxx)
+                processAddPackage(m.getAnnotationsByType(CLS_MDL_PKGS_REF), claxx)
+
+            for (f <- getAllFields(claxx))
+                processImports(f.getAnnotationsByType(CLS_INTENT_IMPORT), field2Str(f))
+                processAddClass(f.getAnnotationsByType(CLS_MDL_CLS_REF), claxx)
+                processAddPackage(f.getAnnotationsByType(CLS_MDL_PKGS_REF), claxx)
 
         scanClass(mdl.getClass)
 
@@ -409,14 +417,14 @@ class NCAnnotationsScanner(mdl: NCModel) extends LazyLogging:
         paramCls.zip(paramGenTypes).zipWithIndex.foreach { case ((pClass, pGenType), i) =>
             def mkArg(): String = arg2Str(mtd, i, ctxFirstParam)
 
-            // Token.
-            if pClass == CLS_TOKEN then () // No-op.
+            // Entity.
+            if pClass == CLS_ENTITY then () // No-op.
             else if pClass.isArray then
                 val compType = pClass.getComponentType
 
-                if compType != CLS_TOKEN then
+                if compType != CLS_ENTITY then
                     E(s"Unexpected array element type for @NCIntentTerm annotated argument [mdlId=$id, origin=$origin, type=${class2Str(compType)}, arg=${mkArg()}]")
-            // Tokens collection and optionals.
+            // Entities collection and optionals.
             else if COMP_CLS.contains(pClass) then
                 pGenType match
                     case pt: ParameterizedType =>
@@ -429,12 +437,13 @@ class NCAnnotationsScanner(mdl: NCModel) extends LazyLogging:
                         val compType = compTypes.head
 
                         compType match
-                            // Java, Scala, Groovy.
+                            // Java, Groovy.
                             case _: Class[_] =>
                                 val genClass = compTypes.head.asInstanceOf[Class[_]]
 
-                                if genClass != CLS_TOKEN then
+                                if genClass != CLS_ENTITY then
                                     E(s"Unexpected generic type for @NCIntentTerm annotated argument [mdlId=$id, origin=$origin, type=${class2Str(genClass)}, arg=${mkArg()}]")
+
                             // Kotlin.
                             case _: WildcardType =>
                                 val wildcardType = compTypes.head.asInstanceOf[WildcardType]
@@ -442,11 +451,16 @@ class NCAnnotationsScanner(mdl: NCModel) extends LazyLogging:
                                 val lowBounds = wildcardType.getLowerBounds
                                 val upBounds = wildcardType.getUpperBounds
 
-                                if lowBounds.nonEmpty || upBounds.size != 1 || upBounds(0) != CLS_TOKEN then
+                                if lowBounds.nonEmpty || upBounds.size != 1 || upBounds(0) != CLS_ENTITY then
                                     E(s"Unexpected Kotlin generic type for @NCIntentTerm annotated argument [mdlId=$id, origin=$origin, type=${wc2Str(wildcardType)}, arg=${mkArg()}]")
-                            case _ =>E(s"Unexpected generic type for @NCIntentTerm annotated argument [mdlId=$id, origin=$origin, type=${compType.getTypeName}, arg=${mkArg()}]")
+                            case _ => E(s"Unexpected generic type for @NCIntentTerm annotated argument [mdlId=$id, origin=$origin, type=${compType.getTypeName}, arg=${mkArg()}]")
 
-                    case _ => E(s"Unexpected parameter type for @NCIntentTerm annotated argument [mdlId=$id, origin=$origin, type=${pGenType.getTypeName}, arg=${mkArg()}]")
+                    // TODO: scala 3 ParameterizedType doesn't here.
+                    case  _ : Any if pGenType.getTypeName == "scala.collection.immutable.Seq" ||
+                                     pGenType.getTypeName == "scala.collection.immutable.List" ||
+                                     pGenType.getTypeName == "scala.Option"  => // No-op.
+                    case _ =>
+                        E(s"Unexpected parameter type for @NCIntentTerm annotated argument [mdlId=$id, origin=$origin, type=${pGenType.getTypeName}, arg=${mkArg()}]")
             // Other types.
             else
                 E(s"Unexpected parameter type for @NCIntentTerm annotated argument [mdlId=$id, origin=$origin, type=${class2Str(pClass)}, arg=${mkArg()}]")
@@ -469,11 +483,11 @@ class NCAnnotationsScanner(mdl: NCModel) extends LazyLogging:
             val p1 = "its @NCIntentTerm annotated argument"
             val p2 = s"[mdlId=$id, origin=$origin, arg=${mkArg()}]"
 
-            // Argument is single token but defined as not single token.
-            if cls == CLS_TOKEN && (min != 1 || max != 1) then
+            // Argument is single entity but defined as not single entity.
+            if cls == CLS_ENTITY && (min != 1 || max != 1) then
                 E(s"Intent term must have [1,1] quantifier because $p1 is a single value $p2")
-            // Argument is not single token but defined as single token.
-            else if cls != CLS_TOKEN && (min == 1 && max == 1) then
+            // Argument is not single entity but defined as single entity.
+            else if cls != CLS_ENTITY && (min == 1 && max == 1) then
                 E(s"Intent term has [1,1] quantifier but $p1 is not a single value $p2")
             // Argument is optional but defined as not optional.
             else if (cls == CLS_SCALA_OPT || cls == CLS_JAVA_OPT) && (min != 0 || max != 1) then
@@ -550,7 +564,7 @@ class NCAnnotationsScanner(mdl: NCModel) extends LazyLogging:
         val tokParamAnns = getSeq(allAnns.toIndexedSeq).filter(_ != null)
         val tokParamTypes = getSeq(allParamTypes)
 
-        // Checks tokens parameters annotations count.
+        // Checks entities parameters annotations count.
         if tokParamAnns.sizeIs != tokParamTypes.length then
             E(s"Unexpected annotations count for @NCIntent annotated method [mdlId=$id, intentId=${intent.id}, count=${tokParamAnns.size}, callback=${method2Str(mtd)}]")
 
