@@ -369,11 +369,13 @@ trait NCIDLCodeGenerator:
 
         def doEq(v1: Object, v2: Object): Boolean =
             //noinspection ComparingUnrelatedTypes
-            if v1 eq v2 then true
-            else if v1 == null && v2 == null then true
+            if v1 == null && v2 == null then true
             else if (v1 == null && v2 != null) || (v1 != null && v2 == null) then false
             else if isInt(v1) && isInt(v2) then asInt(v1) == asInt(v2)
-            else if isReal(v1) && isReal(v2) then asReal(v1) == asReal(v2)
+            else if isReal(v1) && isReal(v2) then
+                val r1 = asReal(v1)
+                val r2 = asReal(v2)
+                if r1.isNaN || r2.isNaN then false else r1 == r2
             else if isBool(v1) && isBool(v2) then asBool(v1) == asBool(v2)
             else if isStr(v1) && isStr(v2) then asStr(v1) == asStr(v2)
             else if isList(v1) && isList(v2) then CollectionUtils.isEqualCollection(asList(v1), asList(v2))

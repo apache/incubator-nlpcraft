@@ -1,4 +1,4 @@
-// Generated from /Users/nivanov/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/internal/intent/compiler/antlr4/NCIDL.g4 by ANTLR 4.9.2
+// Generated from C:/Users/Nikita Ivanov/Documents/GitHub/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/internal/intent/compiler/antlr4\NCIDL.g4 by ANTLR 4.9.2
 package org.apache.nlpcraft.internal.intent.compiler.antlr4;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
