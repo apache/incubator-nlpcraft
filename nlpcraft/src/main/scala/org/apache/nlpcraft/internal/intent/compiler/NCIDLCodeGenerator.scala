@@ -925,17 +925,17 @@ trait NCIDLCodeGenerator:
                 case "ent_count" => checkAvail(); z0(() => Z(idlCtx.entities.size, 0))
                 case "ent_groups" => arg1Tok() match { case x => stack.push(() => Z(toEntity(x().value).getImpl.getGroups, 1)) }
                 case "ent_all" => checkAvail(); z0(() => Z(idlCtx.entities.asJava, 0))
-                case "ent_all_for_id" => checkAvail(); doForAll((ent, id) => ent.getImpl.getId == id)
-                case "ent_all_for_group" => checkAvail(); doForAll((ent, grp) => ent.getImpl.getGroups.contains(grp))
+                case "ent_all_for_id" => checkAvail(); doForAll((e, id) => e.getImpl.getId == id)
+                case "ent_all_for_group" => checkAvail(); doForAll((e, grp) => e.getImpl.getGroups.contains(grp))
                 case "ent_this" => z0(() => Z(ent, 1))
                 case "ent_is_last" => checkAvail(); arg1Tok() match { case x => stack.push(() => { Z(toEntity(x().value).getIndex == idlCtx.entities.size - 1, 1) }) }
                 case "ent_is_first" => checkAvail(); arg1Tok() match { case x => stack.push(() => { Z(toEntity(x().value).getIndex == 0, 1) }) }
-                case "ent_is_before_id" => checkAvail(); doIsBefore((tok, id) => ent.getImpl.getId == id)
-                case "ent_is_before_group" => checkAvail(); doIsBefore((tok, grpId) => ent.getImpl.getGroups.contains(grpId))
-                case "ent_is_after_id" => checkAvail(); doIsAfter((tok, id) => ent.getImpl.getId == id)
-                case "ent_is_after_group" => checkAvail(); doIsAfter((tok, grpId) => ent.getImpl.getGroups.contains(grpId))
-                case "ent_is_between_ids" => checkAvail(); doIsBetween((tok, id) => ent.getImpl.getId == id)
-                case "ent_is_between_groups" => checkAvail(); doIsBetween((tok, grpId) => ent.getImpl.getGroups.contains(grpId))
+                case "ent_is_before_id" => checkAvail(); doIsBefore((e, id) => e.getImpl.getId == id)
+                case "ent_is_before_group" => checkAvail(); doIsBefore((e, grpId) => e.getImpl.getGroups.contains(grpId))
+                case "ent_is_after_id" => checkAvail(); doIsAfter((e, id) => e.getImpl.getId == id)
+                case "ent_is_after_group" => checkAvail(); doIsAfter((e, grpId) => e.getImpl.getGroups.contains(grpId))
+                case "ent_is_between_ids" => checkAvail(); doIsBetween((e, id) => e.getImpl.getId == id)
+                case "ent_is_between_groups" => checkAvail(); doIsBetween((e, grpId) => e.getImpl.getGroups.contains(grpId))
 
                 // Request data.
                 case "req_id" => z0(() => Z(idlCtx.req.getRequestId, 0))

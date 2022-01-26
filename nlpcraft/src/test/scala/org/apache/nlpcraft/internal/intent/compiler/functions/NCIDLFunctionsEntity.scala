@@ -67,7 +67,7 @@ class NCIDLFunctionsEntity extends NCIDLFunctions:
             ),
             TestDesc(
                 truth = "ent_groups() == list('a')",
-                entity = mkEntity(id = "a", tokens = t1, t2, groups = Set("a"))
+                entity = mkEntity(id = "a", tokens = t1, t2)
             )
         )
 

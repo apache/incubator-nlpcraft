@@ -162,7 +162,7 @@ private[functions] object NCIDLFunctions:
 
             override def getTokens: java.util.List[NCToken] = tokens.asJava
             override def getRequestId: String = srvReqId
-            override def getGroups: util.Set[String] = if groups != null then groups.asJava else super.getGroups
+            override def getGroups: util.Set[String] = if groups != null then groups.asJava else util.Collections.singleton(id)
             override def getId: String = id
 
 import org.apache.nlpcraft.internal.intent.compiler.functions.NCIDLFunctions.*
