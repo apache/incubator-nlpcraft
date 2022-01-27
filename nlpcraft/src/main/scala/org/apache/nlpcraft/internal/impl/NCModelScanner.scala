@@ -307,7 +307,7 @@ object NCModelScanner extends LazyLogging:
 
     /**
       *
-      * @param anns
+      * @param спус
       * @param origin
       * @tparam T
       */
@@ -359,16 +359,17 @@ class NCModelScanner(mdl: NCModel) extends LazyLogging:
         val h = ObjectsHolder()
 
         def processImports(anns: scala.Array[NCIntentImport], orig: => String): Unit =
-            checkMultiple(anns, (a: NCIntentImport) => a.value, orig)
+            if anns.nonEmpty then
+                checkMultiple(anns, (a: NCIntentImport) => a.value, orig)
 
-            for (
-                ann <- anns;
-                res <- ann.value;
-                intent <- NCIDLCompiler.compile(NCUtils.readResource(res.strip).mkString("\n"), cfg, res)
-            )
-                if h.intentDecls.exists(_.id == intent.id) then
-                    E(s"Duplicate intent ID [mdlId=$mdlId, origin=$origin, resource=$res, id=${intent.id}]")
-                h.intentDecls += intent
+                for (
+                    ann <- anns;
+                    res <- ann.value;
+                    intent <- NCIDLCompiler.compile(NCUtils.readResource(res.strip).mkString("\n"), cfg, res)
+                )
+                    if h.intentDecls.exists(_.id == intent.id) then
+                        E(s"Duplicate intent ID [mdlId=$mdlId, origin=$origin, resource=$res, id=${intent.id}]")
+                    h.intentDecls += intent
 
         def scanObject(obj: Object): Unit =
             val claxx = obj.getClass
@@ -513,24 +514,28 @@ class NCModelScanner(mdl: NCModel) extends LazyLogging:
 
         // 1. Process inline intent declarations by @NCIntent annotation.
         val annsIntents = mtd.getAnnotationsByType(CLS_INTENT)
-        checkSingle(annsIntents, (a:NCIntent) => a.value, mtdStr)
 
-        for (ann <- annsIntents; intent <- NCIDLCompiler.compile(ann.value, cfg, mtdStr))
-            if intentDecls.exists(_.id == intent.id && existsForOtherMethod(intent.id)) then
-                E(s"Duplicate intent ID [mdlId=$mdlId, origin=$origin, callback=$mtdStr, id=${intent.id}]")
-            else
-                bindIntent(intent, prepareCallback(mtd, obj, intent))
+        if annsIntents.nonEmpty then
+            checkSingle(annsIntents, (a:NCIntent) => a.value, mtdStr)
+
+            for (ann <- annsIntents; intent <- NCIDLCompiler.compile(ann.value, cfg, mtdStr))
+                if intentDecls.exists(_.id == intent.id && existsForOtherMethod(intent.id)) then
+                    E(s"Duplicate intent ID [mdlId=$mdlId, origin=$origin, callback=$mtdStr, id=${intent.id}]")
+                else
+                    bindIntent(intent, prepareCallback(mtd, obj, intent))
 
         // 2. Process intent references from @NCIntentRef annotation.
         val annRefs = mtd.getAnnotationsByType(CLS_INTENT_REF)
-        checkSingle(annRefs, (a:NCIntentRef) => a.value, mtdStr)
 
-        for (ann <- annRefs)
-            val refId = ann.value.trim
+        if annRefs.nonEmpty then
+            checkSingle(annRefs, (a:NCIntentRef) => a.value, mtdStr)
 
-            intentDecls.find(_.id == refId) match
-                case Some(intent) => bindIntent(intent, prepareCallback(mtd, obj, intent))
-                case None => E(s"@NCIntentRef(\"$refId\") references unknown intent ID [mdlId=$mdlId, origin=$origin, refId=$refId, callback=$mtdStr]")
+            for (ann <- annRefs)
+                val refId = ann.value.trim
+
+                intentDecls.find(_.id == refId) match
+                    case Some(intent) => bindIntent(intent, prepareCallback(mtd, obj, intent))
+                    case None => E(s"@NCIntentRef(\"$refId\") references unknown intent ID [mdlId=$mdlId, origin=$origin, refId=$refId, callback=$mtdStr]")
 
     /**
       *
