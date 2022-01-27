@@ -76,8 +76,12 @@ object NCModelScanner extends LazyLogging:
         CLS_JAVA_OPT
     )
 
-    private case class NCCallbackHolder(method: Method, function: NCIntentMatch => NCResult)
-    private case class NCIntentHolder(intent: NCIDLIntent, function: NCIntentMatch => NCResult, samples: Seq[Seq[String]], method: Method)
+    private case class CallbackHolder(method: Method, function: NCIntentMatch => NCResult)
+    private case class IntentHolder(intent: NCIDLIntent, function: NCIntentMatch => NCResult, samples: Seq[Seq[String]], method: Method)
+    private case class ObjectsHolder (
+        intentDecls: mutable.Buffer[NCIDLIntent] = mutable.Buffer.empty,
+        objects: mutable.Buffer[Object] = mutable.Buffer.empty
+    )
 
     /**
       *
@@ -351,9 +355,8 @@ class NCModelScanner(mdl: NCModel) extends LazyLogging:
       *
       * @return
       */
-    private def scanImportsAndRefs(): (mutable.Buffer[NCIDLIntent], mutable.Buffer[Object]) =
-        val objs = mutable.Buffer.empty[Object]
-        val intentDecls = mutable.Buffer.empty[NCIDLIntent]
+    private def scanImportsAndRefs(): ObjectsHolder =
+        val h = ObjectsHolder()
 
         def processImports(anns: scala.Array[NCIntentImport], orig: => String): Unit =
             checkMultiple(anns, (a: NCIntentImport) => a.value, orig)
@@ -363,9 +366,9 @@ class NCModelScanner(mdl: NCModel) extends LazyLogging:
                 res <- ann.value;
                 intent <- NCIDLCompiler.compile(NCUtils.readResource(res.strip).mkString("\n"), cfg, res)
             )
-                if intentDecls.exists(_.id == intent.id) then
+                if h.intentDecls.exists(_.id == intent.id) then
                     E(s"Duplicate intent ID [mdlId=$mdlId, origin=$origin, resource=$res, id=${intent.id}]")
-                intentDecls += intent
+                h.intentDecls += intent
 
         def scan(obj: Object): Unit =
             val claxx = obj.getClass
@@ -380,13 +383,13 @@ class NCModelScanner(mdl: NCModel) extends LazyLogging:
 
                 if (f.isAnnotationPresent(CLS_INTENT_OBJ))
                     val ref = getFieldObject(mdlId, f, obj)
-                    objs += ref
+                    h.objects += ref
                     scan(ref)
 
-        objs += mdl
+        h.objects += mdl
         scan(mdl)
 
-        (intentDecls, objs)
+        h
 
     /**
       *
@@ -492,16 +495,16 @@ class NCModelScanner(mdl: NCModel) extends LazyLogging:
       * @param mtd
       * @param obj
       */
-    private def processMethod(intentDecls: mutable.Buffer[NCIDLIntent], intents: mutable.Buffer[NCIntentHolder], mtd: Method, obj: Object): Unit =
+    private def processMethod(intentDecls: mutable.Buffer[NCIDLIntent], intents: mutable.Buffer[IntentHolder], mtd: Method, obj: Object): Unit =
         val mtdStr = method2Str(mtd)
         lazy val samples = scanSamples(mtd)
 
-        def bindIntent(intent: NCIDLIntent, cb: NCCallbackHolder): Unit =
+        def bindIntent(intent: NCIDLIntent, cb: CallbackHolder): Unit =
             if intents.exists(i => i._1.id == intent.id && i.method != cb.method) then
                 E(s"The intent cannot be bound to more than one callback [mdlId=$mdlId, origin=$origin, class=${getClassName(mtd.getDeclaringClass)}, intentId=${intent.id}]")
             else
                 intentDecls += intent
-                intents += NCIntentHolder(intent, cb.function, samples.getOrElse(intent.id, Seq.empty), cb.method)
+                intents += IntentHolder(intent, cb.function, samples.getOrElse(intent.id, Seq.empty), cb.method)
 
         def existsForOtherMethod(id: String): Boolean =
             intents.find(_.intent.id == id) match
@@ -536,7 +539,7 @@ class NCModelScanner(mdl: NCModel) extends LazyLogging:
       * @param intent
       * @return
       */
-    private def prepareCallback(method: Method, obj: Object, intent: NCIDLIntent): NCCallbackHolder =
+    private def prepareCallback(method: Method, obj: Object, intent: NCIDLIntent): CallbackHolder =
         // Checks method result type.
         if method.getReturnType != CLS_QRY_RES then
             E(s"Unexpected result type for @NCIntent annotated method [mdlId=$mdlId, intentId=${intent.id}, type=${class2Str(method.getReturnType)}, callback=${method2Str(method)}]")
@@ -600,7 +603,7 @@ class NCModelScanner(mdl: NCModel) extends LazyLogging:
 
         checkMinMax(method, tokParamTypes, termIds.map(allLimits), ctxFirstParam)
 
-        NCCallbackHolder(
+        CallbackHolder(
             method,
             (ctx: NCIntentMatch) =>
                 val args = mutable.Buffer.empty[AnyRef]
@@ -668,13 +671,13 @@ class NCModelScanner(mdl: NCModel) extends LazyLogging:
       * @return
       */
     def scan(): Seq[NCModelIntent] =
-        val (intentDecls: mutable.Buffer[NCIDLIntent], objs: mutable.Buffer[Object]) = scanImportsAndRefs()
+        val h = scanImportsAndRefs()
 
-        val intents = mutable.Buffer.empty[NCIntentHolder]
+        val intents = mutable.Buffer.empty[IntentHolder]
 
-        for (obj <- objs; mtd <- getAllMethods(obj)) processMethod(intentDecls, intents, mtd, obj)
+        for (obj <- h.objects; mtd <- getAllMethods(obj)) processMethod(h.intentDecls, intents, mtd, obj)
 
-        val unusedIntents = intentDecls.filter(i => !intents.exists(_._1.id == i.id))
+        val unusedIntents = h.intentDecls.filter(i => !intents.exists(_._1.id == i.id))
 
         if unusedIntents.nonEmpty then
             logger.warn(s"Intents are unused (have no callback): [mdlId=$mdlId, origin=$origin, intentIds=${unusedIntents.map(_.id).mkString("(", ", ", ")")}]")
