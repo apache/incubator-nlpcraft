@@ -370,7 +370,7 @@ class NCModelScanner(mdl: NCModel) extends LazyLogging:
                     E(s"Duplicate intent ID [mdlId=$mdlId, origin=$origin, resource=$res, id=${intent.id}]")
                 h.intentDecls += intent
 
-        def scan(obj: Object): Unit =
+        def scanObject(obj: Object): Unit =
             val claxx = obj.getClass
 
             processImports(claxx.getAnnotationsByType(CLS_INTENT_IMPORT), claxx.getSimpleName)
@@ -382,12 +382,12 @@ class NCModelScanner(mdl: NCModel) extends LazyLogging:
                 processImports(f.getAnnotationsByType(CLS_INTENT_IMPORT), field2Str(f))
 
                 if (f.isAnnotationPresent(CLS_INTENT_OBJ))
-                    val ref = getFieldObject(mdlId, f, obj)
-                    h.objects += ref
-                    scan(ref)
+                    val fieldObj = getFieldObject(mdlId, f, obj)
+                    h.objects += fieldObj
+                    scanObject(fieldObj)
 
         h.objects += mdl
-        scan(mdl)
+        scanObject(mdl)
 
         h
 
