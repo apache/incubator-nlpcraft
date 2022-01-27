@@ -31,7 +31,7 @@ object NCTestModelScala:
         @NCIntentSample(Array("What are the least performing categories for the last quarter?"))
         def intent(
             @NCIntentTerm("single") single: NCEntity,
-            @NCIntentTerm("list") list: Seq[NCEntity], // scala Seq.
+            @NCIntentTerm("list") list: Seq[NCEntity],
             @NCIntentTerm("opt") opt: Option[NCEntity]
         ): NCResult = new NCResult()
 
@@ -39,7 +39,7 @@ object NCTestModelScala:
         @NCIntentSampleRef("scan/samples.txt")
         def intentImport(
             @NCIntentTerm("single") single: NCEntity,
-            @NCIntentTerm("list") list: List[NCEntity], // scala List.
+            @NCIntentTerm("list") list: List[NCEntity],
             @NCIntentTerm("opt") opt: Option[NCEntity]
         ): NCResult = new NCResult()
 
@@ -48,7 +48,7 @@ object NCTestModelScala:
         @NCIntentSample(Array("What are the least performing categories for the last quarter?"))
         def intent(
             @NCIntentTerm("single") single: NCEntity,
-            @NCIntentTerm("list") list: Seq[NCEntity], // scala Seq.
+            @NCIntentTerm("list") list: Seq[NCEntity],
             @NCIntentTerm("opt") opt: Option[NCEntity]
         ) = new NCResult()
 
@@ -56,7 +56,7 @@ object NCTestModelScala:
         @NCIntentSampleRef("scan/samples.txt")
         def intentImport(
             @NCIntentTerm("single") single: NCEntity,
-            @NCIntentTerm("list") list: List[NCEntity], // scala List.
+            @NCIntentTerm("list") list: List[NCEntity],
             @NCIntentTerm("opt") opt: Option[NCEntity]
         ) = new NCResult()
 
@@ -70,7 +70,7 @@ object NCTestModelScala:
         @NCIntentSample(Array("What are the least performing categories for the last quarter?"))
         def intent(
             @NCIntentTerm("single") single: NCEntity,
-            @NCIntentTerm("list") list: Seq[NCEntity], // scala Seq.
+            @NCIntentTerm("list") list: Seq[NCEntity],
             @NCIntentTerm("opt") opt: Option[NCEntity]
         ): NCResult = new NCResult()
 
@@ -78,6 +78,6 @@ object NCTestModelScala:
         @NCIntentSampleRef("scan/samples.txt")
         def intentImport(
             @NCIntentTerm("single") single: NCEntity,
-            @NCIntentTerm("list") list: List[NCEntity], // scala List.
+            @NCIntentTerm("list") list: List[NCEntity],
             @NCIntentTerm("opt") opt: Option[NCEntity]
         ): NCResult = new NCResult()

@@ -136,7 +136,7 @@ class NCModelIntentsInvalidArgsSpec:
         testOk(CHECKED_MDL_VALID, "validList")
         testOk(CHECKED_MDL_VALID, "validOpt")
 
-        // Errors thrown on san phase if error found in any intent.
+        // Errors thrown on scan phase if error found in any intent.
         testScanValidation(CHECKED_MDL_INVALID_LST)
         testScanValidation(CHECKED_MDL_INVALID_OPT)
 
