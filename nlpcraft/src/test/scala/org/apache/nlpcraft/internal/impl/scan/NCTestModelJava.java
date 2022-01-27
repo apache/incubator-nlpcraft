@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.internal.impl;
+package org.apache.nlpcraft.internal.impl.scan;
 
 import org.apache.nlpcraft.NCIntent;
 import org.apache.nlpcraft.NCIntentImport;
@@ -36,15 +36,19 @@ import java.util.Optional;
  *
  */
 public class NCTestModelJava {
+    /**
+     *
+     * @return
+     */
     public static NCModel mkModel() {
         return
             new NCModelAdapter(NCTestConfigJava.CFG, NCTestConfigJava.EN_PIPELINE) {
                 @NCIntentImport({"scan/idl.idl"})
                 @NCIntent(
-                    "intent=intent1 term(single)~{# == 'id1'} term(list)~{# == 'id2'}[0,10] term(opt)~{# == 'id3'}?"
+                    "intent=locInt term(single)~{# == 'id1'} term(list)~{# == 'id2'}[0,10] term(opt)~{# == 'id3'}?"
                 )
                 @NCIntentSample("What are the least performing categories for the last quarter?")
-                NCResult intent1(
+                NCResult intent(
                     @NCIntentTerm("single") NCEntity single,
                     @NCIntentTerm("list") List<NCEntity> list,
                     @NCIntentTerm("opt") Optional<NCEntity> opt
@@ -52,9 +56,9 @@ public class NCTestModelJava {
                     return new NCResult();
                 }
 
-                @NCIntentRef("intent2")
+                @NCIntentRef("impIntId")
                 @NCIntentSampleRef("scan/samples.txt")
-                NCResult intent2(
+                NCResult intentImport(
                     @NCIntentTerm("single") NCEntity single,
                     @NCIntentTerm("list") List<NCEntity> list,
                     @NCIntentTerm("opt") Optional<NCEntity> opt

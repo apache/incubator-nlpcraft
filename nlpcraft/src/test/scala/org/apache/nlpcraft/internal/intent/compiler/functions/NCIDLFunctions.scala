@@ -21,7 +21,7 @@ import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.intent.*
 import org.apache.nlpcraft.internal.intent.compiler.*
 import org.apache.nlpcraft.internal.intent.compiler.functions.*
-import org.apache.nlpcraft.nlp.util.{NCTestRequest, NCTestToken}
+import org.apache.nlpcraft.nlp.util.*
 import org.apache.nlpcraft.nlp.util.opennlp.*
 import org.junit.jupiter.api.BeforeEach
 
@@ -140,7 +140,7 @@ private[functions] object NCIDLFunctions:
     /**
       *
       * @param id
-      * @param srvReqId
+      * @param reqId
       * @param value
       * @param groups
       * @param meta
@@ -149,21 +149,15 @@ private[functions] object NCIDLFunctions:
       */
     def mkEntity(
         id: String = UUID.randomUUID().toString,
-        srvReqId: String = UUID.randomUUID().toString,
-        value: String = null,
+        reqId: String = UUID.randomUUID().toString,
+        value: String = null, // TODO: add tests for usage.
         groups: Set[String] = null,
         meta: Map[String, AnyRef] = Map.empty[String, AnyRef],
         tokens: NCTestToken*
     ): NCEntity =
         require(tokens.nonEmpty)
 
-        new NCPropertyMapAdapter with NCEntity():
-            meta.foreach { (k, v) => put(k, v) }
-
-            override def getTokens: java.util.List[NCToken] = tokens.asJava
-            override def getRequestId: String = srvReqId
-            override def getGroups: util.Set[String] = if groups != null then groups.asJava else util.Collections.singleton(id)
-            override def getId: String = id
+        NCTestEntity(id, reqId, groups, meta, tokens*)
 
 import org.apache.nlpcraft.internal.intent.compiler.functions.NCIDLFunctions.*
 

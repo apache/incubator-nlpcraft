@@ -15,16 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.internal.impl
+package org.apache.nlpcraft.internal.impl.scan
 
 import org.apache.nlpcraft.NCModel
+import org.apache.nlpcraft.internal.impl.*
 import org.junit.jupiter.api.Test
 
 /**
-  *
+  * It tests various ways created models scanning.
   */
-class NCAnnotationsScannerSpec:
-    // Different ways for preparing model instances.
+class NCAnnotationSpec:
+    // Different ways preparing model instances.
     private val mdls = Seq(
         NCTestModelJava.mkModel,
         NCTestModelScala.mkModel,
@@ -35,6 +36,6 @@ class NCAnnotationsScannerSpec:
     @Test
     def test(): Unit =
         for (mdl <- mdls)
+            println(s"Model=${mdl.getClass}")
             val data = new NCAnnotationsScanner(mdl).scan()
-
             println(s"Data=$data")
