@@ -106,15 +106,15 @@ class NCModelIntentsInvalidArgsSpec:
         mkResult0(list)
 
     private def testOk(mdl: NCModel, intentId: String): Unit =
-        val cb = new NCModelScanner(mdl).scan().find(_.intent.id == intentId).get
+        val i = new NCModelScanner(mdl).scan().find(_.intent.id == intentId).get
 
-        println(s"Test finished [modelClass=${mdl.getClass}, intent=$intentId, result=${cb.function.apply(INTENT_MATCH)}")
+        println(s"Test finished [modelClass=${mdl.getClass}, intent=$intentId, result=${i.function(INTENT_MATCH)}")
 
     private def testRuntimeClassCast(mdl: NCModel, intentId: String): Unit =
-        val cb = new NCModelScanner(mdl).scan().find(_.intent.id == intentId).get
+        val i = new NCModelScanner(mdl).scan().find(_.intent.id == intentId).get
 
         try
-            cb.function.apply(INTENT_MATCH)
+            i.function(INTENT_MATCH)
 
             require(false)
         catch
