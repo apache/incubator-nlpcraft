@@ -384,6 +384,10 @@ class NCModelScanner(mdl: NCModel) extends LazyLogging:
 
                 if (f.isAnnotationPresent(CLS_INTENT_OBJ))
                     val fieldObj = getFieldObject(mdlId, f, obj)
+
+                    if fieldObj == null then
+                        throw new NCException(s"Value is null for: ${field2Str(f)}") // TODO: text
+
                     h.objects += fieldObj
                     scanObject(fieldObj)
 

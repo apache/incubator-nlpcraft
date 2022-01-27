@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,23 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft;
+package org.apache.nlpcraft.nlp.util
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import org.apache.nlpcraft.*
+import org.apache.nlpcraft.nlp.util.opennlp.*
 
 /**
- * TODO:
- * Marker annotation. Applied to class member of main model.
- * These fields objects scanned the same way as main model.
- */
-@Documented
-@Retention(value=RUNTIME)
-@Target(value=FIELD)
-public @interface NCIntentObject {
-    // No-op.
-}
+  *
+  */
+abstract class NCTestModelAdapter extends NCModel:
+    override def getConfig: NCModelConfig = CFG
+    override def getPipeline: NCModelPipeline = EN_PIPELINE

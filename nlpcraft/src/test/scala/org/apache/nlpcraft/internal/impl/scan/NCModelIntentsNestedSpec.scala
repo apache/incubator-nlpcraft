@@ -19,6 +19,7 @@ package org.apache.nlpcraft.internal.impl.scan
 
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.impl.NCModelScanner
+import org.apache.nlpcraft.nlp.util.*
 import org.apache.nlpcraft.nlp.util.opennlp.*
 import org.junit.jupiter.api.Test
 
@@ -26,22 +27,17 @@ import org.junit.jupiter.api.Test
   * It tests imports and nested objects usage.
   */
 class NCModelIntentsNestedSpec:
-    private val mdl: NCModel = new NCModel :
-        override def getConfig: NCModelConfig = CFG
-        override def getPipeline: NCModelPipeline = EN_PIPELINE
-
+    private val MDL_VALID: NCModel = new NCTestModelAdapter:
         @NCIntentObject
-        val nested1: Object = new Object() {
+        val nested1: Object = new Object():
             @NCIntentObject
-            val nested2: Object = new Object() {
+            val nested2: Object = new Object():
                 @NCIntentImport(Array("scan/idl.idl"))
                 @NCIntent("intent=intent3 term(x)~{true}")
                 def intent1(@NCIntentTerm("x") x: NCEntity) = new NCResult()
-            }
 
             @NCIntent("intent=intent2 term(x)~{true}")
             def intent1(@NCIntentTerm("x") x: NCEntity) = new NCResult()
-        }
 
         @NCIntent("intent=intent1 term(x)~{true}")
         def intent1(@NCIntentTerm("x") x: NCEntity) = new NCResult()
@@ -54,5 +50,20 @@ class NCModelIntentsNestedSpec:
             @NCIntentTerm("opt") opt: Option[NCEntity]
         ): NCResult = new NCResult()
 
+    private val MDL_INVALID: NCModel = new NCTestModelAdapter :
+        @NCIntentObject
+        val nested1: Object = new Object():
+            @NCIntentObject
+            val nested2: Object = null
+
     @Test
-    def test(): Unit = require(new NCModelScanner(mdl).scan().sizeIs == 4)
+    def test(): Unit = require(new NCModelScanner(MDL_VALID).scan().sizeIs == 4)
+
+    @Test
+    def testNull(): Unit =
+        try
+            new NCModelScanner(MDL_INVALID).scan()
+
+            require(false)
+        catch
+            case e: NCException => e.printStackTrace(System.out)

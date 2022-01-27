@@ -30,22 +30,18 @@ import java.util
   * Note that for some kind of models (it depends on creation type) we can't check methods arguments during scan.
   */
 class NCModelIntentsInvalidArgsSpec:
-    abstract class NCModelAdapter extends NCModel:
-        override def getConfig: NCModelConfig = CFG
-        override def getPipeline: NCModelPipeline = EN_PIPELINE
-
-    class DefinedClassModelValid extends NCModelAdapter:
+    class DefinedClassModelValid extends NCTestModelAdapter:
         @NCIntent("intent=validList term(list)~{# == 'x'}[0,10]")
         def validList(@NCIntentTerm("list") list: List[NCEntity]): NCResult = processListEntity(list)
 
         @NCIntent("intent=validOpt term(opt)~{# == 'x'}?")
         def validOpt(@NCIntentTerm("opt") opt: Option[NCEntity]): NCResult = processOptEntity(opt)
 
-    class DefinedClassModelInvalidLst extends NCModelAdapter:
+    class DefinedClassModelInvalidLst extends NCTestModelAdapter:
         @NCIntent("intent=invalidList term(list)~{# == 'x'}[0,10]")
         def invalidList(@NCIntentTerm("list") list: List[Int]): NCResult = processListInt(list)
 
-    class DefinedClassModelInvalidOpt extends NCModelAdapter:
+    class DefinedClassModelInvalidOpt extends NCTestModelAdapter:
         @NCIntent("intent=invalidOpt term(opt)~{# == 'x'}?")
         def invalidOpt(@NCIntentTerm("opt") opt: Option[Int]): NCResult = processOptInt(opt)
 
@@ -53,7 +49,7 @@ class NCModelIntentsInvalidArgsSpec:
     private val CHECKED_MDL_INVALID_LST: NCModel = new DefinedClassModelInvalidLst
     private val CHECKED_MDL_INVALID_OPT: NCModel = new DefinedClassModelInvalidOpt
     private val UNCHECKED_MDL: NCModel =
-        new NCModelAdapter:
+        new NCTestModelAdapter:
             @NCIntent("intent=validList term(list)~{# == 'x'}[0,10]")
             def validList(@NCIntentTerm("list") list: List[NCEntity]): NCResult = processListEntity(list)
 
