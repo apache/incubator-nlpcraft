@@ -31,7 +31,7 @@ class NCAnnotationNestedSpec:
         override def getPipeline: NCModelPipeline = EN_PIPELINE
 
         @NCIntentObject
-        val nested: Object = new Object() {
+        val nested1: Object = new Object() {
             @NCIntentObject
             val nested2: Object = new Object() {
                 @NCIntentImport(Array("scan/idl.idl"))

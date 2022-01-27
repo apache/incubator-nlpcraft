@@ -30,50 +30,36 @@ import java.util
   * Note that for some kind of models (it depends on creation type) we can't check methods arguments during scan.
   */
 class NCAnnotationInvalidArgsSpec:
-    class DefinedClassModelValid extends NCModel:
+    abstract class NCModelAdapter extends NCModel:
         override def getConfig: NCModelConfig = CFG
         override def getPipeline: NCModelPipeline = EN_PIPELINE
 
-        // Valid parameters.
+    class DefinedClassModelValid extends NCModelAdapter:
         @NCIntent("intent=validList term(list)~{# == 'x'}[0,10]")
         def validList(@NCIntentTerm("list") list: List[NCEntity]): NCResult = processListEntity(list)
 
         @NCIntent("intent=validOpt term(opt)~{# == 'x'}?")
         def validOpt(@NCIntentTerm("opt") opt: Option[NCEntity]): NCResult = processOptEntity(opt)
 
-    class DefinedClassModelInvalidLst extends NCModel:
-        override def getConfig: NCModelConfig = CFG
-        override def getPipeline: NCModelPipeline = EN_PIPELINE
-
-        // Invalid parameters.
+    class DefinedClassModelInvalidLst extends NCModelAdapter:
         @NCIntent("intent=invalidList term(list)~{# == 'x'}[0,10]")
         def invalidList(@NCIntentTerm("list") list: List[Int]): NCResult = processListInt(list)
 
-    class DefinedClassModelInvalidOpt extends NCModel:
-        override def getConfig: NCModelConfig = CFG
-        override def getPipeline: NCModelPipeline = EN_PIPELINE
-
-        // Invalid parameters.
+    class DefinedClassModelInvalidOpt extends NCModelAdapter:
         @NCIntent("intent=invalidOpt term(opt)~{# == 'x'}?")
         def invalidOpt(@NCIntentTerm("opt") opt: Option[Int]): NCResult = processOptInt(opt)
-
 
     private val CHECKED_MDL_VALID: NCModel = new DefinedClassModelValid
     private val CHECKED_MDL_INVALID_LST: NCModel = new DefinedClassModelInvalidLst
     private val CHECKED_MDL_INVALID_OPT: NCModel = new DefinedClassModelInvalidOpt
-    private val UNCHECKED_MDL_MIX: NCModel =
-        new NCModel:
-            override def getConfig: NCModelConfig = CFG
-            override def getPipeline: NCModelPipeline = EN_PIPELINE
-
-            // Valid parameters.
+    private val UNCHECKED_MDL: NCModel =
+        new NCModelAdapter:
             @NCIntent("intent=validList term(list)~{# == 'x'}[0,10]")
             def validList(@NCIntentTerm("list") list: List[NCEntity]): NCResult = processListEntity(list)
 
             @NCIntent("intent=validOpt term(opt)~{# == 'x'}?")
             def validOpt(@NCIntentTerm("opt") opt: Option[NCEntity]): NCResult = processOptEntity(opt)
 
-            // Invalid parameters.
             @NCIntent("intent=invalidList term(list)~{# == 'x'}[0,10]")
             def invalidList(@NCIntentTerm("list") list: List[Int]): NCResult = processListInt(list)
 
@@ -81,15 +67,17 @@ class NCAnnotationInvalidArgsSpec:
             def invalidOpt(@NCIntentTerm("opt") opt: Option[Int]): NCResult = processOptInt(opt)
 
     private val INTENT_MATCH =
-        val ent = NCTestEntity("id", "reqId", tokens = NCTestToken())
+        val e = NCTestEntity("id", "reqId", tokens = NCTestToken())
+
+        def col[T](t: T): util.List[T] = java.util.Collections.singletonList(t)
 
         new NCIntentMatch:
-            override def getIntentId: String = "impIntId"
-            override def getIntentEntities: util.List[util.List[NCEntity]] = col(col(ent))
-            override def getTermEntities(idx: Int): util.List[NCEntity] = col(ent)
-            override def getTermEntities(termId: String): util.List[NCEntity] = col(ent)
+            override def getIntentId: String = "intentId"
+            override def getIntentEntities: util.List[util.List[NCEntity]] = col(col(e))
+            override def getTermEntities(idx: Int): util.List[NCEntity] = col(e)
+            override def getTermEntities(termId: String): util.List[NCEntity] = col(e)
             override def getVariant: NCVariant = new NCVariant:
-                override def getEntities: util.List[NCEntity] = col(ent)
+                override def getEntities: util.List[NCEntity] = col(e)
 
     private def mkResult0(obj: Any): NCResult =
         println(s"Result body: $obj, class=${obj.getClass}")
@@ -117,8 +105,6 @@ class NCAnnotationInvalidArgsSpec:
         val bodyHead: NCEntity = list.head
         mkResult0(list)
 
-    private def col[T](t: T): util.List[T] = java.util.Collections.singletonList(t)
-
     private def testOk(mdl: NCModel, intentId: String): Unit =
         val cb = new NCAnnotationsScanner(mdl).scan().find(_.intent.id == intentId).get.callback
 
@@ -133,27 +119,27 @@ class NCAnnotationInvalidArgsSpec:
             require(false)
         catch
             case e: NCException =>
-                if e.getCause != null && e.getCause.isInstanceOf[ClassCastException] then
-                    println(s"Expected error: $e")
-                    e.printStackTrace(System.out)
+                if e.getCause != null && e.getCause.isInstanceOf[ClassCastException] then e.printStackTrace(System.out)
                 else throw e
 
-    private def testScanError(mdl: NCModel, intentId: String): Unit =
+    private def testScanValidation(mdl: NCModel): Unit =
         try
-            new NCAnnotationsScanner(mdl)
+            new NCAnnotationsScanner(mdl).scan()
+
+            require(false)
         catch
-            case e: NCException =>
-                println(s"Expected error: $e")
-                e.printStackTrace(System.out)
+            case e: NCException => e.printStackTrace(System.out)
 
     @Test
     def test(): Unit =
         testOk(CHECKED_MDL_VALID, "validList")
         testOk(CHECKED_MDL_VALID, "validOpt")
-        testScanError(CHECKED_MDL_INVALID_LST, "invalidList")
-        testScanError(CHECKED_MDL_INVALID_OPT, "invalidOpt")
 
-        testOk(UNCHECKED_MDL_MIX, "validList")
-        testOk(UNCHECKED_MDL_MIX, "validOpt")
-        testRuntimeClassCast(UNCHECKED_MDL_MIX, "invalidList")
-        testRuntimeClassCast(UNCHECKED_MDL_MIX, "invalidOpt")
+        // Errors thrown on san phase if error found in any intent.
+        testScanValidation(CHECKED_MDL_INVALID_LST)
+        testScanValidation(CHECKED_MDL_INVALID_OPT)
+
+        testOk(UNCHECKED_MDL, "validList")
+        testOk(UNCHECKED_MDL, "validOpt")
+        testRuntimeClassCast(UNCHECKED_MDL, "invalidList")
+        testRuntimeClassCast(UNCHECKED_MDL, "invalidOpt")

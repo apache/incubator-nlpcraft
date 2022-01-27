@@ -34,8 +34,5 @@ class NCAnnotationSpec:
     )
 
     @Test
-    def test(): Unit =
-        for (mdl <- mdls)
-            println(s"Model=${mdl.getClass}")
-            val data = new NCAnnotationsScanner(mdl).scan()
-            println(s"Data=$data")
+    def test(): Unit = for (mdl <- mdls) require(new NCAnnotationsScanner(mdl).scan().nonEmpty)
+
