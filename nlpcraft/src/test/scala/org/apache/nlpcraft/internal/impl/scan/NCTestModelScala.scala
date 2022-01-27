@@ -18,6 +18,7 @@
 package org.apache.nlpcraft.internal.impl.scan
 
 import org.apache.nlpcraft.*
+import org.apache.nlpcraft.nlp.util.NCTestModelAdapter
 import org.apache.nlpcraft.nlp.util.opennlp.*
 
 /**
@@ -25,10 +26,7 @@ import org.apache.nlpcraft.nlp.util.opennlp.*
   */
 object NCTestModelScala:
     @NCIntentImport(Array("scan/idl.idl"))
-    object NCTestModelScalaObj extends NCModel :
-        override def getConfig: NCModelConfig = CFG
-        override def getPipeline: NCModelPipeline = EN_PIPELINE
-
+    object NCTestModelScalaObj extends NCTestModelAdapter :
         @NCIntent("intent=locInt term(single)~{# == 'id1'} term(list)~{# == 'id2'}[0,10] term(opt)~{# == 'id3'}?")
         @NCIntentSample(Array("What are the least performing categories for the last quarter?"))
         def intent(
@@ -45,10 +43,7 @@ object NCTestModelScala:
             @NCIntentTerm("opt") opt: Option[NCEntity]
         ): NCResult = new NCResult()
 
-    @NCIntentImport(Array("scan/idl.idl")) class NCTestModelScalaClass extends NCModel :
-        override def getConfig: NCModelConfig = CFG
-        override def getPipeline: NCModelPipeline = EN_PIPELINE
-
+    @NCIntentImport(Array("scan/idl.idl")) class NCTestModelScalaClass extends NCTestModelAdapter :
         @NCIntent("intent=locInt term(single)~{# == 'id1'} term(list)~{# == 'id2'}[0,10] term(opt)~{# == 'id3'}?")
         @NCIntentSample(Array("What are the least performing categories for the last quarter?"))
         def intent(
@@ -69,7 +64,7 @@ object NCTestModelScala:
       *
       * @return
       */
-    def mkModel: NCModel = new NCModelAdapter(CFG, EN_PIPELINE) :
+    def mkModel: NCModel = new NCTestModelAdapter() :
         @NCIntentImport(Array("scan/idl.idl"))
         @NCIntent("intent=locInt term(single)~{# == 'id1'} term(list)~{# == 'id2'}[0,10] term(opt)~{# == 'id3'}?")
         @NCIntentSample(Array("What are the least performing categories for the last quarter?"))
