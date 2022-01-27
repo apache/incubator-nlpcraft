@@ -66,4 +66,6 @@ class NCModelIntentsNestedSpec:
 
             require(false)
         catch
-            case e: NCException => e.printStackTrace(System.out)
+            case e: NCException =>
+                println("Expected stack trace:")
+                e.printStackTrace(System.out)

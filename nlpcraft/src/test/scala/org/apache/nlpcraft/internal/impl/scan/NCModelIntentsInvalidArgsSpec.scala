@@ -115,8 +115,11 @@ class NCModelIntentsInvalidArgsSpec:
             require(false)
         catch
             case e: NCException =>
-                if e.getCause != null && e.getCause.isInstanceOf[ClassCastException] then e.printStackTrace(System.out)
-                else throw e
+                if e.getCause != null && e.getCause.isInstanceOf[ClassCastException] then
+                    println("Expected stack trace:")
+                    e.printStackTrace(System.out)
+                else
+                    throw e
 
     private def testScanValidation(mdl: NCModel): Unit =
         try
@@ -124,7 +127,9 @@ class NCModelIntentsInvalidArgsSpec:
 
             require(false)
         catch
-            case e: NCException => e.printStackTrace(System.out)
+            case e: NCException =>
+                println("Expected stack trace:")
+                e.printStackTrace(System.out)
 
     @Test
     def test(): Unit =
