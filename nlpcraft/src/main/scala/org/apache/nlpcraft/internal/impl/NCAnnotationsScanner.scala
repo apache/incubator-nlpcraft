@@ -36,12 +36,12 @@ import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
 import scala.util.Using
 
-private[internal] case class NCCallback(method: Method, cbFun: Function[NCIntentMatch, NCResult]):
+case class NCCallback(method: Method, cbFun: Function[NCIntentMatch, NCResult]):
     val id: String = method.toString
     val clsName: String = method.getDeclaringClass.getName
     val funName: String = method.getName
 
-private[internal] case class NCIntentData(intent: NCIDLIntent, callback: NCCallback, samples: Seq[Seq[String]])
+case class NCIntentHolder(intent: NCIDLIntent, callback: NCCallback, samples: Seq[Seq[String]])
 
 /**
   * TODO: common comment for annotations usage. Do not apply annotations for unused private methods and fields. Compiler can drop them.
@@ -386,10 +386,10 @@ class NCAnnotationsScanner(mdl: NCModel) extends LazyLogging:
       *
       * @return
       */
-    def scan(): Seq[NCIntentData] =
+    def scan(): Seq[NCIntentHolder] =
         val (intentDecls: mutable.Buffer[NCIDLIntent], objs: mutable.Buffer[Object]) = scanImportsAndRefs()
 
-        val intents = mutable.Buffer.empty[NCIntentData]
+        val intents = mutable.Buffer.empty[NCIntentHolder]
 
         for (obj <- objs; mtd <- getAllMethods(obj)) processMethod(intentDecls, intents, mtd, obj)
 
@@ -512,7 +512,7 @@ class NCAnnotationsScanner(mdl: NCModel) extends LazyLogging:
       * @param mtd
       * @param obj
       */
-    private def processMethod(intentDecls: mutable.Buffer[NCIDLIntent], intents: mutable.Buffer[NCIntentData], mtd: Method, obj: Object): Unit =
+    private def processMethod(intentDecls: mutable.Buffer[NCIDLIntent], intents: mutable.Buffer[NCIntentHolder], mtd: Method, obj: Object): Unit =
         val mtdStr = method2Str(mtd)
         lazy val samples = scanSamples(mtd)
 
@@ -521,7 +521,7 @@ class NCAnnotationsScanner(mdl: NCModel) extends LazyLogging:
                 E(s"The intent cannot be bound to more than one callback [mdlId=$mdlId, origin=$origin, class=${getClassName(mtd.getDeclaringClass)}, intentId=${intent.id}]")
             else
                 intentDecls += intent
-                intents += NCIntentData(intent, cb, samples.getOrElse(intent.id, Seq.empty))
+                intents += NCIntentHolder(intent, cb, samples.getOrElse(intent.id, Seq.empty))
 
         def existsForOtherMethod(id: String): Boolean =
             intents.find(_.intent.id == id) match
