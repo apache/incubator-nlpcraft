@@ -288,7 +288,7 @@ object NCModelScanner extends LazyLogging:
 
     /**
       *
-      * @param s
+      * @param a
       * @return
       */
     private def isNullOrEmpty(a: Any): Boolean =
@@ -307,9 +307,8 @@ object NCModelScanner extends LazyLogging:
 
     /**
       *
-      * @param спус
+      * @param anns
       * @param origin
-      * @tparam T
       */
     private def emptyError(anns: Iterable[_], origin: String): Unit =
         require(anns != null && anns.nonEmpty)
@@ -320,7 +319,7 @@ object NCModelScanner extends LazyLogging:
       *
       * @param anns
       * @param getValues
-      * @param src
+      * @param origin
       * @tparam T
       * @tparam K
       */
@@ -331,7 +330,7 @@ object NCModelScanner extends LazyLogging:
       *
       * @param anns
       * @param getValue
-      * @param src
+      * @param origin
       * @tparam T
       * @tparam K
       */
@@ -434,27 +433,26 @@ class NCModelScanner(mdl: NCModel) extends LazyLogging:
                             // Java, Scala, Groovy.
                             case _: Class[_] =>
                                 val genClass = compTypes.head.asInstanceOf[Class[_]]
-
                                 if genClass != CLS_ENTITY then
                                     E(s"Unexpected generic type for @NCIntentTerm annotated argument [mdlId=$mdlId, origin=$origin, type=${class2Str(genClass)}, arg=${mkArg()}]")
 
                             // Kotlin.
                             case _: WildcardType =>
                                 val wildcardType = compTypes.head.asInstanceOf[WildcardType]
-
                                 val lowBounds = wildcardType.getLowerBounds
                                 val upBounds = wildcardType.getUpperBounds
-
                                 if lowBounds.nonEmpty || upBounds.size != 1 || upBounds(0) != CLS_ENTITY then
                                     E(s"Unexpected Kotlin generic type for @NCIntentTerm annotated argument [mdlId=$mdlId, origin=$origin, type=${wc2Str(wildcardType)}, arg=${mkArg()}]")
+
                             case _ => E(s"Unexpected generic type for @NCIntentTerm annotated argument [mdlId=$mdlId, origin=$origin, type=${compType.getTypeName}, arg=${mkArg()}]")
 
                     case _ =>
-                        // Scala. For methods which added as
+                        // Scala.
                         if COMP_CLS.exists(_ == paramGenType) then
                             if (!warned)
                                 warned = true // TODO: text
                                 logger.warn(s"Method arguments types cannot be detected and checked: ${method2Str(mtd)}")
+                            end if
                         else
                             E(s"Unexpected parameter type for @NCIntentTerm annotated argument [mdlId=$mdlId, origin=$origin, type=${paramGenType.getTypeName}, arg=${mkArg()}]")
             // Other types.
@@ -464,7 +462,6 @@ class NCModelScanner(mdl: NCModel) extends LazyLogging:
 
     /**
       *
-      * @param mdl
       * @param mtd
       * @param paramCls
       * @param limits
@@ -624,7 +621,7 @@ class NCModelScanner(mdl: NCModel) extends LazyLogging:
 
     /**
       *
-      * @param mdl
+      * @param mtd
       * @return
       */
     private def scanSamples(mtd: Method): Map[String, Seq[Seq[String]]] =
