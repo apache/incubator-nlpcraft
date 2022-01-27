@@ -18,14 +18,14 @@
 package org.apache.nlpcraft.internal.impl.scan
 
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.internal.impl.NCAnnotationsScanner
+import org.apache.nlpcraft.internal.impl.NCModelScanner
 import org.apache.nlpcraft.nlp.util.opennlp.*
 import org.junit.jupiter.api.Test
 
 /**
   * It tests imports and nested objects usage.
   */
-class NCAnnotationNestedSpec:
+class NCModelIntentsNestedSpec:
     private val mdl: NCModel = new NCModel :
         override def getConfig: NCModelConfig = CFG
         override def getPipeline: NCModelPipeline = EN_PIPELINE
@@ -55,4 +55,4 @@ class NCAnnotationNestedSpec:
         ): NCResult = new NCResult()
 
     @Test
-    def test(): Unit = require(new NCAnnotationsScanner(mdl).scan().sizeIs == 4)
+    def test(): Unit = require(new NCModelScanner(mdl).scan().sizeIs == 4)

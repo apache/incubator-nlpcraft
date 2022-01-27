@@ -36,17 +36,19 @@ import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
 import scala.util.Using
 
-case class NCCallback(method: Method, cbFun: Function[NCIntentMatch, NCResult]):
-    val id: String = method.toString
-    val clsName: String = method.getDeclaringClass.getName
-    val funName: String = method.getName
-
-case class NCIntentHolder(intent: NCIDLIntent, callback: NCCallback, samples: Seq[Seq[String]])
+/**
+  *
+  * @param intent
+  * @param method
+  * @param function
+  * @param samples
+  */
+case class NCModelIntent(intent: NCIDLIntent, method: Method, function: Function[NCIntentMatch, NCResult], samples: Seq[Seq[String]])
 
 /**
   * TODO: common comment for annotations usage. Do not apply annotations for unused private methods and fields. Compiler can drop them.
   */
-object NCAnnotationsScanner extends LazyLogging:
+object NCModelScanner extends LazyLogging:
     private final val SEPARATORS = Seq('?', ',', '.', '-', '!')
 
     private final val CLS_INTENT = classOf[NCIntent]
@@ -74,6 +76,8 @@ object NCAnnotationsScanner extends LazyLogging:
         CLS_JAVA_LST,
         CLS_JAVA_OPT
     )
+
+    private case class NCCallback(method: Method, function: Function[NCIntentMatch, NCResult])
 
     /**
       *
@@ -330,16 +334,18 @@ object NCAnnotationsScanner extends LazyLogging:
     private def checkSingle[T, K](anns: Iterable[T], getValue: T => K, origin: => String): Unit =
         if anns.exists(a => a == null || isNullOrEmpty(getValue(a))) then emptyError(anns, origin)
 
-import org.apache.nlpcraft.internal.impl.NCAnnotationsScanner.*
+import org.apache.nlpcraft.internal.impl.NCModelScanner.*
 
 /**
   *
   * @param mdl
   */
-class NCAnnotationsScanner(mdl: NCModel) extends LazyLogging:
-    private val cfg = mdl.getConfig
-    private val mdlId = cfg.getId
-    private val origin = cfg.getOrigin
+class NCModelScanner(mdl: NCModel) extends LazyLogging:
+    require(mdl != null)
+
+    private final val cfg = mdl.getConfig
+    private final val mdlId = cfg.getId
+    private final val origin = cfg.getOrigin
 
     /**
       *
@@ -381,32 +387,6 @@ class NCAnnotationsScanner(mdl: NCModel) extends LazyLogging:
         scan(mdl)
 
         (intentDecls, objs)
-
-    /**
-      *
-      * @return
-      */
-    def scan(): Seq[NCIntentHolder] =
-        val (intentDecls: mutable.Buffer[NCIDLIntent], objs: mutable.Buffer[Object]) = scanImportsAndRefs()
-
-        val intents = mutable.Buffer.empty[NCIntentHolder]
-
-        for (obj <- objs; mtd <- getAllMethods(obj)) processMethod(intentDecls, intents, mtd, obj)
-
-        val unusedIntents = intentDecls.filter(i => !intents.exists(_._1.id == i.id))
-
-        if unusedIntents.nonEmpty then
-            logger.warn(s"Intents are unused (have no callback): [mdlId=$mdlId, origin=$origin, intentIds=${unusedIntents.map(_.id).mkString("(", ", ", ")")}]")
-
-        if intents.nonEmpty then
-            // Check the uniqueness of intent IDs.
-            NCUtils.getDups(intents.map(_._1).toSeq.map(_.id)) match
-                case ids if ids.nonEmpty => E(s"Duplicate intent IDs [mdlId=$mdlId, origin=$origin, ids=${ids.mkString(",")}]")
-                case _ => // No-op.
-        else
-            logger.warn(s"Model has no intent: $mdlId")
-
-        intents.toSeq
 
     /**
       *
@@ -512,20 +492,20 @@ class NCAnnotationsScanner(mdl: NCModel) extends LazyLogging:
       * @param mtd
       * @param obj
       */
-    private def processMethod(intentDecls: mutable.Buffer[NCIDLIntent], intents: mutable.Buffer[NCIntentHolder], mtd: Method, obj: Object): Unit =
+    private def processMethod(intentDecls: mutable.Buffer[NCIDLIntent], intents: mutable.Buffer[NCModelIntent], mtd: Method, obj: Object): Unit =
         val mtdStr = method2Str(mtd)
         lazy val samples = scanSamples(mtd)
 
         def bindIntent(intent: NCIDLIntent, cb: NCCallback): Unit =
-            if intents.exists(i => i._1.id == intent.id && i._2.id != cb.id) then
+            if intents.exists(i => i._1.id == intent.id && i.method != cb.method) then
                 E(s"The intent cannot be bound to more than one callback [mdlId=$mdlId, origin=$origin, class=${getClassName(mtd.getDeclaringClass)}, intentId=${intent.id}]")
             else
                 intentDecls += intent
-                intents += NCIntentHolder(intent, cb, samples.getOrElse(intent.id, Seq.empty))
+                intents += NCModelIntent(intent, cb.method, cb.function, samples.getOrElse(intent.id, Seq.empty))
 
         def existsForOtherMethod(id: String): Boolean =
             intents.find(_.intent.id == id) match
-                case Some(i) => i.callback.method != mtd
+                case Some(i) => i.method != mtd
                 case None => false
 
         // 1. Process inline intent declarations by @NCIntent annotation.
@@ -681,3 +661,29 @@ class NCAnnotationsScanner(mdl: NCModel) extends LazyLogging:
             logger.warn(s"@NCIntentSample or @NCIntentSampleRef annotations are missing for: $mtdStr")
 
         samples.toMap
+
+    /**
+      *
+      * @return
+      */
+    def scan(): Seq[NCModelIntent] =
+        val (intentDecls: mutable.Buffer[NCIDLIntent], objs: mutable.Buffer[Object]) = scanImportsAndRefs()
+
+        val intents = mutable.Buffer.empty[NCModelIntent]
+
+        for (obj <- objs; mtd <- getAllMethods(obj)) processMethod(intentDecls, intents, mtd, obj)
+
+        val unusedIntents = intentDecls.filter(i => !intents.exists(_._1.id == i.id))
+
+        if unusedIntents.nonEmpty then
+            logger.warn(s"Intents are unused (have no callback): [mdlId=$mdlId, origin=$origin, intentIds=${unusedIntents.map(_.id).mkString("(", ", ", ")")}]")
+
+        if intents.nonEmpty then
+        // Check the uniqueness of intent IDs.
+            NCUtils.getDups(intents.map(_._1).toSeq.map(_.id)) match
+                case ids if ids.nonEmpty => E(s"Duplicate intent IDs [mdlId=$mdlId, origin=$origin, ids=${ids.mkString(",")}]")
+                case _ => // No-op.
+        else
+            logger.warn(s"Model has no intent: $mdlId")
+
+        intents.toSeq

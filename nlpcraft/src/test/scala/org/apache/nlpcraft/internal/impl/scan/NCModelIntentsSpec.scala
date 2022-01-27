@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test
 /**
   * It tests various ways created models scanning.
   */
-class NCAnnotationSpec:
+class NCModelIntentsSpec:
     // Different ways preparing model instances.
     private val mdls = Seq(
         NCTestModelJava.mkModel,
@@ -34,5 +34,5 @@ class NCAnnotationSpec:
     )
 
     @Test
-    def test(): Unit = for (mdl <- mdls) require(new NCAnnotationsScanner(mdl).scan().nonEmpty)
+    def test(): Unit = for (mdl <- mdls) require(new NCModelScanner(mdl).scan().nonEmpty)
 

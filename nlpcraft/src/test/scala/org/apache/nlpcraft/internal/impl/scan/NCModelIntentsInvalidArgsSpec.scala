@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.internal.impl.scan
 
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.internal.impl.NCAnnotationsScanner
+import org.apache.nlpcraft.internal.impl.NCModelScanner
 import org.apache.nlpcraft.nlp.util.*
 import org.apache.nlpcraft.nlp.util.opennlp.*
 import org.junit.jupiter.api.Test
@@ -29,7 +29,7 @@ import java.util
   * It tests invalid intents methods parameters types usage.
   * Note that for some kind of models (it depends on creation type) we can't check methods arguments during scan.
   */
-class NCAnnotationInvalidArgsSpec:
+class NCModelIntentsInvalidArgsSpec:
     abstract class NCModelAdapter extends NCModel:
         override def getConfig: NCModelConfig = CFG
         override def getPipeline: NCModelPipeline = EN_PIPELINE
@@ -106,15 +106,15 @@ class NCAnnotationInvalidArgsSpec:
         mkResult0(list)
 
     private def testOk(mdl: NCModel, intentId: String): Unit =
-        val cb = new NCAnnotationsScanner(mdl).scan().find(_.intent.id == intentId).get.callback
+        val cb = new NCModelScanner(mdl).scan().find(_.intent.id == intentId).get
 
-        println(s"Test finished [modelClass=${mdl.getClass}, intent=$intentId, result=${cb.cbFun.apply(INTENT_MATCH)}")
+        println(s"Test finished [modelClass=${mdl.getClass}, intent=$intentId, result=${cb.function.apply(INTENT_MATCH)}")
 
     private def testRuntimeClassCast(mdl: NCModel, intentId: String): Unit =
-        val cb = new NCAnnotationsScanner(mdl).scan().find(_.intent.id == intentId).get.callback
+        val cb = new NCModelScanner(mdl).scan().find(_.intent.id == intentId).get
 
         try
-            cb.cbFun.apply(INTENT_MATCH)
+            cb.function.apply(INTENT_MATCH)
 
             require(false)
         catch
@@ -124,7 +124,7 @@ class NCAnnotationInvalidArgsSpec:
 
     private def testScanValidation(mdl: NCModel): Unit =
         try
-            new NCAnnotationsScanner(mdl).scan()
+            new NCModelScanner(mdl).scan()
 
             require(false)
         catch
