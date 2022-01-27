@@ -162,7 +162,7 @@ FUN_NAME
     | 'ent_is_between_groups'
     | 'mdl_id'
     | 'mdl_name'
-    | 'mdl_version'
+    | 'mdl_ver'
     | 'mdl_origin'
     | 'req_id'
     | 'req_text'
