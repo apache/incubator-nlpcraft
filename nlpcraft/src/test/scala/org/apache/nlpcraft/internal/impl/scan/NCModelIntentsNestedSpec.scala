@@ -32,7 +32,7 @@ class NCModelIntentsNestedSpec:
         val nested1: Object = new Object():
             @NCIntentObject
             val nested2: Object = new Object():
-                @NCIntentImport(Array("scan/idl.idl"))
+                @NCIntent("import('scan/idl.idl')")
                 @NCIntent("intent=intent3 term(x)~{true}")
                 def intent1(@NCIntentTerm("x") x: NCEntity) = new NCResult()
 

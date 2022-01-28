@@ -57,7 +57,6 @@ object NCModelScanner extends LazyLogging:
     private final val CLS_SAMPLE = classOf[NCIntentSample]
     private final val CLS_SAMPLE_REF = classOf[NCIntentSampleRef]
     private final val CLS_INTENT_OBJ = classOf[NCIntentObject]
-    private final val CLS_INTENT_IMPORT = classOf[NCIntentImport]
 
     // Java and scala lists.
     private final val CLS_SCALA_SEQ = classOf[Seq[_]]
@@ -77,11 +76,7 @@ object NCModelScanner extends LazyLogging:
     )
 
     private case class CallbackHolder(method: Method, function: NCIntentMatch => NCResult)
-    private case class IntentHolder(intent: NCIDLIntent, function: NCIntentMatch => NCResult, samples: Seq[Seq[String]], method: Method)
-    private case class ObjectsHolder (
-        intentDecls: mutable.Buffer[NCIDLIntent] = mutable.Buffer.empty,
-        objects: mutable.Buffer[Object] = mutable.Buffer.empty
-    )
+    private case class IntentHolder(intent: NCIDLIntent, function: NCIntentMatch => NCResult, method: Method)
 
     /**
       *
@@ -222,28 +217,36 @@ object NCModelScanner extends LazyLogging:
       * @return
       */
     private def getFieldObject(mdlId: String, field: Field, obj: Object): Object =
+        lazy val fStr = field2Str(field)
         val fieldObj = if Modifier.isStatic(field.getModifiers) then null else obj
         var flag = field.canAccess(fieldObj)
+        val res =
+            try
+                if !flag then
+                    field.setAccessible(true)
 
-        try
-            if !flag then
-                field.setAccessible(true)
+                    flag = true
+                else
+                    flag = false
 
-                flag = true
-            else
-                flag = false
+                field.get(fieldObj)
+            catch
+                // TODO: text
+                case e: Throwable => E(s"Unexpected field access error [mdlId=$mdlId, field=$fStr]", e)
+            finally
+                if flag then
+                    try
+                        field.setAccessible(false)
+                    catch
+                        // TODO: text
+                        case e: SecurityException => E(s"Access or security error in field [mdlId=$mdlId, field=$fStr]", e)
 
-            field.get(fieldObj)
-        catch
-            // TODO: text
-            case e: Throwable => E(s"Unexpected field access error [mdlId=$mdlId, field=${field2Str(field)}]", e)
-        finally
-            if flag then
-                try
-                    field.setAccessible(false)
-                catch
-                    // TODO: text
-                    case e: SecurityException => E(s"Access or security error in field [mdlId=$mdlId, field=${field2Str(field)}]", e)
+        if res == null then
+            throw new NCException(s"Value is null for: $fStr") // TODO: text
+
+        res
+
+
 
     /**
       *
@@ -260,23 +263,9 @@ object NCModelScanner extends LazyLogging:
       * @param o Object.
       * @return Methods.
       */
-    private def getAllMethods(o: AnyRef): Set[Method] = getAllMethods(o.getClass)
-
-    /**
-      * Gets its own methods including private and accessible from parents.
-      *
-      * @param claxx Class.
-      * @return Methods.
-      */
-    private def getAllMethods(claxx: Class[_]): Set[Method] = (claxx.getDeclaredMethods ++ claxx.getMethods).toSet
-
-    /**
-      * Gets its own fields including private and accessible from parents.
-      *
-      * @param claxx Class
-      * @return Fields.
-      */
-    private def getAllFields(claxx: Class[_]): Set[Field] = (claxx.getDeclaredFields ++ claxx.getFields).toSet
+    private def getAllMethods(o: AnyRef): Set[Method] =
+        val claxx = o.getClass
+        (claxx.getDeclaredMethods ++ claxx.getMethods).toSet
 
     /**
       * Gets its own fields including private and accessible from parents.
@@ -284,58 +273,9 @@ object NCModelScanner extends LazyLogging:
       * @param o Object.
       * @return Fields.
       */
-    private def getAllFields(o: AnyRef): Set[Field] = getAllFields(o.getClass)
-
-    /**
-      *
-      * @param a
-      * @return
-      */
-    private def isNullOrEmpty(a: Any): Boolean =
-        a == null ||
-        (a match
-            case s: String => s.strip.isEmpty
-            case _ => false
-        )
-
-    /**
-      *
-      * @param it
-      * @return
-      */
-    private def isNullOrEmpty(it: Iterable[_]): Boolean = it == null || it.isEmpty || it.exists(isNullOrEmpty)
-
-    /**
-      *
-      * @param anns
-      * @param origin
-      */
-    private def emptyError(anns: Iterable[_], origin: String): Unit =
-        require(anns != null && anns.nonEmpty)
-
-        E(s"Unexpected empty annotation definition @${anns.head.getClass.getSimpleName} in $origin") // TODO: text
-
-    /**
-      *
-      * @param anns
-      * @param getValues
-      * @param origin
-      * @tparam T
-      * @tparam K
-      */
-    private def checkMultiple[T, K](anns: Iterable[T], getValues: T => Iterable[K], origin: => String): Unit =
-        if anns.exists(a => a == null || isNullOrEmpty(getValues(a))) then emptyError(anns, origin)
-
-    /**
-      *
-      * @param anns
-      * @param getValue
-      * @param origin
-      * @tparam T
-      * @tparam K
-      */
-    private def checkSingle[T, K](anns: Iterable[T], getValue: T => K, origin: => String): Unit =
-        if anns.exists(a => a == null || isNullOrEmpty(getValue(a))) then emptyError(anns, origin)
+    private def getAllFields(o: AnyRef): Set[Field] =
+        val claxx = o.getClass
+        (claxx.getDeclaredFields ++ claxx.getFields).toSet
 
 import org.apache.nlpcraft.internal.impl.NCModelScanner.*
 
@@ -350,50 +290,10 @@ class NCModelScanner(mdl: NCModel) extends LazyLogging:
     private final val mdlId = cfg.getId
     private final val origin = cfg.getOrigin
 
-    /**
-      *
-      * @return
-      */
-    private def scanImportsAndRefs(): ObjectsHolder =
-        val h = ObjectsHolder()
-
-        def processImports(anns: scala.Array[NCIntentImport], orig: => String): Unit =
-            if anns.nonEmpty then
-                checkMultiple(anns, (a: NCIntentImport) => a.value, orig)
-
-                for (
-                    ann <- anns;
-                    res <- ann.value;
-                    intent <- NCIDLCompiler.compile(NCUtils.readResource(res.strip).mkString("\n"), cfg, res)
-                )
-                    if h.intentDecls.exists(_.id == intent.id) then
-                        E(s"Duplicate intent ID [mdlId=$mdlId, origin=$origin, resource=$res, id=${intent.id}]")
-                    h.intentDecls += intent
-
-        def scanObject(obj: Object): Unit =
-            val claxx = obj.getClass
-
-            processImports(claxx.getAnnotationsByType(CLS_INTENT_IMPORT), claxx.getSimpleName)
-
-            for (m <- getAllMethods(claxx))
-                processImports(m.getAnnotationsByType(CLS_INTENT_IMPORT), method2Str(m))
-
-            for (f <- getAllFields(claxx))
-                processImports(f.getAnnotationsByType(CLS_INTENT_IMPORT), field2Str(f))
-
-                if (f.isAnnotationPresent(CLS_INTENT_OBJ))
-                    val fieldObj = getFieldObject(mdlId, f, obj)
-
-                    if fieldObj == null then
-                        throw new NCException(s"Value is null for: ${field2Str(f)}") // TODO: text
-
-                    h.objects += fieldObj
-                    scanObject(fieldObj)
-
-        h.objects += mdl
-        scanObject(mdl)
-
-        h
+    private final val intents = mutable.Buffer.empty[IntentHolder]
+    private final val intentDecls = mutable.Buffer.empty[NCIDLIntent]
+    private final val objs = mutable.Buffer.empty[Object]
+    private final val samples = mutable.HashMap.empty[Method, Map[String, Seq[Seq[String]]]]
 
     /**
       *
@@ -492,50 +392,68 @@ class NCModelScanner(mdl: NCModel) extends LazyLogging:
 
     /**
       *
-      * @param intentDecls
       * @param intents
+      * @param intent
+      * @param cb
+      * @param mtd
+      */
+    private def checkBind(intents: mutable.Buffer[IntentHolder], intent: NCIDLIntent, cb: CallbackHolder, mtd: Method): Unit =
+        if intents.exists(i => i._1.id == intent.id && i.method != cb.method) then
+            E(s"The intent cannot be bound to more than one callback [mdlId=$mdlId, origin=$origin, class=${getClassName(mtd.getDeclaringClass)}, intentId=${intent.id}]")
+
+    private def bindIntent(intent: NCIDLIntent, cb: CallbackHolder, mtd: Method): Unit =
+        if intents.exists(i => i._1.id == intent.id && i.method != cb.method) then
+            E(s"The intent cannot be bound to more than one callback [mdlId=$mdlId, origin=$origin, class=${getClassName(mtd.getDeclaringClass)}, intentId=${intent.id}]")
+        else
+            intentDecls += intent
+            intents += IntentHolder(intent, cb.function, cb.method)
+
+
+    /**
+      *
       * @param mtd
       * @param obj
       */
-    private def processMethod(intentDecls: mutable.Buffer[NCIDLIntent], intents: mutable.Buffer[IntentHolder], mtd: Method, obj: Object): Unit =
-        val mtdStr = method2Str(mtd)
-        lazy val samples = scanSamples(mtd)
-
-        def bindIntent(intent: NCIDLIntent, cb: CallbackHolder): Unit =
-            if intents.exists(i => i._1.id == intent.id && i.method != cb.method) then
-                E(s"The intent cannot be bound to more than one callback [mdlId=$mdlId, origin=$origin, class=${getClassName(mtd.getDeclaringClass)}, intentId=${intent.id}]")
-            else
-                intentDecls += intent
-                intents += IntentHolder(intent, cb.function, samples.getOrElse(intent.id, Seq.empty), cb.method)
+    private def processMethod(mtd: Method, obj: Object): Unit =
+        samples += mtd -> scanSamples(mtd)
 
         def existsForOtherMethod(id: String): Boolean =
             intents.find(_.intent.id == id) match
                 case Some(i) => i.method != mtd
                 case None => false
 
-        // 1. Process inline intent declarations by @NCIntent annotation.
-        val annsIntents = mtd.getAnnotationsByType(CLS_INTENT)
+        val anns = mtd.getAnnotationsByType(CLS_INTENT)
 
-        if annsIntents.nonEmpty then
-            checkSingle(annsIntents, (a:NCIntent) => a.value, mtdStr)
+        if anns.nonEmpty then
+            lazy val mtdStr = method2Str(mtd)
 
-            for (ann <- annsIntents; intent <- NCIDLCompiler.compile(ann.value, cfg, mtdStr))
+            if anns.exists(a => a == null || a.value().strip().isEmpty) then
+                E(s"Unexpected empty annotation definition @NCIntentRef in $mtdStr") // TODO: text
+
+            for (ann <- anns; intent <- NCIDLCompiler.compile(ann.value, cfg, mtdStr))
                 if intentDecls.exists(_.id == intent.id && existsForOtherMethod(intent.id)) then
                     E(s"Duplicate intent ID [mdlId=$mdlId, origin=$origin, callback=$mtdStr, id=${intent.id}]")
                 else
-                    bindIntent(intent, prepareCallback(mtd, obj, intent))
+                    bindIntent(intent, prepareCallback(mtd, obj, intent), mtd)
 
-        // 2. Process intent references from @NCIntentRef annotation.
-        val annRefs = mtd.getAnnotationsByType(CLS_INTENT_REF)
+    /**
+      *
+      * @param mtd
+      * @param obj
+      */
+    private def processMethodRefs(mtd: Method, obj: Object): Unit =
+        val anns = mtd.getAnnotationsByType(CLS_INTENT_REF)
 
-        if annRefs.nonEmpty then
-            checkSingle(annRefs, (a:NCIntentRef) => a.value, mtdStr)
+        if anns.nonEmpty then
+            lazy val mtdStr = method2Str(mtd)
+            if anns.exists(a => a == null || a.value().strip().isEmpty) then
+                E(s"Unexpected empty annotation definition @NCIntent in $mtdStr") // TODO: text
 
-            for (ann <- annRefs)
+            for (ann <- anns)
                 val refId = ann.value.trim
 
                 intentDecls.find(_.id == refId) match
-                    case Some(intent) => bindIntent(intent, prepareCallback(mtd, obj, intent))
+                    case Some(intent) => bindIntent(intent, prepareCallback(mtd, obj, intent), mtd)
                     case None => E(s"@NCIntentRef(\"$refId\") references unknown intent ID [mdlId=$mdlId, origin=$origin, refId=$refId, callback=$mtdStr]")
 
     /**
@@ -677,13 +595,22 @@ class NCModelScanner(mdl: NCModel) extends LazyLogging:
       * @return
       */
     def scan(): Seq[NCModelIntent] =
-        val h = scanImportsAndRefs()
+        // 1. First phase scan.
+        //  - For given object finds references via fields (NCIntentObject). Scans also each reference recursively and collects them.
+        //  - For all methods of processed object collects samples (NCIntentSample, NCIntentSampleRef) and intents (NCIntent)
+        def scan(obj: Object): Unit =
+            objs += obj
 
-        val intents = mutable.Buffer.empty[IntentHolder]
+            for (m <- getAllMethods(obj)) processMethod(m, obj)
+            for (f <- getAllFields(obj) if f.isAnnotationPresent(CLS_INTENT_OBJ)) scan(getFieldObject(mdlId, f, obj))
 
-        for (obj <- h.objects; mtd <- getAllMethods(obj)) processMethod(h.intentDecls, intents, mtd, obj)
+        scan(mdl)
 
-        val unusedIntents = h.intentDecls.filter(i => !intents.exists(_._1.id == i.id))
+        // 2. For model and all its references scans each method and finds intents references (NCIntentRef)
+        for (o <- objs; m <- getAllMethods(o)) processMethodRefs(m, o)
+
+        // 3. Validation.
+        val unusedIntents = intentDecls.filter(i => !intents.exists(_._1.id == i.id))
 
         if unusedIntents.nonEmpty then
             logger.warn(s"Intents are unused (have no callback): [mdlId=$mdlId, origin=$origin, intentIds=${unusedIntents.map(_.id).mkString("(", ", ", ")")}]")
@@ -696,4 +623,4 @@ class NCModelScanner(mdl: NCModel) extends LazyLogging:
         else
             logger.warn(s"Model has no intent: $mdlId")
 
-        intents.map(i => NCModelIntent(i.intent, i.function, i.samples)).toSeq
+        intents.map(i => NCModelIntent(i.intent, i.function, samples.getOrElse(i.method, Map.empty).getOrElse(i.intent.id, Seq.empty))).toSeq

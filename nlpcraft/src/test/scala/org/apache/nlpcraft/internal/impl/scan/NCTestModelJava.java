@@ -18,7 +18,6 @@
 package org.apache.nlpcraft.internal.impl.scan;
 
 import org.apache.nlpcraft.NCIntent;
-import org.apache.nlpcraft.NCIntentImport;
 import org.apache.nlpcraft.NCIntentRef;
 import org.apache.nlpcraft.NCIntentSample;
 import org.apache.nlpcraft.NCIntentSampleRef;
@@ -43,7 +42,7 @@ public class NCTestModelJava {
     public static NCModel mkModel() {
         return
             new NCModelAdapter(NCTestConfigJava.CFG, NCTestConfigJava.EN_PIPELINE) {
-                @NCIntentImport({"scan/idl.idl"})
+                @NCIntent("import('scan/idl.idl')")
                 @NCIntent(
                     "intent=locInt term(single)~{# == 'id1'} term(list)~{# == 'id2'}[0,10] term(opt)~{# == 'id3'}?"
                 )
