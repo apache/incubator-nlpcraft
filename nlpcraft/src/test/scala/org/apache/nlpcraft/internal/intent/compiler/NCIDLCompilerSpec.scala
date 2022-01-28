@@ -290,3 +290,21 @@ class NCIDLCompilerSpec:
               |     fragment(f1_, {'a': true, 'b': ["s1", "s2"]})
               |""".stripMargin
         )
+
+    @Test
+    def testImport(): Unit = require(NCIDLCompiler.compile("import('scan/idl.idl')", CFG, "-").size == 1)
+
+    @Test
+    def testEmpty(): Unit =
+        def test0(f: () => Unit): Unit =
+            try
+                f()
+
+                require(false)
+            catch
+                case e: NCException => println(s"Expected error: ${e}")
+
+        test0(() => NCIDLCompiler.compile("", CFG, "-"))
+        test0(() => NCIDLCompiler.compile(" ", CFG, "-"))
+        test0(() => NCIDLCompiler.compile(null, CFG, "-"))
+
