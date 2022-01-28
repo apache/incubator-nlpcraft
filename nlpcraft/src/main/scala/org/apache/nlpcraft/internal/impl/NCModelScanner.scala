@@ -246,8 +246,6 @@ object NCModelScanner extends LazyLogging:
 
         res
 
-
-
     /**
       *
       * @param mtd
@@ -425,10 +423,7 @@ class NCModelScanner(mdl: NCModel) extends LazyLogging:
         val anns = mtd.getAnnotationsByType(CLS_INTENT)
 
         if anns.nonEmpty then
-            lazy val mtdStr = method2Str(mtd)
-
-            if anns.exists(a => a == null || a.value().strip().isEmpty) then
-                E(s"Unexpected empty annotation definition @NCIntentRef in $mtdStr") // TODO: text
+            val mtdStr = method2Str(mtd)
 
             for (ann <- anns; intent <- NCIDLCompiler.compile(ann.value, cfg, mtdStr))
                 if intentDecls.exists(_.id == intent.id && existsForOtherMethod(intent.id)) then
@@ -444,17 +439,12 @@ class NCModelScanner(mdl: NCModel) extends LazyLogging:
     private def processMethodRefs(mtd: Method, obj: Object): Unit =
         val anns = mtd.getAnnotationsByType(CLS_INTENT_REF)
 
-        if anns.nonEmpty then
-            lazy val mtdStr = method2Str(mtd)
-            if anns.exists(a => a == null || a.value().strip().isEmpty) then
-                E(s"Unexpected empty annotation definition @NCIntent in $mtdStr") // TODO: text
+        for (ann <- anns)
+            val refId = ann.value.strip
 
-            for (ann <- anns)
-                val refId = ann.value.trim
-
-                intentDecls.find(_.id == refId) match
-                    case Some(intent) => bindIntent(intent, prepareCallback(mtd, obj, intent), mtd)
-                    case None => E(s"@NCIntentRef(\"$refId\") references unknown intent ID [mdlId=$mdlId, origin=$origin, refId=$refId, callback=$mtdStr]")
+            intentDecls.find(_.id == refId) match
+                case Some(intent) => bindIntent(intent, prepareCallback(mtd, obj, intent), mtd)
+                case None => E(s"@NCIntentRef(\"$refId\") references unknown intent ID [mdlId=$mdlId, origin=$origin, refId=$refId, callback=${method2Str(mtd)}]")
 
     /**
       *
@@ -595,11 +585,27 @@ class NCModelScanner(mdl: NCModel) extends LazyLogging:
       * @return
       */
     def scan(): Seq[NCModelIntent] =
+        def processClassHierarchy(claxx: Class[_]): Unit =
+            if claxx != null then
+                val anns = claxx.getAnnotationsByType(CLS_INTENT)
+
+                if anns.nonEmpty then
+                    val origin = getClassName(claxx)
+
+                    for (ann <- anns; intent <- NCIDLCompiler.compile(ann.value, cfg, origin))
+                        // TODO: duplicate
+                        intentDecls += intent
+
+                processClassHierarchy(claxx.getSuperclass)
+                claxx.getInterfaces.foreach(processClassHierarchy)
+
         // 1. First phase scan.
         //  - For given object finds references via fields (NCIntentObject). Scans also each reference recursively and collects them.
         //  - For all methods of processed object collects samples (NCIntentSample, NCIntentSampleRef) and intents (NCIntent)
         def scan(obj: Object): Unit =
             objs += obj
+
+            processClassHierarchy(obj.getClass)
 
             for (m <- getAllMethods(obj)) processMethod(m, obj)
             for (f <- getAllFields(obj) if f.isAnnotationPresent(CLS_INTENT_OBJ)) scan(getFieldObject(mdlId, f, obj))

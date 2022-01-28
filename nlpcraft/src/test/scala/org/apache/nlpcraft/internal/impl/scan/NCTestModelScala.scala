@@ -25,7 +25,6 @@ import org.apache.nlpcraft.nlp.util.opennlp.*
   *
   */
 object NCTestModelScala:
-    @NCIntent("import('scan/idl.idl')")
     object NCTestModelScalaObj extends NCTestModelAdapter :
         @NCIntent("intent=locInt term(single)~{# == 'id1'} term(list)~{# == 'id2'}[0,10] term(opt)~{# == 'id3'}?")
         @NCIntentSample(Array("What are the least performing categories for the last quarter?"))
@@ -35,7 +34,7 @@ object NCTestModelScala:
             @NCIntentTerm("opt") opt: Option[NCEntity]
         ): NCResult = new NCResult()
 
-        @NCIntentRef("impIntId")
+        @NCIntent("import('scan/idl.idl')")
         @NCIntentSampleRef("scan/samples.txt")
         def intentImport(
             @NCIntentTerm("single") single: NCEntity,
@@ -66,7 +65,6 @@ object NCTestModelScala:
       * @return
       */
     def mkModel: NCModel = new NCTestModelAdapter() :
-        @NCIntent("import('scan/idl.idl')")
         @NCIntent("intent=locInt term(single)~{# == 'id1'} term(list)~{# == 'id2'}[0,10] term(opt)~{# == 'id3'}?")
         @NCIntentSample(Array("What are the least performing categories for the last quarter?"))
         def intent(
@@ -75,7 +73,7 @@ object NCTestModelScala:
             @NCIntentTerm("opt") opt: Option[NCEntity]
         ): NCResult = new NCResult()
 
-        @NCIntentRef("impIntId")
+        @NCIntent("import('scan/idl.idl')")
         @NCIntentSampleRef("scan/samples.txt")
         def intentImport(
             @NCIntentTerm("single") single: NCEntity,

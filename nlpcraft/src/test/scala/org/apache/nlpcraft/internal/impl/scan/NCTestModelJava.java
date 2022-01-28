@@ -42,7 +42,6 @@ public class NCTestModelJava {
     public static NCModel mkModel() {
         return
             new NCModelAdapter(NCTestConfigJava.CFG, NCTestConfigJava.EN_PIPELINE) {
-                @NCIntent("import('scan/idl.idl')")
                 @NCIntent(
                     "intent=locInt term(single)~{# == 'id1'} term(list)~{# == 'id2'}[0,10] term(opt)~{# == 'id3'}?"
                 )
@@ -55,7 +54,7 @@ public class NCTestModelJava {
                     return new NCResult();
                 }
 
-                @NCIntentRef("impIntId")
+                @NCIntent("import('scan/idl.idl')")
                 @NCIntentSampleRef("scan/samples.txt")
                 NCResult intentImport(
                     @NCIntentTerm("single") NCEntity single,

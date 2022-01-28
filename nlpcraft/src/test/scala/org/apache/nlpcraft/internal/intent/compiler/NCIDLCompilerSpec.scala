@@ -57,7 +57,7 @@ class NCIDLCompilerSpec:
     
         checkCompileOk(
             """
-              |import('org/apache/nlpcraft/model/intent/idl/compiler/test_ok.idl')
+              |import('org/apache/nlpcraft/internal/intent/compiler/test_ok.idl')
               |""".stripMargin
         )
         checkCompileOk(

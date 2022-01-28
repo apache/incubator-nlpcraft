@@ -27,12 +27,11 @@ import org.junit.jupiter.api.Test
   * It tests imports and nested objects usage.
   */
 class NCModelIntentsNestedSpec:
-    private val MDL_VALID: NCModel = new NCTestModelAdapter:
+    private val MDL_VALID1: NCModel = new NCTestModelAdapter:
         @NCIntentObject
         val nested1: Object = new Object():
             @NCIntentObject
             val nested2: Object = new Object():
-                @NCIntent("import('scan/idl.idl')")
                 @NCIntent("intent=intent3 term(x)~{true}")
                 def intent1(@NCIntentTerm("x") x: NCEntity) = new NCResult()
 
@@ -42,8 +41,32 @@ class NCModelIntentsNestedSpec:
         @NCIntent("intent=intent1 term(x)~{true}")
         def intent1(@NCIntentTerm("x") x: NCEntity) = new NCResult()
 
-        // Imported in `nested2` (scan/idl.idl)
-        @NCIntentRef("impIntId")
+        @NCIntent("import('scan/idl.idl')")
+        def intent4(
+            @NCIntentTerm("single") single: NCEntity,
+            @NCIntentTerm("list") list: List[NCEntity],
+            @NCIntentTerm("opt") opt: Option[NCEntity]
+        ): NCResult = new NCResult()
+
+    private val MDL_VALID2: NCModel = new NCTestModelAdapter:
+        @NCIntent("import('scan/idl.idl')")
+        class RefClass:
+            ()
+
+        @NCIntentObject
+        val nested1: Object = new Object():
+            @NCIntentObject
+            val nested2 = new RefClass():
+                @NCIntent("intent=intent3 term(x)~{true}")
+                def intent1(@NCIntentTerm("x") x: NCEntity) = new NCResult()
+
+            @NCIntent("intent=intent2 term(x)~{true}")
+            def intent1(@NCIntentTerm("x") x: NCEntity) = new NCResult()
+
+        @NCIntent("intent=intent1 term(x)~{true}")
+        def intent1(@NCIntentTerm("x") x: NCEntity) = new NCResult()
+
+        @NCIntentRef("impIntId") // Reference via nested2 (RefClass)
         def intent4(
             @NCIntentTerm("single") single: NCEntity,
             @NCIntentTerm("list") list: List[NCEntity],
@@ -57,7 +80,9 @@ class NCModelIntentsNestedSpec:
             val nested2: Object = null
 
     @Test
-    def test(): Unit = require(new NCModelScanner(MDL_VALID).scan().sizeIs == 4)
+    def test(): Unit =
+        require(new NCModelScanner(MDL_VALID1).scan().sizeIs == 4)
+        require(new NCModelScanner(MDL_VALID2).scan().sizeIs == 4)
 
     @Test
     def testNull(): Unit =
