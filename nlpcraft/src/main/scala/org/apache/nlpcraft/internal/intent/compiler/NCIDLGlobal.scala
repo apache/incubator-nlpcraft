@@ -23,7 +23,7 @@ import scala.collection.mutable
 /**
   * Global IDL compiler state.
   */
-object NCIDLCompilerGlobal:
+object NCIDLGlobal:
     private final val fragCache = TrieMap.empty[String /* Model ID. */ , mutable.Map[String, NCIDLFragment]]
     private final val importCache = mutable.HashSet.empty[String]
 

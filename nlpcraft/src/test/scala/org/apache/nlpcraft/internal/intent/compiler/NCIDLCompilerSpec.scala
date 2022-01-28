@@ -53,7 +53,7 @@ class NCIDLCompilerSpec:
     @Test
     @throws[NCException]
     def testInlineCompileOk(): Unit =
-        NCIDLCompilerGlobal.clearCache(MODEL_ID)
+        NCIDLGlobal.clearCache(MODEL_ID)
     
         checkCompileOk(
             """
@@ -120,7 +120,7 @@ class NCIDLCompilerSpec:
     @Test
     @throws[NCException]
     def testInlineCompileFail(): Unit =
-        NCIDLCompilerGlobal.clearCache(MODEL_ID)
+        NCIDLGlobal.clearCache(MODEL_ID)
 
         checkCompileError(
             """

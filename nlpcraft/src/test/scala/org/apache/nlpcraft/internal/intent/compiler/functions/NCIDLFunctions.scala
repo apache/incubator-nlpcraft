@@ -166,7 +166,7 @@ import org.apache.nlpcraft.internal.intent.compiler.functions.NCIDLFunctions.*
   */
 private[functions] trait NCIDLFunctions:
     @BeforeEach
-    def before(): Unit = NCIDLCompilerGlobal.clearCache(MODEL_ID)
+    def before(): Unit = NCIDLGlobal.clearCache(MODEL_ID)
 
     /**
       *

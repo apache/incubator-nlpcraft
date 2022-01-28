@@ -181,12 +181,12 @@ object NCIDLCompiler extends LazyLogging:
 
         override def exitFragId(ctx: IDP.FragIdContext): Unit =
             fragId = ctx.id().getText
-            if NCIDLCompilerGlobal.getFragment(mdlCfg.getId, fragId).isDefined then SE(s"Duplicate fragment ID: $fragId")(ctx.id())
+            if NCIDLGlobal.getFragment(mdlCfg.getId, fragId).isDefined then SE(s"Duplicate fragment ID: $fragId")(ctx.id())
 
         override def exitFragRef(ctx: IDP.FragRefContext): Unit =
             val id = ctx.id().getText
 
-            NCIDLCompilerGlobal.getFragment(mdlCfg.getId, id) match
+            NCIDLGlobal.getFragment(mdlCfg.getId, id) match
                 case Some(frag) =>
                     val meta = if fragMeta == null then Map.empty[String, Any] else fragMeta
                     for (fragTerm <- frag.terms)
@@ -256,7 +256,7 @@ object NCIDLCompiler extends LazyLogging:
             }
 
         override def exitFrag(ctx: IDP.FragContext): Unit =
-            NCIDLCompilerGlobal.addFragment(mdlCfg.getId, NCIDLFragment(fragId, terms.toList))
+            NCIDLGlobal.addFragment(mdlCfg.getId, NCIDLFragment(fragId, terms.toList))
             terms.clear()
             fragId = null
 
@@ -286,6 +286,38 @@ object NCIDLCompiler extends LazyLogging:
             intentMeta = null
             intentOpts = new NCIDLIntentOptions()
             terms.clear()
+
+        override def exitImprt(ctx: IDP.ImprtContext): Unit =
+                val x = NCUtils.trimQuotes(ctx.qstring().getText)
+
+                if NCIDLGlobal.hasImport(x) then logger.warn(s"Ignoring already processed IDL import '$x' in: $origin")
+                else
+                    NCIDLGlobal.addImport(x)
+
+                    var imports: Set[NCIDLIntent] = null
+                    val file = new File(x)
+
+                    // First, try absolute path.
+                    if file.exists() then
+                        val idl = NCUtils.readFile(file).mkString("\n")
+                        imports = NCIDLCompiler.compile(idl, mdlCfg, x)
+
+                    // Second, try as a classloader resource.
+                    if imports == null then
+                        val in = mdlCfg.getClass.getClassLoader.getResourceAsStream(x)
+                        if (in != null)
+                            val idl = NCUtils.readStream(in).mkString("\n")
+                            imports = NCIDLCompiler.compile(idl, mdlCfg, x)
+
+                    // Finally, try as URL resource.
+                    if imports == null then
+                        try
+                            val idl = NCUtils.readStream(new URL(x).openStream()).mkString("\n")
+                            imports = NCIDLCompiler.compile(idl, mdlCfg, x )
+                        catch case _: Exception => throw newRuntimeError(s"Invalid or unknown import location: $x")(ctx.qstring())
+
+                    require(imports != null)
+                    imports.foreach(addIntent(_)(ctx.qstring()))
 
         override def syntaxError(errMsg: String, srcName: String, line: Int, pos: Int): NCException =
             throw new NCException(mkSyntaxError(errMsg, srcName, line, pos, idl, origin, mdlCfg))
