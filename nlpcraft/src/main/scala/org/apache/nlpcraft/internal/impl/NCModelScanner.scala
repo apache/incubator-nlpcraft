@@ -347,7 +347,7 @@ class NCModelScanner(mdl: NCModel) extends LazyLogging:
                     case _ =>
                         // Scala.
                         if COMP_CLS.exists(_ == paramGenType) then
-                            if (!warned)
+                            if !warned then
                                 warned = true // TODO: text
                                 logger.warn(s"Method arguments types cannot be detected and checked: ${method2Str(mtd)}")
                             end if
