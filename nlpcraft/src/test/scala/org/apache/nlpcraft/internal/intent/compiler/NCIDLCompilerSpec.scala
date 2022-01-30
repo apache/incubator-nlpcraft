@@ -292,19 +292,17 @@ class NCIDLCompilerSpec:
         )
 
     @Test
-    def testImport(): Unit = require(NCIDLCompiler.compile("import('scan/idl.idl')", CFG, "-").size == 1)
+    def testImport(): Unit = require(NCIDLCompiler.compile("import('scan/idl.idl')", CFG, "test-origin").size == 1)
 
     @Test
     def testEmpty(): Unit =
-        def test0(f: () => Unit): Unit =
+        def test0(idl: String): Unit =
             try
-                f()
-
-                require(false)
+                NCIDLCompiler.compile(idl, CFG, "test-origin")
+                require(true)
             catch
-                case e: NCException => println(s"Expected error: ${e}")
+                case e: NCException => println(s"Unexpected error: $e")
 
-        test0(() => NCIDLCompiler.compile("", CFG, "-"))
-        test0(() => NCIDLCompiler.compile(" ", CFG, "-"))
-        test0(() => NCIDLCompiler.compile(null, CFG, "-"))
+        test0("")
+        test0(" ")
 

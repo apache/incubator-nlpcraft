@@ -34,5 +34,5 @@ class NCModelIntentsSpec:
     )
 
     @Test
-    def test(): Unit = for (mdl <- mdls) require(new NCModelScanner(mdl).scan().nonEmpty)
+    def test(): Unit = for (mdl <- mdls) require(NCModelScanner.scan(mdl).nonEmpty)
 
