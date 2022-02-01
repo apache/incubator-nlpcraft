@@ -495,7 +495,7 @@ object NCModelScanner extends LazyLogging:
 
         val cfg = mdl.getConfig
         lazy val z = s"mdlId=${cfg.getId}"
-        val intents = mutable.Buffer.empty[IntentHolder]
+        val intentsMtds = mutable.HashMap.empty[Method, IntentHolder]
         val intentDecls = mutable.HashMap.empty[String, NCIDLIntent]
         val objs = mutable.Buffer.empty[AnyRef]
         val processed = mutable.HashSet.empty[Class[_]]
@@ -508,8 +508,8 @@ object NCModelScanner extends LazyLogging:
             intentDecls += intent.id -> intent
 
         def addIntent(intent: NCIDLIntent, mtd: Method, obj: AnyRef): Unit =
-            if intents.exists(_.method == mtd) then E(s"The callback cannot have more one intent [$z, callback=${method2Str(mtd)}]")
-            intents += IntentHolder(cfg, intent, obj, mtd)
+            if intentsMtds.contains(mtd) then E(s"The callback cannot have more one intent [$z, callback=${method2Str(mtd)}]")
+            intentsMtds += mtd -> IntentHolder(cfg, intent, obj, mtd)
 
         def processClassAnnotations(cls: Class[_]): Unit =
             if cls != null && processed.add(cls) then
@@ -558,6 +558,8 @@ object NCModelScanner extends LazyLogging:
 
             addDecl(intent)
             addIntent(intent, mtd, obj)
+
+        val intents = intentsMtds.values
 
         val unusedIds = intentDecls.keys.filter(k => !intents.exists(_.intent.id == k))
         if unusedIds.nonEmpty then
