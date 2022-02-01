@@ -32,6 +32,8 @@ object NCCompilerUtils:
       * @return
       */
     def mkErrorHolder(in: String, charPos: Int): CompilerErrorHolder =
+        require(charPos >= 0)
+
         val charPos0 = charPos - (in.length - in.stripLeading().length)
         val in0 = in.strip()
         val pos = Math.max(0, charPos0)
