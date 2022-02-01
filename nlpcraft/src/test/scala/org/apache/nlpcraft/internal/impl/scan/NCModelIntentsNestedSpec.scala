@@ -81,13 +81,13 @@ class NCModelIntentsNestedSpec:
 
     @Test
     def test(): Unit =
-        require(new NCModelScanner(MDL_VALID1).scan().sizeIs == 4)
-        require(new NCModelScanner(MDL_VALID2).scan().sizeIs == 4)
+        require(NCModelScanner.scan(MDL_VALID1).sizeIs == 4)
+        require(NCModelScanner.scan(MDL_VALID2).sizeIs == 4)
 
     @Test
     def testNull(): Unit =
         try
-            new NCModelScanner(MDL_INVALID).scan()
+            NCModelScanner.scan(MDL_INVALID)
 
             require(false)
         catch

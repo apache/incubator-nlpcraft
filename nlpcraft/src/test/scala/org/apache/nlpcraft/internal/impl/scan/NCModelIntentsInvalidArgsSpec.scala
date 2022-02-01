@@ -102,12 +102,12 @@ class NCModelIntentsInvalidArgsSpec:
         mkResult0(list)
 
     private def testOk(mdl: NCModel, intentId: String): Unit =
-        val i = new NCModelScanner(mdl).scan().find(_.intent.id == intentId).get
+        val i = NCModelScanner.scan(mdl).find(_.intent.id == intentId).get
 
         println(s"Test finished [modelClass=${mdl.getClass}, intent=$intentId, result=${i.function(INTENT_MATCH)}")
 
     private def testRuntimeClassCast(mdl: NCModel, intentId: String): Unit =
-        val i = new NCModelScanner(mdl).scan().find(_.intent.id == intentId).get
+        val i = NCModelScanner.scan(mdl).find(_.intent.id == intentId).get
 
         try
             i.function(INTENT_MATCH)
@@ -123,7 +123,7 @@ class NCModelIntentsInvalidArgsSpec:
 
     private def testScanValidation(mdl: NCModel): Unit =
         try
-            new NCModelScanner(mdl).scan()
+            NCModelScanner.scan(mdl)
 
             require(false)
         catch

@@ -45,11 +45,9 @@ import scala.util.Using
 case class NCModelIntent(intent: NCIDLIntent, function: NCIntentMatch => NCResult, samples: Seq[Seq[String]])
 
 /**
-  * TODO: common comment for annotations usage. Do not apply annotations for unused private methods and fields. Compiler can drop them.
+  *
   */
 object NCModelScanner extends LazyLogging:
-    private final val SEPARATORS = Seq('?', ',', '.', '-', '!')
-
     private final val CLS_INTENT = classOf[NCIntent]
     private final val CLS_INTENT_REF = classOf[NCIntentRef]
     private final val CLS_QRY_RES = classOf[NCResult]
@@ -67,6 +65,12 @@ object NCModelScanner extends LazyLogging:
 
     private final val CLS_ENTITY = classOf[NCEntity]
 
+    private lazy val I = "@NCIntent"
+    private lazy val IT = "@NCIntentTerm"
+    private lazy val IR = "@NCIntentRef"
+    private lazy val S = "@NCIntentSample"
+    private lazy val SR = "@NCIntentSampleRef"
+
     private final val COMP_CLS: Set[Class[_]] = Set(
         CLS_SCALA_SEQ,
         CLS_SCALA_LST,
@@ -75,15 +79,20 @@ object NCModelScanner extends LazyLogging:
         CLS_JAVA_OPT
     )
 
-    private case class CallbackHolder(method: Method, function: NCIntentMatch => NCResult)
+    /**
+      *
+      * @param intent
+      * @param function
+      * @param method
+      */
     private case class IntentHolder(intent: NCIDLIntent, function: NCIntentMatch => NCResult, method: Method)
 
     /**
       *
-      * @param cls
-      * @return
       */
-    private def class2Str(cls: Class[_]): String = if cls == null then "null" else s"'${cls.getSimpleName}'"
+    private object IntentHolder:
+        def apply(cfg: NCModelConfig, intent: NCIDLIntent, obj: AnyRef, mtd: Method): IntentHolder =
+            new IntentHolder(intent, prepareCallback(cfg, mtd, obj, intent), mtd)
 
     /**
       *
@@ -94,10 +103,17 @@ object NCModelScanner extends LazyLogging:
 
     /**
       *
+      * @param iter
+      * @return
+      */
+    private def col2Str(iter: Iterable[_]): String = iter.mkString("(", ",", ")")
+
+    /**
+      *
       * @param clazz
       * @return
       */
-    private def getClassName(clazz: Class[_]): String =
+    private def class2Str(clazz: Class[_]): String =
         val cls = clazz.getSimpleName.strip
         // Anonymous classes (like `class foo.bar.name$1`) doesn't have simple names.
         if cls.nonEmpty then cls else clazz.getName.reverse.takeWhile(_ != '.').reverse
@@ -108,10 +124,9 @@ object NCModelScanner extends LazyLogging:
       * @return
       */
     private def method2Str(mtd: Method): String =
-        val cls = getClassName(mtd.getDeclaringClass)
+        val cls = class2Str(mtd.getDeclaringClass)
         val name = mtd.getName
         val args = mtd.getParameters.map(_.getType.getSimpleName).mkString(", ")
-
         s"$cls#$name($args)"
 
     /**
@@ -120,30 +135,29 @@ object NCModelScanner extends LazyLogging:
       * @return
       */
     private def field2Str(f: Field): String =
-        val cls = getClassName(f.getDeclaringClass)
+        val cls = class2Str(f.getDeclaringClass)
         val name = f.getName
-
         s"$cls.$name"
 
     /**
       *
-      * @param mdlId
+      * @param cfg
       * @param mtd
-      * @param paramClss
+      * @param prmClss
       * @param argsList
-      * @param ctxFirstParam
+      * @param ctxFirstPrm
       * @return
       */
-    private def prepareParams(mdlId: String, mtd: Method, paramClss: Seq[Class[_]], argsList: Seq[util.List[NCEntity]], ctxFirstParam: Boolean): Seq[AnyRef] =
-        paramClss.zip(argsList).zipWithIndex.map { case ((paramCls, argList), i) =>
-            def mkArg(): String = arg2Str(mtd, i, ctxFirstParam)
+    private def prepareParams(cfg: NCModelConfig, mtd: Method, prmClss: Seq[Class[_]], argsList: Seq[util.List[NCEntity]], ctxFirstPrm: Boolean): Seq[AnyRef] =
+        prmClss.zip(argsList).zipWithIndex.map { case ((paramCls, argList), i) =>
+            def mkArg(): String = arg2Str(mtd, i, ctxFirstPrm)
 
+            lazy val z = s"mdlId=${cfg.getId}, type=$paramCls, arg=${mkArg()}"
             val entsCnt = argList.size()
 
             // Single entity.
             if paramCls == CLS_ENTITY then
-                if entsCnt != 1 then
-                    E(s"Expected single entity (found $entsCnt) in @NCIntentTerm annotated argument [mdlId=$mdlId, arg=${mkArg()}]")
+                if entsCnt != 1 then E(s"Expected single entity (found $entsCnt) in $IT annotated argument [$z]")
 
                 argList.get(0)
             // Array of entities.
@@ -161,89 +175,76 @@ object NCModelScanner extends LazyLogging:
                 entsCnt match
                     case 0 => None
                     case 1 => Option(argList.get(0))
-                    case _ => E(s"Too many entities ($entsCnt) for scala.Option[_] @NCIntentTerm annotated argument [mdlId$mdlId, arg=${mkArg()}]")
+                    case _ => E(s"Too many entities ($entsCnt) for 'scala.Option[_]' $IT annotated argument [$z]")
             else if paramCls == CLS_JAVA_OPT then
                 entsCnt match
                     case 0 => util.Optional.empty()
                     case 1 => util.Optional.of(argList.get(0))
-                    case _ => E(s"Too many entities ($entsCnt) for java.util.Optional @NCIntentTerm annotated argument [mdlId$mdlId, arg=${mkArg()}]")
+                    case _ => E(s"Too many entities ($entsCnt) for 'java.util.Optional' $IT annotated argument [$z]")
             else
                 // All allowed arguments types already checked.
-                throw new AssertionError(s"Unexpected callback @NCIntentTerm argument type [mdlId=$mdlId, type=$paramCls, arg=${mkArg()}]")
+                throw new AssertionError(s"Unexpected type for callback's $IT argument [$z]")
         }
 
     /**
       *
-      * @param mdlId
-      * @param method
+      * @param cfg
+      * @param mtd
       * @param obj
       * @param args
       * @return
       */
-    private def invoke(mdlId: String, method: Method, obj: Object, args: scala.Array[AnyRef]): NCResult =
-        val methodObj = if Modifier.isStatic(method.getModifiers) then null else obj
-        var flag = method.canAccess(methodObj)
-
+    private def invoke(cfg: NCModelConfig, mtd: Method, obj: AnyRef, args: scala.Array[AnyRef]): NCResult =
+        val methodObj = if Modifier.isStatic(mtd.getModifiers) then null else obj
+        var flag = mtd.canAccess(methodObj)
+        lazy val z = s"mdlId=${cfg.getId}, callback=${method2Str(mtd)}"
         try
             if !flag then
-                method.setAccessible(true)
-
+                mtd.setAccessible(true)
                 flag = true
             else
                 flag = false
-
-            method.invoke(methodObj, args: _*).asInstanceOf[NCResult]
+            mtd.invoke(methodObj, args: _*).asInstanceOf[NCResult]
         catch
             case e: InvocationTargetException =>
                 e.getTargetException match
                     case cause: NCIntentSkip => throw cause
                     case cause: NCRejection => throw cause
                     case cause: NCException => throw cause
-                    case cause: Throwable => E(s"Intent callback invocation error [mdlId=$mdlId, callback=${method2Str(method)}]", cause)
-
-            case e: Throwable => E(s"Unexpected intent callback invocation error [mdlId=$mdlId, callback=${method2Str(method)}]", e)
+                    case cause: Throwable => E(s"Intent callback invocation error [$z]", cause)
+            case e: Throwable => E(s"Unexpected intent callback invocation error [$z]", e)
         finally
             if flag then
-                try
-                    method.setAccessible(false)
-                catch
-                    case e: SecurityException => E(s"Access or security error in intent callback [mdlId=$mdlId, callback=${method2Str(method)}]", e)
+                try mtd.setAccessible(false)
+                catch case e: SecurityException => E(s"Access or security error in intent callback [$z]", e)
 
     /**
       *
-      * @param mdlId
+      * @param cfg
       * @param field
       * @param obj
       * @return
       */
-    private def getFieldObject(mdlId: String, field: Field, obj: Object): Object =
+    private def getFieldObject(cfg: NCModelConfig, field: Field, obj: AnyRef): AnyRef =
         lazy val fStr = field2Str(field)
         val fieldObj = if Modifier.isStatic(field.getModifiers) then null else obj
         var flag = field.canAccess(fieldObj)
+        lazy val z = s"mdlId=${cfg.getId}, field=$fStr"
         val res =
             try
                 if !flag then
                     field.setAccessible(true)
-
                     flag = true
                 else
                     flag = false
-
                 field.get(fieldObj)
-            catch
-                // TODO: text
-                case e: Throwable => E(s"Unexpected field access error [mdlId=$mdlId, field=$fStr]", e)
+            catch case e: Throwable => E(s"Unexpected field access error [$z]", e)
             finally
                 if flag then
-                    try
-                        field.setAccessible(false)
-                    catch
-                        // TODO: text
-                        case e: SecurityException => E(s"Access or security error in field [mdlId=$mdlId, field=$fStr]", e)
+                    try field.setAccessible(false)
+                    catch case e: SecurityException => E(s"Access or security error in field [$z]", e)
 
-        if res == null then
-            throw new NCException(s"Value is null for: $fStr") // TODO: text
-
+        if res == null then throw new NCException(s"Field value cannot be 'null' for [$z]")
         res
 
     /**
@@ -262,8 +263,8 @@ object NCModelScanner extends LazyLogging:
       * @return Methods.
       */
     private def getAllMethods(o: AnyRef): Set[Method] =
-        val claxx = o.getClass
-        (claxx.getDeclaredMethods ++ claxx.getMethods).toSet
+        val cls = o.getClass
+        (cls.getDeclaredMethods ++ cls.getMethods).toSet
 
     /**
       * Gets its own fields including private and accessible from parents.
@@ -272,35 +273,62 @@ object NCModelScanner extends LazyLogging:
       * @return Fields.
       */
     private def getAllFields(o: AnyRef): Set[Field] =
-        val claxx = o.getClass
-        (claxx.getDeclaredFields ++ claxx.getFields).toSet
-
-import org.apache.nlpcraft.internal.impl.NCModelScanner.*
-
-/**
-  *
-  * @param mdl
-  */
-class NCModelScanner(mdl: NCModel) extends LazyLogging:
-    require(mdl != null)
-
-    private final val cfg = mdl.getConfig
-    private final val mdlId = cfg.getId
-    private final val origin = cfg.getOrigin
-
-    private final val intents = mutable.Buffer.empty[IntentHolder]
-    private final val intentDecls = mutable.Buffer.empty[NCIDLIntent]
-    private final val objs = mutable.Buffer.empty[Object]
-    private final val samples = mutable.HashMap.empty[Method, Map[String, Seq[Seq[String]]]]
+        val cls = o.getClass
+        (cls.getDeclaredFields ++ cls.getFields).toSet
 
     /**
       *
+      * @param cfg
+      * @param mtd
+      * @return
+      */
+    private def scanSamples(cfg: NCModelConfig, mtd: Method): Map[String, Seq[Seq[String]]] =
+        val smpAnns = mtd.getAnnotationsByType(CLS_SAMPLE)
+        val smpAnnsRef = mtd.getAnnotationsByType(CLS_SAMPLE_REF)
+        lazy val mtdStr = method2Str(mtd)
+        lazy val intAnns = mtd.getAnnotationsByType(CLS_INTENT)
+        lazy val refAnns = mtd.getAnnotationsByType(CLS_INTENT_REF)
+        lazy val samples = mutable.HashMap.empty[String, Seq[Seq[String]]]
+
+        if smpAnns.nonEmpty || smpAnnsRef.nonEmpty then
+            if intAnns.isEmpty && refAnns.isEmpty then
+                E(s"$S or $SR annotations without corresponding $I or $IR annotations: $mtdStr")
+            else
+                def read[T](annArr: scala.Array[T], annName: String, getSamples: T => Seq[String], getSource: Option[T => String]): Seq[Seq[String]] =
+                    for (ann <- annArr.toSeq) yield
+                        val samples = getSamples(ann).map(_.strip).filter(s => s.nonEmpty && s.head != '#')
+                        if samples.isEmpty then
+                            getSource match
+                                case None => logger.warn(s"$annName annotation has no samples: $mtdStr")
+                                case Some(f) => logger.warn(s"$annName annotation references '${f(ann)}' file that has no samples: $mtdStr")
+                            Seq.empty
+                        else
+                            samples.filter(_.nonEmpty)
+
+                val seqSeq =
+                    read[NCIntentSample](smpAnns, S, _.value.toSeq, None) ++
+                    read[NCIntentSampleRef](smpAnnsRef, SR, a => NCUtils.readResource(a.value), Option(_.value))
+
+                if NCUtils.containsDups(seqSeq.flatMap(_.toSeq).toList) then
+                    logger.warn(s"$S and $SR annotations have duplicates: $mtdStr")
+
+                val distinct = seqSeq.map(_.distinct).distinct
+                for (ann <- intAnns; intent <- NCIDLCompiler.compile(ann.value, cfg, mtdStr)) samples += intent.id -> distinct
+                for (ann <- refAnns) samples += ann.value -> distinct
+        else if intAnns.nonEmpty || refAnns.nonEmpty then
+            logger.warn(s"$S or $SR annotations are missing for: $mtdStr")
+
+        samples.toMap
+
+    /**
+      *
+      * @param cfg
       * @param mtd
       * @param argClasses
       * @param paramGenTypes
       * @param ctxFirstParam
       */
-    private def checkTypes(mtd: Method, argClasses: Seq[Class[_]], paramGenTypes: Seq[Type], ctxFirstParam: Boolean): Unit =
+    private def checkTypes(cfg: NCModelConfig, mtd: Method, argClasses: Seq[Class[_]], paramGenTypes: Seq[Type], ctxFirstParam: Boolean): Unit =
         require(argClasses.sizeIs == paramGenTypes.length)
 
         var warned = false
@@ -308,155 +336,95 @@ class NCModelScanner(mdl: NCModel) extends LazyLogging:
         argClasses.zip(paramGenTypes).zipWithIndex.foreach { case ((argClass, paramGenType), i) =>
             def mkArg(): String = arg2Str(mtd, i, ctxFirstParam)
 
+            lazy val z = s"mdlId=${cfg.getId}, type=${class2Str(argClass)}, arg=${mkArg()}"
+
             // Entity.
             if argClass == CLS_ENTITY then () // No-op.
             else if argClass.isArray then
                 val compType = argClass.getComponentType
-
                 if compType != CLS_ENTITY then
-                    E(s"Unexpected array element type for @NCIntentTerm annotated argument [mdlId=$mdlId, origin=$origin, type=${class2Str(compType)}, arg=${mkArg()}]")
-            // Entities collection and optionals.
+                    E(s"Unexpected array element type for $IT annotated argument [$z]")
+                // Entities collection and optionals.
             else if COMP_CLS.contains(argClass) then
                 paramGenType match
                     case pt: ParameterizedType =>
                         val actTypes = pt.getActualTypeArguments
                         val compTypes = if actTypes == null then Seq.empty else actTypes.toSeq
-
                         if compTypes.sizeIs != 1 then
-                            E(s"Unexpected generic types count for @NCIntentTerm annotated argument [mdlId=$mdlId, origin=$origin, count=${compTypes.length}, arg=${mkArg()}]")
-
+                            E(s"Unexpected generic types count for $IT annotated argument [count=${compTypes.length}, $z]")
                         val compType = compTypes.head
-
                         compType match
                             // Java, Scala, Groovy.
                             case _: Class[_] =>
                                 val genClass = compTypes.head.asInstanceOf[Class[_]]
                                 if genClass != CLS_ENTITY then
-                                    E(s"Unexpected generic type for @NCIntentTerm annotated argument [mdlId=$mdlId, origin=$origin, type=${class2Str(genClass)}, arg=${mkArg()}]")
-
+                                    E(s"Unexpected generic type for $IT annotated argument [$z]")
                             // Kotlin.
                             case _: WildcardType =>
                                 val wildcardType = compTypes.head.asInstanceOf[WildcardType]
                                 val lowBounds = wildcardType.getLowerBounds
                                 val upBounds = wildcardType.getUpperBounds
                                 if lowBounds.nonEmpty || upBounds.size != 1 || upBounds(0) != CLS_ENTITY then
-                                    E(s"Unexpected Kotlin generic type for @NCIntentTerm annotated argument [mdlId=$mdlId, origin=$origin, type=${wc2Str(wildcardType)}, arg=${mkArg()}]")
-
-                            case _ => E(s"Unexpected generic type for @NCIntentTerm annotated argument [mdlId=$mdlId, origin=$origin, type=${compType.getTypeName}, arg=${mkArg()}]")
-
+                                    E(s"Unexpected Kotlin generic type for $IT annotated argument [$z]")
+                            case _ => E(s"Unexpected generic type for $IT annotated argument [$z]")
                     case _ =>
                         // Scala.
                         if COMP_CLS.exists(_ == paramGenType) then
                             if !warned then
-                                warned = true // TODO: text
-                                logger.warn(s"Method arguments types cannot be detected and checked: ${method2Str(mtd)}")
+                                warned = true
+                                logger.warn(s"Unable to detected and type-check method argument [${method2Str(mtd)}, $z]")
                             end if
                         else
-                            E(s"Unexpected parameter type for @NCIntentTerm annotated argument [mdlId=$mdlId, origin=$origin, type=${paramGenType.getTypeName}, arg=${mkArg()}]")
-            // Other types.
+                            E(s"Unexpected parameter type for $IT annotated argument [$z]")
             else
-                E(s"Unexpected parameter type for @NCIntentTerm annotated argument [mdlId=$mdlId, origin=$origin, type=${class2Str(argClass)}, arg=${mkArg()}]")
+                // Other types.
+                E(s"Unexpected parameter type for $IT annotated argument [$z]")
         }
 
     /**
       *
+      * @param cfg
       * @param mtd
       * @param paramCls
       * @param limits
       * @param ctxFirstParam
       */
-    private def checkMinMax(mtd: Method, paramCls: Seq[Class[_]], limits: Seq[(Int, Int)], ctxFirstParam: Boolean): Unit =
+    private def checkMinMax(cfg: NCModelConfig, mtd: Method, paramCls: Seq[Class[_]], limits: Seq[(Int, Int)], ctxFirstParam: Boolean): Unit =
         require(paramCls.sizeIs == limits.length)
 
         paramCls.zip(limits).zipWithIndex.foreach { case ((cls, (min, max)), i) =>
             def mkArg(): String = arg2Str(mtd, i, ctxFirstParam)
 
-            val p1 = "its @NCIntentTerm annotated argument"
-            val p2 = s"[mdlId=$mdlId, origin=$origin, arg=${mkArg()}]"
+            val p1 = "its $IT annotated argument"
+            val p2 = s"mdlId=${cfg.getId}, arg=${mkArg()}"
 
             // Argument is single entity but defined as not single entity.
             if cls == CLS_ENTITY && (min != 1 || max != 1) then
-                E(s"Intent term must have [1,1] quantifier because $p1 is a single value $p2")
+                E(s"Intent term must have [1,1] quantifier because $p1 is a single value [$p2]")
             // Argument is not single entity but defined as single entity.
             else if cls != CLS_ENTITY && (min == 1 && max == 1) then
-                E(s"Intent term has [1,1] quantifier but $p1 is not a single value $p2")
+                E(s"Intent term has [1,1] quantifier but $p1 is not a single value [$p2]")
             // Argument is optional but defined as not optional.
             else if (cls == CLS_SCALA_OPT || cls == CLS_JAVA_OPT) && (min != 0 || max != 1) then
-                E(s"Intent term must have [0,1] quantifier because $p1 is optional $p2")
+                E(s"Intent term must have [0,1] quantifier because $p1 is optional [$p2]")
             // Argument is not optional but defined as optional.
             else if (cls != CLS_SCALA_OPT && cls != CLS_JAVA_OPT) && (min == 0 && max == 1) then
-                E(s"Intent term has [0,1] quantifier but $p1 is not optional $p2")
+                E(s"Intent term has [0,1] quantifier but $p1 is not optional [$p2]")
         }
 
     /**
       *
-      * @param intents
-      * @param intent
-      * @param cb
-      * @param mtd
-      */
-    private def checkBind(intents: mutable.Buffer[IntentHolder], intent: NCIDLIntent, cb: CallbackHolder, mtd: Method): Unit =
-        if intents.exists(i => i._1.id == intent.id && i.method != cb.method) then
-            E(s"The intent cannot be bound to more than one callback [mdlId=$mdlId, origin=$origin, class=${getClassName(mtd.getDeclaringClass)}, intentId=${intent.id}]")
-
-    private def bindIntent(intent: NCIDLIntent, cb: CallbackHolder, mtd: Method): Unit =
-        if intents.exists(i => i._1.id == intent.id && i.method != cb.method) then
-            E(s"The intent cannot be bound to more than one callback [mdlId=$mdlId, origin=$origin, class=${getClassName(mtd.getDeclaringClass)}, intentId=${intent.id}]")
-        else
-            intentDecls += intent
-            intents += IntentHolder(intent, cb.function, cb.method)
-
-
-    /**
-      *
-      * @param mtd
-      * @param obj
-      */
-    private def processMethod(mtd: Method, obj: Object): Unit =
-        samples += mtd -> scanSamples(mtd)
-
-        def existsForOtherMethod(id: String): Boolean =
-            intents.find(_.intent.id == id) match
-                case Some(i) => i.method != mtd
-                case None => false
-
-        val anns = mtd.getAnnotationsByType(CLS_INTENT)
-
-        if anns.nonEmpty then
-            val mtdStr = method2Str(mtd)
-
-            for (ann <- anns; intent <- NCIDLCompiler.compile(ann.value, cfg, mtdStr))
-                if intentDecls.exists(_.id == intent.id && existsForOtherMethod(intent.id)) then
-                    E(s"Duplicate intent ID [mdlId=$mdlId, origin=$origin, callback=$mtdStr, id=${intent.id}]")
-                else
-                    bindIntent(intent, prepareCallback(mtd, obj, intent), mtd)
-
-    /**
-      *
-      * @param mtd
-      * @param obj
-      */
-    private def processMethodRefs(mtd: Method, obj: Object): Unit =
-        val anns = mtd.getAnnotationsByType(CLS_INTENT_REF)
-
-        for (ann <- anns)
-            val refId = ann.value.strip
-
-            intentDecls.find(_.id == refId) match
-                case Some(intent) => bindIntent(intent, prepareCallback(mtd, obj, intent), mtd)
-                case None => E(s"@NCIntentRef(\"$refId\") references unknown intent ID [mdlId=$mdlId, origin=$origin, refId=$refId, callback=${method2Str(mtd)}]")
-
-    /**
-      *
+      * @param cfg
       * @param method
       * @param obj
       * @param intent
       * @return
       */
-    private def prepareCallback(method: Method, obj: Object, intent: NCIDLIntent): CallbackHolder =
+    private def prepareCallback(cfg: NCModelConfig, method: Method, obj: AnyRef, intent: NCIDLIntent): NCIntentMatch => NCResult =
+        lazy val z = s"mdlId=${cfg.getId}, intentId=${intent.id}, type=${class2Str(method.getReturnType)}, callback=${method2Str(method)}"
+
         // Checks method result type.
-        if method.getReturnType != CLS_QRY_RES then
-            E(s"Unexpected result type for @NCIntent annotated method [mdlId=$mdlId, intentId=${intent.id}, type=${class2Str(method.getReturnType)}, callback=${method2Str(method)}]")
+        if method.getReturnType != CLS_QRY_RES then E(s"Unexpected result type for @NCIntent annotated method [$z]")
 
         val allParamTypes = method.getParameterTypes.toSeq
         val ctxFirstParam = allParamTypes.nonEmpty && allParamTypes.head == CLS_INTENT_MATCH
@@ -472,7 +440,7 @@ class NCModelScanner(mdl: NCModel) extends LazyLogging:
 
         // Checks entities parameters annotations count.
         if tokParamAnns.sizeIs != tokParamTypes.length then
-            E(s"Unexpected annotations count for @NCIntent annotated method [mdlId=$mdlId, intentId=${intent.id}, count=${tokParamAnns.size}, callback=${method2Str(method)}]")
+            E(s"Unexpected annotations count for $I annotated method [count=${tokParamAnns.size}, $z]")
 
         // Gets terms IDs.
         val termIds = tokParamAnns.toList.zipWithIndex.map {
@@ -481,20 +449,17 @@ class NCModelScanner(mdl: NCModel) extends LazyLogging:
 
                 val termAnns = annArr.filter(_.isInstanceOf[NCIntentTerm])
 
-                // Each method arguments (second and later) must have one NCIntentTerm annotation.
+                // Each method arguments (second and later) must have one 'NCIntentTerm' annotation.
                 termAnns.length match
                     case 1 => termAnns.head.asInstanceOf[NCIntentTerm].value
                     case 0 =>
-                        if idx == 0 then
-                            E(s"Missing @NCIntentTerm annotation or wrong type of the 1st parameter (must be 'NCIntentMatch') for [mdlId=$mdlId, intentId=${intent.id}, arg=${mkArg()}]")
-                        else
-                            E(s"Missing @NCIntentTerm annotation for [mdlId=$mdlId, intentId=${intent.id}, arg=${mkArg()}]")
-
-                    case _ => E(s"Too many @NCIntentTerm annotations for [mdlId=$mdlId, intentId=${intent.id}, arg=${mkArg()}]")
-            }
+                        if idx == 0 then E(s"Missing $IT annotation or wrong type of the 1st parameter (must be 'NCIntentMatch') for [$z]")
+                        else E(s"Missing $IT annotation for [$z]")
+                    case _ => E(s"Too many $IT annotations for [$z]")
+        }
 
         if NCUtils.containsDups(termIds) then
-            E(s"Duplicate term IDs in @NCIntentTerm annotations [mdlId=$mdlId, intentId=${intent.id}, dups=${NCUtils.getDups(termIds).mkString(", ")}, callback=${method2Str(method)}]")
+            E(s"Duplicate term IDs in $IT annotations [dups=${NCUtils.getDups(termIds).mkString(", ")}, $z]")
 
         val terms = intent.terms
 
@@ -505,128 +470,105 @@ class NCModelScanner(mdl: NCModel) extends LazyLogging:
 
         if invalidIds.nonEmpty then
             // Report only the first one for simplicity & clarity.
-            E(s"Unknown term ID in @NCIntentTerm annotation [mdlId=$mdlId, intentId=${intent.id}, termId=${invalidIds.head}, callback=${method2Str(method)}]")
-
-        val paramGenTypes = getSeq(method.getGenericParameterTypes.toIndexedSeq)
+            E(s"Unknown term ID in $IT annotation [termId=${invalidIds.head}, $z]")
 
         // Checks parameters.
-        checkTypes(method, tokParamTypes, paramGenTypes, ctxFirstParam)
+        val paramGenTypes = getSeq(method.getGenericParameterTypes.toIndexedSeq)
+        checkTypes(cfg, method, tokParamTypes, paramGenTypes, ctxFirstParam)
 
         // Checks limits.
         val allLimits = terms.map(t => t.id.orNull -> (t.min, t.max)).toMap
+        checkMinMax(cfg, method, tokParamTypes, termIds.map(allLimits), ctxFirstParam)
 
-        checkMinMax(method, tokParamTypes, termIds.map(allLimits), ctxFirstParam)
-
-        CallbackHolder(
-            method,
-            (ctx: NCIntentMatch) =>
-                val args = mutable.Buffer.empty[AnyRef]
-                if ctxFirstParam then args += ctx
-                args ++= prepareParams(mdlId, method, tokParamTypes, termIds.map(ctx.getTermEntities), ctxFirstParam)
-
-                invoke(mdlId, method, obj, args.toArray)
-        )
-
-    /**
-      *
-      * @param mtd
-      * @return
-      */
-    private def scanSamples(mtd: Method): Map[String, Seq[Seq[String]]] =
-        val smpAnns = mtd.getAnnotationsByType(CLS_SAMPLE)
-        val smpAnnsRef = mtd.getAnnotationsByType(CLS_SAMPLE_REF)
-        lazy val mtdStr = method2Str(mtd)
-        lazy val intAnns = mtd.getAnnotationsByType(CLS_INTENT)
-        lazy val refAnns = mtd.getAnnotationsByType(CLS_INTENT_REF)
-        lazy val samples = mutable.HashMap.empty[String, Seq[Seq[String]]]
-
-        if smpAnns.nonEmpty || smpAnnsRef.nonEmpty then
-            if intAnns.isEmpty && refAnns.isEmpty then
-                E(s"@NCIntentSample or @NCIntentSampleRef annotations without corresponding @NCIntent or @NCIntentRef annotations: $mtdStr")
-            else
-                def read[T](annArr: scala.Array[T], annName: String, getSamples: T => Seq[String], getSource: Option[T => String]): Seq[Seq[String]] =
-                    for (ann <- annArr.toSeq) yield
-                        val samples = getSamples(ann).map(_.strip).filter(s => s.nonEmpty && s.head != '#')
-
-                        if samples.isEmpty then
-                            getSource match
-                                case None => logger.warn(s"$annName annotation has no samples: $mtdStr")
-                                case Some(f) => logger.warn(s"$annName annotation references '${f(ann)}' file that has no samples: $mtdStr")
-
-                            Seq.empty
-                        else
-                            samples
-                .filter(_.nonEmpty)
-
-                val seqSeq =
-                    read[NCIntentSample](
-                        smpAnns, "@NCIntentSample", _.value.toSeq, None
-                    ) ++
-                    read[NCIntentSampleRef](
-                        smpAnnsRef, "@NCIntentSampleRef", a => NCUtils.readResource(a.value), Option(_.value)
-                    )
-
-                if NCUtils.containsDups(seqSeq.flatMap(_.toSeq).toList) then
-                    logger.warn(s"@NCIntentSample and @NCIntentSampleRef annotations have duplicates: $mtdStr")
-
-                val distinct = seqSeq.map(_.distinct).distinct
-
-                for (ann <- intAnns; intent <- NCIDLCompiler.compile(ann.value, cfg, mtdStr))
-                    samples += intent.id -> distinct
-
-                for (ann <- refAnns) samples += ann.value -> distinct
-        else if intAnns.nonEmpty || refAnns.nonEmpty then
-            logger.warn(s"@NCIntentSample or @NCIntentSampleRef annotations are missing for: $mtdStr")
-
-        samples.toMap
+        (ctx: NCIntentMatch) =>
+            val args = mutable.Buffer.empty[AnyRef]
+            if ctxFirstParam then args += ctx
+            args ++= prepareParams(cfg, method, tokParamTypes, termIds.map(ctx.getTermEntities), ctxFirstParam)
+            invoke(cfg, method, obj, args.toArray)
 
     /**
       *
       * @return
       */
-    def scan(): Seq[NCModelIntent] =
-        def processClassHierarchy(claxx: Class[_]): Unit =
-            if claxx != null then
-                val anns = claxx.getAnnotationsByType(CLS_INTENT)
+    def scan(mdl: NCModel): Seq[NCModelIntent] =
+        require(mdl != null)
 
-                if anns.nonEmpty then
-                    val origin = getClassName(claxx)
+        val cfg = mdl.getConfig
+        lazy val z = s"mdlId=${cfg.getId}"
+        val intents = mutable.Buffer.empty[IntentHolder]
+        val intentDecls = mutable.HashMap.empty[String, NCIDLIntent]
+        val objs = mutable.Buffer.empty[AnyRef]
+        val processed = mutable.HashSet.empty[Class[_]]
+        val samples = mutable.HashMap.empty[Method, Map[String, Seq[Seq[String]]]]
 
-                    for (ann <- anns; intent <- NCIDLCompiler.compile(ann.value, cfg, origin))
-                        // TODO: duplicate
-                        intentDecls += intent
+        def addDecl(intent: NCIDLIntent): Unit =
+            intentDecls.get(intent.id) match
+                case Some(ex) => if ex.idl != intent.idl then E(s"Intent with given ID already found with different definition [$z, id=${intent.id}]")
+                case None => // No-op.
+            intentDecls += intent.id -> intent
 
-                processClassHierarchy(claxx.getSuperclass)
-                claxx.getInterfaces.foreach(processClassHierarchy)
+        def addIntent(intent: NCIDLIntent, mtd: Method, obj: AnyRef): Unit =
+            if intents.exists(_.method == mtd) then E(s"The callback cannot have more one intent [$z, callback=${method2Str(mtd)}]")
+            intents += IntentHolder(cfg, intent, obj, mtd)
 
-        // 1. First phase scan.
-        //  - For given object finds references via fields (NCIntentObject). Scans also each reference recursively and collects them.
-        //  - For all methods of processed object collects samples (NCIntentSample, NCIntentSampleRef) and intents (NCIntent)
-        def scan(obj: Object): Unit =
+        def processClassAnnotations(cls: Class[_]): Unit =
+            if cls != null && processed.add(cls) then
+                for (ann <- cls.getAnnotationsByType(CLS_INTENT); intent <- NCIDLCompiler.compile(ann.value, cfg, class2Str(cls)))
+                    addDecl(intent)
+
+                processClassAnnotations(cls.getSuperclass)
+                cls.getInterfaces.foreach(processClassAnnotations)
+
+        // First phase scan.
+        // For given object finds references via fields (NCIntentObject). Scans also each reference recursively and collects them.
+        // For all methods of processed object collects samples (NCIntentSample, NCIntentSampleRef) and intents (NCIntent)
+        def scan(obj: AnyRef): Unit =
             objs += obj
+            processClassAnnotations(obj.getClass)
+            val methods = getAllMethods(obj)
 
-            processClassHierarchy(obj.getClass)
+            // Collects samples for each method.
+            for (mtd <- methods) samples += mtd -> scanSamples(cfg, mtd)
 
-            for (m <- getAllMethods(obj)) processMethod(m, obj)
-            for (f <- getAllFields(obj) if f.isAnnotationPresent(CLS_INTENT_OBJ)) scan(getFieldObject(mdlId, f, obj))
+            // // Collects intents for each method.
+            for (
+                mtd <- methods;
+                ann <- mtd.getAnnotationsByType(CLS_INTENT);
+                intent <- NCIDLCompiler.compile(ann.value, cfg, method2Str(mtd))
+            )
+                addDecl(intent)
+                addIntent(intent, mtd, obj)
+
+            // Scans annotated fields.
+            for (f <- getAllFields(obj) if f.isAnnotationPresent(CLS_INTENT_OBJ)) scan(getFieldObject(cfg, f, obj))
 
         scan(mdl)
 
-        // 2. For model and all its references scans each method and finds intents references (NCIntentRef)
-        for (o <- objs; m <- getAllMethods(o)) processMethodRefs(m, o)
+        // Second phase. For model and all its references scans each method and finds intents references (NCIntentRef)
+        for (
+            obj <- objs;
+            mtd <- getAllMethods(obj);
+            ann <- mtd.getAnnotationsByType(CLS_INTENT_REF)
+        )
+            val refId = ann.value.strip
+            val intent = intentDecls.getOrElse(
+                refId,
+                E(s"$IR(\"$refId\") references unknown intent ID [$z, callback=${method2Str(mtd)}]")
+            )
 
-        // 3. Validation.
-        val unusedIntents = intentDecls.filter(i => !intents.exists(_._1.id == i.id))
+            addDecl(intent)
+            addIntent(intent, mtd, obj)
 
-        if unusedIntents.nonEmpty then
-            logger.warn(s"Intents are unused (have no callback): [mdlId=$mdlId, origin=$origin, intentIds=${unusedIntents.map(_.id).mkString("(", ", ", ")")}]")
+        val unusedIds = intentDecls.keys.filter(k => !intents.exists(_.intent.id == k))
+        if unusedIds.nonEmpty then
+            logger.warn(s"Intents are unused (have no callback): [$z, intentIds=${col2Str(unusedIds)}]")
 
         if intents.nonEmpty then
-        // Check the uniqueness of intent IDs.
-            NCUtils.getDups(intents.map(_._1).toSeq.map(_.id)) match
-                case ids if ids.nonEmpty => E(s"Duplicate intent IDs [mdlId=$mdlId, origin=$origin, ids=${ids.mkString(",")}]")
+            // Check the uniqueness of intent IDs.
+            NCUtils.getDups(intents.map(_.intent.id).toSeq) match
+                case ids if ids.nonEmpty => E(s"Duplicate intent IDs [$z, ids=${col2Str(ids)}]")
                 case _ => // No-op.
         else
-            logger.warn(s"Model has no intent: $mdlId")
+            logger.warn(s"Model has no intent: ${cfg.getId}")
 
         intents.map(i => NCModelIntent(i.intent, i.function, samples.getOrElse(i.method, Map.empty).getOrElse(i.intent.id, Seq.empty))).toSeq
