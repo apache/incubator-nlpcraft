@@ -18,6 +18,7 @@
 package org.apache.nlpcraft;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -28,6 +29,15 @@ public interface NCEntity extends NCPropertyMap {
      * @return
      */
     List<NCToken> getTokens();
+
+    /**
+     * Joins all tokens' text with trimming using space as a delimiter. This function does not cache the
+     * result and performs text construction on each call. Make sure to cache the result to avoid
+     * unnecessary parasitic workload if and when method {@link #getTokens()} does not change.
+     */
+    default String mkText() {
+        return getTokens().stream().map(s -> s.getText().trim()).collect(Collectors.joining(" ")).trim();
+    }
 
     /**
      * Gets ID of the request this entity is part of.

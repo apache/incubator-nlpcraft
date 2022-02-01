@@ -20,12 +20,15 @@ package org.apache.nlpcraft.internal.util
 import com.typesafe.scalalogging.*
 import org.apache.nlpcraft.*
 import com.google.gson.*
+
 import java.io.*
 import java.net.*
-import java.util.concurrent.{CopyOnWriteArrayList, ExecutorService, TimeUnit} // Avoids conflicts.
+import java.time.{ZoneId, Instant, ZonedDateTime}
+import java.util.concurrent.{CopyOnWriteArrayList, ExecutorService, TimeUnit}
 import java.util.regex.Pattern
 import java.util.zip.*
-import java.util.{Random, UUID}
+import java.util.{Random, TimeZone}
+
 import scala.annotation.tailrec
 import scala.collection.{IndexedSeq, Seq, mutable}
 import scala.concurrent.*
@@ -41,6 +44,7 @@ import scala.util.Using
 object NCUtils extends LazyLogging:
     final val NL = System getProperty "line.separator"
     private val RND = new Random()
+    private final val UTC = ZoneId.of("UTC")
     private val sysProps = new SystemProperties
     private final lazy val GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create()
 
@@ -197,6 +201,16 @@ object NCUtils extends LazyLogging:
     def getJsonBooleanField(json: String, field: String): Boolean =
         try GSON.getAdapter(classOf[JsonElement]).fromJson(json).getAsJsonObject.get(field).getAsBoolean
         catch case e: Exception => E(s"Cannot extract JSON field '$field' from: '$json'", e)
+
+    /**
+      * Gets now in UTC timezone.
+      */
+    def nowUtc(): ZonedDateTime = ZonedDateTime.now(UTC)
+
+    /**
+      * Gets now in UTC timezone in milliseconds representation.
+      */
+    def nowUtcMs(): Long = Instant.now().toEpochMilli
 
     /**
       * Shortcut - current timestamp in milliseconds.
