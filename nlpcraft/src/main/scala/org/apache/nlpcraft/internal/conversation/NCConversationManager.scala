@@ -17,38 +17,36 @@
 
 package org.apache.nlpcraft.internal.conversation
 
-import io.opencensus.trace.Span
-import org.apache.nlpcraft.common._
-import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
+import com.typesafe.scalalogging.LazyLogging
+import org.apache.nlpcraft.*
+import org.apache.nlpcraft.internal.util.NCUtils
 
-import scala.collection._
+import scala.collection.*
 
 /**
   * Conversation manager.
   */
-object NCConversationManager:
+class NCConversationManager(mdlCfg: NCModelConfig) extends LazyLogging:
     case class Key(usrId: Long, mdlId: String)
-    case class Value(conv: NCConversation, var tstamp: Long = 0)
-
+    case class Value(conv: NCConversationHolder, var tstamp: Long = 0)
     private final val convs: mutable.Map[Key, Value] = mutable.HashMap.empty[Key, Value]
-
     @volatile private var gc: Thread = _
 
     /**
       *
       * @return
       */
-    def start(): NCService =
-        gc = NCUtils.mkThread("conversation-manager-gc") { t =>
+    def start(): Unit =
+        gc = NCUtils.mkThread(s"conv-mgr-gc-@${mdlCfg.getId}") { t =>
             while (!t.isInterrupted)
                 try
                     convs.synchronized {
-                        val sleepTime = clearForTimeout() - U.now()
+                        val sleepTime = clearForTimeout() - NCUtils.now()
                         if sleepTime > 0 then convs.wait(sleepTime)
                     }
                 catch
                     case _: InterruptedException => // No-op.
-                    case e: Throwable => U.prettyError(logger, s"Unexpected error for thread: ${t.getName}", e)
+                    case e: Throwable => logger.error(s"Unexpected error for thread: ${t.getName}", e)
         }
         gc.start()
 
@@ -66,16 +64,11 @@ object NCConversationManager:
     private def clearForTimeout(): Long =
         require(Thread.holdsLock(convs))
 
-        val now = U.now()
+        val now = NCUtils.now()
         val delKeys = mutable.HashSet.empty[Key]
 
         for ((key, value) <- convs)
-            val del =
-                NCModelManager.getModelOpt(key.mdlId) match
-                    case Some(mdl) => value.tstamp < now - mdl.model.getConversationTimeout
-                    case None => true
-
-            if del then
+            if value.tstamp < now - mdlCfg.getConversationTimeout then
                 value.conv.getUserData.clear()
                 delKeys += key
 
@@ -91,21 +84,14 @@ object NCConversationManager:
       * @param mdlId Model ID.
       * @return New or existing conversation.
       */
-    def getConversation(usrId: Long, mdlId: String, parent: Span = null): NCConversation =
-        startScopedSpan("getConversation", parent, "usrId" -> usrId, "mdlId" -> mdlId) { _ =>
-            val mdl = NCModelManager.getModel(mdlId).model
+    def getConversation(usrId: Long, mdlId: String): NCConversationHolder =
+        convs.synchronized {
+            val v = convs.getOrElseUpdate(
+                Key(usrId, mdlId),
+                Value(NCConversationHolder(usrId, mdlId, mdlCfg.getConversationTimeout, mdlCfg.getConversationDepth))
+            )
 
-            convs.synchronized {
-                val v = convs.getOrElseUpdate(
-                    Key(usrId, mdlId),
-                    Value(NCConversation(usrId, mdlId, mdl.getConversationTimeout, mdl.getConversationDepth))
-                )
-
-                v.tstamp = U.nowUtcMs()
-
-                convs.notifyAll()
-
-                v.conv
-            }
+            v.tstamp = NCUtils.nowUtcMs()
+            convs.notifyAll()
+            v.conv
         }
-}

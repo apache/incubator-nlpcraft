@@ -50,8 +50,7 @@ class NCModelIntentsNestedSpec:
 
     private val MDL_VALID2: NCModel = new NCTestModelAdapter:
         @NCIntent("import('scan/idl.idl')")
-        class RefClass:
-            ()
+        class RefClass
 
         @NCIntentObject
         val nested1: Object = new Object():

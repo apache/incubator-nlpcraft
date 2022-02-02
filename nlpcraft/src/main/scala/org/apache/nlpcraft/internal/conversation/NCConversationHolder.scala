@@ -32,7 +32,7 @@ import scala.jdk.CollectionConverters.*
 /**
   * An active conversation is an ordered set of utterances for the specific user and data model.
   */
-case class NCConversation(
+case class NCConversationHolder(
     usrId: Long,
     mdlId: String,
     timeoutMs: Long,
