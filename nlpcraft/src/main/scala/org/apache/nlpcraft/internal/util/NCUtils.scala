@@ -347,7 +347,9 @@ object NCUtils extends LazyLogging:
             @volatile private var stopped = false
 
             override def isInterrupted: Boolean = super.isInterrupted || stopped
-            override def interrupt(): Unit =  stopped = true; super.interrupt()
+            override def interrupt(): Unit =
+                stopped = true
+                super.interrupt()
 
             override def run(): Unit =
                 logger.trace(s"Thread started: $name")
@@ -360,6 +362,15 @@ object NCUtils extends LazyLogging:
                     case e: Throwable => logger.warn(s"Unexpected error during '$name' thread execution:", e)
                 finally
                     stopped = true
+
+    /**
+      *
+      * @param prefix
+      * @param mdlId
+      * @param body
+      * @return
+      */
+    def mkThread(prefix: String, mdlId: String)(body: Thread => Unit): Thread = mkThread(s"$prefix-@$mdlId")(body)
 
     /**
       * Gets resource existing flag.
@@ -401,15 +412,6 @@ object NCUtils extends LazyLogging:
                 case _ => E(s"Resource not found: $src")
         else if isUrl(src) then new URL(src).openStream()
         else E(s"Source not found or unsupported: $src")
-
-    /**
-      * Makes thread.
-      *
-      * @param name Name.
-      * @param body Thread body.
-      */
-    def mkThread(name: String, body: Runnable): Thread =
-        mkThread(name) { _ => body.run() }
 
     /**
       * Sleeps number of milliseconds properly handling exceptions.

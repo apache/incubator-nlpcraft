@@ -46,10 +46,19 @@ case class NCConversationHolder(
     // Short-Term-Memory.
     private val stm = mutable.ArrayBuffer.empty[ConversationItem]
     private val lastEnts = mutable.ArrayBuffer.empty[Iterable[NCEntity]]
+    private val ctx = mutable.ArrayBuffer.empty[NCEntity]
 
-    @volatile private var ctx: util.List[NCEntity] = new util.ArrayList[NCEntity]()
     @volatile private var lastUpdateTstamp = NCUtils.nowUtcMs()
     @volatile private var depth = 0
+
+    /**
+      *
+      * @param newCtx
+      */
+    private def replaceContext(newCtx: mutable.ArrayBuffer[NCEntity]): Unit =
+        require(Thread.holdsLock(stm))
+        ctx.clear()
+        ctx ++= newCtx
 
     /**
       *
@@ -93,7 +102,7 @@ case class NCConversationHolder(
                 squeezeEntities()
 
             lastUpdateTstamp = now
-            ctx = new util.ArrayList[NCEntity](stm.flatMap(_.holders.map(_.entity)).asJava)
+            replaceContext(stm.flatMap(_.holders.map(_.entity)))
             ack()
         }
 
@@ -106,7 +115,7 @@ case class NCConversationHolder(
         stm.synchronized {
             for (item <- stm) item.holders --= item.holders.filter(h => p.test(h.entity))
             squeezeEntities()
-            ctx = ctx.asScala.filter(ent => !p.test(ent)).asJava
+            replaceContext(ctx.filter(ent => !p.test(ent)))
         }
 
         logger.trace(s"STM is cleared [usrId=$usrId, mdlId=$mdlId]")
@@ -186,7 +195,7 @@ case class NCConversationHolder(
         if ctx.isEmpty then logger.trace(s"STM is empty for [$z]")
         else
             val tbl = NCAsciiTable("Entity ID", "Groups", "Request ID")
-            ctx.asScala.foreach(ent => tbl += (
+            ctx.foreach(ent => tbl += (
                 ent.getId,
                 ent.getGroups.asScala.mkString(", "),
                 ent.getRequestId
@@ -199,8 +208,8 @@ case class NCConversationHolder(
       */
     def getEntity: util.List[NCEntity] =
         stm.synchronized {
-            val reqIds = ctx.asScala.map(_.getRequestId).distinct.zipWithIndex.toMap
-            val ents = ctx.asScala.groupBy(_.getRequestId).toSeq.sortBy(p => reqIds(p._1)).reverse.flatMap(_._2)
+            val reqIds = ctx.map(_.getRequestId).distinct.zipWithIndex.toMap
+            val ents = ctx.groupBy(_.getRequestId).toSeq.sortBy(p => reqIds(p._1)).reverse.flatMap(_._2)
 
             new util.ArrayList[NCEntity](ents.asJava)
         }

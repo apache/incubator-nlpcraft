@@ -37,12 +37,14 @@ class NCConversationManager(mdlCfg: NCModelConfig) extends LazyLogging:
       * @return
       */
     def start(): Unit =
-        gc = NCUtils.mkThread(s"conv-mgr-gc-@${mdlCfg.getId}") { t =>
+        gc = NCUtils.mkThread("conv-mgr-gc", mdlCfg.getId) { t =>
             while (!t.isInterrupted)
                 try
                     convs.synchronized {
                         val sleepTime = clearForTimeout() - NCUtils.now()
-                        if sleepTime > 0 then convs.wait(sleepTime)
+                        if sleepTime > 0 then
+                            logger.trace(s"${t.getName} waits for $sleepTime ms.")
+                            convs.wait(sleepTime)
                     }
                 catch
                     case _: InterruptedException => // No-op.
