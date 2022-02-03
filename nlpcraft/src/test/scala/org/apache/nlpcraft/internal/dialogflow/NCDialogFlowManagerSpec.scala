@@ -106,8 +106,8 @@ class NCDialogFlowManagerSpec:
 
     @Test
     def testTimeout(): Unit =
-        val delay = 500
-        val timeout = delay * 20
+        val delay = 10
+        val timeout = delay * 1000
 
         mgr = NCDialogFlowManager(ModelConfigMock(timeout))
 
@@ -123,7 +123,7 @@ class NCDialogFlowManagerSpec:
 
         mgr.start()
 
-        Thread.sleep(delay * 3)
+        Thread.sleep(delay * 5)
         check("user1" -> 1, "user2" -> 0)
 
         mgr.stop()
