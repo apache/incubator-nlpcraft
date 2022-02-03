@@ -39,11 +39,21 @@ class NCBracketsTokenEnricherImpl extends NCTokenEnricher with LazyLogging:
 
         for (t <- toks.asScala if ok)
             t.getText match
-                case "(" | "{" | "[" | "<" => mark(t); stack.push(t.getText)
-                case ")" => check("("); mark(t)
-                case "}" => check("{"); mark(t)
-                case "]" => check("["); mark(t)
-                case ">" => check("<"); mark(t)
+                case "(" | "{" | "[" | "<" =>
+                    mark(t)
+                    stack.push(t.getText)
+                case ")" =>
+                    check("(")
+                    mark(t)
+                case "}" =>
+                    check("{")
+                    mark(t)
+                case "]" =>
+                    check("[")
+                    mark(t)
+                case ">" =>
+                    check("<")
+                    mark(t)
                 case _ => mark(t)
 
         if ok && stack.isEmpty then map.foreach { (tok, b) => tok.put("brackets", b) }

@@ -115,7 +115,9 @@ object NCMacroCompiler extends LazyLogging:
 
             if ctx.minMaxShortcut() != null then
                 ctx.minMaxShortcut().getText match
-                    case "?" => min = 0; max = 1
+                    case "?" =>
+                        min = 0
+                        max = 1
                     case c => throw compilerError(s"Invalid min/max shortcut '$c' in: ${ctx.getText}")
             else if ctx.MINMAX() != null then
                 var s = ctx.MINMAX().getText
@@ -126,15 +128,11 @@ object NCMacroCompiler extends LazyLogging:
                 if comma == -1 || comma == 0 || comma == s.length - 1 then
                     throw compilerError(s"Invalid min/max quantifier: $orig")
 
-                try
-                    min = java.lang.Integer.parseInt(s.substring(0, comma).trim)
-                catch
-                    case _: NumberFormatException => throw compilerError(s"Invalid min quantifier: $orig")
+                try min = java.lang.Integer.parseInt(s.substring(0, comma).trim)
+                catch case _: NumberFormatException => throw compilerError(s"Invalid min quantifier: $orig")
 
-                try
-                    max = java.lang.Integer.parseInt(s.substring(comma + 1).trim)
-                catch
-                    case _: NumberFormatException => throw compilerError(s"Invalid max quantifier: $orig")
+                try max = java.lang.Integer.parseInt(s.substring(comma + 1).trim)
+                catch case _: NumberFormatException => throw compilerError(s"Invalid max quantifier: $orig")
 
             if min < 0 || max < 0 || min > max || max == 0 || max > MAX_QTY then
                 throw compilerError(s"[$min,$max] quantifiers should be 'max >= min, min >= 0, max > 0, max <= $MAX_QTY'.")

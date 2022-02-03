@@ -74,7 +74,6 @@ class NCDialogFlowManager(mdlCfg: NCModelConfig) extends LazyLogging:
      * @param intentMatch
      * @param res Intent callback result.
      * @param ctx Original query context.
-     * @param parent
      */
     def addMatchedIntent(intentMatch: NCIntentMatch, res: NCResult, ctx: NCContext): Unit =
         val item: NCDialogFlowItem = new NCDialogFlowItem:
