@@ -27,9 +27,8 @@ import scala.collection.*
   * Conversation manager.
   */
 class NCConversationManager(mdlCfg: NCModelConfig) extends LazyLogging:
-    case class Key(usrId: Long, mdlId: String)
     case class Value(conv: NCConversationHolder, var tstamp: Long = 0)
-    private final val convs: mutable.Map[Key, Value] = mutable.HashMap.empty[Key, Value]
+    private final val convs: mutable.Map[String, Value] = mutable.HashMap.empty[String, Value]
     @volatile private var gc: Thread = _
 
     /**
@@ -67,12 +66,13 @@ class NCConversationManager(mdlCfg: NCModelConfig) extends LazyLogging:
         require(Thread.holdsLock(convs))
 
         val now = NCUtils.now()
-        val delKeys = mutable.HashSet.empty[Key]
+        val delKeys = mutable.HashSet.empty[String]
 
         for ((key, value) <- convs)
             if value.tstamp < now - mdlCfg.getConversationTimeout then
                 value.conv.getUserData.clear()
                 delKeys += key
+
 
         convs --= delKeys
 
@@ -80,17 +80,16 @@ class NCConversationManager(mdlCfg: NCModelConfig) extends LazyLogging:
         else Long.MaxValue
 
     /**
-      * Gets conversation for given key.
+      * Gets conversation for given user ID.
       *
       * @param usrId User ID.
-      * @param mdlId Model ID.
       * @return New or existing conversation.
       */
-    def getConversation(usrId: Long, mdlId: String): NCConversationHolder =
+    def getConversation(usrId: String): NCConversationHolder =
         convs.synchronized {
             val v = convs.getOrElseUpdate(
-                Key(usrId, mdlId),
-                Value(NCConversationHolder(usrId, mdlId, mdlCfg.getConversationTimeout, mdlCfg.getConversationDepth))
+                usrId,
+                Value(NCConversationHolder(usrId, mdlCfg.getId, mdlCfg.getConversationTimeout, mdlCfg.getConversationDepth))
             )
 
             v.tstamp = NCUtils.nowUtcMs()

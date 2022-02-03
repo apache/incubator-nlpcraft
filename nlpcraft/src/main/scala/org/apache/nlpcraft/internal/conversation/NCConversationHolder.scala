@@ -33,7 +33,7 @@ import scala.jdk.CollectionConverters.*
   * An active conversation is an ordered set of utterances for the specific user and data model.
   */
 case class NCConversationHolder(
-    usrId: Long,
+    usrId: String,
     mdlId: String,
     timeoutMs: Long,
     maxDepth: Int
@@ -206,7 +206,7 @@ case class NCConversationHolder(
       *
       * @return
       */
-    def getEntity: util.List[NCEntity] =
+    def getEntities: util.List[NCEntity] =
         stm.synchronized {
             val reqIds = ctx.map(_.getRequestId).distinct.zipWithIndex.toMap
             val ents = ctx.groupBy(_.getRequestId).toSeq.sortBy(p => reqIds(p._1)).reverse.flatMap(_._2)

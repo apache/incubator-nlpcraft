@@ -19,8 +19,8 @@ package org.apache.nlpcraft.internal.dialogflow
 
 import org.apache.nlpcraft.internal.util.NCUtils
 import org.apache.nlpcraft.nlp.util.NCTestRequest
-import org.apache.nlpcraft.{NCContext, NCConversation, NCEntity, NCIntentMatch, NCModelConfig, NCRequest, NCResult, NCVariant}
-import org.junit.jupiter.api.{AfterEach, Test}
+import org.apache.nlpcraft.*
+import org.junit.jupiter.api.*
 
 import java.util
 
