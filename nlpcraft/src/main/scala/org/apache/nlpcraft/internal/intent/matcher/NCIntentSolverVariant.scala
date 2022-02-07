@@ -43,8 +43,8 @@ case class NCIntentSolverVariant(entities: Seq[NCEntity]) extends Ordered[NCInte
         val toks: Seq[Seq[NCToken]] = entities.map(_.getTokens.asScala.toSeq)
 
         val toksCnt = toks.map(_.size).sum
-        val totalSparsity = -toks.map(calcSparsity).sum  // Less is better.
         val avgWordsPerEntity = if toksCnt > 0 then Math.round((entities.size.toFloat / toksCnt) * 100) else 0
+        val totalSparsity = -toks.map(calcSparsity).sum  // Less is better.
 
         // Order is important.
         Seq(toksCnt, avgWordsPerEntity, totalSparsity)
