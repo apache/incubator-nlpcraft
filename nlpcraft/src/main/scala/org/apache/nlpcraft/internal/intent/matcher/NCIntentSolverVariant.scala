@@ -34,20 +34,20 @@ case class NCIntentSolverVariant(entities: Seq[NCEntity]) extends Ordered[NCInte
       */
     private def calcSparsity(toks: Seq[NCToken]): Int =
         val idxs = toks.map(_.getIndex)
-        idxs.zipWithIndex.tail.map { case (v, i) => Math.abs(v - idxs(i - 1)) }.sum - idxs.length + 1
+        idxs.zipWithIndex.tail.map { (v, i) => Math.abs(v - idxs(i - 1)) }.sum - idxs.length + 1
 
     /**
-     * Calculates weight components.
+     * Calculates weight components sequence.
      */
     private def calcWeight(): Seq[Int] =
         val toks: Seq[Seq[NCToken]] = entities.map(_.getTokens.asScala.toSeq)
 
         val toksCnt = toks.map(_.size).sum
-        val avgWordsPerEntity = if toksCnt > 0 then Math.round((entities.size.toFloat / toksCnt) * 100) else 0
+        val avgToksPerEntity = if toksCnt > 0 then Math.round((entities.size.toFloat / toksCnt) * 100) else 0
         val totalSparsity = -toks.map(calcSparsity).sum  // Less is better.
 
         // Order is important.
-        Seq(toksCnt, avgWordsPerEntity, totalSparsity)
+        Seq(toksCnt, avgToksPerEntity, totalSparsity)
 
     override def compare(other: NCIntentSolverVariant): Int =
         def compareWeight(weight1: Int, weight2: Int): Option[Int] =
@@ -55,4 +55,4 @@ case class NCIntentSolverVariant(entities: Seq[NCEntity]) extends Ordered[NCInte
             else if weight2 > weight1 then Option(-1)
             else None
 
-        weights.zip(other.weights).flatMap { (w1, w2) => compareWeight(w1, w2)}.to(LazyList).headOption.getOrElse(0)
+        weights.zip(other.weights).flatMap { (w1, w2) => compareWeight(w1, w2) }.to(LazyList).headOption.getOrElse(0)
