@@ -30,11 +30,11 @@ case class NCIntentSolverVariant(entities: Seq[NCEntity]) extends Ordered[NCInte
 
     /**
       *
-      * @param idx
-      * @return
+      * @param toks
       */
-    private def calcSparsity(idx: Seq[Int]): Int =
-        idx.zipWithIndex.tail.map { case (v, i) => Math.abs(v - idx(i - 1)) }.sum - idx.length + 1
+    private def calcSparsity(toks: Seq[NCToken]): Int =
+        val idxs = toks.map(_.getIndex)
+        idxs.zipWithIndex.tail.map { case (v, i) => Math.abs(v - idxs(i - 1)) }.sum - idxs.length + 1
 
     /**
      * Calculates weight components.
@@ -43,7 +43,7 @@ case class NCIntentSolverVariant(entities: Seq[NCEntity]) extends Ordered[NCInte
         val toks: Seq[Seq[NCToken]] = entities.map(_.getTokens.asScala.toSeq)
 
         val toksCnt = toks.map(_.size).sum
-        val totalSparsity = -toks.map(seq => calcSparsity(seq.map(_.getIndex))).sum  // Less is better.
+        val totalSparsity = -toks.map(calcSparsity).sum  // Less is better.
         val avgWordsPerEntity = if toksCnt > 0 then Math.round((entities.size.toFloat / toksCnt) * 100) else 0
 
         // Order is important.
