@@ -20,7 +20,7 @@ package org.apache.nlpcraft;
 /**
  *
  */
-public interface NCToken extends NCPropertyMap {
+public interface  NCToken extends NCPropertyMap {
     /**
      *
      * @return
