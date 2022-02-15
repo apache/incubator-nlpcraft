@@ -38,7 +38,7 @@ case class NCIntentSolverEngine(dialog: NCDialogFlowManager) extends LazyLogging
      * NOTE: not thread-safe.
      */
     private class Weight(ws: Int*) extends Ordered[Weight]:
-        private var buf = mutable.ArrayBuffer[Int]() ++ ws
+        private val buf = mutable.ArrayBuffer[Int]() ++ ws
 
         /**
          * Adds given weight to this weight.
@@ -47,12 +47,13 @@ case class NCIntentSolverEngine(dialog: NCDialogFlowManager) extends LazyLogging
          * @return
          */
         def +=(that: Weight): Weight =
-            val buf2 = mutable.ArrayBuffer[Int]()
+            val tmp = mutable.ArrayBuffer[Int]()
 
             for (i <- 0 until Math.max(buf.size, that.buf.size))
-                buf2.append(norm(i, buf) + norm(i, that.buf))
+                tmp.append(norm(i, buf) + norm(i, that.buf))
 
-            buf = buf2
+            buf.clear()
+            buf ++= tmp
 
             this
 
