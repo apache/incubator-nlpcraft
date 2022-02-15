@@ -41,6 +41,7 @@ class NCDialogFlowManagerSpec:
         override def getRequest: NCRequest = NCTestRequest(txt = "Any", userId = userId, ts = reqTs)
         override def getConversation: NCConversation = null
         override def getVariants: util.Collection[NCVariant] = null
+        override def getTokens: util.List[NCToken] = null
 
     case class ModelConfigMock(timeout: Long = Long.MaxValue) extends NCModelConfig("testId", "test", "1.0", "Test description", "Test origin"):
         override def getConversationTimeout: Long = timeout

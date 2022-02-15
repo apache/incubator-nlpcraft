@@ -15,48 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft;
+package org.apache.nlpcraft.internal.intent.matcher
 
-import java.util.*;
+import org.apache.nlpcraft.*
 
 /**
- *
+ * Input data for intent solver.
  */
-public interface NCContext {
-    /**
-     * Tests if given entity is part of the query this context is associated with.
-     *
-     * @param ent Entity to check.
-     */
-    boolean isOwnerOf(NCEntity ent);
-
-    /**
-     * Gets model configuration for this query.
-     *
-     * @return Model.
-     */
-    NCModelConfig getModelConfig();
-
-    /**
-     * Gets user request.
-     *
-     * @return User request.
-     */
-    NCRequest getRequest();
-
-    /**
-     * Gets current conversation for this context.
-     *
-     * @return Current conversation.
-     */
-    NCConversation getConversation();
-
-    /**
-     *
-     * @return
-     */
-    Collection<NCVariant> getVariants();
-
-    // TODO:
-    List<NCToken> getTokens();
-}
+case class NCIntentSolverInput(
+    context: NCContext,
+    intentMatch: NCIntentMatch = null
+)
