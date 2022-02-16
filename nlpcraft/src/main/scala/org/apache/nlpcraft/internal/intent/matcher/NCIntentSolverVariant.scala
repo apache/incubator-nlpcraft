@@ -24,7 +24,9 @@ import scala.jdk.CollectionConverters.*
 
 /**
  * Sentence variant & its weight.
- */
+  *
+  * @param entities
+  */
 case class NCIntentSolverVariant(entities: Seq[NCEntity]) extends Ordered[NCIntentSolverVariant]:
     private lazy val weights = calcWeight()
 

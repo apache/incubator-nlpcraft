@@ -50,13 +50,10 @@ case class NCIntentSolverEngine(dialog: NCDialogFlowManager) extends LazyLogging
         @targetName("plusEqual")
         def +=(that: Weight): Weight =
             val tmp = mutable.ArrayBuffer[Int]()
-
             for (i <- 0 until Math.max(buf.size, that.buf.size))
                 tmp.append(norm(i, buf) + norm(i, that.buf))
-
             buf.clear()
             buf ++= tmp
-
             this
 
         /**
@@ -67,7 +64,6 @@ case class NCIntentSolverEngine(dialog: NCDialogFlowManager) extends LazyLogging
          */
         def append(w: Int): Weight =
             buf.append(w)
-
             this
 
         /**
@@ -78,7 +74,6 @@ case class NCIntentSolverEngine(dialog: NCDialogFlowManager) extends LazyLogging
          */
         def prepend(w: Int): Weight =
             buf.prepend(w)
-
             this
 
         /**

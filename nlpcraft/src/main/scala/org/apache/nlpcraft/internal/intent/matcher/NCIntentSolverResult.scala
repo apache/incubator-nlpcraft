@@ -21,11 +21,23 @@ import org.apache.nlpcraft.*
 
 /**
   * Intent solver engine result. Using basic case class for easier Java interop.
+  *
+  * @param termId
+  * @param entities
   */
 case class NCIntentEntitiesGroup(
     termId: Option[String],
     entities: Seq[NCEntity]
 )
+
+/**
+  *
+  * @param intentId
+  * @param fn
+  * @param groups
+  * @param variant
+  * @param variantIdx
+  */
 case class NCIntentSolverResult(
     intentId: String,
     fn: NCIntentMatch => NCResult,
