@@ -25,6 +25,7 @@ import org.apache.nlpcraft.internal.intent.*
 
 import java.util.List as JList
 import java.util.function.Function
+import scala.annotation.targetName
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import scala.jdk.CollectionConverters.*
@@ -46,6 +47,7 @@ case class NCIntentSolverEngine(dialog: NCDialogFlowManager) extends LazyLogging
          * @param that Weight to add.
          * @return
          */
+        @targetName("plusEqual")
         def +=(that: Weight): Weight =
             val tmp = mutable.ArrayBuffer[Int]()
 
@@ -279,7 +281,6 @@ case class NCIntentSolverEngine(dialog: NCDialogFlowManager) extends LazyLogging
 
                     if grp.usedEntities.nonEmpty then
                         var entIdx = 0
-
                         for (e <- grp.usedEntities)
                             val conv = if e.conv then "(conv) " else ""
                             ents += s"    #$entIdx: $conv${e.entity}"
@@ -532,7 +533,6 @@ case class NCIntentSolverEngine(dialog: NCDialogFlowManager) extends LazyLogging
                 case b: java.lang.Boolean =>
                     if b then
                         matchesCnt += 1
-
                         if uses > 0 then
                             usesSum += uses
                             usedEnts += ent
