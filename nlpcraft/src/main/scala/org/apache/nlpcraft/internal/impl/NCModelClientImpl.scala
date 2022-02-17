@@ -24,7 +24,7 @@ import org.apache.nlpcraft.internal.util.*
 
 import java.util.concurrent.*
 import java.util.concurrent.atomic.AtomicReference
-import java.util.{Objects, List as JList, Map as JMap}
+import java.util.{Objects, List as JList, Map as JMap, Collections as JColls}
 import scala.collection.mutable
 import scala.concurrent.ExecutionContext
 import scala.jdk.CollectionConverters.*
@@ -58,10 +58,10 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
 
         add(pipeline.getTokenEnrichers)
         add(pipeline.getTokenValidators)
-        add(pipeline.getEntityParsers)
+        add(pipeline.getEntityEnrichers)
         add(pipeline.getEntityParsers)
         add(pipeline.getEntityValidators)
-        add(pipeline.getTokenValidators)
+        if pipeline.getVariantFilter.isPresent then add(JColls.singletonList(pipeline.getVariantFilter.get()))
 
         plSrvs = buf.toSeq
         processServices(_.onStart(cfg), "started")

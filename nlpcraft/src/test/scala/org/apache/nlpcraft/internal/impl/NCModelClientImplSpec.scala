@@ -35,8 +35,9 @@ class NCModelClientImplSpec:
     def test(): Unit =
         val mdl =
             new NCTestModelAdapter():
-                @NCIntent("intent=ls term(act)={has(ent_groups, 'act')} term(loc)={# == 'ls:loc'}*")
-                def onMatch(@NCIntentTerm("act") act: NCEntity, @NCIntentTerm("loc") locs: Seq[NCEntity]): NCResult =
+                //@NCIntent("intent=ls term(act)={has(ent_groups, 'act')} term(loc)={# == 'ls:loc'}*")
+                @NCIntent("intent=ls term(act)={# == 'ls:on'} term(loc)={# == 'ls:loc'}*")
+                def onMatch(@NCIntentTerm("act") act: NCEntity, @NCIntentTerm("loc") locs: List[NCEntity]): NCResult =
                     val ncRes = new NCResult()
                     ncRes.setType(NCResultType.ASK_RESULT)
                     ncRes.setBody(if locs.isEmpty then "entire house" else locs.map(_.mkText()).mkString(","))
@@ -53,9 +54,8 @@ class NCModelClientImplSpec:
 
         val client = new NCModelClientImpl(mdl)
 
-        val res = client.askSync("What are the least performing categories for the last quarter?", null, "userId")
+        val res = client.askSync("Lights on at second floor kitchen", null, "userId")
 
-        println(res)
         println(res.getIntentId)
         println(res.getBody)
 
