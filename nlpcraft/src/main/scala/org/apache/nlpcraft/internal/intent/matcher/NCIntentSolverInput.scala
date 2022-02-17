@@ -23,9 +23,11 @@ import org.apache.nlpcraft.*
  * Input data for intent solver.
   *
   * @param context
+  * @model model
   * @param intentMatch
   */
 case class NCIntentSolverInput(
     context: NCContext,
-    intentMatch: NCIntentMatch = null
+    model: NCModel,
+    var intentMatch: NCIntentMatch = null
 )
