@@ -19,58 +19,571 @@ package org.apache.nlpcraft.internal.intent.matcher
 
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.*
+import org.apache.nlpcraft.internal.ascii.NCAsciiTable
 import org.apache.nlpcraft.internal.dialogflow.NCDialogFlowManager
-import org.apache.nlpcraft.internal.intent.NCIDLIntent
+import org.apache.nlpcraft.internal.intent.*
 
 import java.util.{Collections, List as JList}
+import java.util.function.Function
+import scala.annotation.targetName
 import scala.collection.mutable
+import scala.collection.mutable.ArrayBuffer
 import scala.jdk.CollectionConverters.*
+import scala.language.postfixOps
 
 /**
- * Front-end for intent solver.
- */
-class NCIntentSolver(
-    engine: NCIntentSolverEngine,
-    dialog: NCDialogFlowManager,
-    // TODO: order.
+// TODO: order.
     // TODO: NCIntentSolverInput contains model.
     // TODO: logic with RedoSolver.
     // TODO: NCIntentMatcher API.
     // TODO: why 2 classes NCIntentSolver and NCIntentSolverEngine.
-    intents: Map[NCIDLIntent, NCIntentMatch => NCResult]
-) extends LazyLogging:
+
+ * Intent solver that finds the best matching intent given user sentence.
+ */
+case class NCIntentSolver(dialog: NCDialogFlowManager, intents: Map[NCIDLIntent, NCIntentMatch => NCResult]) extends LazyLogging:
+    /**
+     * NOTE: not thread-safe.
+     */
+    private class Weight(ws: Int*) extends Ordered[Weight]:
+        private val buf = mutable.ArrayBuffer[Int]() ++ ws
+
+        /**
+         * Adds given weight to this weight.
+         *
+         * @param that Weight to add.
+         * @return
+         */
+        @targetName("plusEqual")
+        def +=(that: Weight): Weight =
+            val tmp = mutable.ArrayBuffer[Int]()
+            for (i <- 0 until Math.max(buf.size, that.buf.size))
+                tmp.append(norm(i, buf) + norm(i, that.buf))
+            buf.clear()
+            buf ++= tmp
+            this
+
+        /**
+         * Appends new weight.
+         *
+         * @param w New weight to append.
+         * @return
+         */
+        def append(w: Int): Weight =
+            buf.append(w)
+            this
+
+        /**
+         * Prepends new weight.
+         *
+         * @param w New weight to prepend.
+         * @return
+         */
+        def prepend(w: Int): Weight =
+            buf.prepend(w)
+            this
+
+        /**
+         * Sets specific weight at a given index.
+         *
+         * @param idx
+         * @param w
+         */
+        def setWeight(idx: Int, w: Int): Unit =
+            buf(idx) = w
+
+        /**
+         * Gets element at given index or zero if index is out of bounds.
+         *
+         * @param i Index in collection.
+         * @param c Collection.
+         * @return
+         */
+        private def norm(i: Int, c: mutable.ArrayBuffer[Int]): Int = if i < c.size then c(i) else 0
+
+        /**
+         *
+         * @param that
+         * @return
+         */
+        override def compare(that: Weight): Int =
+            def compareWeight(idx: Int): Option[Int] =
+                val res = Integer.compare(norm(idx, buf), norm(idx, that.buf))
+                Option.when(res != 0)(res)
+
+            (0 until Math.max(buf.size, that.buf.size)).flatMap(compareWeight).to(LazyList).headOption.getOrElse(0)
+
+        def toSeq: Seq[Int] = buf.toSeq
+
+        override def toString: String = buf.mkString("[", ", ", "]")
+
     /**
      *
-     * @param in
-     * @param span
-     * @return
+     * @param used
+     * @param entity
      */
-    def solve(in: NCIntentSolverInput): NCResult =
-        var res: NCResult = null
+    private case class IntentEntity(
+        var used: Boolean,
+        var conv: Boolean,
+        entity: NCEntity
+    )
 
-        while (res != null)
-          solve0(in) match
-              case Some(solverRes) => res = solverRes
-              case None => // No-op.
+    /**
+     * @param termId
+     * @param usedEntities
+     * @param weight
+     */
+    private case class TermMatch(termId: Option[String], usedEntities: Seq[IntentEntity], weight: Weight):
+        private lazy val maxIndex: Int = usedEntities.map(_.entity.getTokens.asScala.map(_.getIndex).max).max
 
-        res
+        def after(tm: TermMatch): Boolean = maxIndex > tm.maxIndex
+
+    /**
+      *
+      * @param entities
+      */
+    private case class PredicateMatch(entities: Seq[IntentEntity], weight: Weight)
 
     /**
      *
-     * @param in Intent solver input.
-     * @param span Parent span.
-     * @return
-     * @throws NCRejection
+     * @param term
+     * @param usedEntities
      */
-    private def solve0(in: NCIntentSolverInput): Option[NCResult] =
+    private case class TermEntitiesGroup(
+        term: NCIDLTerm,
+        usedEntities: Seq[IntentEntity]
+    )
+
+    /**
+     *
+     * @param entityGroups
+     * @param weight
+     * @param intent
+     */
+    private case class IntentMatch(
+        entityGroups: List[TermEntitiesGroup],
+        weight: Weight,
+        intent: NCIDLIntent
+    )
+
+    /**
+      *
+      * @param intentMatch
+      * @param callback
+      * @param variant
+      * @param variantIdx
+      */
+    private case class MatchHolder(
+        intentMatch: IntentMatch, // Match.
+        callback: NCIntentMatch => NCResult, // Callback function.
+        variant: NCIntentSolverVariant, // Variant used for the match.
+        variantIdx: Int // Variant index.
+    )
+
+    /**
+     * Main entry point for intent engine.
+     *
+     * @param ctx Query context.
+     * @param intents Intents to match for.
+     * @return
+     */
+    private def solveIntents(ctx: NCContext, intents: Map[NCIDLIntent, NCIntentMatch => NCResult]): List[NCIntentSolverResult] =
+        dialog.ack(ctx.getRequest.getUserId)
+
+        val matches = mutable.ArrayBuffer.empty[MatchHolder]
+
+        // Find all matches across all intents and sentence variants.
+        for (
+            (vrn, vrnIdx) <- ctx.getVariants.asScala.zipWithIndex;
+            ents = vrn.getEntities.asScala;
+            varEnts = ents.map(IntentEntity(false, false, _)).toSeq;
+            varEntsGroups = ents.map(t => if t.getGroups != null then t.getGroups.asScala else Set.empty[String]);
+            (intent, callback) <- intents
+        )
+            val convEnts: Seq[IntentEntity] =
+                if intent.terms.exists(_.conv) then
+                    // We do not mix tokens with same group from the conversation and given sentence.
+                    ctx.getConversation.getStm.asScala.toSeq.
+                        map(ent => ent -> (if ent.getGroups == null then Set.empty[String] else ent.getGroups.asScala)).
+                        filter { (ent, entGroups)  => !varEntsGroups.exists(_.subsetOf(entGroups)) }.
+                        map { (e, _) => IntentEntity(used = false, conv = true, e) }
+                else
+                    Seq.empty
+
+            // Solve intent in isolation.
+            solveIntent(ctx, intent, varEnts, convEnts, vrnIdx) match
+                case Some(intentMatch) => matches += MatchHolder(intentMatch, callback, NCIntentSolverVariant(vrn.getEntities.asScala.toSeq), vrnIdx)
+                case None => // No-op.
+
+        val sorted = matches.sortWith((m1: MatchHolder, m2: MatchHolder) =>
+            // 1. First with maximum weight.
+            m1.intentMatch.weight.compare(m2.intentMatch.weight) match { // Do not drop this bracket (IDE confused)
+                case x1 if x1 < 0 => false
+                case x1 if x1 > 0 => true
+                case x1 =>
+                    require(x1 == 0)
+
+                    logEqualMatches(m1, m2)
+
+                    // 2. First with maximum variant.
+                    m1.variant.compareTo(m2.variant) match
+                        case x2 if x2 < 0 => false
+                        case x2 if x2 > 0 => true
+                        case x2 =>
+                            require(x2 == 0)
+
+                            def calcHash(m: MatchHolder): Int =
+                                val variantPart =
+                                    m.variant.
+                                        entities.
+                                        map(t => s"${t.getId}${t.getGroups}${t.mkText()}").
+                                        mkString("")
+
+                                val intentPart = m.intentMatch.intent.toString
+
+                                (variantPart, intentPart).##
+
+                            // Order doesn't make sense here.
+                            // It is just to provide deterministic result for the matches with the same weights.
+                            calcHash(m1) > calcHash(m2)
+            }
+        )
+
+        logMatches(sorted)
+
+        sorted.map(m =>
+            NCIntentSolverResult(
+                m.intentMatch.intent.id,
+                m.callback,
+                m.intentMatch.entityGroups.map(grp => NCIntentEntitiesGroup(grp.term.id, grp.usedEntities.map(_.entity))),
+                m.variant,
+                m.variantIdx
+            )
+        ).toList
+
+    /**
+      *
+      * @param matches
+      */
+    private def logMatches(matches: ArrayBuffer[MatchHolder]): Unit =
+        if matches.nonEmpty then
+            val tbl = NCAsciiTable("Variant", "Intent", "Term Entities", "Intent Match Weight")
+
+            for (m <- matches)
+                val im = m.intentMatch
+                val w = im.weight
+                val ents = mutable.ListBuffer.empty[String]
+
+                ents += s"intent=${im.intent.id}"
+                var grpIdx = 0
+
+                for (grp <- im.entityGroups)
+                    ents += s"  ${grp.term.toString}"
+                    grpIdx += 1
+
+                    if grp.usedEntities.nonEmpty then
+                        var entIdx = 0
+                        for (e <- grp.usedEntities)
+                            val conv = if e.conv then "(conv) " else ""
+                            ents += s"    #$entIdx: $conv${e.entity}"
+                            entIdx += 1
+                    else
+                        ents += "    <empty>"
+
+                if m == matches.head then
+                    tbl += (
+                        Seq(s"#${m.variantIdx + 1}", "<|best match|>"), Seq(im.intent.id, "<|best match|>"), ents, w
+                    )
+                else
+                    tbl += (
+                        s"#${m.variantIdx + 1}", im.intent.id, ents, w
+                    )
+
+            tbl.info(
+                logger,
+                Option(s"Found ${matches.size} matching ${if matches.size > 1 then "intents"else "intent"} (sorted best to worst):")
+            )
+        else
+            logger.info(s"No matching intent found:")
+            logger.info(s"  +-- Turn on DEBUG log level to see more details.")
+
+    /**
+      *
+      * @param m1
+      * @param m2
+      */
+    private def logEqualMatches(m1: MatchHolder, m2: MatchHolder): Unit =
+        val mw1 = m1.intentMatch.weight
+        val mw2 = m2.intentMatch.weight
+        val v1 = m1.variant
+        val v2 = m2.variant
+
+        val tbl = new NCAsciiTable()
+
+        tbl += (s"${"Intent ID"}", m1.intentMatch.intent.id, m2.intentMatch.intent.id)
+        tbl += (s"${"Variant #"}", m1.variantIdx + 1, m2.variantIdx + 1)
+        tbl += (s"${"Intent Match Weight"}", mw1.toString, mw2.toString)
+        tbl += (s"${"Variant Weight"}", v1.toString, v2.toString)
+
+        logger.warn(s"""Two matching intents have the same weight for their matches (variants weight will be used further):${tbl.toString}""")
+
+    /**
+     *
+     * @param intent
+     * @param senEnts
+     * @param convEnts
+     * @return
+     */
+    private def solveIntent(
+        ctx: NCContext, intent: NCIDLIntent, senEnts: Seq[IntentEntity], convEnts: Seq[IntentEntity], varIdx: Int
+    ): Option[IntentMatch] =
+        val intentId = intent.id
+        val opts = intent.options
+        val flow = dialog.getDialogFlow(ctx.getRequest.getUserId)
+        val varStr = s"(variant #${varIdx + 1})"
+        val flowRegex = intent.flowRegex
+
+        // Check dialog flow regex first, if any.
+        val flowMatched: Boolean =
+            intent.flowRegex match
+                case Some(regex) =>
+                    val flowStr = flow.map(_.getIntentMatch.getIntentId).mkString(" ")
+
+                    def process(matched: Boolean): Boolean =
+                        val s = if matched then "matched" else "did not match"
+                        logger.info(s"Intent '$intentId' $s regex dialog flow $varStr:")
+                        logger.info(s"  |-- ${"Intent IDs  :"} $flowStr")
+                        logger.info(s"  +-- ${"Match regex :"} ${regex.toString}")
+
+                        matched
+
+                    process(regex.matcher(flowStr).find(0))
+                case None => true
+
+        if flowMatched then
+            val intentW = new Weight()
+            val intentGrps = mutable.ArrayBuffer.empty[TermEntitiesGroup]
+            var abort = false
+            var lastTermMatch: TermMatch = null
+            val sess = ctx.getConversation.getSession // Conversation metadata (shared across all terms). // TODO?
+            val convMeta = sess.keysSet().asScala.map(k => k -> sess.get(k).asInstanceOf[Object]).toMap
+            val ents = senEnts.map(_.entity)
+
+            // Check terms.
+            for (term <- intent.terms if !abort)
+                // Fresh context for each term.
+                val idlCtx = NCIDLContext(
+                    ctx.getModelConfig,
+                    ents,
+                    intentMeta = intent.meta,
+                    convMeta = convMeta,
+                    req = ctx.getRequest,
+                    vars = mutable.HashMap.empty[String, NCIDLFunction] ++ term.decls
+                )
+
+                solveTerm(term, idlCtx, senEnts, if term.conv then convEnts else Seq.empty) match
+                    case Some(termMatch) =>
+                        if opts.ordered && lastTermMatch != null && !termMatch.after(lastTermMatch) then
+                            abort = true
+                        else
+                            // Term is found.
+                            // Add its weight and grab its entities.
+                            intentW += termMatch.weight
+                            intentGrps += TermEntitiesGroup(term, termMatch.usedEntities)
+                            lastTermMatch = termMatch
+
+                            logMatch(intent, term, termMatch)
+                    case None =>
+                        // Term is missing. Stop further processing for this intent. This intent cannot be matched.
+                        logger.debug(s"Intent '$intentId' did not match because of unmatched term '$term' $varStr.")
+
+                        abort = true
+
+            if abort then
+                None
+            else
+                val usedSenEnts = senEnts.filter(_.used)
+                val unusedSenEnts = senEnts.filter(!_.used)
+                val usedConvEnts = convEnts.filter(_.used)
+                val usedToks = usedSenEnts.flatMap(_.entity.getTokens.asScala)
+                val unusedToks = ctx.getTokens.asScala.filter(p => !usedToks.contains(p))
+
+                if !opts.allowStmEntityOnly && usedSenEnts.isEmpty && usedConvEnts.nonEmpty then
+                    logger.info(
+                        s"Intent '$intentId' did not match because all its matched tokens came from STM $varStr. See intent 'allowStmEntityOnly' option."
+                    )
+
+                    None
+                else if !opts.ignoreUnusedFreeWords && unusedToks.nonEmpty then
+                    logger.info(
+                        s"Intent '$intentId' did not match because of unused free words $varStr. See intent 'ignoreUnusedFreeWords' option. Unused free words indexes: ${unusedToks.map(_.getIndex).mkString("{", ",", "}")}"
+                    )
+
+                    None
+                else
+                    if usedSenEnts.isEmpty && usedConvEnts.isEmpty then
+                        logger.warn(s"Intent '$intentId' matched but no entities were used $varStr.")
+
+                    // Number of remaining (unused) non-free words in the sentence is a measure of exactness of the match.
+                    // The match is exact when all non-free words are used in that match.
+                    // Negate to make sure the bigger (smaller negative number) is better.
+                    // TODO: check formula.
+                    val nonFreeWordNum = -(ctx.getTokens.size() - senEnts.map(_.entity.getTokens.size()).sum)
+
+                    intentW.prepend(nonFreeWordNum)
+
+                    Option(IntentMatch(entityGroups = intentGrps.toList, weight = intentW, intent = intent))
+        else
+            None
+
+    /**
+      *
+      * @param intent
+      * @param term
+      * @param termMatch
+      */
+    private def logMatch(intent: NCIDLIntent, term: NCIDLTerm, termMatch: TermMatch): Unit =
+        val tbl = NCAsciiTable()
+
+        val w = termMatch.weight.toSeq
+
+        tbl += ("Intent ID", s"${intent.id}")
+        tbl += ("Matched Term", term)
+        tbl += (
+            "Matched Entities",
+            termMatch.usedEntities.map(t =>
+                val txt = t.entity.mkText()
+                val idx = t.entity.getTokens.asScala.map(_.getIndex).mkString("{", ",", "}")
+
+                s"$txt${s"[$idx]"}").mkString(" ")
+        )
+        tbl += (
+            s"Term Match Weight", s"${"<"}${w.head}, ${w(1)}, ${w(2)}, ${w(3)}, ${w(4)}, ${w(5)}${">"}"
+        )
+
+        tbl.debug(logger, Option("Term match found:"))
+
+    /**
+     * Solves term.
+     *
+     * @param term
+     * @param idlCtx
+     * @param convEnts
+     * @param senEnts
+     * @return
+     */
+    private def solveTerm(
+        term: NCIDLTerm,
+        idlCtx: NCIDLContext,
+        senEnts: Seq[IntentEntity],
+        convEnts: Seq[IntentEntity]
+    ): Option[TermMatch] =
+        if senEnts.isEmpty && convEnts.isEmpty then
+            logger.warn(s"No entities available to match on for the term '$term'.")
+
+        try
+            solvePredicate(term, idlCtx, senEnts, convEnts) match
+                case Some(pm) =>
+                    Option(
+                        TermMatch(
+                            term.id,
+                            pm.entities,
+                            // If term match is non-empty we add the following weights:
+                            //   - min
+                            //   - delta between specified max and normalized max (how close the actual quantity was to the specified one).
+                            //   - normalized max
+                            // NOTE: 'usedEntities' can be empty.
+                            pm.weight.
+                                append(term.min).
+                                append(-(term.max - pm.entities.size)).
+                                // Normalize max quantifier in case of unbound max.
+                                append(if term.max == Integer.MAX_VALUE then pm.entities.size else term.max)
+                        )
+                    )
+                // Term not found at all.
+                case None => None
+        catch case e: Exception => throw new NCException(s"Runtime error processing IDL term: $term", e)
+
+    /**
+     * Solves term's predicate.
+     *
+     * @param term
+     * @param idlCtx
+     * @param senEnts
+     * @param convEnts
+     * @return
+     */
+    private def solvePredicate(
+        term: NCIDLTerm,
+        idlCtx: NCIDLContext,
+        senEnts: Seq[IntentEntity],
+        convEnts: Seq[IntentEntity]
+    ): Option[PredicateMatch] =
+        // Algorithm is "hungry", i.e. it will fetch all entities satisfying item's predicate
+        // in entire sentence even if these entities are separated by other already used entities
+        // and conversation will be used only to get to the 'max' number of the item.
+        val usedEnts = mutable.ArrayBuffer.empty[IntentEntity]
+        var usesSum = 0
+        var matchesCnt = 0
+
+        // Collect to the 'max' from sentence & conversation, if possible.
+        for (ents <- Seq(senEnts, convEnts); ent <- ents.filter(!_.used) if usedEnts.lengthCompare(term.max) < 0)
+            // TODO: idx == matchesCnt - ok?
+            val NCIDLStackItem(res, uses) = term.pred.apply(NCIDLEntity(ent.entity, matchesCnt), idlCtx)
+
+            res match
+                case b: java.lang.Boolean =>
+                    if b then
+                        matchesCnt += 1
+                        if uses > 0 then
+                            usesSum += uses
+                            usedEnts += ent
+
+                case _ => throw new NCException(s"Predicate returned non-boolean result: $res")
+
+        // We couldn't collect even 'min' matches.
+        if matchesCnt < term.min then
+            None
+        // Term is optional (min == 0) and no matches found (valid result).
+        else if matchesCnt == 0 then
+            require(term.min == 0)
+            require(usedEnts.isEmpty)
+
+            Option(PredicateMatch(List.empty, new Weight(0, 0, 0)))
+        // We've found some matches (and min > 0).
+        else
+            // Number of entities from the current sentence.
+            val senTokNum = usedEnts.count(e => !convEnts.contains(e))
+
+            // Sum of conversation depths for each entities from the conversation.
+            // Negated to make sure that bigger (smaller negative number) is better.
+            // TODO: check formula.
+            def getConversationDepth(e: IntentEntity): Option[Int] =
+                val depth = convEnts.indexOf(e)
+                Option.when(depth >= 0)(depth + 1)
+
+            val convDepthsSum = -usedEnts.flatMap(getConversationDepth).sum
+            
+            // Mark found entities as used.
+            for (e <- usedEnts) e.used = true
+
+            Option(PredicateMatch(usedEnts.toSeq, new Weight(senTokNum, convDepthsSum, usesSum)))
+
+    /**
+      *
+      * @param in Intent solver input.
+      * @param span Parent span.
+      * @return
+      * @throws NCRejection
+      */
+    private def solveIteration(in: NCIntentSolverInput): Option[NCResult] =
         // Should it be an assertion?
         if intents.isEmpty then throw new NCRejection("Intent solver has no registered intents.")
-        
+
         val ctx = in.context
         val req = ctx.getRequest
 
         val results =
-            try engine.solve(ctx, intents)
+            try solveIntents(ctx, intents)
             catch case e: Exception => throw new NCRejection("Processing failed due to unexpected error.", e)
 
         if results.isEmpty then throw new NCRejection("No matching intent found.")
@@ -103,17 +616,17 @@ class NCIntentSolver(
 
                 // This can throw NCIntentSkip exception.
                 val cbRes = res.fn(intentMatch)
-    
+
                 // Store won intent match in the input.
                 in.intentMatch = intentMatch
 
                 if cbRes.getIntentId == null then
                     cbRes.setIntentId(res.intentId)
-                    
+
                 logger.info(s"Intent '${res.intentId}' for variant #${res.variantIdx + 1} selected as the <|best match|>")
 
                 dialog.addMatchedIntent(intentMatch, cbRes, ctx)
-                
+
                 return Option(cbRes)
             catch
                 case e: NCIntentSkip =>
@@ -121,5 +634,22 @@ class NCIntentSolver(
                     e.getMessage match
                         case s if s != null => logger.info(s"Selected intent '${res.intentId}' skipped: $s")
                         case _ => logger.info(s"Selected intent '${res.intentId}' skipped.")
-        
+
         throw new NCRejection("No matching intent found - all intents were skipped.")
+
+    /**
+      *
+      * @param in
+      * @param span
+      * @return
+      * @throws NCRejection
+      */
+    def solve(in: NCIntentSolverInput): NCResult =
+        var res: NCResult = null
+
+        while (res != null)
+            solveIteration(in) match
+                case Some(solverRes) => res = solverRes
+                case None => // No-op.
+
+        res
