@@ -68,12 +68,13 @@ class NCModelIntentsInvalidArgsSpec:
         def col[T](t: T): util.List[T] = java.util.Collections.singletonList(t)
 
         new NCIntentMatch:
-            override def getIntentId: String = "intentId"
-            override def getIntentEntities: util.List[util.List[NCEntity]] = col(col(e))
+            override val getContext: NCContext = null
+            override val getIntentId: String = "intentId"
+            override val getIntentEntities: util.List[util.List[NCEntity]] = col(col(e))
             override def getTermEntities(idx: Int): util.List[NCEntity] = col(e)
             override def getTermEntities(termId: String): util.List[NCEntity] = col(e)
-            override def getVariant: NCVariant = new NCVariant:
-                override def getEntities: util.List[NCEntity] = col(e)
+            override val getVariant: NCVariant = new NCVariant:
+                override val getEntities: util.List[NCEntity] = col(e)
 
     private def mkResult0(obj: Any): NCResult =
         println(s"Result body: $obj, class=${obj.getClass}")

@@ -24,7 +24,9 @@ import scala.jdk.CollectionConverters.*
 
 /**
  * Sentence variant & its weight.
- */
+  *
+  * @param entities
+  */
 case class NCIntentSolverVariant(entities: Seq[NCEntity]) extends Ordered[NCIntentSolverVariant]:
     private lazy val weights = calcWeight()
 
@@ -51,8 +53,10 @@ case class NCIntentSolverVariant(entities: Seq[NCEntity]) extends Ordered[NCInte
 
     override def compare(other: NCIntentSolverVariant): Int =
         def compareWeight(weight1: Int, weight2: Int): Option[Int] =
-            if weight1 > weight2 then Option(1)
-            else if weight2 > weight1 then Option(-1)
-            else None
+            val res = Integer.compare(weight1, weight2)
+            Option.when(res != 0)(res)
 
         weights.zip(other.weights).flatMap { (w1, w2) => compareWeight(w1, w2) }.to(LazyList).headOption.getOrElse(0)
+
+    // TODO:
+    override def toString: String = s"Weights: ${weights.mkString("[", ",", "]")}"

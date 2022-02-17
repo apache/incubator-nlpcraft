@@ -17,11 +17,31 @@
 
 package org.apache.nlpcraft.internal.intent.matcher
 
+import org.apache.nlpcraft.*
+
+/**
+  * Intent solver engine result. Using basic case class for easier Java interop.
+  *
+  * @param termId
+  * @param entities
+  */
+case class NCIntentEntitiesGroup(
+    termId: Option[String],
+    entities: Seq[NCEntity]
+)
+
 /**
   *
+  * @param intentId
+  * @param fn
+  * @param groups
+  * @param variant
+  * @param variantIdx
   */
-object NCIntentMatcher:
-    /**
-      *
-      */
-    def bestMatch(): Unit = ???
+case class NCIntentSolverResult(
+    intentId: String,
+    fn: NCIntentMatch => NCResult,
+    groups: Seq[NCIntentEntitiesGroup],
+    variant: NCIntentSolverVariant,
+    variantIdx: Int
+)
