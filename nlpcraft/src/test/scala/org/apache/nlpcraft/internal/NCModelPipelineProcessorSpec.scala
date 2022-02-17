@@ -51,12 +51,12 @@ class NCModelPipelineProcessorSpec:
 
             val res = new NCModelPipelineProcessor(new NCModelAdapter(CFG, pipeline)).prepVariants(txt, null, "userId")
 
-            println(s"Variants count: ${res.vars.size}")
-            for ((v, idx) <- res.vars.zipWithIndex)
+            println(s"Variants count: ${res.variants.size}")
+            for ((v, idx) <- res.variants.zipWithIndex)
                 println(s"Variant: $idx")
                 NCTestUtils.printEntities(txt, v.getEntities.asScala.toSeq)
 
-            require(res.vars.sizeIs == variantCnt)
+            require(res.variants.sizeIs == variantCnt)
 
         test("t1 t2", 4, NCSemanticTestElement("t1", "t2"), NCSemanticTestElement("t2", "t1"))
         test("t1 t2", 2, NCSemanticTestElement("t1", "t2"), NCSemanticTestElement("t2"))

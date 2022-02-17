@@ -60,5 +60,5 @@ public interface NCConversation {
      *
      * @param filter Dialog flow filter.
      */
-    void clearDialog(Predicate<NCDialogFlowItem> filter);
+    void clearDialog(Predicate<String> filter); // TODO: was NCDialogFlowItem
 }

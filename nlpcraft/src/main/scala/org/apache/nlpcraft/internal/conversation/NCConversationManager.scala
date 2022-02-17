@@ -22,6 +22,7 @@ import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.util.NCUtils
 
 import scala.collection.*
+import scala.jdk.CollectionConverters.*
 
 /**
   * Conversation manager.
@@ -70,7 +71,10 @@ class NCConversationManager(mdlCfg: NCModelConfig) extends LazyLogging:
 
         for ((key, value) <- convs)
             if value.tstamp < now - mdlCfg.getConversationTimeout then
-                value.conv.getUserData.clear()
+                val data = value.conv.getUserData
+
+                data.synchronized { data.keysSet().asScala.foreach(data.remove) }
+
                 delKeys += key
 
 

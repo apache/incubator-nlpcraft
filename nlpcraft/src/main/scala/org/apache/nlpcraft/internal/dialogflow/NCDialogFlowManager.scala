@@ -33,7 +33,7 @@ import java.time.format.DateTimeFormatter
 /**
  * Dialog flow manager.
  */
-class NCDialogFlowManager(mdlCfg: NCModelConfig) extends LazyLogging:
+case class NCDialogFlowManager(mdlCfg: NCModelConfig) extends LazyLogging:
     private final val flow = mutable.HashMap.empty[String, mutable.ArrayBuffer[NCDialogFlowItem]]
 
     @volatile private var gc: Thread = _

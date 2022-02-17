@@ -19,12 +19,17 @@ package org.apache.nlpcraft.internal.impl
 
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.*
+import org.apache.nlpcraft.internal.dialogflow.NCDialogFlowManager
+import org.apache.nlpcraft.internal.conversation.*
 import org.apache.nlpcraft.internal.impl.*
+import org.apache.nlpcraft.internal.intent.matcher.{NCIntentSolver, NCIntentSolverInput}
 import org.apache.nlpcraft.internal.util.*
 
+import scala.jdk.CollectionConverters.*
 import java.util
 import java.util.concurrent.*
 import java.util.concurrent.atomic.*
+import java.util.function.Predicate
 import java.util.{ArrayList, UUID, List as JList, Map as JMap}
 import scala.collection.immutable
 import scala.jdk.OptionConverters.*
@@ -36,13 +41,7 @@ import scala.jdk.CollectionConverters.*
   * @param mdl
   */
 class NCModelPipelineProcessor(mdl: NCModel) extends LazyLogging:
-    /**
-      *
-      * @param req
-      * @param vars
-      * @param checkCancel
-      */
-    case class VariantsHolder(req: NCRequest, vars: Seq[NCVariant], checkCancel: Option[() => Unit])
+    case class VariantsHolder(request: NCRequest, variants: Seq[NCVariant], tokens: JList[NCToken], checkCancel: Option[() => Unit])
 
     require(mdl != null)
     require(mdl.getPipeline.getTokenParser != null)
@@ -60,6 +59,11 @@ class NCModelPipelineProcessor(mdl: NCModel) extends LazyLogging:
     private val entVals = nvl(pipeline.getEntityValidators)
     private val varFilter = pipeline.getVariantFilter.toScala
 
+    private val convMgr = NCConversationManager(mdl.getConfig)
+    private val dialogMgr = NCDialogFlowManager(mdl.getConfig)
+    private val mdlIntents = NCModelScanner.scan(mdl)
+    private val solver = NCIntentSolver(dialogMgr, mdlIntents.map(p => p.intent -> p.function).toMap)
+
     /**
       *
       * @param list
@@ -73,7 +77,29 @@ class NCModelPipelineProcessor(mdl: NCModel) extends LazyLogging:
       * @param h
       * @return
       */
-    private def matchIntent(h: VariantsHolder): NCResult = ???
+    private def matchIntent(h: VariantsHolder): NCResult =
+        val userId = h.request.getUserId
+        val convHldr = convMgr.getConversation(userId)
+        val allEnts = h.variants.flatMap(_.getEntities.asScala)
+
+        val conv =
+            new NCConversation {
+                override val getSession: NCPropertyMap = convHldr.getUserData
+                override val getStm: JList[NCEntity] = convHldr.getEntities
+                override val getDialogFlow: JList[NCDialogFlowItem] = dialogMgr.getDialogFlow(userId).asJava
+                override def clearStm(filter: Predicate[NCEntity]): Unit = convHldr.clearEntities(filter)
+                override def clearDialog(filter: Predicate[String]): Unit = dialogMgr.clearForPredicate(userId, (s: String) => filter.test(s))
+            }
+
+        val ctx = new NCContext:
+            override def isOwnerOf(ent: NCEntity): Boolean = allEnts.contains(ent)
+            override val getModelConfig: NCModelConfig = mdl.getConfig
+            override val getRequest: NCRequest = h.request
+            override val getConversation: NCConversation = conv
+            override val getVariants: util.Collection[NCVariant] = h.variants.asJava
+            override val getTokens: JList[NCToken] = h.tokens
+
+        solver.solve(NCIntentSolverInput(ctx, mdl))
 
     /**
       *
@@ -159,7 +185,7 @@ class NCModelPipelineProcessor(mdl: NCModel) extends LazyLogging:
             check()
             variants = varFilter.get.filter(req, cfg, variants)
 
-        VariantsHolder(req, variants.asScala.toSeq, checkCancel)
+        VariantsHolder(req, variants.asScala.toSeq, toks, checkCancel)
 
     /**
       *
@@ -171,8 +197,7 @@ class NCModelPipelineProcessor(mdl: NCModel) extends LazyLogging:
       * @throws NCCuration
       * @throws NCException
       */
-    def askSync(txt: String, data: JMap[String, AnyRef], usrId: String): NCResult =
-        matchIntent(prepVariants(txt, data, usrId))
+    def askSync(txt: String, data: JMap[String, AnyRef], usrId: String): NCResult = matchIntent(prepVariants(txt, data, usrId))
 
     /**
       * TODO: explain all exceptions that are thrown by the future.

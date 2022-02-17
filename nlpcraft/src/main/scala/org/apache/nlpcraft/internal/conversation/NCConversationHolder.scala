@@ -38,7 +38,7 @@ case class NCConversationHolder(
     timeoutMs: Long,
     maxDepth: Int
 ) extends LazyLogging {
-    private final val data = new ConcurrentHashMap[String, Object]()
+    private final val data = new NCPropertyMapAdapter()
 
     case class EntityHolder(entity: NCEntity, var entityTypeUsageTime: Long = 0)
     case class ConversationItem(holders: mutable.ArrayBuffer[EntityHolder], reqId: String, tstamp: Long)
@@ -217,5 +217,5 @@ case class NCConversationHolder(
     /**
       *
       */
-    def getUserData: util.Map[String, Object] = data
+    val getUserData: NCPropertyMap = data
 }
