@@ -32,12 +32,6 @@ import scala.jdk.CollectionConverters.*
 import scala.language.postfixOps
 
 /**
-// TODO: order.
-    // TODO: NCIntentSolverInput contains model.
-    // TODO: logic with RedoSolver.
-    // TODO: NCIntentMatcher API.
-    // TODO: why 2 classes NCIntentSolver and NCIntentSolverEngine.
-
  * Intent solver that finds the best matching intent given user sentence.
  */
 case class NCIntentSolver(dialog: NCDialogFlowManager, intents: Map[NCIDLIntent, NCIntentMatch => NCResult]) extends LazyLogging:
@@ -570,72 +564,80 @@ case class NCIntentSolver(dialog: NCDialogFlowManager, intents: Map[NCIDLIntent,
 
     /**
       *
-      * @param in Intent solver input.
+      * @param slvIn Intent solver input.
       * @param span Parent span.
       * @return
       * @throws NCRejection
       */
-    private def solveIteration(in: NCIntentSolverInput): Option[NCResult] =
+    private def solveIteration(slvIn: NCIntentSolverInput): Option[NCResult] =
         // Should it be an assertion?
         if intents.isEmpty then throw new NCRejection("Intent solver has no registered intents.")
 
-        val ctx = in.context
+        val ctx = slvIn.context
         val req = ctx.getRequest
 
-        val results =
+        val intentResults =
             try solveIntents(ctx, intents)
             catch case e: Exception => throw new NCRejection("Processing failed due to unexpected error.", e)
 
-        if results.isEmpty then throw new NCRejection("No matching intent found.")
+        if intentResults.isEmpty then throw new NCRejection("No matching intent found.")
 
-        var i = -1
+        object Loop:
+            private var data: Option[Option[NCResult]] = None
+            private var stopped: Boolean = false
 
-        for (res <- results if res != null)
+            def hasNext: Boolean = !stopped
+
+            def finish(data: Option[NCResult]): Unit =
+                Loop.data = Option(data)
+                Loop.stopped = true
+
+            def result: Option[NCResult] = data.getOrElse(throw new NCRejection("No matching intent found - all intents were skipped."))
+
+        for (intentRes <- intentResults.filter(_ != null) if Loop.hasNext)
+            val intentMatch: NCIntentMatch =
+                new NCIntentMatch:
+                    override val getContext: NCContext = ctx
+                    override val getIntentId: String = intentRes.intentId
+                    override val getIntentEntities: JList[JList[NCEntity]] = intentRes.groups.map(_.entities).map(_.asJava).asJava
+                    override def getTermEntities(idx: Int): JList[NCEntity] = intentRes.groups(idx).entities.asJava
+                    override def getTermEntities(termId: String): JList[NCEntity] =
+                        intentRes.groups.find(_.termId === termId) match
+                            case Some(g) => g.entities.asJava
+                            case None => Collections.emptyList()
+                    override val getVariant: NCVariant =
+                        new NCVariant:
+                            override def getEntities: JList[NCEntity] = intentRes.variant.entities.asJava
             try
-                i += 1
+                if slvIn.model.onMatchedIntent(intentMatch) then
+                    // This can throw NCIntentSkip exception.
+                    val cbRes = intentRes.fn(intentMatch)
 
-                val intentMatch: NCIntentMatch =
-                    new NCIntentMatch:
-                        override val getIntentId: String = res.intentId
-                        override val getIntentEntities: JList[JList[NCEntity]] = res.groups.map(_.entities).map(_.asJava).asJava
-                        override def getTermEntities(idx: Int): JList[NCEntity] = res.groups(idx).entities.asJava
-                        override def getTermEntities(termId: String): JList[NCEntity] =
-                            res.groups.find(_.termId === termId) match
-                                case Some(g) => g.entities.asJava
-                                case None => Collections.emptyList()
-                        override val getVariant: NCVariant =
-                            new NCVariant:
-                                override def getEntities: JList[NCEntity] = res.variant.entities.asJava
+                    // Store won intent match in the input.
+                    slvIn.intentMatch = intentMatch
 
-                if !in.model.onMatchedIntent(intentMatch) then
+                    if cbRes.getIntentId == null then
+                        cbRes.setIntentId(intentRes.intentId)
+
+                    logger.info(s"Intent '${intentRes.intentId}' for variant #${intentRes.variantIdx + 1} selected as the <|best match|>")
+
+                    dialog.addMatchedIntent(intentMatch, cbRes, ctx)
+
+                    Loop.finish(Option(cbRes))
+                else
                     logger.info(
-                        s"Model '${ctx.getModelConfig.getId}' triggered rematching of intents by intent '${res.intentId}' on variant #${res.variantIdx + 1}."
+                        s"Model '${ctx.getModelConfig.getId}' triggered rematching of intents by intent '${intentRes.intentId}' on variant #${intentRes.variantIdx + 1}."
                     )
 
-                    return None
+                    Loop.finish(None)
+                catch
+                    case e: NCIntentSkip =>
+                        // No-op - just skipping this result.
+                        e.getMessage match
+                            case s if s != null => logger.info(s"Selected intent '${intentRes.intentId}' skipped: $s")
+                            case _ => logger.info(s"Selected intent '${intentRes.intentId}' skipped.")
 
-                // This can throw NCIntentSkip exception.
-                val cbRes = res.fn(intentMatch)
-
-                // Store won intent match in the input.
-                in.intentMatch = intentMatch
-
-                if cbRes.getIntentId == null then
-                    cbRes.setIntentId(res.intentId)
-
-                logger.info(s"Intent '${res.intentId}' for variant #${res.variantIdx + 1} selected as the <|best match|>")
-
-                dialog.addMatchedIntent(intentMatch, cbRes, ctx)
-
-                return Option(cbRes)
-            catch
-                case e: NCIntentSkip =>
-                    // No-op - just skipping this result.
-                    e.getMessage match
-                        case s if s != null => logger.info(s"Selected intent '${res.intentId}' skipped: $s")
-                        case _ => logger.info(s"Selected intent '${res.intentId}' skipped.")
-
-        throw new NCRejection("No matching intent found - all intents were skipped.")
+        Loop.result
 
     /**
       *
@@ -649,7 +651,7 @@ case class NCIntentSolver(dialog: NCDialogFlowManager, intents: Map[NCIDLIntent,
 
         while (res != null)
             solveIteration(in) match
-                case Some(solverRes) => res = solverRes
+                case Some(iterRes) => res = iterRes
                 case None => // No-op.
 
         res

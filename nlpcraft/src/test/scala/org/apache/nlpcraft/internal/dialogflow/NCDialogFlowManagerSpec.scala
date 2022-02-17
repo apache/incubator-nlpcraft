@@ -28,12 +28,13 @@ import java.util
   *
   */
 class NCDialogFlowManagerSpec:
-    case class IntentMatchMock(intentId: String) extends NCIntentMatch:
-        override def getIntentId: String = intentId
-        override def getIntentEntities: util.List[util.List[NCEntity]] = null
+    case class IntentMatchMock(intentId: String, ctx: NCContext) extends NCIntentMatch:
+        override val getContext: NCContext = ctx
+        override val getIntentId: String = intentId
+        override val getIntentEntities: util.List[util.List[NCEntity]] = null
         override def getTermEntities(idx: Int): util.List[NCEntity] = null
         override def getTermEntities(termId: String): util.List[NCEntity] = null
-        override def getVariant: NCVariant = null
+        override val getVariant: NCVariant = null
 
     case class ContextMock(userId: String, reqTs: Long = NCUtils.now()) extends NCContext:
         override def isOwnerOf(ent: NCEntity): Boolean = false
@@ -68,7 +69,7 @@ class NCDialogFlowManagerSpec:
       * @param id
       * @param ctx
       */
-    private def addMatchedIntent(id: String, ctx: NCContext): Unit = mgr.addMatchedIntent(IntentMatchMock(id), null, ctx)
+    private def addMatchedIntent(id: String, ctx: NCContext): Unit = mgr.addMatchedIntent(IntentMatchMock(id, ctx), null, ctx)
 
     /**
       *

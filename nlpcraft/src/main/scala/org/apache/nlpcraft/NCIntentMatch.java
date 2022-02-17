@@ -78,4 +78,12 @@ public interface NCIntentMatch {
      * @see #getIntentEntities()
      */
     NCVariant getVariant();
+
+
+    /**
+     * Gets context of the user input query.
+     *
+     * @return Original query context.
+     */
+    NCContext getContext();
 }
