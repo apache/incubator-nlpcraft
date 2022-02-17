@@ -46,7 +46,7 @@ class NCModelPipelineProcessor(mdl: NCModel) extends LazyLogging:
     require(mdl != null)
     require(mdl.getPipeline.getTokenParser != null)
     require(mdl.getPipeline.getEntityParsers != null)
-    require(mdl.getPipeline.getEntityParsers.size() > 0)
+    require(!mdl.getPipeline.getEntityParsers.isEmpty)
 
     private val pipeline = mdl.getPipeline
     private val pool = new java.util.concurrent.ForkJoinPool()
@@ -83,13 +83,12 @@ class NCModelPipelineProcessor(mdl: NCModel) extends LazyLogging:
         val allEnts = h.variants.flatMap(_.getEntities.asScala)
 
         val conv =
-            new NCConversation {
+            new NCConversation:
                 override val getSession: NCPropertyMap = convHldr.getUserData
                 override val getStm: JList[NCEntity] = convHldr.getEntities
                 override val getDialogFlow: JList[NCDialogFlowItem] = dialogMgr.getDialogFlow(userId).asJava
                 override def clearStm(filter: Predicate[NCEntity]): Unit = convHldr.clearEntities(filter)
                 override def clearDialog(filter: Predicate[String]): Unit = dialogMgr.clearForPredicate(userId, (s: String) => filter.test(s))
-            }
 
         val ctx = new NCContext:
             override def isOwnerOf(ent: NCEntity): Boolean = allEnts.contains(ent)

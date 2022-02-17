@@ -649,7 +649,7 @@ case class NCIntentSolver(dialog: NCDialogFlowManager, intents: Map[NCIDLIntent,
     def solve(in: NCIntentSolverInput): NCResult =
         var res: NCResult = null
 
-        while (res != null)
+        while (res == null)
             solveIteration(in) match
                 case Some(iterRes) => res = iterRes
                 case None => // No-op.
