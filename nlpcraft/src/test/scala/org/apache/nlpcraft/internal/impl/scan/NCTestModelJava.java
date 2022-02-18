@@ -17,15 +17,14 @@
 
 package org.apache.nlpcraft.internal.impl.scan;
 
+import org.apache.nlpcraft.NCEntity;
 import org.apache.nlpcraft.NCIntent;
-import org.apache.nlpcraft.NCIntentRef;
 import org.apache.nlpcraft.NCIntentSample;
 import org.apache.nlpcraft.NCIntentSampleRef;
 import org.apache.nlpcraft.NCIntentTerm;
 import org.apache.nlpcraft.NCModel;
 import org.apache.nlpcraft.NCModelAdapter;
 import org.apache.nlpcraft.NCResult;
-import org.apache.nlpcraft.NCEntity;
 import org.apache.nlpcraft.nlp.util.opennlp.NCTestConfigJava;
 
 import java.util.List;

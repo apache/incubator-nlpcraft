@@ -19,9 +19,10 @@ package org.apache.nlpcraft.nlp.util
 
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.nlp.util.NCTestPipeline.*
-import scala.jdk.CollectionConverters.*
+
 import java.util
 import java.util.Map as JMap
+import scala.jdk.CollectionConverters.*
 
 /**
   * Request test implementation.
