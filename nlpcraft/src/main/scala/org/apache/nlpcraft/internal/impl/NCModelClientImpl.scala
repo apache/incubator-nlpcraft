@@ -47,7 +47,7 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
     private val intents = NCModelScanner.scan(mdl)
     private val convMgr = NCConversationManager(mdl.getConfig)
     private val dlgMgr = NCDialogFlowManager(mdl.getConfig)
-    private val plMgr = new NCModelPipelineManager(mdl.getConfig, mdl.getPipeline)
+    private val plMgr = NCModelPipelineManager(mdl.getConfig, mdl.getPipeline)
     private val intentsMgr = NCIntentsManager(dlgMgr, intents.map(p => p.intent -> p.function).toMap)
 
     init()
