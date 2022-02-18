@@ -20,33 +20,21 @@ package org.apache.nlpcraft.internal.impl
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.*
-import org.apache.nlpcraft.internal.dialogflow.NCDialogFlowManager
-import org.apache.nlpcraft.internal.intent.matcher.NCIntentsManager
-import org.apache.nlpcraft.internal.util.*
-
-import java.util.concurrent.*
-import java.util.concurrent.atomic.AtomicReference
-import java.util.{Objects, Collections as JColls, List as JList, Map as JMap}
-import scala.collection.mutable
-import scala.concurrent.ExecutionContext
-import scala.jdk.CollectionConverters.*
-import org.apache.nlpcraft.*
-import org.apache.nlpcraft.internal.dialogflow.NCDialogFlowManager
 import org.apache.nlpcraft.internal.conversation.*
+import org.apache.nlpcraft.internal.dialogflow.NCDialogFlowManager
 import org.apache.nlpcraft.internal.impl.*
-import org.apache.nlpcraft.internal.intent.matcher.{NCIntentsManager, NCIntentSolverInput}
+import org.apache.nlpcraft.internal.intent.matcher.*
 import org.apache.nlpcraft.internal.util.*
 
-import scala.jdk.CollectionConverters.*
 import java.util
 import java.util.concurrent.*
 import java.util.concurrent.atomic.*
-import java.util.function.Predicate
-import java.util.{ArrayList, UUID, List as JList, Map as JMap}
-import scala.collection.immutable
-import scala.jdk.OptionConverters.*
+import java.util.function.*
+import java.util.{ArrayList, Objects, UUID, Collections as JColls, List as JList, Map as JMap}
+import scala.collection.{immutable, mutable}
 import scala.concurrent.ExecutionContext
 import scala.jdk.CollectionConverters.*
+import scala.jdk.OptionConverters.*
 
 /**
   *

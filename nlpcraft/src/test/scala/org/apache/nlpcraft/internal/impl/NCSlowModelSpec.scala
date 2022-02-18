@@ -30,7 +30,7 @@ import scala.util.Using
 /**
   *
   */
-class NCModelSlowModelSpec:
+class NCSlowModelSpec:
     /**
       *
       * @param delayMs

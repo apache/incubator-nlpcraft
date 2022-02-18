@@ -358,7 +358,7 @@ class NCIntentsManager(dialog: NCDialogFlowManager, intents: Map[NCIDLIntent, NC
             val intentGrps = mutable.ArrayBuffer.empty[TermEntitiesGroup]
             var abort = false
             var lastTermMatch: TermMatch = null
-            val sess = ctx.getConversation.getSession // Conversation metadata (shared across all terms). // TODO?
+            val sess = ctx.getConversation.getSession // Conversation metadata (shared across all terms).
             val convMeta = sess.keysSet().asScala.map(k => k -> sess.get(k).asInstanceOf[Object]).toMap
             val ents = senEnts.map(_.entity)
 
