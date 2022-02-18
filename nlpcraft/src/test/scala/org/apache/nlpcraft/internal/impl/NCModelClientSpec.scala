@@ -28,24 +28,7 @@ import scala.jdk.CollectionConverters.*
 import scala.util.Using
 
 class NCModelClientSpec:
-    /**
-      *
-      */
-    @Test
-    def test(): Unit =
-        val mdl: NCTestModelAdapter =
-            new NCTestModelAdapter():
-                // TODO: doesn't work.
-                //@NCIntent("intent=ls term(act)={has(ent_groups, 'act')} term(loc)={# == 'ls:loc'}*") @NCIntent("intent=locInt term(single)~{# == 'id1'} term(list)~{# == 'id2'}[0,10] term(opt)~{# == 'id3'}?")
-                @NCIntentSample(Array("Lights on at second floor kitchen", "Invalid sample"))
-                @NCIntent("intent=ls term(act)={# == 'ls:on'} term(loc)={# == 'ls:loc'}*")
-                def onMatch(@NCIntentTerm("act") act: NCEntity, @NCIntentTerm("loc") locs: List[NCEntity]): NCResult =
-                    val ncRes = new NCResult()
-                    ncRes.setType(NCResultType.ASK_RESULT)
-                    ncRes.setBody(if locs.isEmpty then "entire house" else locs.map(_.mkText()).mkString(","))
-
-                    ncRes
-
+    private def test0(mdl: NCTestModelAdapter): Unit =
         mdl.getPipeline.getEntityParsers.add(
             new NCSemanticEntityParser(
                 new NCEnSemanticPorterStemmer,
@@ -62,3 +45,24 @@ class NCModelClientSpec:
 
             client.validateSamples()
         }
+    /**
+      *
+      */
+    @Test
+    def test(): Unit =
+        test0(
+            new NCTestModelAdapter():
+                @NCIntentSample(Array("Lights on at second floor kitchen", "Invalid sample"))
+                @NCIntent("intent=ls term(act)={# == 'ls:on'} term(loc)={# == 'ls:loc'}*")
+                def onMatch(@NCIntentTerm("act") act: NCEntity, @NCIntentTerm("loc") locs: List[NCEntity]): NCResult = new NCResult()
+        )
+
+    @Test
+    def test2(): Unit =
+        test0(
+            new NCTestModelAdapter():
+                @NCIntent("intent=ls term(act)={has(ent_groups, 'act')} term(loc)={# == 'ls:loc'}*")
+                @NCIntentSample(Array("Lights on at second floor kitchen", "Invalid sample"))
+                def onMatch(@NCIntentTerm("act") act: NCEntity, @NCIntentTerm("loc") locs: List[NCEntity]): NCResult = new NCResult()
+        )
+

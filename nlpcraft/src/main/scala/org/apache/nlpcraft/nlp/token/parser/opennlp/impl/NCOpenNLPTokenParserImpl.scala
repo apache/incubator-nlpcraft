@@ -51,18 +51,18 @@ class NCOpenNLPTokenParserImpl(tokMdl: String,  posMdlSrc: String, lemmaDicSrc: 
 
     private def init(): Unit =
         NCUtils.execPar(
-            () =>
+            () => {
                 tagger = new POSTaggerME(new POSModel(NCUtils.getStream(posMdlSrc)))
                 logger.trace(s"Loaded resource: $posMdlSrc")
-            ,
-            () =>
+            },
+            () => {
                 lemmatizer = new DictionaryLemmatizer(NCUtils.getStream(lemmaDicSrc))
                 logger.trace(s"Loaded resource: $lemmaDicSrc")
-            ,
-            () =>
+            },
+            () => {
                 tokenizer = new TokenizerME(new TokenizerModel(NCUtils.getStream(tokMdl)))
                 logger.trace(s"Loaded resource: $tokMdl")
-
+            }
         )(ExecutionContext.Implicits.global)
 
     override def tokenize(text: String): JList[NCToken] =
