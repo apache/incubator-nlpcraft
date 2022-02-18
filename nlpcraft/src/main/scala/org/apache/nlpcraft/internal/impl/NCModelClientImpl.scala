@@ -20,100 +20,172 @@ package org.apache.nlpcraft.internal.impl
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.*
+import org.apache.nlpcraft.internal.ascii.NCAsciiTable
+import org.apache.nlpcraft.internal.conversation.*
+import org.apache.nlpcraft.internal.dialogflow.NCDialogFlowManager
+import org.apache.nlpcraft.internal.impl.*
+import org.apache.nlpcraft.internal.intent.matcher.*
 import org.apache.nlpcraft.internal.util.*
 
+import java.util
 import java.util.concurrent.*
-import java.util.concurrent.atomic.AtomicReference
-import java.util.{Objects, List as JList, Map as JMap}
-import scala.collection.mutable
+import java.util.concurrent.atomic.*
+import java.util.function.*
+import java.util.{ArrayList, Objects, UUID, Collections as JColls, List as JList, Map as JMap}
+import scala.collection.{immutable, mutable}
 import scala.concurrent.ExecutionContext
 import scala.jdk.CollectionConverters.*
+import scala.jdk.OptionConverters.*
 
 /**
   *
   * @param mdl
   */
 class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
-    private val plProc = NCModelPipelineProcessor(mdl)
-    private var plSrvs: Seq[NCLifecycle] = _
+    verify()
 
-    init(mdl.getConfig, mdl.getPipeline)
+    private val intents = NCModelScanner.scan(mdl)
+    private val convMgr = NCConversationManager(mdl.getConfig)
+    private val dlgMgr = NCDialogFlowManager(mdl.getConfig)
+    private val plMgr = new NCModelPipelineManager(mdl.getConfig, mdl.getPipeline)
+    private val intentsMgr = NCIntentsManager(dlgMgr, intents.map(p => p.intent -> p.function).toMap)
+
+    init()
 
     /**
       *
       * @param cfg
       * @param pipeline
       */
-    private def init(cfg: NCModelConfig, pipeline: NCModelPipeline): Unit =
+    private def verify(): Unit =
+        Objects.requireNonNull(mdl, "Model cannot be null.")
+
+        val cfg = mdl.getConfig
+        val pipeline = mdl.getPipeline
+
         Objects.requireNonNull(cfg.getId, "Model ID cannot be null.")
         Objects.requireNonNull(cfg.getName, "Model name cannot be null.")
         Objects.requireNonNull(cfg.getVersion, "Model version cannot be null.")
         Objects.requireNonNull(pipeline.getTokenParser, "Token parser cannot be null.")
         Objects.requireNonNull(pipeline.getEntityParsers, "List of entity parsers in the pipeline cannot be null.")
+
         if pipeline.getEntityParsers.isEmpty then E(s"At least one entity parser must be specified in the pipeline.")
 
-        val buf = mutable.ArrayBuffer.empty[NCLifecycle] ++ pipeline.getEntityParsers.asScala
-
-        def add[T <: NCLifecycle](list: JList[T]): Unit = if list != null then buf ++= list.asScala
-
-        add(pipeline.getTokenEnrichers)
-        add(pipeline.getTokenValidators)
-        add(pipeline.getEntityParsers)
-        add(pipeline.getEntityParsers)
-        add(pipeline.getEntityValidators)
-        add(pipeline.getTokenValidators)
-
-        plSrvs = buf.toSeq
-        processServices(_.onStart(cfg), "started")
-
     /**
       *
-      * @param act
-      * @param actVerb
       */
-    private def processServices(act: NCLifecycle => Unit, actVerb: String): Unit =
-        NCUtils.execPar(plSrvs.map(p =>
-            () => {
-                act(p)
-                logger.info(s"Service $actVerb: '${p.getClass.getName}'")
-            }
-        )*)(ExecutionContext.Implicits.global)
+    private def init(): Unit =
+        convMgr.start()
+        dlgMgr.start()
+        plMgr.start()
 
-    /**
-      *
+
+     /*
       * @param txt
       * @param data
       * @param usrId
       * @return
       */
-    def ask(txt: String, data: JMap[String, AnyRef], usrId: String): CompletableFuture[NCResult] =
-        plProc.ask(txt, data, usrId)
+    def ask(txt: String, data: JMap[String, AnyRef], usrId: String): NCResult =
+        val plData = plMgr.prepare(txt, data, usrId)
+
+        val userId = plData.request.getUserId
+        val convHldr = convMgr.getConversation(userId)
+        val allEnts = plData.variants.flatMap(_.getEntities.asScala)
+
+        val conv: NCConversation =
+            new NCConversation:
+                override val getSession: NCPropertyMap = convHldr.getUserData
+                override val getStm: JList[NCEntity] = convHldr.getEntities.asJava
+                override val getDialogFlow: JList[NCDialogFlowItem] = dlgMgr.getDialogFlow(userId).asJava
+                override def clearStm(filter: Predicate[NCEntity]): Unit = convHldr.clear(filter)
+                override def clearDialog(filter: Predicate[NCDialogFlowItem]): Unit = dlgMgr.clear(userId, (s: NCDialogFlowItem) => filter.test(s))
+
+        val ctx: NCContext =
+            new NCContext:
+                override def isOwnerOf(ent: NCEntity): Boolean = allEnts.contains(ent)
+                override val getModelConfig: NCModelConfig = mdl.getConfig
+                override val getRequest: NCRequest = plData.request
+                override val getConversation: NCConversation = conv
+                override val getVariants: util.Collection[NCVariant] = plData.variants.asJava
+                override val getTokens: JList[NCToken] = plData.tokens
+
+        intentsMgr.solve(NCIntentSolverInput(ctx, mdl))
+
 
     /**
       *
-      * @param txt
-      * @param data
       * @param usrId
-      * @return
       */
-    def askSync(txt: String, data: JMap[String, AnyRef], usrId: String): NCResult =
-        plProc.askSync(txt, data, usrId)
+    def clearStm(usrId: String): Unit = convMgr.getConversation(usrId).clear(_ => true)
+
+    /**
+      *
+      * @param usrId
+      * @param filter
+      */
+    def clearStm(usrId: String, filter: Predicate[NCEntity]): Unit = convMgr.getConversation(usrId).clear(filter)
 
     /**
       *
       * @param usrId
       */
-    def clearConversation(usrId: String): Unit = ???
+    def clearDialog(usrId: String): Unit = dlgMgr.clear(usrId)
 
     /**
       *
       * @param usrId
       */
-    def clearDialog(usrId: String): Unit = ???
+    def clearDialog(usrId: String, filter: Predicate[NCDialogFlowItem]): Unit = dlgMgr.clear(usrId, (i: NCDialogFlowItem) => filter.test(i))
+
+    /**
+      *
+      */
+    def validateSamples(): Unit =
+        case class Result(intentId: String, text: String, pass: Boolean, error: Option[String], time: Long)
+
+        val userId = UUID.randomUUID().toString
+        val results = mutable.ArrayBuffer.empty[Result]
+
+        def now: Long = System.currentTimeMillis()
+
+        for (i <- intents; samples <- i.samples)
+            for (sample <- samples)
+                val t = now
+
+                try
+                    ask(sample, null, userId)
+
+                    results += Result(i.intent.id, sample, true, None, now - t)
+                catch
+                    case e: Throwable =>
+                        results += Result(i.intent.id, sample, true, Option(e.getMessage), now - t)
+
+            clearDialog(userId)
+            clearStm(userId)
+
+        val tbl = NCAsciiTable()
+
+        tbl #= ("Intent ID", "+/-", "Text", "Error", "ms.")
+
+        for (res <- results)
+            tbl += (
+                res.intentId,
+                if res.pass then "OK" else "FAIL",
+                res.text,
+                res.error.getOrElse(""),
+                res.time
+            )
+
+        val passCnt = results.count(_.pass)
+        val failCnt = results.count(!_.pass)
+
+        tbl.info(logger, Option(s"Model auto-validation results: OK $passCnt, FAIL $failCnt:"))
 
     /**
       *
       */
     def close(): Unit =
-        plProc.close()
-        processServices(_.onStop(mdl.getConfig), "stopped")
+        plMgr.close()
+        dlgMgr.close()
+        convMgr.close()

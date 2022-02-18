@@ -19,9 +19,9 @@ package org.apache.nlpcraft.nlp.util
 
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.nlp.util.NCTestPipeline.*
+
+import java.util.{List as JList, Set as JSet}
 import scala.jdk.CollectionConverters.*
-import java.util.Set as JSet
-import java.util.List as JList
 
 /**
   * Entity test implementation.

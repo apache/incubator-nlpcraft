@@ -26,7 +26,7 @@ import scala.jdk.CollectionConverters.*
   * @param idx
   */
 class NCIDLEntity(ent: NCEntity, idx: Int):
-    private lazy val txt = ent.getTokens.asScala.map(_.getText).mkString(" ")
+    private lazy val txt = ent.mkText()
 
     def getImpl: NCEntity = ent
     def getText: String = txt

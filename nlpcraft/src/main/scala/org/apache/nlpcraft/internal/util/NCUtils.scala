@@ -20,12 +20,15 @@ package org.apache.nlpcraft.internal.util
 import com.typesafe.scalalogging.*
 import org.apache.nlpcraft.*
 import com.google.gson.*
+
 import java.io.*
 import java.net.*
-import java.util.concurrent.{CopyOnWriteArrayList, ExecutorService, TimeUnit} // Avoids conflicts.
+import java.time.{ZoneId, Instant, ZonedDateTime}
+import java.util.concurrent.{CopyOnWriteArrayList, ExecutorService, TimeUnit}
 import java.util.regex.Pattern
 import java.util.zip.*
-import java.util.{Random, UUID}
+import java.util.{Random, TimeZone}
+
 import scala.annotation.tailrec
 import scala.collection.{IndexedSeq, Seq, mutable}
 import scala.concurrent.*
@@ -41,6 +44,7 @@ import scala.util.Using
 object NCUtils extends LazyLogging:
     final val NL = System getProperty "line.separator"
     private val RND = new Random()
+    private final val UTC = ZoneId.of("UTC")
     private val sysProps = new SystemProperties
     private final lazy val GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create()
 
@@ -199,6 +203,16 @@ object NCUtils extends LazyLogging:
         catch case e: Exception => E(s"Cannot extract JSON field '$field' from: '$json'", e)
 
     /**
+      * Gets now in UTC timezone.
+      */
+    def nowUtc(): ZonedDateTime = ZonedDateTime.now(UTC)
+
+    /**
+      * Gets now in UTC timezone in milliseconds representation.
+      */
+    def nowUtcMs(): Long = Instant.now().toEpochMilli
+
+    /**
       * Shortcut - current timestamp in milliseconds.
       */
     def now(): Long = System.currentTimeMillis()
@@ -333,7 +347,9 @@ object NCUtils extends LazyLogging:
             @volatile private var stopped = false
 
             override def isInterrupted: Boolean = super.isInterrupted || stopped
-            override def interrupt(): Unit =  stopped = true; super.interrupt()
+            override def interrupt(): Unit =
+                stopped = true
+                super.interrupt()
 
             override def run(): Unit =
                 logger.trace(s"Thread started: $name")
@@ -346,6 +362,15 @@ object NCUtils extends LazyLogging:
                     case e: Throwable => logger.warn(s"Unexpected error during '$name' thread execution:", e)
                 finally
                     stopped = true
+
+    /**
+      *
+      * @param prefix
+      * @param mdlId
+      * @param body
+      * @return
+      */
+    def mkThread(prefix: String, mdlId: String)(body: Thread => Unit): Thread = mkThread(s"$prefix-@$mdlId")(body)
 
     /**
       * Gets resource existing flag.
@@ -387,15 +412,6 @@ object NCUtils extends LazyLogging:
                 case _ => E(s"Resource not found: $src")
         else if isUrl(src) then new URL(src).openStream()
         else E(s"Source not found or unsupported: $src")
-
-    /**
-      * Makes thread.
-      *
-      * @param name Name.
-      * @param body Thread body.
-      */
-    def mkThread(name: String, body: Runnable): Thread =
-        mkThread(name) { _ => body.run() }
 
     /**
       * Sleeps number of milliseconds properly handling exceptions.

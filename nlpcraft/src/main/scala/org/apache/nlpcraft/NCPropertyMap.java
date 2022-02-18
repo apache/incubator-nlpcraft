@@ -82,4 +82,9 @@ public interface NCPropertyMap {
      * @return
      */
     Set<String> keysSet();
+
+    /**
+     *
+     */
+    void clear();
 }

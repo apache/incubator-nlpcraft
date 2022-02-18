@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.internal
+package org.apache.nlpcraft.internal.impl
 
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.internal.impl.NCModelPipelineProcessor
 import org.apache.nlpcraft.nlp.entity.parser.nlp.impl.NCNLPEntityParserImpl
 import org.apache.nlpcraft.nlp.entity.parser.semantic.*
 import org.apache.nlpcraft.nlp.entity.parser.semantic.impl.en.NCEnSemanticPorterStemmer
@@ -36,7 +35,7 @@ import scala.jdk.CollectionConverters.*
 /**
   *
   */
-class NCModelPipelineProcessorSpec:
+class NCModelPipelineManagerSpec:
     /**
       *
       */
@@ -49,61 +48,15 @@ class NCModelPipelineProcessorSpec:
             pipeline.getEntityParsers.clear()
             pipeline.getEntityParsers.add(parser)
 
-            val res = new NCModelPipelineProcessor(new NCModelAdapter(CFG, pipeline)).prepVariants(txt, null, "userId")
+            val res = new NCModelPipelineManager(CFG, pipeline).prepare(txt, null, "userId")
 
-            println(s"Variants count: ${res.vars.size}")
-            for ((v, idx) <- res.vars.zipWithIndex)
+            println(s"Variants count: ${res.variants.size}")
+            for ((v, idx) <- res.variants.zipWithIndex)
                 println(s"Variant: $idx")
                 NCTestUtils.printEntities(txt, v.getEntities.asScala.toSeq)
 
-            require(res.vars.sizeIs == variantCnt)
+            require(res.variants.sizeIs == variantCnt)
 
         test("t1 t2", 4, NCSemanticTestElement("t1", "t2"), NCSemanticTestElement("t2", "t1"))
         test("t1 t2", 2, NCSemanticTestElement("t1", "t2"), NCSemanticTestElement("t2"))
 
-    /**
-      *
-      * @param delayMs
-      * @param iterCnt
-      * @return
-      */
-    private def mkSlowPipelineProcessor(delayMs: Long, iterCnt: Int): NCModelPipelineProcessor =
-        val pipeline = EN_PIPELINE.clone()
-
-        pipeline.getEntityParsers.clear()
-
-        def mkSlowParser(i: Int) =
-            new NCEntityParser:
-                override def parse(req: NCRequest, cfg: NCModelConfig, toks: JList[NCToken]): JList[NCEntity] =
-                    println(s"Parser called: $i")
-                    Thread.sleep(delayMs)
-                    java.util.Collections.emptyList()
-
-        (0 until iterCnt).foreach(i => pipeline.getEntityParsers.add(mkSlowParser(i)))
-
-        NCModelPipelineProcessor(new NCModelAdapter(CFG, pipeline))
-
-    /**
-      *
-      */
-    @Test
-    def testCancel(): Unit =
-        val fut = mkSlowPipelineProcessor(1, 10000).ask("any", null, "userId")
-
-        Thread.sleep(20)
-        require(fut.cancel(true))
-        Thread.sleep(20)
-
-        Assertions.assertThrows(classOf[CancellationException], () => fut.get)
-
-    /**
-      *
-      */
-    @Test
-    def testTimeout(): Unit =
-        val fut = mkSlowPipelineProcessor(1, 10000).ask("any", null, "userId")
-
-        Thread.sleep(20)
-
-        try Assertions.assertThrows(classOf[TimeoutException], () => fut.get(1, TimeUnit.MILLISECONDS))
-        finally fut.cancel(true)

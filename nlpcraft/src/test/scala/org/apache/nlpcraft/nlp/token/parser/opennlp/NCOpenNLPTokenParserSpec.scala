@@ -50,16 +50,17 @@ class NCOpenNLPTokenParserSpec:
         test(
             "Test requests!",
             toks =>
-                require(toks.sizeIs == 3);
-                require(!isStopWord(toks.head));
+                require(toks.sizeIs == 3)
+                require(!isStopWord(toks.head))
                 require(isStopWord(toks.last))
         )
         test(
             "Test requests !",
-            toks =>
-                require(toks.sizeIs == 3);
-                require(!isStopWord(toks.head));
+            toks => {
+                require(toks.sizeIs == 3)
+                require(!isStopWord(toks.head))
                 require(isStopWord(toks.last))
+            }
         )
         test(
             // First and last are stop words,
@@ -67,21 +68,23 @@ class NCOpenNLPTokenParserSpec:
             // Note that "a ` a a` a" parsed as 5 tokens ("a", "`", ""a, "a`", "a") because OpenNLP tokenizer logic,
             // So we use spaces around quotes to simplify test.
             "a ` a a ` a",
-            toks =>
-                require(toks.sizeIs == 6);
-                require(isStopWord(toks.head));
-                require(isStopWord(toks.last));
+            toks => {
+                require(toks.sizeIs == 6)
+                require(isStopWord(toks.head))
+                require(isStopWord(toks.last))
                 require(toks.drop(1).reverse.drop(1).forall(p => !isStopWord(p)))
+            }
         )
         test(
             // First and last are stop words,
             // Third and fourth are not because brackets.
             "a ( a a ) a",
-            toks =>
-                require(toks.sizeIs == 6);
-                require(isStopWord(toks.head));
-                require(isStopWord(toks.last));
+            toks => {
+                require(toks.sizeIs == 6)
+                require(isStopWord(toks.head))
+                require(isStopWord(toks.last))
                 require(toks.drop(1).reverse.drop(1).forall(p => !isStopWord(p)))
+            }
         )
         test(
             // Invalid brackets.

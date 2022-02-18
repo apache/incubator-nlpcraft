@@ -20,12 +20,12 @@ package org.apache.nlpcraft;
 import org.apache.nlpcraft.internal.impl.NCModelClientImpl;
 
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.function.Predicate;
 
 /**
  *
  */
-public class NCModelClient {
+public class NCModelClient implements AutoCloseable {
     private final NCModelClientImpl impl;
 
     /**
@@ -44,29 +44,26 @@ public class NCModelClient {
      * @return
      * @throws NCException
      */
-    public CompletableFuture<NCResult> ask(String txt, Map<String, Object> data, String usrId) {
+    public NCResult ask(String txt, Map<String, Object> data, String usrId) {
         return impl.ask(txt, data, usrId);
     }
 
     /**
      *
-     * @param txt
-     * @param data
      * @param usrId
-     * @return
      * @throws NCException
      */
-    public NCResult askSync(String txt, Map<String, Object> data, String usrId) {
-        return impl.askSync(txt, data, usrId);
+    public void clearStm(String usrId) {
+        impl.clearStm(usrId);
     }
 
     /**
      *
      * @param usrId
-     * @throws NCException
+     * @param filter
      */
-    public void clearConversation(String usrId) {
-        impl.clearConversation(usrId);
+    public void clearStm(String usrId, Predicate<NCEntity> filter) {
+        impl.clearStm(usrId, filter);
     }
 
     /**
@@ -79,9 +76,26 @@ public class NCModelClient {
     }
 
     /**
-     * 
+     *
+     * @param usrId
+     * @param filter
      */
+    public void clearDialog(String usrId, Predicate<NCDialogFlowItem> filter) {
+        impl.clearDialog(usrId, filter);
+    }
+
+    /**
+     *
+     */
+    @Override
     public void close() {
         impl.close();
+    }
+
+    /**
+     *
+     */
+    public void validateSamples() {
+        impl.validateSamples();
     }
 }

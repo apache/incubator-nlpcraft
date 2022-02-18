@@ -36,9 +36,9 @@ public interface NCIntentMatch {
      * to the order and index of terms in the matching intent. Number of sub-lists will always be the same
      * as the number of terms in the matched intent.
      * <p>
-     * Consider using {@link NCIntentTerm} annotation instead for simpler access to intent entities.
+     * Consider using {@link NCIntentTerm} annotation instead for simpler access to the intent entities.
      *
-     * @return List of list of entities representing matched intent.
+     * @return List of lists of entities representing matched intent.
      * @see #getVariant()
      * @see NCIntentTerm
      */
@@ -47,7 +47,7 @@ public interface NCIntentMatch {
     /**
      * Gets entities for given term. This is a companion method for {@link #getIntentEntities()}.
      * <p>
-     * Consider using {@link NCIntentTerm} annotation instead for simpler access to intent entities.
+     * Consider using {@link NCIntentTerm} annotation instead for simpler access to the intent entities.
      *
      * @param idx Index of the term (starting from <code>0</code>).
      * @return List of entities, potentially {@code null}, for given term.
@@ -59,7 +59,7 @@ public interface NCIntentMatch {
     /**
      * Gets entities for given term. This is a companion method for {@link #getIntentEntities()}.
      * <p>
-     * Consider using {@link NCIntentTerm} annotation instead for simpler access to intent entities.
+     * Consider using {@link NCIntentTerm} annotation instead for simpler access to the intent entities.
      *
      * @param termId ID of the term for which to get entities.
      * @return List of entities, potentially {@code null}, for given term.
@@ -78,4 +78,12 @@ public interface NCIntentMatch {
      * @see #getIntentEntities()
      */
     NCVariant getVariant();
+
+
+    /**
+     * Gets context of the user input query.
+     *
+     * @return Original query context.
+     */
+    NCContext getContext();
 }

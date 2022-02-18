@@ -18,8 +18,8 @@
 package org.apache.nlpcraft.internal.intent.compiler.functions
 
 import org.apache.nlpcraft.internal.intent.compiler.functions.NCIDLFunctions.*
-import org.junit.jupiter.api.Test
 import org.apache.nlpcraft.nlp.util.opennlp.*
+import org.junit.jupiter.api.Test
 
 import scala.language.implicitConversions
 

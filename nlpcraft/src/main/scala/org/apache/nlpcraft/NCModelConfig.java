@@ -17,13 +17,19 @@
 
 package org.apache.nlpcraft;
 
+import java.time.Duration;
 import java.util.*;
 
 /**
  *
  */
 public class NCModelConfig extends NCPropertyMapAdapter {
+    public final long DFLT_CONV_TIMEOUT = Duration.ofMinutes(60).toMillis();
+    public final int DFLT_CONV_DEPTH = 3;
+
     private final String id, name, ver, desc, origin;
+    private long convTimeout = DFLT_CONV_TIMEOUT;
+    private int convDepth = DFLT_CONV_DEPTH;
 
     /**
      * @param id
@@ -99,5 +105,37 @@ public class NCModelConfig extends NCPropertyMapAdapter {
      */
     public String getOrigin() {
         return origin;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public long getConversationTimeout() {
+        return convTimeout;
+    }
+
+    /**
+     *
+     * @param convTimeout
+     */
+    public void setConversationTimeout(long convTimeout) {
+        this.convTimeout = convTimeout;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public int getConversationDepth() {
+        return convDepth;
+    }
+
+    /**
+     *
+     * @param convDepth
+     */
+    public void setConversationDepth(int convDepth) {
+        this.convDepth = convDepth;
     }
 }
