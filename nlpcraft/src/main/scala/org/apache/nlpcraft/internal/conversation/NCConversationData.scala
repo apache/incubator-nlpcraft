@@ -32,7 +32,7 @@ import scala.jdk.CollectionConverters.*
 /**
   * An active conversation is an ordered set of utterances for the specific user and data model.
   */
-case class NCConversationHolder(
+case class NCConversationData(
     usrId: String,
     mdlId: String,
     timeoutMs: Long,
@@ -111,7 +111,7 @@ case class NCConversationHolder(
       *
       * @param p Java-side predicate.
       */
-    def clearEntities(p: Predicate[NCEntity]): Unit =
+    def clear(p: Predicate[NCEntity]): Unit =
         stm.synchronized {
             for (item <- stm) item.holders --= item.holders.filter(h => p.test(h.entity))
             squeezeEntities()
@@ -119,16 +119,6 @@ case class NCConversationHolder(
         }
 
         logger.trace(s"STM is cleared [usrId=$usrId, mdlId=$mdlId]")
-
-    /**
-      * Clears all entities from this conversation satisfying given predicate.
-      *
-      * @param p Scala-side predicate.
-      */
-    def clearEntities(p: NCEntity => Boolean): Unit =
-        clearEntities(new Predicate[NCEntity]:
-            override def test(t: NCEntity): Boolean = p(t)
-        )
 
     /**
       *
@@ -206,16 +196,15 @@ case class NCConversationHolder(
       *
       * @return
       */
-    def getEntities: util.List[NCEntity] =
+    def getEntities: Seq[NCEntity] =
+        // TODO: copy?
         stm.synchronized {
             val reqIds = ctx.map(_.getRequestId).distinct.zipWithIndex.toMap
-            val ents = ctx.groupBy(_.getRequestId).toSeq.sortBy(p => reqIds(p._1)).reverse.flatMap(_._2)
-
-            new util.ArrayList[NCEntity](ents.asJava)
+            ctx.groupBy(_.getRequestId).toSeq.sortBy(p => reqIds(p._1)).reverse.flatMap(_._2)
         }
 
     /**
-      *
+      * TODO: thread safe?
       */
     val getUserData: NCPropertyMap = data
 }

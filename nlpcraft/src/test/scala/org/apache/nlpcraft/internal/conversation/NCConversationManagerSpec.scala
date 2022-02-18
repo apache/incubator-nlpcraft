@@ -39,7 +39,7 @@ class NCConversationManagerSpec:
         val conv = mgr.getConversation("user1")
 
         def checkSize(size: Int): Unit =
-            require(conv.getEntities.size() == size, s"Unexpected entities size: ${conv.getEntities.size()}, expected: $size")
+            require(conv.getEntities.sizeIs == size, s"Unexpected entities size: ${conv.getEntities.size}, expected: $size")
 
         // Initial empty.
         checkSize(0)
@@ -53,11 +53,9 @@ class NCConversationManagerSpec:
         checkSize(2)
 
         // Partially cleared.
-        conv.clearEntities(new Predicate[NCEntity]:
-            override def test(t: NCEntity): Boolean = t.getId == "e1"
-        )
+        conv.clear(_.getId == "e1")
         checkSize(1)
-        require(conv.getEntities.get(0).getId == "e2")
+        require(conv.getEntities.head.getId == "e2")
 
     @Test
     def testTimeout(): Unit =
@@ -68,11 +66,11 @@ class NCConversationManagerSpec:
         val reqId = "req1"
 
         // TODO: Drop method and use saved conversation instead - error is thrown
-        def getConversation: NCConversationHolder = mgr.getConversation("user1")
+        def getConversation: NCConversationData = mgr.getConversation("user1")
 
         def checkSize(size: Int): Unit =
             val conv = getConversation
-            require(conv.getEntities.size() == size, s"Unexpected entities size: ${conv.getEntities.size()}, expected: $size")
+            require(conv.getEntities.sizeIs == size, s"Unexpected entities size: ${conv.getEntities.size}, expected: $size")
 
         // Initial empty.
         checkSize(0)

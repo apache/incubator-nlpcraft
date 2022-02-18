@@ -23,6 +23,7 @@ import org.apache.nlpcraft.nlp.util.NCTestRequest
 import org.junit.jupiter.api.*
 
 import java.util
+import java.util.function.Predicate
 
 /**
   *
@@ -99,7 +100,7 @@ class NCDialogFlowManagerSpec:
         mgr.clear(usrId = "user1")
         check("user1" -> 0, "user2" -> 2, "user3" -> 1, "user4" -> 0)
 
-        mgr.clearForPredicate(usrId = "user2", _ == "i21")
+        mgr.clear(usrId = "user2", _.getIntentMatch.getIntentId == "i21")
         check("user1" -> 0, "user2" -> 1, "user3" -> 1, "user4" -> 0)
 
         mgr.clear(usrId = "user2")

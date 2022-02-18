@@ -90,7 +90,6 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
         dlgMgr.start()
         plMgr.start()
 
-
     /**
       *
       * @param data
@@ -104,10 +103,10 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
         val conv: NCConversation =
             new NCConversation:
                 override val getSession: NCPropertyMap = convHldr.getUserData
-                override val getStm: JList[NCEntity] = convHldr.getEntities
+                override val getStm: JList[NCEntity] = convHldr.getEntities.asJava
                 override val getDialogFlow: JList[NCDialogFlowItem] = dlgMgr.getDialogFlow(userId).asJava
-                override def clearStm(filter: Predicate[NCEntity]): Unit = convHldr.clearEntities(filter)
-                override def clearDialog(filter: Predicate[String]): Unit = dlgMgr.clearForPredicate(userId, (s: String) => filter.test(s))
+                override def clearStm(filter: Predicate[NCEntity]): Unit = convHldr.clear(filter)
+                override def clearDialog(filter: Predicate[NCDialogFlowItem]): Unit = dlgMgr.clear(userId, (s: NCDialogFlowItem) => filter.test(s))
 
         val ctx: NCContext =
             new NCContext:
@@ -146,7 +145,7 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
       *
       * @param usrId
       */
-    def clearConversation(usrId: String): Unit = convMgr.getConversation(usrId).clearEntities(_ => true)
+    def clearConversation(usrId: String): Unit = convMgr.getConversation(usrId).clear(_ => true)
 
     /**
       *
@@ -154,6 +153,9 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
       */
     def clearDialog(usrId: String): Unit = dlgMgr.clear(usrId)
 
+    /**
+      *
+      */
     def close(): Unit =
         plMgr.close()
         dlgMgr.close()

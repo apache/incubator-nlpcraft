@@ -28,10 +28,9 @@ import scala.jdk.CollectionConverters.*
   * Conversation manager.
   */
 class NCConversationManager(cfg: NCModelConfig) extends LazyLogging:
-    case class Value(conv: NCConversationHolder, var tstamp: Long = 0)
+    case class Value(conv: NCConversationData, var tstamp: Long = 0)
     private final val convs: mutable.Map[String, Value] = mutable.HashMap.empty[String, Value]
     @volatile private var gc: Thread = _
-
 
     /**
       * Gets conversation for given user ID.
@@ -39,11 +38,11 @@ class NCConversationManager(cfg: NCModelConfig) extends LazyLogging:
       * @param usrId User ID.
       * @return New or existing conversation.
       */
-    def getConversation(usrId: String): NCConversationHolder =
+    def getConversation(usrId: String): NCConversationData =
         convs.synchronized {
             val v = convs.getOrElseUpdate(
                 usrId,
-                Value(NCConversationHolder(usrId, cfg.getId, cfg.getConversationTimeout, cfg.getConversationDepth))
+                Value(NCConversationData(usrId, cfg.getId, cfg.getConversationTimeout, cfg.getConversationDepth))
             )
 
             v.tstamp = NCUtils.nowUtcMs()

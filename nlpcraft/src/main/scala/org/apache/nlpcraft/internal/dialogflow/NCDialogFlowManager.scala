@@ -117,6 +117,7 @@ class NCDialogFlowManager(cfg: NCModelConfig) extends LazyLogging:
       * @return Dialog flow.
       */
     def getDialogFlow(usrId: String): Seq[NCDialogFlowItem] =
+        // TODO: copy?
         flow.synchronized { flow.get(usrId) } match
             case Some(buf) => buf.toSeq
             case None => Seq.empty
@@ -166,8 +167,8 @@ class NCDialogFlowManager(cfg: NCModelConfig) extends LazyLogging:
       * @param pred Intent ID predicate.
       * @param parent Parent span, if any.
       */
-    def clearForPredicate(usrId: String, pred: String => Boolean): Unit =
+    def clear(usrId: String, pred: NCDialogFlowItem => Boolean): Unit =
         flow.synchronized {
-            flow(usrId) = flow(usrId).filterNot(v => pred(v.getIntentMatch.getIntentId))
+            flow(usrId) = flow(usrId).filterNot(pred)
             flow.notifyAll()
         }
