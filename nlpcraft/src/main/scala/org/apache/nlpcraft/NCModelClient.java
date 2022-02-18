@@ -25,7 +25,7 @@ import java.util.concurrent.*;
 /**
  *
  */
-public class NCModelClient {
+public class NCModelClient implements AutoCloseable {
     private final NCModelClientImpl impl;
 
     /**
@@ -81,6 +81,7 @@ public class NCModelClient {
     /**
      * 
      */
+    @Override
     public void close() {
         impl.close();
     }

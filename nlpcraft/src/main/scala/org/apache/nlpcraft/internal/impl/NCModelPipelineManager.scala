@@ -59,31 +59,11 @@ class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCModelPipeline) exte
     private val entVals = nvl(pipeline.getEntityValidators)
     private val varFilterOpt = pipeline.getVariantFilter.toScala
 
-    private var allSrvs: Seq[NCLifecycle] =
+    private val allSrvs: Seq[NCLifecycle] =
         tokEnrichers ++ entEnrichers ++ entParsers ++ tokVals ++ entVals ++ varFilterOpt.toSeq
 
     processServices(_.onStart(cfg), "started")
 
-    /**
-      *
-      * @param cfg
-      * @param pipeline
-      */
-    private def init(): Unit =
-        val buf = mutable.ArrayBuffer.empty[NCLifecycle] ++ pipeline.getEntityParsers.asScala
-
-        def add[T <: NCLifecycle](list: JList[T]): Unit = if list != null then buf ++= list.asScala
-
-        add(pipeline.getTokenEnrichers)
-        add(pipeline.getTokenValidators)
-        add(pipeline.getEntityEnrichers)
-        add(pipeline.getEntityParsers)
-        add(pipeline.getEntityValidators)
-        if pipeline.getVariantFilter.isPresent then add(JColls.singletonList(pipeline.getVariantFilter.get()))
-
-        allSrvs = buf.toSeq
-
-        processServices(_.onStart(cfg), "started")
 
     /**
       *

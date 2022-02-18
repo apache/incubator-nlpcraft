@@ -39,6 +39,31 @@ class NCDialogFlowManager(cfg: NCModelConfig) extends LazyLogging:
     @volatile private var gc: Thread = _
 
     /**
+      *  Gets next clearing time.
+      */
+    private def clearForTimeout(): Long =
+        require(Thread.holdsLock(flow))
+
+        val timeout = cfg.getConversationTimeout
+        val bound = NCUtils.now() - timeout
+        var next = Long.MaxValue
+
+        val delKeys = mutable.ArrayBuffer.empty[String]
+
+        for ((usrId, values) <- flow)
+            values --= values.filter(_.getRequest.getReceiveTimestamp < bound)
+
+            if values.nonEmpty then
+                val candidate = values.map(_.getRequest.getReceiveTimestamp).min + timeout
+                if next > candidate then next = candidate
+                else
+                    delKeys += usrId
+
+        if delKeys.nonEmpty then flow --= delKeys
+
+        next
+
+    /**
       *
       * @return
       */
@@ -60,20 +85,20 @@ class NCDialogFlowManager(cfg: NCModelConfig) extends LazyLogging:
 
         gc.start()
     /**
-     *
-     */
+      *
+      */
     def close(): Unit =
         NCUtils.stopThread(gc)
         gc = null
         flow.clear()
 
     /**
-     * Adds matched (winning) intent to the dialog flow.
-     *
-     * @param intentMatch
-     * @param res Intent callback result.
-     * @param ctx Original query context.
-     */
+      * Adds matched (winning) intent to the dialog flow.
+      *
+      * @param intentMatch
+      * @param res Intent callback result.
+      * @param ctx Original query context.
+      */
     def addMatchedIntent(intentMatch: NCIntentMatch, res: NCResult, ctx: NCContext): Unit =
         val item: NCDialogFlowItem = new NCDialogFlowItem:
             override val getIntentMatch: NCIntentMatch = intentMatch
@@ -97,10 +122,10 @@ class NCDialogFlowManager(cfg: NCModelConfig) extends LazyLogging:
             case None => Seq.empty
 
     /**
-     * Prints out ASCII table for current dialog flow.
-     *
-     * @param usrId User ID.
-     */
+      * Prints out ASCII table for current dialog flow.
+      *
+      * @param usrId User ID.
+      */
     def ack(usrId: String): Unit =
         val tbl = NCAsciiTable(
             "#",
@@ -123,35 +148,10 @@ class NCDialogFlowManager(cfg: NCModelConfig) extends LazyLogging:
         logger.info(s"""Current dialog flow (oldest first) for [mdlId=${cfg.getId}, usrId=$usrId]\n${tbl.toString()}""")
 
     /**
-     *  Gets next clearing time.
-     */
-    private def clearForTimeout(): Long =
-        require(Thread.holdsLock(flow))
-
-        val timeout = cfg.getConversationTimeout
-        val bound = NCUtils.now() - timeout
-        var next = Long.MaxValue
-
-        val delKeys = mutable.ArrayBuffer.empty[String]
-
-        for ((usrId, values) <- flow)
-            values --= values.filter(_.getRequest.getReceiveTimestamp < bound)
-
-            if values.nonEmpty then
-                val candidate = values.map(_.getRequest.getReceiveTimestamp).min + timeout
-                if next > candidate then next = candidate
-            else
-                delKeys += usrId
-
-        if delKeys.nonEmpty then flow --= delKeys
-
-        next
-
-    /**
-     * Clears dialog history for given user ID.
-     *
-     * @param usrId User ID.
-     */
+      * Clears dialog history for given user ID.
+      *
+      * @param usrId User ID.
+      */
     def clear(usrId: String): Unit =
         flow.synchronized {
             flow -= usrId
@@ -159,13 +159,13 @@ class NCDialogFlowManager(cfg: NCModelConfig) extends LazyLogging:
         }
 
     /**
-     * Clears dialog history for given user ID and predicate.
-     *
-     * @param usrId User ID.
-     * @param mdlId Model ID.
-     * @param pred Intent ID predicate.
-     * @param parent Parent span, if any.
-     */
+      * Clears dialog history for given user ID and predicate.
+      *
+      * @param usrId User ID.
+      * @param mdlId Model ID.
+      * @param pred Intent ID predicate.
+      * @param parent Parent span, if any.
+      */
     def clearForPredicate(usrId: String, pred: String => Boolean): Unit =
         flow.synchronized {
             flow(usrId) = flow(usrId).filterNot(v => pred(v.getIntentMatch.getIntentId))

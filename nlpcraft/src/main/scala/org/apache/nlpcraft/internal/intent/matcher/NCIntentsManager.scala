@@ -278,7 +278,7 @@ class NCIntentsManager(dialog: NCDialogFlowManager, intents: Map[NCIDLIntent, NC
                         var entIdx = 0
                         for (e <- grp.usedEntities)
                             val conv = if e.conv then "(conv) " else ""
-                            ents += s"    #$entIdx: $conv${e.entity}"
+                            ents += s"    #$entIdx: $conv${e.entity.getId}(${e.entity.mkText()})"
                             entIdx += 1
                     else
                         ents += "    <empty>"
@@ -587,11 +587,9 @@ class NCIntentsManager(dialog: NCDialogFlowManager, intents: Map[NCIDLIntent, NC
             private var stopped: Boolean = false
 
             def hasNext: Boolean = !stopped
-
             def finish(data: Option[NCResult]): Unit =
                 Loop.data = Option(data)
                 Loop.stopped = true
-
             def result: Option[NCResult] = data.getOrElse(throw new NCRejection("No matching intent found - all intents were skipped."))
 
         for (intentRes <- intentResults.filter(_ != null) if Loop.hasNext)

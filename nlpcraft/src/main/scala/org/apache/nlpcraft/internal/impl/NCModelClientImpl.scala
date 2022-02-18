@@ -55,12 +55,11 @@ import scala.jdk.CollectionConverters.*
 class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
     verify()
 
-    private val mdlIntents = NCModelScanner.scan(mdl)
-
+    private val intents = NCModelScanner.scan(mdl)
     private val pipelineMgr = new NCModelPipelineManager(mdl.getConfig, mdl.getPipeline)
     private val convMgr = NCConversationManager(mdl.getConfig)
     private val dialogMgr = NCDialogFlowManager(mdl.getConfig)
-    private val intentsMgr = NCIntentsManager(dialogMgr, mdlIntents.map(p => p.intent -> p.function).toMap)
+    private val intentsMgr = NCIntentsManager(dialogMgr, intents.map(p => p.intent -> p.function).toMap)
 
     /**
       *
@@ -78,6 +77,7 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
         Objects.requireNonNull(cfg.getVersion, "Model version cannot be null.")
         Objects.requireNonNull(pipeline.getTokenParser, "Token parser cannot be null.")
         Objects.requireNonNull(pipeline.getEntityParsers, "List of entity parsers in the pipeline cannot be null.")
+
         if pipeline.getEntityParsers.isEmpty then E(s"At least one entity parser must be specified in the pipeline.")
 
     /**
@@ -85,7 +85,7 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
       * @param data
       * @return
       */
-    private def matchVariants(data: NCPipelineVariants): NCResult =
+    private def ask0(data: NCPipelineVariants): NCResult =
         val userId = data.request.getUserId
         val convHldr = convMgr.getConversation(userId)
         val allEnts = data.variants.flatMap(_.getEntities.asScala)
@@ -121,9 +121,7 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
         val check = () => if fut.isCancelled then
             E(s"Asynchronous ask is interrupted [txt=$txt, usrId=$usrId]")
 
-        fut.completeAsync(() => matchVariants(pipelineMgr.prepare(txt, data, usrId, Option(check))))
-
-
+        fut.completeAsync(() => ask0(pipelineMgr.prepare(txt, data, usrId, Option(check))))
 
     /**
       *
@@ -133,7 +131,7 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
       * @return
       */
     def askSync(txt: String, data: JMap[String, AnyRef], usrId: String): NCResult =
-        matchVariants(pipelineMgr.prepare(txt, data, usrId))
+        ask0(pipelineMgr.prepare(txt, data, usrId))
 
     /**
       *

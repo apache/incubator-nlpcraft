@@ -56,8 +56,10 @@ class NCModelClientImplSpec:
 
         val res = client.askSync("Lights on at second floor kitchen", null, "userId")
 
-        println(res.getIntentId)
-        println(res.getBody)
+        println(s"Intent: ${res.getIntentId}")
+        println(s"Body: ${res.getBody}")
+
+        client.close()
 
 
 

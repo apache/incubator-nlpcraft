@@ -32,6 +32,48 @@ class NCConversationManager(cfg: NCModelConfig) extends LazyLogging:
     private final val convs: mutable.Map[String, Value] = mutable.HashMap.empty[String, Value]
     @volatile private var gc: Thread = _
 
+
+    /**
+      * Gets conversation for given user ID.
+      *
+      * @param usrId User ID.
+      * @return New or existing conversation.
+      */
+    def getConversation(usrId: String): NCConversationHolder =
+        convs.synchronized {
+            val v = convs.getOrElseUpdate(
+                usrId,
+                Value(NCConversationHolder(usrId, cfg.getId, cfg.getConversationTimeout, cfg.getConversationDepth))
+            )
+
+            v.tstamp = NCUtils.nowUtcMs()
+            convs.notifyAll()
+            v.conv
+        }
+
+    /**
+      * Gets next clearing time.
+      */
+    private def clearForTimeout(): Long =
+        require(Thread.holdsLock(convs))
+
+        val now = NCUtils.now()
+        val delKeys = mutable.HashSet.empty[String]
+
+        for ((key, value) <- convs)
+            if value.tstamp < now - cfg.getConversationTimeout then
+                val data = value.conv.getUserData
+
+                data.synchronized { data.keysSet().asScala.foreach(data.remove) }
+
+                delKeys += key
+
+
+        convs --= delKeys
+
+        if convs.nonEmpty then convs.values.map(v => v.tstamp + v.conv.timeoutMs).min
+        else Long.MaxValue
+
     /**
       *
       * @return
@@ -59,44 +101,3 @@ class NCConversationManager(cfg: NCModelConfig) extends LazyLogging:
         NCUtils.stopThread(gc)
         gc = null
         convs.clear()
-
-    /**
-      * Gets next clearing time.
-      */
-    private def clearForTimeout(): Long =
-        require(Thread.holdsLock(convs))
-
-        val now = NCUtils.now()
-        val delKeys = mutable.HashSet.empty[String]
-
-        for ((key, value) <- convs)
-            if value.tstamp < now - cfg.getConversationTimeout then
-                val data = value.conv.getUserData
-
-                data.synchronized { data.keysSet().asScala.foreach(data.remove) }
-
-                delKeys += key
-
-
-        convs --= delKeys
-
-        if convs.nonEmpty then convs.values.map(v => v.tstamp + v.conv.timeoutMs).min
-        else Long.MaxValue
-
-    /**
-      * Gets conversation for given user ID.
-      *
-      * @param usrId User ID.
-      * @return New or existing conversation.
-      */
-    def getConversation(usrId: String): NCConversationHolder =
-        convs.synchronized {
-            val v = convs.getOrElseUpdate(
-                usrId,
-                Value(NCConversationHolder(usrId, cfg.getId, cfg.getConversationTimeout, cfg.getConversationDepth))
-            )
-
-            v.tstamp = NCUtils.nowUtcMs()
-            convs.notifyAll()
-            v.conv
-        }
