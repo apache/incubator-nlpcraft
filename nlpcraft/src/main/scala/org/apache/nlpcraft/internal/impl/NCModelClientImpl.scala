@@ -20,6 +20,7 @@ package org.apache.nlpcraft.internal.impl
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.*
+import org.apache.nlpcraft.internal.ascii.NCAsciiTable
 import org.apache.nlpcraft.internal.conversation.*
 import org.apache.nlpcraft.internal.dialogflow.NCDialogFlowManager
 import org.apache.nlpcraft.internal.impl.*
@@ -78,15 +79,19 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
         dlgMgr.start()
         plMgr.start()
 
-    /**
-      *
+
+     /*
+      * @param txt
       * @param data
+      * @param usrId
       * @return
       */
-    private def ask0(data: NCPipelineData): NCResult =
-        val userId = data.request.getUserId
+    def ask(txt: String, data: JMap[String, AnyRef], usrId: String): NCResult =
+        val plData = plMgr.prepare(txt, data, usrId)
+
+        val userId = plData.request.getUserId
         val convHldr = convMgr.getConversation(userId)
-        val allEnts = data.variants.flatMap(_.getEntities.asScala)
+        val allEnts = plData.variants.flatMap(_.getEntities.asScala)
 
         val conv: NCConversation =
             new NCConversation:
@@ -100,46 +105,82 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
             new NCContext:
                 override def isOwnerOf(ent: NCEntity): Boolean = allEnts.contains(ent)
                 override val getModelConfig: NCModelConfig = mdl.getConfig
-                override val getRequest: NCRequest = data.request
+                override val getRequest: NCRequest = plData.request
                 override val getConversation: NCConversation = conv
-                override val getVariants: util.Collection[NCVariant] = data.variants.asJava
-                override val getTokens: JList[NCToken] = data.tokens
+                override val getVariants: util.Collection[NCVariant] = plData.variants.asJava
+                override val getTokens: JList[NCToken] = plData.tokens
 
         intentsMgr.solve(NCIntentSolverInput(ctx, mdl))
 
-    /**
-      *
-      * @param txt
-      * @param data
-      * @param usrId
-      * @return
-      */
-    def ask(txt: String, data: JMap[String, AnyRef], usrId: String): CompletableFuture[NCResult] =
-        val fut = new CompletableFuture[NCResult]
-        val check = () => if fut.isCancelled then E(s"Asynchronous ask is interrupted [txt=$txt, usrId=$usrId]")
-
-        fut.completeAsync(() => ask0(plMgr.prepare(txt, data, usrId, Option(check))))
-
-    /**
-      *
-      * @param txt
-      * @param data
-      * @param usrId
-      * @return
-      */
-    def askSync(txt: String, data: JMap[String, AnyRef], usrId: String): NCResult = ask0(plMgr.prepare(txt, data, usrId))
 
     /**
       *
       * @param usrId
       */
-    def clearConversation(usrId: String): Unit = convMgr.getConversation(usrId).clear(_ => true)
+    def clearStm(usrId: String): Unit = convMgr.getConversation(usrId).clear(_ => true)
+
+    /**
+      *
+      * @param usrId
+      * @param filter
+      */
+    def clearStm(usrId: String, filter: Predicate[NCEntity]): Unit = convMgr.getConversation(usrId).clear(filter)
 
     /**
       *
       * @param usrId
       */
     def clearDialog(usrId: String): Unit = dlgMgr.clear(usrId)
+
+    /**
+      *
+      * @param usrId
+      */
+    def clearDialog(usrId: String, filter: Predicate[NCDialogFlowItem]): Unit = dlgMgr.clear(usrId, (i: NCDialogFlowItem) => filter.test(i))
+
+    /**
+      *
+      */
+    def validateSamples(): Unit =
+        case class Result(intentId: String, text: String, pass: Boolean, error: Option[String], time: Long)
+
+        val userId = UUID.randomUUID().toString
+        val results = mutable.ArrayBuffer.empty[Result]
+
+        def now: Long = System.currentTimeMillis()
+
+        for (i <- intents; samples <- i.samples)
+            for (sample <- samples)
+                val t = now
+
+                try
+                    ask(sample, null, userId)
+
+                    results += Result(i.intent.id, sample, true, None, now - t)
+                catch
+                    case e: Throwable =>
+                        results += Result(i.intent.id, sample, true, Option(e.getMessage), now - t)
+
+            clearDialog(userId)
+            clearStm(userId)
+
+        val tbl = NCAsciiTable()
+
+        tbl #= ("Intent ID", "+/-", "Text", "Error", "ms.")
+
+        for (res <- results)
+            tbl += (
+                res.intentId,
+                if res.pass then "OK" else "FAIL",
+                res.text,
+                res.error.getOrElse(""),
+                res.time
+            )
+
+        val passCnt = results.count(_.pass)
+        val failCnt = results.count(!_.pass)
+
+        tbl.info(logger, Option(s"Model auto-validation results: OK $passCnt, FAIL $failCnt:"))
 
     /**
       *

@@ -17,13 +17,16 @@
 
 package org.apache.nlpcraft;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  *
  */
 public class NCPropertyMapAdapter implements NCPropertyMap {
-    private final Map<String, Object> map = new HashMap<>();
+    private final Map<String, Object> map = new ConcurrentHashMap<>();
 
     @Override
     public <T> T get(String key) {
@@ -63,5 +66,10 @@ public class NCPropertyMapAdapter implements NCPropertyMap {
     @Override
     public Set<String> keysSet() {
         return map.keySet();
+    }
+
+    @Override
+    public void clear() {
+        map.clear();
     }
 }

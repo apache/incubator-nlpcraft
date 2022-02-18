@@ -33,10 +33,11 @@ class NCModelClientSpec:
       */
     @Test
     def test(): Unit =
-        val mdl =
+        val mdl: NCTestModelAdapter =
             new NCTestModelAdapter():
                 // TODO: doesn't work.
-                //@NCIntent("intent=ls term(act)={has(ent_groups, 'act')} term(loc)={# == 'ls:loc'}*")
+                //@NCIntent("intent=ls term(act)={has(ent_groups, 'act')} term(loc)={# == 'ls:loc'}*") @NCIntent("intent=locInt term(single)~{# == 'id1'} term(list)~{# == 'id2'}[0,10] term(opt)~{# == 'id3'}?")
+                @NCIntentSample(Array("Lights on at second floor kitchen", "Invalid sample"))
                 @NCIntent("intent=ls term(act)={# == 'ls:on'} term(loc)={# == 'ls:loc'}*")
                 def onMatch(@NCIntentTerm("act") act: NCEntity, @NCIntentTerm("loc") locs: List[NCEntity]): NCResult =
                     val ncRes = new NCResult()
@@ -54,8 +55,10 @@ class NCModelClientSpec:
         )
 
         Using.resource(new NCModelClient(mdl)) { client =>
-            val res = client.askSync("Lights on at second floor kitchen", null, "userId")
+            val res = client.ask("Lights on at second floor kitchen", null, "userId")
 
             println(s"Intent: ${res.getIntentId}")
             println(s"Body: ${res.getBody}")
+
+            client.validateSamples()
         }

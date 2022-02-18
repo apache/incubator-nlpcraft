@@ -61,12 +61,8 @@ class NCConversationManager(cfg: NCModelConfig) extends LazyLogging:
 
         for ((key, value) <- convs)
             if value.tstamp < now - cfg.getConversationTimeout then
-                val data = value.conv.getUserData
-
-                data.synchronized { data.keysSet().asScala.foreach(data.remove) }
-
+                value.conv.getUserData.clear()
                 delKeys += key
-
 
         convs --= delKeys
 
