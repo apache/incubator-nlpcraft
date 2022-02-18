@@ -79,7 +79,6 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
         dlgMgr.start()
         plMgr.start()
 
-
      /*
       * @param txt
       * @param data
@@ -111,7 +110,6 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
                 override val getTokens: JList[NCToken] = plData.tokens
 
         intentsMgr.solve(NCIntentSolverInput(ctx, mdl))
-
 
     /**
       *
@@ -145,21 +143,22 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
         case class Result(intentId: String, text: String, pass: Boolean, error: Option[String], time: Long)
 
         val userId = UUID.randomUUID().toString
-        val results = mutable.ArrayBuffer.empty[Result]
+        val res = mutable.ArrayBuffer.empty[Result]
 
         def now: Long = System.currentTimeMillis()
 
         for (i <- intents; samples <- i.samples)
             for (sample <- samples)
-                val t = now
+                val start = now
 
-                try
-                    ask(sample, null, userId)
+                val err: Option[String] =
+                    try
+                        ask(sample, null, userId)
 
-                    results += Result(i.intent.id, sample, true, None, now - t)
-                catch
-                    case e: Throwable =>
-                        results += Result(i.intent.id, sample, true, Option(e.getMessage), now - t)
+                        None
+                    catch case e: Throwable => Option(e.getMessage)
+
+                res += Result(i.intent.id, sample, err.isEmpty, err, now - start)
 
             clearDialog(userId)
             clearStm(userId)
@@ -168,7 +167,7 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
 
         tbl #= ("Intent ID", "+/-", "Text", "Error", "ms.")
 
-        for (res <- results)
+        for (res <- res)
             tbl += (
                 res.intentId,
                 if res.pass then "OK" else "FAIL",
@@ -177,8 +176,8 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
                 res.time
             )
 
-        val passCnt = results.count(_.pass)
-        val failCnt = results.count(!_.pass)
+        val passCnt = res.count(_.pass)
+        val failCnt = res.count(!_.pass)
 
         tbl.info(logger, Option(s"Model auto-validation results: OK $passCnt, FAIL $failCnt:"))
 
