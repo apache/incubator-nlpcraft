@@ -42,7 +42,7 @@ import scala.jdk.OptionConverters.*
   * @param tokens
   * @param checkCancel
   */
-case class NCPipelineVariants(request: NCRequest, variants: Seq[NCVariant], tokens: JList[NCToken], checkCancel: Option[() => Unit])
+case class NCPipelineData(request: NCRequest, variants: Seq[NCVariant], tokens: JList[NCToken], checkCancel: Option[() => Unit])
 
 /**
   *
@@ -61,9 +61,6 @@ class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCModelPipeline) exte
 
     private val allSrvs: Seq[NCLifecycle] =
         tokEnrichers ++ entEnrichers ++ entParsers ++ tokVals ++ entVals ++ varFilterOpt.toSeq
-
-    processServices(_.onStart(cfg), "started")
-
 
     /**
       *
@@ -94,7 +91,7 @@ class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCModelPipeline) exte
       * @param checkCancel
       * @return
       */
-    def prepare(txt: String, data: JMap[String, AnyRef], usrId: String, checkCancel: Option[() => Unit] = None): NCPipelineVariants =
+    def prepare(txt: String, data: JMap[String, AnyRef], usrId: String, checkCancel: Option[() => Unit] = None): NCPipelineData =
         require(txt != null && usrId != null)
 
         /**
@@ -166,7 +163,9 @@ class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCModelPipeline) exte
             check()
             variants = varFilterOpt.get.filter(req, cfg, variants)
 
-        NCPipelineVariants(req, variants.asScala.toSeq, toks, checkCancel)
+        NCPipelineData(req, variants.asScala.toSeq, toks, checkCancel)
+
+    def start(): Unit = processServices(_.onStart(cfg), "started")
     /**
       *
       */

@@ -56,10 +56,12 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
     verify()
 
     private val intents = NCModelScanner.scan(mdl)
-    private val pipelineMgr = new NCModelPipelineManager(mdl.getConfig, mdl.getPipeline)
     private val convMgr = NCConversationManager(mdl.getConfig)
-    private val dialogMgr = NCDialogFlowManager(mdl.getConfig)
-    private val intentsMgr = NCIntentsManager(dialogMgr, intents.map(p => p.intent -> p.function).toMap)
+    private val dlgMgr = NCDialogFlowManager(mdl.getConfig)
+    private val plMgr = new NCModelPipelineManager(mdl.getConfig, mdl.getPipeline)
+    private val intentsMgr = NCIntentsManager(dlgMgr, intents.map(p => p.intent -> p.function).toMap)
+
+    init()
 
     /**
       *
@@ -82,10 +84,19 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
 
     /**
       *
+      */
+    private def init(): Unit =
+        convMgr.start()
+        dlgMgr.start()
+        plMgr.start()
+
+
+    /**
+      *
       * @param data
       * @return
       */
-    private def ask0(data: NCPipelineVariants): NCResult =
+    private def ask0(data: NCPipelineData): NCResult =
         val userId = data.request.getUserId
         val convHldr = convMgr.getConversation(userId)
         val allEnts = data.variants.flatMap(_.getEntities.asScala)
@@ -94,9 +105,9 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
             new NCConversation:
                 override val getSession: NCPropertyMap = convHldr.getUserData
                 override val getStm: JList[NCEntity] = convHldr.getEntities
-                override val getDialogFlow: JList[NCDialogFlowItem] = dialogMgr.getDialogFlow(userId).asJava
+                override val getDialogFlow: JList[NCDialogFlowItem] = dlgMgr.getDialogFlow(userId).asJava
                 override def clearStm(filter: Predicate[NCEntity]): Unit = convHldr.clearEntities(filter)
-                override def clearDialog(filter: Predicate[String]): Unit = dialogMgr.clearForPredicate(userId, (s: String) => filter.test(s))
+                override def clearDialog(filter: Predicate[String]): Unit = dlgMgr.clearForPredicate(userId, (s: String) => filter.test(s))
 
         val ctx: NCContext =
             new NCContext:
@@ -118,10 +129,9 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
       */
     def ask(txt: String, data: JMap[String, AnyRef], usrId: String): CompletableFuture[NCResult] =
         val fut = new CompletableFuture[NCResult]
-        val check = () => if fut.isCancelled then
-            E(s"Asynchronous ask is interrupted [txt=$txt, usrId=$usrId]")
+        val check = () => if fut.isCancelled then E(s"Asynchronous ask is interrupted [txt=$txt, usrId=$usrId]")
 
-        fut.completeAsync(() => ask0(pipelineMgr.prepare(txt, data, usrId, Option(check))))
+        fut.completeAsync(() => ask0(plMgr.prepare(txt, data, usrId, Option(check))))
 
     /**
       *
@@ -130,25 +140,21 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
       * @param usrId
       * @return
       */
-    def askSync(txt: String, data: JMap[String, AnyRef], usrId: String): NCResult =
-        ask0(pipelineMgr.prepare(txt, data, usrId))
+    def askSync(txt: String, data: JMap[String, AnyRef], usrId: String): NCResult = ask0(plMgr.prepare(txt, data, usrId))
 
     /**
       *
       * @param usrId
       */
-    def clearConversation(usrId: String): Unit = convMgr.getConversation(usrId)
+    def clearConversation(usrId: String): Unit = convMgr.getConversation(usrId).clearEntities(_ => true)
 
     /**
       *
       * @param usrId
       */
-    def clearDialog(usrId: String): Unit = dialogMgr.clear(usrId)
+    def clearDialog(usrId: String): Unit = dlgMgr.clear(usrId)
 
-    /**
-      *
-      */
     def close(): Unit =
-        if pipelineMgr != null then pipelineMgr.close()
-        if convMgr != null then convMgr.close()
-        if dialogMgr != null then dialogMgr.close()
+        plMgr.close()
+        dlgMgr.close()
+        convMgr.close()
