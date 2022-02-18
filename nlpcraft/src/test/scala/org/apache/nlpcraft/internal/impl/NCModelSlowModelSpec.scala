@@ -76,7 +76,6 @@ class NCModelSlowModelSpec:
             val fut = client.ask("any", null, "userId")
 
             Thread.sleep(20)
-            Thread.sleep(20)
 
             try Assertions.assertThrows(classOf[TimeoutException], () => fut.get(1, TimeUnit.MILLISECONDS))
             finally fut.cancel(true)
