@@ -34,7 +34,7 @@ import scala.language.postfixOps
 /**
  * Intent solver that finds the best matching intent given user sentence.
  */
-case class NCIntentSolver(dialog: NCDialogFlowManager, intents: Map[NCIDLIntent, NCIntentMatch => NCResult]) extends LazyLogging:
+class NCIntentsManager(dialog: NCDialogFlowManager, intents: Map[NCIDLIntent, NCIntentMatch => NCResult]) extends LazyLogging:
     /**
      * NOTE: not thread-safe.
      */

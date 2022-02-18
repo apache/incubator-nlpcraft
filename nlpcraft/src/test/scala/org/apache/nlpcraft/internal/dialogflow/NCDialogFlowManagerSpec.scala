@@ -75,7 +75,7 @@ class NCDialogFlowManagerSpec:
       *
       */
     @AfterEach
-    def cleanUp(): Unit = if mgr != null then mgr.stop()
+    def cleanUp(): Unit = if mgr != null then mgr.close()
 
     @Test
     def test(): Unit =
@@ -128,5 +128,5 @@ class NCDialogFlowManagerSpec:
         Thread.sleep(delay * 5)
         check("user1" -> 1, "user2" -> 0)
 
-        mgr.stop()
+        mgr.close()
         check("user1" -> 0, "user2" -> 0)

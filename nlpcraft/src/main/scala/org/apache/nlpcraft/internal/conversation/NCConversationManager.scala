@@ -27,7 +27,7 @@ import scala.jdk.CollectionConverters.*
 /**
   * Conversation manager.
   */
-class NCConversationManager(mdlCfg: NCModelConfig) extends LazyLogging:
+class NCConversationManager(cfg: NCModelConfig) extends LazyLogging:
     case class Value(conv: NCConversationHolder, var tstamp: Long = 0)
     private final val convs: mutable.Map[String, Value] = mutable.HashMap.empty[String, Value]
     @volatile private var gc: Thread = _
@@ -37,7 +37,7 @@ class NCConversationManager(mdlCfg: NCModelConfig) extends LazyLogging:
       * @return
       */
     def start(): Unit =
-        gc = NCUtils.mkThread("conv-mgr-gc", mdlCfg.getId) { t =>
+        gc = NCUtils.mkThread("conv-mgr-gc", cfg.getId) { t =>
             while (!t.isInterrupted)
                 try
                     convs.synchronized {
@@ -55,7 +55,7 @@ class NCConversationManager(mdlCfg: NCModelConfig) extends LazyLogging:
     /**
       *
       */
-    def stop(): Unit =
+    def close(): Unit =
         NCUtils.stopThread(gc)
         gc = null
         convs.clear()
@@ -70,7 +70,7 @@ class NCConversationManager(mdlCfg: NCModelConfig) extends LazyLogging:
         val delKeys = mutable.HashSet.empty[String]
 
         for ((key, value) <- convs)
-            if value.tstamp < now - mdlCfg.getConversationTimeout then
+            if value.tstamp < now - cfg.getConversationTimeout then
                 val data = value.conv.getUserData
 
                 data.synchronized { data.keysSet().asScala.foreach(data.remove) }
@@ -93,7 +93,7 @@ class NCConversationManager(mdlCfg: NCModelConfig) extends LazyLogging:
         convs.synchronized {
             val v = convs.getOrElseUpdate(
                 usrId,
-                Value(NCConversationHolder(usrId, mdlCfg.getId, mdlCfg.getConversationTimeout, mdlCfg.getConversationDepth))
+                Value(NCConversationHolder(usrId, cfg.getId, cfg.getConversationTimeout, cfg.getConversationDepth))
             )
 
             v.tstamp = NCUtils.nowUtcMs()

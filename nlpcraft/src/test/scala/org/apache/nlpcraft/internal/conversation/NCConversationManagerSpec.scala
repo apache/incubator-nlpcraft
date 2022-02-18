@@ -91,5 +91,5 @@ class NCConversationManagerSpec:
             Thread.sleep(timeout * 2)
             checkSize(0)
         finally
-            mgr.stop()
+            mgr.close()
 

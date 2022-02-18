@@ -18,51 +18,85 @@
 package org.apache.nlpcraft.internal.impl
 
 import com.typesafe.scalalogging.LazyLogging
-import org.apache.nlpcraft.*
-import org.apache.nlpcraft.internal.dialogflow.NCDialogFlowManager
+import org.apache.nlpcraft.{NCModelConfig, NCModelPipeline, *}
 import org.apache.nlpcraft.internal.conversation.*
+import org.apache.nlpcraft.internal.dialogflow.NCDialogFlowManager
 import org.apache.nlpcraft.internal.impl.*
-import org.apache.nlpcraft.internal.intent.matcher.{NCIntentSolver, NCIntentSolverInput}
+import org.apache.nlpcraft.internal.intent.matcher.*
 import org.apache.nlpcraft.internal.util.*
 
-import scala.jdk.CollectionConverters.*
 import java.util
 import java.util.concurrent.*
 import java.util.concurrent.atomic.*
 import java.util.function.Predicate
-import java.util.{ArrayList, UUID, List as JList, Map as JMap}
-import scala.collection.immutable
-import scala.jdk.OptionConverters.*
+import java.util.{ArrayList, Objects, UUID, Collections as JColls, List as JList, Map as JMap}
+import scala.collection.{immutable, mutable}
 import scala.concurrent.ExecutionContext
 import scala.jdk.CollectionConverters.*
+import scala.jdk.OptionConverters.*
 
 /**
   *
-  * @param mdl
+  * @param request
+  * @param variants
+  * @param tokens
+  * @param checkCancel
   */
-class NCModelPipelineProcessor(mdl: NCModel) extends LazyLogging:
-    case class VariantsHolder(request: NCRequest, variants: Seq[NCVariant], tokens: JList[NCToken], checkCancel: Option[() => Unit])
+case class NCPipelineVariants(request: NCRequest, variants: Seq[NCVariant], tokens: JList[NCToken], checkCancel: Option[() => Unit])
 
-    require(mdl != null)
-    require(mdl.getPipeline.getTokenParser != null)
-    require(mdl.getPipeline.getEntityParsers != null)
-    require(!mdl.getPipeline.getEntityParsers.isEmpty)
-
-    private val pipeline = mdl.getPipeline
+/**
+  *
+  * @param cfg
+  * @param pipeline
+  */
+class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCModelPipeline) extends LazyLogging:
     private val pool = new java.util.concurrent.ForkJoinPool()
-    private val cfg = mdl.getConfig
     private val tokParser = pipeline.getTokenParser
     private val tokEnrichers = nvl(pipeline.getTokenEnrichers)
     private val entEnrichers = nvl(pipeline.getEntityEnrichers)
     private val entParsers = nvl(pipeline.getEntityParsers)
     private val tokVals = nvl(pipeline.getTokenValidators)
     private val entVals = nvl(pipeline.getEntityValidators)
-    private val varFilter = pipeline.getVariantFilter.toScala
+    private val varFilterOpt = pipeline.getVariantFilter.toScala
 
-    private val convMgr = NCConversationManager(mdl.getConfig)
-    private val dialogMgr = NCDialogFlowManager(mdl.getConfig)
-    private val mdlIntents = NCModelScanner.scan(mdl)
-    private val solver = NCIntentSolver(dialogMgr, mdlIntents.map(p => p.intent -> p.function).toMap)
+    private var allSrvs: Seq[NCLifecycle] =
+        tokEnrichers ++ entEnrichers ++ entParsers ++ tokVals ++ entVals ++ varFilterOpt.toSeq
+
+    processServices(_.onStart(cfg), "started")
+
+    /**
+      *
+      * @param cfg
+      * @param pipeline
+      */
+    private def init(): Unit =
+        val buf = mutable.ArrayBuffer.empty[NCLifecycle] ++ pipeline.getEntityParsers.asScala
+
+        def add[T <: NCLifecycle](list: JList[T]): Unit = if list != null then buf ++= list.asScala
+
+        add(pipeline.getTokenEnrichers)
+        add(pipeline.getTokenValidators)
+        add(pipeline.getEntityEnrichers)
+        add(pipeline.getEntityParsers)
+        add(pipeline.getEntityValidators)
+        if pipeline.getVariantFilter.isPresent then add(JColls.singletonList(pipeline.getVariantFilter.get()))
+
+        allSrvs = buf.toSeq
+
+        processServices(_.onStart(cfg), "started")
+
+    /**
+      *
+      * @param act
+      * @param actVerb
+      */
+    private def processServices(act: NCLifecycle => Unit, actVerb: String): Unit =
+        NCUtils.execPar(allSrvs.map(p =>
+            () => {
+                act(p)
+                logger.info(s"Service $actVerb: '${p.getClass.getName}'")
+            }
+        )*)(ExecutionContext.Implicits.global)
 
     /**
       *
@@ -74,46 +108,13 @@ class NCModelPipelineProcessor(mdl: NCModel) extends LazyLogging:
 
     /**
       *
-      * @param h
-      * @return
-      */
-    private def matchIntent(h: VariantsHolder): NCResult =
-        val userId = h.request.getUserId
-        val convHldr = convMgr.getConversation(userId)
-        val allEnts = h.variants.flatMap(_.getEntities.asScala)
-
-        val conv =
-            new NCConversation:
-                override val getSession: NCPropertyMap = convHldr.getUserData
-                override val getStm: JList[NCEntity] = convHldr.getEntities
-                override val getDialogFlow: JList[NCDialogFlowItem] = dialogMgr.getDialogFlow(userId).asJava
-                override def clearStm(filter: Predicate[NCEntity]): Unit = convHldr.clearEntities(filter)
-                override def clearDialog(filter: Predicate[String]): Unit = dialogMgr.clearForPredicate(userId, (s: String) => filter.test(s))
-
-        val ctx = new NCContext:
-            override def isOwnerOf(ent: NCEntity): Boolean = allEnts.contains(ent)
-            override val getModelConfig: NCModelConfig = mdl.getConfig
-            override val getRequest: NCRequest = h.request
-            override val getConversation: NCConversation = conv
-            override val getVariants: util.Collection[NCVariant] = h.variants.asJava
-            override val getTokens: JList[NCToken] = h.tokens
-
-        solver.solve(NCIntentSolverInput(ctx, mdl))
-
-    /**
-      *
       * @param txt
       * @param data
       * @param usrId
       * @param checkCancel
       * @return
       */
-    private[internal] def prepVariants(
-        txt: String,
-        data: JMap[String, AnyRef],
-        usrId: String,
-        checkCancel: Option[() => Unit] = None
-    ): VariantsHolder =
+    def prepare(txt: String, data: JMap[String, AnyRef], usrId: String, checkCancel: Option[() => Unit] = None): NCPipelineVariants =
         require(txt != null && usrId != null)
 
         /**
@@ -172,48 +173,23 @@ class NCModelPipelineProcessor(mdl: NCModel) extends LazyLogging:
 
         var variants: JList[NCVariant] =
             if overlapEnts.nonEmpty then
-                NCModelPipelineHelper.findCombinations(overlapEnts.map(_.asJava).asJava, pool)
-                    .asScala.map(_.asScala).map(delComb =>
+                NCModelPipelineHelper.
+                    findCombinations(overlapEnts.map(_.asJava).asJava, pool).
+                    asScala.map(_.asScala).map(delComb =>
                         val delSet = delComb.toSet
                         newVariant(entities.filter(!delSet.contains(_)))
                     ).asJava
             else
                 Seq(newVariant(entities)).asJava
 
-        if varFilter.isDefined then
+        if varFilterOpt.isDefined then
             check()
-            variants = varFilter.get.filter(req, cfg, variants)
+            variants = varFilterOpt.get.filter(req, cfg, variants)
 
-        VariantsHolder(req, variants.asScala.toSeq, toks, checkCancel)
-
-    /**
-      *
-      * @param txt
-      * @param data
-      * @param usrId
-      * @return
-      * @throws NCRejection
-      * @throws NCCuration
-      * @throws NCException
-      */
-    def askSync(txt: String, data: JMap[String, AnyRef], usrId: String): NCResult = matchIntent(prepVariants(txt, data, usrId))
-
-    /**
-      * TODO: explain all exceptions that are thrown by the future.
-      *
-      * @param txt
-      * @param data
-      * @param usrId
-      * @return
-      */
-    def ask(txt: String, data: JMap[String, AnyRef], usrId: String): CompletableFuture[NCResult] =
-        val fut = new CompletableFuture[NCResult]
-        val check = () => if fut.isCancelled then
-            E(s"Asynchronous ask is interrupted [txt=$txt, usrId=$usrId]")
-
-        fut.completeAsync(() => matchIntent(prepVariants(txt, data, usrId, Option(check))))
-
+        NCPipelineVariants(req, variants.asScala.toSeq, toks, checkCancel)
     /**
       *
       */
-    def close(): Unit = NCUtils.shutdownPool(pool)
+    def close(): Unit =
+        processServices(_.onStop(cfg), "stopped")
+        NCUtils.shutdownPool(pool)

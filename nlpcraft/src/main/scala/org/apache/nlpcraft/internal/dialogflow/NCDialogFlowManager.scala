@@ -33,7 +33,7 @@ import java.time.format.DateTimeFormatter
 /**
  * Dialog flow manager.
  */
-case class NCDialogFlowManager(mdlCfg: NCModelConfig) extends LazyLogging:
+class NCDialogFlowManager(cfg: NCModelConfig) extends LazyLogging:
     private final val flow = mutable.HashMap.empty[String, mutable.ArrayBuffer[NCDialogFlowItem]]
 
     @volatile private var gc: Thread = _
@@ -43,7 +43,7 @@ case class NCDialogFlowManager(mdlCfg: NCModelConfig) extends LazyLogging:
       * @return
       */
     def start(): Unit =
-        gc = NCUtils.mkThread("dialog-mgr-gc", mdlCfg.getId) { t =>
+        gc = NCUtils.mkThread("dialog-mgr-gc", cfg.getId) { t =>
             while (!t.isInterrupted)
                 try
                     flow.synchronized {
@@ -59,11 +59,10 @@ case class NCDialogFlowManager(mdlCfg: NCModelConfig) extends LazyLogging:
         }
 
         gc.start()
-
     /**
      *
      */
-    def stop(): Unit =
+    def close(): Unit =
         NCUtils.stopThread(gc)
         gc = null
         flow.clear()
@@ -121,7 +120,7 @@ case class NCDialogFlowManager(mdlCfg: NCModelConfig) extends LazyLogging:
             )
         }
 
-        logger.info(s"""Current dialog flow (oldest first) for [mdlId=${mdlCfg.getId}, usrId=$usrId]\n${tbl.toString()}""")
+        logger.info(s"""Current dialog flow (oldest first) for [mdlId=${cfg.getId}, usrId=$usrId]\n${tbl.toString()}""")
 
     /**
      *  Gets next clearing time.
@@ -129,7 +128,7 @@ case class NCDialogFlowManager(mdlCfg: NCModelConfig) extends LazyLogging:
     private def clearForTimeout(): Long =
         require(Thread.holdsLock(flow))
 
-        val timeout = mdlCfg.getConversationTimeout
+        val timeout = cfg.getConversationTimeout
         val bound = NCUtils.now() - timeout
         var next = Long.MaxValue
 
