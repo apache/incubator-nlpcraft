@@ -41,25 +41,27 @@ class NCModelPingPongSpec:
 
     private val MDL: NCTestModelAdapter =
         new NCTestModelAdapter():
-            // TODO: how to reset it on any request?
-            var state: String = null
-
             @NCIntent("intent=dialog term(dialog)={# == 'dialog'}")
-            def onDialog(@NCIntentTerm("dialog") dialog: NCEntity): NCResult =
-                state = "dialog"
-                R(ASK_DIALOG, s"Confirm your request 'dialog' request: ${dialog.mkText()}")
+            def onDialog(im: NCIntentMatch, @NCIntentTerm("dialog") dialog: NCEntity): NCResult =
+                R(ASK_DIALOG, s"Confirm your request 'dialog'!")
 
             @NCIntent("intent=confirm term(confirm)={# == 'confirm'}")
-            def onConfirm(@NCIntentTerm("confirm") confirm: NCEntity): NCResult =
-                if state == null || state != "dialog" then throw new NCRejection("Nothing to confirm.")
+            def onConfirm(im: NCIntentMatch, @NCIntentTerm("confirm") confirm: NCEntity): NCResult =
+                // TODO: I can compare only with last matched.
+                val lastIntentId =
+                    im.getContext.
+                        getConversation.
+                        getDialogFlow.asScala.lastOption.
+                        flatMap(p => Option(p.getIntentMatch.getIntentId)).orNull
 
-                state = "confirm"
-                R(ASK_RESULT, s"Confirmed by: ${confirm.mkText()}")
+                if lastIntentId != "dialog" then
+                    throw new NCRejection("Nothing to confirm.")
+
+                R(ASK_RESULT, s"'dialog' confirmed.")
 
             @NCIntent("intent=other term(other)={# == 'other'}")
-            def onOther(@NCIntentTerm("other") other: NCEntity): NCResult =
-                state = "other"
-                R(ASK_RESULT, s"Any by: ${other.mkText()}")
+            def onOther(im: NCIntentMatch, @NCIntentTerm("other") other: NCEntity): NCResult =
+                R(ASK_RESULT, s"Some request by: ${other.mkText()}")
 
     MDL.getPipeline.getEntityParsers.add(
         new NCSemanticEntityParser(
