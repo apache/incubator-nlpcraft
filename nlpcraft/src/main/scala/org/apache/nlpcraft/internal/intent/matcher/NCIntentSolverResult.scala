@@ -20,17 +20,17 @@ package org.apache.nlpcraft.internal.intent.matcher
 import org.apache.nlpcraft.*
 
 /**
-  * Intent solver engine result. Using basic case class for easier Java interop.
   *
   * @param termId
   * @param entities
   */
-case class NCIntentEntitiesGroup(
+case class NCIntentTermEntities(
     termId: Option[String],
     entities: Seq[NCEntity]
 )
 
 /**
+  * Intent solver engine result. Using basic case class for easier Java interop.
   *
   * @param intentId
   * @param fn
@@ -39,9 +39,9 @@ case class NCIntentEntitiesGroup(
   * @param variantIdx
   */
 case class NCIntentSolverResult(
-    intentId: String,
-    fn: NCIntentMatch => NCResult,
-    groups: Seq[NCIntentEntitiesGroup],
-    variant: NCIntentSolverVariant,
-    variantIdx: Int
+   intentId: String,
+   fn: NCIntentMatch => NCResult,
+   groups: Seq[NCIntentTermEntities],
+   variant: NCIntentSolverVariant,
+   variantIdx: Int
 )

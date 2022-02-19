@@ -22,12 +22,8 @@ import scala.jdk.CollectionConverters.*
 
 /**
   *
-  * @param ent
-  * @param idx
+  * @param impl
+  * @param index
   */
-class NCIDLEntity(ent: NCEntity, idx: Int):
-    private lazy val txt = ent.mkText()
-
-    def getImpl: NCEntity = ent
-    def getText: String = txt
-    def getIndex: Int = idx
+case class NCIDLEntity(impl: NCEntity, index: Int):
+    lazy val text: String = impl.mkText()

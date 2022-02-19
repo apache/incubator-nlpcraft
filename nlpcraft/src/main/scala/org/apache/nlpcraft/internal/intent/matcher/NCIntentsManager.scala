@@ -248,7 +248,7 @@ class NCIntentsManager(dialog: NCDialogFlowManager, intents: Map[NCIDLIntent, NC
             NCIntentSolverResult(
                 m.intentMatch.intent.id,
                 m.callback,
-                m.intentMatch.entityGroups.map(grp => NCIntentEntitiesGroup(grp.term.id, grp.usedEntities.map(_.entity))),
+                m.intentMatch.entityGroups.map(grp => NCIntentTermEntities(grp.term.id, grp.usedEntities.map(_.entity))),
                 m.variant,
                 m.variantIdx
             )
@@ -318,7 +318,7 @@ class NCIntentsManager(dialog: NCDialogFlowManager, intents: Map[NCIDLIntent, NC
         tbl += (s"${"Intent Match Weight"}", mw1.toString, mw2.toString)
         tbl += (s"${"Variant Weight"}", v1.toString, v2.toString)
 
-        logger.warn(s"""Two matching intents have the same weight for their matches (variants weight will be used further):${tbl.toString}""")
+        tbl.warn(logger, Option("Two matching intents have the same weight for their matches (variants weight will be used further):"))
 
     /**
      *
@@ -403,15 +403,16 @@ class NCIntentsManager(dialog: NCDialogFlowManager, intents: Map[NCIDLIntent, NC
 
                 if !opts.allowStmEntityOnly && usedSenEnts.isEmpty && usedConvEnts.nonEmpty then
                     logger.info(
-                        s"Intent '$intentId' did not match because all its matched tokens came from STM $varStr. See intent 'allowStmEntityOnly' option."
+                        s"Intent '$intentId' did not match because all its matched tokens came from STM $varStr. " +
+                        s"See intent 'allowStmEntityOnly' option."
                     )
-
                     None
                 else if !opts.ignoreUnusedFreeWords && unusedToks.nonEmpty then
                     logger.info(
-                        s"Intent '$intentId' did not match because of unused free words $varStr. See intent 'ignoreUnusedFreeWords' option. Unused free words indexes: ${unusedToks.map(_.getIndex).mkString("{", ",", "}")}"
+                        s"Intent '$intentId' did not match because of unused free words $varStr. " +
+                        s"See intent 'ignoreUnusedFreeWords' option. " +
+                        s"Unused free words indexes: ${unusedToks.map(_.getIndex).mkString("{", ",", "}")}"
                     )
-
                     None
                 else
                     if usedSenEnts.isEmpty && usedConvEnts.isEmpty then
@@ -420,7 +421,6 @@ class NCIntentsManager(dialog: NCDialogFlowManager, intents: Map[NCIDLIntent, NC
                     // Number of remaining (unused) non-free words in the sentence is a measure of exactness of the match.
                     // The match is exact when all non-free words are used in that match.
                     // Negate to make sure the bigger (smaller negative number) is better.
-                    // TODO: check formula.
                     val nonFreeWordNum = -(ctx.getTokens.size() - senEnts.map(_.entity.getTokens.size()).sum)
 
                     intentW.prepend(nonFreeWordNum)
@@ -565,8 +565,6 @@ class NCIntentsManager(dialog: NCDialogFlowManager, intents: Map[NCIDLIntent, NC
     /**
       *
       * @param slvIn Intent solver input.
-      * @param span Parent span.
-      * @return
       * @throws NCRejection
       */
     private def solveIteration(slvIn: NCIntentSolverInput): Option[NCResult] =
@@ -610,7 +608,6 @@ class NCIntentsManager(dialog: NCDialogFlowManager, intents: Map[NCIDLIntent, NC
                 if slvIn.model.onMatchedIntent(intentMatch) then
                     // This can throw NCIntentSkip exception.
                     val cbRes = intentRes.fn(intentMatch)
-
                     // Store won intent match in the input.
                     slvIn.intentMatch = intentMatch
 
@@ -618,15 +615,10 @@ class NCIntentsManager(dialog: NCDialogFlowManager, intents: Map[NCIDLIntent, NC
                         cbRes.setIntentId(intentRes.intentId)
 
                     logger.info(s"Intent '${intentRes.intentId}' for variant #${intentRes.variantIdx + 1} selected as the <|best match|>")
-
                     dialog.addMatchedIntent(intentMatch, cbRes, ctx)
-
                     Loop.finish(Option(cbRes))
                 else
-                    logger.info(
-                        s"Model '${ctx.getModelConfig.getId}' triggered rematching of intents by intent '${intentRes.intentId}' on variant #${intentRes.variantIdx + 1}."
-                    )
-
+                    logger.info(s"Model '${ctx.getModelConfig.getId}' triggered rematching of intents by intent '${intentRes.intentId}' on variant #${intentRes.variantIdx + 1}.")
                     Loop.finish(None)
                 catch
                     case e: NCIntentSkip =>
@@ -640,16 +632,12 @@ class NCIntentsManager(dialog: NCDialogFlowManager, intents: Map[NCIDLIntent, NC
     /**
       *
       * @param in
-      * @param span
-      * @return
       * @throws NCRejection
       */
     def solve(in: NCIntentSolverInput): NCResult =
         var res: NCResult = null
-
         while (res == null)
             solveIteration(in) match
                 case Some(iterRes) => res = iterRes
                 case None => // No-op.
-
         res

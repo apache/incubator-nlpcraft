@@ -22,14 +22,14 @@ import org.apache.nlpcraft.*
 /**
   * IDL term.
   *
-  * @param idl
+  * @param idl IDL expression for this term.
   * @param id Optional ID of this term.
   * @param decls Term optional declarations.
   * @param pred Term predicate.
-  * @param min
-  * @param max
+  * @param min Min quantifier.
+  * @param max Max quantifier.
   * @param conv Whether or not this term support conversation context.
-  * @param fragMeta
+  * @param fragMeta Fragment metadata, if any.
   */
 case class NCIDLTerm(
     idl: String,

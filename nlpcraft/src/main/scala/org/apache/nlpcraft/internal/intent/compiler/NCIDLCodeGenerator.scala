@@ -834,14 +834,14 @@ trait NCIDLCodeGenerator:
             val x = arg1()
             stack.push(() => {
                 val Z(arg, n) = x()
-                Z(idlCtx.entities.exists(t => t.getIndex > ent.getIndex && f(t, toStr(arg))), n)
+                Z(idlCtx.entities.exists(t => t.index > ent.index && f(t, toStr(arg))), n)
             })
 
         def doIsAfter(f: (NCIDLEntity, String) => Boolean): Unit =
             val x = arg1()
             stack.push(() => {
                 val Z(arg, n) = x()
-                Z(idlCtx.entities.exists(t => t.getIndex < ent.getIndex && f(t, toStr(arg))), n)
+                Z(idlCtx.entities.exists(t => t.index < ent.index && f(t, toStr(arg))), n)
             })
 
         def doIsBetween(f: (NCIDLEntity, String) => Boolean): Unit =
@@ -849,9 +849,9 @@ trait NCIDLCodeGenerator:
             stack.push(() => {
                 val (a1, a2, n) = extract2(x1, x2)
                 Z(
-                    idlCtx.entities.exists(t => t.getIndex < ent.getIndex && f(t, toStr(a1)))
+                    idlCtx.entities.exists(t => t.index < ent.index && f(t, toStr(a1)))
                     &&
-                    idlCtx.entities.exists(t => t.getIndex > ent.getIndex && f(t, toStr(a2)))
+                    idlCtx.entities.exists(t => t.index > ent.index && f(t, toStr(a2)))
                     ,
                     n
                 )
@@ -897,7 +897,7 @@ trait NCIDLCodeGenerator:
         try
             fun match
                 // Metadata access.
-                case "meta_ent" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(ent.getImpl.get[Object](toStr(v))), 0) })
+                case "meta_ent" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(ent.impl.get[Object](toStr(v))), 0) })
                 case "meta_cfg" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(idlCtx.mdlCfg.get[Object](toStr(v))), 0) })
                 case "meta_req" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(idlCtx.req.getRequestData.get(toStr(v))), 0) })
                 case "meta_intent" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(idlCtx.intentMeta.get(toStr(v)).orNull), 0) })
@@ -919,23 +919,23 @@ trait NCIDLCodeGenerator:
                 case "mdl_origin" => z0(() => Z(idlCtx.mdlCfg.getOrigin, 0))
 
                 // Entity functions.
-                case "ent_id" => arg1Tok() match { case x => stack.push(() => Z(toEntity(x().value).getImpl.getId, 1)) }
-                case "ent_index" => arg1Tok() match { case x => stack.push(() => Z(toEntity(x().value).getIndex, 1)) }
-                case "ent_text" => arg1Tok() match { case x => stack.push(() => Z(toEntity(x().value).getText, 1)) }
+                case "ent_id" => arg1Tok() match { case x => stack.push(() => Z(toEntity(x().value).impl.getId, 1)) }
+                case "ent_index" => arg1Tok() match { case x => stack.push(() => Z(toEntity(x().value).index, 1)) }
+                case "ent_text" => arg1Tok() match { case x => stack.push(() => Z(toEntity(x().value).text, 1)) }
                 case "ent_count" => checkAvail(); z0(() => Z(idlCtx.entities.size, 0))
-                case "ent_groups" => arg1Tok() match { case x => stack.push(() => Z(toEntity(x().value).getImpl.getGroups, 1)) }
+                case "ent_groups" => arg1Tok() match { case x => stack.push(() => Z(toEntity(x().value).impl.getGroups, 1)) }
                 case "ent_all" => checkAvail(); z0(() => Z(idlCtx.entities.asJava, 0))
-                case "ent_all_for_id" => checkAvail(); doForAll((e, id) => e.getImpl.getId == id)
-                case "ent_all_for_group" => checkAvail(); doForAll((e, grp) => e.getImpl.getGroups.contains(grp))
+                case "ent_all_for_id" => checkAvail(); doForAll((e, id) => e.impl.getId == id)
+                case "ent_all_for_group" => checkAvail(); doForAll((e, grp) => e.impl.getGroups.contains(grp))
                 case "ent_this" => z0(() => Z(ent, 1))
-                case "ent_is_last" => checkAvail(); arg1Tok() match { case x => stack.push(() => { Z(toEntity(x().value).getIndex == idlCtx.entities.size - 1, 1) }) }
-                case "ent_is_first" => checkAvail(); arg1Tok() match { case x => stack.push(() => { Z(toEntity(x().value).getIndex == 0, 1) }) }
-                case "ent_is_before_id" => checkAvail(); doIsBefore((e, id) => e.getImpl.getId == id)
-                case "ent_is_before_group" => checkAvail(); doIsBefore((e, grpId) => e.getImpl.getGroups.contains(grpId))
-                case "ent_is_after_id" => checkAvail(); doIsAfter((e, id) => e.getImpl.getId == id)
-                case "ent_is_after_group" => checkAvail(); doIsAfter((e, grpId) => e.getImpl.getGroups.contains(grpId))
-                case "ent_is_between_ids" => checkAvail(); doIsBetween((e, id) => e.getImpl.getId == id)
-                case "ent_is_between_groups" => checkAvail(); doIsBetween((e, grpId) => e.getImpl.getGroups.contains(grpId))
+                case "ent_is_last" => checkAvail(); arg1Tok() match { case x => stack.push(() => { Z(toEntity(x().value).index == idlCtx.entities.size - 1, 1) }) }
+                case "ent_is_first" => checkAvail(); arg1Tok() match { case x => stack.push(() => { Z(toEntity(x().value).index == 0, 1) }) }
+                case "ent_is_before_id" => checkAvail(); doIsBefore((e, id) => e.impl.getId == id)
+                case "ent_is_before_group" => checkAvail(); doIsBefore((e, grpId) => e.impl.getGroups.contains(grpId))
+                case "ent_is_after_id" => checkAvail(); doIsAfter((e, id) => e.impl.getId == id)
+                case "ent_is_after_group" => checkAvail(); doIsAfter((e, grpId) => e.impl.getGroups.contains(grpId))
+                case "ent_is_between_ids" => checkAvail(); doIsBetween((e, id) => e.impl.getId == id)
+                case "ent_is_between_groups" => checkAvail(); doIsBetween((e, grpId) => e.impl.getGroups.contains(grpId))
 
                 // Request data.
                 case "req_id" => z0(() => Z(idlCtx.req.getRequestId, 0))
