@@ -104,10 +104,10 @@ class NCModelPingPongSpec:
         // 1. Nothing to confirm. No history.
         askForReject("confirm")
 
-        // 2. Nothing to confirm. Last question is not `dialog`.
+        // 2. Nothing to confirm. Last question is not `command`.
         askForResult("other")
         askForReject("confirm")
 
-        // 3. Last question is `dialog`. Can be confirmed.
+        // 3. Last question is `command`. Can be confirmed.
         askForDialog("command")
         askForResult("confirm")
