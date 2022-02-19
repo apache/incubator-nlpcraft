@@ -23,7 +23,8 @@ import org.apache.nlpcraft.nlp.entity.parser.semantic.impl.en.NCEnSemanticPorter
 import org.apache.nlpcraft.NCResultType.*
 import org.apache.nlpcraft.nlp.util.NCTestModelAdapter
 import org.apache.nlpcraft.nlp.util.opennlp.*
-import org.junit.jupiter.api.{AfterEach, BeforeEach, Test}
+import org.junit.jupiter.api.*
+import org.apache.nlpcraft.nlp.entity.parser.semantic.NCSemanticTestElement as STE
 
 import scala.jdk.CollectionConverters.*
 import scala.util.Using
@@ -34,19 +35,19 @@ import scala.util.Using
 class NCModelPingPongSpec:
     private var client: NCModelClient = null
 
-    case class R(resType: NCResultType, txt: String) extends NCResult:
+    private case class R(resType: NCResultType, txt: String) extends NCResult:
         this.setType(resType)
         this.setBody(txt)
         override def toString: String = s"$resType ($txt)"
 
-    private val MDL: NCTestModelAdapter =
+    private val MDL: NCModel =
         new NCTestModelAdapter():
-            @NCIntent("intent=dialog term(dialog)={# == 'dialog'}")
-            def onDialog(im: NCIntentMatch, @NCIntentTerm("dialog") dialog: NCEntity): NCResult =
-                R(ASK_DIALOG, s"Confirm your request 'dialog'!")
+            @NCIntent("intent=command term(command)={# == 'command'}")
+            def onCommand(im: NCIntentMatch, @NCIntentTerm("command") command: NCEntity): NCResult =
+                R(ASK_DIALOG, s"Confirm your request 'command'")
 
-            @NCIntent("intent=confirm term(confirm)={# == 'confirm'}")
-            def onConfirm(im: NCIntentMatch, @NCIntentTerm("confirm") confirm: NCEntity): NCResult =
+            @NCIntent("intent=confirmCommand term(confirm)={# == 'confirm'}")
+            def onConfirmCommand(im: NCIntentMatch, @NCIntentTerm("confirm") confirm: NCEntity): NCResult =
                 // TODO: I can compare only with last matched.
                 val lastIntentId =
                     im.getContext.
@@ -54,7 +55,7 @@ class NCModelPingPongSpec:
                         getDialogFlow.asScala.lastOption.
                         flatMap(p => Option(p.getIntentMatch.getIntentId)).orNull
 
-                if lastIntentId != "dialog" then
+                if lastIntentId != "command" then
                     throw new NCRejection("Nothing to confirm.")
 
                 R(ASK_RESULT, s"'dialog' confirmed.")
@@ -67,11 +68,7 @@ class NCModelPingPongSpec:
         new NCSemanticEntityParser(
             new NCEnSemanticPorterStemmer,
             EN_PIPELINE.getTokenParser,
-            Seq(
-                NCSemanticTestElement("dialog", "my command"),
-                NCSemanticTestElement("confirm", "my confirm"),
-                NCSemanticTestElement("other", "my other")
-            ).asJava
+            Seq(STE("command"), STE("confirm"), STE("other")).asJava
         )
     )
 
@@ -81,18 +78,23 @@ class NCModelPingPongSpec:
     @AfterEach
     def tearDown(): Unit = client.close()
 
-    private def ask(txt: String, expType: NCResultType): Unit =
+    private def ask(txt: String, typ: NCResultType): Unit =
         val res = client.ask(txt, null, "userId")
         println(s"Request [text=$txt, result=$res]")
-        require(res.getType == expType)
+        require(res.getType == typ)
+
+    private def askForDialog(txt: String): Unit = ask(txt, ASK_DIALOG)
+    private def askForResult(txt: String): Unit = ask(txt, ASK_RESULT)
+    private def askForReject(txt: String): Unit =
+        try ask(txt, ASK_RESULT) catch case e: NCRejection => println(s"Expected reject on: $txt")
 
     /**
       *
       */
     @Test
     def test(): Unit =
-        ask("my command", ASK_DIALOG)
-        ask("my confirm", ASK_RESULT)
+        askForDialog("command")
+        askForResult("confirm")
 
     /**
       *
@@ -100,12 +102,12 @@ class NCModelPingPongSpec:
     @Test
     def test2(): Unit =
         // 1. Nothing to confirm. No history.
-        try ask("my confirm", ASK_RESULT) catch case e: NCRejection => println("Expected reject.")
+        askForReject("confirm")
 
         // 2. Nothing to confirm. Last question is not `dialog`.
-        ask("my other", ASK_RESULT)
-        try ask("my confirm", ASK_RESULT) catch case e: NCRejection => println("Expected reject.")
+        askForResult("other")
+        askForReject("confirm")
 
         // 3. Last question is `dialog`. Can be confirmed.
-        ask("my command", ASK_DIALOG)
-        ask("my confirm", ASK_RESULT)
+        askForDialog("command")
+        askForResult("confirm")
