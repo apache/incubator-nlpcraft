@@ -18,6 +18,7 @@
 package org.apache.nlpcraft.internal.impl
 
 import com.typesafe.scalalogging.LazyLogging
+import org.apache.nlpcraft.internal.ascii.NCAsciiTable
 import org.apache.nlpcraft.{NCModelConfig, NCModelPipeline, *}
 import org.apache.nlpcraft.internal.conversation.*
 import org.apache.nlpcraft.internal.dialogflow.NCDialogFlowManager
@@ -163,7 +164,26 @@ class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCModelPipeline) exte
             check()
             variants = varFilterOpt.get.filter(req, cfg, variants)
 
-        NCPipelineData(req, variants.asScala.toSeq, toks, checkCancel)
+        val vrnts = variants.asScala.toSeq
+
+        for ((v, i) <- vrnts.zipWithIndex)
+            val tbl = NCAsciiTable("EntityId", "Tokens", "Tokens Position", "Properties")
+
+            def mkProps(m: NCPropertyMap): String =
+                if m.keysSet().isEmpty then ""
+                else m.keysSet().asScala.toSeq.sorted.map(p => s"$p=${m.get[Any](p)}").mkString("{", ", ", "}")
+
+            for (e <- v.getEntities.asScala)
+                val toks = e.getTokens.asScala
+                tbl += (
+                    e.getId,
+                    toks.map(_.getText).mkString("|"),
+                    toks.map(p => s"${p.getStartCharIndex}-${p.getEndCharIndex}").mkString("|"),
+                    mkProps(e)
+                )
+            tbl.info(logger, Option(s"Variant: ${i + 1} (${vrnts.size})"))
+
+        NCPipelineData(req, vrnts, toks, checkCancel)
 
     def start(): Unit = processServices(_.onStart(cfg), "started")
     /**

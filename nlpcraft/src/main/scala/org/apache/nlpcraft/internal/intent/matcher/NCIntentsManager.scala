@@ -189,7 +189,6 @@ class NCIntentsManager(dialog: NCDialogFlowManager, intents: Map[NCIDLIntent, NC
         for (
             (vrn, vrnIdx) <- ctx.getVariants.asScala.zipWithIndex;
             ents = vrn.getEntities.asScala;
-            varEnts = ents.map(IntentEntity(false, false, _)).toSeq;
             varEntsGroups = ents.map(t => if t.getGroups != null then t.getGroups.asScala else Set.empty[String]);
             (intent, callback) <- intents
         )
@@ -204,7 +203,7 @@ class NCIntentsManager(dialog: NCDialogFlowManager, intents: Map[NCIDLIntent, NC
                     Seq.empty
 
             // Solve intent in isolation.
-            solveIntent(ctx, intent, varEnts, convEnts, vrnIdx) match
+            solveIntent(ctx, intent, ents.map(IntentEntity(false, false, _)).toSeq, convEnts, vrnIdx) match
                 case Some(intentMatch) => matches += MatchHolder(intentMatch, callback, NCIntentSolverVariant(vrn.getEntities.asScala.toSeq), vrnIdx)
                 case None => // No-op.
 

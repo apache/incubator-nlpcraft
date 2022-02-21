@@ -25,7 +25,9 @@ import org.apache.nlpcraft.NCRequest;
 import org.apache.nlpcraft.NCToken;
 import org.apache.nlpcraft.nlp.entity.parser.stanford.impl.NCStanfordNLPEntityParserImpl;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -63,11 +65,11 @@ public class NCStanfordNLPEntityParser implements NCEntityParser {
      * @param stanford
      * @param supported
      */
-    public NCStanfordNLPEntityParser(StanfordCoreNLP stanford, String supported) {
+    public NCStanfordNLPEntityParser(StanfordCoreNLP stanford, String... supported) {
         Objects.requireNonNull(stanford, "Stanford instance cannot be null.");
         Objects.requireNonNull(supported, "Supported element cannot be null.");
 
-        this.impl = new NCStanfordNLPEntityParserImpl(stanford, Collections.singleton(supported));
+        this.impl = new NCStanfordNLPEntityParserImpl(stanford, new HashSet<>(Arrays.asList(supported)));
     }
 
     @Override

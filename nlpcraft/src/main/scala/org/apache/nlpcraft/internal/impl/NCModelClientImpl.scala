@@ -31,8 +31,9 @@ import java.util
 import java.util.concurrent.*
 import java.util.concurrent.atomic.*
 import java.util.function.*
-import java.util.{ArrayList, Objects, UUID, Collections as JColls, List as JList, Map as JMap}
-import scala.collection.{immutable, mutable}
+import java.util.{Collections as JColls, List as JList, Map as JMap}
+import java.util.*
+import scala.collection.*
 import scala.concurrent.ExecutionContext
 import scala.jdk.CollectionConverters.*
 import scala.jdk.OptionConverters.*
@@ -140,7 +141,7 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
       *
       */
     def validateSamples(): Unit =
-        case class Result(intentId: String, text: String, pass: Boolean, error: Option[String], time: Long)
+        case class Result(intentId: String, text: String, error: Option[String], time: Long)
 
         val userId = UUID.randomUUID().toString
         val res = mutable.ArrayBuffer.empty[Result]
@@ -153,33 +154,38 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
 
                 val err: Option[String] =
                     try
-                        ask(sample, null, userId)
+                        val r = ask(sample, null, userId)
 
-                        None
-                    catch case e: Throwable => Option(e.getMessage)
+                        Option.when(
+                            ask(sample, null, userId).getIntentId != i.intent.id)
+                            (s"Unexpected intent ID: '${r.getIntentId}'")
+                    catch case e: Throwable =>
+                        logger.warn("Unexpected error.", e) // TODO:
+                        Option(e.getLocalizedMessage)
 
-                res += Result(i.intent.id, sample, err.isEmpty, err, now - start)
+                res += Result(i.intent.id, sample, err, now - start)
 
             clearDialog(userId)
             clearStm(userId)
 
         val tbl = NCAsciiTable()
-
         tbl #= ("Intent ID", "+/-", "Text", "Error", "ms.")
 
         for (res <- res)
             tbl += (
                 res.intentId,
-                if res.pass then "OK" else "FAIL",
+                if res.error.isEmpty then "OK" else "FAIL",
                 res.text,
                 res.error.getOrElse(""),
                 res.time
             )
 
-        val passCnt = res.count(_.pass)
-        val failCnt = res.count(!_.pass)
+        val passCnt = res.count(_.error.isEmpty)
+        val failCnt = res.count(_.error.isDefined)
 
         tbl.info(logger, Option(s"Model auto-validation results: OK $passCnt, FAIL $failCnt:"))
+
+        if failCnt > 0 then require(false, "Some tests failed.")
 
     /**
       *
