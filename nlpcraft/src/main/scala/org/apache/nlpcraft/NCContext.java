@@ -57,6 +57,9 @@ public interface NCContext {
      */
     Collection<NCVariant> getVariants();
 
-    // TODO:
+    /**
+     *
+     * @return
+     */
     List<NCToken> getTokens();
 }

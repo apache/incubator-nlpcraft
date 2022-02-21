@@ -76,7 +76,7 @@
     <properties>
         <!-- Major Java/Scala version. -->
         <scala.major.ver>3</scala.major.ver>
-        <scala3.ver>${scala.major.ver}.1.0</scala3.ver>
+        <scala3.ver>${scala.major.ver}.1.1</scala3.ver>
         <scala2.ver>2.13.8</scala2.ver>
         <java.ver>11</java.ver>
         <maven.build.timestamp.format>yyyy-MM-dd-HH-mm</maven.build.timestamp.format>
@@ -110,7 +110,7 @@
         <jackson.yaml.ver>2.13.1</jackson.yaml.ver>
         <apache.opennlp.ver>1.9.4</apache.opennlp.ver>
         <jmh.version>1.34</jmh.version>
-        <gson.ver>2.8.5</gson.ver>
+        <gson.ver>2.9.0</gson.ver>
 
         <!-- Force specific encoding on text resources. -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -380,7 +380,7 @@
     <profiles>
         <!-- Stanford CoreNLP integration is not included by default due to GPL-licensed code. -->
         <profile>
-            <id>stanford-corenlp</id>
+            <id>stanford-core</id>
             <modules>
                 <module>nlpcraft-stanford</module>
             </modules>
