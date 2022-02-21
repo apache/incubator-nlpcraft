@@ -47,7 +47,5 @@ case class NCTestPipeline(tokParser: NCTokenParser) extends NCPropertyMapAdapter
         copy.getTokenValidators.addAll(this.getTokenValidators)
         copy.getEntityValidators.addAll(this.getEntityValidators)
 
-        // TODO: variant filter?
-
         copy
 

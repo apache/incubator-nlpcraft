@@ -33,7 +33,7 @@ import scala.util.Using
   *
   */
 class NCModelPingPongSpec:
-    private var client: NCModelClient = null
+    private var client: NCModelClient = _
 
     private case class R(resType: NCResultType, txt: String) extends NCResult:
         this.setType(resType)
@@ -48,7 +48,6 @@ class NCModelPingPongSpec:
 
             @NCIntent("intent=confirmCommand term(confirm)={# == 'confirm'}")
             def onConfirmCommand(im: NCIntentMatch, @NCIntentTerm("confirm") confirm: NCEntity): NCResult =
-                // TODO: I can compare only with last matched.
                 val lastIntentId =
                     im.getContext.
                         getConversation.

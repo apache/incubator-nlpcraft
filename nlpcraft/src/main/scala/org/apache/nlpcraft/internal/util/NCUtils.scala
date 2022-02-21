@@ -786,8 +786,8 @@ object NCUtils extends LazyLogging:
         } (ec)).foreach(Await.result(_, Duration.Inf))
 
         if !errs.isEmpty then
-            errs.forEach(e => logger.error("Error during service starting.", e)) // TODO: error message.
-            E("Some service cannot be started.")  // TODO: error message.
+            errs.forEach(e => logger.error("Parallel execution error.", e))
+            E("Parallel execution failed - see previous error log.")
 
     /**
       * Shuts down executor service and waits for its finish.

@@ -117,7 +117,6 @@ class NCDialogFlowManager(cfg: NCModelConfig) extends LazyLogging:
       * @return Dialog flow.
       */
     def getDialogFlow(usrId: String): Seq[NCDialogFlowItem] =
-        // TODO: copy?
         flow.synchronized { flow.get(usrId) } match
             case Some(buf) => buf.toSeq
             case None => Seq.empty

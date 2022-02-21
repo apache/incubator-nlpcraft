@@ -150,7 +150,7 @@ private[functions] object NCIDLFunctions:
     def mkEntity(
         id: String = UUID.randomUUID().toString,
         reqId: String = UUID.randomUUID().toString,
-        value: String = null, // TODO: add tests for usage.
+        value: String = null, 
         groups: Set[String] = null,
         meta: Map[String, AnyRef] = Map.empty[String, AnyRef],
         tokens: NCTestToken*

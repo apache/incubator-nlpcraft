@@ -65,7 +65,7 @@ class NCConversationManagerSpec:
         val t = NCTestToken()
         val reqId = "req1"
 
-        // TODO: Drop method and use saved conversation instead - error is thrown
+        // TODO: Drop method and use saved conversation instead - error is thrown.
         def getConversation: NCConversationData = mgr.getConversation("user1")
 
         def checkSize(size: Int): Unit =

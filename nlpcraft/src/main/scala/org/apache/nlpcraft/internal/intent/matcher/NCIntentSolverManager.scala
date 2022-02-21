@@ -34,7 +34,7 @@ import scala.language.postfixOps
 /**
  * Intent solver that finds the best matching intent given user sentence.
  */
-class NCIntentsManager(dialog: NCDialogFlowManager, intents: Map[NCIDLIntent, NCIntentMatch => NCResult]) extends LazyLogging:
+class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLIntent, NCIntentMatch => NCResult]) extends LazyLogging:
     /**
      * NOTE: not thread-safe.
      */
@@ -520,7 +520,6 @@ class NCIntentsManager(dialog: NCDialogFlowManager, intents: Map[NCIDLIntent, NC
 
         // Collect to the 'max' from sentence & conversation, if possible.
         for (ents <- Seq(senEnts, convEnts); ent <- ents.filter(!_.used) if usedEnts.lengthCompare(term.max) < 0)
-            // TODO: idx == matchesCnt - ok?
             val NCIDLStackItem(res, uses) = term.pred.apply(NCIDLEntity(ent.entity, matchesCnt), idlCtx)
 
             res match
@@ -549,7 +548,6 @@ class NCIntentsManager(dialog: NCDialogFlowManager, intents: Map[NCIDLIntent, NC
 
             // Sum of conversation depths for each entities from the conversation.
             // Negated to make sure that bigger (smaller negative number) is better.
-            // TODO: check formula.
             def getConversationDepth(e: IntentEntity): Option[Int] =
                 val depth = convEnts.indexOf(e)
                 Option.when(depth >= 0)(depth + 1)

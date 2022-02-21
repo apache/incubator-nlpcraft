@@ -49,7 +49,7 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
     private val convMgr = NCConversationManager(mdl.getConfig)
     private val dlgMgr = NCDialogFlowManager(mdl.getConfig)
     private val plMgr = NCModelPipelineManager(mdl.getConfig, mdl.getPipeline)
-    private val intentsMgr = NCIntentsManager(dlgMgr, intents.map(p => p.intent -> p.function).toMap)
+    private val intentsMgr = NCIntentSolverManager(dlgMgr, intents.map(p => p.intent -> p.function).toMap)
 
     init()
 
@@ -160,7 +160,7 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
                             ask(sample, null, userId).getIntentId != i.intent.id)
                             (s"Unexpected intent ID: '${r.getIntentId}'")
                     catch case e: Throwable =>
-                        logger.warn("Unexpected error.", e) // TODO:
+                        logger.warn("Unexpected error.", e) 
                         Option(e.getLocalizedMessage)
 
                 res += Result(i.intent.id, sample, err, now - start)

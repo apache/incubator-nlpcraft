@@ -197,7 +197,6 @@ case class NCConversationData(
       * @return
       */
     def getEntities: Seq[NCEntity] =
-        // TODO: copy?
         stm.synchronized {
             val reqIds = ctx.map(_.getRequestId).distinct.zipWithIndex.toMap
             ctx.groupBy(_.getRequestId).toSeq.sortBy(p => reqIds(p._1)).reverse.flatMap(_._2)
