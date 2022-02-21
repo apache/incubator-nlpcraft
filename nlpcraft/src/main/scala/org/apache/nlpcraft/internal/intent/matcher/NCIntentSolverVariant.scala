@@ -58,4 +58,4 @@ case class NCIntentSolverVariant(entities: Seq[NCEntity]) extends Ordered[NCInte
 
         weights.zip(other.weights).flatMap { (w1, w2) => compareWeight(w1, w2) }.to(LazyList).headOption.getOrElse(0)
 
-    override def toString: String = s"Weights: ${weights.mkString("[", ",", "]")}"
+    override def toString: String = s"${weights.mkString("[", ", ", "]")}"
