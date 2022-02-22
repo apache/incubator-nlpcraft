@@ -27,6 +27,7 @@ import org.apache.nlpcraft.nlp.entity.parser.semantic.impl.NCSemanticChunkKind.*
 import org.apache.nlpcraft.nlp.entity.parser.semantic.impl.NCSemanticSourceType.*
 
 import java.io.*
+import java.util
 import java.util.regex.*
 import java.util.{List as JList, Map as Jmap}
 import scala.collection.mutable
@@ -142,7 +143,7 @@ object NCSemanticEntityParserImpl:
 import org.apache.nlpcraft.nlp.entity.parser.semantic.impl.NCSemanticEntityParserImpl.*
 
 /**
-  * 
+  *
   * @param stemmer
   * @param parser
   * @param macros
