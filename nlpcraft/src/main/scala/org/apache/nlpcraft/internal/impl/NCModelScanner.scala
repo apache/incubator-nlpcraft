@@ -18,7 +18,6 @@
 package org.apache.nlpcraft.internal.impl
 
 import com.typesafe.scalalogging.LazyLogging
-import org.apache.commons.lang3.reflect.FieldUtils
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.intent.*
 import org.apache.nlpcraft.internal.intent.compiler.*
