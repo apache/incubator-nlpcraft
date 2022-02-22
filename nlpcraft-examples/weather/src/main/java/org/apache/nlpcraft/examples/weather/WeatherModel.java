@@ -213,6 +213,7 @@ public class WeatherModel implements NCModel {
             if (dateEntOpt.isPresent()) { // Date token overrides any indicators.
                 NCEntity dateEnt = dateEntOpt.get();
 
+                // TODO: from NNE ?
                 from = Instant.now();
                 to = Instant.now();
             }

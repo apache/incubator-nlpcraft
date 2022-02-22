@@ -29,7 +29,7 @@ import org.apache.nlpcraft.nlp.entity.parser.semantic.impl.NCSemanticSourceType.
 import java.io.*
 import java.util
 import java.util.regex.*
-import java.util.{List as JList, Map as Jmap}
+import java.util.{List as JList, Map as JMap, Set as JSet}
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
 
@@ -48,7 +48,7 @@ object NCSemanticEntityParserImpl:
     def apply(
         stemmer: NCSemanticStemmer,
         parser: NCTokenParser,
-        macros: Jmap[String, String],
+        macros: JMap[String, String],
         elms: JList[NCSemanticElement]
     ): NCSemanticEntityParserImpl =
         require(elms != null)
@@ -225,7 +225,6 @@ class NCSemanticEntityParserImpl(
             val e = elemsMap(h.elemId)
             new NCPropertyMapAdapter with NCEntity:
                 if (e.getProperties != null) e.getProperties.asScala.foreach { (k, v) => put(s"${h.elemId}:$k", v) }
-
                 h.value match
                     case Some(value) => put(s"${h.elemId}:value", value)
                     case None => // No-op.
@@ -233,4 +232,5 @@ class NCSemanticEntityParserImpl(
                 override val getTokens: JList[NCToken] = h.tokens.asJava
                 override val getRequestId: String = req.getRequestId
                 override val getId: String = h.elemId
+                override val getGroups: JSet[String] = e.getGroups
         }).asJava

@@ -21,6 +21,7 @@ import org.apache.nlpcraft.*
 import org.apache.nlpcraft.nlp.entity.parser.semantic.NCSemanticEntityParser
 import org.apache.nlpcraft.nlp.entity.parser.semantic.impl.en.NCEnSemanticPorterStemmer
 import org.apache.nlpcraft.nlp.token.parser.opennlp.NCOpenNLPTokenParser
+import org.apache.nlpcraft.nlp.token.enricher.en.NCStopWordsTokenEnricher
 
 /**
  * This example provides very simple implementation for NLI-powered light switch.
@@ -42,7 +43,9 @@ class LightSwitchGroovyModel implements NCModel {
         NCOpenNLPTokenParser tp = new NCOpenNLPTokenParser(tokMdlSrc, posMdlSrc, lemmaDicSrc)
 
         this.cfg = new NCModelConfig("nlpcraft.lightswitch.groovy.ex", "LightSwitch Example Model", "1.0")
-        this.pipeline = new NCModelPipelineBuilder(tp, new NCSemanticEntityParser(new NCEnSemanticPorterStemmer(), tp, "lightswitch_model.yaml")).build()
+        this.pipeline = new NCModelPipelineBuilder(tp, new NCSemanticEntityParser(new NCEnSemanticPorterStemmer(), tp, "lightswitch_model.yaml")).
+            withTokenEnricher(new NCStopWordsTokenEnricher()).
+            build()
     }
 
     /**

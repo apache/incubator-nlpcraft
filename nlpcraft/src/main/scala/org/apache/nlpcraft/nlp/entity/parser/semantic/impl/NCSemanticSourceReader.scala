@@ -65,9 +65,9 @@ private[impl] object NCSemanticSourceReader:
     )
     case class Source(macros: Map[String, String], elements: Seq[Element])
 
-    private def nvl[T](seq: Seq[T]): JSet[T] = if seq == null then null else new util.HashSet[T](seq.asJava)
-    private def nvl[T](set: Set[T]): JSet[T] = if set == null then null else set.asJava
-    private def nvl[T, R](seq: Seq[T], to: T => R): Seq[R] = if seq == null then null else seq.map(to)
+    private def nvlGroups[T](seq: Seq[T]): JSet[T] = if seq == null then null else new util.HashSet[T](seq.asJava)
+    private def nvlSynonyms[T](set: Set[T]): JSet[T] = if set == null then null else set.asJava
+    private def nvlElements[T, R](seq: Seq[T], to: T => R): Seq[R] = if seq == null then Seq.empty else seq.map(to)
     private def nvlValues(m: Map[String, Set[String]]): JMap[String, JSet[String]] =
         if m == null then null else m.map { (k, v) => k -> v.asJava }.asJava
     private def nvlProperties(m: Map[String, AnyRef]): JMap[String, Object] =
@@ -78,9 +78,12 @@ private[impl] object NCSemanticSourceReader:
         else
             new NCPropertyMapAdapter with NCSemanticElement:
                 override val getId: String = e.id
-                override val getGroups: JSet[String] = nvl(e.groups)
+                override val getGroups: JSet[String] =
+                    val gs = nvlGroups(e.groups)
+
+                    if gs != null && !gs.isEmpty then gs else super.getGroups
                 override val getValues: JMap[String, JSet[String]] = nvlValues(e.values)
-                override val getSynonyms: JSet[String] = nvl(e.synonyms)
+                override val getSynonyms: JSet[String] = nvlSynonyms(e.synonyms)
                 override val getProperties: JMap[String, AnyRef] = nvlProperties(e.properties)
 
     /**
@@ -101,4 +104,4 @@ private[impl] object NCSemanticSourceReader:
             configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true).
             readValue(is, classOf[Source])
 
-        NCSemanticSourceData(src.macros, nvl(src.elements, convertElement))
+        NCSemanticSourceData(src.macros, nvlElements(src.elements, convertElement))

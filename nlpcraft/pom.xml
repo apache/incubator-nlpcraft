@@ -33,12 +33,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>${commons.lang3.ver}</version>
-        </dependency>
-
-        <dependency>
             <groupId>co.blocke</groupId>
             <artifactId>scala-reflection_${scala.major.ver}</artifactId>
             <version>${scala3.ref.ver}</version>

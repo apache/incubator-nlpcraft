@@ -26,25 +26,25 @@ import scala.util.Using
   * JUnit models validation.
   */
 class NCModelValidationSpec:
-    private val MDL_SCALA = new LightSwitchScalaModel(
+    private lazy val MDL_SCALA = new LightSwitchScalaModel(
         "opennlp/en-token.bin",
         "opennlp/en-pos-maxent.bin",
         "opennlp/en-lemmatizer.dict"
     )
 
-    private val MDL_JAVA = new LightSwitchJavaModel(
+    private lazy val MDL_JAVA = new LightSwitchJavaModel(
         "opennlp/en-token.bin",
         "opennlp/en-pos-maxent.bin",
         "opennlp/en-lemmatizer.dict"
     )
 
-    private val MDL_GROOVY = new LightSwitchGroovyModel(
+    private lazy val MDL_GROOVY = new LightSwitchGroovyModel(
         "opennlp/en-token.bin",
         "opennlp/en-pos-maxent.bin",
         "opennlp/en-lemmatizer.dict"
     )
 
-    private val MDL_KOTLIN = new LightSwitchKotlinModel(
+    private lazy val MDL_KOTLIN = new LightSwitchKotlinModel(
         "opennlp/en-token.bin",
         "opennlp/en-pos-maxent.bin",
         "opennlp/en-lemmatizer.dict"

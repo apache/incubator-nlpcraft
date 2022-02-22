@@ -21,6 +21,7 @@ package org.apache.nlpcraft.examples.lightswitch
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.nlp.entity.parser.semantic.NCSemanticEntityParser
 import org.apache.nlpcraft.nlp.entity.parser.semantic.impl.en.NCEnSemanticPorterStemmer
+import org.apache.nlpcraft.nlp.token.enricher.en.NCStopWordsTokenEnricher
 import org.apache.nlpcraft.nlp.token.parser.opennlp.NCOpenNLPTokenParser
 import java.util.*
 import java.util.stream.Collectors
@@ -41,7 +42,10 @@ class LightSwitchKotlinModel(tokMdlSrc: String, posMdlSrc: String, lemmaDicSrc: 
     private val tp = NCOpenNLPTokenParser(tokMdlSrc, posMdlSrc, lemmaDicSrc)
 
     private val cfg = NCModelConfig("nlpcraft.lightswitch.kotlin.ex", "LightSwitch Example Model", "1.0")
-    private val pipeline = NCModelPipelineBuilder(tp, NCSemanticEntityParser(NCEnSemanticPorterStemmer(), tp, "lightswitch_model.yaml")).build()
+    private val pipeline =
+        NCModelPipelineBuilder(tp, NCSemanticEntityParser(NCEnSemanticPorterStemmer(), tp, "lightswitch_model.yaml")).
+        withTokenEnricher(NCStopWordsTokenEnricher()).
+        build()
     /**
      * Intent and its on-match callback.
      *

@@ -20,7 +20,6 @@ package org.apache.nlpcraft.examples.time;
 import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.dataformat.yaml.*;
-import org.apache.commons.lang3.text.WordUtils;
 import org.apache.nlpcraft.*;
 import org.apache.nlpcraft.examples.utils.cities.CitiesDataProvider;
 import org.apache.nlpcraft.examples.utils.cities.City;
@@ -94,8 +93,8 @@ public class TimeModel implements NCModel {
     private static NCResult mkResult(String city, String cntry, String tmz, double lat, double lon) {
         Map<String, Object> m = new HashMap<>();
 
-        m.put("city", WordUtils.capitalize(city));
-        m.put("country", WordUtils.capitalize(cntry));
+        m.put("city", capitalize(city));
+        m.put("country", capitalize(cntry));
         m.put("timezone", tmz);
         m.put("lat", lat);
         m.put("lon", lon);
@@ -113,6 +112,15 @@ public class TimeModel implements NCModel {
         }
 
         return res;
+    }
+
+    /**
+     * 
+     * @param s
+     * @return
+     */
+    private static String capitalize(String s) {
+        return s == null || s.isEmpty() ? s : s.substring(0, 1).toUpperCase() + s.substring(1, s.length());
     }
 
     /**

@@ -31,7 +31,7 @@ class NCStanfordNLPEntityParserSpec:
 
     @Test
     def test(): Unit =
-        val txt = "Los Angeles, 23 August, 23 and sergeykamov@apache.org"
+        val txt = "Los Angeles, 23 August, 23 and sergeykamov@apache.org, tomorrow"
 
         val toks = EN_STANFORD_PIPELINE.getTokenParser.tokenize(txt)
         NCTestUtils.printTokens(toks.asScala.toSeq)
@@ -39,4 +39,4 @@ class NCStanfordNLPEntityParserSpec:
         val res = parser.parse(NCTestRequest(txt), CFG, toks)
         NCTestUtils.printEntities(txt, res.asScala.toSeq)
 
-        require(res.size() == 4)
+        require(res.size() == 5)

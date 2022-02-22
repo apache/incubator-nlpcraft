@@ -22,6 +22,7 @@ import org.apache.nlpcraft.nlp.entity.parser.nlp.NCNLPEntityParser
 import org.apache.nlpcraft.nlp.entity.parser.semantic.NCSemanticEntityParser
 import org.apache.nlpcraft.nlp.entity.parser.semantic.impl.en.NCEnSemanticPorterStemmer
 import org.apache.nlpcraft.nlp.token.parser.opennlp.NCOpenNLPTokenParser
+import org.apache.nlpcraft.nlp.token.enricher.en.NCStopWordsTokenEnricher
 
 /**
   * This example provides very simple implementation for NLI-powered light switch.
@@ -42,7 +43,10 @@ class LightSwitchScalaModel(tokMdlSrc: String, posMdlSrc: String, lemmaDicSrc: S
         val tp = new NCOpenNLPTokenParser(tokMdlSrc, posMdlSrc, lemmaDicSrc)
         new NCModelPipelineBuilder(
             tp,
-            new NCSemanticEntityParser(new NCEnSemanticPorterStemmer(), tp, "lightswitch_model.yaml")).build()
+            new NCSemanticEntityParser(new NCEnSemanticPorterStemmer(), tp, "lightswitch_model.yaml")
+        ).
+            withTokenEnricher(new NCStopWordsTokenEnricher()).
+            build()
 
     /**
       * Intent and its on-match callback.

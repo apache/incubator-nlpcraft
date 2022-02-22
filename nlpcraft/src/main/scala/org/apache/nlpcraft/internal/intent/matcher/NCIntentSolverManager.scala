@@ -23,30 +23,81 @@ import org.apache.nlpcraft.internal.ascii.NCAsciiTable
 import org.apache.nlpcraft.internal.dialogflow.NCDialogFlowManager
 import org.apache.nlpcraft.internal.intent.*
 
-import java.util.{Collections, List as JList}
 import java.util.function.Function
+import java.util.{Collections, List as JList}
 import scala.annotation.targetName
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import scala.jdk.CollectionConverters.*
 import scala.language.postfixOps
 
-/**
- * Intent solver that finds the best matching intent given user sentence.
- */
-class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLIntent, NCIntentMatch => NCResult]) extends LazyLogging:
+object NCIntentSolverManager:
     /**
-     * NOTE: not thread-safe.
-     */
+      * Sentence variant & its weight.
+      *
+      * @param entities
+      */
+    private case class IntentSolverVariant(entities: Seq[NCEntity]) extends Ordered[IntentSolverVariant]:
+        private lazy val weights = calcWeight()
+
+        private def calcSparsity(toks: Seq[NCToken]): Int =
+            val idxs = toks.map(_.getIndex)
+            idxs.zipWithIndex.tail.map { (v, i) => Math.abs(v - idxs(i - 1)) }.sum - idxs.length + 1
+
+        private def calcWeight(): Seq[Int] =
+            val toks: Seq[Seq[NCToken]] = entities.map(_.getTokens.asScala.toSeq)
+
+            val toksCnt = toks.map(_.size).sum
+            val avgToksPerEntity = if toksCnt > 0 then Math.round((entities.size.toFloat / toksCnt) * 100) else 0
+            val totalSparsity = -toks.map(calcSparsity).sum  // Less is better.
+
+            // Order is important.
+            Seq(toksCnt, avgToksPerEntity, totalSparsity)
+
+        override def compare(other: IntentSolverVariant): Int =
+            def compareWeight(weight1: Int, weight2: Int): Option[Int] =
+                val res = Integer.compare(weight1, weight2)
+                Option.when(res != 0)(res)
+
+            weights.zip(other.weights).flatMap { (w1, w2) => compareWeight(w1, w2) }.to(LazyList).headOption.getOrElse(0)
+
+        override def toString: String = s"${weights.mkString("[", ", ", "]")}"
+
+    /**
+      *
+      * @param termId
+      * @param entities
+      */
+
+    /**
+      *
+      * @param termId
+      * @param entities
+      */
+    private case class IntentTermEntities(termId: Option[String], entities: Seq[NCEntity])
+
+    /**
+      *
+      * @param intentId
+      * @param fn
+      * @param groups
+      * @param variant
+      * @param variantIdx
+      */
+    private case class IntentSolverResult(intentId: String, fn: NCIntentMatch => NCResult, groups: Seq[IntentTermEntities], variant: IntentSolverVariant, variantIdx: Int)
+
+    /**
+      * NOTE: not thread-safe.
+      */
     private class Weight(ws: Int*) extends Ordered[Weight]:
         private val buf = mutable.ArrayBuffer[Int]() ++ ws
 
         /**
-         * Adds given weight to this weight.
-         *
-         * @param that Weight to add.
-         * @return
-         */
+          * Adds given weight to this weight.
+          *
+          * @param that Weight to add.
+          * @return
+          */
         @targetName("plusEqual")
         def +=(that: Weight): Weight =
             val tmp = mutable.ArrayBuffer[Int]()
@@ -57,48 +108,48 @@ class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLInten
             this
 
         /**
-         * Appends new weight.
-         *
-         * @param w New weight to append.
-         * @return
-         */
+          * Appends new weight.
+          *
+          * @param w New weight to append.
+          * @return
+          */
         def append(w: Int): Weight =
             buf.append(w)
             this
 
         /**
-         * Prepends new weight.
-         *
-         * @param w New weight to prepend.
-         * @return
-         */
+          * Prepends new weight.
+          *
+          * @param w New weight to prepend.
+          * @return
+          */
         def prepend(w: Int): Weight =
             buf.prepend(w)
             this
 
         /**
-         * Sets specific weight at a given index.
-         *
-         * @param idx
-         * @param w
-         */
+          * Sets specific weight at a given index.
+          *
+          * @param idx
+          * @param w
+          */
         def setWeight(idx: Int, w: Int): Unit =
             buf(idx) = w
 
         /**
-         * Gets element at given index or zero if index is out of bounds.
-         *
-         * @param i Index in collection.
-         * @param c Collection.
-         * @return
-         */
+          * Gets element at given index or zero if index is out of bounds.
+          *
+          * @param i Index in collection.
+          * @param c Collection.
+          * @return
+          */
         private def norm(i: Int, c: mutable.ArrayBuffer[Int]): Int = if i < c.size then c(i) else 0
 
         /**
-         *
-         * @param that
-         * @return
-         */
+          *
+          * @param that
+          * @return
+          */
         override def compare(that: Weight): Int =
             def compareWeight(idx: Int): Option[Int] =
                 val res = Integer.compare(norm(idx, buf), norm(idx, that.buf))
@@ -111,21 +162,24 @@ class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLInten
         override def toString: String = buf.mkString("[", ", ", "]")
 
     /**
-     *
-     * @param used
-     * @param entity
-     */
-    private case class IntentEntity(
-        var used: Boolean,
-        var conv: Boolean,
-        entity: NCEntity
-    )
+      *
+      * @param used
+      * @param entity
+      */
+    private case class IntentEntity(var used: Boolean, var conv: Boolean, entity: NCEntity)
 
     /**
-     * @param termId
-     * @param usedEntities
-     * @param weight
-     */
+      *
+      * @param result
+      * @param intentMatch
+      */
+    private case class IterationResult(result: NCResult, intentMatch: NCIntentMatch)
+
+    /**
+      * @param termId
+      * @param usedEntities
+      * @param weight
+      */
     private case class TermMatch(termId: Option[String], usedEntities: Seq[IntentEntity], weight: Weight):
         private lazy val maxIndex: Int = usedEntities.map(_.entity.getTokens.asScala.map(_.getIndex).max).max
 
@@ -138,22 +192,22 @@ class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLInten
     private case class PredicateMatch(entities: Seq[IntentEntity], weight: Weight)
 
     /**
-     *
-     * @param term
-     * @param usedEntities
-     */
+      *
+      * @param term
+      * @param usedEntities
+      */
     private case class TermEntitiesGroup(
         term: NCIDLTerm,
         usedEntities: Seq[IntentEntity]
     )
 
     /**
-     *
-     * @param entityGroups
-     * @param weight
-     * @param intent
-     */
-    private case class IntentMatch(
+      *
+      * @param entityGroups
+      * @param weight
+      * @param intent
+      */
+    private case class IntentMatchHolder(
         entityGroups: List[TermEntitiesGroup],
         weight: Weight,
         intent: NCIDLIntent
@@ -167,27 +221,34 @@ class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLInten
       * @param variantIdx
       */
     private case class MatchHolder(
-        intentMatch: IntentMatch, // Match.
+        intentMatch: IntentMatchHolder, // Match.
         callback: NCIntentMatch => NCResult, // Callback function.
-        variant: NCIntentSolverVariant, // Variant used for the match.
+        variant: IntentSolverVariant, // Variant used for the match.
         variantIdx: Int // Variant index.
     )
 
+import org.apache.nlpcraft.internal.intent.matcher.NCIntentSolverManager.*
+
+/**
+ * Intent solver that finds the best matching intent given user sentence.
+ */
+class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLIntent, NCIntentMatch => NCResult]) extends LazyLogging:
     /**
      * Main entry point for intent engine.
      *
+      * @param mdl Model.
      * @param ctx Query context.
      * @param intents Intents to match for.
      * @return
      */
-    private def solveIntents(ctx: NCContext, intents: Map[NCIDLIntent, NCIntentMatch => NCResult]): List[NCIntentSolverResult] =
+    private def solveIntents(mdl: NCModel, ctx: NCContext, intents: Map[NCIDLIntent, NCIntentMatch => NCResult]): List[IntentSolverResult] =
         dialog.ack(ctx.getRequest.getUserId)
 
         val matches = mutable.ArrayBuffer.empty[MatchHolder]
 
         // Find all matches across all intents and sentence variants.
         for (
-            (vrn, vrnIdx) <- ctx.getVariants.asScala.zipWithIndex;
+            (vrn, vrnIdx) <- ctx.getVariants.asScala.zipWithIndex if mdl.onVariant(vrn);
             ents = vrn.getEntities.asScala;
             varEntsGroups = ents.map(t => if t.getGroups != null then t.getGroups.asScala else Set.empty[String]);
             (intent, callback) <- intents
@@ -204,7 +265,7 @@ class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLInten
 
             // Solve intent in isolation.
             solveIntent(ctx, intent, ents.map(IntentEntity(false, false, _)).toSeq, convEnts, vrnIdx) match
-                case Some(intentMatch) => matches += MatchHolder(intentMatch, callback, NCIntentSolverVariant(vrn.getEntities.asScala.toSeq), vrnIdx)
+                case Some(intentMatch) => matches += MatchHolder(intentMatch, callback, IntentSolverVariant(vrn.getEntities.asScala.toSeq), vrnIdx)
                 case None => // No-op.
 
         val sorted = matches.sortWith((m1: MatchHolder, m2: MatchHolder) =>
@@ -244,10 +305,10 @@ class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLInten
         logMatches(sorted)
 
         sorted.map(m =>
-            NCIntentSolverResult(
+            IntentSolverResult(
                 m.intentMatch.intent.id,
                 m.callback,
-                m.intentMatch.entityGroups.map(grp => NCIntentTermEntities(grp.term.id, grp.usedEntities.map(_.entity))),
+                m.intentMatch.entityGroups.map(grp => IntentTermEntities(grp.term.id, grp.usedEntities.map(_.entity))),
                 m.variant,
                 m.variantIdx
             )
@@ -328,7 +389,7 @@ class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLInten
      */
     private def solveIntent(
         ctx: NCContext, intent: NCIDLIntent, senEnts: Seq[IntentEntity], convEnts: Seq[IntentEntity], varIdx: Int
-    ): Option[IntentMatch] =
+    ): Option[IntentMatchHolder] =
         val intentId = intent.id
         val opts = intent.options
         val flow = dialog.getDialogFlow(ctx.getRequest.getUserId)
@@ -402,15 +463,19 @@ class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLInten
 
                 if !opts.allowStmEntityOnly && usedSenEnts.isEmpty && usedConvEnts.nonEmpty then
                     logger.info(
-                        s"Intent '$intentId' did not match because all its matched tokens came from STM $varStr. " +
-                        s"See intent 'allowStmEntityOnly' option."
+                        s"""
+                           |Intent '$intentId' did not match because all its matched tokens came from STM $varStr.
+                           |See intent 'allowStmEntityOnly' option.
+                           |""".stripMargin
                     )
                     None
                 else if !opts.ignoreUnusedFreeWords && unusedToks.nonEmpty then
                     logger.info(
-                        s"Intent '$intentId' did not match because of unused free words $varStr. " +
-                        s"See intent 'ignoreUnusedFreeWords' option. " +
-                        s"Unused free words indexes: ${unusedToks.map(_.getIndex).mkString("{", ",", "}")}"
+                        s"""
+                           |Intent '$intentId' did not match because of unused free words $varStr.
+                           |See intent 'ignoreUnusedFreeWords' option.
+                           |Unused free words indexes: ${unusedToks.map(_.getIndex).mkString("{", ",", "}")}
+                           |""".stripMargin
                     )
                     None
                 else
@@ -424,7 +489,7 @@ class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLInten
 
                     intentW.prepend(nonFreeWordNum)
 
-                    Option(IntentMatch(entityGroups = intentGrps.toList, weight = intentW, intent = intent))
+                    Option(IntentMatchHolder(entityGroups = intentGrps.toList, weight = intentW, intent = intent))
         else
             None
 
@@ -561,31 +626,31 @@ class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLInten
 
     /**
       *
-      * @param slvIn Intent solver input.
-      * @throws NCRejection
+      * @param mdl
+      * @param ctx
+      * @return
       */
-    private def solveIteration(slvIn: NCIntentSolverInput): Option[NCResult] =
+    private def solveIteration(mdl: NCModel, ctx: NCContext): Option[IterationResult] =
         // Should it be an assertion?
         if intents.isEmpty then throw new NCRejection("Intent solver has no registered intents.")
 
-        val ctx = slvIn.context
         val req = ctx.getRequest
 
         val intentResults =
-            try solveIntents(ctx, intents)
+            try solveIntents(mdl, ctx, intents)
             catch case e: Exception => throw new NCRejection("Processing failed due to unexpected error.", e)
 
         if intentResults.isEmpty then throw new NCRejection("No matching intent found.")
 
         object Loop:
-            private var data: Option[Option[NCResult]] = None
+            private var data: Option[Option[IterationResult]] = None
             private var stopped: Boolean = false
 
             def hasNext: Boolean = !stopped
-            def finish(data: Option[NCResult]): Unit =
+            def finish(data: Option[IterationResult] = None): Unit =
                 Loop.data = Option(data)
                 Loop.stopped = true
-            def result: Option[NCResult] = data.getOrElse(throw new NCRejection("No matching intent found - all intents were skipped."))
+            def result: Option[IterationResult] = data.getOrElse(throw new NCRejection("No matching intent found - all intents were skipped."))
 
         for (intentRes <- intentResults.filter(_ != null) if Loop.hasNext)
             val intentMatch: NCIntentMatch =
@@ -602,21 +667,20 @@ class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLInten
                         new NCVariant:
                             override def getEntities: JList[NCEntity] = intentRes.variant.entities.asJava
             try
-                if slvIn.model.onMatchedIntent(intentMatch) then
+                if mdl.onMatchedIntent(intentMatch) then
                     // This can throw NCIntentSkip exception.
                     val cbRes = intentRes.fn(intentMatch)
                     // Store won intent match in the input.
-                    slvIn.intentMatch = intentMatch
 
                     if cbRes.getIntentId == null then
                         cbRes.setIntentId(intentRes.intentId)
 
                     logger.info(s"Intent '${intentRes.intentId}' for variant #${intentRes.variantIdx + 1} selected as the <|best match|>")
                     dialog.addMatchedIntent(intentMatch, cbRes, ctx)
-                    Loop.finish(Option(cbRes))
+                    Loop.finish(Option(IterationResult(cbRes, intentMatch)))
                 else
                     logger.info(s"Model '${ctx.getModelConfig.getId}' triggered rematching of intents by intent '${intentRes.intentId}' on variant #${intentRes.variantIdx + 1}.")
-                    Loop.finish(None)
+                    Loop.finish()
                 catch
                     case e: NCIntentSkip =>
                         // No-op - just skipping this result.
@@ -628,13 +692,31 @@ class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLInten
 
     /**
       *
-      * @param in
-      * @throws NCRejection
+      * @param mdl
+      * @param ctx
+      * @return
       */
-    def solve(in: NCIntentSolverInput): NCResult =
-        var res: NCResult = null
-        while (res == null)
-            solveIteration(in) match
-                case Some(iterRes) => res = iterRes
-                case None => // No-op.
-        res
+    def solve(mdl: NCModel, ctx: NCContext): NCResult =
+        val resCtx: NCResult = mdl.onContext(ctx)
+
+        if resCtx != null then
+            resCtx
+        else
+            var res: IterationResult = null
+
+            try
+                while (res == null)
+                    solveIteration(mdl, ctx) match
+                        case Some(iterRes) => res = iterRes
+                        case None => // No-op.
+
+                mdl.onResult(res.intentMatch, res.result)
+
+                res.result
+            catch
+                case e: NCRejection =>
+                    mdl.onRejection(if res != null then res.intentMatch else null, e)
+                    throw e
+                case e: Throwable =>
+                    mdl.onError(ctx, e)
+                    throw e

@@ -110,7 +110,7 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
                 override val getVariants: util.Collection[NCVariant] = plData.variants.asJava
                 override val getTokens: JList[NCToken] = plData.tokens
 
-        intentsMgr.solve(NCIntentSolverInput(ctx, mdl))
+        intentsMgr.solve(mdl, ctx)
 
     /**
       *
@@ -156,9 +156,7 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
                     try
                         val r = ask(sample, null, userId)
 
-                        Option.when(
-                            ask(sample, null, userId).getIntentId != i.intent.id)
-                            (s"Unexpected intent ID: '${r.getIntentId}'")
+                        Option.when(r.getIntentId != i.intent.id)(s"Unexpected intent ID: '${r.getIntentId}'")
                     catch case e: Throwable =>
                         logger.warn("Unexpected error.", e) 
                         Option(e.getLocalizedMessage)
