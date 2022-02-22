@@ -142,9 +142,13 @@ object NCSemanticEntityParserImpl:
 import org.apache.nlpcraft.nlp.entity.parser.semantic.impl.NCSemanticEntityParserImpl.*
 
 /**
-  *
+  * 
+  * @param stemmer
+  * @param parser
   * @param macros
   * @param elements
+  * @param mdlSrc
+  * @param scrType
   */
 class NCSemanticEntityParserImpl(
     stemmer: NCSemanticStemmer,

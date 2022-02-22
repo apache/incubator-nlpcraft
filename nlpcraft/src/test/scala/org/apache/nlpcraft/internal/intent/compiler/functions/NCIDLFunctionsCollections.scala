@@ -36,6 +36,7 @@ class NCIDLFunctionsCollections extends NCIDLFunctions:
             "list(1, 2, 3) != list(1.0, 2, 3)",
             "get(list(1, 2, 3), 1) == 2",
             "has(list(1, 2, 3), 1) == true",
+            "has(list('act'), 'act') == true",
             "has(list(1.1, 2.1, 3.1), 1.1) == true",
             "has(list(1.0, 2.0, 3.0), 1.0) == true",
             "has(list(1.0, 2.0, 3.0), 1) == false", // Different types.

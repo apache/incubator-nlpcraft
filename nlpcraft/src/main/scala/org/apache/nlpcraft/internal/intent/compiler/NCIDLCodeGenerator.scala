@@ -923,7 +923,7 @@ trait NCIDLCodeGenerator:
                 case "ent_index" => arg1Tok() match { case x => stack.push(() => Z(toEntity(x().value).index, 1)) }
                 case "ent_text" => arg1Tok() match { case x => stack.push(() => Z(toEntity(x().value).text, 1)) }
                 case "ent_count" => checkAvail(); z0(() => Z(idlCtx.entities.size, 0))
-                case "ent_groups" => arg1Tok() match { case x => stack.push(() => Z(toEntity(x().value).impl.getGroups, 1)) }
+                case "ent_groups" => arg1Tok() match { case x => stack.push(() => Z(JList.copyOf(toEntity(x().value).impl.getGroups), 1)) }
                 case "ent_all" => checkAvail(); z0(() => Z(idlCtx.entities.asJava, 0))
                 case "ent_all_for_id" => checkAvail(); doForAll((e, id) => e.impl.getId == id)
                 case "ent_all_for_group" => checkAvail(); doForAll((e, grp) => e.impl.getGroups.contains(grp))
