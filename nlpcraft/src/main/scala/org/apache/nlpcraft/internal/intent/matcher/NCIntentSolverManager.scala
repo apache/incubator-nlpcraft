@@ -697,26 +697,26 @@ class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLInten
       * @return
       */
     def solve(mdl: NCModel, ctx: NCContext): NCResult =
-        val resCtx: NCResult = mdl.onContext(ctx)
+        var res: NCResult = mdl.onContext(ctx)
 
-        if resCtx != null then
-            resCtx
+        if res != null then
+            res
         else
-            var res: IterationResult = null
+            var loopRes: IterationResult = null
 
             try
-                while (res == null)
+                while (loopRes == null)
                     solveIteration(mdl, ctx) match
-                        case Some(iterRes) => res = iterRes
+                        case Some(iterRes) => loopRes = iterRes
                         case None => // No-op.
 
-                mdl.onResult(res.intentMatch, res.result)
+                res = mdl.onResult(loopRes.intentMatch, loopRes.result)
 
-                res.result
+                if res != null then res else loopRes.result
             catch
                 case e: NCRejection =>
-                    mdl.onRejection(if res != null then res.intentMatch else null, e)
-                    throw e
+                    val res = mdl.onRejection(if loopRes != null then loopRes.intentMatch else null, e)
+                    if res != null then res else throw e
                 case e: Throwable =>
-                    mdl.onError(ctx, e)
-                    throw e
+                    val res = mdl.onError(ctx, e)
+                    if res != null then res else throw e
