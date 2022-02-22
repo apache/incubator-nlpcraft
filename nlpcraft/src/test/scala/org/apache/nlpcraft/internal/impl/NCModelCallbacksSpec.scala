@@ -34,7 +34,6 @@ import scala.util.Using
 class NCModelCallbacksSpec:
     enum State:
         case
-            Default,
             MatchFalse, VariantFalse,
             ContextNotNull, ResultNotNull, RejectionNotNull, ErrorNotNull,
             IntentError, IntentReject
@@ -57,18 +56,16 @@ class NCModelCallbacksSpec:
                 else if has(IntentReject) then throw new NCRejection("Rejection")
                 else RESULT_INTENT
 
-            override def onMatchedIntent(ctx: NCIntentMatch): Boolean = if has(MatchFalse) then false  else true
-            override def onVariant(vrn: NCVariant): Boolean = if has(VariantFalse) then false  else true
-            override def onContext(ctx: NCContext): NCResult = if has(ContextNotNull) then RESULT_CONTEXT  else null
-            override def onResult(ctx: NCIntentMatch, res: NCResult): NCResult = if has(ResultNotNull) then RESULT_RESULT  else null
-            override def onRejection(ctx: NCIntentMatch, e: NCRejection): NCResult = if has(RejectionNotNull) then RESULT_REJECTION else null
-            override def onError(ctx: NCContext, e: Throwable): NCResult = if has(ErrorNotNull) then RESULT_ERROR else null
+            override def onMatchedIntent(ctx: NCIntentMatch): Boolean = getOrElse(MatchFalse, false, true)
+            override def onVariant(vrn: NCVariant): Boolean = getOrElse(VariantFalse, false, true)
+            override def onContext(ctx: NCContext): NCResult = getOrElse(ContextNotNull, RESULT_CONTEXT, null)
+            override def onResult(ctx: NCIntentMatch, res: NCResult): NCResult = getOrElse(ResultNotNull, RESULT_RESULT, null)
+            override def onRejection(ctx: NCIntentMatch, e: NCRejection): NCResult = getOrElse(RejectionNotNull, RESULT_REJECTION, null)
+            override def onError(ctx: NCContext, e: Throwable): NCResult = getOrElse(ErrorNotNull, RESULT_ERROR, null)
 
     MDL.getPipeline.getEntityParsers.add(
         new NCSemanticEntityParser(
-            new NCEnSemanticPorterStemmer,
-            EN_PIPELINE.getTokenParser,
-            Seq(NCSemanticTestElement("x")).asJava
+            new NCEnSemanticPorterStemmer, EN_PIPELINE.getTokenParser, Seq(NCSemanticTestElement("x")).asJava
         )
     )
 
@@ -78,6 +75,16 @@ class NCModelCallbacksSpec:
       * @return
       */
     private def has(s: State): Boolean = states.synchronized { states.contains(s) }
+
+    /**
+      *
+      * @param s
+      * @param v
+      * @param dtlt
+      * @tparam T
+      * @return
+      */
+    private def getOrElse[T](s: State, v: T, dtlt: => T): T = if has(s) then v else dtlt
 
     /**
       *
@@ -95,11 +102,10 @@ class NCModelCallbacksSpec:
       * @param states
       * @return
       */
-    private def set(states: State*) =
-        this.states.synchronized {
-            this.states.clear()
-            this.states ++= states
-        }
+    private def set(states: State*) = this.states.synchronized {
+        this.states.clear()
+        this.states ++= states
+    }
 
     /**
       *
@@ -109,10 +115,7 @@ class NCModelCallbacksSpec:
       */
     private def testOk(client: NCModelClient, exp: NCResult, states: State*): Unit =
         set(states*)
-
-        val res = client.ask("x", null, "userId")
-
-        require(res.getBody == exp.getBody)
+        require(client.ask("x", null, "userId").getBody == exp.getBody)
 
     /**
       *
@@ -145,6 +148,7 @@ class NCModelCallbacksSpec:
         testOk(client, RESULT_REJECTION, IntentReject, RejectionNotNull)
         testOk(client, RESULT_ERROR, IntentError, ErrorNotNull)
 
+        // To avoid endless loop.
         val threadReset =
             new Thread("reset-thread"):
                 override def run(): Unit =
