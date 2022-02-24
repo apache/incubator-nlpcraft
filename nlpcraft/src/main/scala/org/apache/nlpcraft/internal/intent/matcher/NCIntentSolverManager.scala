@@ -68,12 +68,6 @@ object NCIntentSolverManager:
       * @param termId
       * @param entities
       */
-
-    /**
-      *
-      * @param termId
-      * @param entities
-      */
     private case class IntentTermEntities(termId: Option[String], entities: Seq[NCEntity])
 
     /**
@@ -671,10 +665,8 @@ class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLInten
                     // This can throw NCIntentSkip exception.
                     val cbRes = intentRes.fn(intentMatch)
                     // Store won intent match in the input.
-
                     if cbRes.getIntentId == null then
                         cbRes.setIntentId(intentRes.intentId)
-
                     logger.info(s"Intent '${intentRes.intentId}' for variant #${intentRes.variantIdx + 1} selected as the <|best match|>")
                     dialog.addMatchedIntent(intentMatch, cbRes, ctx)
                     Loop.finish(Option(IterationResult(cbRes, intentMatch)))
