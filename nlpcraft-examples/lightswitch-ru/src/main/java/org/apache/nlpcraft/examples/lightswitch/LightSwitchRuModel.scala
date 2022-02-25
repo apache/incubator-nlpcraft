@@ -18,12 +18,12 @@
 package org.apache.nlpcraft.examples.lightswitch
 
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.examples.lightswitch.ru.*
+import org.apache.nlpcraft.examples.lightswitch.nlp.entity.parser.semantic.NCRuSemanticEntityParser
 import org.apache.nlpcraft.nlp.entity.parser.nlp.NCNLPEntityParser
 import org.apache.nlpcraft.nlp.entity.parser.semantic.NCSemanticEntityParser
 import org.apache.nlpcraft.nlp.entity.parser.semantic.impl.en.NCEnSemanticPorterStemmer
-import org.apache.nlpcraft.nlp.token.parser.opennlp.NCOpenNLPTokenParser
 import org.apache.nlpcraft.nlp.token.enricher.en.NCStopWordsTokenEnricher
+import org.apache.nlpcraft.nlp.token.parser.opennlp.NCOpenNLPTokenParser
 
 /**
   * This example provides very simple implementation for NLI-powered light switch.
@@ -38,16 +38,9 @@ import org.apache.nlpcraft.nlp.token.enricher.en.NCStopWordsTokenEnricher
   * See 'README.md' file in the same folder for running and testing instructions.
   */
 
-class LightSwitchModelRu extends NCModel:
+class LightSwitchRuModel extends NCModel:
     override val getConfig: NCModelConfig = new NCModelConfig("nlpcraft.lightswitch.ru.ex", "LightSwitch Example Model RU", "1.0")
-    override val getPipeline: NCModelPipeline =
-        val tp = new NCTokenParserRu
-        new NCModelPipelineBuilder(
-            tp,
-            new NCSemanticEntityParser(new NCSemanticStemmerRu(), tp, "lightswitch_model_ru.yaml")
-        ).
-            withTokenEnricher(new NCStopWordsTokenEnricherRu()).
-            build()
+    override val getPipeline: NCModelPipeline = new NCRuPipeline(new NCRuSemanticEntityParser("lightswitch_model_ru.yaml"))
 
     /**
       * Intent and its on-match callback.

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.examples.lightswitch.ru
+package org.apache.nlpcraft.examples.lightswitch.nlp.token.parser
 
 import org.apache.lucene.analysis.ru.RussianAnalyzer
 import org.apache.nlpcraft.*
@@ -28,11 +28,9 @@ import org.languagetool.tokenizers.WordTokenizer
 import java.util
 import scala.jdk.CollectionConverters.*
 
-object NCTokenParserRu:
+object NCRuTokenParser:
     private val tokenizer = new WordTokenizer
-
     private case class Span(word: String, start: Int, end: Int)
-
     private def nvl(v: String, dflt : => String): String = if v != null then v else dflt
 
     private def split(text: String): Seq[Span] =
@@ -45,9 +43,9 @@ object NCTokenParserRu:
 
         spans.toSeq
 
-import org.apache.nlpcraft.examples.lightswitch.ru.NCTokenParserRu.*
+import NCRuTokenParser.*
 
-class NCTokenParserRu extends NCTokenParser:
+class NCRuTokenParser extends NCTokenParser:
     override def tokenize(text: String): util.List[NCToken] =
         val spans = split(text)
         val tags = RussianTagger.INSTANCE.tag(spans.map(_.word).asJava).asScala

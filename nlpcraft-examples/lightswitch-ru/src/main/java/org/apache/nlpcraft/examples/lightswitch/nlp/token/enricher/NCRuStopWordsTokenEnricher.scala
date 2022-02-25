@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.examples.lightswitch.ru
+package org.apache.nlpcraft.examples.lightswitch.nlp.token.enricher
 
 import org.apache.lucene.analysis.ru.RussianAnalyzer
 import org.apache.nlpcraft.*
@@ -26,18 +26,20 @@ import scala.jdk.CollectionConverters.*
 /**
   *
   */
-class NCStopWordsTokenEnricherRu extends NCTokenEnricher:
+class NCRuStopWordsTokenEnricher extends NCTokenEnricher:
     private final val stops = RussianAnalyzer.getDefaultStopSet
 
     override def enrich(req: NCRequest, cfg: NCModelConfig, toks: util.List[NCToken]): Unit =
-        toks.asScala.foreach(t =>
+        for (t <- toks.asScala)
+            val lemma = t.getLemma
+            lazy val pos = t.getPos
+
             t.put(
                 "stopword",
-                t.getLemma.length == 1 && !Character.isLetter(t.getLemma.head) ||
-                t.getPos.startsWith("PARTICLE") ||
-                t.getPos.startsWith("INTERJECTION") ||
-                t.getPos.startsWith("PREP") ||
+                lemma.length == 1 && !Character.isLetter(lemma.head) ||
+                pos.startsWith("PARTICLE") ||
+                pos.startsWith("INTERJECTION") ||
+                pos.startsWith("PREP") ||
                 stops.contains(t.getLemma) ||
                 stops.contains(t.getText.toLowerCase)
             )
-        )

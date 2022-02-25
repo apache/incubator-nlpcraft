@@ -15,12 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.examples.lightswitch.ru
+package org.apache.nlpcraft.examples.lightswitch.nlp.entity.parser.semantic
 
 import opennlp.tools.stemmer.snowball.SnowballStemmer
-import org.apache.nlpcraft.nlp.entity.parser.semantic.NCSemanticStemmer
+import org.apache.nlpcraft.examples.lightswitch.nlp.token.parser.NCRuTokenParser
+import org.apache.nlpcraft.nlp.entity.parser.semantic.*
 
-class NCSemanticStemmerRu extends NCSemanticStemmer:
-    private val stemmer = new SnowballStemmer(SnowballStemmer.ALGORITHM.RUSSIAN)
-
-    override def stem(txt: String): String = stemmer.synchronized { stemmer.stem(txt.toLowerCase).toString }
+/**
+  *
+  * @param src
+  */
+class NCRuSemanticEntityParser(src: String) extends NCSemanticEntityParser(
+    new NCSemanticStemmer:
+        private val stemmer = new SnowballStemmer(SnowballStemmer.ALGORITHM.RUSSIAN)
+        override def stem(txt: String): String = stemmer.synchronized { stemmer.stem(txt.toLowerCase).toString }
+    ,
+    new NCRuTokenParser(),
+    src
+)
