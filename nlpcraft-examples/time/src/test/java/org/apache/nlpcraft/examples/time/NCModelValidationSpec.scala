@@ -27,4 +27,4 @@ import scala.util.Using
   */
 class NCModelValidationSpec:
     @Test
-    def test(): Unit = Using.resource(new NCModelClient(new TimeModel())) { client => client.validateSamples() }
+    def test(): Unit = Using.resource(new NCModelClient(new TimeModel())) { _.validateSamples() }

@@ -26,7 +26,7 @@ import scala.util.Using
   * JUnit models validation.
   */
 class NCModelValidationSpec:
-    private def test(mdl: NCModel): Unit = Using.resource(new NCModelClient(mdl)) { client => client.validateSamples() }
+    private def test(mdl: NCModel): Unit = Using.resource(new NCModelClient(mdl)) { _.validateSamples() }
 
     @Test
     def testJava(): Unit = test(new LightSwitchJavaModel())
