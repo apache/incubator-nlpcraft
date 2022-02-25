@@ -18,12 +18,13 @@
 package org.apache.nlpcraft.examples.lightswitch
 
 import org.apache.nlpcraft.*
+import org.apache.nlpcraft.internal.util.NCResourceReader
 import org.apache.nlpcraft.nlp.entity.parser.nlp.NCNLPEntityParser
 import org.apache.nlpcraft.nlp.entity.parser.semantic.NCSemanticEntityParser
 import org.apache.nlpcraft.nlp.entity.parser.semantic.impl.en.NCEnSemanticPorterStemmer
-import org.apache.nlpcraft.nlp.token.parser.opennlp.NCOpenNLPTokenParser
 import org.apache.nlpcraft.nlp.token.enricher.en.NCStopWordsTokenEnricher
-import org.apache.nlpcraft.internal.util.NCResourceReader
+import org.apache.nlpcraft.nlp.token.parser.opennlp.NCOpenNLPTokenParser
+import org.apache.nlpcraft.nlp.*
 
 /**
   * This example provides very simple implementation for NLI-powered light switch.
@@ -38,22 +39,10 @@ import org.apache.nlpcraft.internal.util.NCResourceReader
   * See 'README.md' file in the same folder for running and testing instructions.
   */
 
-class LightSwitchScalaModel extends NCModel:
-    override val getConfig: NCModelConfig = new NCModelConfig("nlpcraft.lightswitch.scala.ex", "LightSwitch Example Model", "1.0")
-    override val getPipeline: NCModelPipeline =
-        val reader = new NCResourceReader()
-        val tp = new NCOpenNLPTokenParser(
-            reader.getPath("opennlp/en-token.bin"),
-            reader.getPath("opennlp/en-pos-maxent.bin"),
-            reader.getPath("opennlp/en-lemmatizer.dict")
-        )
-        new NCModelPipelineBuilder(
-            tp,
-            new NCSemanticEntityParser(new NCEnSemanticPorterStemmer(), tp, "lightswitch_model.yaml")
-        ).
-            withTokenEnricher(new NCStopWordsTokenEnricher()).
-            build()
-
+class LightSwitchScalaModel extends NCModelAdapter(
+    new NCModelConfig("nlpcraft.lightswitch.java.ex", "LightSwitch Example Model", "1.0"),
+    new NCENDefaultPipeline(new NCENSemanticEntityParser("lightswitch_model.yaml"))
+):
     /**
       * Intent and its on-match callback.
       *

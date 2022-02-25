@@ -17,23 +17,39 @@
 
 package org.apache.nlpcraft.examples.time;
 
-import com.fasterxml.jackson.core.*;
-import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.dataformat.yaml.*;
-import org.apache.nlpcraft.*;
-import org.apache.nlpcraft.examples.time.utils.cities.*;
-import org.apache.nlpcraft.examples.time.utils.keycdn.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import org.apache.nlpcraft.NCEntity;
+import org.apache.nlpcraft.NCIntent;
+import org.apache.nlpcraft.NCIntentMatch;
+import org.apache.nlpcraft.NCIntentRef;
+import org.apache.nlpcraft.NCIntentSample;
+import org.apache.nlpcraft.NCIntentTerm;
+import org.apache.nlpcraft.NCModelAdapter;
+import org.apache.nlpcraft.NCModelConfig;
+import org.apache.nlpcraft.NCModelPipeline;
+import org.apache.nlpcraft.NCRejection;
+import org.apache.nlpcraft.NCResult;
+import org.apache.nlpcraft.NCResultType;
+import org.apache.nlpcraft.examples.time.utils.cities.CitiesDataProvider;
+import org.apache.nlpcraft.examples.time.utils.cities.City;
+import org.apache.nlpcraft.examples.time.utils.cities.CityData;
+import org.apache.nlpcraft.examples.time.utils.keycdn.GeoData;
+import org.apache.nlpcraft.examples.time.utils.keycdn.GeoManager;
 import org.apache.nlpcraft.internal.util.NCResourceReader;
+import org.apache.nlpcraft.nlp.NCENDefaultPipeline;
+import org.apache.nlpcraft.nlp.NCENSemanticEntityParser;
 import org.apache.nlpcraft.nlp.entity.parser.opennlp.NCOpenNLPEntityParser;
-import org.apache.nlpcraft.nlp.entity.parser.semantic.NCSemanticEntityParser;
-import org.apache.nlpcraft.nlp.entity.parser.semantic.impl.en.NCEnSemanticPorterStemmer;
-import org.apache.nlpcraft.nlp.token.parser.opennlp.NCOpenNLPTokenParser;
 
-import java.time.*;
-import java.time.format.*;
-import java.util.*;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
-import static java.time.format.FormatStyle.*;
+import static java.time.format.FormatStyle.MEDIUM;
 
 /**
  * Time example data model.
@@ -47,7 +63,7 @@ import static java.time.format.FormatStyle.*;
 @NCIntent("fragment=city term(city)~{# == 'opennlp:location'}")
 @NCIntent("intent=intent2 term~{# == 'x:time'} fragment(city)")
 @NCIntent("intent=intent1 term={# == 'x:time'}")
-public class TimeModel implements NCModel {
+public class TimeModel extends NCModelAdapter {
     // Medium data formatter.
     static private final DateTimeFormatter FMT = DateTimeFormatter.ofLocalizedDateTime(MEDIUM);
 
@@ -57,27 +73,17 @@ public class TimeModel implements NCModel {
     // Geo manager.
     static private final GeoManager geoMrg = new GeoManager();
 
-    private final NCModelConfig cfg;
-    private final NCModelPipeline pipeline;
-
     /**
      * Initializes model.
      */
     public TimeModel() {
-        NCResourceReader reader = new NCResourceReader();
-
-        NCOpenNLPTokenParser tp = new NCOpenNLPTokenParser(
-            reader.getPath("opennlp/en-token.bin"),
-            reader.getPath("opennlp/en-pos-maxent.bin"),
-            reader.getPath("opennlp/en-lemmatizer.dict")
+        super(
+            new NCModelConfig("nlpcraft.time.ex", "Time Example Model", "1.0"),
+            new NCENDefaultPipeline(
+                new NCENSemanticEntityParser("time_model.yaml"),
+                new NCOpenNLPEntityParser(new NCResourceReader().getPath("opennlp/en-ner-location.bin"))
+            )
         );
-
-        this.cfg = new NCModelConfig("nlpcraft.time.ex", "Time Example Model", "1.0");
-        this.pipeline = new NCModelPipelineBuilder(
-            tp,
-            new NCOpenNLPEntityParser(reader.getPath("opennlp/en-ner-location.bin")),
-            new NCSemanticEntityParser(new NCEnSemanticPorterStemmer(), tp, "time_model.yaml")
-        ).build();
     }
 
     /**
@@ -184,15 +190,5 @@ public class TimeModel implements NCModel {
         return mkResult(
             geo.getCityName(), geo.getCountryName(), geo.getTimezoneName(), geo.getLatitude(), geo.getLongitude()
         );
-    }
-
-    @Override
-    public NCModelConfig getConfig() {
-        return cfg;
-    }
-
-    @Override
-    public NCModelPipeline getPipeline() {
-        return pipeline;
     }
 }

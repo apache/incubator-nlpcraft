@@ -68,8 +68,8 @@ public class NCENDefaultPipeline implements NCModelPipeline {
      *
      * @param parser
      */
-    public NCENDefaultPipeline(NCEntityParser parser) {
-        this.entParsers = Collections.singletonList(parser);
+    public NCENDefaultPipeline(NCEntityParser... parsers) {
+        this.entParsers = Arrays.asList(parsers);
     }
 
     @Override

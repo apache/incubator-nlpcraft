@@ -38,10 +38,10 @@ import org.apache.nlpcraft.nlp.token.parser.opennlp.NCOpenNLPTokenParser
   * See 'README.md' file in the same folder for running and testing instructions.
   */
 
-class LightSwitchRuModel extends NCModel:
-    override val getConfig: NCModelConfig = new NCModelConfig("nlpcraft.lightswitch.ru.ex", "LightSwitch Example Model RU", "1.0")
-    override val getPipeline: NCModelPipeline = new NCRuPipeline(new NCRuSemanticEntityParser("lightswitch_model_ru.yaml"))
-
+class LightSwitchRuModel extends NCModelAdapter(
+    new NCModelConfig("nlpcraft.lightswitch.ru.ex", "LightSwitch Example Model RU", "1.0"),
+    new NCRuPipeline(new NCRuSemanticEntityParser("lightswitch_model_ru.yaml"))
+):
     /**
       * Intent and its on-match callback.
       *

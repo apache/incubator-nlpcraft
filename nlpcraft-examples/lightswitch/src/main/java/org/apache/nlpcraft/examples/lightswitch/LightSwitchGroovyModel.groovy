@@ -18,11 +18,8 @@
 package org.apache.nlpcraft.examples.lightswitch
 
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.internal.util.NCResourceReader
-import org.apache.nlpcraft.nlp.entity.parser.semantic.NCSemanticEntityParser
-import org.apache.nlpcraft.nlp.entity.parser.semantic.impl.en.NCEnSemanticPorterStemmer
-import org.apache.nlpcraft.nlp.token.parser.opennlp.NCOpenNLPTokenParser
-import org.apache.nlpcraft.nlp.token.enricher.en.NCStopWordsTokenEnricher
+import org.apache.nlpcraft.nlp.NCENDefaultPipeline
+import org.apache.nlpcraft.nlp.NCENSemanticEntityParser
 
 /**
  * This example provides very simple implementation for NLI-powered light switch.
@@ -36,22 +33,12 @@ import org.apache.nlpcraft.nlp.token.enricher.en.NCStopWordsTokenEnricher
  * <p>
  * See 'README.md' file in the same folder for running and testing instructions.
  */
-class LightSwitchGroovyModel implements NCModel {
-    private final NCModelConfig cfg
-    private final NCModelPipeline pipeline
-
+class LightSwitchGroovyModel extends NCModelAdapter {
     LightSwitchGroovyModel() {
-        NCResourceReader reader = new NCResourceReader()
-        NCOpenNLPTokenParser tp = new NCOpenNLPTokenParser(
-            reader.getPath("opennlp/en-token.bin"),
-            reader.getPath("opennlp/en-pos-maxent.bin"),
-            reader.getPath("opennlp/en-lemmatizer.dict")
+        super(
+            new NCModelConfig("nlpcraft.lightswitch.java.ex", "LightSwitch Example Model", "1.0"),
+            new NCENDefaultPipeline(new NCENSemanticEntityParser("lightswitch_model.yaml"))
         )
-
-        this.cfg = new NCModelConfig("nlpcraft.lightswitch.groovy.ex", "LightSwitch Example Model", "1.0")
-        this.pipeline = new NCModelPipelineBuilder(tp, new NCSemanticEntityParser(new NCEnSemanticPorterStemmer(), tp, "lightswitch_model.yaml")).
-            withTokenEnricher(new NCStopWordsTokenEnricher()).
-            build()
     }
 
     /**
@@ -101,15 +88,5 @@ class LightSwitchGroovyModel implements NCModel {
         res.body = "Lights are [$status] in [${locations.toLowerCase()}]."
 
         res
-    }
-
-    @Override
-    NCModelConfig getConfig() {
-        return cfg
-    }
-
-    @Override
-    NCModelPipeline getPipeline() {
-        return pipeline
     }
 }

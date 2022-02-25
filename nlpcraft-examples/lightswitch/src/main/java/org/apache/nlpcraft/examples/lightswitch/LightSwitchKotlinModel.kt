@@ -19,11 +19,8 @@ package org.apache.nlpcraft.examples.lightswitch
 
 
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.internal.util.NCResourceReader
-import org.apache.nlpcraft.nlp.entity.parser.semantic.NCSemanticEntityParser
-import org.apache.nlpcraft.nlp.entity.parser.semantic.impl.en.NCEnSemanticPorterStemmer
-import org.apache.nlpcraft.nlp.token.enricher.en.NCStopWordsTokenEnricher
-import org.apache.nlpcraft.nlp.token.parser.opennlp.NCOpenNLPTokenParser
+import org.apache.nlpcraft.nlp.NCENDefaultPipeline
+import org.apache.nlpcraft.nlp.NCENSemanticEntityParser
 import java.util.*
 import java.util.stream.Collectors
 
@@ -39,19 +36,10 @@ import java.util.stream.Collectors
  *
  * See 'README.md' file in the same folder for running and testing instructions.
  */
-class LightSwitchKotlinModel : NCModel {
-    private val reader = NCResourceReader()
-    private val tp = NCOpenNLPTokenParser(
-        reader.getPath("opennlp/en-token.bin"),
-        reader.getPath("opennlp/en-pos-maxent.bin"),
-        reader.getPath("opennlp/en-lemmatizer.dict")
-    )
-
-    private val cfg = NCModelConfig("nlpcraft.lightswitch.kotlin.ex", "LightSwitch Example Model", "1.0")
-    private val pipeline =
-        NCModelPipelineBuilder(tp, NCSemanticEntityParser(NCEnSemanticPorterStemmer(), tp, "lightswitch_model.yaml")).
-        withTokenEnricher(NCStopWordsTokenEnricher()).
-        build()
+class LightSwitchKotlinModel : NCModelAdapter(
+    NCModelConfig("nlpcraft.lightswitch.kotlin.ex", "LightSwitch Example Model", "1.0"),
+    NCENDefaultPipeline(NCENSemanticEntityParser("lightswitch_model.yaml"))
+) {
     /**
      * Intent and its on-match callback.
      *
@@ -102,13 +90,5 @@ class LightSwitchKotlinModel : NCModel {
         res.setBody("Lights are [" + status + "] in [" + locations.lowercase(Locale.getDefault()) + "].")
 
         return res
-    }
-
-    override fun getConfig(): NCModelConfig {
-        return cfg
-    }
-
-    override fun getPipeline(): NCModelPipeline {
-        return pipeline
     }
 }
