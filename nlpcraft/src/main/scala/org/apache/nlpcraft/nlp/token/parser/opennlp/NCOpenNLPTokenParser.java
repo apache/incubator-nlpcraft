@@ -45,8 +45,6 @@ public class NCOpenNLPTokenParser implements NCTokenParser {
      */
     public NCOpenNLPTokenParser(String tokMdlSrc, String posMdlSrc, String lemmaDicSrc) {
         Objects.requireNonNull(tokMdlSrc, "Tokenizer model path cannot be null.");
-        Objects.requireNonNull(posMdlSrc, "POS model path cannot be null.");
-        Objects.requireNonNull(lemmaDicSrc, "Lemmatizer model path cannot be null.");
 
         impl = new NCOpenNLPTokenParserImpl(tokMdlSrc, posMdlSrc, lemmaDicSrc);
     }

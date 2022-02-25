@@ -96,3 +96,43 @@ class NCOpenNLPTokenParserSpec:
             "< < [ a ] > >",
             toks => require(!isStopWord(toks.find(_.getText == "a").get))
         )
+
+    @Test
+    def testNullable(): Unit =
+        val txt = "parents had files"
+
+        // 1. Nullable.
+        var parser = new NCOpenNLPTokenParser(
+            "opennlp/en-token.bin",
+            null,
+            null
+        )
+
+        var tbl = NCAsciiTable("Text", "Lemma", "POS")
+
+        for (t <- parser.tokenize(txt).asScala)
+            tbl += (t.getText, t.getLemma, t.getPos)
+
+            require(t.getPos.isEmpty)
+            require(t.getText == t.getLemma)
+
+        println(tbl.toString)
+
+        // 2. Not nullable.
+        parser = new NCOpenNLPTokenParser(
+            "opennlp/en-token.bin",
+            "opennlp/en-pos-maxent.bin",
+            "opennlp/en-lemmatizer.dict"
+        )
+
+        tbl = NCAsciiTable("Text", "Lemma", "POS")
+
+        for (t <- parser.tokenize(txt).asScala)
+            tbl += (t.getText, t.getLemma, t.getPos)
+
+            require(t.getPos.nonEmpty)
+            require(t.getText != t.getLemma)
+
+        println(tbl.toString)
+
+

@@ -40,8 +40,6 @@ import scala.jdk.CollectionConverters.*
   */
 class NCOpenNLPTokenParserImpl(tokMdl: String,  posMdlSrc: String, lemmaDicSrc: String) extends NCTokenParser with LazyLogging:
     require(tokMdl != null)
-    require(posMdlSrc != null)
-    require(lemmaDicSrc != null)
 
     private var tagger: POSTaggerME = _
     private var lemmatizer: DictionaryLemmatizer = _
@@ -52,12 +50,14 @@ class NCOpenNLPTokenParserImpl(tokMdl: String,  posMdlSrc: String, lemmaDicSrc: 
     private def init(): Unit =
         NCUtils.execPar(
             () => {
-                tagger = new POSTaggerME(new POSModel(NCUtils.getStream(posMdlSrc)))
-                logger.trace(s"Loaded resource: $posMdlSrc")
+                if posMdlSrc != null then
+                    tagger = new POSTaggerME(new POSModel(NCUtils.getStream(posMdlSrc)))
+                    logger.trace(s"Loaded resource: $posMdlSrc")
             },
             () => {
-                lemmatizer = new DictionaryLemmatizer(NCUtils.getStream(lemmaDicSrc))
-                logger.trace(s"Loaded resource: $lemmaDicSrc")
+                if lemmaDicSrc != null then
+                    lemmatizer = new DictionaryLemmatizer(NCUtils.getStream(lemmaDicSrc))
+                    logger.trace(s"Loaded resource: $lemmaDicSrc")
             },
             () => {
                 tokenizer = new TokenizerME(new TokenizerModel(NCUtils.getStream(tokMdl)))
@@ -71,8 +71,8 @@ class NCOpenNLPTokenParserImpl(tokMdl: String,  posMdlSrc: String, lemmaDicSrc: 
         this.synchronized {
             val hs = tokenizer.tokenizePos(text).map(p => Holder(p.getCoveredText(text).toString, p.getStart, p.getEnd))
             val toks = hs.map(_.text)
-            val poses = tagger.tag(toks)
-            var lemmas = lemmatizer.lemmatize(toks, poses)
+            val poses = if tagger != null then tagger.tag(toks) else toks.map(_ => "")
+            var lemmas = if lemmatizer != null then lemmatizer.lemmatize(toks, poses) else toks
 
             require(toks.length == poses.length && toks.length == lemmas.length)
 
@@ -83,7 +83,7 @@ class NCOpenNLPTokenParserImpl(tokMdl: String,  posMdlSrc: String, lemmaDicSrc: 
                 case ((lemma, pos), i) => Option.when(lemma == "O" && pos == "NN")(i)
             }
 
-            if suspIdxs.nonEmpty then
+            if suspIdxs.nonEmpty && lemmatizer != null then
                 val fixes: Map[Int, String] = lemmatizer.
                     lemmatize(suspIdxs.map(i => toks(i)), suspIdxs.map(_ => "NNN")).
                     zipWithIndex.

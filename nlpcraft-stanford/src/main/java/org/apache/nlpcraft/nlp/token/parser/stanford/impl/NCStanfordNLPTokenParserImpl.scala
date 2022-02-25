@@ -37,6 +37,8 @@ import scala.jdk.CollectionConverters.*
 class NCStanfordNLPTokenParserImpl(stanford: StanfordCoreNLP) extends NCTokenParser:
     require(stanford != null)
 
+    private def nvl(v: String, dflt : => String): String = if v != null then v else dflt
+
     override def tokenize(text: String): JList[NCToken] =
         val doc = new CoreDocument(text)
         stanford.annotate(doc)
@@ -45,10 +47,12 @@ class NCStanfordNLPTokenParserImpl(stanford: StanfordCoreNLP) extends NCTokenPar
 
         val toks = ann.asScala.flatMap(_.asInstanceOf[ArrayCoreMap].get(classOf[TokensAnnotation]).asScala).
             zipWithIndex.map { (t, idx) =>
-                new NCPropertyMapAdapter with NCToken :
-                    override val getText: String = t.originalText()
-                    override val getLemma: String = t.lemma()
-                    override val getPos: String = t.tag()
+                val txt = t.originalText()
+
+                new NCPropertyMapAdapter with NCToken:
+                    override val getText: String = txt
+                    override val getLemma: String = nvl(t.lemma(), txt)
+                    override val getPos: String = nvl(t.tag(), "")
                     override val getIndex: Int = idx
                     override val getStartCharIndex: Int = t.beginPosition()
                     override val getEndCharIndex: Int = t.endPosition()
