@@ -86,6 +86,15 @@ class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCModelPipeline) exte
 
     /**
       *
+      * @param m
+      * @return
+      */
+    private def mkProps(m: NCPropertyMap): String =
+        if m.keysSet().isEmpty then ""
+        else m.keysSet().asScala.toSeq.sorted.map(p => s"$p=${m.get[Any](p)}").mkString("{", ", ", "}")
+
+    /**
+      *
       * @param txt
       * @param data
       * @param usrId
@@ -118,6 +127,19 @@ class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCModelPipeline) exte
             for (e <- tokEnrichers)
                 check()
                 e.enrich(req, cfg, toks)
+
+        val tbl = NCAsciiTable("Text", "Lemma", "POS", "Start index", "End index", "Properties")
+
+        for (t <- toks.asScala)
+            tbl += (
+                t.getText,
+                t.getLemma,
+                t.getPos,
+                t.getStartCharIndex,
+                t.getEndCharIndex,
+                mkProps(t)
+            )
+        tbl.info(logger, Option(s"Tokens for: ${req.getText}"))
 
         // NOTE: we run validators regardless of whether token list is empty.
         for (v <- tokVals)
@@ -168,10 +190,6 @@ class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCModelPipeline) exte
 
         for ((v, i) <- vrnts.zipWithIndex)
             val tbl = NCAsciiTable("EntityId", "Tokens", "Tokens Position", "Properties")
-
-            def mkProps(m: NCPropertyMap): String =
-                if m.keysSet().isEmpty then ""
-                else m.keysSet().asScala.toSeq.sorted.map(p => s"$p=${m.get[Any](p)}").mkString("{", ", ", "}")
 
             for (e <- v.getEntities.asScala)
                 val toks = e.getTokens.asScala

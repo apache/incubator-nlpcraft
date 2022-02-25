@@ -21,8 +21,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <name>NLPCraft Example Time</name>
-    <artifactId>nlpcraft-example-time</artifactId>
+    <name>NLPCraft Example Light Switch RU</name>
+    <artifactId>nlpcraft-example-lightswitch-ru</artifactId>
 
     <parent>
         <artifactId>nlpcraft-parent</artifactId>
@@ -37,6 +37,30 @@
             <artifactId>nlpcraft</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-analyzers-common</artifactId>
+            <version>8.11.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.languagetool</groupId>
+            <artifactId>language-de</artifactId>
+            <version>5.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.languagetool</groupId>
+            <artifactId>language-ru</artifactId>
+            <version>5.6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.languagetool</groupId>
+            <artifactId>languagetool-core</artifactId>
+            <version>5.6</version>
+        </dependency>
+
 
         <!-- Test dependencies. -->
         <dependency>

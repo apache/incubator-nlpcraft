@@ -1,0 +1,45 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+macros:
+  "<TURN_ON>" : "{включить|включать|врубить|врубать|запустить|запускать|зажигать|зажечь}"
+  "<TURN_OFF>" : "{погасить|загасить|гасить|выключить|выключать|вырубить|вырубать|отключить|отключать|убрать|убирать|приглушить|приглушать|стоп}"
+  "<ENTIRE_OPT>" : "{весь|все|всё|повсюду|вокруг|полностью|везде|_}"
+  "<LIGHT_OPT>" : "{это|лампа|бра|люстра|светильник|лампочка|лампа|освещение|свет|электричество|электрика|_}"
+
+elements:
+  - id: "ls:loc"
+    description: "Location of lights."
+    synonyms:
+      - "<ENTIRE_OPT> {здание|помещение|дом|кухня|детская|кабинет|гостиная|спальня|ванная|туалет|{большая|обеденная|ванная|детская|туалетная} комната}"
+
+  - id: "ls:on"
+    groups:
+      - "act"
+    description: "Light switch ON action."
+    synonyms:
+      - "<LIGHT_OPT> <ENTIRE_OPT> <TURN_ON>"
+      - "<TURN_ON> <ENTIRE_OPT> <LIGHT_OPT>"
+
+  - id: "ls:off"
+    groups:
+      - "act"
+    description: "Light switch OFF action."
+    synonyms:
+      - "<LIGHT_OPT> <ENTIRE_OPT> <TURN_OFF>"
+      - "<TURN_OFF> <ENTIRE_OPT> <LIGHT_OPT>"
+      - "без <ENTIRE_OPT> <LIGHT_OPT>"
