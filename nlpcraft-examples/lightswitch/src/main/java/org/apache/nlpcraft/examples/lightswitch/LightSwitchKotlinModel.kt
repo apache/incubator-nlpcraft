@@ -19,6 +19,7 @@ package org.apache.nlpcraft.examples.lightswitch
 
 
 import org.apache.nlpcraft.*
+import org.apache.nlpcraft.internal.util.NCResourceReader
 import org.apache.nlpcraft.nlp.entity.parser.semantic.NCSemanticEntityParser
 import org.apache.nlpcraft.nlp.entity.parser.semantic.impl.en.NCEnSemanticPorterStemmer
 import org.apache.nlpcraft.nlp.token.enricher.en.NCStopWordsTokenEnricher
@@ -38,8 +39,13 @@ import java.util.stream.Collectors
  *
  * See 'README.md' file in the same folder for running and testing instructions.
  */
-class LightSwitchKotlinModel(tokMdlSrc: String, posMdlSrc: String, lemmaDicSrc: String) : NCModel {
-    private val tp = NCOpenNLPTokenParser(tokMdlSrc, posMdlSrc, lemmaDicSrc)
+class LightSwitchKotlinModel : NCModel {
+    private val reader = NCResourceReader()
+    private val tp = NCOpenNLPTokenParser(
+        reader.getPath("opennlp/en-token.bin"),
+        reader.getPath("opennlp/en-pos-maxent.bin"),
+        reader.getPath("opennlp/en-lemmatizer.dict")
+    )
 
     private val cfg = NCModelConfig("nlpcraft.lightswitch.kotlin.ex", "LightSwitch Example Model", "1.0")
     private val pipeline =

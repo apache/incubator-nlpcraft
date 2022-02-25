@@ -52,4 +52,13 @@ public class NCResourceReader {
     public File get(String path) {
         return impl.get(path);
     }
+
+    /**
+     * 
+     * @param path
+     * @return
+     */
+    public String getPath(String path) {
+        return impl.get(path).getAbsolutePath();
+    }
 }

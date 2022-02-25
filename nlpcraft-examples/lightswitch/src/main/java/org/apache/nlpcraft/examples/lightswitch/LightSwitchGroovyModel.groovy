@@ -18,6 +18,7 @@
 package org.apache.nlpcraft.examples.lightswitch
 
 import org.apache.nlpcraft.*
+import org.apache.nlpcraft.internal.util.NCResourceReader
 import org.apache.nlpcraft.nlp.entity.parser.semantic.NCSemanticEntityParser
 import org.apache.nlpcraft.nlp.entity.parser.semantic.impl.en.NCEnSemanticPorterStemmer
 import org.apache.nlpcraft.nlp.token.parser.opennlp.NCOpenNLPTokenParser
@@ -39,8 +40,13 @@ class LightSwitchGroovyModel implements NCModel {
     private final NCModelConfig cfg
     private final NCModelPipeline pipeline
 
-    LightSwitchGroovyModel(String tokMdlSrc, String posMdlSrc, String lemmaDicSrc) {
-        NCOpenNLPTokenParser tp = new NCOpenNLPTokenParser(tokMdlSrc, posMdlSrc, lemmaDicSrc)
+    LightSwitchGroovyModel() {
+        NCResourceReader reader = new NCResourceReader()
+        NCOpenNLPTokenParser tp = new NCOpenNLPTokenParser(
+            reader.getPath("opennlp/en-token.bin"),
+            reader.getPath("opennlp/en-pos-maxent.bin"),
+            reader.getPath("opennlp/en-lemmatizer.dict")
+        )
 
         this.cfg = new NCModelConfig("nlpcraft.lightswitch.groovy.ex", "LightSwitch Example Model", "1.0")
         this.pipeline = new NCModelPipelineBuilder(tp, new NCSemanticEntityParser(new NCEnSemanticPorterStemmer(), tp, "lightswitch_model.yaml")).

@@ -26,40 +26,16 @@ import scala.util.Using
   * JUnit models validation.
   */
 class NCModelValidationSpec:
-    private lazy val MDL_SCALA = new LightSwitchScalaModel(
-        "opennlp/en-token.bin",
-        "opennlp/en-pos-maxent.bin",
-        "opennlp/en-lemmatizer.dict"
-    )
-
-    private lazy val MDL_JAVA = new LightSwitchJavaModel(
-        "opennlp/en-token.bin",
-        "opennlp/en-pos-maxent.bin",
-        "opennlp/en-lemmatizer.dict"
-    )
-
-    private lazy val MDL_GROOVY = new LightSwitchGroovyModel(
-        "opennlp/en-token.bin",
-        "opennlp/en-pos-maxent.bin",
-        "opennlp/en-lemmatizer.dict"
-    )
-
-    private lazy val MDL_KOTLIN = new LightSwitchKotlinModel(
-        "opennlp/en-token.bin",
-        "opennlp/en-pos-maxent.bin",
-        "opennlp/en-lemmatizer.dict"
-    )
-
     private def test(mdl: NCModel): Unit = Using.resource(new NCModelClient(mdl)) { client => client.validateSamples() }
 
     @Test
-    def testJava(): Unit = test(MDL_JAVA)
+    def testJava(): Unit = test(new LightSwitchJavaModel())
 
     @Test
-    def testGroovy(): Unit = test(MDL_GROOVY)
+    def testGroovy(): Unit = test(new LightSwitchGroovyModel())
 
     @Test
-    def testKotlin(): Unit = test(MDL_KOTLIN)
+    def testKotlin(): Unit = test(new LightSwitchKotlinModel())
 
     @Test
-    def testScala(): Unit = test(MDL_SCALA)
+    def testScala(): Unit = test(new LightSwitchScalaModel())

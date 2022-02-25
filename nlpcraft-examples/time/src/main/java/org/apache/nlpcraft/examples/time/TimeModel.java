@@ -23,6 +23,7 @@ import com.fasterxml.jackson.dataformat.yaml.*;
 import org.apache.nlpcraft.*;
 import org.apache.nlpcraft.examples.time.utils.cities.*;
 import org.apache.nlpcraft.examples.time.utils.keycdn.*;
+import org.apache.nlpcraft.internal.util.NCResourceReader;
 import org.apache.nlpcraft.nlp.entity.parser.opennlp.NCOpenNLPEntityParser;
 import org.apache.nlpcraft.nlp.entity.parser.semantic.NCSemanticEntityParser;
 import org.apache.nlpcraft.nlp.entity.parser.semantic.impl.en.NCEnSemanticPorterStemmer;
@@ -61,19 +62,20 @@ public class TimeModel implements NCModel {
 
     /**
      * Initializes model.
-     *
-     * @param tokMdlSrc
-     * @param posMdlSrc
-     * @param lemmaDicSrc
-     * @param locMdlSrc
      */
-    public TimeModel(String tokMdlSrc, String posMdlSrc, String lemmaDicSrc, String locMdlSrc) {
-        NCOpenNLPTokenParser tp = new NCOpenNLPTokenParser(tokMdlSrc, posMdlSrc, lemmaDicSrc);
+    public TimeModel() {
+        NCResourceReader reader = new NCResourceReader();
+
+        NCOpenNLPTokenParser tp = new NCOpenNLPTokenParser(
+            reader.getPath("opennlp/en-token.bin"),
+            reader.getPath("opennlp/en-pos-maxent.bin"),
+            reader.getPath("opennlp/en-lemmatizer.dict")
+        );
 
         this.cfg = new NCModelConfig("nlpcraft.time.ex", "Time Example Model", "1.0");
         this.pipeline = new NCModelPipelineBuilder(
             tp,
-            new NCOpenNLPEntityParser(locMdlSrc),
+            new NCOpenNLPEntityParser(reader.getPath("opennlp/en-ner-location.bin")),
             new NCSemanticEntityParser(new NCEnSemanticPorterStemmer(), tp, "time_model.yaml")
         ).build();
     }

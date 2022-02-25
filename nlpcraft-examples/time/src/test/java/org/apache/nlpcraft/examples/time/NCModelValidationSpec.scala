@@ -26,12 +26,5 @@ import scala.util.Using
   * JUnit model validation.
   */
 class NCModelValidationSpec:
-    private val MDL = new TimeModel(
-        "opennlp/en-token.bin",
-        "opennlp/en-pos-maxent.bin",
-        "opennlp/en-lemmatizer.dict",
-        "opennlp/en-ner-location.bin",
-    )
-    
     @Test
-    def test(): Unit = Using.resource(new NCModelClient(MDL)) { client => client.validateSamples() }
+    def test(): Unit = Using.resource(new NCModelClient(new TimeModel())) { client => client.validateSamples() }

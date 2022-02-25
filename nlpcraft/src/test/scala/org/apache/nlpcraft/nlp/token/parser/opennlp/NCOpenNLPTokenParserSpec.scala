@@ -19,6 +19,7 @@ package org.apache.nlpcraft.nlp.token.parser.opennlp
 
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.ascii.NCAsciiTable
+import org.apache.nlpcraft.internal.util.NCResourceReader
 import org.apache.nlpcraft.nlp.token.enricher.en.*
 import org.apache.nlpcraft.nlp.util.*
 import org.apache.nlpcraft.nlp.util.opennlp.*
@@ -99,11 +100,12 @@ class NCOpenNLPTokenParserSpec:
 
     @Test
     def testNullable(): Unit =
+        val reader = new NCResourceReader
         val txt = "parents had files"
 
         // 1. Nullable.
         var parser = new NCOpenNLPTokenParser(
-            "opennlp/en-token.bin",
+            reader.getPath("opennlp/en-token.bin"),
             null,
             null
         )
@@ -120,9 +122,9 @@ class NCOpenNLPTokenParserSpec:
 
         // 2. Not nullable.
         parser = new NCOpenNLPTokenParser(
-            "opennlp/en-token.bin",
-            "opennlp/en-pos-maxent.bin",
-            "opennlp/en-lemmatizer.dict"
+            reader.getPath("opennlp/en-token.bin"),
+            reader.getPath("opennlp/en-pos-maxent.bin"),
+            reader.getPath("opennlp/en-lemmatizer.dict")
         )
 
         tbl = NCAsciiTable("Text", "Lemma", "POS")
