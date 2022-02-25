@@ -70,7 +70,7 @@ class NCRuTokenParser extends NCTokenParser:
                     override val getIndex: Int = idx
                     override val getStartCharIndex: Int = span.start
                     override val getEndCharIndex: Int = span.end
-                    override val getLemma: String = lemma.toLowerCase // TODO: discuss
+                    override val getLemma: String = lemma.toLowerCase
                     override val getPos: String = pos
             tok
         }.asJava
