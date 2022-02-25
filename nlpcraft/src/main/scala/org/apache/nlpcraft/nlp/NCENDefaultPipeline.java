@@ -34,12 +34,13 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- *
+ * Default EN implementation based on Open Nlp token parser, and set of built token enrichers including stopword enricher.
+ * Also at least one entity parser must be defined.
  */
 public class NCENDefaultPipeline implements NCModelPipeline {
     private static final NCResourceReader reader = new NCResourceReader();
 
-    private final NCTokenParser tp = new NCOpenNLPTokenParser(
+    private final NCTokenParser tokParser = new NCOpenNLPTokenParser(
         reader.getPath("opennlp/en-token.bin"),
         reader.getPath("opennlp/en-pos-maxent.bin"),
         reader.getPath("opennlp/en-lemmatizer.dict")
@@ -51,17 +52,16 @@ public class NCENDefaultPipeline implements NCModelPipeline {
         new NCQuotesTokenEnricher(),
         new NCDictionaryTokenEnricher(),
         new NCBracketsTokenEnricher()
-
     );
 
-    private final List<NCEntityParser> parsers;
+    private final List<NCEntityParser> entParsers;
 
     /**
      *
-     * @param parsers
+     * @param entParsers
      */
-    public NCENDefaultPipeline(List<NCEntityParser> parsers) {
-        this.parsers = parsers;
+    public NCENDefaultPipeline(List<NCEntityParser> entParsers) {
+        this.entParsers = entParsers;
     }
 
     /**
@@ -69,17 +69,17 @@ public class NCENDefaultPipeline implements NCModelPipeline {
      * @param parser
      */
     public NCENDefaultPipeline(NCEntityParser parser) {
-        this.parsers = Collections.singletonList(parser);
+        this.entParsers = Collections.singletonList(parser);
     }
 
     @Override
     public NCTokenParser getTokenParser() {
-        return tp;
+        return tokParser;
     }
 
     @Override
     public List<NCEntityParser> getEntityParsers() {
-        return parsers;
+        return entParsers;
     }
 
     @Override

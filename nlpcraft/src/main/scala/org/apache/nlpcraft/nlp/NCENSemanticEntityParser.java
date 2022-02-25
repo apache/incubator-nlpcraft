@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
+ * Wrapper on {@link NCSemanticEntityParser} which uses Open Nlp token parser (same as {@link NCENDefaultPipeline}) and built EN stemmer.
  */
 public class NCENSemanticEntityParser extends NCSemanticEntityParser {
     private static final NCResourceReader reader = new NCResourceReader();
