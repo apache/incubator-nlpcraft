@@ -55,22 +55,19 @@ class NCRuTokenParser extends NCTokenParser:
         spans.zip(tags).zipWithIndex.map { case ((span, tag), idx) =>
             val readings = tag.getReadings.asScala
 
-            val (lemma, pos) =
-                readings.size match
-                    // No data. Lemma is word as is, POS is undefined.
-                    case 0 => (span.word, "")
-                    // Takes first. Other variants ignored.
-                    case _ =>
-                        val aTok: AnalyzedToken = readings.head
-                        (nvl(aTok.getLemma, span.word), nvl(aTok.getPOSTag, ""))
+            val (lemma, pos) = readings.size match
+                // No data. Lemma is word as is, POS is undefined.
+                case 0 => (span.word, "")
+                // Takes first. Other variants ignored.
+                case _ =>
+                    val aTok: AnalyzedToken = readings.head
+                    (nvl(aTok.getLemma, span.word), nvl(aTok.getPOSTag, ""))
 
-            val tok: NCToken =
-                new NCPropertyMapAdapter with NCToken:
-                    override val getText: String = span.word
-                    override val getIndex: Int = idx
-                    override val getStartCharIndex: Int = span.start
-                    override val getEndCharIndex: Int = span.end
-                    override val getLemma: String = lemma
-                    override val getPos: String = pos
-            tok
+            new NCPropertyMapAdapter with NCToken:
+                override val getText: String = span.word
+                override val getIndex: Int = idx
+                override val getStartCharIndex: Int = span.start
+                override val getEndCharIndex: Int = span.end
+                override val getLemma: String = lemma
+                override val getPos: String = pos
         }.asJava
