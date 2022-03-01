@@ -36,7 +36,7 @@ class NCRuStopWordsTokenEnricher extends NCTokenEnricher:
 
             t.put(
                 "stopword",
-                lemma.length == 1 && !Character.isLetter(lemma.head) ||
+                lemma.length == 1 && !Character.isLetter(lemma.head) && !Character.isDigit(lemma.head) ||
                 stops.contains(lemma.toLowerCase) ||
                 pos.startsWith("PARTICLE") ||
                 pos.startsWith("INTERJECTION") ||
