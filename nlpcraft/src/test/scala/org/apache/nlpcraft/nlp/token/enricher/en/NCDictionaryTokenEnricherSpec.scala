@@ -17,6 +17,7 @@
 
 package org.apache.nlpcraft.nlp.token.enricher.en
 
+import org.apache.nlpcraft.internal.util.NCResourceReader
 import org.apache.nlpcraft.nlp.token.enricher.en.*
 import org.apache.nlpcraft.nlp.util.*
 import org.apache.nlpcraft.nlp.util.opennlp.*
@@ -28,16 +29,27 @@ import scala.jdk.CollectionConverters.*
   *
   */
 class NCDictionaryTokenEnricherSpec:
-    private val enricher = new NCDictionaryTokenEnricher()
+    private val dictEnricher = new NCDictionaryTokenEnricher()
+
+    private val reader = new NCResourceReader()
+
+    private val lemmaPosEnricher = new NCLemmaPosTokenEnricher(
+        reader.getPath("opennlp/en-pos-maxent.bin"),
+        reader.getPath("opennlp/en-lemmatizer.dict")
+    )    
 
     @Test
     def test(): Unit =
-        val toks = EN_PIPELINE.getTokenParser.tokenize("milk XYZ").asScala.toSeq
+        val txt = "milk XYZ"
+        val toks = EN_PIPELINE.getTokenParser.tokenize(txt).asScala.toSeq
 
         require(toks.head.getOpt[Boolean]("dict:en").isEmpty)
         require(toks.last.getOpt[Boolean]("dict:en").isEmpty)
 
-        enricher.enrich(null, CFG, toks.asJava)
+        val req = NCTestRequest(txt)
+
+        lemmaPosEnricher.enrich(req, CFG, toks.asJava)
+        dictEnricher.enrich(req, CFG, toks.asJava)
         NCTestUtils.printTokens(toks)
 
         require(toks.head.get[Boolean]("dict"))

@@ -31,5 +31,7 @@ class NCDictionaryTokenEnricherImpl extends NCTokenEnricher:
     init()
 
     private def init(): Unit = dict = NCUtils.readResource("moby/354984si.ngl", "iso-8859-1").toSet
+    private def getLemma(t: NCToken): String = t.getOpt("lemma").orElseThrow(() => throw new NCException("Lemma not found in token."))
+
     override def enrich(req: NCRequest, cfg: NCModelConfig, toks: JList[NCToken]): Unit =
-        toks.forEach(t => t.put("dict", dict.contains(t.getLemma)))
+        toks.forEach(t => t.put("dict", dict.contains(getLemma(t))))

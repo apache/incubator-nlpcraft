@@ -49,10 +49,12 @@ class NCStanfordNLPTokenParserImpl(stanford: StanfordCoreNLP) extends NCTokenPar
             zipWithIndex.map { (t, idx) =>
                 val txt = t.originalText()
 
+                // TODO:
                 new NCPropertyMapAdapter with NCToken:
                     override val getText: String = txt
-                    override val getLemma: String = nvl(t.lemma(), txt)
-                    override val getPos: String = nvl(t.tag(), "")
+                    // TODO: move it into special component?
+//                    override val getLemma: String = nvl(t.lemma(), txt)
+//                    override val getPos: String = nvl(t.tag(), "")
                     override val getIndex: Int = idx
                     override val getStartCharIndex: Int = t.beginPosition()
                     override val getEndCharIndex: Int = t.endPosition()

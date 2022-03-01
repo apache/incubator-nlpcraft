@@ -18,10 +18,10 @@
 package org.apache.nlpcraft.nlp.entity.parser.semantic
 
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.internal.util.NCUtils
+import org.apache.nlpcraft.internal.util.{NCResourceReader, NCUtils}
 import org.apache.nlpcraft.nlp.entity.parser.opennlp.NCOpenNLPEntityParser
 import org.apache.nlpcraft.nlp.entity.parser.semantic.impl.en.NCEnSemanticPorterStemmer
-import org.apache.nlpcraft.nlp.token.enricher.en.NCStopWordsTokenEnricher
+import org.apache.nlpcraft.nlp.token.enricher.en.*
 import org.apache.nlpcraft.nlp.util.*
 import org.apache.nlpcraft.nlp.util.opennlp.*
 import org.junit.jupiter.api.*
@@ -88,6 +88,13 @@ class NCSemanticEntityParserSpec:
 
     private val stopWordsEnricher = new NCStopWordsTokenEnricher()
 
+    private val reader = new NCResourceReader()
+
+    private val lemmaPosEnricher = new NCLemmaPosTokenEnricher(
+        reader.getPath("opennlp/en-pos-maxent.bin"),
+        reader.getPath("opennlp/en-lemmatizer.dict")
+    )
+
     /**
       *
       * @param txt
@@ -99,6 +106,7 @@ class NCSemanticEntityParserSpec:
         val req = NCTestRequest(txt)
         val toks = EN_PIPELINE.getTokenParser.tokenize(txt)
 
+        lemmaPosEnricher.enrich(req, CFG, toks)
         stopWordsEnricher.enrich(req, CFG, toks)
 
         NCTestUtils.printTokens(toks.asScala.toSeq)
@@ -127,6 +135,7 @@ class NCSemanticEntityParserSpec:
         val req = NCTestRequest(txt)
         val toks = EN_PIPELINE.getTokenParser.tokenize(txt)
 
+        lemmaPosEnricher.enrich(req, CFG, toks)
         stopWordsEnricher.enrich(req, CFG, toks)
 
         NCTestUtils.printTokens(toks.asScala.toSeq)

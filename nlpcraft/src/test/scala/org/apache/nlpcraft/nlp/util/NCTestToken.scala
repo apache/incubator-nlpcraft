@@ -48,6 +48,3 @@ case class NCTestToken(
     override def getIndex: Int = idx
     override def getStartCharIndex: Int = start
     override def getEndCharIndex: Int = end
-    override def getLemma: String = if lemma  != null then lemma else txt
-    override def getPos: String = if pos  != null then pos else "undefined"
-

@@ -19,7 +19,7 @@ package org.apache.nlpcraft.examples.lightswitch
 
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.examples.lightswitch.nlp.entity.parser.semantic.NCRuSemanticEntityParser
-import org.apache.nlpcraft.examples.lightswitch.nlp.token.enricher.NCRuStopWordsTokenEnricher
+import org.apache.nlpcraft.examples.lightswitch.nlp.token.enricher.{NCRuLemmaPosTokenEnricher, NCRuStopWordsTokenEnricher}
 import org.apache.nlpcraft.examples.lightswitch.nlp.token.parser.NCRuTokenParser
 import org.apache.nlpcraft.nlp.entity.parser.nlp.NCNLPEntityParser
 import org.apache.nlpcraft.nlp.entity.parser.semantic.NCSemanticEntityParser
@@ -47,7 +47,10 @@ class LightSwitchRuModel extends NCModelAdapter(
     new NCModelConfig("nlpcraft.lightswitch.ru.ex", "LightSwitch Example Model RU", "1.0"),
     new NCModelPipeline:
         override val getTokenParser: NCTokenParser = new NCRuTokenParser()
-        override val getTokenEnrichers: util.List[NCTokenEnricher] = Seq(new NCRuStopWordsTokenEnricher()).asJava
+        override val getTokenEnrichers: util.List[NCTokenEnricher] = Seq(
+            new NCRuLemmaPosTokenEnricher(),
+            new NCRuStopWordsTokenEnricher()
+        ).asJava
         override val getEntityParsers: util.List[NCEntityParser] = Seq(new NCRuSemanticEntityParser("lightswitch_model_ru.yaml")).asJava
 ):
     /**

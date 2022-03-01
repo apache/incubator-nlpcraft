@@ -32,14 +32,24 @@ import scala.jdk.CollectionConverters.*
   *
   */
 class NCOpenNLPTokenParserSpec:
-    private val enricher = new NCStopWordsTokenEnricher(null, null)
+    private val reader = new NCResourceReader()
+
+    private val lemmaPosEnricher = new NCLemmaPosTokenEnricher(
+        reader.getPath("opennlp/en-pos-maxent.bin"),
+        reader.getPath("opennlp/en-lemmatizer.dict")
+    )
+
+    private val stopEnricher = new NCStopWordsTokenEnricher(null, null)
 
     private def isStopWord(t: NCToken): Boolean = t.get[Boolean]("stopword")
 
     private def test(txt: String, validate: Seq[NCToken] => _): Unit =
         val toksList = EN_PIPELINE.getTokenParser.tokenize(txt)
 
-        enricher.enrich(NCTestRequest(txt), CFG, toksList)
+        val req = NCTestRequest(txt)
+
+        lemmaPosEnricher.enrich(req, CFG, toksList)
+        stopEnricher.enrich(req, CFG, toksList)
 
         val toks = toksList.asScala.toSeq
         assert(toks.nonEmpty)
@@ -97,44 +107,3 @@ class NCOpenNLPTokenParserSpec:
             "< < [ a ] > >",
             toks => require(!isStopWord(toks.find(_.getText == "a").get))
         )
-
-    @Test
-    def testNullable(): Unit =
-        val reader = new NCResourceReader
-        val txt = "parents had files"
-
-        // 1. Nullable.
-        var parser = new NCOpenNLPTokenParser(
-            reader.getPath("opennlp/en-token.bin"),
-            null,
-            null
-        )
-
-        var tbl = NCAsciiTable("Text", "Lemma", "POS")
-
-        for (t <- parser.tokenize(txt).asScala)
-            tbl += (t.getText, t.getLemma, t.getPos)
-
-            require(t.getPos.isEmpty)
-            require(t.getText == t.getLemma)
-
-        println(tbl.toString)
-
-        // 2. Not nullable.
-        parser = new NCOpenNLPTokenParser(
-            reader.getPath("opennlp/en-token.bin"),
-            reader.getPath("opennlp/en-pos-maxent.bin"),
-            reader.getPath("opennlp/en-lemmatizer.dict")
-        )
-
-        tbl = NCAsciiTable("Text", "Lemma", "POS")
-
-        for (t <- parser.tokenize(txt).asScala)
-            tbl += (t.getText, t.getLemma, t.getPos)
-
-            require(t.getPos.nonEmpty)
-            require(t.getText != t.getLemma)
-
-        println(tbl.toString)
-
-

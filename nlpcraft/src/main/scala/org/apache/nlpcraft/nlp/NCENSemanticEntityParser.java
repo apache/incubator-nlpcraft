@@ -39,11 +39,7 @@ public class NCENSemanticEntityParser extends NCSemanticEntityParser {
     }
 
     private static NCOpenNLPTokenParser mkParser() {
-        return new NCOpenNLPTokenParser(
-            reader.getPath("opennlp/en-token.bin"),
-            reader.getPath("opennlp/en-pos-maxent.bin"),
-            reader.getPath("opennlp/en-lemmatizer.dict")
-        );
+        return new NCOpenNLPTokenParser(reader.getPath("opennlp/en-token.bin"));
     }
 
     /**

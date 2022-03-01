@@ -98,8 +98,10 @@ object NCStopWordsTokenEnricherImpl:
         "percent"
     )
 
-    private def isQuote(t: NCToken): Boolean = Q_POS.contains(t.getPos)
-    private def toLemmaKey(toks: Seq[NCToken]): String = toks.map(_.getLemma).mkString(" ")
+    private def getPos(t: NCToken): String = t.getOpt("pos").orElseThrow(() => throw new NCException(s"POS not found in token: ${t.keysSet()}"))
+    private def getLemma(t: NCToken): String = t.getOpt("lemma").orElseThrow(() => throw new NCException(s"Lemma not found in token: ${t.keysSet()}"))
+    private def isQuote(t: NCToken): Boolean = Q_POS.contains(getPos(t))
+    private def toLemmaKey(toks: Seq[NCToken]): String = toks.map(getLemma).mkString(" ")
     private def toValueKey(toks: Seq[NCToken]): String = toks.map(_.getText.toLowerCase).mkString(" ")
     private def toOriginalKey(toks: Seq[NCToken]): String = toks.map(_.getText).mkString(" ")
     private def isStopWord(t: NCToken): Boolean = t.getOpt[Boolean]("stopword").orElse(false)
@@ -263,7 +265,7 @@ class NCStopWordsTokenEnricherImpl(addStopsSet: JSet[String], exclStopsSet: JSet
         def matches(toks: Seq[NCToken]): Boolean =
             val posOpt = toks.size match
                 case 0 => throw new AssertionError(s"Unexpected empty tokens.")
-                case 1 => Option(toks.head.getPos)
+                case 1 => Option(getPos(toks.head))
                 case _ => None
 
             // Hash access.
@@ -462,7 +464,7 @@ class NCStopWordsTokenEnricherImpl(addStopsSet: JSet[String], exclStopsSet: JSet
         var stop = true
 
         for ((tok, idx) <- ns.zipWithIndex if idx != lastIdx && !isStopWord(tok) && !isException(Seq(tok)) &&
-            stopPoses.contains(tok.getPos) && isStopWord(ns(idx + 1)))
+            stopPoses.contains(getPos(tok)) && isStopWord(ns(idx + 1)))
             stops += tok
             stop = false
 
@@ -496,7 +498,7 @@ class NCStopWordsTokenEnricherImpl(addStopsSet: JSet[String], exclStopsSet: JSet
             var stop = true
 
             for ((tok, idx) <- ns.zipWithIndex if idx != max && !isStopWord(tok) && !exclStems.contains(stem(tok.getText)) &&
-                POSES.contains(tok.getPos) && isStopWord(ns(idx + 1)))
+                POSES.contains(getPos(tok)) && isStopWord(ns(idx + 1)))
                 stops += tok
                 stop = false
 
@@ -518,8 +520,8 @@ class NCStopWordsTokenEnricherImpl(addStopsSet: JSet[String], exclStopsSet: JSet
 
         for (tok <- toks)
             val idx = tok.getIndex
-            val pos = tok.getPos
-            val lemma = tok.getLemma
+            val pos = getPos(tok)
+            val lemma = getLemma(tok)
             val st = stem(tok.getText)
 
             def isFirst: Boolean = idx == 0
@@ -528,7 +530,7 @@ class NCStopWordsTokenEnricherImpl(addStopsSet: JSet[String], exclStopsSet: JSet
             def prev(): NCToken = toks(idx - 1)
             def isCommonVerbs(firstVerb: String, secondVerb: String): Boolean =
                 isVerb(pos) && lemma == secondVerb ||
-                    (isVerb(pos) && lemma == firstVerb && !isLast && isVerb(next().getPos) && next().getLemma == secondVerb)
+                    (isVerb(pos) && lemma == firstVerb && !isLast && isVerb(getPos(next())) && getLemma(next()) == secondVerb)
 
             // +---------------------------------+
             // | Pass #1.                        |
@@ -539,9 +541,9 @@ class NCStopWordsTokenEnricherImpl(addStopsSet: JSet[String], exclStopsSet: JSet
                     // 1. Word from 'percentage' list.
                     percents.contains(st) &&
                         // 2. Number before.
-                        !isFirst && prev().getPos == "CD" &&
+                        !isFirst && getPos(prev()) == "CD" &&
                         // 3. It's last word or any words after except numbers.
-                        (isLast || next().getPos != "CD")
+                        (isLast || getPos(next()) != "CD")
                     ) ||
                 // be, was, is etc. or has been etc.
                 isCommonVerbs("have", "be") ||

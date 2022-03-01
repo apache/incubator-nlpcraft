@@ -38,8 +38,6 @@ class NCNLPEntityParserImpl extends NCEntityParser:
     override def parse(req: NCRequest, cfg: NCModelConfig, toks: JList[NCToken]): JList[NCEntity] =
         toks.stream().map(t =>
             new NCPropertyMapAdapter with NCEntity:
-                put(s"$id:lemma", t.getLemma)
-                put(s"$id:pos", t.getPos)
                 put(s"$id:text", t.getText)
                 put(s"$id:index", t.getIndex)
                 put(s"$id:startCharIndex", t.getStartCharIndex)

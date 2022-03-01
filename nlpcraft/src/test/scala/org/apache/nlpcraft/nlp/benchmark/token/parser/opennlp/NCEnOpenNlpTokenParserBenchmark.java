@@ -61,11 +61,7 @@ public class NCEnOpenNlpTokenParserBenchmark {
     public void setUp() {
         NCResourceReader reader = new NCResourceReader();
 
-        parser = new NCOpenNLPTokenParser(
-            reader.getPath("opennlp/en-token.bin"),
-            reader.getPath("opennlp/en-pos-maxent.bin"),
-            reader.getPath("opennlp/en-lemmatizer.dict")
-        );
+        parser = new NCOpenNLPTokenParser(reader.getPath("opennlp/en-token.bin"));
     }
 
     @Benchmark

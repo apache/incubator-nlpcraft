@@ -18,6 +18,7 @@
 package org.apache.nlpcraft.nlp.token.enricher.en
 
 import org.apache.nlpcraft.*
+import org.apache.nlpcraft.internal.util.NCResourceReader
 import org.apache.nlpcraft.nlp.token.enricher.en.*
 import org.apache.nlpcraft.nlp.util.*
 import org.apache.nlpcraft.nlp.util.opennlp.*
@@ -30,20 +31,30 @@ import scala.jdk.CollectionConverters.*
   *
   */
 class NCStopWordsEnricherSpec:
+    private val reader = new NCResourceReader()
+
+    private val lemmaPosEnricher = new NCLemmaPosTokenEnricher(
+        reader.getPath("opennlp/en-pos-maxent.bin"),
+        reader.getPath("opennlp/en-lemmatizer.dict")
+    )
+
     /**
       *
-      * @param enricher
+      * @param stopEnricher
       * @param txt
       * @param boolVals
       */
-    private def test(enricher: NCStopWordsTokenEnricher, txt: String, boolVals: Boolean*): Unit =
+    private def test(stopEnricher: NCStopWordsTokenEnricher, txt: String, boolVals: Boolean*): Unit =
         val toksList = EN_PIPELINE.getTokenParser.tokenize(txt)
         require(toksList.size == boolVals.size)
         val toks = toksList.asScala.toSeq
 
         toks.foreach(tok => require(tok.getOpt[Boolean]("stopword").isEmpty))
 
-        enricher.enrich(NCTestRequest(txt), CFG, toksList)
+        val req = NCTestRequest(txt)
+
+        lemmaPosEnricher.enrich(req, CFG, toksList)
+        stopEnricher.enrich(req, CFG, toksList)
 
         NCTestUtils.printTokens(toks)
         toks.zip(boolVals).foreach { (tok, boolVal) => require(tok.get[Boolean]("stopword") == boolVal) }

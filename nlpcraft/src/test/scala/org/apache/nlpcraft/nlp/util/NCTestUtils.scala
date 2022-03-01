@@ -41,14 +41,12 @@ object NCTestUtils:
       * @param toks
       */
     def printTokens(toks: Seq[NCToken]): Unit =
-        val tbl = NCAsciiTable("Text", "Index", "POS", "Lemma", "Stopword", "Start", "End", "Properties")
+        val tbl = NCAsciiTable("Text", "Index", "Stopword", "Start", "End", "Properties")
 
         for (t <- toks)
             tbl += (
                 t.getText,
                 t.getIndex,
-                t.getPos,
-                t.getLemma,
                 t.getOpt[Boolean]("stopword").toScala match
                     case Some(b) => b.toString
                     case None => "undef."

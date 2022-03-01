@@ -22,11 +22,7 @@ import org.apache.nlpcraft.NCModelPipeline;
 import org.apache.nlpcraft.NCTokenEnricher;
 import org.apache.nlpcraft.NCTokenParser;
 import org.apache.nlpcraft.internal.util.NCResourceReader;
-import org.apache.nlpcraft.nlp.token.enricher.en.NCBracketsTokenEnricher;
-import org.apache.nlpcraft.nlp.token.enricher.en.NCDictionaryTokenEnricher;
-import org.apache.nlpcraft.nlp.token.enricher.en.NCQuotesTokenEnricher;
-import org.apache.nlpcraft.nlp.token.enricher.en.NCStopWordsTokenEnricher;
-import org.apache.nlpcraft.nlp.token.enricher.en.NСSwearWordsTokenEnricher;
+import org.apache.nlpcraft.nlp.token.enricher.en.*;
 import org.apache.nlpcraft.nlp.token.parser.opennlp.NCOpenNLPTokenParser;
 
 import java.util.Arrays;
@@ -40,13 +36,13 @@ import java.util.List;
 public class NCENDefaultPipeline implements NCModelPipeline {
     private static final NCResourceReader reader = new NCResourceReader();
 
-    private final NCTokenParser tokParser = new NCOpenNLPTokenParser(
-        reader.getPath("opennlp/en-token.bin"),
-        reader.getPath("opennlp/en-pos-maxent.bin"),
-        reader.getPath("opennlp/en-lemmatizer.dict")
-    );
+    private final NCTokenParser tokParser = new NCOpenNLPTokenParser(reader.getPath("opennlp/en-token.bin"));
 
     private List<NCTokenEnricher> tokenEnrichers = Arrays.asList(
+        new NCLemmaPosTokenEnricher(
+            reader.getPath("opennlp/en-pos-maxent.bin"),
+            reader.getPath("opennlp/en-lemmatizer.dict")
+        ),
         new NCStopWordsTokenEnricher(),
         new NСSwearWordsTokenEnricher(reader.getPath("badfilter/swear_words.txt")),
         new NCQuotesTokenEnricher(),

@@ -44,16 +44,4 @@ public interface NCToken extends NCPropertyMap {
      * @return
      */
     int getEndCharIndex();
-
-    /**
-     *
-     * @return
-     */
-    String getLemma();
-
-    /**
-     *
-     * @return
-     */
-    String getPos();
 }

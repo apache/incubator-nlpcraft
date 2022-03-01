@@ -29,10 +29,13 @@ import scala.jdk.CollectionConverters.*
 class NCRuStopWordsTokenEnricher extends NCTokenEnricher:
     private final val stops = RussianAnalyzer.getDefaultStopSet
 
+    private def getPos(t: NCToken): String = t.getOpt("pos").orElseThrow(() => throw new NCException("POS not found in token."))
+    private def getLemma(t: NCToken): String = t.getOpt("lemma").orElseThrow(() => throw new NCException("Lemma not found in token."))
+
     override def enrich(req: NCRequest, cfg: NCModelConfig, toks: util.List[NCToken]): Unit =
         for (t <- toks.asScala)
-            val lemma = t.getLemma
-            lazy val pos = t.getPos
+            val lemma = getLemma(t)
+            lazy val pos = getPos(t)
 
             t.put(
                 "stopword",

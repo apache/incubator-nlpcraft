@@ -15,29 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.nlp.util.opennlp;
+package org.apache.nlpcraft.nlp.token.enricher.stanford.impl
 
-import org.apache.nlpcraft.NCModelConfig;
-import org.apache.nlpcraft.internal.util.NCResourceReader;
-import org.apache.nlpcraft.nlp.token.parser.opennlp.NCOpenNLPTokenParser;
-import org.apache.nlpcraft.nlp.util.NCTestPipeline;
+import org.apache.nlpcraft.*
 
-/**
- *
- */
-public class NCTestConfigJava {
-    /**
-     *
-     */
-    public static final NCModelConfig CFG = new NCModelConfig("testId", "test", "1.0", "Test description", "Test origin");
+import java.util
 
-    /** */
-    private static NCResourceReader reader = new NCResourceReader();
+class NCStanfordLemmaPosTokenEnricherImpl extends NCTokenEnricher:
+    // TODO:
 
-    /**
-     *
-     */
-    public static final NCTestPipeline EN_PIPELINE = new NCTestPipeline(
-        new NCOpenNLPTokenParser(reader.getPath("opennlp/en-token.bin"))
-    );
-}
+    override def enrich(req: NCRequest, cfg: NCModelConfig, toks: util.List[NCToken]): Unit = ???

@@ -28,7 +28,8 @@ import scala.jdk.CollectionConverters.*
   */
 class NCQuotesTokenEnricherImpl extends NCTokenEnricher with LazyLogging:
     private final val Q_POS: Set[String] = Set("``", "''")
-    private def isQuote(t: NCToken): Boolean = Q_POS.contains(t.getPos)
+    private def getPos(t: NCToken): String = t.getOpt("pos").orElseThrow(() => throw new NCException("POS not found in token."))
+    private def isQuote(t: NCToken): Boolean = Q_POS.contains(getPos(t))
 
     override def enrich(req: NCRequest, cfg: NCModelConfig, toksList: JList[NCToken]): Unit =
         val toks = toksList.asScala

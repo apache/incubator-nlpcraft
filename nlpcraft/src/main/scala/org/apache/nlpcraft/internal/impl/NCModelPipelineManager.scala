@@ -128,13 +128,11 @@ class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCModelPipeline) exte
                 check()
                 e.enrich(req, cfg, toks)
 
-        val tbl = NCAsciiTable("Text", "Lemma", "POS", "Start index", "End index", "Properties")
+        val tbl = NCAsciiTable("Text", "Start index", "End index", "Properties")
 
         for (t <- toks.asScala)
             tbl += (
                 t.getText,
-                t.getLemma,
-                t.getPos,
                 t.getStartCharIndex,
                 t.getEndCharIndex,
                 mkProps(t)
