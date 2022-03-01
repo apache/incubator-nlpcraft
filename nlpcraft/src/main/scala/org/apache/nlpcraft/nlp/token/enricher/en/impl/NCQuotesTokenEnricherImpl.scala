@@ -35,13 +35,14 @@ class NCQuotesTokenEnricherImpl extends NCTokenEnricher with LazyLogging:
         val quotes = toks.filter(isQuote)
 
         // Start and end quote can be different ("a` processed as valid)
-        if quotes.nonEmpty && quotes.size % 2 == 0 then
-            val m = toks.zipWithIndex.toMap
-            val pairs = quotes.zipWithIndex.drop(1).flatMap { (t, idx) =>
-                Option.when(idx % 2 != 0)(m(t) -> m(quotes(idx - 1)))
-            }
-            toks.zipWithIndex.foreach { (tok, idx) =>
-                tok.put("quoted", pairs.exists { (from, to) => from > idx && to < idx })
-            }
-        else
-            logger.warn(s"Detected invalid quotes in: ${req.getText}")
+        if quotes.nonEmpty then
+            if quotes.size % 2 == 0 then
+                val m = toks.zipWithIndex.toMap
+                val pairs = quotes.zipWithIndex.drop(1).flatMap { (t, idx) =>
+                    Option.when(idx % 2 != 0)(m(t) -> m(quotes(idx - 1)))
+                }
+                toks.zipWithIndex.foreach { (tok, idx) =>
+                    tok.put("quoted", pairs.exists { (from, to) => from > idx && to < idx })
+                }
+            else
+                logger.warn(s"Detected invalid quotes in: ${req.getText}")
