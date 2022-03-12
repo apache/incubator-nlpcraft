@@ -19,12 +19,12 @@ package org.apache.nlpcraft.internal.impl
 
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.internal.ascii.NCAsciiTable
-import org.apache.nlpcraft.{NCModelConfig, NCModelPipeline, *}
 import org.apache.nlpcraft.internal.conversation.*
 import org.apache.nlpcraft.internal.dialogflow.NCDialogFlowManager
 import org.apache.nlpcraft.internal.impl.*
 import org.apache.nlpcraft.internal.intent.matcher.*
 import org.apache.nlpcraft.internal.util.*
+import org.apache.nlpcraft.*
 
 import java.util
 import java.util.concurrent.*

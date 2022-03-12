@@ -18,9 +18,9 @@
 package org.apache.nlpcraft.nlp.entity.parser.semantic
 
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.internal.util.{NCResourceReader, NCUtils}
-import org.apache.nlpcraft.nlp.entity.parser.opennlp.NCOpenNLPEntityParser
-import org.apache.nlpcraft.nlp.entity.parser.semantic.impl.en.NCEnSemanticPorterStemmer
+import org.apache.nlpcraft.internal.util.*
+import org.apache.nlpcraft.nlp.entity.parser.*
+import org.apache.nlpcraft.nlp.token.enricher.*
 import org.apache.nlpcraft.nlp.token.enricher.en.*
 import org.apache.nlpcraft.nlp.util.*
 import org.apache.nlpcraft.nlp.util.opennlp.*
@@ -64,9 +64,7 @@ object NCSemanticTestElement:
   */
 class NCSemanticEntityParserSpec:
     private val parser =
-        new NCSemanticEntityParser(
-            new NCEnSemanticPorterStemmer,
-            EN_PIPELINE.getTokenParser,
+        new NCEnSemanticEntityParser(
             Seq(
                 // Standard.
                 NCSemanticTestElement("t1", synonyms = Set("t1")),
@@ -86,14 +84,9 @@ class NCSemanticEntityParserSpec:
             ).asJava
         )
 
-    private val stopWordsEnricher = new NCStopWordsTokenEnricher()
+    private val stopWordsEnricher = new NCENStopWordsTokenEnricher()
 
-    private val reader = new NCResourceReader()
-
-    private val lemmaPosEnricher = new NCLemmaPosTokenEnricher(
-        reader.getPath("opennlp/en-pos-maxent.bin"),
-        reader.getPath("opennlp/en-lemmatizer.dict")
-    )
+    private val lemmaPosEnricher = new NCENOpenNlpLemmaPosTokenEnricher()
 
     /**
       *

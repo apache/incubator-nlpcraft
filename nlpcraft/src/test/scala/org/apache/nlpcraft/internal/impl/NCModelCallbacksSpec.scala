@@ -19,8 +19,8 @@ package org.apache.nlpcraft.internal.impl
 
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.NCResultType.*
+import org.apache.nlpcraft.nlp.entity.parser.{NCEnSemanticEntityParser, NCSemanticEntityParser}
 import org.apache.nlpcraft.nlp.entity.parser.semantic.*
-import org.apache.nlpcraft.nlp.entity.parser.semantic.impl.en.NCEnSemanticPorterStemmer
 import org.apache.nlpcraft.nlp.util.NCTestModelAdapter
 import org.apache.nlpcraft.nlp.util.opennlp.*
 import org.junit.jupiter.api.*
@@ -64,9 +64,7 @@ class NCModelCallbacksSpec:
             override def onError(ctx: NCContext, e: Throwable): NCResult = getOrElse(ErrorNotNull, RESULT_ERROR, null)
 
     MDL.getPipeline.getEntityParsers.add(
-        new NCSemanticEntityParser(
-            new NCEnSemanticPorterStemmer, EN_PIPELINE.getTokenParser, Seq(NCSemanticTestElement("x")).asJava
-        )
+        new NCEnSemanticEntityParser(Seq(NCSemanticTestElement("x")).asJava)
     )
 
     /**

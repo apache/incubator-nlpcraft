@@ -18,6 +18,7 @@
 package org.apache.nlpcraft.nlp.token.enricher.en
 
 import org.apache.nlpcraft.*
+import org.apache.nlpcraft.nlp.token.enricher.*
 import org.apache.nlpcraft.nlp.token.enricher.en.*
 import org.apache.nlpcraft.nlp.util.*
 import org.apache.nlpcraft.nlp.util.opennlp.*
@@ -29,7 +30,7 @@ import scala.jdk.CollectionConverters.*
   *
   */
 class NCBracketsTokenEnricherSpec:
-    private val enricher = new NCBracketsTokenEnricher()
+    private val enricher = new NCENBracketsTokenEnricher()
 
     /**
       *

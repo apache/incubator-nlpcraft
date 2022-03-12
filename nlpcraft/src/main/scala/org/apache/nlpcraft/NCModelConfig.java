@@ -18,7 +18,7 @@
 package org.apache.nlpcraft;
 
 import java.time.Duration;
-import java.util.*;
+import java.util.Objects;
 
 /**
  *

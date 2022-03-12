@@ -18,14 +18,12 @@
 package org.apache.nlpcraft.examples.lightswitch
 
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.examples.lightswitch.nlp.entity.parser.semantic.NCRuSemanticEntityParser
+import org.apache.nlpcraft.examples.lightswitch.nlp.entity.parser.NCRuSemanticEntityParser
 import org.apache.nlpcraft.examples.lightswitch.nlp.token.enricher.{NCRuLemmaPosTokenEnricher, NCRuStopWordsTokenEnricher}
 import org.apache.nlpcraft.examples.lightswitch.nlp.token.parser.NCRuTokenParser
-import org.apache.nlpcraft.nlp.entity.parser.nlp.NCNLPEntityParser
-import org.apache.nlpcraft.nlp.entity.parser.semantic.NCSemanticEntityParser
-import org.apache.nlpcraft.nlp.entity.parser.semantic.impl.en.NCEnSemanticPorterStemmer
-import org.apache.nlpcraft.nlp.token.enricher.en.NCStopWordsTokenEnricher
-import org.apache.nlpcraft.nlp.token.parser.opennlp.NCOpenNLPTokenParser
+import org.apache.nlpcraft.nlp.entity.parser.{NCNLPEntityParser, NCSemanticEntityParser}
+import org.apache.nlpcraft.nlp.token.enricher.NCENStopWordsTokenEnricher
+import org.apache.nlpcraft.nlp.token.parser.NCOpenNLPTokenParser
 
 import java.util
 import scala.jdk.CollectionConverters.*
@@ -44,13 +42,12 @@ import scala.jdk.CollectionConverters.*
   */
 class LightSwitchRuModel extends NCModelAdapter(
     new NCModelConfig("nlpcraft.lightswitch.ru.ex", "LightSwitch Example Model RU", "1.0"),
-    new NCModelPipeline:
-        override val getTokenParser: NCTokenParser = new NCRuTokenParser()
-        override val getTokenEnrichers: util.List[NCTokenEnricher] = Seq(
-            new NCRuLemmaPosTokenEnricher(),
-            new NCRuStopWordsTokenEnricher()
-        ).asJava
-        override val getEntityParsers: util.List[NCEntityParser] = Seq(new NCRuSemanticEntityParser("lightswitch_model_ru.yaml")).asJava
+    new NCModelPipelineBuilder().
+        withTokenParser(new NCRuTokenParser()).
+        withTokenEnricher(new NCRuLemmaPosTokenEnricher()).
+        withTokenEnricher(new NCRuStopWordsTokenEnricher()).
+        withEntityParser(new NCRuSemanticEntityParser("lightswitch_model_ru.yaml")).
+        build()
 ):
     /**
       * Intent and its on-match callback.
@@ -66,13 +63,14 @@ class LightSwitchRuModel extends NCModelAdapter(
         "Включи свет в детской",
         "Включай повсюду освещение",
         "Включайте лампы в детской комнате",
-        "Свет на кухне пожалуйста приглуши",
-        "Нельзя ли повсюду выключить свет",
+        "Свет на кухне, пожалуйста, приглуши",
+        "Нельзя ли повсюду выключить свет?",
         "Пожалуйста без света",
-        "Отключи электричесвто в ванной",
+        "Отключи электричество в ванной",
         "Выключи, пожалуйста, тут всюду свет",
         "Выключай все!",
-        "Свет пожалуйсте везде включи"
+        "Свет пожалуйста везде включи",
+        "Зажги лампу на кухне"
     ))
     def onMatch(
         @NCIntentTerm("act") actEnt: NCEntity,

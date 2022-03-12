@@ -31,8 +31,7 @@ import java.util
 import java.util.concurrent.*
 import java.util.concurrent.atomic.*
 import java.util.function.*
-import java.util.{Collections as JColls, List as JList, Map as JMap}
-import java.util.*
+import java.util.{Collections as JColls, List as JList, Map as JMap, *}
 import scala.collection.*
 import scala.concurrent.ExecutionContext
 import scala.jdk.CollectionConverters.*
@@ -69,8 +68,6 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
         Objects.requireNonNull(cfg.getVersion, "Model version cannot be null.")
         Objects.requireNonNull(pipeline.getTokenParser, "Token parser cannot be null.")
         Objects.requireNonNull(pipeline.getEntityParsers, "List of entity parsers in the pipeline cannot be null.")
-
-        if pipeline.getEntityParsers.isEmpty then E(s"At least one entity parser must be specified in the pipeline.")
 
     /**
       *

@@ -389,6 +389,7 @@
             <id>examples</id>
             <modules>
                 <module>nlpcraft-examples/time</module>
+                <module>nlpcraft-examples/echo</module>
                 <module>nlpcraft-examples/lightswitch</module>
                 <module>nlpcraft-examples/lightswitch-ru</module>
             </modules>

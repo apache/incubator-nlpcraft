@@ -20,6 +20,7 @@ package org.apache.nlpcraft.nlp.token.enricher.en
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.util.NCResourceReader
 import org.apache.nlpcraft.nlp.token.enricher.en.*
+import org.apache.nlpcraft.nlp.token.enricher.*
 import org.apache.nlpcraft.nlp.util.*
 import org.apache.nlpcraft.nlp.util.opennlp.*
 import org.junit.jupiter.api.*
@@ -31,12 +32,7 @@ import scala.jdk.CollectionConverters.*
   *
   */
 class NCStopWordsEnricherSpec:
-    private val reader = new NCResourceReader()
-
-    private val lemmaPosEnricher = new NCLemmaPosTokenEnricher(
-        reader.getPath("opennlp/en-pos-maxent.bin"),
-        reader.getPath("opennlp/en-lemmatizer.dict")
-    )
+    private val lemmaPosEnricher = new NCENOpenNlpLemmaPosTokenEnricher
 
     /**
       *
@@ -44,7 +40,7 @@ class NCStopWordsEnricherSpec:
       * @param txt
       * @param boolVals
       */
-    private def test(stopEnricher: NCStopWordsTokenEnricher, txt: String, boolVals: Boolean*): Unit =
+    private def test(stopEnricher: NCENStopWordsTokenEnricher, txt: String, boolVals: Boolean*): Unit =
         val toksList = EN_PIPELINE.getTokenParser.tokenize(txt)
         require(toksList.size == boolVals.size)
         val toks = toksList.asScala.toSeq
@@ -62,13 +58,13 @@ class NCStopWordsEnricherSpec:
     @Test
     def test(): Unit =
         test(
-            new NCStopWordsTokenEnricher(),
+            new NCENStopWordsTokenEnricher(),
             "the test",
             true,
             false
         )
         test(
-            new NCStopWordsTokenEnricher(Set("test").asJava, Set("the").asJava),
+            new NCENStopWordsTokenEnricher(Set("test").asJava, Set("the").asJava),
             "the test",
             false,
             true

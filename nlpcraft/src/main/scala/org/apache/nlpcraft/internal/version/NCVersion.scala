@@ -17,10 +17,11 @@
 
 package org.apache.nlpcraft.internal.version
 
-import java.time.*
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.internal.*
 import org.apache.nlpcraft.internal.util.NCUtils
+
+import java.time.*
 
 /**
   * Release version holder. Note that this is manually changing property. For every official

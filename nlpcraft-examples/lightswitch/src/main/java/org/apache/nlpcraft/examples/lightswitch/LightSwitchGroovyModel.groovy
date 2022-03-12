@@ -18,8 +18,7 @@
 package org.apache.nlpcraft.examples.lightswitch
 
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.nlp.NCENDefaultPipeline
-import org.apache.nlpcraft.nlp.NCENSemanticEntityParser
+import org.apache.nlpcraft.nlp.entity.parser.NCEnSemanticEntityParser
 
 /**
  * This example provides very simple implementation for NLI-powered light switch.
@@ -37,7 +36,7 @@ class LightSwitchGroovyModel extends NCModelAdapter {
     LightSwitchGroovyModel() {
         super(
             new NCModelConfig("nlpcraft.lightswitch.java.ex", "LightSwitch Example Model", "1.0"),
-            new NCENDefaultPipeline(new NCENSemanticEntityParser("lightswitch_model.yaml"))
+            new NCModelPipelineBuilder().withLanguage("EN").withEntityParser(new NCEnSemanticEntityParser("lightswitch_model.yaml")).build()
         )
     }
 

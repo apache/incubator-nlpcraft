@@ -28,7 +28,7 @@ import org.apache.nlpcraft.NCIntentSample;
 import org.apache.nlpcraft.NCIntentTerm;
 import org.apache.nlpcraft.NCModelAdapter;
 import org.apache.nlpcraft.NCModelConfig;
-import org.apache.nlpcraft.NCModelPipeline;
+import org.apache.nlpcraft.NCModelPipelineBuilder;
 import org.apache.nlpcraft.NCRejection;
 import org.apache.nlpcraft.NCResult;
 import org.apache.nlpcraft.NCResultType;
@@ -37,10 +37,7 @@ import org.apache.nlpcraft.examples.time.utils.cities.City;
 import org.apache.nlpcraft.examples.time.utils.cities.CityData;
 import org.apache.nlpcraft.examples.time.utils.keycdn.GeoData;
 import org.apache.nlpcraft.examples.time.utils.keycdn.GeoManager;
-import org.apache.nlpcraft.internal.util.NCResourceReader;
-import org.apache.nlpcraft.nlp.NCENDefaultPipeline;
-import org.apache.nlpcraft.nlp.NCENSemanticEntityParser;
-import org.apache.nlpcraft.nlp.entity.parser.opennlp.NCOpenNLPEntityParser;
+import org.apache.nlpcraft.nlp.entity.parser.NCEnSemanticEntityParser;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -79,10 +76,7 @@ public class TimeModel extends NCModelAdapter {
     public TimeModel() {
         super(
             new NCModelConfig("nlpcraft.time.ex", "Time Example Model", "1.0"),
-            new NCENDefaultPipeline(
-                new NCENSemanticEntityParser("time_model.yaml"),
-                new NCOpenNLPEntityParser(new NCResourceReader().getPath("opennlp/en-ner-location.bin"))
-            )
+            new NCModelPipelineBuilder().withLanguage("EN").withEntityParser(new NCEnSemanticEntityParser("time_model.yaml")).build()
         );
     }
 

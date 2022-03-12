@@ -17,13 +17,13 @@
 
 package org.apache.nlpcraft.internal.ascii
 
-import java.io.{IOException, PrintStream}
-import java.util.List as JList
 import com.typesafe.scalalogging.Logger
 import org.apache.nlpcraft.*
-import NCAsciiTable.*
+import org.apache.nlpcraft.internal.ascii.NCAsciiTable.*
 import org.apache.nlpcraft.internal.util.NCUtils
 
+import java.io.*
+import java.util.List as JList
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.CollectionHasAsScala
 import scala.util.Using

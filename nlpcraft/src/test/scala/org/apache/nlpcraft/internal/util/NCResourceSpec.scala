@@ -25,18 +25,16 @@ import org.junit.jupiter.api.Test
 class NCResourceSpec:
     @Test
     def test(): Unit =
-        val res = new NCResourceReader()
-
         // Get and delete.
-        var f = res.get("opennlp/en-lemmatizer.dict")
+        var f = NCResourceReader.get("opennlp/en-lemmatizer.dict")
         require(f.delete())
         println(s"Deleted: ${f.getAbsolutePath}")
 
         // Download.
-        f = res.get("opennlp/en-lemmatizer.dict")
+        f = NCResourceReader.get("opennlp/en-lemmatizer.dict")
         // From cache.
-        f = res.get("opennlp/en-lemmatizer.dict")
+        f = NCResourceReader.get("opennlp/en-lemmatizer.dict")
         // By absolute path.
-        f = res.get(f.getAbsolutePath)
+        f = NCResourceReader.get(f.getAbsolutePath)
 
         require(f.exists())

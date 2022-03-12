@@ -19,7 +19,7 @@ package org.apache.nlpcraft.nlp.util.opennlp;
 
 import org.apache.nlpcraft.NCModelConfig;
 import org.apache.nlpcraft.internal.util.NCResourceReader;
-import org.apache.nlpcraft.nlp.token.parser.opennlp.NCOpenNLPTokenParser;
+import org.apache.nlpcraft.nlp.token.parser.NCOpenNLPTokenParser;
 import org.apache.nlpcraft.nlp.util.NCTestPipeline;
 
 /**
@@ -32,12 +32,7 @@ public class NCTestConfigJava {
     public static final NCModelConfig CFG = new NCModelConfig("testId", "test", "1.0", "Test description", "Test origin");
 
     /** */
-    private static NCResourceReader reader = new NCResourceReader();
-
-    /**
-     *
-     */
     public static final NCTestPipeline EN_PIPELINE = new NCTestPipeline(
-        new NCOpenNLPTokenParser(reader.getPath("opennlp/en-token.bin"))
+        new NCOpenNLPTokenParser(NCResourceReader.getPath("opennlp/en-token.bin"))
     );
 }

@@ -17,15 +17,14 @@
 
 package org.apache.nlpcraft.internal.conversation
 
-import java.util
-import java.util.concurrent.ConcurrentHashMap
-import java.util.function.Predicate
-
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.ascii.*
 import org.apache.nlpcraft.internal.util.*
 
+import java.util
+import java.util.concurrent.ConcurrentHashMap
+import java.util.function.Predicate
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
 

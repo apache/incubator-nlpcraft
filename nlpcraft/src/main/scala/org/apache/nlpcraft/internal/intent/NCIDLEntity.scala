@@ -18,6 +18,7 @@
 package org.apache.nlpcraft.internal.intent
 
 import org.apache.nlpcraft.*
+
 import scala.jdk.CollectionConverters.*
 
 /**

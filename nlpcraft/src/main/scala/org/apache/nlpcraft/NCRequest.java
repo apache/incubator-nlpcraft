@@ -17,7 +17,7 @@
 
 package org.apache.nlpcraft;
 
-import java.util.*;
+import java.util.Map;
 
 /**
  * Information about the user request.

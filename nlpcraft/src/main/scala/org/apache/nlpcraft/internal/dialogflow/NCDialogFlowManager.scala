@@ -20,15 +20,13 @@ package org.apache.nlpcraft.internal.dialogflow
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.ascii.NCAsciiTable
+import org.apache.nlpcraft.internal.util.NCUtils
 
 import java.text.DateFormat
+import java.time.format.DateTimeFormatter
 import java.util
 import java.util.*
 import scala.collection.*
-import com.typesafe.scalalogging.LazyLogging
-import org.apache.nlpcraft.internal.util.NCUtils
-
-import java.time.format.DateTimeFormatter
 
 /**
  * Dialog flow manager.

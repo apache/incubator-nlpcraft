@@ -19,12 +19,10 @@ package org.apache.nlpcraft.examples.lightswitch
 
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.util.NCResourceReader
-import org.apache.nlpcraft.nlp.entity.parser.nlp.NCNLPEntityParser
-import org.apache.nlpcraft.nlp.entity.parser.semantic.NCSemanticEntityParser
-import org.apache.nlpcraft.nlp.entity.parser.semantic.impl.en.NCEnSemanticPorterStemmer
-import org.apache.nlpcraft.nlp.token.enricher.en.NCStopWordsTokenEnricher
-import org.apache.nlpcraft.nlp.token.parser.opennlp.NCOpenNLPTokenParser
 import org.apache.nlpcraft.nlp.*
+import org.apache.nlpcraft.nlp.entity.parser.{NCEnSemanticEntityParser, NCNLPEntityParser, NCSemanticEntityParser}
+import org.apache.nlpcraft.nlp.token.enricher.NCENStopWordsTokenEnricher
+import org.apache.nlpcraft.nlp.token.parser.NCOpenNLPTokenParser
 
 /**
   * This example provides very simple implementation for NLI-powered light switch.
@@ -41,7 +39,7 @@ import org.apache.nlpcraft.nlp.*
 
 class LightSwitchScalaModel extends NCModelAdapter(
     new NCModelConfig("nlpcraft.lightswitch.java.ex", "LightSwitch Example Model", "1.0"),
-    new NCENDefaultPipeline(new NCENSemanticEntityParser("lightswitch_model.yaml"))
+    new NCModelPipelineBuilder().withLanguage("EN").withEntityParser(new NCEnSemanticEntityParser("lightswitch_model.yaml")).build()
 ):
     /**
       * Intent and its on-match callback.

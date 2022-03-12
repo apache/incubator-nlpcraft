@@ -19,10 +19,10 @@ package org.apache.nlpcraft.examples.lightswitch
 
 
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.nlp.NCENDefaultPipeline
-import org.apache.nlpcraft.nlp.NCENSemanticEntityParser
+import org.apache.nlpcraft.nlp.entity.parser.NCEnSemanticEntityParser
 import java.util.*
 import java.util.stream.Collectors
+
 
 /**
  * This example provides very simple implementation for NLI-powered light switch.
@@ -38,7 +38,7 @@ import java.util.stream.Collectors
  */
 class LightSwitchKotlinModel : NCModelAdapter(
     NCModelConfig("nlpcraft.lightswitch.kotlin.ex", "LightSwitch Example Model", "1.0"),
-    NCENDefaultPipeline(NCENSemanticEntityParser("lightswitch_model.yaml"))
+    NCModelPipelineBuilder().withLanguage("EN").withEntityParser(NCEnSemanticEntityParser("lightswitch_model.yaml")).build()
 ) {
     /**
      * Intent and its on-match callback.

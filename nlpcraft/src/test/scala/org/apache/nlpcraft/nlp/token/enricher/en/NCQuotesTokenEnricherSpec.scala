@@ -20,6 +20,7 @@ package org.apache.nlpcraft.nlp.token.enricher.en
 import org.apache.nlpcraft.NCToken
 import org.apache.nlpcraft.internal.util.NCResourceReader
 import org.apache.nlpcraft.nlp.token.enricher.en.*
+import org.apache.nlpcraft.nlp.token.enricher.*
 import org.apache.nlpcraft.nlp.util.*
 import org.apache.nlpcraft.nlp.util.opennlp.*
 import org.junit.jupiter.api.*
@@ -30,14 +31,8 @@ import scala.jdk.CollectionConverters.*
   *
   */
 class NCQuotesTokenEnricherSpec:
-    private val reader = new NCResourceReader()
-
-    private val lemmaPosEnricher = new NCLemmaPosTokenEnricher(
-        reader.getPath("opennlp/en-pos-maxent.bin"),
-        reader.getPath("opennlp/en-lemmatizer.dict")
-    )
-
-    private val quoteEnricher = new NCQuotesTokenEnricher
+    private val lemmaPosEnricher = new NCENOpenNlpLemmaPosTokenEnricher
+    private val quoteEnricher = new NCENQuotesTokenEnricher
 
     /**
       *

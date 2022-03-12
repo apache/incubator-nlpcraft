@@ -21,6 +21,7 @@ import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.ascii.NCAsciiTable
 import org.apache.nlpcraft.internal.util.NCResourceReader
 import org.apache.nlpcraft.nlp.token.enricher.en.*
+import org.apache.nlpcraft.nlp.token.enricher.*
 import org.apache.nlpcraft.nlp.util.*
 import org.apache.nlpcraft.nlp.util.opennlp.*
 import org.junit.jupiter.api.*
@@ -32,14 +33,8 @@ import scala.jdk.CollectionConverters.*
   *
   */
 class NCOpenNLPTokenParserSpec:
-    private val reader = new NCResourceReader()
-
-    private val lemmaPosEnricher = new NCLemmaPosTokenEnricher(
-        reader.getPath("opennlp/en-pos-maxent.bin"),
-        reader.getPath("opennlp/en-lemmatizer.dict")
-    )
-
-    private val stopEnricher = new NCStopWordsTokenEnricher(null, null)
+    private val lemmaPosEnricher = new NCENOpenNlpLemmaPosTokenEnricher
+    private val stopEnricher = new NCENStopWordsTokenEnricher(null, null)
 
     private def isStopWord(t: NCToken): Boolean = t.get[Boolean]("stopword")
 

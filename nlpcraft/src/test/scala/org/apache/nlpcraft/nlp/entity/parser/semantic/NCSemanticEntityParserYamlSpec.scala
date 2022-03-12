@@ -19,8 +19,7 @@ package org.apache.nlpcraft.nlp.entity.parser.semantic
 
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.util.NCUtils
-import org.apache.nlpcraft.nlp.entity.parser.opennlp.NCOpenNLPEntityParser
-import org.apache.nlpcraft.nlp.entity.parser.semantic.impl.en.NCEnSemanticPorterStemmer
+import org.apache.nlpcraft.nlp.entity.parser.*
 import org.apache.nlpcraft.nlp.util.*
 import org.apache.nlpcraft.nlp.util.opennlp.*
 import org.junit.jupiter.api.*
@@ -34,11 +33,7 @@ import scala.jdk.OptionConverters.RichOptional
   *
   */
 class NCSemanticEntityParserYamlSpec:
-    private val parser = new NCSemanticEntityParser(
-        new NCEnSemanticPorterStemmer,
-        EN_PIPELINE.getTokenParser,
-        "models/lightswitch_model.yaml"
-    )
+    private val parser = new NCEnSemanticEntityParser("models/lightswitch_model.yaml")
 
     /**
       * 

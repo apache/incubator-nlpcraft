@@ -402,6 +402,13 @@ object NCUtils extends LazyLogging:
 
     /**
       *
+      * @param f
+      * @return
+      */
+    def isFile(f: File): Boolean = f.exists() && f.isFile
+
+    /**
+      *
       * @param src Local filesystem path, resources file or URL.
       */
     def getStream(src: String): InputStream =

@@ -17,45 +17,32 @@
 
 package org.apache.nlpcraft;
 
-import java.util.*;
+import org.apache.nlpcraft.internal.util.NCResourceReader;
+import org.apache.nlpcraft.nlp.token.enricher.NCENBracketsTokenEnricher;
+import org.apache.nlpcraft.nlp.token.enricher.NCENDictionaryTokenEnricher;
+import org.apache.nlpcraft.nlp.token.enricher.NCENOpenNlpLemmaPosTokenEnricher;
+import org.apache.nlpcraft.nlp.token.enricher.NCENQuotesTokenEnricher;
+import org.apache.nlpcraft.nlp.token.enricher.NCENStopWordsTokenEnricher;
+import org.apache.nlpcraft.nlp.token.enricher.NСENSwearWordsTokenEnricher;
+import org.apache.nlpcraft.nlp.token.parser.NCENOpenNLPTokenParser;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  *
  */
 public class NCModelPipelineBuilder {
-    private final NCTokenParser tokParser;
+    private NCTokenParser tokParser;
     private final List<NCTokenEnricher> tokEnrichers = new ArrayList<>();
     private final List<NCEntityEnricher> entEnrichers = new ArrayList<>();
     private final List<NCEntityParser> entParsers = new ArrayList<>();
     private final List<NCTokenValidator> tokVals = new ArrayList<>();
     private final List<NCEntityValidator> entVals = new ArrayList<>();
     private Optional<NCVariantFilter> varFilter = Optional.empty();
-
-    /**
-     *
-     * @param id
-     * @param name
-     * @param version
-     */
-    public NCModelPipelineBuilder(NCTokenParser tokParser, List<NCEntityParser> entParsers) {
-        Objects.requireNonNull(tokParser, "Token parser cannot be null.");
-        Objects.requireNonNull(entParsers, "Entity parsers cannot be null.");
-        if (entParsers.isEmpty())
-            throw new IllegalArgumentException("At least one entity parser must be defined.");
-
-        this.tokParser = tokParser;
-        this.entParsers.addAll(entParsers);
-    }
-
-    /**
-     *
-     * @param tokParser
-     * @param entParsers
-     */
-    public NCModelPipelineBuilder(NCTokenParser tokParser, NCEntityParser... entParsers) {
-        this(tokParser, Arrays.asList(entParsers));
-    }
-
 
     /**
      * @param tokEnrichers
@@ -193,9 +180,48 @@ public class NCModelPipelineBuilder {
     }
 
     /**
+     *
+     * @param tokParser
+     * @return
+     */
+    public NCModelPipelineBuilder withTokenParser(NCTokenParser tokParser) {
+        Objects.requireNonNull(tokParser, "Token parser cannot be null.");
+
+        this.tokParser = tokParser;
+
+        return this;
+    }
+
+    public NCModelPipelineBuilder withLanguage(String lang) {
+        Objects.requireNonNull(lang, "Language cannot be null.");
+
+        switch (lang.toUpperCase()) {
+            case "EN":
+                tokParser = new NCENOpenNLPTokenParser();
+
+                tokEnrichers.add(new NCENOpenNlpLemmaPosTokenEnricher());
+                tokEnrichers.add(new NCENStopWordsTokenEnricher());
+                tokEnrichers.add(new NСENSwearWordsTokenEnricher(NCResourceReader.getPath("badfilter/swear_words.txt")));
+                tokEnrichers.add(new NCENQuotesTokenEnricher());
+                tokEnrichers.add(new NCENDictionaryTokenEnricher());
+                tokEnrichers.add(new NCENBracketsTokenEnricher());
+
+                this.entParsers.addAll(entParsers);
+
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported language: " + lang);
+        }
+
+        return this;
+    }
+
+    /**
      * @return
      */
     public NCModelPipeline build() {
+        Objects.requireNonNull(tokParser, "Token parser cannot be null.");
+
         return new NCModelPipeline() {
             @Override public NCTokenParser getTokenParser() {
                 return tokParser;

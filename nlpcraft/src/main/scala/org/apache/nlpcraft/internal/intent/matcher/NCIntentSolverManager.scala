@@ -625,8 +625,7 @@ class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLInten
       * @return
       */
     private def solveIteration(mdl: NCModel, ctx: NCContext): Option[IterationResult] =
-        // Should it be an assertion?
-        if intents.isEmpty then throw new NCRejection("Intent solver has no registered intents.")
+        require(intents.nonEmpty)
 
         val req = ctx.getRequest
 
@@ -694,6 +693,10 @@ class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLInten
         if res != null then
             res
         else
+            if intents.isEmpty then
+                // TODO: text.
+                throw NCRejection("Intent solver has no registered intents and model's `onContext` method returns null result.")
+
             var loopRes: IterationResult = null
 
             try

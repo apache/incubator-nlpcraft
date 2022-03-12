@@ -18,7 +18,8 @@
 package org.apache.nlpcraft.nlp.entity.parser.opennlp
 
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.internal.util.{NCResourceReader, NCUtils}
+import org.apache.nlpcraft.internal.util.*
+import org.apache.nlpcraft.nlp.entity.parser.NCOpenNLPEntityParser
 import org.apache.nlpcraft.nlp.util.*
 import org.apache.nlpcraft.nlp.util.opennlp.*
 import org.junit.jupiter.api.*
@@ -33,7 +34,6 @@ import scala.jdk.OptionConverters.RichOptional
   *
   */
 class NCOpenNLPEntityParserSpec:
-    private val reader = new NCResourceReader()
     private val parser = new NCOpenNLPEntityParser(
         Seq(
             "opennlp/en-ner-location.bin",
@@ -42,7 +42,7 @@ class NCOpenNLPEntityParserSpec:
             "opennlp/en-ner-organization.bin",
             "opennlp/en-ner-date.bin",
             "opennlp/en-ner-percentage.bin"
-        ).map(reader.getPath).asJava
+        ).map(NCResourceReader.getPath).asJava
     )
 
     /**

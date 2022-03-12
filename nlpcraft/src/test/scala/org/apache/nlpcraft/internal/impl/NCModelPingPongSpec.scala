@@ -18,13 +18,12 @@
 package org.apache.nlpcraft.internal.impl
 
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.nlp.entity.parser.semantic.*
-import org.apache.nlpcraft.nlp.entity.parser.semantic.impl.en.NCEnSemanticPorterStemmer
 import org.apache.nlpcraft.NCResultType.*
+import org.apache.nlpcraft.nlp.entity.parser.{NCEnSemanticEntityParser, NCSemanticEntityParser}
+import org.apache.nlpcraft.nlp.entity.parser.semantic.{NCSemanticTestElement as STE, *}
 import org.apache.nlpcraft.nlp.util.NCTestModelAdapter
 import org.apache.nlpcraft.nlp.util.opennlp.*
 import org.junit.jupiter.api.*
-import org.apache.nlpcraft.nlp.entity.parser.semantic.NCSemanticTestElement as STE
 
 import scala.jdk.CollectionConverters.*
 import scala.util.Using
@@ -64,11 +63,7 @@ class NCModelPingPongSpec:
                 R(ASK_RESULT, s"Some request by: ${other.mkText()}")
 
     MDL.getPipeline.getEntityParsers.add(
-        new NCSemanticEntityParser(
-            new NCEnSemanticPorterStemmer,
-            EN_PIPELINE.getTokenParser,
-            Seq(STE("command"), STE("confirm"), STE("other")).asJava
-        )
+        new NCEnSemanticEntityParser(Seq(STE("command"), STE("confirm"), STE("other")).asJava)
     )
 
     @BeforeEach

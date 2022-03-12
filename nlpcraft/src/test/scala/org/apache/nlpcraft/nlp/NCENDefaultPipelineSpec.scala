@@ -18,8 +18,7 @@
 package org.apache.nlpcraft.nlp
 
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.nlp.entity.parser.semantic.NCSemanticEntityParser
-import org.apache.nlpcraft.nlp.entity.parser.semantic.impl.en.NCEnSemanticPorterStemmer
+import org.apache.nlpcraft.nlp.entity.parser.{NCEnSemanticEntityParser, NCSemanticEntityParser}
 import org.apache.nlpcraft.nlp.util.NCTestModelAdapter
 import org.junit.jupiter.api.Test
 
@@ -53,7 +52,8 @@ class NCENDefaultPipelineSpec:
     def test(): Unit =
         val cfg = new NCModelConfig("test.id", "Test model", "1.0")
         // Default EN pipeline with default EN semantic parser.
-        val pipeline = new NCENDefaultPipeline(new NCENSemanticEntityParser("models/lightswitch_model.yaml"))
+
+        val pipeline = new NCModelPipelineBuilder().withLanguage("EN").withEntityParser(new NCEnSemanticEntityParser("models/lightswitch_model.yaml")).build()
 
         Using.resource(new NCModelClient(mkModel(cfg, pipeline))) { client =>
             println(client.ask("Please, put the light out in the upstairs bedroom.", null, "userId").getBody)
