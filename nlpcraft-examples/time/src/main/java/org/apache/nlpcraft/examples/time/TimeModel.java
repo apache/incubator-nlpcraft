@@ -99,18 +99,15 @@ public class TimeModel extends NCModelAdapter {
         m.put("lon", lon);
         m.put("localTime", ZonedDateTime.now(ZoneId.of(tmz)).format(FMT));
 
-        NCResult res = new NCResult();
-
-        res.setType(NCResultType.ASK_RESULT);
-
         try {
-            res.setBody(new ObjectMapper(new YAMLFactory()).writeValueAsString(m));
+            return new NCResult(
+                new ObjectMapper(new YAMLFactory()).writeValueAsString(m),
+                NCResultType.ASK_RESULT
+            );
         }
         catch (JsonProcessingException e) {
             throw new RuntimeException("YAML conversion error.", e);
         }
-
-        return res;
     }
 
     /**

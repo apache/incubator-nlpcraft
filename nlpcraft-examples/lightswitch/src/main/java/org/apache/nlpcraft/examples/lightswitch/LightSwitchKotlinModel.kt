@@ -84,11 +84,9 @@ class LightSwitchKotlinModel : NCModelAdapter(
         // Add HomeKit, Arduino or other integration here.
 
         // By default - just return a descriptive action string.
-        val res = NCResult()
-
-        res.setType(NCResultType.ASK_RESULT)
-        res.setBody("Lights are [" + status + "] in [" + locations.lowercase(Locale.getDefault()) + "].")
-
-        return res
+        return NCResult(
+            "Lights are [" + status + "] in [" + locations.lowercase(Locale.getDefault()) + "].",
+            NCResultType.ASK_RESULT
+        )
     }
 }

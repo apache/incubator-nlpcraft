@@ -24,6 +24,7 @@ import java.util
 import java.util.List as JList
 import scala.jdk.CollectionConverters.*
 import scala.jdk.OptionConverters.RichOptional
+import scala.util.Using
 
 /**
   *
@@ -76,3 +77,21 @@ object NCTestUtils:
             )
 
         tbl.print(s"Request: $req")
+
+    /**
+      *
+      * @param mdl
+      * @param expectedOk
+      */
+    def askSomething(mdl: NCModel, expectedOk: Boolean): Unit =
+        Using.resource(new NCModelClient(mdl)) { client =>
+            def ask(): NCResult = client.ask("test", null, "userId")
+
+            if expectedOk then
+                println(ask().getBody)
+            else
+                try
+                    ask()
+                    require(false)
+                catch case e: Exception => println(s"Expected error: ${e.getMessage}")
+        }

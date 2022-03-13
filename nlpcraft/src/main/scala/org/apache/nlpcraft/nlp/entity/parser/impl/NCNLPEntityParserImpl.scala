@@ -41,7 +41,8 @@ class NCNLPEntityParserImpl extends NCEntityParser:
                 put(s"$id:text", t.getText)
                 put(s"$id:index", t.getIndex)
                 put(s"$id:startCharIndex", t.getStartCharIndex)
-                put(s"$id:endCharIndex", t.getEndCharIndex)
+
+                t.keysSet().forEach(key => put(s"$id:$key", t.get(key)))
 
                 override val getTokens: JList[NCToken] = util.Collections.singletonList(t)
                 override val getRequestId: String = req.getRequestId

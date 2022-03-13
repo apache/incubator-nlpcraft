@@ -86,11 +86,9 @@ public class LightSwitchJavaModel extends NCModelAdapter {
         // Add HomeKit, Arduino or other integration here.
 
         // By default - just return a descriptive action string.
-        NCResult res = new NCResult();
-
-        res.setType(NCResultType.ASK_RESULT);
-        res.setBody("Lights are [" + status + "] in [" + locations.toLowerCase() + "].");
-
-        return res;
+        return new NCResult(
+            "Lights are [" + status + "] in [" + locations.toLowerCase() + "].",
+            NCResultType.ASK_RESULT
+        );
     }
 }

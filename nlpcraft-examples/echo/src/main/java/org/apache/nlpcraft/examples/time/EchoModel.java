@@ -59,11 +59,9 @@ public class EchoModel extends NCModelAdapter {
         m.put("variants", ctx.getVariants());
         m.put("tokens", ctx.getTokens());
 
-        NCResult res = new NCResult();
-
-        res.setType(NCResultType.ASK_RESULT);
-        res.setBody(new GsonBuilder().setPrettyPrinting().create().toJson(m));
-
-        return res;
+        return new NCResult(
+            new GsonBuilder().setPrettyPrinting().create().toJson(m),
+            NCResultType.ASK_RESULT
+        );
     }
 }

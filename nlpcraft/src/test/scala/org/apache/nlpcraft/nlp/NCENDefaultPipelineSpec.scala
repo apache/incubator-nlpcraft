@@ -43,10 +43,10 @@ class NCENDefaultPipelineSpec:
             ): NCResult =
                 val status = if actEnt.getId == "ls:on" then "on" else "off"
                 val locations = if locEnts.isEmpty then "entire house" else locEnts.map(_.mkText()).mkString(", ")
-                val res = new NCResult()
-                res.setType(NCResultType.ASK_RESULT)
-                res.setBody(s"Lights are [$status] in [${locations.toLowerCase}].")
-                res
+                new NCResult(
+                    s"Lights are [$status] in [${locations.toLowerCase}].",
+                    NCResultType.ASK_RESULT
+                )
 
     @Test
     def test(): Unit =

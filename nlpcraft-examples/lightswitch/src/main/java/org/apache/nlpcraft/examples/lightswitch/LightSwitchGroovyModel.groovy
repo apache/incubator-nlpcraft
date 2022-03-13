@@ -81,11 +81,9 @@ class LightSwitchGroovyModel extends NCModelAdapter {
         // Add HomeKit, Arduino or other integration here.
 
         // By default - just return a descriptive action string.
-        NCResult res = new NCResult()
-
-        res.type = NCResultType.ASK_RESULT
-        res.body = "Lights are [$status] in [${locations.toLowerCase()}]."
-
-        res
+        new NCResult(
+            "Lights are [$status] in [${locations.toLowerCase()}].",
+            NCResultType.ASK_RESULT
+        )
     }
 }

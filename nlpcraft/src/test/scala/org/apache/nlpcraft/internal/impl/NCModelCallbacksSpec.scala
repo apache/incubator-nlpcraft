@@ -42,11 +42,11 @@ class NCModelCallbacksSpec:
 
     private val states = collection.mutable.HashSet.empty[State]
 
-    private val RESULT_INTENT = mkResult("result-intent")
-    private val RESULT_CONTEXT = mkResult("result-context")
-    private val RESULT_RESULT = mkResult("result-result")
-    private val RESULT_REJECTION = mkResult("result-rejection")
-    private val RESULT_ERROR = mkResult("result-error")
+    private val RESULT_INTENT = new NCResult("result-intent", NCResultType.ASK_RESULT)
+    private val RESULT_CONTEXT = new NCResult("result-context", NCResultType.ASK_RESULT)
+    private val RESULT_RESULT = new NCResult("result-result", NCResultType.ASK_RESULT)
+    private val RESULT_REJECTION = new NCResult("result-rejection", NCResultType.ASK_RESULT)
+    private val RESULT_ERROR = new NCResult("result-error", NCResultType.ASK_RESULT)
 
     private val MDL: NCModel =
         new NCTestModelAdapter():
@@ -83,17 +83,6 @@ class NCModelCallbacksSpec:
       * @return
       */
     private def getOrElse[T](s: State, v: T, dtlt: => T): T = if has(s) then v else dtlt
-
-    /**
-      *
-      * @param txt
-      * @return
-      */
-    private def mkResult(txt: String): NCResult =
-        val res = new NCResult()
-        res.setType(NCResultType.ASK_RESULT)
-        res.setBody(txt)
-        res
 
     /**
       *
