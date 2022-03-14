@@ -32,7 +32,7 @@ import scala.jdk.CollectionConverters.*
   *
   */
 class NCStopWordsEnricherSpec:
-    private val lemmaPosEnricher = new NCENOpenNlpLemmaPosTokenEnricher
+    private val lemmaPosEnricher = new NCEnOpenNLPLemmaPosTokenEnricher
 
     /**
       *
@@ -40,7 +40,7 @@ class NCStopWordsEnricherSpec:
       * @param txt
       * @param boolVals
       */
-    private def test(stopEnricher: NCENStopWordsTokenEnricher, txt: String, boolVals: Boolean*): Unit =
+    private def test(stopEnricher: NCEnStopWordsTokenEnricher, txt: String, boolVals: Boolean*): Unit =
         val toksList = EN_PIPELINE.getTokenParser.tokenize(txt)
         require(toksList.size == boolVals.size)
         val toks = toksList.asScala.toSeq
@@ -58,13 +58,13 @@ class NCStopWordsEnricherSpec:
     @Test
     def test(): Unit =
         test(
-            new NCENStopWordsTokenEnricher(),
+            new NCEnStopWordsTokenEnricher(),
             "the test",
             true,
             false
         )
         test(
-            new NCENStopWordsTokenEnricher(Set("test").asJava, Set("the").asJava),
+            new NCEnStopWordsTokenEnricher(Set("test").asJava, Set("the").asJava),
             "the test",
             false,
             true

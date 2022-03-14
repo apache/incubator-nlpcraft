@@ -26,7 +26,7 @@ import scala.jdk.CollectionConverters.*
 /**
   *
   */
-class NCENQuotesTokenEnricherImpl extends NCTokenEnricher with LazyLogging:
+class NCEnQuotesTokenEnricherImpl extends NCTokenEnricher with LazyLogging:
     private final val Q_POS: Set[String] = Set("``", "''")
     private def getPos(t: NCToken): String = t.getOpt("pos").orElseThrow(() => throw new NCException("POS not found in token."))
     private def isQuote(t: NCToken): Boolean = Q_POS.contains(getPos(t))

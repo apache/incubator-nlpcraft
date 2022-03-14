@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.nlp.entity.parser;
+package org.apache.nlpcraft.nlp.entity.parser.semantic;
 
 import org.apache.nlpcraft.NCEntity;
 import org.apache.nlpcraft.NCEntityParser;
@@ -24,7 +24,7 @@ import org.apache.nlpcraft.NCModelConfig;
 import org.apache.nlpcraft.NCRequest;
 import org.apache.nlpcraft.NCToken;
 import org.apache.nlpcraft.NCTokenParser;
-import org.apache.nlpcraft.nlp.entity.parser.impl.NCSemanticEntityParserImpl;
+import org.apache.nlpcraft.nlp.entity.parser.impl.semantic.NCSemanticEntityParserImpl;
 
 import java.util.Collections;
 import java.util.List;

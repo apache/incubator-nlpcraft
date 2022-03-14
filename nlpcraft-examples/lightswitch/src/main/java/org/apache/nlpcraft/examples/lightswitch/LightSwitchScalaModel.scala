@@ -20,8 +20,9 @@ package org.apache.nlpcraft.examples.lightswitch
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.util.NCResourceReader
 import org.apache.nlpcraft.nlp.*
-import org.apache.nlpcraft.nlp.entity.parser.{NCEnSemanticEntityParser, NCNLPEntityParser, NCSemanticEntityParser}
-import org.apache.nlpcraft.nlp.token.enricher.NCENStopWordsTokenEnricher
+import org.apache.nlpcraft.nlp.entity.parser.semantic.NCSemanticEntityParser
+import org.apache.nlpcraft.nlp.entity.parser.{NCEnSemanticEntityParser, NCNLPEntityParser}
+import org.apache.nlpcraft.nlp.token.enricher.NCEnStopWordsTokenEnricher
 import org.apache.nlpcraft.nlp.token.parser.NCOpenNLPTokenParser
 
 /**

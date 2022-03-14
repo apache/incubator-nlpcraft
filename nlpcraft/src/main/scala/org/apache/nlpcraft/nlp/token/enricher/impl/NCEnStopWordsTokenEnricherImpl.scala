@@ -21,7 +21,7 @@ import com.typesafe.scalalogging.LazyLogging
 import opennlp.tools.stemmer.PorterStemmer
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.util.NCUtils
-import org.apache.nlpcraft.nlp.entity.parser.NCSemanticStemmer
+import org.apache.nlpcraft.nlp.entity.parser.semantic.NCSemanticStemmer
 
 import java.io.*
 import java.util
@@ -34,7 +34,7 @@ import scala.jdk.CollectionConverters.*
 /**
   *
   */
-object NCENStopWordsTokenEnricherImpl:
+object NCEnStopWordsTokenEnricherImpl:
     // Condition types.
     type Wildcard = (String, String)
     type Word = String
@@ -165,14 +165,14 @@ object NCENStopWordsTokenEnricherImpl:
     private def tokenMix(toks: Seq[NCToken], maxLen: Int = Integer.MAX_VALUE): Seq[Seq[NCToken]] =
         (for (n <- toks.length until 0 by -1 if n <= maxLen) yield toks.sliding(n)).flatten
 
-import org.apache.nlpcraft.nlp.token.enricher.impl.NCENStopWordsTokenEnricherImpl.*
+import org.apache.nlpcraft.nlp.token.enricher.impl.NCEnStopWordsTokenEnricherImpl.*
 
 /**
   *
   * @param addStopsSet
   * @param exclStopsSet
   */
-class NCENStopWordsTokenEnricherImpl(addStopsSet: JSet[String], exclStopsSet: JSet[String]) extends NCTokenEnricher with LazyLogging:
+class NCEnStopWordsTokenEnricherImpl(addStopsSet: JSet[String], exclStopsSet: JSet[String]) extends NCTokenEnricher with LazyLogging:
     private final val stemmer = new PorterStemmer
 
     private var addStems: Set[String] = _

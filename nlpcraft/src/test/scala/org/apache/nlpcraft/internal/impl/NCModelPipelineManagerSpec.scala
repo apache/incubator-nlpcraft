@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.internal.impl
 
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.nlp.entity.parser.{NCEnSemanticEntityParser, NCSemanticElement}
+import org.apache.nlpcraft.nlp.entity.parser.NCEnSemanticEntityParser
 import org.apache.nlpcraft.nlp.entity.parser.semantic.*
 import org.apache.nlpcraft.nlp.entity.parser.impl.NCNLPEntityParserImpl
 import org.apache.nlpcraft.nlp.util.*

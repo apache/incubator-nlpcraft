@@ -18,16 +18,14 @@
 package org.apache.nlpcraft;
 
 import org.apache.nlpcraft.internal.util.NCResourceReader;
-import org.apache.nlpcraft.nlp.token.enricher.NCENBracketsTokenEnricher;
-import org.apache.nlpcraft.nlp.token.enricher.NCENDictionaryTokenEnricher;
-import org.apache.nlpcraft.nlp.token.enricher.NCENOpenNlpLemmaPosTokenEnricher;
-import org.apache.nlpcraft.nlp.token.enricher.NCENQuotesTokenEnricher;
-import org.apache.nlpcraft.nlp.token.enricher.NCENStopWordsTokenEnricher;
-import org.apache.nlpcraft.nlp.token.enricher.NСENSwearWordsTokenEnricher;
+import org.apache.nlpcraft.nlp.token.enricher.NCEnBracketsTokenEnricher;
+import org.apache.nlpcraft.nlp.token.enricher.NCEnDictionaryTokenEnricher;
+import org.apache.nlpcraft.nlp.token.enricher.NCEnQuotesTokenEnricher;
+import org.apache.nlpcraft.nlp.token.enricher.NCEnStopWordsTokenEnricher;
+import org.apache.nlpcraft.nlp.token.enricher.NСEnSwearWordsTokenEnricher;
 import org.apache.nlpcraft.nlp.token.parser.NCENOpenNLPTokenParser;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -199,12 +197,12 @@ public class NCModelPipelineBuilder {
             case "EN":
                 tokParser = new NCENOpenNLPTokenParser();
 
-                tokEnrichers.add(new NCENOpenNlpLemmaPosTokenEnricher());
-                tokEnrichers.add(new NCENStopWordsTokenEnricher());
-                tokEnrichers.add(new NСENSwearWordsTokenEnricher(NCResourceReader.getPath("badfilter/swear_words.txt")));
-                tokEnrichers.add(new NCENQuotesTokenEnricher());
-                tokEnrichers.add(new NCENDictionaryTokenEnricher());
-                tokEnrichers.add(new NCENBracketsTokenEnricher());
+                //tokEnrichers.add(new NCEnOpenNLPLemmaPosTokenEnricher());
+                //tokEnrichers.add(new NCEnStopWordsTokenEnricher());
+                tokEnrichers.add(new NСEnSwearWordsTokenEnricher(NCResourceReader.getPath("badfilter/swear_words.txt")));
+                tokEnrichers.add(new NCEnQuotesTokenEnricher());
+                tokEnrichers.add(new NCEnDictionaryTokenEnricher());
+                tokEnrichers.add(new NCEnBracketsTokenEnricher());
 
                 this.entParsers.addAll(entParsers);
 

@@ -17,24 +17,33 @@
 
 package org.apache.nlpcraft.nlp.token.enricher;
 
-import org.apache.nlpcraft.internal.util.NCResourceReader;
-import org.apache.nlpcraft.nlp.token.enricher.NCOpenNlpLemmaPosTokenEnricher;
+import org.apache.nlpcraft.NCModelConfig;
+import org.apache.nlpcraft.NCRequest;
+import org.apache.nlpcraft.NCToken;
+import org.apache.nlpcraft.NCTokenEnricher;
+import org.apache.nlpcraft.nlp.token.enricher.impl.NCEnDictionaryTokenEnricherImpl;
+
+import java.util.List;
 
 /**
- * TODO: enriches with <code>lemma</code> and <code>pos</code> properties.
- *
- * Models can be downloaded from the following resources:
- *  - tagger: http://opennlp.sourceforge.net/models-1.5/en-pos-maxent.bin
- *  - lemmatizer: https://raw.githubusercontent.com/richardwilly98/elasticsearch-opennlp-auto-tagging/master/src/main/resources/models/en-lemmatizer.dict
+ * TODO: enriches with <code>dict</code> property.
  */
-public class NCENOpenNlpLemmaPosTokenEnricher extends NCOpenNlpLemmaPosTokenEnricher {
-    /**
-     *
-     */
-    public NCENOpenNlpLemmaPosTokenEnricher() {
-        super(
-            NCResourceReader.getPath("opennlp/en-pos-maxent.bin"),
-            NCResourceReader.getPath("opennlp/en-lemmatizer.dict")
-        );
+public class NCEnDictionaryTokenEnricher implements NCTokenEnricher {
+    private final NCEnDictionaryTokenEnricherImpl impl = new NCEnDictionaryTokenEnricherImpl();
+
+    @Override
+    public void enrich(NCRequest req, NCModelConfig cfg, List<NCToken> toks) {
+        assert impl != null;
+        impl.enrich(req, cfg, toks);
+    }
+
+    @Override
+    public void onStart(NCModelConfig cfg) {
+        impl.onStart(cfg);
+    }
+
+    @Override
+    public void onStop(NCModelConfig cfg) {
+        impl.onStop(cfg);
     }
 }

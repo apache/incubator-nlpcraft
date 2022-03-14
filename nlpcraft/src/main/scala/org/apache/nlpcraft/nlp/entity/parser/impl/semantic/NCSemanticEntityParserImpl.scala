@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.nlp.entity.parser.impl
+package org.apache.nlpcraft.nlp.entity.parser.impl.semantic
 
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.makro.NCMacroParser
 import org.apache.nlpcraft.internal.util.NCUtils
-import org.apache.nlpcraft.nlp.entity.parser.impl.NCSemanticChunkKind.*
-import org.apache.nlpcraft.nlp.entity.parser.impl.NCSemanticEntityParserImpl.combine
-import org.apache.nlpcraft.nlp.entity.parser.impl.NCSemanticSourceType.*
-import org.apache.nlpcraft.nlp.entity.parser.*
+import org.apache.nlpcraft.nlp.entity.parser.semantic.*
+import org.apache.nlpcraft.nlp.entity.parser.impl.semantic.NCSemanticEntityParserImpl.combine
+import org.apache.nlpcraft.nlp.entity.parser.impl.semantic.*
+import org.apache.nlpcraft.nlp.entity.parser.semantic.NCSemanticStemmer
 
 import java.io.*
 import java.util
@@ -158,7 +158,7 @@ object NCSemanticEntityParserImpl:
         else if i >= data1.size then tmp
         else combine(data1, data2, i + 1, tmp.map(_ :+ data1(i)) ++ tmp.map(_ :+ data2(i)))
 
-import org.apache.nlpcraft.nlp.entity.parser.impl.NCSemanticEntityParserImpl.*
+import org.apache.nlpcraft.nlp.entity.parser.impl.semantic.NCSemanticEntityParserImpl.*
 
 /**
   *

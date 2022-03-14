@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.nlp.entity.parser;
+package org.apache.nlpcraft.nlp.entity.parser.semantic;
 
 import java.util.Collections;
 import java.util.Map;

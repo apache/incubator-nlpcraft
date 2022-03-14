@@ -37,7 +37,6 @@ import org.apache.nlpcraft.examples.time.utils.cities.City;
 import org.apache.nlpcraft.examples.time.utils.cities.CityData;
 import org.apache.nlpcraft.examples.time.utils.keycdn.GeoData;
 import org.apache.nlpcraft.examples.time.utils.keycdn.GeoManager;
-import org.apache.nlpcraft.nlp.entity.parser.NCEnSemanticEntityParser;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;

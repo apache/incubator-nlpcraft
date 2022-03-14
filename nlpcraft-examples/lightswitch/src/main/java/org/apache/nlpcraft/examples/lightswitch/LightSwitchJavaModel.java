@@ -18,7 +18,6 @@
 package org.apache.nlpcraft.examples.lightswitch;
 
 import org.apache.nlpcraft.*;
-import org.apache.nlpcraft.nlp.entity.parser.NCEnSemanticEntityParser;
 
 import java.util.List;
 import java.util.stream.Collectors;

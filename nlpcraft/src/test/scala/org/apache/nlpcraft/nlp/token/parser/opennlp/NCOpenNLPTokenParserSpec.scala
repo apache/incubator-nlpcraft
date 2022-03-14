@@ -33,8 +33,8 @@ import scala.jdk.CollectionConverters.*
   *
   */
 class NCOpenNLPTokenParserSpec:
-    private val lemmaPosEnricher = new NCENOpenNlpLemmaPosTokenEnricher
-    private val stopEnricher = new NCENStopWordsTokenEnricher(null, null)
+    private val lemmaPosEnricher = new NCEnOpenNLPLemmaPosTokenEnricher
+    private val stopEnricher = new NCEnStopWordsTokenEnricher(null, null)
 
     private def isStopWord(t: NCToken): Boolean = t.get[Boolean]("stopword")
 

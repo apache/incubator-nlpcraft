@@ -29,7 +29,7 @@ import java.util.List as JList
   * 
   * @param res
   */
-class NCENSwearWordsTokenEnricherImpl(res: String) extends NCTokenEnricher with LazyLogging:
+class NCEnSwearWordsTokenEnricherImpl(res: String) extends NCTokenEnricher with LazyLogging:
     require(res != null)
 
     private final val stemmer = new PorterStemmer

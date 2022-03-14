@@ -14,15 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.nlpcraft.nlp.entity.parser.impl
+package org.apache.nlpcraft.nlp.entity.parser.impl.semantic
 
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.*
 import com.fasterxml.jackson.dataformat.yaml.*
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.nlp.entity.parser.NCSemanticElement
-import org.apache.nlpcraft.nlp.entity.parser.impl.NCSemanticSourceType.*
+import org.apache.nlpcraft.nlp.entity.parser.impl.semantic.NCSemanticSourceType.*
+import org.apache.nlpcraft.nlp.entity.parser.impl.semantic.*
+import org.apache.nlpcraft.nlp.entity.parser.semantic.*
 
 import java.io.InputStream
 import java.util

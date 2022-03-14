@@ -8,7 +8,7 @@ import scala.collection.mutable
 /**
   * Generates first word sequences.
   */
-object NCENStopWordGenerator:
+object NCEnStopWordGenerator:
     private final lazy val stemmer = new PorterStemmer
 
     // Output files.

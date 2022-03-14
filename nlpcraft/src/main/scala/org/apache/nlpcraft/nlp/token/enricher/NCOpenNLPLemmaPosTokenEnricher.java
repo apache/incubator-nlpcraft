@@ -21,26 +21,25 @@ import org.apache.nlpcraft.NCModelConfig;
 import org.apache.nlpcraft.NCRequest;
 import org.apache.nlpcraft.NCToken;
 import org.apache.nlpcraft.NCTokenEnricher;
-import org.apache.nlpcraft.nlp.token.enricher.impl.NCENStopWordsTokenEnricherImpl;
+import org.apache.nlpcraft.nlp.token.enricher.impl.NCOpenNLPLemmaPosTokenEnricherImpl;
 
 import java.util.List;
-import java.util.Set;
 
 /**
- * TODO: enriches with <code>stopword</code> property.
+ * TODO: enriches with <code>lemma</code> and <code>pos</code> properties.
+ *
+ * Models can be downloaded from the following resources:
+ *  - tagger: http://opennlp.sourceforge.net/models-1.5/en-pos-maxent.bin
+ *  - lemmatizer: https://raw.githubusercontent.com/richardwilly98/elasticsearch-opennlp-auto-tagging/master/src/main/resources/models/en-lemmatizer.dict
  */
-public class NCENStopWordsTokenEnricher implements NCTokenEnricher {
-    private final NCENStopWordsTokenEnricherImpl impl;
+public class NCOpenNLPLemmaPosTokenEnricher implements NCTokenEnricher {
+    private final NCOpenNLPLemmaPosTokenEnricherImpl impl;
 
     /**
      *
      */
-    public NCENStopWordsTokenEnricher(Set<String> addSw, Set<String> exclSw) {
-        impl = new NCENStopWordsTokenEnricherImpl(addSw, exclSw);
-    }
-
-    public NCENStopWordsTokenEnricher() {
-        impl = new NCENStopWordsTokenEnricherImpl(null, null);
+    public NCOpenNLPLemmaPosTokenEnricher(String posMdlSrc, String lemmaDicSrc) {
+        impl = new NCOpenNLPLemmaPosTokenEnricherImpl(posMdlSrc, lemmaDicSrc);
     }
 
     @Override

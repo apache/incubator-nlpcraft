@@ -21,15 +21,27 @@ import org.apache.nlpcraft.NCModelConfig;
 import org.apache.nlpcraft.NCRequest;
 import org.apache.nlpcraft.NCToken;
 import org.apache.nlpcraft.NCTokenEnricher;
-import org.apache.nlpcraft.nlp.token.enricher.impl.NCENBracketsTokenEnricherImpl;
+import org.apache.nlpcraft.nlp.token.enricher.impl.NCEnSwearWordsTokenEnricherImpl;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
- * TODO: enriches with <code>brackets</code> property.
+ * TODO: enriches with <code>swear</code> property.
  */
-public class NCENBracketsTokenEnricher implements NCTokenEnricher {
-    private final NCENBracketsTokenEnricherImpl impl = new NCENBracketsTokenEnricherImpl();
+public class NСEnSwearWordsTokenEnricher implements NCTokenEnricher {
+    private final NCEnSwearWordsTokenEnricherImpl impl;
+
+    /**
+     * TODO: swear_words.txt - describe where it can be downloaded.
+     * 
+     * @param mdlSrc
+     */
+    public NСEnSwearWordsTokenEnricher(String mdlSrc) {
+        Objects.requireNonNull(mdlSrc, "Swear words model file cannot be null.");
+
+        impl = new NCEnSwearWordsTokenEnricherImpl(mdlSrc);
+    }
 
     @Override
     public void enrich(NCRequest req, NCModelConfig cfg, List<NCToken> toks) {

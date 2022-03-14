@@ -31,7 +31,7 @@ import scala.io.Source
 import scala.util.Using
 
 /**
-  * TODO: move it NCUtils?
+  * Caching resource reader for files that cannot be shipped with Apache release.
   */
 object NCResourceReader extends LazyLogging:
     private final val DFLT_DIR = new File(System.getProperty("user.home"), ".nlpcraft/extcfg").getAbsolutePath
@@ -47,10 +47,8 @@ object NCResourceReader extends LazyLogging:
         val normDir = if dir != null then dir else DFLT_DIR
         val f = new File(normDir)
 
-        if f.exists then
-            if !f.isDirectory then E(s"Invalid folder: $normDir")
-        else
-            if !f.mkdirs then E(s"Cannot create folder: $normDir")
+        if f.exists then if !f.isDirectory then E(s"Invalid folder: $normDir")
+        else if !f.mkdirs then E(s"Cannot create folder: $normDir")
 
         f
 
@@ -92,7 +90,7 @@ object NCResourceReader extends LazyLogging:
         val nameLen = f.getName.length
 
         md5.
-            flatMap { (resPath, md5) => if path.endsWith(resPath) && resPath.length >= nameLen then Some(md5) else None }.
+            flatMap { (resPath, md5) => if path.endsWith(resPath) && resPath.length >= nameLen then Option(md5) else None }.
             to(LazyList).
             headOption.
             getOrElse(throw new NCException(s"MD5 data not found for: '$path'"))
@@ -105,12 +103,19 @@ object NCResourceReader extends LazyLogging:
       */
     private def isValid(f: File, md5: Map[String, String]): Boolean =
         val v1 = getMd5(f, md5)
-
         val v2 =
             try Using.resource(Files.newInputStream(f.toPath)) { in => DigestUtils.md5Hex(in) }
             catch case e: IOException => throw new NCException(s"Failed to get MD5 for: '${f.getAbsolutePath}'", e)
 
         v1 == v2
+
+    /**
+      *
+      * @param in
+      * @param dest
+      */
+    private def copy(in: InputStream, dest: String): Unit =
+        Using.resource(new FileOutputStream(dest)) { out => IOUtils.copy(in, out) }
 
     /**
       *
@@ -121,12 +126,10 @@ object NCResourceReader extends LazyLogging:
       */
     private def download(path: String, outFile: String, md5: Map[String, String]): File =
         mkDir(new File(outFile).getParent)
-
         val url = s"$BASE_URL/$path"
-
         try
             Using.resource(new BufferedInputStream(new URL(url).openStream())) { src =>
-                Using.resource(new FileOutputStream(outFile)) { out => IOUtils.copy(src, out) }
+                copy(src, outFile)
                 logger.info(s"One-time download for external config [url='$url', file='$outFile']")
 
                 val f = new File(outFile)
@@ -166,7 +169,7 @@ object NCResourceReader extends LazyLogging:
                 if NCUtils.isResource(path) then
                     getClass.getClassLoader.getResourceAsStream(path) match
                         case in if in != null =>
-                            Using.resource(new FileOutputStream(f)) { out => IOUtils.copy(in, out) }
+                            copy(in, f.getAbsolutePath)
                             validateOrDownload(f)
                         case _ => E(s"Resource not found: $path")
                 // URL.

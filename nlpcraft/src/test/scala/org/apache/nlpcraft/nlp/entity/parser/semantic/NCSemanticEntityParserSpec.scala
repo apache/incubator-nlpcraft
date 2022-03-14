@@ -84,9 +84,9 @@ class NCSemanticEntityParserSpec:
             ).asJava
         )
 
-    private val stopWordsEnricher = new NCENStopWordsTokenEnricher()
+    private val stopWordsEnricher = new NCEnStopWordsTokenEnricher()
 
-    private val lemmaPosEnricher = new NCENOpenNlpLemmaPosTokenEnricher()
+    private val lemmaPosEnricher = new NCEnOpenNLPLemmaPosTokenEnricher()
 
     /**
       *

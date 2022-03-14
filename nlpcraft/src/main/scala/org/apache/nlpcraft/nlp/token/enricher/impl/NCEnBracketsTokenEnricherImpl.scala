@@ -28,7 +28,7 @@ import scala.jdk.CollectionConverters.CollectionHasAsScala
 /**
   *
   */
-class NCENBracketsTokenEnricherImpl extends NCTokenEnricher with LazyLogging:
+class NCEnBracketsTokenEnricherImpl extends NCTokenEnricher with LazyLogging:
     override def enrich(req: NCRequest, cfg: NCModelConfig, toks: JList[NCToken]): Unit =
         val stack = new java.util.Stack[String]()
         val map = mutable.HashMap.empty[NCToken, Boolean]

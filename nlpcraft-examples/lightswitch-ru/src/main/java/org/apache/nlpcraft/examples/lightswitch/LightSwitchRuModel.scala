@@ -21,8 +21,9 @@ import org.apache.nlpcraft.*
 import org.apache.nlpcraft.examples.lightswitch.nlp.entity.parser.NCRuSemanticEntityParser
 import org.apache.nlpcraft.examples.lightswitch.nlp.token.enricher.{NCRuLemmaPosTokenEnricher, NCRuStopWordsTokenEnricher}
 import org.apache.nlpcraft.examples.lightswitch.nlp.token.parser.NCRuTokenParser
-import org.apache.nlpcraft.nlp.entity.parser.{NCNLPEntityParser, NCSemanticEntityParser}
-import org.apache.nlpcraft.nlp.token.enricher.NCENStopWordsTokenEnricher
+import org.apache.nlpcraft.nlp.entity.parser.NCNLPEntityParser
+import org.apache.nlpcraft.nlp.entity.parser.semantic.NCSemanticEntityParser
+import org.apache.nlpcraft.nlp.token.enricher.NCEnStopWordsTokenEnricher
 import org.apache.nlpcraft.nlp.token.parser.NCOpenNLPTokenParser
 
 import java.util

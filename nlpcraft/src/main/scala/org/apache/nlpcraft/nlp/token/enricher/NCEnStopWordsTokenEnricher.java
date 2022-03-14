@@ -21,15 +21,27 @@ import org.apache.nlpcraft.NCModelConfig;
 import org.apache.nlpcraft.NCRequest;
 import org.apache.nlpcraft.NCToken;
 import org.apache.nlpcraft.NCTokenEnricher;
-import org.apache.nlpcraft.nlp.token.enricher.impl.NCENDictionaryTokenEnricherImpl;
+import org.apache.nlpcraft.nlp.token.enricher.impl.NCEnStopWordsTokenEnricherImpl;
 
 import java.util.List;
+import java.util.Set;
 
 /**
- * TODO: enriches with <code>dict</code> property.
+ * TODO: enriches with <code>stopword</code> property.
  */
-public class NCENDictionaryTokenEnricher implements NCTokenEnricher {
-    private final NCENDictionaryTokenEnricherImpl impl = new NCENDictionaryTokenEnricherImpl();
+public class NCEnStopWordsTokenEnricher implements NCTokenEnricher {
+    private final NCEnStopWordsTokenEnricherImpl impl;
+
+    /**
+     *
+     */
+    public NCEnStopWordsTokenEnricher(Set<String> addSw, Set<String> exclSw) {
+        impl = new NCEnStopWordsTokenEnricherImpl(addSw, exclSw);
+    }
+
+    public NCEnStopWordsTokenEnricher() {
+        impl = new NCEnStopWordsTokenEnricherImpl(null, null);
+    }
 
     @Override
     public void enrich(NCRequest req, NCModelConfig cfg, List<NCToken> toks) {

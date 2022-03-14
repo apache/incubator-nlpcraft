@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.nlpcraft.nlp.entity.parser.impl
+package org.apache.nlpcraft.nlp.entity.parser.impl.semantic
 
 import com.fasterxml.jackson.databind.*
 import com.fasterxml.jackson.dataformat.yaml.*
@@ -23,8 +23,9 @@ import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.makro.NCMacroParser
 import org.apache.nlpcraft.internal.util.NCUtils
-import org.apache.nlpcraft.nlp.entity.parser.impl.NCSemanticChunkKind.*
-import org.apache.nlpcraft.nlp.entity.parser.*
+import org.apache.nlpcraft.nlp.entity.parser.semantic.*
+import org.apache.nlpcraft.nlp.entity.parser.impl.semantic.NCSemanticChunkKind.*
+import org.apache.nlpcraft.nlp.entity.parser.impl.semantic.*
 
 import java.io.InputStream
 import java.util

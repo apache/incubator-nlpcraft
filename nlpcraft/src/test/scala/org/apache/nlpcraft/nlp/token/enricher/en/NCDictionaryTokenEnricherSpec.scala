@@ -30,9 +30,9 @@ import scala.jdk.CollectionConverters.*
   *
   */
 class NCDictionaryTokenEnricherSpec:
-    private val dictEnricher = new NCENDictionaryTokenEnricher()
+    private val dictEnricher = new NCEnDictionaryTokenEnricher()
 
-    private val lemmaPosEnricher = new NCENOpenNlpLemmaPosTokenEnricher()
+    private val lemmaPosEnricher = new NCEnOpenNLPLemmaPosTokenEnricher()
 
     @Test
     def test(): Unit =

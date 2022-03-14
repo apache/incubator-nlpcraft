@@ -15,23 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.nlp.token.enricher.impl
-
-import org.apache.nlpcraft.*
-import org.apache.nlpcraft.internal.util.NCUtils
-
-import java.util.List as JList
+package org.apache.nlpcraft.nlp.entity.parser.semantic;
 
 /**
-  *
-  */
-class NCENDictionaryTokenEnricherImpl extends NCTokenEnricher:
-    private var dict: Set[String] = _
-
-    init()
-
-    private def init(): Unit = dict = NCUtils.readResource("moby/354984si.ngl", "iso-8859-1").toSet
-    private def getLemma(t: NCToken): String = t.getOpt("lemma").orElseThrow(() => throw new NCException("Lemma not found in token."))
-
-    override def enrich(req: NCRequest, cfg: NCModelConfig, toks: JList[NCToken]): Unit =
-        toks.forEach(t => t.put("dict", dict.contains(getLemma(t))))
+ * 
+ */
+public interface NCSemanticStemmer {
+    /**
+     *
+     * @param txt
+     * @return
+     */
+    String stem(String txt);
+}

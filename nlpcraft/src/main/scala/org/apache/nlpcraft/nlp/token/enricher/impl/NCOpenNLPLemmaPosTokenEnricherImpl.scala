@@ -35,7 +35,7 @@ import scala.jdk.CollectionConverters.*
   * @param posMdlSrc
   * @param lemmaDicSrc
   */
-class NCLemmaPosTokenEnricherImpl(posMdlSrc: String, lemmaDicSrc: String) extends NCTokenEnricher with LazyLogging:
+class NCOpenNLPLemmaPosTokenEnricherImpl(posMdlSrc: String, lemmaDicSrc: String) extends NCTokenEnricher with LazyLogging:
     private var tagger: POSTaggerME = _
     private var lemmatizer: DictionaryLemmatizer = _
 

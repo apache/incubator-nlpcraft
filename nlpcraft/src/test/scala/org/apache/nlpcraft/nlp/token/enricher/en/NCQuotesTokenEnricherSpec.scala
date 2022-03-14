@@ -31,8 +31,8 @@ import scala.jdk.CollectionConverters.*
   *
   */
 class NCQuotesTokenEnricherSpec:
-    private val lemmaPosEnricher = new NCENOpenNlpLemmaPosTokenEnricher
-    private val quoteEnricher = new NCENQuotesTokenEnricher
+    private val lemmaPosEnricher = new NCEnOpenNLPLemmaPosTokenEnricher
+    private val quoteEnricher = new NCEnQuotesTokenEnricher
 
     /**
       *

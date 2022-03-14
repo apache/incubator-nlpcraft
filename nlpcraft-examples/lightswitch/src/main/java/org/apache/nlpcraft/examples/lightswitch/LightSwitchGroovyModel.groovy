@@ -18,7 +18,6 @@
 package org.apache.nlpcraft.examples.lightswitch
 
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.nlp.entity.parser.NCEnSemanticEntityParser
 
 /**
  * This example provides very simple implementation for NLI-powered light switch.

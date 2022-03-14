@@ -30,7 +30,7 @@ import scala.jdk.CollectionConverters.*
   *
   */
 class NCBracketsTokenEnricherSpec:
-    private val enricher = new NCENBracketsTokenEnricher()
+    private val enricher = new NCEnBracketsTokenEnricher()
 
     /**
       *

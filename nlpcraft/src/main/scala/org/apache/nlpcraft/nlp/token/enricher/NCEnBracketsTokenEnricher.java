@@ -21,26 +21,15 @@ import org.apache.nlpcraft.NCModelConfig;
 import org.apache.nlpcraft.NCRequest;
 import org.apache.nlpcraft.NCToken;
 import org.apache.nlpcraft.NCTokenEnricher;
-import org.apache.nlpcraft.nlp.token.enricher.impl.NCLemmaPosTokenEnricherImpl;
+import org.apache.nlpcraft.nlp.token.enricher.impl.NCEnBracketsTokenEnricherImpl;
 
 import java.util.List;
 
 /**
- * TODO: enriches with <code>lemma</code> and <code>pos</code> properties.
- *
- * Models can be downloaded from the following resources:
- *  - tagger: http://opennlp.sourceforge.net/models-1.5/en-pos-maxent.bin
- *  - lemmatizer: https://raw.githubusercontent.com/richardwilly98/elasticsearch-opennlp-auto-tagging/master/src/main/resources/models/en-lemmatizer.dict
+ * TODO: enriches with <code>brackets</code> property.
  */
-public class NCOpenNlpLemmaPosTokenEnricher implements NCTokenEnricher {
-    private final NCLemmaPosTokenEnricherImpl impl;
-
-    /**
-     *
-     */
-    public NCOpenNlpLemmaPosTokenEnricher(String posMdlSrc, String lemmaDicSrc) {
-        impl = new NCLemmaPosTokenEnricherImpl(posMdlSrc, lemmaDicSrc);
-    }
+public class NCEnBracketsTokenEnricher implements NCTokenEnricher {
+    private final NCEnBracketsTokenEnricherImpl impl = new NCEnBracketsTokenEnricherImpl();
 
     @Override
     public void enrich(NCRequest req, NCModelConfig cfg, List<NCToken> toks) {

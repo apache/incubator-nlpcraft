@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.nlp.token.enricher.en.impl
 
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.nlp.token.enricher.impl.NCENStopWordsTokenEnricherImpl
+import org.apache.nlpcraft.nlp.token.enricher.impl.NCEnStopWordsTokenEnricherImpl
 import org.apache.nlpcraft.nlp.token.enricher.en.*
 import org.apache.nlpcraft.nlp.util.*
 import org.apache.nlpcraft.nlp.util.opennlp.*
@@ -45,7 +45,7 @@ class NCStopWordsImplSpec:
 
         toks.zip(words).foreach { (t, w) => t.put("stopword", w.stop) }
 
-        val mix = NCENStopWordsTokenEnricherImpl.tokenMixWithStopWords(toks)
+        val mix = NCEnStopWordsTokenEnricherImpl.tokenMixWithStopWords(toks)
 
         val resSorted = mix.map(_.map(_.getText).mkString).sorted
         val expectedSorted = expected.sorted
