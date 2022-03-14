@@ -19,7 +19,7 @@ package org.apache.nlpcraft.examples.lightswitch.nlp.token.enricher
 
 import org.apache.nlpcraft.*
 import org.languagetool.AnalyzedToken
-import org.languagetool.tagging.ru.RussianTagger
+import org.languagetool.tagging.fr.FrenchTagger
 
 import java.util
 import java.util.stream.Collectors
@@ -28,12 +28,12 @@ import scala.jdk.CollectionConverters.*
 /**
   *
   */
-class NCRuLemmaPosTokenEnricher extends NCTokenEnricher:
+class NCFrLemmaPosTokenEnricher extends NCTokenEnricher:
     private def nvl(v: String, dflt : => String): String = if v != null then v else dflt
 
     override def enrich(req: NCRequest, cfg: NCModelConfig, toksList: util.List[NCToken]): Unit =
         val toks = toksList.asScala
-        val tags = RussianTagger.INSTANCE.tag(toks.map(_.getText).asJava).asScala
+        val tags = FrenchTagger.INSTANCE.tag(toks.map(_.getText).asJava).asScala
 
         require(toks.size == tags.size)
 

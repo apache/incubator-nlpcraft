@@ -19,6 +19,7 @@ package org.apache.nlpcraft.examples.lightswitch.nlp.token.parser
 
 import org.apache.nlpcraft.*
 import org.languagetool.tokenizers.WordTokenizer
+import org.languagetool.tokenizers.fr.FrenchWordTokenizer
 
 import java.util
 import scala.jdk.CollectionConverters.*
@@ -26,8 +27,8 @@ import scala.jdk.CollectionConverters.*
 /**
   *
   */
-class NCRuTokenParser extends NCTokenParser:
-    private val tokenizer = new WordTokenizer
+class NCFrTokenParser extends NCTokenParser:
+    private val tokenizer = new FrenchWordTokenizer
 
     override def tokenize(text: String): util.List[NCToken] =
         val toks = collection.mutable.ArrayBuffer.empty[NCToken]
@@ -36,7 +37,7 @@ class NCRuTokenParser extends NCTokenParser:
         for (((word, len), idx) <- tokenizer.tokenize(text).asScala.map(p => p -> p.length).zipWithIndex)
             val start = sumLen
             val end = sumLen + word.length
-            
+
             if word.strip.nonEmpty then
                 toks += new NCPropertyMapAdapter with NCToken:
                     override def getText: String = word

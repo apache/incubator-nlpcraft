@@ -19,9 +19,9 @@ package org.apache.nlpcraft.examples.lightswitch
 
 import com.google.gson.Gson
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.examples.lightswitch.nlp.entity.parser.NCRuSemanticEntityParser
-import org.apache.nlpcraft.examples.lightswitch.nlp.token.enricher.{NCRuLemmaPosTokenEnricher, NCRuStopWordsTokenEnricher}
-import org.apache.nlpcraft.examples.lightswitch.nlp.token.parser.NCRuTokenParser
+import org.apache.nlpcraft.examples.lightswitch.nlp.entity.parser.NCFrSemanticEntityParser
+import org.apache.nlpcraft.examples.lightswitch.nlp.token.enricher.{NCFrLemmaPosTokenEnricher, NCFrStopWordsTokenEnricher}
+import org.apache.nlpcraft.examples.lightswitch.nlp.token.parser.NCFrTokenParser
 import org.apache.nlpcraft.nlp.entity.parser.{NCNLPEntityParser, NCSemanticEntityParser}
 import org.apache.nlpcraft.nlp.token.enricher.NCENStopWordsTokenEnricher
 import org.apache.nlpcraft.nlp.token.parser.NCOpenNLPTokenParser
@@ -41,13 +41,13 @@ import scala.jdk.CollectionConverters.*
   * <p>
   * See 'README.md' file in the same folder for running and testing instructions.
   */
-class LightSwitchRuModel extends NCModelAdapter(
-    new NCModelConfig("nlpcraft.lightswitch.ru.ex", "LightSwitch Example Model RU", "1.0"),
+class LightSwitchFrModel extends NCModelAdapter(
+    new NCModelConfig("nlpcraft.lightswitch.fr.ex", "LightSwitch Example Model FR", "1.0"),
     new NCModelPipelineBuilder().
-        withTokenParser(new NCRuTokenParser()).
-        withTokenEnricher(new NCRuLemmaPosTokenEnricher()).
-        withTokenEnricher(new NCRuStopWordsTokenEnricher()).
-        withEntityParser(new NCRuSemanticEntityParser("lightswitch_model_ru.yaml")).
+        withTokenParser(new NCFrTokenParser()).
+        withTokenEnricher(new NCFrLemmaPosTokenEnricher()).
+        withTokenEnricher(new NCFrStopWordsTokenEnricher()).
+        withEntityParser(new NCFrSemanticEntityParser("lightswitch_model_fr.yaml")).
         build()
 ):
     /**
@@ -59,32 +59,32 @@ class LightSwitchRuModel extends NCModelAdapter(
       */
     @NCIntent("intent=ls term(act)={has(ent_groups, 'act')} term(loc)={# == 'ls:loc'}*")
     @NCIntentSample(Array(
-        "Выключи свет по всем доме",
-        "Выруби электричество!",
-        "Включи свет в детской",
-        "Включай повсюду освещение",
-        "Включайте лампы в детской комнате",
-        "Свет на кухне, пожалуйста, приглуши",
-        "Нельзя ли повсюду выключить свет?",
-        "Пожалуйста без света",
-        "Отключи электричество в ванной",
-        "Выключи, пожалуйста, тут всюду свет",
-        "Выключай все!",
-        "Свет пожалуйста везде включи",
-        "Зажги лампу на кухне"
+        "Éteins l“allumier dans toute la maison",
+        "Coupez l'électricité!",
+        "Allume la lumière dans la chambre des enfants",
+        "Allume l'éclairage partout",
+        "Allumer les lampes dans la chambre des enfants",
+        "Éteins la lumière dans la cuisine, s'il te plaît",
+        "Est-il possible d'éteindre les lumières partout?",
+        "S'il vous plaît sans lumière",
+        "Couper l'électricité dans la salle de bain",
+        "Éteins la lumière, s'il te plaît.",
+        "Éteignez tout!",
+        "Allume la lumière partout s'il te plaît ",
+        "Allume la lampe dans la cuisine"
     ))
     def onMatch(
         @NCIntentTerm("act") actEnt: NCEntity,
         @NCIntentTerm("loc") locEnts: List[NCEntity]
     ): NCResult =
-        val action = if actEnt.getId == "ls:on" then "включить" else "выключить"
-        val locations = if locEnts.isEmpty then "весь дом" else locEnts.map(_.mkText()).mkString(", ")
+        val action = if actEnt.getId == "ls:on" then "allumer" else "éteindre"
+        val locations = if locEnts.isEmpty then "toute la maison" else locEnts.map(_.mkText()).mkString(", ")
 
         // Add HomeKit, Arduino or other integration here.
 
         // By default - just return a descriptive action string.
 
         new NCResult(
-           new Gson().toJson(Map("locations" -> locations, "action" -> action).asJava),
-           NCResultType.ASK_RESULT
+            new Gson().toJson(Map("locations" -> locations, "action" -> action).asJava),
+            NCResultType.ASK_RESULT
         )
