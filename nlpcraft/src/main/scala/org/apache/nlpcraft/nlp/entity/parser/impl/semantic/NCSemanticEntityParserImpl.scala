@@ -230,10 +230,12 @@ class NCSemanticEntityParserImpl(
         val cache = mutable.HashSet.empty[Seq[Int]] // Variants (tokens without stopwords) can be repeated.
 
         case class Holder(elemId: String, tokens: Seq[NCToken], value: Option[String]):
-            private val idxs = tokens.map(_.getIndex).toSet
+            val tokensSet = tokens.toSet
+            val idxs = tokensSet.map(_.getIndex)
+
             def isSuperSet(toks: Seq[NCToken]): Boolean = idxs.size > toks.size && toks.map(_.getIndex).toSet.subsetOf(idxs)
 
-        val hs = mutable.ArrayBuffer.empty[Holder]
+        var hs = mutable.ArrayBuffer.empty[Holder]
 
         for (piece <- getPieces(toks) if !hs.exists(_.isSuperSet(piece.baseTokens));
             variant <- Seq(piece.baseTokens) ++ piece.variants)
@@ -270,6 +272,20 @@ class NCSemanticEntityParserImpl(
                                     }
 
                                 if found then add(elemId, Option.when(s.value != null)(s.value))
+
+        // Deletes redundant.
+        hs = hs.distinct
+        
+        val del = mutable.ArrayBuffer.empty[Holder]
+        // 1. Look at each element with its value.
+        for (((_, _), seq) <- hs.groupBy(h => (h.elemId, h.value)) if seq.size > 1)
+            // 2. If some variants are duplicated - keep only one, with most tokens counts.
+            val seqIdxs = seq.zipWithIndex
+
+            for ((h, idx) <- seqIdxs if !del.contains(h))
+                del ++= seqIdxs.filter { (_, oIdx) => oIdx != idx }.map { (h, _) => h }.filter(_.tokensSet.subsetOf(h.tokensSet))
+
+        hs --= del
 
         hs.toSeq.map(h => {
             val e = elemsMap(h.elemId)

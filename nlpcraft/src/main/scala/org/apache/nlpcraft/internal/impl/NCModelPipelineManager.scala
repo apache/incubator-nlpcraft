@@ -184,7 +184,8 @@ class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCModelPipeline) exte
             check()
             variants = varFilterOpt.get.filter(req, cfg, variants)
 
-        val vrnts = variants.asScala.toSeq
+        // Skips empty variants.
+        val vrnts = variants.asScala.toSeq.filter(!_.getEntities.isEmpty)
 
         for ((v, i) <- vrnts.zipWithIndex)
             val tbl = NCAsciiTable("EntityId", "Tokens", "Tokens Position", "Properties")

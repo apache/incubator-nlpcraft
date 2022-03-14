@@ -691,6 +691,9 @@ class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLInten
         var res: NCResult = mdl.onContext(ctx)
 
         if res != null then
+            // TODO: text.
+            if intents.nonEmpty then logger.warn("`onContext` method overrides existed intents. They are ignored.")
+
             res
         else
             if intents.isEmpty then

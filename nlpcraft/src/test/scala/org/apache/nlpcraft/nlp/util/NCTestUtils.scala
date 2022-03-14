@@ -80,6 +80,28 @@ object NCTestUtils:
 
     /**
       *
+      * @param req
+      * @param vs
+      */
+    def printVariants(req: String, vs: Seq[NCVariant]): Unit =
+        println(s"Request $req variants:")
+
+        for ((v, idx) <- vs.zipWithIndex)
+            val tbl = NCAsciiTable("EntityId", "Tokens", "Tokens Position", "Properties")
+
+            for (e <- v.getEntities.asScala)
+                val toks = e.getTokens.asScala
+                tbl += (
+                    e.getId,
+                    toks.map(_.getText).mkString("|"),
+                    toks.map(p => s"${p.getStartCharIndex}-${p.getEndCharIndex}").mkString("|"),
+                    mkProps(e)
+                )
+
+            tbl.print(s"Variant: ${idx + 1}")
+
+    /**
+      *
       * @param mdl
       * @param expectedOk
       */

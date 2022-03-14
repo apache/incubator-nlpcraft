@@ -32,61 +32,34 @@ import scala.collection.mutable
 import scala.concurrent.ExecutionContext
 import scala.jdk.CollectionConverters.*
 import scala.jdk.OptionConverters.RichOptional
-
-/**
-  *
-  * @param id
-  * @param synonyms
-  * @param values
-  * @param groups
-  */
-case class NCSemanticTestElement(
-    id: String,
-    synonyms: Set[String] = Set.empty,
-    values: Map[String, Set[String]] = Map.empty,
-    groups: Seq[String] = Seq.empty,
-    props: Map[String, AnyRef] = Map.empty
-) extends NCSemanticElement:
-    override def getId: String = id
-    override def getGroups: JSet[String] = groups.toSet.asJava
-    override def getValues: JMap[String, JSet[String]] = values.map { (k, v) => k -> v.asJava}.asJava
-    override def getSynonyms: JSet[String] = synonyms.asJava
-    override def getProperties: JMap[String, Object] = props.asJava
-
-/**
-  *
-  */
-object NCSemanticTestElement:
-    def apply(id: String, synonyms: String*) = new NCSemanticTestElement(id, synonyms = synonyms.toSet)
-
 /**
   *
   */
 class NCSemanticEntityParserSpec:
+    import NCSemanticTestElement as E
+
     private val parser =
         new NCEnSemanticEntityParser(
             Seq(
                 // Standard.
-                NCSemanticTestElement("t1", synonyms = Set("t1")),
+                E("t1", synonyms = Set("t1")),
                 // No extra synonyms.
-                NCSemanticTestElement("t2"),
+                E("t2"),
                 // Multiple words.
-                NCSemanticTestElement("t3", synonyms = Set("t3 t3")),
+                E("t3", synonyms = Set("t3 t3")),
                 // Value. No extra synonyms.
-                NCSemanticTestElement("t4", values = Map("value4" -> Set.empty)),
+                E("t4", values = Map("value4" -> Set.empty)),
                 // Value. Multiple words.
-                NCSemanticTestElement("t5", values = Map("value5" -> Set("value 5"))),
+                E("t5", values = Map("value5" -> Set("value 5"))),
                 // Elements data.
-                NCSemanticTestElement("t6", props = Map("testKey" -> "testValue")),
+                E("t6", props = Map("testKey" -> "testValue")),
                 // Regex.
-                NCSemanticTestElement("t7", synonyms = Set("x //[a-d]+//"))
-
+                E("t7", synonyms = Set("x //[a-d]+//"))
             ).asJava
         )
 
-    private val stopWordsEnricher = new NCEnStopWordsTokenEnricher()
-
-    private val lemmaPosEnricher = new NCEnOpenNLPLemmaPosTokenEnricher()
+    private val stopWordsEnricher = new NCENStopWordsTokenEnricher()
+    private val lemmaPosEnricher = new NCENOpenNlpLemmaPosTokenEnricher()
 
     /**
       *
