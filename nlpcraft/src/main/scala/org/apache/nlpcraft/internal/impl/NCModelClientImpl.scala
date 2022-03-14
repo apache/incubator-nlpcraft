@@ -54,8 +54,6 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
 
     /**
       *
-      * @param cfg
-      * @param pipeline
       */
     private def verify(): Unit =
         Objects.requireNonNull(mdl, "Model cannot be null.")
