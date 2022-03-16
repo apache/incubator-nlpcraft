@@ -18,10 +18,9 @@
 package org.apache.nlpcraft.internal.impl
 
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.nlp.entity.parser.NCEnSemanticEntityParser
+import org.apache.nlpcraft.nlp.entity.parser.*
 import org.apache.nlpcraft.nlp.entity.parser.semantic.NCSemanticEntityParser
-import org.apache.nlpcraft.nlp.util.NCTestModelAdapter
-import org.apache.nlpcraft.nlp.util.opennlp.*
+import org.apache.nlpcraft.nlp.util.*
 import org.junit.jupiter.api.Test
 
 import scala.jdk.CollectionConverters.*
@@ -30,7 +29,7 @@ import scala.util.Using
 class NCModelClientSpec:
     private def test0(mdl: NCTestModelAdapter): Unit =
         mdl.getPipeline.getEntityParsers.add(
-            new NCEnSemanticEntityParser("models/lightswitch_model.yaml")
+            NCTestUtils.mkENSemanticParser("models/lightswitch_model.yaml")
         )
 
         Using.resource(new NCModelClient(mdl)) { client =>

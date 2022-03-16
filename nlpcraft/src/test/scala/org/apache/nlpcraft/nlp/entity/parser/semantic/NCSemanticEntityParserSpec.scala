@@ -21,9 +21,7 @@ import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.util.*
 import org.apache.nlpcraft.nlp.entity.parser.*
 import org.apache.nlpcraft.nlp.token.enricher.*
-import org.apache.nlpcraft.nlp.token.enricher.en.*
 import org.apache.nlpcraft.nlp.util.*
-import org.apache.nlpcraft.nlp.util.opennlp.*
 import org.junit.jupiter.api.*
 
 import java.util
@@ -39,7 +37,7 @@ class NCSemanticEntityParserSpec:
     import NCSemanticTestElement as E
 
     private val parser =
-        new NCEnSemanticEntityParser(
+        NCTestUtils.mkENSemanticParser(
             Seq(
                 // Standard.
                 E("t1", synonyms = Set("t1")),
@@ -58,8 +56,11 @@ class NCSemanticEntityParserSpec:
             ).asJava
         )
 
-    private val stopWordsEnricher = new NCENStopWordsTokenEnricher()
-    private val lemmaPosEnricher = new NCENOpenNlpLemmaPosTokenEnricher()
+    private val stopWordsEnricher = new NCEnStopWordsTokenEnricher()
+    private val lemmaPosEnricher = new NCOpenNLPLemmaPosTokenEnricher(
+        NCResourceReader.getPath("opennlp/en-pos-maxent.bin"),
+        NCResourceReader.getPath("opennlp/en-lemmatizer.dict")
+    )
 
     /**
       *

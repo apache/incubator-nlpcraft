@@ -21,7 +21,6 @@ import org.apache.nlpcraft.internal.util.NCResourceReader
 import org.apache.nlpcraft.nlp.token.enricher.NСEnSwearWordsTokenEnricher
 import org.apache.nlpcraft.nlp.token.enricher.en.*
 import org.apache.nlpcraft.nlp.util.*
-import org.apache.nlpcraft.nlp.util.opennlp.*
 import org.junit.jupiter.api.*
 
 import scala.jdk.CollectionConverters.*

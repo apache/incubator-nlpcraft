@@ -22,7 +22,6 @@ import org.apache.nlpcraft.internal.util.NCUtils
 import org.apache.nlpcraft.nlp.entity.parser.*
 import org.apache.nlpcraft.nlp.token.parser.NCOpenNLPTokenParser
 import org.apache.nlpcraft.nlp.util.*
-import org.apache.nlpcraft.nlp.util.opennlp.*
 import org.junit.jupiter.api.*
 
 import java.util
@@ -35,7 +34,7 @@ import scala.jdk.OptionConverters.RichOptional
   *
   */
 class NCSemanticEntityParserJsonSpec:
-    private val parser = new NCEnSemanticEntityParser("models/alarm_model.json")
+    private val parser = NCTestUtils.mkENSemanticParser("models/alarm_model.json")
 
     /**
       * 

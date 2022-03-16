@@ -17,16 +17,22 @@
 
 package org.apache.nlpcraft;
 
+import opennlp.tools.stemmer.PorterStemmer;
 import org.apache.nlpcraft.internal.util.NCResourceReader;
+import org.apache.nlpcraft.nlp.entity.parser.semantic.NCSemanticElement;
+import org.apache.nlpcraft.nlp.entity.parser.semantic.NCSemanticEntityParser;
+import org.apache.nlpcraft.nlp.entity.parser.semantic.NCSemanticStemmer;
 import org.apache.nlpcraft.nlp.token.enricher.NCEnBracketsTokenEnricher;
 import org.apache.nlpcraft.nlp.token.enricher.NCEnDictionaryTokenEnricher;
 import org.apache.nlpcraft.nlp.token.enricher.NCEnQuotesTokenEnricher;
 import org.apache.nlpcraft.nlp.token.enricher.NCEnStopWordsTokenEnricher;
+import org.apache.nlpcraft.nlp.token.enricher.NCOpenNLPLemmaPosTokenEnricher;
 import org.apache.nlpcraft.nlp.token.enricher.NСEnSwearWordsTokenEnricher;
-import org.apache.nlpcraft.nlp.token.parser.NCENOpenNLPTokenParser;
+import org.apache.nlpcraft.nlp.token.parser.NCOpenNLPTokenParser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -195,10 +201,13 @@ public class NCModelPipelineBuilder {
 
         switch (lang.toUpperCase()) {
             case "EN":
-                tokParser = new NCENOpenNLPTokenParser();
+                tokParser = new NCOpenNLPTokenParser(NCResourceReader.getPath("opennlp/en-token.bin"));
 
-                //tokEnrichers.add(new NCEnOpenNLPLemmaPosTokenEnricher());
-                //tokEnrichers.add(new NCEnStopWordsTokenEnricher());
+                tokEnrichers.add(new NCOpenNLPLemmaPosTokenEnricher(
+                    NCResourceReader.getPath("opennlp/en-pos-maxent.bin"),
+                    NCResourceReader.getPath("opennlp/en-lemmatizer.dict")
+                ));
+                tokEnrichers.add(new NCEnStopWordsTokenEnricher());
                 tokEnrichers.add(new NСEnSwearWordsTokenEnricher(NCResourceReader.getPath("badfilter/swear_words.txt")));
                 tokEnrichers.add(new NCEnQuotesTokenEnricher());
                 tokEnrichers.add(new NCEnDictionaryTokenEnricher());
@@ -207,6 +216,84 @@ public class NCModelPipelineBuilder {
                 this.entParsers.addAll(entParsers);
 
                 break;
+            default:
+                throw new IllegalArgumentException("Unsupported language: " + lang);
+        }
+
+        return this;
+    }
+
+    /**
+     *
+     * @param lang
+     * @param macros
+     * @param elms
+     * @return
+     */
+    public NCModelPipelineBuilder withSemantic(String lang, Map<String, String> macros, List<NCSemanticElement> elms) {
+        switch (lang.toUpperCase()) {
+            case "EN":
+                this.entParsers.add(
+                    new NCSemanticEntityParser(
+                        new NCSemanticStemmer() {
+                            private final PorterStemmer ps = new PorterStemmer();
+
+                            @Override
+                            public synchronized String stem(String txt) {
+                                return ps.stem(txt.toLowerCase()); // TODO:
+                            }
+                        },
+                        new NCOpenNLPTokenParser(NCResourceReader.getPath("opennlp/en-token.bin")),
+                        macros,
+                        elms
+                    )
+                );
+
+                break;
+
+            default:
+                throw new IllegalArgumentException("Unsupported language: " + lang);
+        }
+
+        return this;
+    }
+
+    /**
+     *
+     * @param lang
+     * @param elms
+     * @return
+     */
+    public NCModelPipelineBuilder withSemantic(String lang, List<NCSemanticElement> elms) {
+        return withSemantic(lang, null, elms);
+    }
+
+    /**
+     *
+     * @param lang
+     * @param src
+     * @return
+     */
+    public NCModelPipelineBuilder withSemantic(String lang, String src) {
+        switch (lang.toUpperCase()) {
+            case "EN":
+                this.entParsers.add(
+                    new NCSemanticEntityParser(
+                        new NCSemanticStemmer() {
+                            private final PorterStemmer ps = new PorterStemmer();
+
+                            @Override
+                            public synchronized String stem(String txt) {
+                                return ps.stem(txt.toLowerCase()); // TODO:
+                            }
+                        },
+                        new NCOpenNLPTokenParser(NCResourceReader.getPath("opennlp/en-token.bin")),
+                        src
+                    )
+                );
+
+                break;
+
             default:
                 throw new IllegalArgumentException("Unsupported language: " + lang);
         }

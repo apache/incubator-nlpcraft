@@ -17,7 +17,8 @@
 
 package org.apache.nlpcraft.nlp.entity.parser.stanford
 
-import org.apache.nlpcraft.nlp.util.*
+import org.apache.nlpcraft.nlp.util.NCTestUtils
+import org.apache.nlpcraft.nlp.util.NCTestRequest
 import org.apache.nlpcraft.nlp.util.stanford.*
 import org.junit.jupiter.api.Test
 

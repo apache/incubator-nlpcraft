@@ -17,7 +17,7 @@
 
 package org.apache.nlpcraft.nlp.entity.parser.semantic
 
-import org.apache.nlpcraft.nlp.entity.parser.NCSemanticElement
+import org.apache.nlpcraft.nlp.entity.parser.*
 import org.apache.nlpcraft.*
 
 import java.util

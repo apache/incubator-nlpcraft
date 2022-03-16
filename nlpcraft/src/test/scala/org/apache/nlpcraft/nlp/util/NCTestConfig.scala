@@ -15,16 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.nlp.token.parser;
+package org.apache.nlpcraft.nlp.util
 
-import org.apache.nlpcraft.internal.util.NCResourceReader;
-import org.apache.nlpcraft.nlp.token.parser.NCOpenNLPTokenParser;
+import org.apache.nlpcraft.NCModelConfig
+import org.apache.nlpcraft.nlp.token.parser.NCOpenNLPTokenParser
+import org.apache.nlpcraft.nlp.util.*
 
-/*
- *
- */
-public class NCENOpenNLPTokenParser extends NCOpenNLPTokenParser {
-    public NCENOpenNLPTokenParser() {
-        super(NCResourceReader.getPath("opennlp/en-token.bin"));
-    }
-}
+/**
+  *
+  */
+final val CFG = NCTestConfigJava.CFG
+
+/**
+  *
+  */
+final val EN_PIPELINE = NCTestConfigJava.EN_PIPELINE

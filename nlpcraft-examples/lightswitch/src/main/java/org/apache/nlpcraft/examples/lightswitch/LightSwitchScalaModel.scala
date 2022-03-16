@@ -21,7 +21,7 @@ import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.util.NCResourceReader
 import org.apache.nlpcraft.nlp.*
 import org.apache.nlpcraft.nlp.entity.parser.semantic.NCSemanticEntityParser
-import org.apache.nlpcraft.nlp.entity.parser.{NCEnSemanticEntityParser, NCNLPEntityParser}
+import org.apache.nlpcraft.nlp.entity.parser.*
 import org.apache.nlpcraft.nlp.token.enricher.NCEnStopWordsTokenEnricher
 import org.apache.nlpcraft.nlp.token.parser.NCOpenNLPTokenParser
 
@@ -40,7 +40,7 @@ import org.apache.nlpcraft.nlp.token.parser.NCOpenNLPTokenParser
 
 class LightSwitchScalaModel extends NCModelAdapter(
     new NCModelConfig("nlpcraft.lightswitch.java.ex", "LightSwitch Example Model", "1.0"),
-    new NCModelPipelineBuilder().withLanguage("EN").withEntityParser(new NCEnSemanticEntityParser("lightswitch_model.yaml")).build()
+    new NCModelPipelineBuilder().withLanguage("EN").withSemantic("EN", "lightswitch_model.yaml").build()
 ):
     /**
       * Intent and its on-match callback.

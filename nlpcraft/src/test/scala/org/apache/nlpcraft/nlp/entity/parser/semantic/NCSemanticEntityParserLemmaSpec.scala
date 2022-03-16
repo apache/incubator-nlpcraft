@@ -21,11 +21,9 @@ import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.impl.*
 import org.apache.nlpcraft.internal.util.*
 import org.apache.nlpcraft.nlp.entity.parser.*
-import org.apache.nlpcraft.nlp.token.enricher.{NCENOpenNlpLemmaPosTokenEnricher, NCENStopWordsTokenEnricher}
-import org.apache.nlpcraft.nlp.token.enricher.en.*
-import org.apache.nlpcraft.nlp.token.parser.NCENOpenNLPTokenParser
-import org.apache.nlpcraft.nlp.util.NCTestUtils
-import org.apache.nlpcraft.nlp.util.opennlp.*
+import org.apache.nlpcraft.nlp.token.enricher.*
+import org.apache.nlpcraft.nlp.token.parser.*
+import org.apache.nlpcraft.nlp.util.*
 import org.junit.jupiter.api.*
 
 import java.util
@@ -37,9 +35,12 @@ import scala.jdk.CollectionConverters.*
   *
   */
 class NCSemanticEntityParserLemmaSpec:
-    private val lemmaTokEnricher = new NCENOpenNlpLemmaPosTokenEnricher
-    private val swTokEnricher = new NCENStopWordsTokenEnricher
-    private val tokParser = new NCENOpenNLPTokenParser
+    private val lemmaTokEnricher = new NCOpenNLPLemmaPosTokenEnricher(
+        NCResourceReader.getPath("opennlp/en-pos-maxent.bin"),
+        NCResourceReader.getPath("opennlp/en-lemmatizer.dict")
+    )
+    private val swTokEnricher = new NCEnStopWordsTokenEnricher
+    private val tokParser = new NCOpenNLPTokenParser(NCResourceReader.getPath("opennlp/en-token.bin"))
     private val lemmaStemmer =
         new NCSemanticStemmer():
             override def stem(txt: String): String = if wrapped(txt) then unwrap(txt) else UUID.randomUUID().toString

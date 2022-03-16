@@ -28,7 +28,6 @@ import org.apache.nlpcraft.NCRejection;
 import org.apache.nlpcraft.NCRequest;
 import org.apache.nlpcraft.NCResult;
 import org.apache.nlpcraft.NCResultType;
-import org.apache.nlpcraft.nlp.entity.parser.NCEnSemanticEntityParser;
 
 import java.util.HashMap;
 import java.util.Map;

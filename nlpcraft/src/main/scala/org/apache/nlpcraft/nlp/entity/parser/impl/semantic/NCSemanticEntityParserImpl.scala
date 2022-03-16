@@ -178,7 +178,7 @@ class NCSemanticEntityParserImpl(
     scrType: NCSemanticSourceType = null
 ) extends NCEntityParser with LazyLogging:
     require(stemmer != null && parser != null)
-    require(macros != null && elements != null || mdlSrc != null && scrType != null)
+    require(elements != null || mdlSrc != null && scrType != null)
 
     private var synsHolder: NCSemanticSynonymsHolder = _
     private var elemsMap: Map[String, NCSemanticElement] = _

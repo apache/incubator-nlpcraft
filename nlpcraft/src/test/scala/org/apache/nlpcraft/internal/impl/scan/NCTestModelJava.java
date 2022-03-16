@@ -25,7 +25,7 @@ import org.apache.nlpcraft.NCIntentTerm;
 import org.apache.nlpcraft.NCModel;
 import org.apache.nlpcraft.NCModelAdapter;
 import org.apache.nlpcraft.NCResult;
-import org.apache.nlpcraft.nlp.util.opennlp.NCTestConfigJava;
+import org.apache.nlpcraft.nlp.util.*;
 
 import java.util.List;
 import java.util.Optional;

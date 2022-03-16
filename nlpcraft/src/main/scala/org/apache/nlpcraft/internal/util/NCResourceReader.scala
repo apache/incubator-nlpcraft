@@ -47,8 +47,8 @@ object NCResourceReader extends LazyLogging:
         val normDir = if dir != null then dir else DFLT_DIR
         val f = new File(normDir)
 
-        if f.exists then if !f.isDirectory then E(s"Invalid folder: $normDir")
-        else if !f.mkdirs then E(s"Cannot create folder: $normDir")
+        if f.exists && !f.isDirectory then E(s"Invalid folder: $normDir")
+        if !f.exists && !f.mkdirs then E(s"Cannot create folder: $normDir")
 
         f
 

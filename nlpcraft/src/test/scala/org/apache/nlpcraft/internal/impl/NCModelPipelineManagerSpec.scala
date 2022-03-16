@@ -18,11 +18,10 @@
 package org.apache.nlpcraft.internal.impl
 
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.nlp.entity.parser.NCEnSemanticEntityParser
+import org.apache.nlpcraft.nlp.entity.parser.*
 import org.apache.nlpcraft.nlp.entity.parser.semantic.*
 import org.apache.nlpcraft.nlp.entity.parser.impl.NCNLPEntityParserImpl
 import org.apache.nlpcraft.nlp.util.*
-import org.apache.nlpcraft.nlp.util.opennlp.*
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.function.Executable
 
@@ -44,7 +43,7 @@ class NCModelPipelineManagerSpec:
         def test(txt: String, variantCnt: Int, elements: NCSemanticElement*): Unit =
             val pipeline = EN_PIPELINE.clone()
 
-            val parser = new NCEnSemanticEntityParser(elements.asJava)
+            val parser = NCTestUtils.mkENSemanticParser(elements.asJava)
             pipeline.getEntityParsers.clear()
             pipeline.getEntityParsers.add(parser)
 

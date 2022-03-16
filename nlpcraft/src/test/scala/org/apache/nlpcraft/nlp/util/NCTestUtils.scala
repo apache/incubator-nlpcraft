@@ -19,9 +19,12 @@ package org.apache.nlpcraft.nlp.util
 
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.ascii.NCAsciiTable
+import org.apache.nlpcraft.internal.util.NCResourceReader
+import org.apache.nlpcraft.nlp.entity.parser.semantic.*
+import org.apache.nlpcraft.nlp.token.parser.NCOpenNLPTokenParser
 
 import java.util
-import java.util.List as JList
+import java.util.{Map, List as JList}
 import scala.jdk.CollectionConverters.*
 import scala.jdk.OptionConverters.RichOptional
 import scala.util.Using
@@ -117,3 +120,37 @@ object NCTestUtils:
                     require(false)
                 catch case e: Exception => println(s"Expected error: ${e.getMessage}")
         }
+
+    /**
+      *
+      * @param elms
+      * @param macros
+      * @return
+      */
+    def mkENSemanticParser(elms: util.List[NCSemanticElement], macros: util.Map[String, String] = null): NCSemanticEntityParser =
+        val s = new opennlp.tools.stemmer.PorterStemmer
+
+        new NCSemanticEntityParser(
+            new NCSemanticStemmer():
+                override def stem(txt: String): String = s.stem(txt.toLowerCase)
+            ,
+            new NCOpenNLPTokenParser(NCResourceReader.getPath("opennlp/en-token.bin")),
+            macros,
+            elms
+        )
+
+    /**
+      *
+      * @param src
+      * @return
+      */
+    def mkENSemanticParser(src: String): NCSemanticEntityParser =
+        val s = new opennlp.tools.stemmer.PorterStemmer
+
+        new NCSemanticEntityParser(
+            new NCSemanticStemmer():
+                override def stem(txt: String): String = s.stem(txt.toLowerCase)
+            ,
+            new NCOpenNLPTokenParser(NCResourceReader.getPath("opennlp/en-token.bin")),
+            src
+        )

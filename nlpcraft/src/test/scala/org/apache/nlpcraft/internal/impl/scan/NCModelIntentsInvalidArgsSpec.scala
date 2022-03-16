@@ -20,7 +20,6 @@ package org.apache.nlpcraft.internal.impl.scan
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.impl.NCModelScanner
 import org.apache.nlpcraft.nlp.util.*
-import org.apache.nlpcraft.nlp.util.opennlp.*
 import org.junit.jupiter.api.Test
 
 import java.util

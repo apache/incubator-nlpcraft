@@ -15,18 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.nlp.util.opennlp
+package org.apache.nlpcraft.nlp.util;
 
-import org.apache.nlpcraft.NCModelConfig
-import org.apache.nlpcraft.nlp.token.parser.NCOpenNLPTokenParser
-import org.apache.nlpcraft.nlp.util.*
-
-/**
-  *
-  */
-final val CFG = NCTestConfigJava.CFG
+import org.apache.nlpcraft.NCModelConfig;
+import org.apache.nlpcraft.internal.util.NCResourceReader;
+import org.apache.nlpcraft.nlp.token.parser.NCOpenNLPTokenParser;
+import org.apache.nlpcraft.nlp.util.NCTestPipeline;
 
 /**
-  *
-  */
-final val EN_PIPELINE = NCTestConfigJava.EN_PIPELINE
+ *
+ */
+public class NCTestConfigJava {
+    /**
+     *
+     */
+    public static final NCModelConfig CFG = new NCModelConfig("testId", "test", "1.0", "Test description", "Test origin");
+
+    /** */
+    public static final NCTestPipeline EN_PIPELINE = new NCTestPipeline(
+        new NCOpenNLPTokenParser(NCResourceReader.getPath("opennlp/en-token.bin"))
+    );
+}

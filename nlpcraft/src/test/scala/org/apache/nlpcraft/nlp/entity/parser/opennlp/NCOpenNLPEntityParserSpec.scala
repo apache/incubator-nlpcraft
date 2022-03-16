@@ -21,7 +21,6 @@ import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.util.*
 import org.apache.nlpcraft.nlp.entity.parser.NCOpenNLPEntityParser
 import org.apache.nlpcraft.nlp.util.*
-import org.apache.nlpcraft.nlp.util.opennlp.*
 import org.junit.jupiter.api.*
 
 import java.util
