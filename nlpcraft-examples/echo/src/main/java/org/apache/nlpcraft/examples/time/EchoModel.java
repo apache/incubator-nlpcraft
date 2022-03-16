@@ -42,7 +42,6 @@ public class EchoModel extends NCModelAdapter {
             new NCModelConfig("nlpcraft.echo.ex", "Echo Example Model", "1.0"),
             new NCModelPipelineBuilder().withLanguage("EN").build()
         );
-
     }
 
     @Override
