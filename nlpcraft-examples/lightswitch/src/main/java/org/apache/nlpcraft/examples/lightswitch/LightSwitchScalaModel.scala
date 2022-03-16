@@ -40,7 +40,7 @@ import org.apache.nlpcraft.nlp.token.parser.NCOpenNLPTokenParser
 
 class LightSwitchScalaModel extends NCModelAdapter(
     new NCModelConfig("nlpcraft.lightswitch.java.ex", "LightSwitch Example Model", "1.0"),
-    new NCModelPipelineBuilder().withLanguage("EN").withSemantic("EN", "lightswitch_model.yaml").build()
+    new NCModelPipelineBuilder().withSemantic("EN", "lightswitch_model.yaml").build()
 ):
     /**
       * Intent and its on-match callback.

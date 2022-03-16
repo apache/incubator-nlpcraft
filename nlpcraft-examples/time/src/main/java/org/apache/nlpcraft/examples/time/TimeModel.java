@@ -75,7 +75,7 @@ public class TimeModel extends NCModelAdapter {
     public TimeModel() {
         super(
             new NCModelConfig("nlpcraft.time.ex", "Time Example Model", "1.0"),
-            new NCModelPipelineBuilder().withLanguage("EN").withSemantic("EN", "time_model.yaml").build()
+            new NCModelPipelineBuilder().withSemantic("EN", "time_model.yaml").build()
         );
     }
 

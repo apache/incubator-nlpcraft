@@ -18,7 +18,9 @@
 package org.apache.nlpcraft.nlp
 
 import org.apache.nlpcraft.*
+import org.apache.nlpcraft.internal.util.NCResourceReader
 import org.apache.nlpcraft.nlp.entity.parser.NCNLPEntityParser
+import org.apache.nlpcraft.nlp.token.parser.NCOpenNLPTokenParser
 import org.apache.nlpcraft.nlp.util.NCTestUtils
 import org.junit.jupiter.api.Test
 
@@ -38,7 +40,7 @@ class NCTokenEnricherSpec:
 
     private def mkBuilder(): NCModelPipelineBuilder =
         new NCModelPipelineBuilder().
-            withLanguage("EN").
+            withTokenParser(new NCOpenNLPTokenParser(NCResourceReader.getPath("opennlp/en-token.bin"))).
             //  For intents matching, we have to add at least one entity parser.
             withEntityParser(new NCNLPEntityParser)
 

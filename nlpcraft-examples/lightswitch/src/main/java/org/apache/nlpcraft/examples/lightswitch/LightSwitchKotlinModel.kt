@@ -37,7 +37,7 @@ import java.util.stream.Collectors
  */
 class LightSwitchKotlinModel : NCModelAdapter(
     NCModelConfig("nlpcraft.lightswitch.kotlin.ex", "LightSwitch Example Model", "1.0"),
-    NCModelPipelineBuilder().withLanguage("EN").withSemantic("EN", "lightswitch_model.yaml").build()
+    NCModelPipelineBuilder().withSemantic("EN", "lightswitch_model.yaml").build()
 ) {
     /**
      * Intent and its on-match callback.

@@ -18,6 +18,8 @@
 package org.apache.nlpcraft.nlp
 
 import org.apache.nlpcraft.*
+import org.apache.nlpcraft.internal.util.NCResourceReader
+import org.apache.nlpcraft.nlp.token.parser.NCOpenNLPTokenParser
 import org.apache.nlpcraft.nlp.util.NCTestUtils
 import org.junit.jupiter.api.Test
 
@@ -34,7 +36,7 @@ class NCTokenValidatorSpec:
 
         NCTestUtils.askSomething(mdl, ok)
 
-    private def mkBuilder(): NCModelPipelineBuilder = new NCModelPipelineBuilder().withLanguage("EN")
+    private def mkBuilder(): NCModelPipelineBuilder = new NCModelPipelineBuilder().withTokenParser(new NCOpenNLPTokenParser(NCResourceReader.getPath("opennlp/en-token.bin")))
     private def mkPipeline(apply: NCModelPipelineBuilder => NCModelPipelineBuilder): NCModelPipeline = apply(mkBuilder()).build()
 
     @Test

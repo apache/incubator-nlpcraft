@@ -49,6 +49,30 @@ public class NCModelPipelineBuilder {
     private Optional<NCVariantFilter> varFilter = Optional.empty();
 
     /**
+     *
+     * @return
+     */
+    private static NCSemanticStemmer mkEnStemmer() {
+        return new NCSemanticStemmer() {
+            private final PorterStemmer ps = new PorterStemmer();
+
+            @Override
+            public synchronized String stem(String txt) {
+                return ps.stem(txt.toLowerCase()); // TODO:
+            }
+        };
+    }
+
+    /**
+     *
+     * @return
+     */
+    private NCOpenNLPTokenParser mkEnOpenNlpTokenParser() {
+        return new NCOpenNLPTokenParser(NCResourceReader.getPath("opennlp/en-token.bin"));
+    }
+
+
+    /**
      * @param tokEnrichers
      * @return This instance for call chaining.
      */
@@ -196,31 +220,21 @@ public class NCModelPipelineBuilder {
         return this;
     }
 
-    public NCModelPipelineBuilder withLanguage(String lang) {
-        Objects.requireNonNull(lang, "Language cannot be null.");
+    /**
+     *
+     */
+    private void setEnComponents() {
+        tokParser = mkEnOpenNlpTokenParser();
 
-        switch (lang.toUpperCase()) {
-            case "EN":
-                tokParser = new NCOpenNLPTokenParser(NCResourceReader.getPath("opennlp/en-token.bin"));
-
-                tokEnrichers.add(new NCOpenNLPLemmaPosTokenEnricher(
-                    NCResourceReader.getPath("opennlp/en-pos-maxent.bin"),
-                    NCResourceReader.getPath("opennlp/en-lemmatizer.dict")
-                ));
-                tokEnrichers.add(new NCEnStopWordsTokenEnricher());
-                tokEnrichers.add(new NСEnSwearWordsTokenEnricher(NCResourceReader.getPath("badfilter/swear_words.txt")));
-                tokEnrichers.add(new NCEnQuotesTokenEnricher());
-                tokEnrichers.add(new NCEnDictionaryTokenEnricher());
-                tokEnrichers.add(new NCEnBracketsTokenEnricher());
-
-                this.entParsers.addAll(entParsers);
-
-                break;
-            default:
-                throw new IllegalArgumentException("Unsupported language: " + lang);
-        }
-
-        return this;
+        tokEnrichers.add(new NCOpenNLPLemmaPosTokenEnricher(
+            NCResourceReader.getPath("opennlp/en-pos-maxent.bin"),
+            NCResourceReader.getPath("opennlp/en-lemmatizer.dict")
+        ));
+        tokEnrichers.add(new NCEnStopWordsTokenEnricher());
+        tokEnrichers.add(new NСEnSwearWordsTokenEnricher(NCResourceReader.getPath("badfilter/swear_words.txt")));
+        tokEnrichers.add(new NCEnQuotesTokenEnricher());
+        tokEnrichers.add(new NCEnDictionaryTokenEnricher());
+        tokEnrichers.add(new NCEnBracketsTokenEnricher());
     }
 
     /**
@@ -231,23 +245,15 @@ public class NCModelPipelineBuilder {
      * @return
      */
     public NCModelPipelineBuilder withSemantic(String lang, Map<String, String> macros, List<NCSemanticElement> elms) {
+        Objects.requireNonNull(lang, "Language cannot be null.");
+        Objects.requireNonNull(elms, "Model elements cannot be null.");
+        if (elms.isEmpty()) throw new IllegalArgumentException("Model elements cannot be empty.");
+
         switch (lang.toUpperCase()) {
             case "EN":
-                this.entParsers.add(
-                    new NCSemanticEntityParser(
-                        new NCSemanticStemmer() {
-                            private final PorterStemmer ps = new PorterStemmer();
+                setEnComponents();
 
-                            @Override
-                            public synchronized String stem(String txt) {
-                                return ps.stem(txt.toLowerCase()); // TODO:
-                            }
-                        },
-                        new NCOpenNLPTokenParser(NCResourceReader.getPath("opennlp/en-token.bin")),
-                        macros,
-                        elms
-                    )
-                );
+                this.entParsers.add(new NCSemanticEntityParser(mkEnStemmer(), mkEnOpenNlpTokenParser(), macros, elms));
 
                 break;
 
@@ -275,22 +281,14 @@ public class NCModelPipelineBuilder {
      * @return
      */
     public NCModelPipelineBuilder withSemantic(String lang, String src) {
+        Objects.requireNonNull(lang, "Language cannot be null.");
+        Objects.requireNonNull(src, "Model source cannot be null.");
+
         switch (lang.toUpperCase()) {
             case "EN":
-                this.entParsers.add(
-                    new NCSemanticEntityParser(
-                        new NCSemanticStemmer() {
-                            private final PorterStemmer ps = new PorterStemmer();
+                setEnComponents();
 
-                            @Override
-                            public synchronized String stem(String txt) {
-                                return ps.stem(txt.toLowerCase()); // TODO:
-                            }
-                        },
-                        new NCOpenNLPTokenParser(NCResourceReader.getPath("opennlp/en-token.bin")),
-                        src
-                    )
-                );
+                this.entParsers.add(new NCSemanticEntityParser(mkEnStemmer(), mkEnOpenNlpTokenParser(), src));
 
                 break;
 
@@ -300,6 +298,7 @@ public class NCModelPipelineBuilder {
 
         return this;
     }
+
 
     /**
      * @return
