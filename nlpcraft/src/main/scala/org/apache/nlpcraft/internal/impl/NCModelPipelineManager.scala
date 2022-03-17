@@ -41,9 +41,8 @@ import scala.jdk.OptionConverters.*
   * @param request
   * @param variants
   * @param tokens
-  * @param checkCancel
   */
-case class NCPipelineData(request: NCRequest, variants: Seq[NCVariant], tokens: JList[NCToken], checkCancel: Option[() => Unit])
+case class NCPipelineData(request: NCRequest, variants: Seq[NCVariant], tokens: JList[NCToken])
 
 /**
   *
@@ -98,10 +97,9 @@ class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCModelPipeline) exte
       * @param txt
       * @param data
       * @param usrId
-      * @param checkCancel
       * @return
       */
-    def prepare(txt: String, data: JMap[String, AnyRef], usrId: String, checkCancel: Option[() => Unit] = None): NCPipelineData =
+    def prepare(txt: String, data: JMap[String, AnyRef], usrId: String): NCPipelineData =
         require(txt != null && usrId != null)
 
         /**
@@ -113,7 +111,6 @@ class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCModelPipeline) exte
             new NCVariant:
                 override val getEntities: JList[NCEntity] = ents.asJava
 
-        val check = checkCancel.getOrElse(() => ())
         val req: NCRequest = new NCRequest:
             override val getUserId: String = usrId
             override val getRequestId: String = UUID.randomUUID().toString
@@ -124,9 +121,7 @@ class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCModelPipeline) exte
         val toks = tokParser.tokenize(txt)
 
         if toks.size() > 0 then
-            for (e <- tokEnrichers)
-                check()
-                e.enrich(req, cfg, toks)
+            for (e <- tokEnrichers) e.enrich(req, cfg, toks)
 
         val tbl = NCAsciiTable("Text", "Start index", "End index", "Properties")
 
@@ -140,25 +135,17 @@ class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCModelPipeline) exte
         tbl.info(logger, Option(s"Tokens for: ${req.getText}"))
 
         // NOTE: we run validators regardless of whether token list is empty.
-        for (v <- tokVals)
-            check()
-            v.validate(req, cfg, toks)
+        for (v <- tokVals) v.validate(req, cfg, toks)
 
         val entsList = new util.ArrayList[NCEntity]()
 
-        for (p <- entParsers)
-            check()
-            entsList.addAll(p.parse(req, cfg, toks))
+        for (p <- entParsers) entsList.addAll(p.parse(req, cfg, toks))
 
         if entsList.size() > 0 then
-            for (e <- entEnrichers)
-                check()
-                e.enrich(req, cfg, entsList)
+            for (e <- entEnrichers) e.enrich(req, cfg, entsList)
 
         // NOTE: we run validators regardless of whether entity list is empty.
-        for (v <- entVals)
-            check()
-            v.validate(req, cfg, entsList)
+        for (v <- entVals) v.validate(req, cfg, entsList)
 
         val entities = entsList.asScala.toSeq
 
@@ -180,9 +167,7 @@ class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCModelPipeline) exte
             else
                 Seq(newVariant(entities)).asJava
 
-        if varFilterOpt.isDefined then
-            check()
-            variants = varFilterOpt.get.filter(req, cfg, variants)
+        if varFilterOpt.isDefined then variants = varFilterOpt.get.filter(req, cfg, variants)
 
         // Skips empty variants.
         val vrnts = variants.asScala.toSeq.filter(!_.getEntities.isEmpty)
@@ -200,7 +185,7 @@ class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCModelPipeline) exte
                 )
             tbl.info(logger, Option(s"Variant: ${i + 1} (${vrnts.size})"))
 
-        NCPipelineData(req, vrnts, toks, checkCancel)
+        NCPipelineData(req, vrnts, toks)
 
     def start(): Unit = processServices(_.onStart(cfg), "started")
     /**
