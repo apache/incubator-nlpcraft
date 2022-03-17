@@ -134,7 +134,7 @@ object NCTestUtils:
             new NCSemanticStemmer():
                 override def stem(txt: String): String = s.stem(txt.toLowerCase)
             ,
-            new NCOpenNLPTokenParser(NCResourceReader.getPath("opennlp/en-token.bin")),
+            EN_TOK_PARSER,
             macros,
             elms
         )
@@ -151,6 +151,6 @@ object NCTestUtils:
             new NCSemanticStemmer():
                 override def stem(txt: String): String = s.stem(txt.toLowerCase)
             ,
-            new NCOpenNLPTokenParser(NCResourceReader.getPath("opennlp/en-token.bin")),
+            EN_TOK_PARSER,
             src
         )

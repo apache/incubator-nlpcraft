@@ -17,7 +17,4 @@ final val STANFORD =
     props.setProperty("annotators", "tokenize, ssplit, pos, lemma, ner")
     new StanfordCoreNLP(props)
 
-/**
-  *
-  */
-final val EN_STANFORD_PIPELINE = NCTestPipeline(new NCStanfordNLPTokenParser(STANFORD))
+final val TOK_STANFORD_PARSER = new NCStanfordNLPTokenParser(STANFORD)

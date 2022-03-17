@@ -32,7 +32,7 @@ import scala.jdk.OptionConverters.RichOptional
   *
   */
 class NCSemanticEntityParserYamlSpec:
-    private val parser = NCTestUtils.mkENSemanticParser("models/lightswitch_model.yaml")
+    private val semParser = NCTestUtils.mkENSemanticParser("models/lightswitch_model.yaml")
 
     /**
       * 
@@ -41,11 +41,7 @@ class NCSemanticEntityParserYamlSpec:
       */
     private def check(txt: String, id: String): Unit =
         val req = NCTestRequest(txt)
-        val ents = parser.parse(
-            req,
-            CFG,
-            EN_PIPELINE.getTokenParser.tokenize(req.txt)
-        ).asScala.toSeq
+        val ents = semParser.parse(req, CFG, EN_TOK_PARSER.tokenize(req.txt)).asScala.toSeq
 
         NCTestUtils.printEntities(txt, ents)
 

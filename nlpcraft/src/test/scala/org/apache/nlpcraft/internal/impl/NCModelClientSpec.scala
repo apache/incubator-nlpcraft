@@ -28,9 +28,7 @@ import scala.util.Using
 
 class NCModelClientSpec:
     private def test0(mdl: NCTestModelAdapter): Unit =
-        mdl.getPipeline.getEntityParsers.add(
-            NCTestUtils.mkENSemanticParser("models/lightswitch_model.yaml")
-        )
+        mdl.getPipeline.getEntityParsers.add(NCTestUtils.mkENSemanticParser("models/lightswitch_model.yaml"))
 
         Using.resource(new NCModelClient(mdl)) { client =>
             val res = client.ask("Lights on at second floor kitchen", null, "userId")

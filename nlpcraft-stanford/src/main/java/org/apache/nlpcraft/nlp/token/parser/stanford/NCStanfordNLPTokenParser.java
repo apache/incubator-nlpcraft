@@ -26,7 +26,8 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- *
+ * TODO:
+ * Note that this rokenizer also addes 2 properties into parsed token: lemma and pos
  */
 public class NCStanfordNLPTokenParser implements NCTokenParser {
     private final NCStanfordNLPTokenParserImpl impl;

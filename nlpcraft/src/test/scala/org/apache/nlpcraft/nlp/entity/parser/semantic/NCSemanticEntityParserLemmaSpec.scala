@@ -35,12 +35,6 @@ import scala.jdk.CollectionConverters.*
   *
   */
 class NCSemanticEntityParserLemmaSpec:
-    private val lemmaTokEnricher = new NCOpenNLPLemmaPosTokenEnricher(
-        NCResourceReader.getPath("opennlp/en-pos-maxent.bin"),
-        NCResourceReader.getPath("opennlp/en-lemmatizer.dict")
-    )
-    private val swTokEnricher = new NCEnStopWordsTokenEnricher
-    private val tokParser = new NCOpenNLPTokenParser(NCResourceReader.getPath("opennlp/en-token.bin"))
     private val lemmaStemmer =
         new NCSemanticStemmer():
             override def stem(txt: String): String = if wrapped(txt) then unwrap(txt) else UUID.randomUUID().toString
@@ -64,15 +58,15 @@ class NCSemanticEntityParserLemmaSpec:
         val mgr = new NCModelPipelineManager(
             CFG,
             new NCModelPipelineBuilder().
-                withTokenParser(tokParser).
-                withTokenEnricher(lemmaTokEnricher).
-                withTokenEnricher(swTokEnricher).
+                withTokenParser(EN_TOK_PARSER).
+                withTokenEnricher(EN_TOK_LEMMA_POS_ENRICHER).
+                withTokenEnricher(EN_TOK_STOP_ENRICHER).
                 // 1. Wraps lemmas.
                 withTokenEnricher((req: NCRequest, cfg: NCModelConfig, toks: JList[NCToken]) =>
                     toks.forEach(t => t.put("lemma", wrap(t.get[String]("lemma"))))
                 ).
                 // 2. Semantic parser with fixed stemmer which stems only lemmas.
-                withEntityParser(new NCSemanticEntityParser(lemmaStemmer, tokParser, elems.asJava)).
+                withEntityParser(new NCSemanticEntityParser(lemmaStemmer, EN_TOK_PARSER, elems.asJava)).
                 build()
         )
 

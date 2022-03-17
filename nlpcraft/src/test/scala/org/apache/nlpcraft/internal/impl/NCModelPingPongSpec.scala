@@ -59,9 +59,7 @@ class NCModelPingPongSpec:
             def onOther(im: NCIntentMatch, @NCIntentTerm("other") other: NCEntity): NCResult =
                 R(ASK_RESULT, s"Some request by: ${other.mkText()}")
 
-    MDL.getPipeline.getEntityParsers.add(
-        NCTestUtils.mkENSemanticParser(Seq(STE("command"), STE("confirm"), STE("other")).asJava)
-    )
+    MDL.getPipeline.getEntityParsers.add(NCTestUtils.mkENSemanticParser(Seq(STE("command"), STE("confirm"), STE("other")).asJava))
 
     @BeforeEach
     def setUp(): Unit = client = new NCModelClient(MDL)

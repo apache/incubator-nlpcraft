@@ -29,11 +29,6 @@ import scala.jdk.CollectionConverters.*
   *
   */
 class NCQuotesTokenEnricherSpec:
-    private val lemmaPosEnricher = 
-        new NCOpenNLPLemmaPosTokenEnricher(
-            NCResourceReader.getPath("opennlp/en-pos-maxent.bin"), 
-            NCResourceReader.getPath("opennlp/en-lemmatizer.dict")
-        )
     private val quoteEnricher = new NCEnQuotesTokenEnricher
 
     /**
@@ -42,11 +37,11 @@ class NCQuotesTokenEnricherSpec:
       * @param quotes
       */
     private def check(txt: String, quotes: Set[Integer]): Unit =
-        val toks = EN_PIPELINE.getTokenParser.tokenize(txt)
+        val toks = EN_TOK_PARSER.tokenize(txt)
         val toksSeq = toks.asScala.toSeq
 
         val req = NCTestRequest(txt)
-        lemmaPosEnricher.enrich(req, CFG, toks)
+        EN_TOK_LEMMA_POS_ENRICHER.enrich(req, CFG, toks)
         quoteEnricher.enrich(req, CFG, toks)
         
         NCTestUtils.printTokens(toksSeq)

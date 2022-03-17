@@ -21,12 +21,8 @@ import org.apache.nlpcraft.NCModelConfig
 import org.apache.nlpcraft.nlp.token.parser.NCOpenNLPTokenParser
 import org.apache.nlpcraft.nlp.util.*
 
-/**
-  *
-  */
 final val CFG = NCTestConfigJava.CFG
-
-/**
-  *
-  */
-final val EN_PIPELINE = NCTestConfigJava.EN_PIPELINE
+final val EN_TOK_PARSER = NCTestConfigJava.EN_TOK_PARSER
+final val EN_TOK_STOP_ENRICHER = NCTestConfigJava.EN_TOK_STOP_ENRICHER
+final val EN_TOK_LEMMA_POS_ENRICHER = NCTestConfigJava.EN_TOK_LEMMA_POS_ENRICHER
+final def mkEnPipeline = NCTestConfigJava.mkEnPipeline()

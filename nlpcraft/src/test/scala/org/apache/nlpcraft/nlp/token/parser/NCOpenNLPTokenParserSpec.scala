@@ -31,22 +31,15 @@ import scala.jdk.CollectionConverters.*
   *
   */
 class NCOpenNLPTokenParserSpec:
-    private val lemmaPosEnricher =
-        new NCOpenNLPLemmaPosTokenEnricher(
-            NCResourceReader.getPath("opennlp/en-pos-maxent.bin"),
-            NCResourceReader.getPath("opennlp/en-lemmatizer.dict")
-        )
-    private val stopEnricher = new NCEnStopWordsTokenEnricher(null, null)
-
     private def isStopWord(t: NCToken): Boolean = t.get[Boolean]("stopword")
 
     private def test(txt: String, validate: Seq[NCToken] => _): Unit =
-        val toksList = EN_PIPELINE.getTokenParser.tokenize(txt)
+        val toksList = EN_TOK_PARSER.tokenize(txt)
 
         val req = NCTestRequest(txt)
 
-        lemmaPosEnricher.enrich(req, CFG, toksList)
-        stopEnricher.enrich(req, CFG, toksList)
+        EN_TOK_LEMMA_POS_ENRICHER.enrich(req, CFG, toksList)
+        EN_TOK_STOP_ENRICHER.enrich(req, CFG, toksList)
 
         val toks = toksList.asScala.toSeq
         assert(toks.nonEmpty)

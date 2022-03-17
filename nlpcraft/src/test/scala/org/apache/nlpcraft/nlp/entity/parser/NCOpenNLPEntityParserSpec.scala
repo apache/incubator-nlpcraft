@@ -33,16 +33,20 @@ import scala.jdk.OptionConverters.RichOptional
   *
   */
 class NCOpenNLPEntityParserSpec:
-    private val parser = new NCOpenNLPEntityParser(
-        Seq(
-            "opennlp/en-ner-location.bin",
-            "opennlp/en-ner-money.bin",
-            "opennlp/en-ner-person.bin",
-            "opennlp/en-ner-organization.bin",
-            "opennlp/en-ner-date.bin",
-            "opennlp/en-ner-percentage.bin"
-        ).map(NCResourceReader.getPath).asJava
-    )
+    private val parser =
+        val list = new java.util.concurrent.CopyOnWriteArrayList[String]()
+
+        NCUtils.execPar(
+            Seq(
+                "opennlp/en-ner-location.bin",
+                "opennlp/en-ner-money.bin",
+                "opennlp/en-ner-person.bin",
+                "opennlp/en-ner-organization.bin",
+                "opennlp/en-ner-date.bin",
+                "opennlp/en-ner-percentage.bin"
+            ).map(p => () => list.add(NCResourceReader.getPath(p)))*)(ExecutionContext.Implicits.global)
+
+        new NCOpenNLPEntityParser(list)
 
     /**
       *
@@ -51,7 +55,7 @@ class NCOpenNLPEntityParserSpec:
       */
     private def check(txt: String, expected: String): Unit =
         val req = NCTestRequest(txt)
-        val toks = EN_PIPELINE.getTokenParser.tokenize(txt)
+        val toks = EN_TOK_PARSER.tokenize(txt)
         val ents = parser.parse(req, CFG, toks).asScala.toSeq
 
         NCTestUtils.printEntities(txt, ents)

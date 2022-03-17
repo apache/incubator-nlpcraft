@@ -35,7 +35,7 @@ import scala.jdk.OptionConverters.RichOptional
   */
 class NCSemanticEntityParserSpec:
     import NCSemanticTestElement as E
-    private val parser =
+    private val semParser =
         NCTestUtils.mkENSemanticParser(
             Seq(
                 // Standard.
@@ -55,12 +55,6 @@ class NCSemanticEntityParserSpec:
             ).asJava
         )
 
-    private val stopWordsEnricher = new NCEnStopWordsTokenEnricher()
-    private val lemmaPosEnricher = new NCOpenNLPLemmaPosTokenEnricher(
-        NCResourceReader.getPath("opennlp/en-pos-maxent.bin"),
-        NCResourceReader.getPath("opennlp/en-lemmatizer.dict")
-    )
-
     /**
       *
       * @param txt
@@ -70,14 +64,14 @@ class NCSemanticEntityParserSpec:
       */
     private def check(txt: String, id: String, value: Option[String] = None, elemData: Option[Map[String, Any]] = None): Unit =
         val req = NCTestRequest(txt)
-        val toks = EN_PIPELINE.getTokenParser.tokenize(txt)
+        val toks = EN_TOK_PARSER.tokenize(txt)
 
-        lemmaPosEnricher.enrich(req, CFG, toks)
-        stopWordsEnricher.enrich(req, CFG, toks)
+        EN_TOK_LEMMA_POS_ENRICHER.enrich(req, CFG, toks)
+        EN_TOK_STOP_ENRICHER.enrich(req, CFG, toks)
 
         NCTestUtils.printTokens(toks.asScala.toSeq)
 
-        val ents = parser.parse(req, CFG, toks).asScala.toSeq
+        val ents = semParser.parse(req, CFG, toks).asScala.toSeq
 
         NCTestUtils.printEntities(txt, ents)
         require(ents.sizeIs == 1)
@@ -99,14 +93,14 @@ class NCSemanticEntityParserSpec:
       */
     private def checkMultiple(txt: String, ids: String*): Unit =
         val req = NCTestRequest(txt)
-        val toks = EN_PIPELINE.getTokenParser.tokenize(txt)
+        val toks = EN_TOK_PARSER.tokenize(txt)
 
-        lemmaPosEnricher.enrich(req, CFG, toks)
-        stopWordsEnricher.enrich(req, CFG, toks)
+        EN_TOK_LEMMA_POS_ENRICHER.enrich(req, CFG, toks)
+        EN_TOK_STOP_ENRICHER.enrich(req, CFG, toks)
 
         NCTestUtils.printTokens(toks.asScala.toSeq)
 
-        val ents = parser.parse(req, CFG, toks).asScala.toSeq
+        val ents = semParser.parse(req, CFG, toks).asScala.toSeq
 
         NCTestUtils.printEntities(txt, ents)
         require(ents.sizeIs == ids.size)

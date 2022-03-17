@@ -30,23 +30,17 @@ import scala.jdk.CollectionConverters.*
 class NCDictionaryTokenEnricherSpec:
     private val dictEnricher = new NCEnDictionaryTokenEnricher()
 
-    private val lemmaPosEnricher =
-        new NCOpenNLPLemmaPosTokenEnricher(
-            NCResourceReader.getPath("opennlp/en-pos-maxent.bin"),
-            NCResourceReader.getPath("opennlp/en-lemmatizer.dict")
-        )
-
     @Test
     def test(): Unit =
         val txt = "milk XYZ"
-        val toks = EN_PIPELINE.getTokenParser.tokenize(txt).asScala.toSeq
+        val toks = EN_TOK_PARSER.tokenize(txt).asScala.toSeq
 
         require(toks.head.getOpt[Boolean]("dict:en").isEmpty)
         require(toks.last.getOpt[Boolean]("dict:en").isEmpty)
 
         val req = NCTestRequest(txt)
 
-        lemmaPosEnricher.enrich(req, CFG, toks.asJava)
+        EN_TOK_LEMMA_POS_ENRICHER.enrich(req, CFG, toks.asJava)
         dictEnricher.enrich(req, CFG, toks.asJava)
         NCTestUtils.printTokens(toks)
 

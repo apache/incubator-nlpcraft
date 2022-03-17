@@ -37,7 +37,7 @@ class NCStopWordsImplSpec:
       * @param expected
       */
     private def test0(words: Seq[W], expected: Seq[String]): Unit =
-        val toksList = EN_PIPELINE.getTokenParser.tokenize(words.map(_.text).mkString(" "))
+        val toksList = EN_TOK_PARSER.tokenize(words.map(_.text).mkString(" "))
         require(toksList.size == words.size)
         val toks = toksList.asScala
 

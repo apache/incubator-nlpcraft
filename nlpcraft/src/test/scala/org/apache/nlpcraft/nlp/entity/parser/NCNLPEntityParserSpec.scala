@@ -41,7 +41,7 @@ class NCNLPEntityParserSpec:
     @Test
     def test(): Unit =
         val req = NCTestRequest("I had the lunch")
-        val toks = EN_PIPELINE.getTokenParser.tokenize(req.txt)
+        val toks = EN_TOK_PARSER.tokenize(req.txt)
         val entities = parser.parse(req, CFG, toks).asScala.toSeq
 
         NCTestUtils.printEntities(req.txt, entities)

@@ -34,7 +34,7 @@ import scala.jdk.OptionConverters.RichOptional
   *
   */
 class NCSemanticEntityParserJsonSpec:
-    private val parser = NCTestUtils.mkENSemanticParser("models/alarm_model.json")
+    private val semParser = NCTestUtils.mkENSemanticParser("models/alarm_model.json")
 
     /**
       * 
@@ -44,11 +44,7 @@ class NCSemanticEntityParserJsonSpec:
       */
     private def check(txt: String, id: String, elemData: Option[Map[String, Any]] = None): Unit =
         val req = NCTestRequest(txt)
-        val ents = parser.parse(
-            req,
-            CFG,
-            EN_PIPELINE.getTokenParser.tokenize(req.txt)
-        ).asScala.toSeq
+        val ents = semParser.parse(req, CFG, EN_TOK_PARSER.tokenize(req.txt)).asScala.toSeq
 
         NCTestUtils.printEntities(txt, ents)
 
