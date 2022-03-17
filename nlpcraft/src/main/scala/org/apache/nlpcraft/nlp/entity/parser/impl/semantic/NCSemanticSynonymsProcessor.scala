@@ -197,7 +197,7 @@ private[impl] object NCSemanticSynonymsProcessor extends LazyLogging:
                             else
                                 regex.used = true
                                 Some(regex.mkChunk())
-                        case None => Option(NCSemanticSynonymChunk(TEXT, tok.getText, stemmer.stem(tok.getText)))
+                        case None => Option(NCSemanticSynonymChunk(TEXT, tok.getText, stemmer.stem(tok.getText.toLowerCase)))
                 ).toSeq
             }).toSeq
 
@@ -236,7 +236,7 @@ private[impl] object NCSemanticSynonymsProcessor extends LazyLogging:
 
             def add(syns: Seq[NCSemanticSynonym]): Unit = buf ++= syns.map(Holder(_, elemId))
             def addSpec(txt: String, value: String = null): Unit =
-                buf += Holder(NCSemanticSynonym(Seq(NCSemanticSynonymChunk(TEXT, txt, stemmer.stem(txt))), value), elemId)
+                buf += Holder(NCSemanticSynonym(Seq(NCSemanticSynonymChunk(TEXT, txt, stemmer.stem(txt.toLowerCase))), value), elemId)
 
             addSpec(elemId)
 

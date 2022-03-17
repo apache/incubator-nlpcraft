@@ -58,7 +58,7 @@ public class NCModelPipelineBuilder {
 
             @Override
             public synchronized String stem(String txt) {
-                return ps.stem(txt.toLowerCase()); // TODO:
+                return ps.stem(txt);
             }
         };
     }

@@ -129,7 +129,7 @@ object NCTestUtils:
     private def mkSemanticStemmer: NCSemanticStemmer =
         new NCSemanticStemmer():
             private val ps = new PorterStemmer
-            override def stem(txt: String): String = ps.synchronized { ps.stem(txt.toLowerCase) }
+            override def stem(txt: String): String = ps.synchronized { ps.stem(txt) }
 
 
     /**

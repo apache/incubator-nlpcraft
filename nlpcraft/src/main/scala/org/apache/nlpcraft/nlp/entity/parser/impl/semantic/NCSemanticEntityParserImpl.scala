@@ -211,7 +211,7 @@ class NCSemanticEntityParserImpl(
         val toks = toksList.asScala.toSeq
         if toks.exists(_.get[String]("stopword") == null) then warnMissedProperty("stopword")
 
-        val stems = toks.map(p => p -> stemmer.stem(p.getText)).toMap
+        val stems = toks.map(p => p -> stemmer.stem(p.getText.toLowerCase)).toMap
         val stems4Lemms =
             var ok = true
             val seq =
@@ -221,7 +221,7 @@ class NCSemanticEntityParserImpl(
                         t -> lemma
 
             if ok then
-                seq.toMap.map { (tok, lemma) => tok -> stemmer.stem(lemma) }
+                seq.toMap.map { (tok, lemma) => tok -> stemmer.stem(lemma.toLowerCase) }
             else
                 warnMissedProperty("lemma")
                 Map.empty
