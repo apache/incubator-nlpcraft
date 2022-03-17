@@ -102,7 +102,6 @@ class NCSemanticEntityParserLemmaSpec:
     @Test
     def test(): Unit =
         import NCSemanticTestElement as E
-
         // Lemma.
         ask(
             "my test",

@@ -17,8 +17,8 @@
 
 package org.apache.nlpcraft.nlp.entity.parser.semantic
 
-import org.apache.nlpcraft.nlp.entity.parser.*
 import org.apache.nlpcraft.*
+import org.apache.nlpcraft.nlp.entity.parser.*
 
 import java.util
 import java.util.{List as JList, Map as JMap, Set as JSet}

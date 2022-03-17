@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.nlp.token.enricher.en.impl
+package org.apache.nlpcraft.nlp.token.enricher.impl
 
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.nlp.token.enricher.impl.NCEnStopWordsTokenEnricherImpl
-import org.apache.nlpcraft.nlp.token.enricher.en.*
 import org.apache.nlpcraft.nlp.util.*
 import org.junit.jupiter.api.*
 

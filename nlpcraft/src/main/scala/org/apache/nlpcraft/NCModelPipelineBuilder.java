@@ -231,6 +231,8 @@ public class NCModelPipelineBuilder {
             NCResourceReader.getPath("opennlp/en-lemmatizer.dict")
         ));
         tokEnrichers.add(new NCEnStopWordsTokenEnricher());
+
+        // TODO: Do we need following components here?
         tokEnrichers.add(new NСEnSwearWordsTokenEnricher(NCResourceReader.getPath("badfilter/swear_words.txt")));
         tokEnrichers.add(new NCEnQuotesTokenEnricher());
         tokEnrichers.add(new NCEnDictionaryTokenEnricher());

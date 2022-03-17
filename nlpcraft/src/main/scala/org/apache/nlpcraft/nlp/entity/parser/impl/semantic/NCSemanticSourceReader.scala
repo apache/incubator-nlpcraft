@@ -21,8 +21,8 @@ import com.fasterxml.jackson.databind.*
 import com.fasterxml.jackson.dataformat.yaml.*
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.nlp.entity.parser.impl.semantic.NCSemanticSourceType.*
 import org.apache.nlpcraft.nlp.entity.parser.impl.semantic.*
+import org.apache.nlpcraft.nlp.entity.parser.impl.semantic.NCSemanticSourceType.*
 import org.apache.nlpcraft.nlp.entity.parser.semantic.*
 
 import java.io.InputStream

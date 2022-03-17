@@ -17,8 +17,8 @@
 package org.apache.nlpcraft.nlp.entity.parser.impl.semantic
 
 import org.apache.nlpcraft.NCToken
-import org.apache.nlpcraft.nlp.entity.parser.impl.semantic.NCSemanticChunkKind.*
 import org.apache.nlpcraft.nlp.entity.parser.impl.semantic.*
+import org.apache.nlpcraft.nlp.entity.parser.impl.semantic.NCSemanticChunkKind.*
 
 import java.util.regex.Pattern
 

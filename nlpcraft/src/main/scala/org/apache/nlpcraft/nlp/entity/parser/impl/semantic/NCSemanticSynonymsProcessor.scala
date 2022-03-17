@@ -23,9 +23,9 @@ import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.makro.NCMacroParser
 import org.apache.nlpcraft.internal.util.NCUtils
-import org.apache.nlpcraft.nlp.entity.parser.semantic.*
-import org.apache.nlpcraft.nlp.entity.parser.impl.semantic.NCSemanticChunkKind.*
 import org.apache.nlpcraft.nlp.entity.parser.impl.semantic.*
+import org.apache.nlpcraft.nlp.entity.parser.impl.semantic.NCSemanticChunkKind.*
+import org.apache.nlpcraft.nlp.entity.parser.semantic.*
 
 import java.io.InputStream
 import java.util

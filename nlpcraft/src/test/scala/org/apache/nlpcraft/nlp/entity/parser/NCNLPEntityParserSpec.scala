@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.nlp.entity.parser.nlp
+package org.apache.nlpcraft.nlp.entity.parser
 
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.util.NCUtils

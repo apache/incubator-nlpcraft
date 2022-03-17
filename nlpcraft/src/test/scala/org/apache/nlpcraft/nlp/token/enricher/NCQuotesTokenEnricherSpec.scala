@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.nlp.token.enricher.en
+package org.apache.nlpcraft.nlp.token.enricher
 
+import org.apache.nlpcraft.NCToken
 import org.apache.nlpcraft.internal.util.NCResourceReader
-import org.apache.nlpcraft.nlp.token.enricher.en.*
 import org.apache.nlpcraft.nlp.token.enricher.*
 import org.apache.nlpcraft.nlp.util.*
 import org.junit.jupiter.api.*
@@ -28,28 +28,31 @@ import scala.jdk.CollectionConverters.*
 /**
   *
   */
-class NCDictionaryTokenEnricherSpec:
-    private val dictEnricher = new NCEnDictionaryTokenEnricher()
-
-    private val lemmaPosEnricher =
+class NCQuotesTokenEnricherSpec:
+    private val lemmaPosEnricher = 
         new NCOpenNLPLemmaPosTokenEnricher(
-            NCResourceReader.getPath("opennlp/en-pos-maxent.bin"),
+            NCResourceReader.getPath("opennlp/en-pos-maxent.bin"), 
             NCResourceReader.getPath("opennlp/en-lemmatizer.dict")
         )
+    private val quoteEnricher = new NCEnQuotesTokenEnricher
+
+    /**
+      *
+      * @param txt
+      * @param quotes
+      */
+    private def check(txt: String, quotes: Set[Integer]): Unit =
+        val toks = EN_PIPELINE.getTokenParser.tokenize(txt)
+        val toksSeq = toks.asScala.toSeq
+
+        val req = NCTestRequest(txt)
+        lemmaPosEnricher.enrich(req, CFG, toks)
+        quoteEnricher.enrich(req, CFG, toks)
+        
+        NCTestUtils.printTokens(toksSeq)
+        toksSeq.foreach (tok => require(!(tok.get[Boolean]("quoted") ^ quotes.contains(tok.getIndex))))
 
     @Test
     def test(): Unit =
-        val txt = "milk XYZ"
-        val toks = EN_PIPELINE.getTokenParser.tokenize(txt).asScala.toSeq
-
-        require(toks.head.getOpt[Boolean]("dict:en").isEmpty)
-        require(toks.last.getOpt[Boolean]("dict:en").isEmpty)
-
-        val req = NCTestRequest(txt)
-
-        lemmaPosEnricher.enrich(req, CFG, toks.asJava)
-        dictEnricher.enrich(req, CFG, toks.asJava)
-        NCTestUtils.printTokens(toks)
-
-        require(toks.head.get[Boolean]("dict"))
-        require(!toks.last.get[Boolean]("dict"))
+        check("It called ' test data '", Set(3, 4))
+        check("It called ' test data ' , ' test data '", Set(3, 4, 8, 9))

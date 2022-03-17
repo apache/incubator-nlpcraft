@@ -28,6 +28,8 @@ import org.apache.nlpcraft.NCRejection;
 import org.apache.nlpcraft.NCRequest;
 import org.apache.nlpcraft.NCResult;
 import org.apache.nlpcraft.NCResultType;
+import org.apache.nlpcraft.internal.util.NCResourceReader;
+import org.apache.nlpcraft.nlp.token.parser.NCOpenNLPTokenParser;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,7 +41,7 @@ public class EchoModel extends NCModelAdapter {
     public EchoModel() {
         super(
             new NCModelConfig("nlpcraft.echo.ex", "Echo Example Model", "1.0"),
-            new NCModelPipelineBuilder().build()
+            new NCModelPipelineBuilder().withTokenParser(new NCOpenNLPTokenParser(NCResourceReader.getPath("opennlp/en-token.bin"))).build()
         );
     }
 
