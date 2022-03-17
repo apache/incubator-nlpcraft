@@ -28,7 +28,7 @@ import scala.jdk.CollectionConverters.*
   *
   */
 class NCBracketsTokenEnricherSpec:
-    private val enricher = new NCEnBracketsTokenEnricher()
+    private val bracketsEnricher = new NCEnBracketsTokenEnricher()
 
     /**
       *
@@ -37,7 +37,7 @@ class NCBracketsTokenEnricherSpec:
       */
     private def check(txt: String, brackets: Set[Integer]): Unit =
         val toks = EN_TOK_PARSER.tokenize(txt)
-        enricher.enrich(NCTestRequest(txt), CFG, toks)
+        bracketsEnricher.enrich(NCTestRequest(txt), CFG, toks)
         val seq = toks.asScala.toSeq
         
         NCTestUtils.printTokens(seq)

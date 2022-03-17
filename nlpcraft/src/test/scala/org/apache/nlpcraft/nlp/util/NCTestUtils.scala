@@ -28,6 +28,7 @@ import java.util.{Map, List as JList}
 import scala.jdk.CollectionConverters.*
 import scala.jdk.OptionConverters.RichOptional
 import scala.util.Using
+import opennlp.tools.stemmer.PorterStemmer
 
 /**
   *
@@ -123,21 +124,22 @@ object NCTestUtils:
 
     /**
       *
+      * @return
+      */
+    private def mkSemanticStemmer: NCSemanticStemmer =
+        new NCSemanticStemmer():
+            private val ps = new PorterStemmer
+            override def stem(txt: String): String = ps.synchronized { ps.stem(txt.toLowerCase) }
+
+
+    /**
+      *
       * @param elms
       * @param macros
       * @return
       */
     def mkENSemanticParser(elms: util.List[NCSemanticElement], macros: util.Map[String, String] = null): NCSemanticEntityParser =
-        val s = new opennlp.tools.stemmer.PorterStemmer
-
-        new NCSemanticEntityParser(
-            new NCSemanticStemmer():
-                override def stem(txt: String): String = s.stem(txt.toLowerCase)
-            ,
-            EN_TOK_PARSER,
-            macros,
-            elms
-        )
+        new NCSemanticEntityParser(mkSemanticStemmer, EN_TOK_PARSER, macros, elms)
 
     /**
       *
@@ -145,12 +147,4 @@ object NCTestUtils:
       * @return
       */
     def mkENSemanticParser(src: String): NCSemanticEntityParser =
-        val s = new opennlp.tools.stemmer.PorterStemmer
-
-        new NCSemanticEntityParser(
-            new NCSemanticStemmer():
-                override def stem(txt: String): String = s.stem(txt.toLowerCase)
-            ,
-            EN_TOK_PARSER,
-            src
-        )
+        new NCSemanticEntityParser(mkSemanticStemmer, EN_TOK_PARSER, src)

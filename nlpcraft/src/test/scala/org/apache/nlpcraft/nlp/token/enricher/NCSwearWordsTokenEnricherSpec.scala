@@ -29,7 +29,7 @@ import scala.jdk.CollectionConverters.*
   *
   */
 class NCSwearWordsTokenEnricherSpec:
-    private val enricher = new NСEnSwearWordsTokenEnricher(NCResourceReader.getPath("badfilter/swear_words.txt"))
+    private val swEnricher = new NСEnSwearWordsTokenEnricher(NCResourceReader.getPath("badfilter/swear_words.txt"))
 
     @Test
     def test(): Unit =
@@ -38,7 +38,7 @@ class NCSwearWordsTokenEnricherSpec:
         require(toks.head.getOpt[Boolean]("swear:en").isEmpty)
         require(toks.last.getOpt[Boolean]("swear:en").isEmpty)
 
-        enricher.enrich(null, null, toks.asJava)
+        swEnricher.enrich(null, null, toks.asJava)
 
         NCTestUtils.printTokens(toks)
 

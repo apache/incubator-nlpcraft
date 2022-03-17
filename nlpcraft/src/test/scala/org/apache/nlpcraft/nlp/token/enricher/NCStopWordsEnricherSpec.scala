@@ -54,7 +54,7 @@ class NCStopWordsEnricherSpec:
     @Test
     def test(): Unit =
         test(
-            new NCEnStopWordsTokenEnricher(),
+            EN_TOK_STOP_ENRICHER,
             "the test",
             true,
             false

@@ -202,7 +202,7 @@ case class NCConversationData(
         }
 
     /**
-      * TODO: thread safe?
+      *
       */
     val getUserData: NCPropertyMap = data
 }

@@ -113,8 +113,7 @@ object NCEnStopWordsTokenEnricherImpl:
       * @param tokens Tokens.
       * @param maxLen Maximum number of tokens in the sequence.
       */
-    // TODO: private[impl]
-    def tokenMixWithStopWords(tokens: Seq[NCToken], maxLen: Int = Integer.MAX_VALUE): Seq[Seq[NCToken]] =
+    private[impl] def tokenMixWithStopWords(tokens: Seq[NCToken], maxLen: Int = Integer.MAX_VALUE): Seq[Seq[NCToken]] =
         /**
           * Gets all combinations for sequence of mandatory tokens with stop-words and without.
           *

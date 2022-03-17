@@ -232,7 +232,7 @@ public class NCModelPipelineBuilder {
         ));
         tokEnrichers.add(new NCEnStopWordsTokenEnricher());
 
-        // TODO: Do we need following components here?
+        // TODO: Do we need the following components here?
         tokEnrichers.add(new NСEnSwearWordsTokenEnricher(NCResourceReader.getPath("badfilter/swear_words.txt")));
         tokEnrichers.add(new NCEnQuotesTokenEnricher());
         tokEnrichers.add(new NCEnDictionaryTokenEnricher());

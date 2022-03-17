@@ -27,10 +27,10 @@ import java.util.{Optional, ArrayList as JList}
   *
   * @param tokParser
   */
-case class NCTestPipeline(tokParser: NCTokenParser) extends NCPropertyMapAdapter with NCModelPipeline with Cloneable:
+case class NCTestPipeline(tokParser: NCTokenParser) extends NCPropertyMapAdapter with NCModelPipeline:
     require(tokParser != null)
 
-    private var variantFilter: Optional[NCVariantFilter] = Optional.empty()
+    var variantFilter: Optional[NCVariantFilter] = Optional.empty()
 
     override val getTokenParser: NCTokenParser = tokParser
     override val getTokenEnrichers = new JList[NCTokenEnricher]()
@@ -39,15 +39,3 @@ case class NCTestPipeline(tokParser: NCTokenParser) extends NCPropertyMapAdapter
     override val getTokenValidators = new JList[NCTokenValidator]()
     override val getEntityValidators = new JList[NCEntityValidator]()
     override def getVariantFilter: Optional[NCVariantFilter] = variantFilter
-
-    override def clone(): NCTestPipeline =
-        val copy = NCTestPipeline(this.tokParser)
-
-        copy.getTokenEnrichers.addAll(this.getTokenEnrichers)
-        copy.getEntityEnrichers.addAll(this.getEntityEnrichers)
-        copy.getEntityParsers.addAll(this.getEntityParsers)
-        copy.getTokenValidators.addAll(this.getTokenValidators)
-        copy.getEntityValidators.addAll(this.getEntityValidators)
-        copy.variantFilter = this.variantFilter
-
-        copy
