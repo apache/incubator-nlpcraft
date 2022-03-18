@@ -37,6 +37,8 @@ import org.apache.nlpcraft.examples.time.utils.cities.City;
 import org.apache.nlpcraft.examples.time.utils.cities.CityData;
 import org.apache.nlpcraft.examples.time.utils.keycdn.GeoData;
 import org.apache.nlpcraft.examples.time.utils.keycdn.GeoManager;
+import org.apache.nlpcraft.internal.util.NCResourceReader;
+import org.apache.nlpcraft.nlp.entity.parser.NCOpenNLPEntityParser;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -75,7 +77,10 @@ public class TimeModel extends NCModelAdapter {
     public TimeModel() {
         super(
             new NCModelConfig("nlpcraft.time.ex", "Time Example Model", "1.0"),
-            new NCModelPipelineBuilder().withSemantic("EN", "time_model.yaml").build()
+            new NCModelPipelineBuilder().
+                withSemantic("EN", "time_model.yaml").
+                withEntityParser(new NCOpenNLPEntityParser(NCResourceReader.getPath("opennlp/en-ner-location.bin"))).
+                build()
         );
     }
 

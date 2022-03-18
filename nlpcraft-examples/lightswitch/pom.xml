@@ -33,8 +33,8 @@
 
     <properties>
         <kotlin.ver>1.6.10</kotlin.ver>
-        <groovy.ver>3.0.9</groovy.ver>
-        <gmavenplus.ver>1.12.1</gmavenplus.ver>
+        <groovy.ver>3.0.10</groovy.ver>
+        <gmavenplus.ver>1.13.1</gmavenplus.ver>
     </properties>
 
     <dependencies>
