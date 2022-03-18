@@ -38,7 +38,7 @@ public class LightSwitchJavaModel extends NCModelAdapter {
     public LightSwitchJavaModel() {
         super(
             new NCModelConfig("nlpcraft.lightswitch.java.ex", "LightSwitch Example Model", "1.0"),
-            new NCModelPipelineBuilder().withSemantic("EN", "lightswitch_model.yaml").build()
+            new NCModelPipelineBuilder().withSemantic("en", "lightswitch_model.yaml").build()
         );
     }
 

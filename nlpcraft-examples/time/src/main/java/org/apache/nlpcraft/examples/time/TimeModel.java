@@ -78,7 +78,7 @@ public class TimeModel extends NCModelAdapter {
         super(
             new NCModelConfig("nlpcraft.time.ex", "Time Example Model", "1.0"),
             new NCModelPipelineBuilder().
-                withSemantic("EN", "time_model.yaml").
+                withSemantic("en", "time_model.yaml").
                 withEntityParser(new NCOpenNLPEntityParser(NCResourceReader.getPath("opennlp/en-ner-location.bin"))).
                 build()
         );

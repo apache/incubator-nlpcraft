@@ -47,7 +47,7 @@ import java.util.concurrent.TimeUnit;
 @Fork(value = 1, jvmArgs = {"-Xms2G", "-Xmx2G"})
 @Warmup(iterations = 5, time = 10)
 @Measurement(iterations = 5, time = 5)
-public class NCEnOpenNlpTokenParserBenchmark {
+public class NCEnOpenNLPTokenParserBenchmark {
     @State(Scope.Thread)
     public static class NCBenchmarkAdapterState {
         final NCRequest request = NCTestRequest.apply(
@@ -68,6 +68,6 @@ public class NCEnOpenNlpTokenParserBenchmark {
     }
 
     public static void main(String[] args) throws RunnerException {
-        new Runner(new OptionsBuilder().include(NCEnOpenNlpTokenParserBenchmark.class.getSimpleName()).shouldFailOnError(true).build()).run();
+        new Runner(new OptionsBuilder().include(NCEnOpenNLPTokenParserBenchmark.class.getSimpleName()).shouldFailOnError(true).build()).run();
     }
 }

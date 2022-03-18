@@ -59,19 +59,20 @@ class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCModelPipeline) exte
     private val entVals = nvl(pipeline.getEntityValidators)
     private val varFilterOpt = pipeline.getVariantFilter.toScala
 
-    private val allSrvs: Seq[NCLifecycle] =
+    private val allComps: Seq[NCLifecycle] =
         tokEnrichers ++ entEnrichers ++ entParsers ++ tokVals ++ entVals ++ varFilterOpt.toSeq
 
     /**
+      * Processes pipeline components.
       *
-      * @param act
-      * @param actVerb
+      * @param act Action to process.
+      * @param actVerb Action descriptor.
       */
-    private def processServices(act: NCLifecycle => Unit, actVerb: String): Unit =
-        NCUtils.execPar(allSrvs.map(p =>
+    private def processComponents(act: NCLifecycle => Unit, actVerb: String): Unit =
+        NCUtils.execPar(allComps.map(p =>
             () => {
                 act(p)
-                logger.info(s"Service $actVerb: '${p.getClass.getName}'")
+                logger.info(s"Component $actVerb: '${p.getClass.getName}'")
             }
         )*)(ExecutionContext.Implicits.global)
 
@@ -187,10 +188,10 @@ class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCModelPipeline) exte
 
         NCPipelineData(req, vrnts, toks)
 
-    def start(): Unit = processServices(_.onStart(cfg), "started")
+    def start(): Unit = processComponents(_.onStart(cfg), "started")
     /**
       *
       */
     def close(): Unit =
-        processServices(_.onStop(cfg), "stopped")
+        processComponents(_.onStop(cfg), "stopped")
         NCUtils.shutdownPool(pool)

@@ -35,7 +35,7 @@ class LightSwitchGroovyModel extends NCModelAdapter {
     LightSwitchGroovyModel() {
         super(
             new NCModelConfig("nlpcraft.lightswitch.java.ex", "LightSwitch Example Model", "1.0"),
-            new NCModelPipelineBuilder().withSemantic("EN", "lightswitch_model.yaml").build()
+            new NCModelPipelineBuilder().withSemantic("en", "lightswitch_model.yaml").build()
         )
     }
 
@@ -71,7 +71,7 @@ class LightSwitchGroovyModel extends NCModelAdapter {
             "Light up the garage, please!",
             "Kill the illumination now!"
     ])
-    NCResult onMatch(
+    static NCResult onMatch(
         @NCIntentTerm("act") NCEntity actEnt,
         @NCIntentTerm("loc") List<NCEntity> locEnts) {
         String status = actEnt.id == "ls:on" ? "on" : "off"

@@ -31,15 +31,7 @@ import java.util
 import scala.jdk.CollectionConverters.*
 
 /**
-  * This example provides very simple implementation for NLI-powered light switch.
-  * You can say something like this:
-  * <ul>
-  *     <li>"Turn the lights off in the entire house."</li>
-  *     <li>"Switch on the illumination in the master bedroom closet."</li>
-  * </ul>
-  * You can easily modify intent callbacks to perform the actual light switching using
-  * HomeKit or Arduino-based controllers.
-  * <p>
+  *
   * See 'README.md' file in the same folder for running and testing instructions.
   */
 class LightSwitchRuModel extends NCModelAdapter(
@@ -82,9 +74,7 @@ class LightSwitchRuModel extends NCModelAdapter(
         val locations = if locEnts.isEmpty then "весь дом" else locEnts.map(_.mkText()).mkString(", ")
 
         // Add HomeKit, Arduino or other integration here.
-
         // By default - just return a descriptive action string.
-
         new NCResult(
            new Gson().toJson(Map("locations" -> locations, "action" -> action).asJava),
            NCResultType.ASK_RESULT

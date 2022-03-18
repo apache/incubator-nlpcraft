@@ -67,7 +67,7 @@ public class NCModelPipelineBuilder {
      *
      * @return
      */
-    private NCOpenNLPTokenParser mkEnOpenNlpTokenParser() {
+    private NCOpenNLPTokenParser mkEnOpenNLPTokenParser() {
         return new NCOpenNLPTokenParser(NCResourceReader.getPath("opennlp/en-token.bin"));
     }
 
@@ -224,7 +224,7 @@ public class NCModelPipelineBuilder {
      *
      */
     private void setEnComponents() {
-        tokParser = mkEnOpenNlpTokenParser();
+        tokParser = mkEnOpenNLPTokenParser();
 
         tokEnrichers.add(new NCOpenNLPLemmaPosTokenEnricher(
             NCResourceReader.getPath("opennlp/en-pos-maxent.bin"),
@@ -255,7 +255,7 @@ public class NCModelPipelineBuilder {
             case "EN":
                 setEnComponents();
 
-                this.entParsers.add(new NCSemanticEntityParser(mkEnStemmer(), mkEnOpenNlpTokenParser(), macros, elms));
+                this.entParsers.add(new NCSemanticEntityParser(mkEnStemmer(), mkEnOpenNLPTokenParser(), macros, elms));
 
                 break;
 
@@ -290,7 +290,7 @@ public class NCModelPipelineBuilder {
             case "EN":
                 setEnComponents();
 
-                this.entParsers.add(new NCSemanticEntityParser(mkEnStemmer(), mkEnOpenNlpTokenParser(), src));
+                this.entParsers.add(new NCSemanticEntityParser(mkEnStemmer(), mkEnOpenNLPTokenParser(), src));
 
                 break;
 
