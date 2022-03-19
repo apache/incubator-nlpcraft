@@ -24,7 +24,7 @@ import org.apache.nlpcraft.nlp.entity.parser.semantic.*
 import org.apache.nlpcraft.nlp.token.parser.NCOpenNLPTokenParser
 
 import java.util
-import java.util.{Map, List as JList}
+import java.util.{Map as JMap, List as JList}
 import scala.jdk.CollectionConverters.*
 import scala.jdk.OptionConverters.RichOptional
 import scala.util.Using
@@ -138,7 +138,7 @@ object NCTestUtils:
       * @param macros
       * @return
       */
-    def mkENSemanticParser(elms: util.List[NCSemanticElement], macros: util.Map[String, String] = null): NCSemanticEntityParser =
+    def mkENSemanticParser(elms: JList[NCSemanticElement], macros: JMap[String, String] = null): NCSemanticEntityParser =
         new NCSemanticEntityParser(mkSemanticStemmer, EN_TOK_PARSER, macros, elms)
 
     /**

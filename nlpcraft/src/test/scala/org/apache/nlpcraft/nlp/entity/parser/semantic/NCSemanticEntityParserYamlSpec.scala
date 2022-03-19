@@ -53,5 +53,4 @@ class NCSemanticEntityParserYamlSpec:
       * 
       */
     @Test
-    def test(): Unit =
-        check("Turn the lights off in the entire house.", "ls:off")
+    def test(): Unit = check("Turn the lights off in the entire house.", "ls:off")

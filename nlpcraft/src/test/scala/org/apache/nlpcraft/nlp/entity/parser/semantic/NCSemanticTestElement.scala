@@ -38,11 +38,11 @@ case class NCSemanticTestElement(
     groups: Seq[String] = Seq.empty,
     props: Map[String, AnyRef] = Map.empty
 ) extends NCSemanticElement:
-    override def getId: String = id
-    override def getGroups: JSet[String] = groups.toSet.asJava
-    override def getValues: JMap[String, JSet[String]] = values.map { (k, v) => k -> v.asJava }.asJava
-    override def getSynonyms: JSet[String] = synonyms.asJava
-    override def getProperties: JMap[String, Object] = props.asJava
+    override val getId: String = id
+    override val getGroups: JSet[String] = groups.toSet.asJava
+    override val getValues: JMap[String, JSet[String]] = values.map { (k, v) => k -> v.asJava }.asJava
+    override val getSynonyms: JSet[String] = synonyms.asJava
+    override val getProperties: JMap[String, Object] = props.asJava
 
 /**
   *
