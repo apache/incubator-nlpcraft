@@ -53,6 +53,8 @@ class NCModelPingPongSpec:
                 if lastIntentId != "command" then
                     throw new NCRejection("Nothing to confirm.")
 
+                println("'Command' confirmed and can be be executed here.")
+
                 R(ASK_RESULT, s"'dialog' confirmed.")
 
             @NCIntent("intent=other term(other)={# == 'other'}")
