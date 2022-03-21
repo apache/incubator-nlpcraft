@@ -196,7 +196,7 @@ private[impl] object NCSemanticSynonymsProcessor extends LazyLogging:
                             if regex.used then None
                             else
                                 regex.used = true
-                                Some(regex.mkChunk())
+                                Option(regex.mkChunk())
                         case None => Option(NCSemanticSynonymChunk(TEXT, tok.getText, stemmer.stem(tok.getText.toLowerCase)))
                 ).toSeq
             }).toSeq

@@ -160,9 +160,7 @@ class NCDialogFlowManager(cfg: NCModelConfig) extends LazyLogging:
       * Clears dialog history for given user ID and predicate.
       *
       * @param usrId User ID.
-      * @param mdlId Model ID.
       * @param pred Intent ID predicate.
-      * @param parent Parent span, if any.
       */
     def clear(usrId: String, pred: NCDialogFlowItem => Boolean): Unit =
         flow.synchronized {

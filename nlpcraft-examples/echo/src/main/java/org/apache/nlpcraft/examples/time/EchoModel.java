@@ -17,12 +17,10 @@
 
 package org.apache.nlpcraft.examples.time;
 
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.nlpcraft.NCContext;
 import org.apache.nlpcraft.NCModelAdapter;
 import org.apache.nlpcraft.NCModelConfig;
-import org.apache.nlpcraft.NCModelPipeline;
 import org.apache.nlpcraft.NCModelPipelineBuilder;
 import org.apache.nlpcraft.NCRejection;
 import org.apache.nlpcraft.NCRequest;

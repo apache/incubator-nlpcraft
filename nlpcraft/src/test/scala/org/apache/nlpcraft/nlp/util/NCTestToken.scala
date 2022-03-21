@@ -26,11 +26,13 @@ import scala.jdk.CollectionConverters.*
 
 /**
   * Request test implementation.
-  *
+  * 
   * @param txt
-  * @param userId
-  * @param reqId
-  * @param ts
+  * @param idx
+  * @param start
+  * @param end
+  * @param lemma
+  * @param pos
   * @param data
   */
 case class NCTestToken(
