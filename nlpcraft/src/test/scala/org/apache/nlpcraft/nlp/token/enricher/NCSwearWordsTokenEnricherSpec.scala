@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.nlp.token.enricher
 
 import org.apache.nlpcraft.internal.util.NCResourceReader
-import org.apache.nlpcraft.nlp.token.enricher.NСEnSwearWordsTokenEnricher
+import org.apache.nlpcraft.nlp.token.enricher.*
 import org.apache.nlpcraft.nlp.util.*
 import org.junit.jupiter.api.*
 
@@ -29,7 +29,7 @@ import scala.jdk.CollectionConverters.*
   *
   */
 class NCSwearWordsTokenEnricherSpec:
-    private val swEnricher = new NСEnSwearWordsTokenEnricher(NCResourceReader.getPath("badfilter/swear_words.txt"))
+    private val swEnricher = new NCEnSwearWordsTokenEnricher(NCResourceReader.getPath("badfilter/swear_words.txt"))
 
     @Test
     def test(): Unit =

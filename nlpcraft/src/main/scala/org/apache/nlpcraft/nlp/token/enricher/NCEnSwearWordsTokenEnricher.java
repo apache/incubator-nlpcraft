@@ -29,7 +29,7 @@ import java.util.Objects;
 /**
  * TODO: enriches with <code>swear</code> property.
  */
-public class NСEnSwearWordsTokenEnricher implements NCTokenEnricher {
+public class NCEnSwearWordsTokenEnricher implements NCTokenEnricher {
     private final NCEnSwearWordsTokenEnricherImpl impl;
 
     /**
@@ -37,7 +37,7 @@ public class NСEnSwearWordsTokenEnricher implements NCTokenEnricher {
      * 
      * @param mdlSrc
      */
-    public NСEnSwearWordsTokenEnricher(String mdlSrc) {
+    public NCEnSwearWordsTokenEnricher(String mdlSrc) {
         Objects.requireNonNull(mdlSrc, "Swear words model file cannot be null.");
 
         impl = new NCEnSwearWordsTokenEnricherImpl(mdlSrc);

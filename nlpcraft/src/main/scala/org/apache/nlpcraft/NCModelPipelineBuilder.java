@@ -27,7 +27,7 @@ import org.apache.nlpcraft.nlp.token.enricher.NCEnDictionaryTokenEnricher;
 import org.apache.nlpcraft.nlp.token.enricher.NCEnQuotesTokenEnricher;
 import org.apache.nlpcraft.nlp.token.enricher.NCEnStopWordsTokenEnricher;
 import org.apache.nlpcraft.nlp.token.enricher.NCOpenNLPLemmaPosTokenEnricher;
-import org.apache.nlpcraft.nlp.token.enricher.NСEnSwearWordsTokenEnricher;
+import org.apache.nlpcraft.nlp.token.enricher.NCEnSwearWordsTokenEnricher;
 import org.apache.nlpcraft.nlp.token.parser.NCOpenNLPTokenParser;
 
 import java.util.ArrayList;
@@ -233,7 +233,7 @@ public class NCModelPipelineBuilder {
         tokEnrichers.add(new NCEnStopWordsTokenEnricher());
 
         // TODO: Do we need the following components here?
-        tokEnrichers.add(new NСEnSwearWordsTokenEnricher(NCResourceReader.getPath("badfilter/swear_words.txt")));
+        tokEnrichers.add(new NCEnSwearWordsTokenEnricher(NCResourceReader.getPath("badfilter/swear_words.txt")));
         tokEnrichers.add(new NCEnQuotesTokenEnricher());
         tokEnrichers.add(new NCEnDictionaryTokenEnricher());
         tokEnrichers.add(new NCEnBracketsTokenEnricher());
