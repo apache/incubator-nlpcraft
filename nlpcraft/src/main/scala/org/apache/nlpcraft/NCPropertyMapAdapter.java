@@ -23,8 +23,9 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- *
+ * Convenient adapter for {@link NCPropertyMap} interface.
  */
+@SuppressWarnings("unchecked")
 public class NCPropertyMapAdapter implements NCPropertyMap {
     private final Map<String, Object> map = new ConcurrentHashMap<>();
 

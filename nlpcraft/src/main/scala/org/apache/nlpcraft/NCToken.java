@@ -19,6 +19,10 @@ package org.apache.nlpcraft;
 
 /**
  *
+ * @see NCEntity
+ * @see NCTokenParser
+ * @see NCTokenEnricher
+ * @see NCTokenValidator
  */
 public interface NCToken extends NCPropertyMap {
     /**
