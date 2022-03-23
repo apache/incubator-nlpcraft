@@ -252,7 +252,7 @@
                 <configuration>
                     <additionalOptions>--allow-script-in-comments --ignore-source-errors</additionalOptions>
                     <javadocDirectory>${project.basedir}/../javadoc</javadocDirectory>
-                    <doclint>all</doclint>
+                    <doclint>none</doclint>
                     <docfilessubdirs>true</docfilessubdirs>
                     <encoding>UTF-8</encoding>
                     <failOnError>false</failOnError>
@@ -286,6 +286,26 @@
                     <excludePackageNames>
                         org.apache.nlpcraft.internal.*:org.apache.nlpcraft.nlp.token.impl.*:org.apache.nlpcraft.nlp.token.enricher.impl.*:org.apache.nlpcraft.nlp.token.parser.impl.*:org.apache.nlpcraft.nlp.entity.parser.impl.*
                     </excludePackageNames>
+                    <groups>
+                        <group>
+                            <title>Main API</title>
+                            <packages>
+                                org.apache.nlpcraft
+                            </packages>
+                        </group>
+                        <group>
+                            <title>Entities</title>
+                            <packages>
+                                org.apache.nlpcraft.nlp.entity.parser:org.apache.nlpcraft.nlp.entity.parser.semantic
+                            </packages>
+                        </group>
+                        <group>
+                            <title>Tokens</title>
+                            <packages>
+                                org.apache.nlpcraft.nlp.token.parser:org.apache.nlpcraft.nlp.token.enricher
+                            </packages>
+                        </group>
+                    </groups>
                     <header>
                         <![CDATA[
                             Apache NLPCraft <span style="font-size: 80%">${project.version}</span>
