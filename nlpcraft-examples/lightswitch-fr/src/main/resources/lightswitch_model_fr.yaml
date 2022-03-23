@@ -16,30 +16,33 @@
 #
 
 macros:
-  "<TURN_ON>" : "{allumer|déclencher|lancer|illuminer}"
-  "<TURN_OFF>" : "{éteindre|couper|désactiver|déconnecter|éliminer|baisser}"
-  "<ENTIRE_OPT>" : "{tout|partout|autour|totalement|_}"
-  "<LIGHT_OPT>" : "{ce|lampe|bras|lustre|luminaire|ampoule|éclairage|lumière|électricité|électricien|_}"
+  "<ACTION>" : "{allumer|laisser|mettre}"
+  "<KILL>" : "{éteindre|couper|tuer|arrêter|éliminer|baisser|no}"
+  "<ENTIRE_OPT>" : "{entière|pleine|tout|total|_}"
+  "<FLOOR_OPT>" : "{là-haut|à l'étage|en bas|{1er|premier|2ème|deuxième|3ème|troisième|4ème|quatrième|5ème|cinquième|dernier|haut|rez-de-chaussée|en bas} étage|_}"
+  "<TYPE>" : "{chambre|salle|pièce|placard|mansardé|loft|mezzanine|rangement {chambre|salle|pièce|_}}"
+  "<LIGHT>" : "{tout|_} {cela|lumière|éclairage|illumination|lampe}"
 
 elements:
   - id: "ls:loc"
     description: "Location of lights."
     synonyms:
-      - "<ENTIRE_OPT> {bâtiment|salle|maison|cuisine|chambre des enfants|bureau|salon|chambre à coucher|salle de bain|toilette|grande salle à manger|salle de bain|chambre des enfants}"
+      - "<ENTIRE_OPT> <FLOOR_OPT> {cuisine|bibliothèque|placard|garage|bureau|salle de jeux|{salle à manger|buanderie|jeu} <TYPE>}"
+      - "<ENTIRE_OPT> <FLOOR_OPT> {maître|gamin|bébé|enfant|hôte|client|_} {coucher|bains|toilette|rangement} {<TYPE>|_}"
+      - "<ENTIRE_OPT> {maison|foyer|bâtiment|{1er|premier} étage|chaussée|{2ème|deuxième} étage}"
 
   - id: "ls:on"
     groups:
       - "act"
     description: "Light switch ON action."
     synonyms:
-      - "<LIGHT_OPT> <ENTIRE_OPT> <TURN_ON>"
-      - "<TURN_ON> <ENTIRE_OPT> <LIGHT_OPT>"
+      - "{<ACTION>|_} <LIGHT>"
+      - "{<LIGHT>|_} <ACTION>"
 
   - id: "ls:off"
     groups:
       - "act"
     description: "Light switch OFF action."
     synonyms:
-      - "<LIGHT_OPT> <ENTIRE_OPT> <TURN_OFF>"
-      - "<TURN_OFF> <ENTIRE_OPT> <LIGHT_OPT>"
-      - "sans <ENTIRE_OPT> <LIGHT_OPT>"
+      - "<KILL> <LIGHT>"
+      - "<LIGHT> <KILL>"

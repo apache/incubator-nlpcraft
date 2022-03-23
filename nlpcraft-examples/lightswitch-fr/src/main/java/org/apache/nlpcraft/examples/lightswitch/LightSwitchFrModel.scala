@@ -59,19 +59,28 @@ class LightSwitchFrModel extends NCModelAdapter(
       */
     @NCIntent("intent=ls term(act)={has(ent_groups, 'act')} term(loc)={# == 'ls:loc'}*")
     @NCIntentSample(Array(
-        "Éteins l“allumier dans toute la maison",
-        "Coupez l'électricité!",
-        "Allume la lumière dans la chambre des enfants",
-        "Allume l'éclairage partout",
-        "Allumer les lampes dans la chambre des enfants",
-        "Éteins la lumière dans la cuisine, s'il te plaît",
-        "Est-il possible d'éteindre les lumières partout?",
-        "S'il vous plaît sans lumière",
-        "Couper l'électricité dans la salle de bain",
-        "Éteins la lumière, s'il te plaît.",
-        "Éteignez tout!",
-        "Allume la lumière partout s'il te plaît ",
-        "Allume la lampe dans la cuisine"
+        "Éteignez les lumières dans toute la maison.",
+        "Éteignez toutes les lumières maintenant.",
+        "Allumez l'éclairage dans le placard de la chambre des maîtres.",
+        "Éteindre les lumières au 1er étage.",
+        "Allumez les lumières.",
+        "Allumes dans la cuisine.",
+        "S'il vous plait, éteignez la lumière dans la chambre à l'étage.",
+        "Allumez les lumières dans toute la maison.",
+        "Éteignez les lumières dans la chambre d'hôtes.",
+        "Pourriez-vous éteindre toutes les lumières s'il vous plait?",
+        "Désactivez l'éclairage au 2ème étage.",
+        "Éteignez les lumières dans la chambre au 1er étage.",
+        "Lumières allumées à la cuisine du deuxième étage.",
+        "S'il te plaît, pas de lumières!",
+        "Coupez toutes les lumières maintenant!",
+        "Éteindre les lumières dans le garage.",
+        "Lumières éteintes dans la cuisine!",
+        "Augmentez l'éclairage dans le garage et la chambre des maîtres.",
+        "Baissez toute la lumière maintenant!",
+        "Pas de lumières dans la chambre, s'il vous plait.",
+        "Allumez le garage, s'il vous plait.",
+        "Tuez l'illumination maintenant."
     ))
     def onMatch(
         @NCIntentTerm("act") actEnt: NCEntity,
