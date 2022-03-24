@@ -17,6 +17,8 @@
 
 package org.apache.nlpcraft.nlp.benchmark.client;
 
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.core.config.NullConfiguration;
 import org.apache.nlpcraft.NCEntity;
 import org.apache.nlpcraft.NCIntent;
 import org.apache.nlpcraft.NCIntentTerm;
@@ -24,14 +26,11 @@ import org.apache.nlpcraft.NCModel;
 import org.apache.nlpcraft.NCModelAdapter;
 import org.apache.nlpcraft.NCModelClient;
 import org.apache.nlpcraft.NCModelConfig;
-import org.apache.nlpcraft.NCModelPipeline;
 import org.apache.nlpcraft.NCModelPipelineBuilder;
 import org.apache.nlpcraft.NCRequest;
 import org.apache.nlpcraft.NCResult;
 import org.apache.nlpcraft.NCResultType;
-import org.apache.nlpcraft.nlp.util.NCTestModelAdapter;
 import org.apache.nlpcraft.nlp.util.NCTestRequest;
-import org.apache.nlpcraft.nlp.util.NCTestUtils;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -49,7 +48,6 @@ import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -65,10 +63,9 @@ import java.util.concurrent.TimeUnit;
 @Warmup(iterations = 5, time = 10)
 @Measurement(iterations = 5, time = 5)
 public class NCClientBenchmark {
-    // It overrides 'org.apache.nlpcraft' log level value in test scope log4j.xml property file.
-    // Should be here to be loaded before logger initialized.
+    // It disables logging. Should be here to be applied before logger initialized.
     static {
-        System.setProperty("TEST_LOG_LEVEL", "ERROR");
+        Configurator.initialize(new NullConfiguration());
     }
 
     @State(Scope.Thread)
