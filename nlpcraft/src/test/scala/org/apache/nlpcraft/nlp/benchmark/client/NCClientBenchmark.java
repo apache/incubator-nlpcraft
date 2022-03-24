@@ -20,7 +20,12 @@ package org.apache.nlpcraft.nlp.benchmark.client;
 import org.apache.nlpcraft.NCEntity;
 import org.apache.nlpcraft.NCIntent;
 import org.apache.nlpcraft.NCIntentTerm;
+import org.apache.nlpcraft.NCModel;
+import org.apache.nlpcraft.NCModelAdapter;
 import org.apache.nlpcraft.NCModelClient;
+import org.apache.nlpcraft.NCModelConfig;
+import org.apache.nlpcraft.NCModelPipeline;
+import org.apache.nlpcraft.NCModelPipelineBuilder;
 import org.apache.nlpcraft.NCRequest;
 import org.apache.nlpcraft.NCResult;
 import org.apache.nlpcraft.NCResultType;
@@ -77,20 +82,25 @@ public class NCClientBenchmark {
 
     @Setup
     public void setUp() {
-        client = new NCModelClient(
-            new NCTestModelAdapter() {
+        // Models contains all EN components, including
+        //  - openNLP based tokens parser,
+        //  - stopword and lemma tokens enrichers,
+        //  - set of unused here tokens enrichers (they just added by default in 'en' builder profile) and
+        //  - one semantic entities parser.
+        NCModel mdl =
+            new NCModelAdapter(
+                new NCModelConfig("testId", "test", "1.0", "Test description", "Test origin"),
+                new NCModelPipelineBuilder().withSemantic("en", "models/lightswitch_model.yaml").build()
+            ) {
                 private final NCResult res = new NCResult("OK", NCResultType.ASK_RESULT);
-
-                {
-                    getPipeline().getEntityParsers().add(NCTestUtils.mkENSemanticParser("models/lightswitch_model.yaml"));
-                }
 
                 @NCIntent("intent=ls term(act)={# == 'ls:on'} term(loc)={# == 'ls:loc'}*")
                 public NCResult onMatch(@NCIntentTerm("act") NCEntity act, @NCIntentTerm("loc")List<NCEntity> locs) {
                     return res;
                 }
-            }
-        );
+            };
+
+        client = new NCModelClient(mdl);
     }
 
     @TearDown
