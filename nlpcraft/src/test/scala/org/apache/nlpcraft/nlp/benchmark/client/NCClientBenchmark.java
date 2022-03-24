@@ -26,7 +26,7 @@ import org.apache.nlpcraft.NCModel;
 import org.apache.nlpcraft.NCModelAdapter;
 import org.apache.nlpcraft.NCModelClient;
 import org.apache.nlpcraft.NCModelConfig;
-import org.apache.nlpcraft.NCModelPipelineBuilder;
+import org.apache.nlpcraft.NCPipelineBuilder;
 import org.apache.nlpcraft.NCRequest;
 import org.apache.nlpcraft.NCResult;
 import org.apache.nlpcraft.NCResultType;
@@ -87,7 +87,7 @@ public class NCClientBenchmark {
         NCModel mdl =
             new NCModelAdapter(
                 new NCModelConfig("testId", "test", "1.0", "Test description", "Test origin"),
-                new NCModelPipelineBuilder().withSemantic("en", "models/lightswitch_model.yaml").build()
+                new NCPipelineBuilder().withSemantic("en", "models/lightswitch_model.yaml").build()
             ) {
                 private final NCResult res = new NCResult("OK", NCResultType.ASK_RESULT);
 

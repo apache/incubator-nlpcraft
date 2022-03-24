@@ -18,33 +18,47 @@
 package org.apache.nlpcraft;
 
 /**
+ * Represents a contiguous substring of the original input text produced by {@link NCTokenParser}.
+ *
+ * <span class="hdr">Metadata</span>
+ * Note that both {@link NCToken} and {@link NCEntity} interfaces extend {@link NCPropertyMap} interface
+ * that allows them to store custom metadata properties. Parser, enrichers and validators for tokens
+ * and entities use this capability to store and check their properties in tokens and entities.
  *
  * @see NCEntity
  * @see NCTokenParser
  * @see NCTokenEnricher
  * @see NCTokenValidator
+ * @see NCPipeline
  */
 public interface NCToken extends NCPropertyMap {
     /**
+     * Gets the text of this token.
      *
-     * @return
+     * @return Text of this token.
      */
     String getText();
 
     /**
+     * Gets the index of this token in the list returned bu {@link NCTokenParser#tokenize(String)} method.
      *
-     * @return
+     * @return Zero-based index of this token in the list returned bu {@link NCTokenParser#tokenize(String)} method.
      */
     int getIndex();
 
     /**
+     * Gets the inclusive start position of this token's text in the original input text supplied to
+     * {@link NCTokenParser#tokenize(String)} method.
      *
-     * @return
+     * @return Start position (inlcusive) of this token's text in the original input text.
      */
     int getStartCharIndex();
 
     /**
+     * Gets the inclusive end position of this token's text in the original input text supplied to
+     * {@link NCTokenParser#tokenize(String)} method.
      *
+     * @return End position (invlusvie) of this token's text in the original input text.
      * @return
      */
     int getEndCharIndex();

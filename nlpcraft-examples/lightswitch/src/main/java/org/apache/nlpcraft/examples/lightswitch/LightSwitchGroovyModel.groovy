@@ -35,7 +35,7 @@ class LightSwitchGroovyModel extends NCModelAdapter {
     LightSwitchGroovyModel() {
         super(
             new NCModelConfig("nlpcraft.lightswitch.java.ex", "LightSwitch Example Model", "1.0"),
-            new NCModelPipelineBuilder().withSemantic("en", "lightswitch_model.yaml").build()
+            new NCPipelineBuilder().withSemantic("en", "lightswitch_model.yaml").build()
         )
     }
 

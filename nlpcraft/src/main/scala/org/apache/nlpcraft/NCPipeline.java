@@ -24,7 +24,7 @@ import java.util.Optional;
 /**
  *
  */
-public interface NCModelPipeline {
+public interface NCPipeline {
     /**
      *
      * @return

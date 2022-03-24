@@ -21,7 +21,7 @@ import com.google.gson.GsonBuilder;
 import org.apache.nlpcraft.NCContext;
 import org.apache.nlpcraft.NCModelAdapter;
 import org.apache.nlpcraft.NCModelConfig;
-import org.apache.nlpcraft.NCModelPipelineBuilder;
+import org.apache.nlpcraft.NCPipelineBuilder;
 import org.apache.nlpcraft.NCRejection;
 import org.apache.nlpcraft.NCRequest;
 import org.apache.nlpcraft.NCResult;
@@ -39,7 +39,7 @@ public class EchoModel extends NCModelAdapter {
     public EchoModel() {
         super(
             new NCModelConfig("nlpcraft.echo.ex", "Echo Example Model", "1.0"),
-            new NCModelPipelineBuilder().withTokenParser(new NCOpenNLPTokenParser(NCResourceReader.getPath("opennlp/en-token.bin"))).build()
+            new NCPipelineBuilder().withTokenParser(new NCOpenNLPTokenParser(NCResourceReader.getPath("opennlp/en-token.bin"))).build()
         );
     }
 

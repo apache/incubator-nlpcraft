@@ -36,7 +36,7 @@ import scala.jdk.CollectionConverters.*
   */
 class LightSwitchRuModel extends NCModelAdapter(
     new NCModelConfig("nlpcraft.lightswitch.ru.ex", "LightSwitch Example Model RU", "1.0"),
-    new NCModelPipelineBuilder().
+    new NCPipelineBuilder().
         withTokenParser(new NCRuTokenParser()).
         withTokenEnricher(new NCRuLemmaPosTokenEnricher()).
         withTokenEnricher(new NCRuStopWordsTokenEnricher()).

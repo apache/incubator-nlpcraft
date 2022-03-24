@@ -31,20 +31,20 @@ import scala.util.Using
   *
   */
 class NCEntityEnricherSpec:
-    private def test0(pipeline: NCModelPipeline, ok: Boolean): Unit =
+    private def test0(pipeline: NCPipeline, ok: Boolean): Unit =
         val mdl: NCModel = new NCModelAdapter(new NCModelConfig("test.id", "Test model", "1.0"), pipeline):
             @NCIntent("intent=i term(any)={meta_ent('k1') == 'v1'}")
             def onMatch(): NCResult = new NCResult("OK", NCResultType.ASK_RESULT)
 
         NCTestUtils.askSomething(mdl, ok)
 
-    private def mkBuilder(): NCModelPipelineBuilder =
-        new NCModelPipelineBuilder().
+    private def mkBuilder(): NCPipelineBuilder =
+        new NCPipelineBuilder().
             withTokenParser(new NCOpenNLPTokenParser(NCResourceReader.getPath("opennlp/en-token.bin"))).
             //  For intents matching, we have to add at least one entity parser.
             withEntityParser(new NCNLPEntityParser)
 
-    private def mkPipeline(apply: NCModelPipelineBuilder => NCModelPipelineBuilder): NCModelPipeline = apply(mkBuilder()).build()
+    private def mkPipeline(apply: NCPipelineBuilder => NCPipelineBuilder): NCPipeline = apply(mkBuilder()).build()
 
     @Test
     def test(): Unit =

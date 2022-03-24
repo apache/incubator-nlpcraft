@@ -39,7 +39,7 @@ import java.util.Optional;
 /**
  *
  */
-public class NCModelPipelineBuilder {
+public class NCPipelineBuilder {
     private NCTokenParser tokParser;
     private final List<NCTokenEnricher> tokEnrichers = new ArrayList<>();
     private final List<NCEntityEnricher> entEnrichers = new ArrayList<>();
@@ -76,7 +76,7 @@ public class NCModelPipelineBuilder {
      * @param tokEnrichers
      * @return This instance for call chaining.
      */
-    public NCModelPipelineBuilder withTokenEnrichers(List<NCTokenEnricher> tokEnrichers) {
+    public NCPipelineBuilder withTokenEnrichers(List<NCTokenEnricher> tokEnrichers) {
         Objects.requireNonNull(tokEnrichers, "List of token enrichers cannot be null.");
         tokEnrichers.forEach(p -> Objects.requireNonNull(p, "Token enricher cannot be null."));
 
@@ -89,7 +89,7 @@ public class NCModelPipelineBuilder {
      * @param tokEnricher
      * @return This instance for call chaining.
      */
-    public NCModelPipelineBuilder withTokenEnricher(NCTokenEnricher tokEnricher) {
+    public NCPipelineBuilder withTokenEnricher(NCTokenEnricher tokEnricher) {
         Objects.requireNonNull(tokEnricher, "Token enricher cannot be null.");
 
         this.tokEnrichers.add(tokEnricher);
@@ -101,7 +101,7 @@ public class NCModelPipelineBuilder {
      * @param entEnrichers
      * @return This instance for call chaining.
      */
-    public NCModelPipelineBuilder withEntityEnrichers(List<NCEntityEnricher> entEnrichers) {
+    public NCPipelineBuilder withEntityEnrichers(List<NCEntityEnricher> entEnrichers) {
         Objects.requireNonNull(entEnrichers, "List of entity enrichers cannot be null.");
         entEnrichers.forEach(p -> Objects.requireNonNull(p, "Entity enrichers cannot be null."));
 
@@ -114,7 +114,7 @@ public class NCModelPipelineBuilder {
      * @param entEnricher
      * @return This instance for call chaining.
      */
-    public NCModelPipelineBuilder withEntityEnricher(NCEntityEnricher entEnricher) {
+    public NCPipelineBuilder withEntityEnricher(NCEntityEnricher entEnricher) {
         Objects.requireNonNull(entEnricher, "Entity enricher cannot be null.");
 
         this.entEnrichers.add(entEnricher);
@@ -126,7 +126,7 @@ public class NCModelPipelineBuilder {
      * @param entParsers
      * @return This instance for call chaining.
      */
-    public NCModelPipelineBuilder withEntityParsers(List<NCEntityParser> entParsers) {
+    public NCPipelineBuilder withEntityParsers(List<NCEntityParser> entParsers) {
         Objects.requireNonNull(entParsers, "List of entity parsers cannot be null.");
         entParsers.forEach(p -> Objects.requireNonNull(p, "Entity parser cannot be null."));
 
@@ -139,7 +139,7 @@ public class NCModelPipelineBuilder {
      * @param entParser
      * @return This instance for call chaining.
      */
-    public NCModelPipelineBuilder withEntityParser(NCEntityParser entParser) {
+    public NCPipelineBuilder withEntityParser(NCEntityParser entParser) {
         Objects.requireNonNull(entParser, "Entity parser cannot be null.");
 
         this.entParsers.add(entParser);
@@ -151,7 +151,7 @@ public class NCModelPipelineBuilder {
      * @param tokVals
      * @return This instance for call chaining.
      */
-    public NCModelPipelineBuilder withTokenValidators(List<NCTokenValidator> tokVals) {
+    public NCPipelineBuilder withTokenValidators(List<NCTokenValidator> tokVals) {
         Objects.requireNonNull(tokVals, "List of token validators cannot be null.");
         tokVals.forEach(p -> Objects.requireNonNull(p, "Token validator cannot be null."));
 
@@ -164,7 +164,7 @@ public class NCModelPipelineBuilder {
      * @param tokVal
      * @return This instance for call chaining.
      */
-    public NCModelPipelineBuilder withTokenValidator(NCTokenValidator tokVal) {
+    public NCPipelineBuilder withTokenValidator(NCTokenValidator tokVal) {
         Objects.requireNonNull(tokVal, "Token validator cannot be null.");
 
         this.tokVals.add(tokVal);
@@ -176,7 +176,7 @@ public class NCModelPipelineBuilder {
      * @param entVals
      * @return This instance for call chaining.
      */
-    public NCModelPipelineBuilder withEntityValidators(List<NCEntityValidator> entVals) {
+    public NCPipelineBuilder withEntityValidators(List<NCEntityValidator> entVals) {
         Objects.requireNonNull(entVals, "List of entity validators cannot be null.");
         entVals.forEach(p -> Objects.requireNonNull(p, "Entity validators cannot be null."));
 
@@ -189,7 +189,7 @@ public class NCModelPipelineBuilder {
      * @param entVal
      * @return This instance for call chaining.
      */
-    public NCModelPipelineBuilder withEntityValidator(NCEntityValidator entVal) {
+    public NCPipelineBuilder withEntityValidator(NCEntityValidator entVal) {
         Objects.requireNonNull(entVal, "Entity validator cannot be null.");
 
         this.entVals.add(entVal);
@@ -201,7 +201,7 @@ public class NCModelPipelineBuilder {
      * @param varFilter
      * @return This instance for call chaining.
      */
-    public NCModelPipelineBuilder withVariantFilter(NCVariantFilter varFilter) {
+    public NCPipelineBuilder withVariantFilter(NCVariantFilter varFilter) {
         this.varFilter = Optional.of(varFilter);
 
         return this;
@@ -212,7 +212,7 @@ public class NCModelPipelineBuilder {
      * @param tokParser
      * @return
      */
-    public NCModelPipelineBuilder withTokenParser(NCTokenParser tokParser) {
+    public NCPipelineBuilder withTokenParser(NCTokenParser tokParser) {
         Objects.requireNonNull(tokParser, "Token parser cannot be null.");
 
         this.tokParser = tokParser;
@@ -245,7 +245,7 @@ public class NCModelPipelineBuilder {
      * @param elms
      * @return
      */
-    public NCModelPipelineBuilder withSemantic(String lang, Map<String, String> macros, List<NCSemanticElement> elms) {
+    public NCPipelineBuilder withSemantic(String lang, Map<String, String> macros, List<NCSemanticElement> elms) {
         Objects.requireNonNull(lang, "Language cannot be null.");
         Objects.requireNonNull(elms, "Model elements cannot be null.");
         if (elms.isEmpty()) throw new IllegalArgumentException("Model elements cannot be empty.");
@@ -271,7 +271,7 @@ public class NCModelPipelineBuilder {
      * @param elms
      * @return
      */
-    public NCModelPipelineBuilder withSemantic(String lang, List<NCSemanticElement> elms) {
+    public NCPipelineBuilder withSemantic(String lang, List<NCSemanticElement> elms) {
         return withSemantic(lang, null, elms);
     }
 
@@ -281,7 +281,7 @@ public class NCModelPipelineBuilder {
      * @param src
      * @return
      */
-    public NCModelPipelineBuilder withSemantic(String lang, String src) {
+    public NCPipelineBuilder withSemantic(String lang, String src) {
         Objects.requireNonNull(lang, "Language cannot be null.");
         Objects.requireNonNull(src, "Model source cannot be null.");
 
@@ -304,10 +304,10 @@ public class NCModelPipelineBuilder {
     /**
      * @return
      */
-    public NCModelPipeline build() {
+    public NCPipeline build() {
         Objects.requireNonNull(tokParser, "Token parser cannot be null.");
 
-        return new NCModelPipeline() {
+        return new NCPipeline() {
             @Override public NCTokenParser getTokenParser() {
                 return tokParser;
             }

@@ -43,7 +43,7 @@ import scala.jdk.CollectionConverters.*
   */
 class LightSwitchFrModel extends NCModelAdapter(
     new NCModelConfig("nlpcraft.lightswitch.fr.ex", "LightSwitch Example Model FR", "1.0"),
-    new NCModelPipelineBuilder().
+    new NCPipelineBuilder().
         withTokenParser(new NCFrTokenParser()).
         withTokenEnricher(new NCFrLemmaPosTokenEnricher()).
         withTokenEnricher(new NCFrStopWordsTokenEnricher()).

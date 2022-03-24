@@ -20,13 +20,22 @@ package org.apache.nlpcraft;
 import java.util.List;
 
 /**
+ * A tokenizer that splits a text into the list of {@link NCToken tokens}.
  *
+ * See {@link NCPipeline} for documentation on the token parser place
+ * in the overall processing pipeline.
+ *
+ * @see NCToken
+ * @see NCTokenEnricher
+ * @see NCTokenValidator
+ * @see NCPipeline
  */
 public interface NCTokenParser {
     /**
+     * Splits given text into list of tokens. Can return an empty list but never {@code null}.
      *
-     * @param text
-     * @return
+     * @param text A text to split into tokens. Can be empty but never {@code null}.
+     * @return List of tokens. Can be empty but never {@code null}.
      */
     List<NCToken> tokenize(String text);
 }

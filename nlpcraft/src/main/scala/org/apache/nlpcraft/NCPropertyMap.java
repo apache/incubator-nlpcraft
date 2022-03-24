@@ -24,6 +24,8 @@ import java.util.Set;
  * Map-like container that provides support for mutable runtime-only propertes or metadata.
  *
  * @see NCPropertyMapAdapter
+ * @see NCToken
+ * @see NCEntity
  */
 public interface NCPropertyMap {
     /**

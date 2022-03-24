@@ -24,14 +24,14 @@ import java.util.Objects;
  */
 public class NCModelAdapter implements NCModel {
     private final NCModelConfig cfg;
-    private final NCModelPipeline pipeline;
+    private final NCPipeline pipeline;
 
     /**
      *
      * @param cfg
      * @param pipeline
      */
-    public NCModelAdapter(NCModelConfig cfg, NCModelPipeline pipeline) {
+    public NCModelAdapter(NCModelConfig cfg, NCPipeline pipeline) {
         Objects.requireNonNull(cfg, "Model config cannot be null.");
         Objects.requireNonNull(pipeline, "Model pipeline cannot be null.");
 
@@ -45,7 +45,7 @@ public class NCModelAdapter implements NCModel {
     }
 
     @Override
-    public NCModelPipeline getPipeline() {
+    public NCPipeline getPipeline() {
         return pipeline;
     }
 }

@@ -49,7 +49,7 @@ case class NCPipelineData(request: NCRequest, variants: Seq[NCVariant], tokens: 
   * @param cfg
   * @param pipeline
   */
-class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCModelPipeline) extends LazyLogging:
+class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCPipeline) extends LazyLogging:
     private val pool = new java.util.concurrent.ForkJoinPool()
     private val tokParser = pipeline.getTokenParser
     private val tokEnrichers = nvl(pipeline.getTokenEnrichers)

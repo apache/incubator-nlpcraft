@@ -57,7 +57,7 @@ class NCSemanticEntityParserLemmaSpec:
     private def ask(txt: String, elems: Seq[NCSemanticTestElement], expVrnts: Seq[Seq[Data]]): Unit =
         val mgr = new NCModelPipelineManager(
             CFG,
-            new NCModelPipelineBuilder().
+            new NCPipelineBuilder().
                 withTokenParser(EN_TOK_PARSER).
                 withTokenEnricher(EN_TOK_LEMMA_POS_ENRICHER).
                 withTokenEnricher(EN_TOK_STOP_ENRICHER).

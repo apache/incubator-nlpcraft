@@ -27,7 +27,7 @@ import java.util.{Optional, ArrayList as JList}
   *
   * @param tokParser
   */
-case class NCTestPipeline(tokParser: NCTokenParser) extends NCPropertyMapAdapter with NCModelPipeline:
+case class NCTestPipeline(tokParser: NCTokenParser) extends NCPropertyMapAdapter with NCPipeline:
     require(tokParser != null)
 
     var variantFilter: Optional[NCVariantFilter] = Optional.empty()

@@ -31,7 +31,7 @@ public interface NCModel {
      *
      * @return
      */
-    NCModelPipeline getPipeline();
+    NCPipeline getPipeline();
 
     /**
      *

@@ -28,7 +28,7 @@ import org.apache.nlpcraft.NCIntentSample;
 import org.apache.nlpcraft.NCIntentTerm;
 import org.apache.nlpcraft.NCModelAdapter;
 import org.apache.nlpcraft.NCModelConfig;
-import org.apache.nlpcraft.NCModelPipelineBuilder;
+import org.apache.nlpcraft.NCPipelineBuilder;
 import org.apache.nlpcraft.NCRejection;
 import org.apache.nlpcraft.NCResult;
 import org.apache.nlpcraft.NCResultType;
@@ -77,7 +77,7 @@ public class TimeModel extends NCModelAdapter {
     public TimeModel() {
         super(
             new NCModelConfig("nlpcraft.time.ex", "Time Example Model", "1.0"),
-            new NCModelPipelineBuilder().
+            new NCPipelineBuilder().
                 withSemantic("en", "time_model.yaml").
                 withEntityParser(new NCOpenNLPEntityParser(NCResourceReader.getPath("opennlp/en-ner-location.bin"))).
                 build()

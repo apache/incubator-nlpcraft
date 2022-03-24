@@ -34,7 +34,7 @@ import scala.jdk.CollectionConverters.*
 /**
   *
   */
-class NCModelPipelineManagerSpec:
+class NCPipelineManagerSpec:
     /**
       *
       */
