@@ -35,7 +35,7 @@ import scala.jdk.CollectionConverters.*
   */
 case class NCTestRequest(
     txt: String,
-    userId: String = null,
+    userId: String = "userId",
     reqId: String = null,
     ts: Long = -1,
     data: Map[String, AnyRef] = null

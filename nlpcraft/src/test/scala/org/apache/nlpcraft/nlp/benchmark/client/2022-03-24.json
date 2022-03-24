@@ -1,0 +1,57 @@
+[
+    {
+        "jmhVersion" : "1.34",
+        "benchmark" : "org.apache.nlpcraft.nlp.benchmark.client.NCClientBenchmark.testParse",
+        "mode" : "avgt",
+        "threads" : 1,
+        "forks" : 1,
+        "jvm" : "/Library/Java/JavaVirtualMachines/jdk-11.0.9.jdk/Contents/Home/bin/java",
+        "jvmArgs" : [
+            "-Xms2G",
+            "-Xmx2G"
+        ],
+        "jdkVersion" : "11.0.9",
+        "vmName" : "Java HotSpot(TM) 64-Bit Server VM",
+        "vmVersion" : "11.0.9+7-LTS",
+        "warmupIterations" : 5,
+        "warmupTime" : "10 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "primaryMetric" : {
+            "score" : 25.068108681069525,
+            "scoreError" : 6.605110263308195,
+            "scoreConfidence" : [
+                18.46299841776133,
+                31.67321894437772
+            ],
+            "scorePercentiles" : {
+                "0.0" : 22.4460412735426,
+                "50.0" : 25.551017474489797,
+                "90.0" : 27.0597884,
+                "95.0" : 27.0597884,
+                "99.0" : 27.0597884,
+                "99.9" : 27.0597884,
+                "99.99" : 27.0597884,
+                "99.999" : 27.0597884,
+                "99.9999" : 27.0597884,
+                "100.0" : 27.0597884
+            },
+            "scoreUnit" : "ms/op",
+            "rawData" : [
+                [
+                    22.4460412735426,
+                    24.557350980392158,
+                    25.551017474489797,
+                    25.726345276923077,
+                    27.0597884
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    }
+]
+
+
