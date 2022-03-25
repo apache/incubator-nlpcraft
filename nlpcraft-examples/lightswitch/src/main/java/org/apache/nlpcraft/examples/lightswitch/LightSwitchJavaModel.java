@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
  * You can easily modify intent callbacks to perform the actual light switching using
  * HomeKit or Arduino-based controllers.
  * <p>
- * See 'README.md' file in the same folder for running and testing instructions.
+ * See 'README.md' file in the same folder for running and testing instructions. 
  */
 public class LightSwitchJavaModel extends NCModelAdapter {
     public LightSwitchJavaModel() {
