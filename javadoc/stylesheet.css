@@ -94,17 +94,20 @@ code, tt {
     padding-top:4px;
     margin-top:8px;
     line-height:1.4em;
+    color: #4A6782;
 }
 dt code {
     font-family:"Roboto Mono", monospace;
     font-size:14px;
     padding-top:4px;
+    color: #4A6782;
 }
 table tr td dt code {
     font-family:"Roboto Mono", monospace;
     font-size:14px;
     vertical-align:top;
     padding-top:4px;
+    color: #4A6782;
 }
 sup {
     font-size:8px;

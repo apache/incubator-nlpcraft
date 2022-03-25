@@ -68,7 +68,7 @@ public interface NCModel {
     /**
      * Gets model configuration.
      *
-     * @return Model configuraiton.
+     * @return Model configuration.
      */
     NCModelConfig getConfig();
 
@@ -81,12 +81,12 @@ public interface NCModel {
 
     /**
      * A callback to accept or reject a parsed variant. This callback is called before any other callbacks at the
-     * beginning of the processing pipeline and it is called for each parsed variant.
+     * beginning of the processing pipeline, and it is called for each parsed variant.
      * <p>
      * Note that a given input query can have one or more possible different parsing variants. Depending on model
      * configuration an input query can produce hundreds or even thousands of parsing variants that can significantly
      * slow down the overall processing. This method allows to filter out unnecessary parsing variants based on
-     * variety of user-defined factors like number of entities, presence of a particular entnity in the variant, etc.
+     * variety of user-defined factors like number of entities, presence of a particular entity in the variant, etc.
      * <p>
      * By default, this method accepts all variants (returns {@code true}).
      *
@@ -117,40 +117,91 @@ public interface NCModel {
     }
 
     /**
+     * A callback that is called when intent was successfully matched but right before its callback is called. This
+     * callback is called after {@link #onContext(NCContext)} is called and may be called multiple times
+     * depending on its return value. If {@code true} is returned than the default workflow will continue and the
+     * matched intent's callback will be called. However, if {@code null} is returned than the entire existing set of
+     * parsing variants will be matched against all declared intents again. Returning {@code false} allows this
+     * method to alter the state of the model (like soft-reset conversation or change metadata) and force the
+     * full re-evaluation of the parsing variants against all declared intents.
+     * <p>
+     * Note that user logic should be careful not to induce infinite loop in this behavior.
+     * Note that this callback may not be called at all based on the return value of {@link #onContext(NCContext)} callback.
+     * Typical use case for this callback is to perform logging, debugging, statistic or usage collection, explicit
+     * update or initialization of conversation context, security audit or validation, etc.
+     * <p>
+     * By default, this method returns {@code true}.
      *
-     * @param ctx Input query context.
-     * @return
-     * @throws NCRejection
+     * @param ctx Intent match context - the same instance that's passed to the matched intent callback.
+     * @return If {@code true} is returned than the default workflow will continue and the matched intent's
+     *      callback will be called. However, if {@code false} is returned than the entire existing set of
+     *      parsing variants will be matched against all declared intents again. Returning false allows this
+     *      method to alter the state of the model (like soft-reset conversation or change metadata) and force
+     *      the re-evaluation of the parsing variants against all declared intents. Note that user logic should be
+     *      careful not to induce infinite loop in this behavior.
+     * @throws NCRejection This callback can throw the rejection exception to abort user request processing. In this
+     *      case the {@link #onRejection(NCIntentMatch, NCRejection)} callback will be called next.
      */
     default boolean onMatchedIntent(NCIntentMatch ctx) throws NCRejection {
         return true;
     }
 
     /**
+     * A callback that is called when successful result is obtained from the intent callback and right before
+     * sending it back to the caller. This callback is called after {@link #onMatchedIntent(NCIntentMatch)} is called.
+     * Note that this callback may not be called at all, and if called - it's called only once. Typical use case
+     * for this callback is to perform logging, debugging, statistic or usage collection, explicit update or
+     * initialization of conversation context, security audit or validation, etc.
+     * <p>
+     * Default implementation is a no-op returning {@code null}.
      *
-     * @param ctx Input query context.
-     * @param res
-     * @return
+     * @param ctx Intent match context - the same instance that's passed to the matched intent callback
+     *      that produced this result.
+     * @param res Existing result.
+     * @return Optional query result to return interrupting the default workflow. Specifically, if this
+     *      method returns a non-{@code null} result, it will be returned to the caller immediately overriding
+     *      default behavior and existing query result or error processing, if any. If the method returns {@code null} -
+     *      the default processing flow will continue.
      */
     default NCResult onResult(NCIntentMatch ctx, NCResult res) {
         return null;
     }
 
     /**
+     * A callback that is called when intent callback threw NCRejection exception. This callback is called
+     * after {@link #onMatchedIntent(NCIntentMatch)} is called. Note that this callback may not be called at all,
+     * and if called - it's called only once. Typical use case for this callback is to perform logging, debugging,
+     * statistic or usage collection, explicit update or initialization of conversation context, security audit or
+     * validation, etc.
+     * <p>
+     * Default implementation is a no-op returning {@code null}.
      *
-     * @param ctx Input query context.
-     * @param e
-     * @return
+     * @param ctx Optional intent match context - the same instance that's passed to the matched intent callback
+     *      that produced this rejection. It is {@code null} if rejection was triggered outside the intent callback.
+     * @param e Rejection exception.
+     * @return Optional query result to return interrupting the default workflow. Specifically, if this method
+     *      returns a non-{@code null} result, it will be returned to the caller immediately overriding default behavior
+     *      and existing query result or error processing, if any. If the method returns {@code null} - the default
+     *      processing flow will continue.
      */
     default NCResult onRejection(NCIntentMatch ctx, NCRejection e) {
         return null;
     }
 
     /**
+     * A callback that is called when intent callback failed with unexpected exception. Note that this callback may
+     * not be called at all, and if called - it's called only once. Typical use case for this callback is
+     * to perform logging, debugging, statistic or usage collection, explicit update or initialization of conversation
+     * context, security audit or validation, etc.
+     * <p>
+     * Default implementation is a no-op returning {@code null}.
      *
-     * @param ctx Input query context.
-     * @param e
-     * @return
+     * @param ctx Intent match context - the same instance that's passed to the matched intent that produced this error.
+     * @param e Failure exception.
+     * @return Optional query result to return interrupting the default workflow. Specifically, if this method
+     *      returns a non-{@code null} result, it will be returned to the caller immediately overriding default
+     *      behavior and existing query result or error processing, if any. If the method returns {@code null} - the
+     *      default processing flow will continue.
      */
     default NCResult onError(NCContext ctx, Throwable e) {
         return null;
