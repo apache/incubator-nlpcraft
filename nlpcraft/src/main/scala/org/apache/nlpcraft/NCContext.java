@@ -21,7 +21,9 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- *
+ * A context containing a fully parsed data from the input query. 
+ * 
+ * @see NCModel#onContext(NCContext)
  */
 public interface NCContext {
     /**
@@ -32,14 +34,14 @@ public interface NCContext {
     boolean isOwnerOf(NCEntity ent);
 
     /**
-     * Gets model configuration for this query.
+     * Gets configuration of the model this context is associated with.
      *
      * @return Model.
      */
     NCModelConfig getModelConfig();
 
     /**
-     * Gets user request.
+     * Gets user request container.
      *
      * @return User request.
      */
@@ -53,14 +55,17 @@ public interface NCContext {
     NCConversation getConversation();
 
     /**
-     *
-     * @return
+     * Gets the list of parsing variants. Returned list always contains as least one parsing variant.
+     * 
+     * @return A non-empty list of parsing variants.
+     * @see NCModel#onVariant(NCVariant)
      */
     Collection<NCVariant> getVariants();
 
     /**
+     * Gets the list of all tokens for the input query this context is associated with.
      *
-     * @return
+     * @return List of tokens for this context. Can be empty but never {@code null}.
      */
     List<NCToken> getTokens();
 }
