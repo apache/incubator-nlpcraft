@@ -19,6 +19,8 @@ package org.apache.nlpcraft
 
 import org.apache.nlpcraft.*
 
+import scala.annotation.targetName
+
 /**
   * Global syntax sugar for throwing [[NCException]].
   *
@@ -31,8 +33,10 @@ def E[T](msg: String, cause: Throwable = null): T = throw new NCException(msg, c
 final val DEEP_DEBUG = false
 
 extension[T](opt: Option[T])
+    @targetName("equalEqualEqualOpt")
     def === (x: Option[T]): Boolean = opt.isDefined && x.isDefined && opt.get == x.get
-    def === (x: T): Boolean = opt.isDefined && opt.get == x
+    @targetName("equalEqualEqual")
+    def ===(x: T): Boolean = opt.isDefined && opt.get == x
 
 extension(v: Int)
     def MS: Int = v
