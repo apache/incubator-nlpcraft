@@ -21,7 +21,7 @@ import java.util.List;
 
 /**
  * A tokenizer that splits a text into the list of {@link NCToken tokens}.
- *
+ * <p>
  * See {@link NCPipeline} for documentation on the token parser place
  * in the overall processing pipeline.
  *

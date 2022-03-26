@@ -34,7 +34,7 @@ package org.apache.nlpcraft;
  * some aspects of your data models - your entire model and all of its components are part of your project's source code.
  * <p>
  * In most cases, one would use a convenient {@link NCModelAdapter} adapter to implement this interface. Here's a snippet
- * of the user data model from Lighswitch example:
+ * of the user data model from LightSwitch example:
  * <pre class="brush: java, highlight: [1]">
  * public class LightSwitchJavaModel extends NCModelAdapter {
  *     public LightSwitchJavaModel() {

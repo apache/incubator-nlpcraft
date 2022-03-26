@@ -26,7 +26,9 @@ import java.util.Map;
  */
 public interface NCRequest {
     /**
-     * Gets ID of the user on behalf of which this request was submitted.
+     * Gets ID of the user on behalf of which this request was submitted. User ID is used by
+     * NLPCraft to manage the conversation state. It can be any value as long as it is constant
+     * and globally unique for the given user.
      *
      * @return User ID.
      */
