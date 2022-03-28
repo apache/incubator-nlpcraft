@@ -75,13 +75,7 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
         dlgMgr.start()
         plMgr.start()
 
-     /*
-      * @param txt
-      * @param data
-      * @param usrId
-      * @return
-      */
-    def ask(txt: String, data: JMap[String, AnyRef], usrId: String): NCResult =
+    private def ask0(txt: String, data: JMap[String, AnyRef], usrId: String, isValidation: Boolean): NCResult =
         val plData = plMgr.prepare(txt, data, usrId)
 
         val userId = plData.request.getUserId
@@ -105,7 +99,16 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
                 override val getVariants: util.Collection[NCVariant] = plData.variants.asJava
                 override val getTokens: JList[NCToken] = plData.tokens
 
-        intentsMgr.solve(mdl, ctx)
+        intentsMgr.solve(mdl, ctx, isValidation)
+
+
+     /*
+      * @param txt
+      * @param data
+      * @param usrId
+      * @return
+      */
+    def ask(txt: String, data: JMap[String, AnyRef], usrId: String): NCResult = ask0(txt, data, usrId, false)
 
     /**
       *
@@ -187,3 +190,6 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
         plMgr.close()
         dlgMgr.close()
         convMgr.close()
+
+    def validateAsk(txt: String, data: JMap[String, AnyRef], usrId: String): JList[JList[NCEntity]] =
+        ask0(txt, data, usrId, true).getBody.asInstanceOf[JList[JList[NCEntity]]]

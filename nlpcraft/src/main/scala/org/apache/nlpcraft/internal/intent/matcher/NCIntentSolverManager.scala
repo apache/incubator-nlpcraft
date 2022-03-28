@@ -622,9 +622,10 @@ class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLInten
       *
       * @param mdl
       * @param ctx
+      * @param isValidation
       * @return
       */
-    private def solveIteration(mdl: NCModel, ctx: NCContext): Option[IterationResult] =
+    private def solveIteration(mdl: NCModel, ctx: NCContext, isValidation: Boolean): Option[IterationResult] =
         require(intents.nonEmpty)
 
         val req = ctx.getRequest
@@ -662,7 +663,7 @@ class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLInten
             try
                 if mdl.onMatchedIntent(intentMatch) then
                     // This can throw NCIntentSkip exception.
-                    val cbRes = intentRes.fn(intentMatch)
+                    val cbRes = if isValidation then new NCResult(intentMatch.getIntentEntities, NCResultType.ASK_RESULT) else intentRes.fn(intentMatch)
                     // Store won intent match in the input.
                     if cbRes.getIntentId == null then
                         cbRes.setIntentId(intentRes.intentId)
@@ -685,9 +686,10 @@ class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLInten
       *
       * @param mdl
       * @param ctx
+      * @param isValidation
       * @return
       */
-    def solve(mdl: NCModel, ctx: NCContext): NCResult =
+    def solve(mdl: NCModel, ctx: NCContext, isValidation: Boolean): NCResult =
         var res: NCResult = mdl.onContext(ctx)
 
         if res != null then
@@ -704,7 +706,7 @@ class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLInten
 
             try
                 while (loopRes == null)
-                    solveIteration(mdl, ctx) match
+                    solveIteration(mdl, ctx, isValidation) match
                         case Some(iterRes) => loopRes = iterRes
                         case None => // No-op.
 

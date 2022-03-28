@@ -27,6 +27,9 @@ import scala.jdk.CollectionConverters.*
 import scala.util.Using
 
 class NCModelClientSpec:
+    private def s(e: NCEntity): String =
+        s"Entity [id=${e.getId}, text=${e.mkText()}, properties={${e.keysSet().asScala.map(k => s"$k=${e.get(k)}")}}]"
+
     private def test0(mdl: NCTestModelAdapter): Unit =
         mdl.getPipeline.getEntityParsers.add(NCTestUtils.mkENSemanticParser("models/lightswitch_model.yaml"))
 
@@ -37,6 +40,9 @@ class NCModelClientSpec:
             println(s"Body: ${res.getBody}")
 
             client.validateSamples()
+            val entities = client.validateAsk("Lights on at second floor kitchen", null, "userId")
+
+            println("Entities: \n" + entities.asScala.map(p => p.asScala.map(s).mkString(", ")).mkString("\n"))
         }
     /**
       *

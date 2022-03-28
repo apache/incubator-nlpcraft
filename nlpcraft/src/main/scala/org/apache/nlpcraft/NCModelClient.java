@@ -20,6 +20,7 @@ package org.apache.nlpcraft;
 import org.apache.nlpcraft.internal.impl.NCModelClientImpl;
 
 import java.util.Map;
+import java.util.List;
 import java.util.function.Predicate;
 
 /**
@@ -97,5 +98,9 @@ public class NCModelClient implements AutoCloseable {
      */
     public void validateSamples() {
         impl.validateSamples();
+    }
+
+    public List<List<NCEntity>> validateAsk(String txt, Map<String, Object> data, String usrId) {
+        return impl.validateAsk(txt, data, usrId);
     }
 }
