@@ -90,7 +90,7 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
 
         val conv: NCConversation =
             new NCConversation:
-                override val getSession: NCPropertyMap = convHldr.getUserData
+                override val getData: NCPropertyMap = convHldr.getUserData
                 override val getStm: JList[NCEntity] = convHldr.getEntities.asJava
                 override val getDialogFlow: JList[NCDialogFlowItem] = dlgMgr.getDialogFlow(userId).asJava
                 override def clearStm(filter: Predicate[NCEntity]): Unit = convHldr.clear(filter)
