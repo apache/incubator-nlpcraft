@@ -100,7 +100,7 @@ public class NCModelClient implements AutoCloseable {
         impl.validateSamples();
     }
 
-    public List<List<NCEntity>> validateAsk(String txt, Map<String, Object> data, String usrId) {
-        return impl.validateAsk(txt, data, usrId);
+    public List<List<NCEntity>> validateIntentArguments(String txt, Map<String, Object> data, String usrId) {
+        return impl.validateIntentArguments(txt, data, usrId);
     }
 }

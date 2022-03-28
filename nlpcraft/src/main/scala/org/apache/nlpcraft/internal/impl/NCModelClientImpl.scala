@@ -191,5 +191,5 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
         dlgMgr.close()
         convMgr.close()
 
-    def validateAsk(txt: String, data: JMap[String, AnyRef], usrId: String): JList[JList[NCEntity]] =
+    def validateIntentArguments(txt: String, data: JMap[String, AnyRef], usrId: String): JList[JList[NCEntity]] =
         ask0(txt, data, usrId, true).getBody.asInstanceOf[JList[JList[NCEntity]]]
