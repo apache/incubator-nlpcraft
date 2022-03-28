@@ -21,7 +21,18 @@ import java.util.List;
 import java.util.function.Predicate;
 
 /**
- *
+ * Conversation container. This container is unique for user and data model pair.
+ * <p>
+ * Conversation management is based on idea of a short-term-memory (STM). STM can be viewed as a condensed
+ * short-term history of the input for a given user and data model. Every submitted user request that wasn't
+ * rejected is added to the conversation STM as a list of tokens. Existing STM tokens belonging to the same
+ * group will be overridden by the more recent tokens from the same group. Note also that tokens in STM automatically
+ * expire (i.e. context is "forgotten") after a certain period of time and/or based on the depth of the
+ * conversation since the last mention.
+ * <p>
+ * You can also maintain user state-machine between requests using converasation's session. Conversation's session is
+ * a mutable thread-safe container that can hold any arbitrary user data while supporting the same expiration logic as
+ * the rest of the conversation elements (i.e. tokens and previously matched intent IDs).
  */
 public interface NCConversation {
     /**
