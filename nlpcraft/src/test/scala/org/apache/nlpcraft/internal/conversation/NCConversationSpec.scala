@@ -37,7 +37,7 @@ class NCConversationSpec:
             override def getPipeline: NCPipeline = new NCPipelineBuilder().withSemantic("en", Seq(TE("e1"), TE("e2")).asJava).build()
             override def getConfig: NCModelConfig = CFG
 
-            @NCIntent("intent=i1 term(t1)={# == 'e1'} term(t2)={# == 'e2'}?")
+            @NCIntent("intent=i1 term(t1)~{# == 'e1'} term(t2)~{# == 'e2'}?")
             def onMatch(@NCIntentTerm("t1") t1: NCEntity, @NCIntentTerm("t2") t2: Option[NCEntity]): NCResult = new NCResult()
 
         Using.resource(new NCModelClient(mdl)) { cli =>

@@ -255,7 +255,7 @@ class NCIntentSolverManager(
         for (
             (vrn, vrnIdx) <- ctx.getVariants.asScala.zipWithIndex if mdl.onVariant(vrn);
             ents = vrn.getEntities.asScala;
-            varEntsGroups = ents.map(t => if t.getGroups != null then t.getGroups.asScala else Set.empty[String]);
+            varEntsGroups = ents.filter(t => t.getGroups != null && !t.getGroups.isEmpty).map(_.getGroups.asScala);
             (intent, callback) <- intents
         )
             val convEnts: Seq[IntentEntity] =
