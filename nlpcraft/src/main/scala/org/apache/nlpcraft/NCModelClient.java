@@ -103,7 +103,7 @@ public class NCModelClient implements AutoCloseable {
      * TODO:
      * Gets intent information which contains intent ID and its callback arguments entities.
      * Note that
-     *  - Callback is not called  in this case.
+     *  - Callback is not called in this case.
      *  - if model `onContext` method overrided - error thrown because we don't find intents in this case.
      *
      * @param txt
