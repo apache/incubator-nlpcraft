@@ -18,18 +18,24 @@
 package org.apache.nlpcraft;
 
 /**
+ * An item of the dialog flow. Dialog flow is a chronologically ordered list of dialog flow items. Each item
+ * represents a snapshot of winning intent's match and its associated data. List of dialog flow items
+ * is passed into a custom user-defined dialog flow match method.
  *
+ * @see NCConversation#getDialogFlow() 
  */
 public interface NCDialogFlowItem {
     /**
+     * Gets the intent match container.
      *
-     * @return
+     * @return Intent match container.
      */
     NCIntentMatch getIntentMatch();
 
     /**
+     * Gets the input request descriptor.
      *
-     * @return
+     * @return Input request descriptor.
      */
     NCRequest getRequest();
 

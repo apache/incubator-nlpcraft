@@ -412,7 +412,7 @@ class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLInten
             val intentGrps = mutable.ArrayBuffer.empty[TermEntitiesGroup]
             var abort = false
             var lastTermMatch: TermMatch = null
-            val sess = ctx.getConversation.getSession // Conversation metadata (shared across all terms).
+            val sess = ctx.getConversation.getData // Conversation metadata (shared across all terms).
             val convMeta = sess.keysSet().asScala.map(k => k -> sess.get(k).asInstanceOf[Object]).toMap
             val ents = senEnts.map(_.entity)
 

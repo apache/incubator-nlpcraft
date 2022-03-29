@@ -21,17 +21,57 @@ import java.util.List;
 import java.util.function.Predicate;
 
 /**
+ * Conversation container. Conversation is essentially a container for everything that should be implicitly remembered
+ * during the active, ongoing conversation and forgotten once the conversation stops. Conversation contains the
+ * following elements:
+ * <ul>
+ *     <li>List of entities defining a "short-term-memory (STM)" of this conversation.</li>
+ *     <li>Chronological list of previously matched intents.</li>
+ *     <li>Auto-expiring user data.</li>
+ * </ul>
+ * Note that the conversation is unique for given combination of user and data model.
+ * <p>
+ * Conversation management is based on idea of a short-term-memory (STM). STM can be viewed as a condensed
+ * short-term history of the input for a given user and data model. Every submitted user request that wasn't
+ * rejected is added to the conversation STM as a list of tokens. Existing STM tokens belonging to the same
+ * group will be overridden by the more recent tokens from the same group. Note also that tokens in STM automatically
+ * expire (i.e. context is "forgotten") after a certain period of time and/or based on the depth of the
+ * conversation since the last mention.
+ * <p>
+ * You can also maintain user state-machine between requests using conversation's session. Conversation's {@link #getData() data} is
+ * a mutable thread-safe container that can hold any arbitrary user data while supporting the same expiration logic as
+ * the rest of the conversation elements (i.e. tokens and previously matched intent IDs).
+ * <p>
+ * Conversation expiration policy is configured by two configuration properties:
+ * <ul>
+ *     <li>{@link NCModelConfig#getConversationDepth()}</li>
+ *     <li>{@link NCModelConfig#getConversationTimeout()}</li>
+ * </ul>
  *
+ * @see NCContext#getConversation()
+ * @see NCModelConfig#getConversationDepth()
+ * @see NCModelConfig#getConversationTimeout()
  */
 public interface NCConversation {
     /**
+     * Gets user-defined as a mutable thread-safe property container. Note tha this container has the same expiration
+     * policy as the conversation it belongs to. Specifically, this returned container will be cleared when the
+     * conversation gets cleared automatically (by timeout or depth) or manually.
      *
-     * @return
+     * @return User-defined conversation data container. Can be empty but never {@code null}.
      */
-    NCPropertyMap getSession();
+    NCPropertyMap getData();
 
     /**
-     * 
+     * Gets an ordered list of entities stored in the conversation STM for the current user and data model. Entities in
+     * the returned list are ordered by their conversational depth, i.e. the entities from more recent requests appear
+     * before entities from older requests.
+     * <p>
+     * Note that specific rules by which STM operates are undefined for the purpose of this function (i.e. callers
+     * should not rely on any observed behavior of how STM stores and evicts its content).
+     *
+     * @return List of entities for this conversation's STM. The list can be empty which indicates that conversation
+     * is brand new or expired - but never {@code null}.
      */
     List<NCEntity> getStm();
 
@@ -44,7 +84,15 @@ public interface NCConversation {
     List<NCDialogFlowItem> getDialogFlow();
 
     /**
-     * 
+     * Removes all entities satisfying given predicate from the conversation STM. This is particularly useful when the
+     * logic processing the user input makes an implicit assumption not present in the user input itself. Such
+     * assumption may alter the conversation (without having an explicit entities responsible for it) and therefore
+     * this method can be used to remove "stale" entities from conversation STM.
+     * <p>
+     * For example, in some cases the intent logic can assume the user current location as an implicit geographical
+     * location and therefore all existing geographical-related entities should be removed from the conversation
+     * STM to maintain correct context.
+     *
      * @param filter Entity remove filter.
      */
     void clearStm(Predicate<NCEntity> filter);
