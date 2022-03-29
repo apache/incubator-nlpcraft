@@ -26,7 +26,6 @@ import java.util.Optional;
  * <p>
  * An NLP pipeline is a container for various processing components that take the input text at the beginning of the
  * pipeline and produce the list of {@link NCEntity entities} at the end of the pipeline.
- * <p>
  * Schematically the pipeline looks like this:
  * <pre>
  *                                   +----------+        +-----------+
@@ -34,11 +33,10 @@ import java.util.Optional;
  * :  Text   : -> |  Token  | -> | Token     |  | -> | Token      |  | ----.
  * :  Input  :    |  Parser |    | Enrichers |--+    | Validators |--+      \
  * *=========*    +---------+    +-----------+       +------------+          \
- *                                                                            \
- *                                                                             }
- *                    +-----------+        +----------+        +--------+     /
- * *=========*    +---+--------+  |    +---+-------+  |    +---+-----+  |    /
- * :  Entity : <- | Entity     |  | <- | Entity    |  | <- | Entity  |  | <-'
+ *                                                                            }
+ *                    +-----------+        +----------+        +--------+    /
+ * *=========*    +---+--------+  |    +---+-------+  |    +---+-----+  |   /
+ * :  Entity : <- | Entity     |  | <- | Entity    |  | <- | Entity  |  | <-
  * :  List   :    | Validators |--+    | Enrichers |--+    | Parsers |--+
  * *=========*    +------------+       +-----------+       +---------+
  * </pre>
@@ -46,8 +44,8 @@ import java.util.Optional;
  * Pipeline has the following components:
  * <ul>
  *     <li>
- *         {@link NCTokenParser Token parser} is responsible for taking the input text and tokenize it into a list of
- *         {@link NCToken tokens}. This process is called tokenization, i.e. the process of demarcating and
+ *         {@link NCTokenParser} is responsible for taking the input text and tokenize it into a list of
+ *         {@link NCToken}. This process is called tokenization, i.e. the process of demarcating and
  *         classifying sections of a string of input characters. There's only one token parser for the pipeline.
  *     </li>
  *     <li>
