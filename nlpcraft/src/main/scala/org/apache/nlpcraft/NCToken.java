@@ -19,7 +19,8 @@ package org.apache.nlpcraft;
 
 /**
  * Represents a contiguous substring of the original input text produced by {@link NCTokenParser}.
- * See {@link NCPipeline} for documentation on the tokens place in the overall processing pipeline.
+ * A token is the result of {@link NCTokenParser tokenization} - the process of demarcating and classifying sections of a string of
+ * input characters. See {@link NCPipeline} for documentation on the tokens place in the overall processing pipeline.
  *
  * <span class="hdr">Metadata</span>
  * Note that both {@link NCToken} and {@link NCEntity} interfaces extend {@link NCPropertyMap} interface
