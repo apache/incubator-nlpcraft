@@ -26,7 +26,6 @@ import org.apache.nlpcraft.internal.dialogflow.NCDialogFlowManager
 import org.apache.nlpcraft.internal.impl.*
 import org.apache.nlpcraft.internal.intent.matcher.*
 import org.apache.nlpcraft.internal.util.*
-import org.apache.nlpcraft.internal.intent.matcher.NCIntentSolveType.*
 
 import java.util
 import java.util.concurrent.*
@@ -83,6 +82,8 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
         val convHldr = convMgr.getConversation(userId)
         val allEnts = plData.variants.flatMap(_.getEntities.asScala)
 
+        convHldr.updateEntities()
+
         val conv: NCConversation =
             new NCConversation:
                 override val getData: NCPropertyMap = convHldr.getUserData
@@ -109,7 +110,7 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
       * @return
       */
     def ask(txt: String, data: JMap[String, AnyRef], usrId: String): NCResult =
-        ask0(txt, data, usrId, REGULAR).swap.toOption.get
+        ask0(txt, data, usrId, NCIntentSolveType.REGULAR).swap.toOption.get
 
     /**
       *
@@ -193,4 +194,5 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
         convMgr.close()
 
     def getWinnerIntent(txt: String, data: JMap[String, AnyRef], usrId: String, saveHistory: Boolean): NCWinnerIntent =
+        import NCIntentSolveType.*
         ask0(txt, data, usrId, if saveHistory then TEST_HISTORY else TEST_NO_HISTORY).toOption.get
