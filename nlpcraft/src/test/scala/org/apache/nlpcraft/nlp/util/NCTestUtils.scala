@@ -143,6 +143,15 @@ object NCTestUtils:
 
     /**
       *
+      * @param elms
+      * @param macros
+      * @return
+      */
+    def mkENSemanticParser(elms: NCSemanticElement*): NCSemanticEntityParser =
+        new NCSemanticEntityParser(mkSemanticStemmer, EN_TOK_PARSER, null, elms.asJava)
+
+    /**
+      *
       * @param src
       * @return
       */

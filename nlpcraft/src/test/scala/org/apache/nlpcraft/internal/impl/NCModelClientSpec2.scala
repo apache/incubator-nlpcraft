@@ -34,9 +34,12 @@ class NCModelClientSpec2:
     def test(): Unit =
         import NCSemanticTestElement as TE
 
-        val mdl = new NCModel:
-            override def getConfig: NCModelConfig = CFG
-            override def getPipeline: NCPipeline = new NCPipelineBuilder().withSemantic("en", Seq(TE("e1"), TE("e2")).asJava).build()
+        val mdl = new NCTestModelAdapter:
+            override val getPipeline: NCPipeline =
+                val pl = mkEnPipeline
+                pl.getEntityParsers.add(NCTestUtils.mkENSemanticParser(TE("e1"), TE("e2")))
+                pl.getTokenEnrichers.add(EN_TOK_LEMMA_POS_ENRICHER)
+                pl
 
             @NCIntent("intent=i1 term(t1)={# == 'e1'} term(t2List)={# == 'e2'}*")
             def onMatch(@NCIntentTerm("t1") act: NCEntity, @NCIntentTerm("t2List") locs: List[NCEntity]): NCResult =
