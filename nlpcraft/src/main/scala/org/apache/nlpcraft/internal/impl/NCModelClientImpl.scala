@@ -26,6 +26,7 @@ import org.apache.nlpcraft.internal.dialogflow.NCDialogFlowManager
 import org.apache.nlpcraft.internal.impl.*
 import org.apache.nlpcraft.internal.intent.matcher.*
 import org.apache.nlpcraft.internal.util.*
+import org.apache.nlpcraft.internal.intent.matcher.NCIntentSolveType.*
 
 import java.util
 import java.util.concurrent.*
@@ -48,7 +49,7 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
     private val convMgr = NCConversationManager(mdl.getConfig)
     private val dlgMgr = NCDialogFlowManager(mdl.getConfig)
     private val plMgr = NCModelPipelineManager(mdl.getConfig, mdl.getPipeline)
-    private val intentsMgr = NCIntentSolverManager(dlgMgr, intents.map(p => p.intent -> p.function).toMap)
+    private val intentsMgr = NCIntentSolverManager(dlgMgr, convMgr, intents.map(p => p.intent -> p.function).toMap)
 
     init()
 
@@ -75,7 +76,7 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
         dlgMgr.start()
         plMgr.start()
 
-    private def ask0(txt: String, data: JMap[String, AnyRef], usrId: String, testRun: Boolean): Either[NCResult, NCWinnerIntent] =
+    private def ask0(txt: String, data: JMap[String, AnyRef], usrId: String, typ: NCIntentSolveType): Either[NCResult, NCWinnerIntent] =
         val plData = plMgr.prepare(txt, data, usrId)
 
         val userId = plData.request.getUserId
@@ -99,7 +100,7 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
                 override val getVariants: util.Collection[NCVariant] = plData.variants.asJava
                 override val getTokens: JList[NCToken] = plData.tokens
 
-        intentsMgr.solve(mdl, ctx, testRun)
+        intentsMgr.solve(mdl, ctx, typ)
 
      /*
       * @param txt
@@ -107,7 +108,8 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
       * @param usrId
       * @return
       */
-    def ask(txt: String, data: JMap[String, AnyRef], usrId: String): NCResult = ask0(txt, data, usrId, false).swap.toOption.get
+    def ask(txt: String, data: JMap[String, AnyRef], usrId: String): NCResult =
+        ask0(txt, data, usrId, REGULAR).swap.toOption.get
 
     /**
       *
@@ -190,5 +192,5 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
         dlgMgr.close()
         convMgr.close()
 
-    def getWinnerIntent(txt: String, data: JMap[String, AnyRef], usrId: String): NCWinnerIntent =
-        ask0(txt, data, usrId, true).toOption.get
+    def getWinnerIntent(txt: String, data: JMap[String, AnyRef], usrId: String, saveHistory: Boolean): NCWinnerIntent =
+        ask0(txt, data, usrId, if saveHistory then TEST_HISTORY else TEST_NO_HISTORY).toOption.get

@@ -20,6 +20,7 @@ package org.apache.nlpcraft.internal.intent.matcher
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.ascii.NCAsciiTable
+import org.apache.nlpcraft.internal.conversation.NCConversationManager
 import org.apache.nlpcraft.internal.dialogflow.NCDialogFlowManager
 import org.apache.nlpcraft.internal.intent.*
 
@@ -30,6 +31,9 @@ import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import scala.jdk.CollectionConverters.*
 import scala.language.postfixOps
+
+enum NCIntentSolveType:
+    case REGULAR, TEST_HISTORY, TEST_NO_HISTORY
 
 object NCIntentSolverManager:
     /**
@@ -229,7 +233,11 @@ import org.apache.nlpcraft.internal.intent.matcher.NCIntentSolverManager.*
 /**
  * Intent solver that finds the best matching intent given user sentence.
  */
-class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLIntent, NCIntentMatch => NCResult]) extends LazyLogging:
+class NCIntentSolverManager(
+    dialog: NCDialogFlowManager,
+    conv: NCConversationManager,
+    intents: Map[NCIDLIntent, NCIntentMatch => NCResult]
+) extends LazyLogging:
     /**
      * Main entry point for intent engine.
      *
@@ -625,10 +633,10 @@ class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLInten
       *
       * @param mdl
       * @param ctx
-      * @param testRun
+      * @param typ
       * @return
       */
-    private def solveIteration(mdl: NCModel, ctx: NCContext, testRun: Boolean): Option[IterationResult] =
+    private def solveIteration(mdl: NCModel, ctx: NCContext, typ: NCIntentSolveType): Option[IterationResult] =
         require(intents.nonEmpty)
 
         val req = ctx.getRequest
@@ -667,16 +675,33 @@ class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLInten
             try
                 if mdl.onMatchedIntent(im) then
                     // This can throw NCIntentSkip exception.
-                    if testRun then
-                        Loop.finish(Option(IterationResult(Right(NCWinnerIntentImpl(im.getIntentId, im.getIntentEntities)), im)))
-                    else
-                        val cbRes = intentRes.fn(im)
-                        // Store won intent match in the input.
-                        if cbRes.getIntentId == null then
-                            cbRes.setIntentId(intentRes.intentId)
-                        logger.info(s"Intent '${intentRes.intentId}' for variant #${intentRes.variantIdx + 1} selected as the <|best match|>")
-                        dialog.addMatchedIntent(im, cbRes, ctx)
-                        Loop.finish(Option(IterationResult(Left(cbRes), im)))
+                    import NCIntentSolveType.*
+
+                    def saveHistory(r: NCResult): Unit =
+                        dialog.addMatchedIntent(im, r, ctx)
+                        conv.getConversation(req.getUserId).addEntities(
+                            req.getRequestId, im.getIntentEntities.asScala.flatMap(_.asScala).toSeq.distinct
+                        )
+
+                    typ match
+                        case REGULAR =>
+                            val cbRes = intentRes.fn(im)
+                            // Store won intent match in the input.
+                            if cbRes.getIntentId == null then
+                                cbRes.setIntentId(intentRes.intentId)
+                            logger.info(s"Intent '${intentRes.intentId}' for variant #${intentRes.variantIdx + 1} selected as the <|best match|>")
+
+                            saveHistory(cbRes)
+
+                            Loop.finish(Option(IterationResult(Left(cbRes), im)))
+
+                        case TEST_HISTORY =>
+                            // Added dummy result. TODO: is it ok?
+                            saveHistory(new NCResult())
+
+                            Loop.finish(Option(IterationResult(Right(NCWinnerIntentImpl(im.getIntentId, im.getIntentEntities)), im)))
+                        case TEST_NO_HISTORY =>
+                            Loop.finish(Option(IterationResult(Right(NCWinnerIntentImpl(im.getIntentId, im.getIntentEntities)), im)))
                 else
                     logger.info(s"Model '${ctx.getModelConfig.getId}' triggered rematching of intents by intent '${intentRes.intentId}' on variant #${intentRes.variantIdx + 1}.")
                     Loop.finish()
@@ -693,14 +718,16 @@ class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLInten
       *
       * @param mdl
       * @param ctx
-      * @param testRun
+      * @param typ
       * @return
       */
-    def solve(mdl: NCModel, ctx: NCContext, testRun: Boolean): ResultData =
+    def solve(mdl: NCModel, ctx: NCContext, typ: NCIntentSolveType): ResultData =
+        import NCIntentSolveType.*
+
         val ctxRes = mdl.onContext(ctx)
 
         if ctxRes != null then
-            if testRun then E("`onContext` method overriden, intents cannot be found.") // TODO: test
+            if typ != REGULAR then E("`onContext` method overriden, intents cannot be found.") // TODO: test
             if intents.nonEmpty then logger.warn("`onContext` method overrides existed intents. They are ignored.") // TODO: text.
 
             Left(ctxRes)
@@ -713,29 +740,31 @@ class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLInten
 
             try
                 while (loopRes == null)
-                    solveIteration(mdl, ctx, testRun) match
+                    solveIteration(mdl, ctx, typ) match
                         case Some(iterRes) => loopRes = iterRes
                         case None => // No-op.
 
-                if testRun then
-                    loopRes.result
-                else
-                    mdl.onResult(loopRes.intentMatch, loopRes.result.swap.toOption.get) match
-                        case null => loopRes.result
-                        case res => Left(res)
+                typ match
+                    case REGULAR =>
+                        mdl.onResult(loopRes.intentMatch, loopRes.result.swap.toOption.get) match
+                            case null => loopRes.result
+                            case res => Left(res)
+                    case _ => loopRes.result
             catch
                 case e: NCRejection =>
-                    if testRun then throw e
+                    typ match
+                        case REGULAR =>
+                            mdl.onRejection(if loopRes != null then loopRes.intentMatch else null, e) match
+                                case null => throw e
+                                case res => Left(res)
+                        case _ => throw e
 
-                    mdl.onRejection(if loopRes != null then loopRes.intentMatch else null, e) match
-                        case null => throw e
-                        case res => Left(res)
                 case e: Throwable =>
-                    if testRun then throw e
-
-                    mdl.onError(ctx, e) match
-                        case null => throw e
-                        case res =>
-                            logger.warn("Error during execution.", e)
-
-                            Left(res)
+                    typ match
+                        case REGULAR =>
+                            mdl.onError(ctx, e) match
+                                case null => throw e
+                                case res =>
+                                    logger.warn("Error during execution.", e)
+                                    Left(res)
+                        case _ => throw e

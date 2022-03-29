@@ -109,9 +109,10 @@ public class NCModelClient implements AutoCloseable {
      * @param txt
      * @param data
      * @param usrId
+     * @param saveHistory
      * @return
      */
-    public NCWinnerIntent getWinnerIntent(String txt, Map<String, Object> data, String usrId) {
-        return impl.getWinnerIntent(txt, data, usrId);
+    public NCWinnerIntent getWinnerIntent(String txt, Map<String, Object> data, String usrId, boolean saveHistory) {
+        return impl.getWinnerIntent(txt, data, usrId, saveHistory);
     }
 }

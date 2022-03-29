@@ -44,7 +44,7 @@ class NCModelClientSpec2:
 
         Using.resource(new NCModelClient(mdl)) { client =>
             case class Result(txt: String):
-                private val wi = client.getWinnerIntent(txt, null, "userId")
+                private val wi = client.getWinnerIntent(txt, null, "userId", true)
                 private val allArgs: JList[JList[NCEntity]] = wi.getArguments
 
                 val intentId: String = wi.getIntentId
@@ -84,7 +84,7 @@ class NCModelClientSpec2:
 
             // 3. No winners.
             try
-                client.getWinnerIntent("x", null, "userId")
+                client.getWinnerIntent("x", null, "userId", false)
 
                 require(false)
             catch
