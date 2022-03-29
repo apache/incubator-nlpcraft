@@ -75,7 +75,7 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
         dlgMgr.start()
         plMgr.start()
 
-    private def ask0(txt: String, data: JMap[String, AnyRef], usrId: String, isValidation: Boolean): NCResult =
+    private def ask0(txt: String, data: JMap[String, AnyRef], usrId: String, testRun: Boolean): Either[NCResult, NCWinnerIntent] =
         val plData = plMgr.prepare(txt, data, usrId)
 
         val userId = plData.request.getUserId
@@ -99,8 +99,7 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
                 override val getVariants: util.Collection[NCVariant] = plData.variants.asJava
                 override val getTokens: JList[NCToken] = plData.tokens
 
-        intentsMgr.solve(mdl, ctx, isValidation)
-
+        intentsMgr.solve(mdl, ctx, testRun)
 
      /*
       * @param txt
@@ -108,7 +107,7 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
       * @param usrId
       * @return
       */
-    def ask(txt: String, data: JMap[String, AnyRef], usrId: String): NCResult = ask0(txt, data, usrId, false)
+    def ask(txt: String, data: JMap[String, AnyRef], usrId: String): NCResult = ask0(txt, data, usrId, false).swap.toOption.get
 
     /**
       *
@@ -191,5 +190,5 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
         dlgMgr.close()
         convMgr.close()
 
-    def validateIntentArguments(txt: String, data: JMap[String, AnyRef], usrId: String): JList[JList[NCEntity]] =
-        ask0(txt, data, usrId, true).getBody.asInstanceOf[JList[JList[NCEntity]]]
+    def getWinnerIntent(txt: String, data: JMap[String, AnyRef], usrId: String): NCWinnerIntent =
+        ask0(txt, data, usrId, true).toOption.get

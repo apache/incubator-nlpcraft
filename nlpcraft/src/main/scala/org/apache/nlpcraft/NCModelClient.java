@@ -20,7 +20,6 @@ package org.apache.nlpcraft;
 import org.apache.nlpcraft.internal.impl.NCModelClientImpl;
 
 import java.util.Map;
-import java.util.List;
 import java.util.function.Predicate;
 
 /**
@@ -100,7 +99,19 @@ public class NCModelClient implements AutoCloseable {
         impl.validateSamples();
     }
 
-    public List<List<NCEntity>> validateIntentArguments(String txt, Map<String, Object> data, String usrId) {
-        return impl.validateIntentArguments(txt, data, usrId);
+    /**
+     * TODO:
+     * Gets intent information which contains intent ID and its callback arguments entities.
+     * Note that
+     *  - Callback is not called  in this case.
+     *  - if model `onContext` method overrided - error thrown because we don't find intents in this case.
+     *
+     * @param txt
+     * @param data
+     * @param usrId
+     * @return
+     */
+    public NCWinnerIntent getWinnerIntent(String txt, Map<String, Object> data, String usrId) {
+        return impl.getWinnerIntent(txt, data, usrId);
     }
 }

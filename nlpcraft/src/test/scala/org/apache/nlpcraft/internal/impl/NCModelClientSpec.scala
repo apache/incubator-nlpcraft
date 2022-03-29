@@ -40,9 +40,10 @@ class NCModelClientSpec:
             println(s"Body: ${res.getBody}")
 
             client.validateSamples()
-            val entities = client.validateIntentArguments("Lights on at second floor kitchen", null, "userId")
 
-            println("Entities: \n" + entities.asScala.map(p => p.asScala.map(s).mkString(", ")).mkString("\n"))
+            val winner = client.getWinnerIntent("Lights on at second floor kitchen", null, "userId")
+            println(s"Winner intent: ${winner.getIntentId}")
+            println("Entities: \n" + winner.getArguments.asScala.map(p => p.asScala.map(s).mkString(", ")).mkString("\n"))
         }
     /**
       *

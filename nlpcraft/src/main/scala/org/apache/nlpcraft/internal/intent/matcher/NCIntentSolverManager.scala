@@ -69,6 +69,7 @@ object NCIntentSolverManager:
       * @param entities
       */
     private case class IntentTermEntities(termId: Option[String], entities: Seq[NCEntity])
+    private case class NCWinnerIntentImpl(getIntentId: String, getArguments: JList[JList[NCEntity]]) extends NCWinnerIntent
 
     /**
       *
@@ -162,12 +163,14 @@ object NCIntentSolverManager:
       */
     private case class IntentEntity(var used: Boolean, var conv: Boolean, entity: NCEntity)
 
+    type ResultData = Either[NCResult, NCWinnerIntent]
+
     /**
       *
       * @param result
       * @param intentMatch
       */
-    private case class IterationResult(result: NCResult, intentMatch: NCIntentMatch)
+    private case class IterationResult(result: ResultData, intentMatch: NCIntentMatch)
 
     /**
       * @param termId
@@ -612,7 +615,7 @@ class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLInten
                 Option.when(depth >= 0)(depth + 1)
 
             val convDepthsSum = -usedEnts.flatMap(getConversationDepth).sum
-            
+
             // Mark found entities as used.
             for (e <- usedEnts) e.used = true
 
@@ -622,10 +625,10 @@ class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLInten
       *
       * @param mdl
       * @param ctx
-      * @param isValidation
+      * @param testRun
       * @return
       */
-    private def solveIteration(mdl: NCModel, ctx: NCContext, isValidation: Boolean): Option[IterationResult] =
+    private def solveIteration(mdl: NCModel, ctx: NCContext, testRun: Boolean): Option[IterationResult] =
         require(intents.nonEmpty)
 
         val req = ctx.getRequest
@@ -637,17 +640,18 @@ class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLInten
         if intentResults.isEmpty then throw new NCRejection("No matching intent found.")
 
         object Loop:
-            private var data: Option[Option[IterationResult]] = None
-            private var stopped: Boolean = false
+            private var data: Option[IterationResult] = _
 
-            def hasNext: Boolean = !stopped
+            def hasNext: Boolean = data == null
             def finish(data: Option[IterationResult] = None): Unit =
-                Loop.data = Option(data)
-                Loop.stopped = true
-            def result: Option[IterationResult] = data.getOrElse(throw new NCRejection("No matching intent found - all intents were skipped."))
+                require(data != null)
+                Loop.data = data
+            def result: Option[IterationResult] =
+                if data == null then throw new NCRejection("No matching intent found - all intents were skipped.")
+                data
 
         for (intentRes <- intentResults.filter(_ != null) if Loop.hasNext)
-            val intentMatch: NCIntentMatch =
+            val im: NCIntentMatch =
                 new NCIntentMatch:
                     override val getContext: NCContext = ctx
                     override val getIntentId: String = intentRes.intentId
@@ -661,15 +665,18 @@ class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLInten
                         new NCVariant:
                             override def getEntities: JList[NCEntity] = intentRes.variant.entities.asJava
             try
-                if mdl.onMatchedIntent(intentMatch) then
+                if mdl.onMatchedIntent(im) then
                     // This can throw NCIntentSkip exception.
-                    val cbRes = if isValidation then new NCResult(intentMatch.getIntentEntities, NCResultType.ASK_RESULT) else intentRes.fn(intentMatch)
-                    // Store won intent match in the input.
-                    if cbRes.getIntentId == null then
-                        cbRes.setIntentId(intentRes.intentId)
-                    logger.info(s"Intent '${intentRes.intentId}' for variant #${intentRes.variantIdx + 1} selected as the <|best match|>")
-                    dialog.addMatchedIntent(intentMatch, cbRes, ctx)
-                    Loop.finish(Option(IterationResult(cbRes, intentMatch)))
+                    if testRun then
+                        Loop.finish(Option(IterationResult(Right(NCWinnerIntentImpl(im.getIntentId, im.getIntentEntities)), im)))
+                    else
+                        val cbRes = intentRes.fn(im)
+                        // Store won intent match in the input.
+                        if cbRes.getIntentId == null then
+                            cbRes.setIntentId(intentRes.intentId)
+                        logger.info(s"Intent '${intentRes.intentId}' for variant #${intentRes.variantIdx + 1} selected as the <|best match|>")
+                        dialog.addMatchedIntent(im, cbRes, ctx)
+                        Loop.finish(Option(IterationResult(Left(cbRes), im)))
                 else
                     logger.info(s"Model '${ctx.getModelConfig.getId}' triggered rematching of intents by intent '${intentRes.intentId}' on variant #${intentRes.variantIdx + 1}.")
                     Loop.finish()
@@ -686,17 +693,17 @@ class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLInten
       *
       * @param mdl
       * @param ctx
-      * @param isValidation
+      * @param testRun
       * @return
       */
-    def solve(mdl: NCModel, ctx: NCContext, isValidation: Boolean): NCResult =
-        var res: NCResult = mdl.onContext(ctx)
+    def solve(mdl: NCModel, ctx: NCContext, testRun: Boolean): ResultData =
+        val ctxRes = mdl.onContext(ctx)
 
-        if res != null then
-            // TODO: text.
-            if intents.nonEmpty then logger.warn("`onContext` method overrides existed intents. They are ignored.")
+        if ctxRes != null then
+            if testRun then E("`onContext` method overriden, intents cannot be found.") // TODO: test
+            if intents.nonEmpty then logger.warn("`onContext` method overrides existed intents. They are ignored.") // TODO: text.
 
-            res
+            Left(ctxRes)
         else
             if intents.isEmpty then
                 // TODO: text.
@@ -706,17 +713,29 @@ class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLInten
 
             try
                 while (loopRes == null)
-                    solveIteration(mdl, ctx, isValidation) match
+                    solveIteration(mdl, ctx, testRun) match
                         case Some(iterRes) => loopRes = iterRes
                         case None => // No-op.
 
-                res = mdl.onResult(loopRes.intentMatch, loopRes.result)
-
-                if res != null then res else loopRes.result
+                if testRun then
+                    loopRes.result
+                else
+                    mdl.onResult(loopRes.intentMatch, loopRes.result.swap.toOption.get) match
+                        case null => loopRes.result
+                        case res => Left(res)
             catch
                 case e: NCRejection =>
-                    val res = mdl.onRejection(if loopRes != null then loopRes.intentMatch else null, e)
-                    if res != null then res else throw e
+                    if testRun then throw e
+
+                    mdl.onRejection(if loopRes != null then loopRes.intentMatch else null, e) match
+                        case null => throw e
+                        case res => Left(res)
                 case e: Throwable =>
-                    val res = mdl.onError(ctx, e)
-                    if res != null then res else throw e
+                    if testRun then throw e
+
+                    mdl.onError(ctx, e) match
+                        case null => throw e
+                        case res =>
+                            logger.warn("Error during execution.", e)
+
+                            Left(res)
