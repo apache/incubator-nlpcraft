@@ -22,6 +22,32 @@ import java.util.List;
 import java.util.Optional;
 
 /**
+ * Input request NLP processing pipeline.
+ * <p>
+ * An NLP pipeline is a container for various processing components that take the input text at the beginning of the
+ * pipeline and produce the list of {@link NCEntity entities} at the end of the pipeline.
+ * <p>
+ * Schematically the pipeline looks like this:
+ * <pre>
+ *                                   +----------+        +-----------+
+ * *=========*    +---------+    +---+-------+  |    +---+-------+   |
+ * :  Text   : -> |  Token  | -> | Token     |  | -> | Token      |  |  ---.
+ * :  Input  :    |  Parser |    | Enrichers |--+    | Validators |--+      \
+ * *=========*    +---------+    +-----------+       +------------+          \
+ *                                                                            \
+ *                                                                             }
+ *                    +-----------+        +----------+        +--------+     /
+ * *=========*    +---+--------+  |    +---+-------+  |    +---+-----+  |    /
+ * :  Entity : <- | Entity     |  | <- | Entity    |  | <- | Entity  |  | <-'
+ * :  List   :    | Validators |--+    | Enrichers |--+    | Parsers |--+
+ * *=========*    +------------+       +-----------+       +---------+
+ * </pre>
+ * <p>
+ * Pipeline has the following components:
+ * <ul>
+ *     <li></li>
+ * </ul>
+ *
  *
  */
 public interface NCPipeline {
