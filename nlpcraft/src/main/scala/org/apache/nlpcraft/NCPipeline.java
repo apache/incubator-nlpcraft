@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Input request NLP processing pipeline.
+ * NLP processing pipeline for the input request. Pipeline is associated with the model.
  * <p>
  * An NLP pipeline is a container for various processing components that take the input text at the beginning of the
  * pipeline and produce the list of {@link NCEntity entities} at the end of the pipeline.
@@ -31,7 +31,7 @@ import java.util.Optional;
  * <pre>
  *                                   +----------+        +-----------+
  * *=========*    +---------+    +---+-------+  |    +---+-------+   |
- * :  Text   : -> |  Token  | -> | Token     |  | -> | Token      |  |  ---.
+ * :  Text   : -> |  Token  | -> | Token     |  | -> | Token      |  | ----.
  * :  Input  :    |  Parser |    | Enrichers |--+    | Validators |--+      \
  * *=========*    +---------+    +-----------+       +------------+          \
  *                                                                            \
@@ -45,7 +45,14 @@ import java.util.Optional;
  * <p>
  * Pipeline has the following components:
  * <ul>
- *     <li></li>
+ *     <li>
+ *         {@link NCTokenParser Token parser} is responsible for taking the input text and tokenize it into a list of
+ *         {@link NCToken tokens}. This process is called tokenization, i.e. the process of demarcating and
+ *         classifying sections of a string of input characters. There's only one token parser for the pipeline.
+ *     </li>
+ *     <li>
+ *         After the initial list of token is
+ *     </li>
  * </ul>
  *
  *
