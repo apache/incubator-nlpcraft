@@ -109,7 +109,8 @@ public class NCModelClient implements AutoCloseable {
      * @param txt
      * @param data
      * @param usrId
-     * @param saveHistory
+     * @param saveHistory if true that found intent data added to dialog flow (with empty NCResult, bacause callback wasn't called) and STM.
+     *                    if false found intent ignored in history.
      * @return
      */
     public NCWinnerIntent getWinnerIntent(String txt, Map<String, Object> data, String usrId, boolean saveHistory) {
