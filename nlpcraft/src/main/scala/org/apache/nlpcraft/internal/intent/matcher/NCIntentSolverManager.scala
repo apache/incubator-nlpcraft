@@ -33,7 +33,9 @@ import scala.jdk.CollectionConverters.*
 import scala.language.postfixOps
 
 /**
-  *
+  * REGULAR - regular request.
+  * SEARCH - if callback is trying to be found. STM and dialog flow processed as usual.
+  * SEARCH_NO_HISTORY - if callback is trying to be found. STM and dialog processing skipped.
   */
 enum NCIntentSolveType:
     case REGULAR, SEARCH, SEARCH_NO_HISTORY
