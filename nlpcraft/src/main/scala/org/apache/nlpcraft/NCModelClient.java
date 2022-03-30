@@ -101,7 +101,7 @@ public class NCModelClient implements AutoCloseable {
 
     /**
      * TODO:
-     * Gets intent information which contains intent ID and its callback arguments entities.
+     * Gets callback information which contains intent ID and callback arguments entities.
      * Note that
      *  - Callback is not called in this case.
      *  - if model `onContext` method overrided - error thrown because we don't find intents in this case.
@@ -113,7 +113,7 @@ public class NCModelClient implements AutoCloseable {
      *                    if false found intent ignored in history.
      * @return
      */
-    public NCWinnerIntent getWinnerIntent(String txt, Map<String, Object> data, String usrId, boolean saveHistory) {
-        return impl.getWinnerIntent(txt, data, usrId, saveHistory);
+    public NCCallbackData findCallback(String txt, Map<String, Object> data, String usrId, boolean saveHistory) {
+        return impl.findCallback(txt, data, usrId, saveHistory);
     }
 }

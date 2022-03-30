@@ -18,12 +18,11 @@
 package org.apache.nlpcraft;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * TODO:
  */
-public interface NCWinnerIntent {
+public interface NCCallbackData {
     String getIntentId();
-    List<List<NCEntity>> getArguments();
+    List<List<NCEntity>> getCallbackArguments();
 }

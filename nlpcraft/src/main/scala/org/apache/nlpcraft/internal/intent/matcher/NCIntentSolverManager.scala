@@ -32,8 +32,11 @@ import scala.collection.mutable.ArrayBuffer
 import scala.jdk.CollectionConverters.*
 import scala.language.postfixOps
 
+/**
+  *
+  */
 enum NCIntentSolveType:
-    case REGULAR, TEST_HISTORY, TEST_NO_HISTORY
+    case REGULAR, SEARCH, SEARCH_NO_HISTORY
 
 object NCIntentSolverManager:
     /**
@@ -73,7 +76,13 @@ object NCIntentSolverManager:
       * @param entities
       */
     private case class IntentTermEntities(termId: Option[String], entities: Seq[NCEntity])
-    private case class NCWinnerIntentImpl(getIntentId: String, getArguments: JList[JList[NCEntity]]) extends NCWinnerIntent
+
+    /**
+      *
+      * @param getIntentId
+      * @param getCallbackArguments
+      */
+    private case class CallbackDataImpl(getIntentId: String, getCallbackArguments: JList[JList[NCEntity]]) extends NCCallbackData
 
     /**
       *
@@ -167,7 +176,7 @@ object NCIntentSolverManager:
       */
     private case class IntentEntity(var used: Boolean, var conv: Boolean, entity: NCEntity)
 
-    type ResultData = Either[NCResult, NCWinnerIntent]
+    type ResultData = Either[NCResult, NCCallbackData]
 
     /**
       *
@@ -564,7 +573,7 @@ class NCIntentSolverManager(
                     )
                 // Term not found at all.
                 case None => None
-        catch case e: Exception => throw new NCException(s"Runtime error processing IDL term: $term", e)
+        catch case e: Exception => E(s"Runtime error processing IDL term: $term", e)
 
     /**
      * Solves term's predicate.
@@ -677,11 +686,13 @@ class NCIntentSolverManager(
                     // This can throw NCIntentSkip exception.
                     import NCIntentSolveType.*
 
-                    def saveHistory(r: NCResult): Unit =
-                        dialog.addMatchedIntent(im, r, ctx)
+                    def saveHistory(res: NCResult): Unit =
+                        dialog.addMatchedIntent(im, res, ctx)
                         conv.getConversation(req.getUserId).addEntities(
                             req.getRequestId, im.getIntentEntities.asScala.flatMap(_.asScala).toSeq.distinct
                         )
+                    def finishHistory(): Unit =
+                        Loop.finish(Option(IterationResult(Right(CallbackDataImpl(im.getIntentId, im.getIntentEntities)), im)))
 
                     typ match
                         case REGULAR =>
@@ -694,14 +705,10 @@ class NCIntentSolverManager(
                             saveHistory(cbRes)
 
                             Loop.finish(Option(IterationResult(Left(cbRes), im)))
-
-                        case TEST_HISTORY =>
-                            // Added dummy result. TODO: is it ok?
-                            saveHistory(new NCResult())
-
-                            Loop.finish(Option(IterationResult(Right(NCWinnerIntentImpl(im.getIntentId, im.getIntentEntities)), im)))
-                        case TEST_NO_HISTORY =>
-                            Loop.finish(Option(IterationResult(Right(NCWinnerIntentImpl(im.getIntentId, im.getIntentEntities)), im)))
+                        case SEARCH =>
+                            saveHistory(new NCResult()) // // Added dummy result. TODO: is it ok?
+                            finishHistory()
+                        case SEARCH_NO_HISTORY => finishHistory()
                 else
                     logger.info(s"Model '${ctx.getModelConfig.getId}' triggered rematching of intents by intent '${intentRes.intentId}' on variant #${intentRes.variantIdx + 1}.")
                     Loop.finish()
@@ -722,15 +729,15 @@ class NCIntentSolverManager(
       * @return
       */
     def solve(mdl: NCModel, ctx: NCContext, typ: NCIntentSolveType): ResultData =
-        import NCIntentSolveType.*
+        import NCIntentSolveType.REGULAR
 
-        val ctxRes = mdl.onContext(ctx)
+        val mdlCtxRes = mdl.onContext(ctx)
 
-        if ctxRes != null then
+        if mdlCtxRes != null then
             if typ != REGULAR then E("`onContext` method overriden, intents cannot be found.") // TODO: test
             if intents.nonEmpty then logger.warn("`onContext` method overrides existed intents. They are ignored.") // TODO: text.
 
-            Left(ctxRes)
+            Left(mdlCtxRes)
         else
             if intents.isEmpty then
                 // TODO: text.
@@ -748,7 +755,7 @@ class NCIntentSolverManager(
                     case REGULAR =>
                         mdl.onResult(loopRes.intentMatch, loopRes.result.swap.toOption.get) match
                             case null => loopRes.result
-                            case res => Left(res)
+                            case mdlRes => Left(mdlRes)
                     case _ => loopRes.result
             catch
                 case e: NCRejection =>
@@ -756,7 +763,7 @@ class NCIntentSolverManager(
                         case REGULAR =>
                             mdl.onRejection(if loopRes != null then loopRes.intentMatch else null, e) match
                                 case null => throw e
-                                case res => Left(res)
+                                case mdlRejRes => Left(mdlRejRes)
                         case _ => throw e
 
                 case e: Throwable =>
@@ -764,7 +771,7 @@ class NCIntentSolverManager(
                         case REGULAR =>
                             mdl.onError(ctx, e) match
                                 case null => throw e
-                                case res =>
+                                case mdlErrRes =>
                                     logger.warn("Error during execution.", e)
-                                    Left(res)
+                                    Left(mdlErrRes)
                         case _ => throw e

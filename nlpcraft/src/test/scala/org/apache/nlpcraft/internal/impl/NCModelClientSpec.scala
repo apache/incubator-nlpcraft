@@ -41,9 +41,9 @@ class NCModelClientSpec:
 
             client.validateSamples()
 
-            val winner = client.getWinnerIntent("Lights on at second floor kitchen", null, "userId", true)
+            val winner = client.findCallback("Lights on at second floor kitchen", null, "userId", true)
             println(s"Winner intent: ${winner.getIntentId}")
-            println("Entities: \n" + winner.getArguments.asScala.map(p => p.asScala.map(s).mkString(", ")).mkString("\n"))
+            println("Entities: \n" + winner.getCallbackArguments.asScala.map(p => p.asScala.map(s).mkString(", ")).mkString("\n"))
         }
     /**
       *

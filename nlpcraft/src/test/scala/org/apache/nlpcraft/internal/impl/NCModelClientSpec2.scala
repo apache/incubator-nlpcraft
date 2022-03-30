@@ -47,8 +47,8 @@ class NCModelClientSpec2:
 
         Using.resource(new NCModelClient(mdl)) { client =>
             case class Result(txt: String):
-                private val wi = client.getWinnerIntent(txt, null, "userId", true)
-                private val allArgs: JList[JList[NCEntity]] = wi.getArguments
+                private val wi = client.findCallback(txt, null, "userId", true)
+                private val allArgs: JList[JList[NCEntity]] = wi.getCallbackArguments
 
                 val intentId: String = wi.getIntentId
                 val size: Int = allArgs.size()
@@ -87,7 +87,7 @@ class NCModelClientSpec2:
 
             // 3. No winners.
             try
-                client.getWinnerIntent("x", null, "userId", false)
+                client.findCallback("x", null, "userId", false)
 
                 require(false)
             catch
