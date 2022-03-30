@@ -22,7 +22,7 @@ package org.apache.nlpcraft;
  * represents a snapshot of winning intent's match and its associated data. List of dialog flow items
  * is passed into a custom user-defined dialog flow match method.
  *
- * @see NCConversation#getDialogFlow() 
+ * @see NCConversation#getDialogFlow()
  */
 public interface NCDialogFlowItem {
     /**
