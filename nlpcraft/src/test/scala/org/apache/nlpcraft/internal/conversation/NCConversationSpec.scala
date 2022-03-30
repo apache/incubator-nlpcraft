@@ -26,9 +26,15 @@ import org.junit.jupiter.api.Assertions.{assertFalse, assertTrue}
 import scala.jdk.CollectionConverters.*
 import scala.util.Using
 
+/**
+  *
+  */
 class NCConversationSpec:
     private val usrId = "userId"
 
+    /**
+      *
+      */
     @Test
     def test(): Unit =
         val mdl: NCModel =
@@ -36,7 +42,7 @@ class NCConversationSpec:
                 import NCSemanticTestElement as TE
                 override val getPipeline: NCPipeline =
                     val pl = mkEnPipeline
-                    pl.getEntityParsers.add(NCTestUtils.mkENSemanticParser(TE("e1"), TE("e2")))
+                    pl.getEntityParsers.add(NCTestUtils.mkEnSemanticParser(TE("e1"), TE("e2")))
                     pl
 
                 @NCIntent("intent=i1 term(t1)~{# == 'e1'} term(t2)~{# == 'e2'}?")

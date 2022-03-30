@@ -113,7 +113,7 @@ public class NCModelClient implements AutoCloseable {
      *                    if false that found intent is not saved in STM and dialog flow.
      * @return
      */
-    public NCCallbackData findCallback(String txt, Map<String, Object> data, String usrId, boolean saveHistory) {
-        return impl.findCallback(txt, data, usrId, saveHistory);
+    public NCCallbackData debugAsk(String txt, Map<String, Object> data, String usrId, boolean saveHistory) {
+        return impl.debugAsk(txt, data, usrId, saveHistory);
     }
 }

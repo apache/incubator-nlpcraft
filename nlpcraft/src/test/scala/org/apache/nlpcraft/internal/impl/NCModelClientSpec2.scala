@@ -29,6 +29,9 @@ import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
 import scala.util.Using
 
+/**
+  * 
+  */
 class NCModelClientSpec2:
     @Test
     def test(): Unit =
@@ -37,7 +40,7 @@ class NCModelClientSpec2:
         val mdl = new NCTestModelAdapter:
             override val getPipeline: NCPipeline =
                 val pl = mkEnPipeline
-                pl.getEntityParsers.add(NCTestUtils.mkENSemanticParser(TE("e1"), TE("e2")))
+                pl.getEntityParsers.add(NCTestUtils.mkEnSemanticParser(TE("e1"), TE("e2")))
                 pl.getTokenEnrichers.add(EN_TOK_LEMMA_POS_ENRICHER)
                 pl
 
@@ -47,7 +50,7 @@ class NCModelClientSpec2:
 
         Using.resource(new NCModelClient(mdl)) { client =>
             case class Result(txt: String):
-                private val wi = client.findCallback(txt, null, "userId", true)
+                private val wi = client.debugAsk(txt, null, "userId", true)
                 private val allArgs: JList[JList[NCEntity]] = wi.getCallbackArguments
 
                 val intentId: String = wi.getIntentId
@@ -87,7 +90,7 @@ class NCModelClientSpec2:
 
             // 3. No winners.
             try
-                client.findCallback("x", null, "userId", false)
+                client.debugAsk("x", null, "userId", false)
 
                 require(false)
             catch

@@ -33,13 +33,14 @@ import scala.jdk.CollectionConverters.*
 import scala.language.postfixOps
 
 /**
-  * REGULAR - regular request.
-  * SEARCH - if callback is trying to be found. STM and dialog flow processed as usual.
-  * SEARCH_NO_HISTORY - if callback is trying to be found. STM and dialog processing skipped.
+  *
   */
 enum NCIntentSolveType:
     case REGULAR, SEARCH, SEARCH_NO_HISTORY
 
+/**
+  *
+  */
 object NCIntentSolverManager:
     /**
       * Sentence variant & its weight.
@@ -410,7 +411,6 @@ class NCIntentSolverManager(
         val opts = intent.options
         val flow = dialog.getDialogFlow(ctx.getRequest.getUserId)
         val varStr = s"(variant #${varIdx + 1})"
-        val flowRegex = intent.flowRegex
 
         // Check dialog flow regex first, if any.
         val flowMatched: Boolean =
@@ -472,7 +472,6 @@ class NCIntentSolverManager(
                 None
             else
                 val usedSenEnts = senEnts.filter(_.used)
-                val unusedSenEnts = senEnts.filter(!_.used)
                 val usedConvEnts = convEnts.filter(_.used)
                 val usedToks = usedSenEnts.flatMap(_.entity.getTokens.asScala)
                 val unusedToks = ctx.getTokens.asScala.filter(p => !usedToks.contains(p))
@@ -698,18 +697,20 @@ class NCIntentSolverManager(
                     typ match
                         case REGULAR =>
                             val cbRes = intentRes.fn(im)
-                            // Store won intent match in the input.
+                            // Store winning intent match in the input.
                             if cbRes.getIntentId == null then
                                 cbRes.setIntentId(intentRes.intentId)
                             logger.info(s"Intent '${intentRes.intentId}' for variant #${intentRes.variantIdx + 1} selected as the <|best match|>")
-
                             saveHistory(cbRes)
 
                             Loop.finish(IterationResult(Left(cbRes), im))
+
                         case SEARCH =>
-                            saveHistory(new NCResult()) // // Added dummy result. TODO: is it ok?
+                            saveHistory(new NCResult()) // Added dummy result.
                             finishHistory()
-                        case SEARCH_NO_HISTORY => finishHistory()
+
+                        case SEARCH_NO_HISTORY =>
+                            finishHistory()
                 else
                     logger.info(s"Model '${ctx.getModelConfig.getId}' triggered rematching of intents by intent '${intentRes.intentId}' on variant #${intentRes.variantIdx + 1}.")
                     Loop.finish()
@@ -735,14 +736,13 @@ class NCIntentSolverManager(
         val mdlCtxRes = mdl.onContext(ctx)
 
         if mdlCtxRes != null then
-            if typ != REGULAR then E("`onContext` method overriden, intents cannot be found.") // TODO: test
-            if intents.nonEmpty then logger.warn("`onContext` method overrides existed intents. They are ignored.") // TODO: text.
+            if typ != REGULAR then E("'onContext()' method is overridden, intents cannot be found.")
+            if intents.nonEmpty then logger.warn("'onContext()' method overrides existing intents - they are ignored.")
 
             Left(mdlCtxRes)
         else
             if intents.isEmpty then
-                // TODO: text.
-                throw NCRejection("Intent solver has no registered intents and model's `onContext` method returns null result.")
+                throw NCRejection("There are no registered intents and model's 'onContext()' method returns 'null' result.")
 
             var loopRes: IterationResult = null
 

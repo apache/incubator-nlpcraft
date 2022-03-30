@@ -26,11 +26,17 @@ import org.junit.jupiter.api.Test
 import scala.jdk.CollectionConverters.*
 import scala.util.Using
 
+/**
+  *
+  */
 class NCConversationTimeoutSpec:
     private val TIMEOUT = 200
     private val VALUE = "value"
     private val EMPTY = "empty"
 
+    /**
+      *
+      */
     @Test
     def test(): Unit =
         val mdl: NCModel =
@@ -43,7 +49,7 @@ class NCConversationTimeoutSpec:
                 override val getPipeline: NCPipeline =
                     val pl = mkEnPipeline
                     import NCSemanticTestElement as TE
-                    pl.getEntityParsers.add(NCTestUtils.mkENSemanticParser(TE("test")))
+                    pl.getEntityParsers.add(NCTestUtils.mkEnSemanticParser(TE("test")))
                     pl
 
                 @NCIntent("intent=i term(e)~{# == 'test'}")

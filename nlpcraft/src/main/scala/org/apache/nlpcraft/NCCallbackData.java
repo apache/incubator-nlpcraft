@@ -20,9 +20,18 @@ package org.apache.nlpcraft;
 import java.util.List;
 
 /**
- * TODO:
+ *
  */
 public interface NCCallbackData {
+    /**
+     *
+     * @return
+     */
     String getIntentId();
+
+    /**
+     *
+     * @return
+     */
     List<List<NCEntity>> getCallbackArguments();
 }

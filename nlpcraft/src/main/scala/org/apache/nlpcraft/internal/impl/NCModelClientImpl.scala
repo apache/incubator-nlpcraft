@@ -75,6 +75,14 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
         dlgMgr.start()
         plMgr.start()
 
+    /**
+      *
+      * @param txt
+      * @param data
+      * @param usrId
+      * @param typ
+      * @return
+      */
     private def ask0(txt: String, data: JMap[String, AnyRef], usrId: String, typ: NCIntentSolveType): Either[NCResult, NCCallbackData] =
         val plData = plMgr.prepare(txt, data, usrId)
 
@@ -193,6 +201,14 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
         dlgMgr.close()
         convMgr.close()
 
-    def findCallback(txt: String, data: JMap[String, AnyRef], usrId: String, saveHistory: Boolean): NCCallbackData =
+    /**
+      *
+      * @param txt
+      * @param data
+      * @param usrId
+      * @param saveHist
+      * @return
+      */
+    def debugAsk(txt: String, data: JMap[String, AnyRef], usrId: String, saveHist: Boolean): NCCallbackData =
         import NCIntentSolveType.*
-        ask0(txt, data, usrId, if saveHistory then SEARCH else SEARCH_NO_HISTORY).toOption.get
+        ask0(txt, data, usrId, if saveHist then SEARCH else SEARCH_NO_HISTORY).toOption.get

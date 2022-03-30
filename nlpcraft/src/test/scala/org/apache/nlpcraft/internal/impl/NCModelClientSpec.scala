@@ -26,12 +26,24 @@ import org.junit.jupiter.api.Test
 import scala.jdk.CollectionConverters.*
 import scala.util.Using
 
+/**
+  *
+  */
 class NCModelClientSpec:
+    /**
+      *
+      * @param e
+      * @return
+      */
     private def s(e: NCEntity): String =
         s"Entity [id=${e.getId}, text=${e.mkText()}, properties={${e.keysSet().asScala.map(k => s"$k=${e.get(k)}")}}]"
 
+    /**
+      *
+      * @param mdl
+      */
     private def test0(mdl: NCTestModelAdapter): Unit =
-        mdl.getPipeline.getEntityParsers.add(NCTestUtils.mkENSemanticParser("models/lightswitch_model.yaml"))
+        mdl.getPipeline.getEntityParsers.add(NCTestUtils.mkEnSemanticParser("models/lightswitch_model.yaml"))
 
         Using.resource(new NCModelClient(mdl)) { client =>
             val res = client.ask("Lights on at second floor kitchen", null, "userId")
@@ -41,10 +53,11 @@ class NCModelClientSpec:
 
             client.validateSamples()
 
-            val winner = client.findCallback("Lights on at second floor kitchen", null, "userId", true)
+            val winner = client.debugAsk("Lights on at second floor kitchen", null, "userId", true)
             println(s"Winner intent: ${winner.getIntentId}")
             println("Entities: \n" + winner.getCallbackArguments.asScala.map(p => p.asScala.map(s).mkString(", ")).mkString("\n"))
         }
+
     /**
       *
       */
@@ -57,6 +70,9 @@ class NCModelClientSpec:
                 def onMatch(@NCIntentTerm("act") act: NCEntity, @NCIntentTerm("loc") locs: List[NCEntity]): NCResult = new NCResult()
         )
 
+    /**
+      * 
+      */
     @Test
     def test2(): Unit =
         test0(

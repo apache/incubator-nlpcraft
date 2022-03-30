@@ -201,19 +201,17 @@ case class NCConversationData(
       *
       * @return
       */
-    def getEntities: Seq[NCEntity] =
-        stm.synchronized {
-            val reqIds = ctx.map(_.getRequestId).distinct.zipWithIndex.toMap
-            ctx.groupBy(_.getRequestId).toSeq.sortBy(p => reqIds(p._1)).reverse.flatMap(_._2)
-        }
+    def getEntities: Seq[NCEntity] = stm.synchronized {
+        val reqIds = ctx.map(_.getRequestId).distinct.zipWithIndex.toMap
+        ctx.groupBy(_.getRequestId).toSeq.sortBy(p => reqIds(p._1)).reverse.flatMap(_._2)
+    }
 
     /**
       *
       */
-    def clear(): Unit =
-        stm.synchronized {
-            ctx.clear()
-            stm.clear()
-            lastEnts.clear()
-            data.clear()
-        }
+    def clear(): Unit = stm.synchronized {
+        ctx.clear()
+        stm.clear()
+        lastEnts.clear()
+        data.clear()
+    }
