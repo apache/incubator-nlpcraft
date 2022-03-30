@@ -660,10 +660,9 @@ class NCIntentSolverManager(
             private var data: Option[IterationResult] = _
 
             def hasNext: Boolean = data == null
-            def finish(data: Option[IterationResult] = None): Unit =
-                require(data != null)
-                Loop.data = data
-            def result: Option[IterationResult] =
+            def finish(data: IterationResult): Unit = Loop.data = Option(data)
+            def finish(): Unit = Loop.data = None
+            def result(): Option[IterationResult] =
                 if data == null then throw new NCRejection("No matching intent found - all intents were skipped.")
                 data
 
@@ -692,7 +691,7 @@ class NCIntentSolverManager(
                             req.getRequestId, im.getIntentEntities.asScala.flatMap(_.asScala).toSeq.distinct
                         )
                     def finishHistory(): Unit =
-                        Loop.finish(Option(IterationResult(Right(CallbackDataImpl(im.getIntentId, im.getIntentEntities)), im)))
+                        Loop.finish(IterationResult(Right(CallbackDataImpl(im.getIntentId, im.getIntentEntities)), im))
 
                     typ match
                         case REGULAR =>
@@ -704,7 +703,7 @@ class NCIntentSolverManager(
 
                             saveHistory(cbRes)
 
-                            Loop.finish(Option(IterationResult(Left(cbRes), im)))
+                            Loop.finish(IterationResult(Left(cbRes), im))
                         case SEARCH =>
                             saveHistory(new NCResult()) // // Added dummy result. TODO: is it ok?
                             finishHistory()
@@ -719,7 +718,7 @@ class NCIntentSolverManager(
                             case s if s != null => logger.info(s"Selected intent '${intentRes.intentId}' skipped: $s")
                             case _ => logger.info(s"Selected intent '${intentRes.intentId}' skipped.")
 
-        Loop.result
+        Loop.result()
 
     /**
       *
