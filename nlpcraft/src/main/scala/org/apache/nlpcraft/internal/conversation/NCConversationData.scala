@@ -36,7 +36,7 @@ case class NCConversationData(
     mdlId: String,
     timeoutMs: Long,
     maxDepth: Int
-) extends LazyLogging {
+) extends LazyLogging:
     private final val data = new NCPropertyMapAdapter()
 
     case class EntityHolder(entity: NCEntity, var entityTypeUsageTime: Long = 0)
@@ -46,6 +46,12 @@ case class NCConversationData(
     private val stm = mutable.ArrayBuffer.empty[ConversationItem]
     private val lastEnts = mutable.ArrayBuffer.empty[Iterable[NCEntity]]
     private val ctx = mutable.ArrayBuffer.empty[NCEntity]
+
+    /**
+      *
+      */
+    val getUserData: NCPropertyMap = data
+
 
     @volatile private var lastUpdateTstamp = NCUtils.nowUtcMs()
     @volatile private var depth = 0
@@ -204,5 +210,10 @@ case class NCConversationData(
     /**
       *
       */
-    val getUserData: NCPropertyMap = data
-}
+    def clear(): Unit =
+        stm.synchronized {
+            ctx.clear()
+            stm.clear()
+            lastEnts.clear()
+            data.clear()
+        }
