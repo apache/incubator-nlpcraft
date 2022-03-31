@@ -18,20 +18,29 @@
 package org.apache.nlpcraft;
 
 /**
+ * Lifecycle callbacks for various pipeline components.
  *
+ * @see NCTokenParser
+ * @see NCTokenEnricher
+ * @see NCTokenValidator
+ * @see NCEntityParser
+ * @see NCEntityEnricher
+ * @see NCEntityValidator
  */
 public interface NCLifecycle {
     /**
+     * Called when the component starts. Default implementation is no-op.
      *
-     * @param cfg
+     * @param cfg Configuration of the model this component is associated with.
      */
     default void onStart(NCModelConfig cfg) {
         // No-op.
     }
 
     /**
+     * Called when the component stops. Default implementation is no-op.
      *
-     * @param cfg
+     * @param cfg Configuration of the model this component is associated with.
      */
     default void onStop(NCModelConfig cfg) {
         // No-op.
