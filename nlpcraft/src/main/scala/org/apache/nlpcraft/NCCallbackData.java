@@ -18,6 +18,7 @@
 package org.apache.nlpcraft;
 
 import java.util.List;
+import java.util.function.Function;
 
 /**
  *
@@ -34,4 +35,10 @@ public interface NCCallbackData {
      * @return
      */
     List<List<NCEntity>> getCallbackArguments();
+
+    /**
+     *
+     * @return
+     */
+    Function<List<List<NCEntity>>, NCResult> getCallback();
 }

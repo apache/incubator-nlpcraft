@@ -63,6 +63,19 @@ class NCDialogFlowManager(cfg: NCModelConfig) extends LazyLogging:
 
     /**
       *
+      * @param intentMatch
+      * @param res
+      * @param ctx
+      * @return
+      */
+    private def mkItem(intentMatch: NCIntentMatch, res: NCResult, ctx: NCContext): NCDialogFlowItem =
+        new NCDialogFlowItem:
+            override val getIntentMatch: NCIntentMatch = intentMatch
+            override val getRequest: NCRequest = ctx.getRequest
+            override val getResult: NCResult = res
+
+    /**
+      *
       * @return
       */
     def start(): Unit =
@@ -98,13 +111,30 @@ class NCDialogFlowManager(cfg: NCModelConfig) extends LazyLogging:
       * @param ctx Original query context.
       */
     def addMatchedIntent(intentMatch: NCIntentMatch, res: NCResult, ctx: NCContext): Unit =
-        val item: NCDialogFlowItem = new NCDialogFlowItem:
-            override val getIntentMatch: NCIntentMatch = intentMatch
-            override val getRequest: NCRequest = ctx.getRequest
-            override val getResult: NCResult = res
+        val item = mkItem(intentMatch, res, ctx)
 
         flow.synchronized {
             flow.getOrElseUpdate(ctx.getRequest.getUserId, mutable.ArrayBuffer.empty[NCDialogFlowItem]).append(item)
+            flow.notifyAll()
+        }
+
+    /**
+      *
+      * @param intentMatch
+      * @param res
+      * @param ctx
+      */
+    def replaceLastItem(intentMatch: NCIntentMatch, res: NCResult, ctx: NCContext): Unit =
+        val item = mkItem(intentMatch, res, ctx)
+
+        flow.synchronized {
+            val buf = flow.getOrElseUpdate(ctx.getRequest.getUserId, mutable.ArrayBuffer.empty[NCDialogFlowItem])
+
+            // If buf is empty - it cleared by timer, so there is nothing to replace.     
+            if buf.nonEmpty then
+                buf.remove(buf.size - 1)
+                buf.append(item)
+
             flow.notifyAll()
         }
 

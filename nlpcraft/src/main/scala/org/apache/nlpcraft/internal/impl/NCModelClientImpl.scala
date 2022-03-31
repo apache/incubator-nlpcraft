@@ -200,6 +200,7 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
         plMgr.close()
         dlgMgr.close()
         convMgr.close()
+        intentsMgr.close()
 
     /**
       *
