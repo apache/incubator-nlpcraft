@@ -710,7 +710,7 @@ class NCIntentSolverManager(
                         )
                         logger.info(s"Intent '${intentRes.intentId}' for variant #${intentRes.variantIdx + 1} selected as the <|best match|>")
 
-                    def execute(im: NCIntentMatch): NCResult =
+                    def executeCallback(im: NCIntentMatch): NCResult =
                         val cbRes = intentRes.fn(im)
                         // Store winning intent match in the input.
                         if cbRes.getIntentId == null then cbRes.setIntentId(intentRes.intentId)
@@ -723,25 +723,25 @@ class NCIntentSolverManager(
                                 if called then E("Callback was already called.")
                                 called = true
 
-                                val currKey = reqIds.synchronized { reqIds.getOrElse(key, null) }
+                                val reqId = reqIds.synchronized { reqIds.getOrElse(key, null) }
 
                                 // TODO: text.
-                                if currKey != ctx.getRequest.getRequestId then E("Callback is out of date.")
+                                if reqId != ctx.getRequest.getRequestId then E("Callback is out of date.")
 
                                 typ match
                                     case SEARCH =>
-                                        val imFixed = mkIntentMatch(args)
-                                        val cbRes = execute(imFixed)
-                                        dialog.replaceLastItem(imFixed, cbRes, ctx)
+                                        val imNew = mkIntentMatch(args)
+                                        val cbRes = executeCallback(imNew)
+                                        dialog.replaceLastItem(imNew, cbRes, ctx)
                                         cbRes
-                                    case SEARCH_NO_HISTORY => execute(mkIntentMatch(args))
+                                    case SEARCH_NO_HISTORY => executeCallback(mkIntentMatch(args))
                                     case _ => throw new AssertionError(s"Unexpected state: $typ")
 
                         Loop.finish(IterationResult(Right(CallbackDataImpl(im.getIntentId, im.getIntentEntities, cb)), im))
 
                     typ match
                         case REGULAR =>
-                            val cbRes = execute(im)
+                            val cbRes = executeCallback(im)
                             saveHistory(cbRes, im)
                             Loop.finish(IterationResult(Left(cbRes), im))
                         case SEARCH =>
