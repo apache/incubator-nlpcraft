@@ -58,3 +58,8 @@ elements:
     synonyms:
       - "{no|nope|incorrect|wrong}"
       - "{you are|*} {not|are not|aren't } {correct|right}"
+
+  - id: "ord:stop"
+    description: "Stop and cancel all."
+    synonyms:
+      - "{stop|cancel} {it|all|everything|*}"

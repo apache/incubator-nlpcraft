@@ -53,19 +53,37 @@ class OrderModel extends NCModelAdapter(
     @NCIntent("intent=confirm term(confirm)={has(ent_groups, 'confirm')}")
     def onConfirm(im: NCIntentMatch, @NCIntentTerm("confirm") confirm: NCEntity): NCResult =
         val ord = getOrder(im)
+        val dlg = im.getContext.getConversation.getDialogFlow
 
-        if !ord.inProgress() then throw new NCRejection("No orders in progress.")
-
-        if confirm.getId == "ord:confirm:yes" then
-            if ord.isValid() then
-                println(s"Done: $ord")
-                ord.clear()
-                NCResult("Congratulations. Your order executed. You can start make new orders.", ASK_RESULT)
-            else
-                NCResult(ord.ask2Specify(), ASK_DIALOG)
-        else
+        def cancelAll(): NCResult =
             ord.clear()
             NCResult("Order canceled. We are ready for new orders.", ASK_RESULT)
+
+        // 'stop' command.
+        if !dlg.isEmpty && dlg.get(dlg .size() - 1).getIntentMatch.getIntentId == "ord:stop" then
+            confirm.getId match
+                case "ord:confirm:yes" => cancelAll()
+                case "ord:confirm:no" => confirmOrSpecify(ord)
+                case _ => throw new AssertionError()
+        // 'confirm' command.
+        else
+            if !ord.inProgress() then throw new NCRejection("No orders in progress.")
+
+            confirm.getId match
+                case "ord:confirm:yes" =>
+                    if ord.isValid() then
+                        println(s"Done: $ord")
+                        ord.clear()
+                        NCResult("Congratulations. Your order executed. You can start make new orders.", ASK_RESULT)
+                    else
+                        NCResult(ord.ask2Specify(), ASK_DIALOG)
+                case "ord:confirm:no" => cancelAll()
+                case _ => throw new AssertionError()
+
+    @NCIntent("intent=stop term(stop)={# == 'ord:stop'}")
+        def onStop(im: NCIntentMatch, @NCIntentTerm("stop") stop: NCEntity): NCResult =
+            if getOrder(im).inProgress() then NCResult("Are you sure that you want to cancel current order?", ASK_DIALOG)
+            else NCResult("Nothing to cancel", ASK_RESULT)
 
     @NCIntent(
         "intent=order " +
