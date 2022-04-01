@@ -34,16 +34,16 @@ class OrderModelSpec:
         def printDialog(): Unit = for (line <- buf) println(line)
 
         Using.resource(new NCModelClient(new OrderModel)) { client =>
-            def ask(txt: String, expType: NCResultType): Unit =
+            def ask(txt: String, expResType: NCResultType): Unit =
                 val resp = client.ask(txt, null, "userId")
 
                 buf += s">> $txt"
                 buf += s">> ${resp.getBody} (${resp.getType})"
                 buf += ""
 
-                if expType != resp.getType then
+                if expResType != resp.getType then
                     printDialog()
-                    require(false, s"Unexpected type: ${resp.getType}, expected: ${expType}.")
+                    require(false, s"Unexpected type: ${resp.getType}, expected: ${expResType}.")
 
             ask("I want to order margherita medium size, marbonara, marinara and tea", ASK_DIALOG)
             ask("large size please", ASK_DIALOG)

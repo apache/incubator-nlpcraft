@@ -105,7 +105,7 @@ class OrderModel extends NCModelAdapter(
         case class Holder(entity: NCEntity, position: Double)
 
         val ord = getOrder(im)
-        val hsSizes = mutable.ArrayBuffer.empty ++ pizzaSizes.map(p => Holder(p ,getAvgPosition(p)))
+        val hsSizes = mutable.ArrayBuffer.empty ++ pizzaSizes.map(p => Holder(p, getAvgPosition(p)))
 
         // Pizza. Each pizza can be specified by its size. Or size will be asked additionally.
         pizzaKinds.foreach(p => {
