@@ -22,11 +22,6 @@ import scala.collection.mutable
 private enum PizzaSize:
     case SMALL, MEDIUM, LARGE
 
-private class Pizza(name: String, var sizeOpt: Option[PizzaSize]):
-    override def toString: String =
-        val sz = Option.when(sizeOpt.nonEmpty)(sizeOpt.toString.toLowerCase).getOrElse("unknown")
-        s"$name $sz size"
-
 object Order:
     def getPizzaSizeKinds: String = PizzaSize.values.map(_.toString.toLowerCase).mkString(", ")
     def pizza2Str(name: String, size: PizzaSize): String = s"$name ${size.toString.toLowerCase} size"
@@ -43,9 +38,9 @@ class Order:
     private val pizza = mutable.LinkedHashMap.empty[String, PizzaSize]
     private val drinks = mutable.LinkedHashSet.empty[String]
 
-    def addDrink(drink: String): Unit = drinks += drink
-    def addPizza(name: String, size: PizzaSize): Unit = pizza += name -> size
+    def addDrink(name: String): Unit = drinks += name
     def addPizza(name: String): Unit = pizza += name -> null
+    def addPizza(name: String, size: PizzaSize): Unit = pizza += name -> size
 
     def inProgress(): Boolean = pizza.nonEmpty || drinks.nonEmpty
 

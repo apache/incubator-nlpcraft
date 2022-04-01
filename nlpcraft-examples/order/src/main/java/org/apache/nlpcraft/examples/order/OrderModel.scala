@@ -40,7 +40,7 @@ class OrderModel extends NCModelAdapter(
     private def getOrder(im: NCIntentMatch): Order = ords.getOrElseUpdate(im.getContext.getRequest.getUserId, new Order)
 
     private def extractPizzaKind(e: NCEntity): String = e.get[String]("ord:pizza:kind:value")
-    private def extractPizzaSize(e: NCEntity): String = e.get[String]("ord:pizza:size:value")
+    private def extractPizzaSize(e: NCEntity): PizzaSize = PizzaSize.valueOf(e.get[String]("ord:pizza:size:value").toUpperCase)
     private def extractDrink(e: NCEntity): String = e.get[String]("ord:drink:value")
 
     private def confirmOrSpecify(ord: Order): NCResult =
@@ -114,7 +114,7 @@ class OrderModel extends NCModelAdapter(
                 case _ =>
                     val avgPos = getAvgPosition(p)
                     val nextNeighbour = hsSizes.minBy(p => Math.abs(avgPos - p.position))
-                    ord.addPizza(extractPizzaKind(p), PizzaSize.valueOf(extractPizzaSize(nextNeighbour.entity).toUpperCase))
+                    ord.addPizza(extractPizzaKind(p), extractPizzaSize(nextNeighbour.entity))
                     hsSizes -= nextNeighbour
         })
 
@@ -137,7 +137,7 @@ class OrderModel extends NCModelAdapter(
         val ord = getOrder(im)
         require(!ord.isValid())
 
-        val sz = PizzaSize.valueOf(extractPizzaSize(size).toUpperCase)
+        val sz = extractPizzaSize(size)
 
         pizzaOpt match
             case Some(pizza) => ord.addPizza(extractPizzaKind(pizza), sz)
