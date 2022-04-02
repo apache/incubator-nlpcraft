@@ -93,9 +93,9 @@ class OrderModel extends NCModelAdapter (
             ord.clear()
             NCResult("Order canceled. We are ready for new orders.", ASK_RESULT)
 
-        val res=
+        val res =
             // 'stop' command.
-            if !dlg.isEmpty && dlg.get(dlg.size() - 1).getIntentMatch.getIntentId == "ord:stop" then
+            if !dlg.isEmpty && dlg.get(dlg.size() - 1).getIntentMatch.getIntentId == "stop" then
                 confirm.getId match
                     case "ord:confirm:yes" => cancelAll()
                     case "ord:confirm:no" => confirmOrSpecify(ord)

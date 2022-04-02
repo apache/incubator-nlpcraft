@@ -60,7 +60,7 @@ elements:
       - "{you are|*} {not|are not|aren't } {correct|right}"
 
   - id: "ord:confirm:continue"
-    description: "Conformation (continue)."
+    description: "Confirmation (continue)."
     groups: ["confirm"]
     synonyms:
       - "{continue}"
@@ -68,4 +68,4 @@ elements:
   - id: "ord:stop"
     description: "Stop and cancel all."
     synonyms:
-      - "{stop|cancel} {it|all|everything|*}"
+      - "{stop|cancel} {it|all|everything|_}"
