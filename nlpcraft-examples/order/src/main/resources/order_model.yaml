@@ -59,6 +59,12 @@ elements:
       - "{no|nope|incorrect|wrong}"
       - "{you are|*} {not|are not|aren't } {correct|right}"
 
+  - id: "ord:confirm:continue"
+    description: "Conformation (continue)."
+    groups: ["confirm"]
+    synonyms:
+      - "{continue}"
+
   - id: "ord:stop"
     description: "Stop and cancel all."
     synonyms:

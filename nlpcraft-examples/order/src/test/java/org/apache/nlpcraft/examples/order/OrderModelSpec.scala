@@ -38,7 +38,7 @@ class OrderModelSpec:
                 val resp = client.ask(txt, null, "userId")
 
                 buf += s">> $txt"
-                buf += s">> ${resp.getBody} (${resp.getType})"
+                buf += s">> '${resp.getType}': ${resp.getBody}"
                 buf += ""
 
                 if expResType != resp.getType then

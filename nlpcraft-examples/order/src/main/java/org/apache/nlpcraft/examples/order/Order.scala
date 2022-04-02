@@ -23,8 +23,14 @@ private enum PizzaSize:
     case SMALL, MEDIUM, LARGE
 
 object Order:
-    def getPizzaSizeKinds: String = PizzaSize.values.map(_.toString.toLowerCase).mkString(", ")
-    def pizza2Str(name: String, size: PizzaSize): String = s"$name ${size.toString.toLowerCase} size"
+    private val allPizzaSizeKinds: String = withComma(PizzaSize.values.map(_.toString.toLowerCase))
+
+    private def withComma(iter: Iterable[String]): String = iter.mkString(", ")
+    private def pizza2Str(name: String, size: PizzaSize): String =
+        if size != null then s"$name ${size.toString.toLowerCase} size" else name
+    private def seq2Str[T](name: String, seq: Seq[T], toStr: T => String = (t: T) => t.toString): String =
+        if seq.nonEmpty then s"$name: ${withComma(seq.map(toStr))}." else ""
+    private def norm(s: String) = s.trim.replaceAll("(?m)^[ \t]*\r?\n", "")
 
 import Order.*
 
@@ -59,18 +65,36 @@ class Order:
             "Order is empty. Please order some pizza or drinks."
         else
             pizza.find { (_, size) => size == null } match
-                case Some((name, _)) => s"Please specify $name size? It can be $getPizzaSizeKinds"
+                case Some((name, _)) => s"Please specify $name size? It can be $allPizzaSizeKinds"
                 case None => throw new AssertionError("Invalid state")
 
     def ask2Confirm(): String =
         require(isValid())
-        s"Let me specify your order.\n${this.toString()}\nIs it correct?"
+        norm(
+            s"""
+           |Let me specify your order.
+           |${seq2Str("Pizza", pizza.toSeq, pizza2Str)}
+           |${seq2Str("Drinks", drinks.toSeq)}
+           |Is it correct?
+           """.stripMargin
+        )
 
+    def getState(): String =
+        norm(
+            s"""
+               |Current order state: '${if inProgress() then "in progress" else "empty"}'.
+               |${seq2Str("Pizza", pizza.toSeq, pizza2Str)}
+               |${seq2Str("Drinks", drinks.toSeq)}
+           """.stripMargin
+        )
+    
     override def toString(): String =
-        val ps = if pizza.nonEmpty then s"Pizza: ${pizza.map { (name, sz) => pizza2Str(name, sz) }.mkString(", ")}. " else ""
-        val ds = if drinks.nonEmpty then s"Drinks: ${drinks.mkString(", ")}. " else ""
-
-        s"$ps$ds"
+        norm(
+            s"""
+           |${seq2Str("Pizza", pizza.toSeq, pizza2Str)}
+           |${seq2Str("Drinks", drinks.toSeq)}
+           """.stripMargin
+        ).replaceAll("\n", " ")
 
     def clear(): Unit =
         pizza.clear()
