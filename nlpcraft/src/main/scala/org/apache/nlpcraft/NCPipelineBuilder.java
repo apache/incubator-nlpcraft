@@ -46,6 +46,7 @@ public class NCPipelineBuilder {
     private final List<NCEntityParser> entParsers = new ArrayList<>();
     private final List<NCTokenValidator> tokVals = new ArrayList<>();
     private final List<NCEntityValidator> entVals = new ArrayList<>();
+    private final List<NCEntityMapper> entMappers = new ArrayList<>();
     private Optional<NCVariantFilter> varFilter = Optional.empty();
 
     /**
@@ -222,6 +223,31 @@ public class NCPipelineBuilder {
 
     /**
      *
+     * @param entMappers
+     * @return This instance for call chaining.
+     */
+    public NCPipelineBuilder withEntityMappers(List<NCEntityMapper> entMappers) {
+        Objects.requireNonNull(entMappers, "List of entity mappers cannot be null.");
+        entMappers.forEach(p -> Objects.requireNonNull(p, "Entity mapper cannot be null."));
+
+        this.entMappers.addAll(entMappers);
+
+        return this;
+    }
+
+    /**
+     * @param entMapper
+     * @return This instance for call chaining.
+     */
+    public NCPipelineBuilder withEntitMapper(NCEntityMapper entMapper) {
+        Objects.requireNonNull(entMapper, "Entity mapper cannot be null.");
+
+        this.entMappers.add(entMapper);
+
+        return this;
+    }
+    /**
+     *
      */
     private void setEnComponents() {
         tokParser = mkEnOpenNLPTokenParser();
@@ -328,6 +354,11 @@ public class NCPipelineBuilder {
             }
             @Override public Optional<NCVariantFilter> getVariantFilter() {
                 return varFilter;
+            }
+
+            @Override
+            public List<NCEntityMapper> getEntityMappers() {
+                return entMappers;
             }
         };
     }

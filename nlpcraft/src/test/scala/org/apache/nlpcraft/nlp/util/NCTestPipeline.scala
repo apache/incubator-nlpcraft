@@ -21,6 +21,7 @@ import org.apache.nlpcraft.*
 import org.apache.nlpcraft.nlp.token.parser.NCOpenNLPTokenParser
 import org.apache.nlpcraft.nlp.util.NCTestPipeline.*
 
+import java.util
 import java.util.{Optional, ArrayList as JList}
 
 /**
@@ -38,4 +39,5 @@ case class NCTestPipeline(tokParser: NCTokenParser) extends NCPropertyMapAdapter
     override val getEntityParsers = new JList[NCEntityParser]()
     override val getTokenValidators = new JList[NCTokenValidator]()
     override val getEntityValidators = new JList[NCEntityValidator]()
+    override val getEntityMappers = new JList[NCEntityMapper]()
     override def getVariantFilter: Optional[NCVariantFilter] = variantFilter
