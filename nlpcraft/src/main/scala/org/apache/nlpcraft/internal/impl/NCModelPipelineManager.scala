@@ -151,7 +151,7 @@ class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCPipeline) extends L
 
         for (m <- entMappers)
             entsList = m.convert(req, entsList, toks)
-            if entsList == null then E("Entity mapper cannot return null values/")
+            if entsList == null then E("Entity mapper cannot return null values.")
 
         val entities = entsList.asScala.toSeq
 

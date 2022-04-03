@@ -21,7 +21,6 @@ import org.apache.nlpcraft.*
 import org.apache.nlpcraft.nlp.token.parser.NCOpenNLPTokenParser
 import org.apache.nlpcraft.nlp.util.NCTestPipeline.*
 
-import java.util
 import java.util.{Optional, ArrayList as JList}
 
 /**
