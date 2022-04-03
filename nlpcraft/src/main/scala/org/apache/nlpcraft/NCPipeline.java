@@ -27,19 +27,19 @@ import java.util.Optional;
  * An NLP pipeline is a container for various processing components that take the input text at the beginning of the
  * pipeline and produce the list of {@link NCEntity entities} at the end of the pipeline.
  * Schematically the pipeline looks like this:
- * <pre>
+ * &lt;pre&gt;
  *                                                ,---------.        ,----------.        ,-------.
  *   o/         *=========*    ,---------.    ,---'-------. |    ,---'--------. |    ,---'-----. |
- *  /|     ->   :  Text   : -> |  Token  | -> | Token     | | -> | Token      | | -> | Entity  | |
+ *  /|     -&gt;   :  Text   : -&gt; |  Token  | -&gt; | Token     | | -&gt; | Token      | | -&gt; | Entity  | |
  *  / \         :  Input  :    |  Parser |    | Enrichers |-'    | Validators |-'    | Parsers |-'
  *              *=========*    `---------'    `-----------'      `------------'      `---------'
  *                                                                                         |
  *                                                   ,----------.        ,---------.       |
  *              *============*    ,---------.    ,---'--------. |    ,---'-------. |       |
- * Intent   <-  :  Entity    : <- | Variant | <- | Entity     | | <- | Entity    | | <-----'
+ * Intent   &lt;-  :  Entity    : &lt;- | Variant | &lt;- | Entity     | | &lt;- | Entity    | | &lt;-----'
  * Matching     :  Variants  :    | Filter  |    | Validators |-'    | Enrichers |-'
  *              *============*    `---------'    `------------'      `-----------'
- * </pre>
+ * &lt;/pre&gt;
  * <p>
  * Pipeline has the following components:
  * <ul>
