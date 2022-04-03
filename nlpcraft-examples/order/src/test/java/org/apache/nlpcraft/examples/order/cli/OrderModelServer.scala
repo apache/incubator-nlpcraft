@@ -15,32 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.examples.order
+package org.apache.nlpcraft.examples.order.cli
 
 import com.sun.net.httpserver.*
-import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.NCResultType.*
+import org.apache.nlpcraft.examples.order.OrderModel
 
 import java.io.*
-import scala.util.Using
-import com.sun.net.httpserver.HttpServer
-
 import java.net.InetSocketAddress
-import scala.language.postfixOps
+import scala.util.Using
 
+/**
+  *
+  */
+object OrderModelServer:
+    private val host = "localhost"
+    private val port = 8087
+    private val path = "ask"
 
-object OrderModelRest extends App with LazyLogging:
-    private val HOST = "localhost"
-    private val PORT = 8087
+    val URI = s"http://$host:$port/$path"
 
-    main()
-
-    private def main(): Unit = Using.resource(new NCModelClient(new OrderModel)) { client =>
-        val srv = HttpServer.create(new InetSocketAddress(HOST, PORT), 0)
+    def main(args: Array[String]): Unit = Using.resource(new NCModelClient(new OrderModel)) { nlpClient =>
+        val srv = HttpServer.create(new InetSocketAddress(host, port), 0)
 
         srv.createContext(
-            "/ask",
+            s"/$path",
             (e: HttpExchange) =>
                 def response(txt: String): Unit =
                     Using.resource(new BufferedOutputStream(e.getResponseBody)) { out =>
@@ -61,16 +61,15 @@ object OrderModelRest extends App with LazyLogging:
 
                     if req == null || req.isEmpty then Exception(s"Empty request")
 
-                    val resp = client.ask(req, null, "userId")
-                    val prompt =
-                        if resp.getType == ASK_RESULT then "Ask your question to the model: "
-                        else "Your should answer on the model's question: "
+                    val resp = nlpClient.ask(req, null, "userId")
+                    val prompt = if resp.getType == ASK_DIALOG then "(Your should answer on the model's question)\n" else ""
 
-                    response(s"$prompt ${resp.getBody}")
+                    response(s"$prompt${resp.getBody}")
                 catch
                     case e: NCRejection => response(s"Request rejected: ${e.getMessage}")
                     case e: Throwable =>
-                        logger.error("Unexpected error.", e)
+                        System.err.println("Unexpected error.")
+                        e.printStackTrace()
                         response(s"Unexpected error: ${e.getMessage}")
             )
 
@@ -84,10 +83,10 @@ object OrderModelRest extends App with LazyLogging:
                     applStarted = false
                     srv.stop(0)
                     srv.synchronized { srv.notifyAll() }
-                    logger.info("Server stopped.")
+                    println("Server stopped.")
         )
 
-        logger.info(s"Server started: http://$HOST:$PORT/ask")
+        println(s"Server started: $URI")
 
         while (applStarted)
             srv.synchronized {

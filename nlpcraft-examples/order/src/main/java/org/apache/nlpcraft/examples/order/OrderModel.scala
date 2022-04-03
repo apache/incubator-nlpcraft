@@ -18,6 +18,7 @@
 package org.apache.nlpcraft.examples.order
 
 import com.typesafe.scalalogging.LazyLogging
+import org.antlr.v4.runtime.misc.Predicate
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.util.NCResourceReader
 import org.apache.nlpcraft.nlp.*
@@ -33,15 +34,15 @@ object OrderModel extends LazyLogging:
     private def extractPizzaSize(e: NCEntity): PizzaSize = PizzaSize.valueOf(e.get[String]("ord:pizza:size:value").toUpperCase)
     private def extractDrink(e: NCEntity): String = e.get[String]("ord:drink:value")
     private def isStopWord(t: NCToken): Boolean = t.get[Boolean]("stopword")
-    private def confirmOrSpecify(ord: Order): NCResult =
+    private def confirmOrSpecify(ord: OrderState): NCResult =
         NCResult(if ord.isValid() then ord.ask2Confirm() else ord.ask2Specify(), ASK_DIALOG)
-    private def continue(ord: Order): NCResult =
+    private def continue(ord: OrderState): NCResult =
         NCResult(if ord.isValid() then s"OK, please continue your order: $ord" else ord.ask2Specify(), ASK_DIALOG)
 
-    private def log(o: Order): Unit = logger.info(o.getState())
-    private def onStart(im: NCIntentMatch, o: Order): Unit =
+    private def log(o: OrderState): Unit = logger.info(o.getState())
+    private def onStart(im: NCIntentMatch, o: OrderState): Unit =
         logger.info(s"Initial state before request: ${im.getContext.getRequest.getText}")
-    private def onFinish(o: Order): Unit =
+    private def onFinish(o: OrderState): Unit =
         logger.info(s"Result state")
         logger.info(o.getState())
 
@@ -79,9 +80,9 @@ class OrderModel extends NCModelAdapter (
     new NCModelConfig("nlpcraft.order.ex", "Order Example Model", "1.0"),
     new NCPipelineBuilder().withSemantic("en", "order_model.yaml").build()
 ) with LazyLogging:
-    private val ords = mutable.HashMap.empty[String, Order]
+    private val ords = mutable.HashMap.empty[String, OrderState]
 
-    private def getOrder(im: NCIntentMatch): Order = ords.getOrElseUpdate(im.getContext.getRequest.getUserId, new Order)
+    private def getOrder(im: NCIntentMatch): OrderState = ords.getOrElseUpdate(im.getContext.getRequest.getUserId, new OrderState)
 
     @NCIntent("intent=confirm term(confirm)={has(ent_groups, 'confirm')}")
     def onConfirm(im: NCIntentMatch, @NCIntentTerm("confirm") confirm: NCEntity): NCResult =
@@ -91,6 +92,8 @@ class OrderModel extends NCModelAdapter (
 
         def cancelAll(): NCResult =
             ord.clear()
+            im.getContext.getConversation.clearStm(_ => true)
+            im.getContext.getConversation.clearDialog(_ => true)
             NCResult("Order canceled. We are ready for new orders.", ASK_RESULT)
 
         val res =

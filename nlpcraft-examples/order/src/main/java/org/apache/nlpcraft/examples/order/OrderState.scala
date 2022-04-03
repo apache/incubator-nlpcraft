@@ -22,7 +22,7 @@ import scala.collection.mutable
 private enum PizzaSize:
     case SMALL, MEDIUM, LARGE
 
-object Order:
+object OrderState:
     private val allPizzaSizeKinds: String = withComma(PizzaSize.values.map(_.toString.toLowerCase))
 
     private def withComma(iter: Iterable[String]): String = iter.mkString(", ")
@@ -32,7 +32,7 @@ object Order:
         if seq.nonEmpty then s"$name: ${withComma(seq.map(toStr))}." else ""
     private def norm(s: String) = s.trim.replaceAll("(?m)^[ \t]*\r?\n", "")
 
-import Order.*
+import OrderState.*
 
 /**
   * Contract.
@@ -40,7 +40,7 @@ import Order.*
   * 2. 'specify' methods (specifyPizzaSize) should specify elements in the same order.
   * So, we don't need to save which concrete element we treying to specify.
   */
-class Order:
+class OrderState:
     private val pizza = mutable.LinkedHashMap.empty[String, PizzaSize]
     private val drinks = mutable.LinkedHashSet.empty[String]
 

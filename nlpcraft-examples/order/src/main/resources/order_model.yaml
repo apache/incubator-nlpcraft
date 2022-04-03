@@ -33,9 +33,9 @@ elements:
   - id: "ord:pizza:size"
     description: "Size of pizza."
     values:
-      "small": [ "{small|smallest|min|minimal} {size|*}" ]
-      "medium": [ "{medium|intermediate} {size|*}" ]
-      "large": [ "{big|large|max|maximum} {size|*}" ]
+      "small": [ "{small|smallest|min|minimal} {size|_}" ]
+      "medium": [ "{medium|intermediate} {size|_}" ]
+      "large": [ "{big|biggest|large|max|maximum} {size|_}" ]
 
   - id: "ord:drink"
     description: "Kinds of drinks."
@@ -43,27 +43,27 @@ elements:
       "tea": [ ]
       "green tea": [ ]
       "coffee": [ ]
-      "cola": [ "{coca|cola|coca cola|cocacola|coca-cola}" ]
+      "cola": ["{coca|cola|coca cola|cocacola|coca-cola}"]
 
   - id: "ord:confirm:yes"
     description: "Conformation (yes)."
     groups: ["confirm"]
     synonyms:
       - "{yes|yeah|right|fine|nice|excellent|good}"
-      - "{you are|*} {correct|right}"
+      - "{you are|_} {correct|right}"
 
   - id: "ord:confirm:no"
     description: "Conformation (no)."
     groups: ["confirm"]
     synonyms:
       - "{no|nope|incorrect|wrong}"
-      - "{you are|*} {not|are not|aren't } {correct|right}"
+      - "{you are|_} {not|are not|aren't} {correct|right}"
 
   - id: "ord:confirm:continue"
     description: "Confirmation (continue)."
     groups: ["confirm"]
     synonyms:
-      - "{continue}"
+      - "continue"
 
   - id: "ord:stop"
     description: "Stop and cancel all."
