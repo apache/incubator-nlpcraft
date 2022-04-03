@@ -20,6 +20,7 @@ package org.apache.nlpcraft.internal.intent.matcher
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.ascii.NCAsciiTable
+import org.apache.nlpcraft.internal.conversation.NCConversationManager
 import org.apache.nlpcraft.internal.dialogflow.NCDialogFlowManager
 import org.apache.nlpcraft.internal.intent.*
 
@@ -31,6 +32,15 @@ import scala.collection.mutable.ArrayBuffer
 import scala.jdk.CollectionConverters.*
 import scala.language.postfixOps
 
+/**
+  *
+  */
+enum NCIntentSolveType:
+    case REGULAR, SEARCH, SEARCH_NO_HISTORY
+
+/**
+  *
+  */
 object NCIntentSolverManager:
     /**
       * Sentence variant & its weight.
@@ -69,6 +79,18 @@ object NCIntentSolverManager:
       * @param entities
       */
     private case class IntentTermEntities(termId: Option[String], entities: Seq[NCEntity])
+
+    /**
+      *
+      * @param getIntentId
+      * @param getCallbackArguments
+      * @param getCallback
+      */
+    private case class CallbackDataImpl(
+        getIntentId: String,
+        getCallbackArguments: JList[JList[NCEntity]],
+        getCallback: Function[JList[JList[NCEntity]], NCResult]
+    ) extends NCCallbackData
 
     /**
       *
@@ -162,12 +184,14 @@ object NCIntentSolverManager:
       */
     private case class IntentEntity(var used: Boolean, var conv: Boolean, entity: NCEntity)
 
+    type ResultData = Either[NCResult, NCCallbackData]
+
     /**
       *
       * @param result
       * @param intentMatch
       */
-    private case class IterationResult(result: NCResult, intentMatch: NCIntentMatch)
+    private case class IterationResult(result: ResultData, intentMatch: NCIntentMatch)
 
     /**
       * @param termId
@@ -221,12 +245,25 @@ object NCIntentSolverManager:
         variantIdx: Int // Variant index.
     )
 
+    /**
+      *
+      * @param userId
+      * @param mldId
+      */
+    private case class UserModelKey(userId: String, mldId: String)
+
 import org.apache.nlpcraft.internal.intent.matcher.NCIntentSolverManager.*
 
 /**
  * Intent solver that finds the best matching intent given user sentence.
  */
-class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLIntent, NCIntentMatch => NCResult]) extends LazyLogging:
+class NCIntentSolverManager(
+    dialog: NCDialogFlowManager,
+    conv: NCConversationManager,
+    intents: Map[NCIDLIntent, NCIntentMatch => NCResult]
+) extends LazyLogging:
+    private final val reqIds = mutable.HashMap.empty[UserModelKey, String]
+
     /**
      * Main entry point for intent engine.
      *
@@ -244,7 +281,7 @@ class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLInten
         for (
             (vrn, vrnIdx) <- ctx.getVariants.asScala.zipWithIndex if mdl.onVariant(vrn);
             ents = vrn.getEntities.asScala;
-            varEntsGroups = ents.map(t => if t.getGroups != null then t.getGroups.asScala else Set.empty[String]);
+            varEntsGroups = ents.filter(t => t.getGroups != null && !t.getGroups.isEmpty).map(_.getGroups.asScala);
             (intent, callback) <- intents
         )
             val convEnts: Seq[IntentEntity] =
@@ -388,7 +425,6 @@ class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLInten
         val opts = intent.options
         val flow = dialog.getDialogFlow(ctx.getRequest.getUserId)
         val varStr = s"(variant #${varIdx + 1})"
-        val flowRegex = intent.flowRegex
 
         // Check dialog flow regex first, if any.
         val flowMatched: Boolean =
@@ -450,7 +486,6 @@ class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLInten
                 None
             else
                 val usedSenEnts = senEnts.filter(_.used)
-                val unusedSenEnts = senEnts.filter(!_.used)
                 val usedConvEnts = convEnts.filter(_.used)
                 val usedToks = usedSenEnts.flatMap(_.entity.getTokens.asScala)
                 val unusedToks = ctx.getTokens.asScala.filter(p => !usedToks.contains(p))
@@ -553,7 +588,7 @@ class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLInten
                     )
                 // Term not found at all.
                 case None => None
-        catch case e: Exception => throw new NCException(s"Runtime error processing IDL term: $term", e)
+        catch case e: Exception => E(s"Runtime error processing IDL term: $term", e)
 
     /**
      * Solves term's predicate.
@@ -612,7 +647,7 @@ class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLInten
                 Option.when(depth >= 0)(depth + 1)
 
             val convDepthsSum = -usedEnts.flatMap(getConversationDepth).sum
-            
+
             // Mark found entities as used.
             for (e <- usedEnts) e.used = true
 
@@ -622,9 +657,11 @@ class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLInten
       *
       * @param mdl
       * @param ctx
+      * @param typ
+      * @param key
       * @return
       */
-    private def solveIteration(mdl: NCModel, ctx: NCContext): Option[IterationResult] =
+    private def solveIteration(mdl: NCModel, ctx: NCContext, typ: NCIntentSolveType, key: UserModelKey): Option[IterationResult] =
         require(intents.nonEmpty)
 
         val req = ctx.getRequest
@@ -636,17 +673,17 @@ class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLInten
         if intentResults.isEmpty then throw new NCRejection("No matching intent found.")
 
         object Loop:
-            private var data: Option[Option[IterationResult]] = None
-            private var stopped: Boolean = false
+            private var data: Option[IterationResult] = _
 
-            def hasNext: Boolean = !stopped
-            def finish(data: Option[IterationResult] = None): Unit =
-                Loop.data = Option(data)
-                Loop.stopped = true
-            def result: Option[IterationResult] = data.getOrElse(throw new NCRejection("No matching intent found - all intents were skipped."))
+            def hasNext: Boolean = data == null
+            def finish(data: IterationResult): Unit = Loop.data = Option(data)
+            def finish(): Unit = Loop.data = None
+            def result(): Option[IterationResult] =
+                if data == null then throw new NCRejection("No matching intent found - all intents were skipped.")
+                data
 
         for (intentRes <- intentResults.filter(_ != null) if Loop.hasNext)
-            val intentMatch: NCIntentMatch =
+            def mkIntentMatch(arg: JList[JList[NCEntity]]): NCIntentMatch =
                 new NCIntentMatch:
                     override val getContext: NCContext = ctx
                     override val getIntentId: String = intentRes.intentId
@@ -659,16 +696,59 @@ class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLInten
                     override val getVariant: NCVariant =
                         new NCVariant:
                             override def getEntities: JList[NCEntity] = intentRes.variant.entities.asJava
+
+            val im = mkIntentMatch(intentRes.groups.map(_.entities).map(_.asJava).asJava)
             try
-                if mdl.onMatchedIntent(intentMatch) then
+                if mdl.onMatchedIntent(im) then
                     // This can throw NCIntentSkip exception.
-                    val cbRes = intentRes.fn(intentMatch)
-                    // Store won intent match in the input.
-                    if cbRes.getIntentId == null then
-                        cbRes.setIntentId(intentRes.intentId)
-                    logger.info(s"Intent '${intentRes.intentId}' for variant #${intentRes.variantIdx + 1} selected as the <|best match|>")
-                    dialog.addMatchedIntent(intentMatch, cbRes, ctx)
-                    Loop.finish(Option(IterationResult(cbRes, intentMatch)))
+                    import NCIntentSolveType.*
+
+                    def saveHistory(res: NCResult, im: NCIntentMatch): Unit =
+                        dialog.addMatchedIntent(im, res, ctx)
+                        conv.getConversation(req.getUserId).addEntities(
+                            req.getRequestId, im.getIntentEntities.asScala.flatMap(_.asScala).toSeq.distinct
+                        )
+                        logger.info(s"Intent '${intentRes.intentId}' for variant #${intentRes.variantIdx + 1} selected as the <|best match|>")
+
+                    def executeCallback(im: NCIntentMatch): NCResult =
+                        val cbRes = intentRes.fn(im)
+                        // Store winning intent match in the input.
+                        if cbRes.getIntentId == null then cbRes.setIntentId(intentRes.intentId)
+                        cbRes
+
+                    def finishSearch(): Unit =
+                        val cb = new Function[JList[JList[NCEntity]], NCResult]:
+                            @volatile private var called = false
+                            override def apply(args: JList[JList[NCEntity]]): NCResult =
+                                if called then E("Callback was already called.")
+                                called = true
+
+                                val reqId = reqIds.synchronized { reqIds.getOrElse(key, null) }
+
+                                // TODO: text.
+                                if reqId != ctx.getRequest.getRequestId then E("Callback is out of date.")
+
+                                typ match
+                                    case SEARCH =>
+                                        val imNew = mkIntentMatch(args)
+                                        val cbRes = executeCallback(imNew)
+                                        dialog.replaceLastItem(imNew, cbRes, ctx)
+                                        cbRes
+                                    case SEARCH_NO_HISTORY => executeCallback(mkIntentMatch(args))
+                                    case _ => throw new AssertionError(s"Unexpected state: $typ")
+
+                        Loop.finish(IterationResult(Right(CallbackDataImpl(im.getIntentId, im.getIntentEntities, cb)), im))
+
+                    typ match
+                        case REGULAR =>
+                            val cbRes = executeCallback(im)
+                            saveHistory(cbRes, im)
+                            Loop.finish(IterationResult(Left(cbRes), im))
+                        case SEARCH =>
+                            saveHistory(new NCResult(), im) // Added dummy result.
+                            finishSearch()
+                        case SEARCH_NO_HISTORY =>
+                            finishSearch()
                 else
                     logger.info(s"Model '${ctx.getModelConfig.getId}' triggered rematching of intents by intent '${intentRes.intentId}' on variant #${intentRes.variantIdx + 1}.")
                     Loop.finish()
@@ -679,42 +759,66 @@ class NCIntentSolverManager(dialog: NCDialogFlowManager, intents: Map[NCIDLInten
                             case s if s != null => logger.info(s"Selected intent '${intentRes.intentId}' skipped: $s")
                             case _ => logger.info(s"Selected intent '${intentRes.intentId}' skipped.")
 
-        Loop.result
+        Loop.result()
 
     /**
       *
       * @param mdl
       * @param ctx
+      * @param typ
       * @return
       */
-    def solve(mdl: NCModel, ctx: NCContext): NCResult =
-        var res: NCResult = mdl.onContext(ctx)
+    def solve(mdl: NCModel, ctx: NCContext, typ: NCIntentSolveType): ResultData =
+        import NCIntentSolveType.REGULAR
 
-        if res != null then
-            // TODO: text.
-            if intents.nonEmpty then logger.warn("`onContext` method overrides existed intents. They are ignored.")
+        val key = UserModelKey(ctx.getRequest.getUserId, mdl.getConfig.getId)
+        reqIds.synchronized { reqIds.put(key, ctx.getRequest.getRequestId)}
 
-            res
+        val mdlCtxRes = mdl.onContext(ctx)
+
+        if mdlCtxRes != null then
+            if typ != REGULAR then E("'onContext()' method is overridden, intents cannot be found.")
+            if intents.nonEmpty then logger.warn("'onContext()' method overrides existing intents - they are ignored.")
+
+            Left(mdlCtxRes)
         else
             if intents.isEmpty then
-                // TODO: text.
-                throw NCRejection("Intent solver has no registered intents and model's `onContext` method returns null result.")
+                throw NCRejection("There are no registered intents and model's 'onContext()' method returns 'null' result.")
 
             var loopRes: IterationResult = null
 
             try
                 while (loopRes == null)
-                    solveIteration(mdl, ctx) match
+                    solveIteration(mdl, ctx, typ, key) match
                         case Some(iterRes) => loopRes = iterRes
                         case None => // No-op.
 
-                res = mdl.onResult(loopRes.intentMatch, loopRes.result)
-
-                if res != null then res else loopRes.result
+                typ match
+                    case REGULAR =>
+                        mdl.onResult(loopRes.intentMatch, loopRes.result.swap.toOption.get) match
+                            case null => loopRes.result
+                            case mdlRes => Left(mdlRes)
+                    case _ => loopRes.result
             catch
                 case e: NCRejection =>
-                    val res = mdl.onRejection(if loopRes != null then loopRes.intentMatch else null, e)
-                    if res != null then res else throw e
+                    typ match
+                        case REGULAR =>
+                            mdl.onRejection(if loopRes != null then loopRes.intentMatch else null, e) match
+                                case null => throw e
+                                case mdlRejRes => Left(mdlRejRes)
+                        case _ => throw e
+
                 case e: Throwable =>
-                    val res = mdl.onError(ctx, e)
-                    if res != null then res else throw e
+                    typ match
+                        case REGULAR =>
+                            mdl.onError(ctx, e) match
+                                case null => throw e
+                                case mdlErrRes =>
+                                    logger.warn("Error during execution.", e)
+                                    Left(mdlErrRes)
+                        case _ => throw e
+
+    /**
+      *
+      */
+    def close(): Unit = reqIds.clear()

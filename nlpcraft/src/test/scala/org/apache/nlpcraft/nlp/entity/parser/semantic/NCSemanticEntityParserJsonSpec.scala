@@ -34,7 +34,7 @@ import scala.jdk.OptionConverters.RichOptional
   *
   */
 class NCSemanticEntityParserJsonSpec:
-    private val semParser = NCTestUtils.mkENSemanticParser("models/alarm_model.json")
+    private val semParser = NCTestUtils.mkEnSemanticParser("models/alarm_model.json")
 
     /**
       * 

@@ -36,7 +36,7 @@ import scala.jdk.OptionConverters.RichOptional
 class NCSemanticEntityParserSpec:
     import NCSemanticTestElement as E
     private val semParser: NCSemanticEntityParser =
-        NCTestUtils.mkENSemanticParser(
+        NCTestUtils.mkEnSemanticParser(
             Seq(
                 // Standard.
                 E("t1", synonyms = Set("t1")),

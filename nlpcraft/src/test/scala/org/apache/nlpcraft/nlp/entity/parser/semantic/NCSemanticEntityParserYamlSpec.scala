@@ -32,7 +32,7 @@ import scala.jdk.OptionConverters.RichOptional
   *
   */
 class NCSemanticEntityParserYamlSpec:
-    private val semParser: NCSemanticEntityParser = NCTestUtils.mkENSemanticParser("models/lightswitch_model.yaml")
+    private val semParser: NCSemanticEntityParser = NCTestUtils.mkEnSemanticParser("models/lightswitch_model.yaml")
 
     /**
       * 
