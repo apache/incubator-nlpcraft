@@ -62,7 +62,7 @@ object OrderModelServer:
                     if req == null || req.isEmpty then Exception(s"Empty request")
 
                     val resp = nlpClient.ask(req, null, "userId")
-                    val prompt = if resp.getType == ASK_DIALOG then "(Your should answer on the model's question)\n" else ""
+                    val prompt = if resp.getType == ASK_DIALOG then "(Your should answer on the model's question below)\n" else ""
 
                     response(s"$prompt${resp.getBody}")
                 catch
