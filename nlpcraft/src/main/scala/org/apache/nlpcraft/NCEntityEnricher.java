@@ -20,10 +20,11 @@ package org.apache.nlpcraft;
 import java.util.List;
 
 /**
- * A pipeline components that enrichers entities by settings their properties.
+ * A pipeline component that enrichers entities by settings their properties.
  * See {@link NCPipeline} for documentation on the overall processing pipeline. Note that this is
  * an optional component in the pipeline.
  *
+ * @see NCPipeline#getEntityEnrichers()
  * @see NCEntity
  * @see NCToken
  * @see NCTokenParser

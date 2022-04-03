@@ -20,15 +20,27 @@ package org.apache.nlpcraft;
 import java.util.List;
 
 /**
+ * A pipeline components that validates the final list of parsed and enriched entities.
+ * See {@link NCPipeline} for documentation on the overall processing pipeline. Note that this is an
+ * optional component.
  *
+ * @see NCPipeline#getEntityValidators()
+ * @see NCEntity
+ * @see NCToken
+ * @see NCTokenParser
+ * @see NCTokenEnricher
+ * @see NCTokenValidator
+ * @see NCEntityParser
+ * @see NCEntityEnricher
+ * @see NCEntityValidator
  */
 public interface NCEntityValidator extends NCLifecycle {
     /**
      *
-     * @param req
-     * @param cfg
-     * @param ents
-     * @throws NCException
+     * @param req Input request descriptor.
+     * @param cfg Configuration of the model this components is associated with.
+     * @param ents List of entities to validate.
+     * @@throws NCException Thrown in case of any validation violations.
      */
     void validate(NCRequest req, NCModelConfig cfg, List<NCEntity> ents);
 }
