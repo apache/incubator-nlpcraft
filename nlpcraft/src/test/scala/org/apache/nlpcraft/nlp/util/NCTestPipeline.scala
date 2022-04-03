@@ -38,4 +38,5 @@ case class NCTestPipeline(tokParser: NCTokenParser) extends NCPropertyMapAdapter
     override val getEntityParsers = new JList[NCEntityParser]()
     override val getTokenValidators = new JList[NCTokenValidator]()
     override val getEntityValidators = new JList[NCEntityValidator]()
+    override val getEntityMappers = new JList[NCEntityMapper]()
     override def getVariantFilter: Optional[NCVariantFilter] = variantFilter
