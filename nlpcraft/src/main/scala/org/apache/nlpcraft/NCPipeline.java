@@ -126,11 +126,14 @@ public interface NCPipeline {
     NCTokenParser getTokenParser();
 
     /**
+     * TODO: can be empty.
      * Gets the list of entity parser. At least one entity parser is required.
      *
      * @return List of entity parser. List should contain at least one entity parser.
      */
-    List<NCEntityParser> getEntityParsers();
+    default List<NCEntityParser> getEntityParsers() {
+        return Collections.emptyList();
+    }
 
     /**
      * Gets optional list of token enrichers.
@@ -175,5 +178,16 @@ public interface NCPipeline {
      */
     default Optional<NCVariantFilter> getVariantFilter() {
         return Optional.empty();
+    }
+
+    /**
+     * TODO:
+     *
+     * Gets optional list of entity mappers.
+     *
+     * @return Optional list of entity mappers. Can be empty but never {@code null}.
+     */
+    default List<NCEntityMapper> getEntityMappers() {
+        return Collections.emptyList();
     }
 }
