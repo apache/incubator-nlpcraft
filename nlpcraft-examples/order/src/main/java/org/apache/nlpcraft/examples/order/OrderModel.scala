@@ -18,6 +18,8 @@
 package org.apache.nlpcraft.examples.order
 
 import com.typesafe.scalalogging.LazyLogging
+import edu.stanford.nlp.pipeline.StanfordCoreNLP
+import opennlp.tools.stemmer.PorterStemmer
 import org.antlr.v4.runtime.misc.Predicate
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.util.NCResourceReader
@@ -26,10 +28,20 @@ import org.apache.nlpcraft.nlp.entity.parser.*
 
 import scala.collection.mutable
 import org.apache.nlpcraft.NCResultType.*
+import org.apache.nlpcraft.nlp.entity.parser.semantic.{NCSemanticEntityParser, NCSemanticStemmer}
+import org.apache.nlpcraft.nlp.entity.parser.stanford.NCStanfordNLPEntityParser
+import org.apache.nlpcraft.nlp.token.parser.stanford.NCStanfordNLPTokenParser
 
+import java.util.Properties
 import scala.jdk.CollectionConverters.*
 
 object OrderModel extends LazyLogging:
+    private val STANFORD =
+        val props = new Properties()
+        props.setProperty("annotators", "tokenize, ssplit, pos, lemma, ner")
+        new StanfordCoreNLP(props)
+    private val TOK_PARSER = new NCStanfordNLPTokenParser(STANFORD)
+
     private def extractPizzaKind(e: NCEntity): String = e.get[String]("ord:pizza:kind:value")
     private def extractPizzaSize(e: NCEntity): PizzaSize = PizzaSize.valueOf(e.get[String]("ord:pizza:size:value").toUpperCase)
     private def extractDrink(e: NCEntity): String = e.get[String]("ord:drink:value")
@@ -78,7 +90,18 @@ import org.apache.nlpcraft.examples.order.OrderModel.*
   */
 class OrderModel extends NCModelAdapter (
     new NCModelConfig("nlpcraft.order.ex", "Order Example Model", "1.0"),
-    new NCPipelineBuilder().withSemantic("en", "order_model.yaml").build()
+    new NCPipelineBuilder().
+        withTokenParser(TOK_PARSER).
+        withEntityParser(new NCStanfordNLPEntityParser(STANFORD, "number")).
+        withEntityParser(new NCSemanticEntityParser(
+            new NCSemanticStemmer():
+                final private val ps = new PorterStemmer
+                override def stem(txt: String): String = ps.synchronized { ps.stem(txt) }
+            ,
+            TOK_PARSER,
+            "order_model.yaml"
+        )).
+        build()
 ) with LazyLogging:
     private val ords = mutable.HashMap.empty[String, OrderState]
 

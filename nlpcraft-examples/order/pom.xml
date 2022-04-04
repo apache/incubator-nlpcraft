@@ -37,6 +37,11 @@
             <artifactId>nlpcraft</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>nlpcraft-stanford</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!-- Test dependencies. -->
         <dependency>

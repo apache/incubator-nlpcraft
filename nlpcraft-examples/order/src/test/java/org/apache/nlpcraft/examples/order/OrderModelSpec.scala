@@ -43,7 +43,7 @@ class OrderModelSpec:
 
                 if expResType != resp.getType then
                     printDialog()
-                    require(false, s"Unexpected type: ${resp.getType}, expected: ${expResType}.")
+                    require(false, s"Unexpected type: ${resp.getType}, expected: $expResType.")
 
             ask("I want to order margherita medium size, marbonara, marinara and tea", ASK_DIALOG)
             ask("large size please", ASK_DIALOG)

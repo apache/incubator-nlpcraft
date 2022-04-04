@@ -36,6 +36,8 @@ class NCStanfordNLPEntityParserImpl(stanford: StanfordCoreNLP, supported: JSet[S
     require(stanford != null)
     require(supported != null)
 
+    private val supportedLc = supported.asScala.map(_.toLowerCase)
+
     override def parse(req: NCRequest, cfg: NCModelConfig, toksList: JList[NCToken]): JList[NCEntity] =
         val toks = toksList.asScala.toSeq
         val doc = new CoreDocument(req.getText)
@@ -46,7 +48,7 @@ class NCStanfordNLPEntityParserImpl(stanford: StanfordCoreNLP, supported: JSet[S
         for (e <- doc.entityMentions().asScala)
             val typ = e.entityType().toLowerCase
 
-            if supported.contains(typ) then
+            if supportedLc.contains(typ) then
                 val offsets = e.charOffsets()
                 val t1 = toks.find(_.getStartCharIndex == offsets.first)
                 lazy val t2 = toks.find(_.getEndCharIndex == offsets.second)
