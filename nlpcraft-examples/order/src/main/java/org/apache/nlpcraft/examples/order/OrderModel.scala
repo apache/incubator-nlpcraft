@@ -28,6 +28,7 @@ import org.apache.nlpcraft.nlp.entity.parser.*
 
 import scala.collection.mutable
 import org.apache.nlpcraft.NCResultType.*
+import org.apache.nlpcraft.examples.order.components.SimpleCombiner
 import org.apache.nlpcraft.nlp.entity.parser.semantic.{NCSemanticEntityParser, NCSemanticStemmer}
 import org.apache.nlpcraft.nlp.entity.parser.stanford.NCStanfordNLPEntityParser
 import org.apache.nlpcraft.nlp.token.parser.stanford.NCStanfordNLPTokenParser
@@ -101,6 +102,12 @@ class OrderModel extends NCModelAdapter (
             TOK_PARSER,
             "order_model.yaml"
         )).
+//        withEntityMappers(
+//            Seq(
+//                SimpleCombiner("ord:pizza:size", "ord:pizza:kind", "x"),
+//                SimpleCombiner("x", "stanford:number", "")
+//            ).asJava
+//        ).
         build()
 ) with LazyLogging:
     private val ords = mutable.HashMap.empty[String, OrderState]
