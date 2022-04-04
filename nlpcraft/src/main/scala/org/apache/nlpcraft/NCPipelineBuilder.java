@@ -239,7 +239,7 @@ public class NCPipelineBuilder {
      * @param entMapper
      * @return This instance for call chaining.
      */
-    public NCPipelineBuilder withEntitMapper(NCEntityMapper entMapper) {
+    public NCPipelineBuilder withEntityMapper(NCEntityMapper entMapper) {
         Objects.requireNonNull(entMapper, "Entity mapper cannot be null.");
 
         this.entMappers.add(entMapper);
