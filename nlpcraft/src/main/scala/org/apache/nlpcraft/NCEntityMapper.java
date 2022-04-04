@@ -25,10 +25,10 @@ import java.util.List;
 public interface NCEntityMapper extends NCLifecycle {
     /**
      *
-     * @param req
-     * @param entities
-     * @param toks
+     * @param req Input request descriptor.
+     * @param cfg Configuration of the model this components is associated with.
+     * @param ents List of entities to enrich.
      * @return
      */
-    List<NCEntity> convert(NCRequest req, List<NCEntity> entities, List<NCToken> toks);
+    List<NCEntity> map(NCRequest req, NCModelConfig cfg, List<NCEntity> entities);
 }

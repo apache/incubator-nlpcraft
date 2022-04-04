@@ -33,35 +33,43 @@ import scala.jdk.CollectionConverters.*
   *
   */
 class NCEntityMapperSpec:
-    case class UnionMapper(id1: String, id2: String) extends NCEntityMapper:
-        override def convert(req: NCRequest, entities: JList[NCEntity], toks: JList[NCToken]): JList[NCEntity] =
+    private case class Combiner(ids: String*) extends NCEntityMapper:
+        override def map(req: NCRequest, cfg: NCModelConfig, entities: JList[NCEntity]): JList[NCEntity] =
             val es = entities.asScala
+            val replaced = es.filter(p => ids.contains(p.getId))
 
-            val id1AndId2 = es.filter(e => e.getId == id1 || e.getId == id2)
-            val other = es.filter(e => !id1AndId2.contains(e))
+            if replaced.isEmpty then
+                entities
+            else
+                val newEntity: NCEntity = new NCPropertyMapAdapter with NCEntity:
+                    override val getTokens: JList[NCToken] = replaced.flatMap(_.getTokens.asScala).sortBy(_.getIndex).asJava
+                    override val getRequestId: String = req.getRequestId
+                    override val getId: String = ids.mkString
 
-            val newEntity = new NCPropertyMapAdapter with NCEntity:
-                override def getTokens: JList[NCToken] = id1AndId2.flatMap(_.getTokens.asScala).sortBy(_.getIndex).asJava
-                override def getRequestId: String = req.getRequestId
-                override def getId: String = s"$id1$id2"
+                es --= replaced
+                (es :+ newEntity).sortBy(_.getTokens.asScala.head.getIndex).asJava
 
-            (other ++ Seq(newEntity)).sortBy(_.getTokens.get(0).getIndex).asJava
-
-    private val mdl: NCTestModelAdapter = new NCTestModelAdapter:
+    private val mdl = new NCTestModelAdapter:
+        import NCSemanticTestElement as TE
         override val getPipeline: NCPipeline =
             val pl = mkEnPipeline
-            import NCSemanticTestElement as TE
+            val ms = pl.getEntityMappers
+
             pl.getEntityParsers.add(NCTestUtils.mkEnSemanticParser(TE("a"), TE("b"), TE("c"), TE("d")))
+
             // Replaces [a, b] -> [ab]
-            pl.getEntityMappers.add(UnionMapper("a", "b"))
+            ms.add(Combiner("a", "b"))
             // Replaces [c, d] -> [cd]
-            pl.getEntityMappers.add(UnionMapper("c", "d"))
+            ms.add(Combiner("c", "d"))
             // Replaces [ab, cd] -> [abcd]
-            pl.getEntityMappers.add(UnionMapper("ab", "cd"))
+            ms.add(Combiner("ab", "cd"))
+
             pl
 
-        @NCIntent("intent=i term(e)={# == 'abcd'}")
-        def onMatch(@NCIntentTerm("e") e: NCEntity): NCResult = new NCResult("OK", NCResultType.ASK_RESULT)
+        @NCIntent("intent=abcd term(abcd)={# == 'abcd'}")
+        def onMatch(@NCIntentTerm("abcd") abcd: NCEntity): NCResult = new NCResult("OK", NCResultType.ASK_RESULT)
 
     @Test
-    def test(): Unit = Using.resource(new NCModelClient(mdl)) { client => require(client.ask("a b c d", null, "userId").getBody == "OK")}
+    def test(): Unit = Using.resource(new NCModelClient(mdl)) { client =>
+        require(client.ask("a b c d", null, "userId").getIntentId == "abcd")
+    }
