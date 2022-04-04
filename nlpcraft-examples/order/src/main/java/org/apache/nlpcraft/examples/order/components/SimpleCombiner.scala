@@ -21,6 +21,7 @@ import org.apache.nlpcraft.*
 
 import java.util
 import java.util.List as JList
+import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
 
 /**
@@ -30,6 +31,7 @@ import scala.jdk.CollectionConverters.*
   * @param newId
   */
 case class SimpleCombiner(id1: String, id2: String, newId: String) extends NCEntityMapper:
+    private def extract(e: NCEntity): mutable.Seq[NCToken] = e.getTokens.asScala
     override def map(req: NCRequest, cfg: NCModelConfig, entities: util.List[NCEntity]): util.List[NCEntity] =
         var es = entities.asScala
         val es1 = es.filter(_.getId == id1)
@@ -38,21 +40,21 @@ case class SimpleCombiner(id1: String, id2: String, newId: String) extends NCEnt
         if es1.nonEmpty && es2.size == es1.size then
             var ok = true
 
-            val newEs =
+            val mapped =
                 for ((e1, e2) <- es1.zip(es2) if ok) yield
                     if e1.getId == e2.getId then
                         ok = false
                         null
                     else
                         new NCPropertyMapAdapter with NCEntity:
-                            override val getTokens: JList[NCToken] = (e1.getTokens.asScala ++ e2.getTokens.asScala).sortBy(_.getIndex).asJava
+                            override val getTokens: JList[NCToken] = (extract(e1) ++ extract(e2)).sortBy(_.getIndex).asJava
                             override val getRequestId: String = req.getRequestId
                             override val getId: String = newId
 
             if ok then
                 es = es --= es1
                 es = es --= es2
-                (es ++ newEs).sortBy(_.getTokens.asScala.head.getIndex).asJava
+                (es ++ mapped).sortBy(extract(_).head.getIndex).asJava
             else
                 entities
         else
