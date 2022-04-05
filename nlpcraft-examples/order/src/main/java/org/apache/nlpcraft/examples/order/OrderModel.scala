@@ -32,6 +32,7 @@ import org.apache.nlpcraft.examples.order.components.*
 import org.apache.nlpcraft.nlp.entity.parser.semantic.*
 import org.apache.nlpcraft.nlp.entity.parser.stanford.*
 import org.apache.nlpcraft.nlp.token.parser.stanford.*
+import org.apache.nlpcraft.examples.order.State.*
 
 import scala.jdk.CollectionConverters.*
 import java.util.Properties
@@ -67,14 +68,14 @@ object OrderModel extends LazyLogging:
         Pizza(e.get[String]("ord:pizza:value"), e.getOpt[String]("ord:pizza:size").toScala, extractQty(e, "ord:pizza:qty"))
     private def extractDrink(e: NCEntity): Drink = Drink(e.get[String]("ord:drink:value"), extractQty(e, "ord:drink:qty"))
 
-    private def getContent(o: OrderState): String =
+    private def getContent(o: Order): String =
         s"""
        |${seq2Str("Pizza", o.getPizzas.values.map(p => s"${p.name} ${p.size.getOrElse("undefined")} ${p.qty.getOrElse(1)}"))}
        |${seq2Str("Drinks", o.getDrinks.values.map(p => s"${p.name} ${p.qty.getOrElse(1)}"))}
         """.stripMargin
 
 
-    private def toString(o: OrderState): String =
+    private def toString(o: Order): String =
         norm(
             s"""
            |Order
@@ -89,24 +90,27 @@ import org.apache.nlpcraft.examples.order.OrderModel.*
 class OrderModel extends NCModelAdapter (
     new NCModelConfig("nlpcraft.order.ex", "Order Example Model", "1.0"), StanfordEn.PIPELINE
 ) with LazyLogging:
-    private val ords = mutable.HashMap.empty[String, OrderState]
+    private val ords = mutable.HashMap.empty[String, Order]
 
-    private def getOrder(im: NCIntentMatch): OrderState = ords.getOrElseUpdate(im.getContext.getRequest.getUserId, new OrderState)
+    private def getOrder(im: NCIntentMatch): Order = ords.getOrElseUpdate(im.getContext.getRequest.getUserId, new Order)
     private def getLastIntentId(im: NCIntentMatch): Option[String] =
         im.getContext.getConversation.getDialogFlow.asScala.lastOption match
             case Some(e) => Some(e.getIntentMatch.getIntentId)
             case None => None
 
-    private def mkOrderFinishDialog(o: OrderState): NCResult =
-        if o.isValid then new NCResult("Is order ready?", ASK_DIALOG)
-        else NCResult(s"What is size size (large, medium or small) for: ${o.getPizzaNoSize.name}", ASK_DIALOG)
+    private def mkOrderFinishDialog(o: Order): NCResult =
+//        if o.isValid then
+//            o.wait4Approve(true)
+//            new NCResult("Is order ready?", ASK_DIALOG)
+//        else NCResult(s"What is size size (large, medium or small) for: ${o.getPizzaNoSize.name}", ASK_DIALOG)
+        null
 
-    private def mkOrderContinueDialog(o: OrderState): NCResult =
-        require(o.inProgress)
-        NCResult("OK. Please continue", ASK_DIALOG)
+    private def mkOrderContinueDialog(o: Order): NCResult =
+//        require(o.inProgress)
+//        NCResult("OK. Please continue", ASK_DIALOG)
+        null
 
-    private def mkOrderReadyDialog(o: OrderState): NCResult =
-        require(o.isValid)
+    private def mkOrderConfirmDialog(o: Order): NCResult =
         NCResult(
             norm(
                 s"""
@@ -118,14 +122,14 @@ class OrderModel extends NCModelAdapter (
             ASK_DIALOG
         )
 
-    private def mkClearResult(im: NCIntentMatch, o: OrderState): NCResult =
+    private def mkClearResult(im: NCIntentMatch, o: Order): NCResult =
         o.clear()
         val conv = im.getContext.getConversation
         conv.clearStm(_ => true)
         conv.clearDialog(_ => true)
         NCResult("Order canceled. We are ready for new orders.", ASK_RESULT)
 
-    private def mkExecuteResult(o: OrderState): NCResult =
+    private def mkExecuteResult(o: Order): NCResult =
         println(s"EXECUTED:")
         println(OrderModel.toString(o))
         o.clear()
@@ -136,25 +140,34 @@ class OrderModel extends NCModelAdapter (
         val o = getOrder(im)
         val lastIntentId = getLastIntentId(im).orNull
 
-        if lastIntentId == "stop" then mkOrderContinueDialog(o)
-        else if o.isWait4Approve then mkClearResult(im, o)
-        else mkOrderFinishDialog(o)
+//        if o.isWait4Approve then
+//            o.wait4Approve(false)
+//            mkOrderConfirmDialog(o)
+//        else if lastIntentId == "stop" then mkOrderContinueDialog(o)
+//        else mkOrderFinishDialog(o)
+        null
 
     @NCIntent("intent=no term(no)={# == 'ord:no'}")
     def onNo(im: NCIntentMatch, @NCIntentTerm("no") no: NCEntity): NCResult =
         val o = getOrder(im)
         val lastIntentId = getLastIntentId(im).orNull
 
-        if lastIntentId == "stop" then mkOrderContinueDialog(o)
-        else if o.isWait4Approve then mkClearResult(im, o)
-        else mkOrderFinishDialog(o)
+//        if o.isWait4Approve then
+//            o.wait4Approve(false)
+//            mkClearResult(im, o)
+//        else if lastIntentId == "stop" then mkOrderContinueDialog(o)
+//        else mkOrderFinishDialog(o)
+        null
 
     @NCIntent("intent=stop term(stop)={# == 'ord:stop'}")
     def onStop(im: NCIntentMatch, @NCIntentTerm("stop") stop: NCEntity): NCResult =
         val o = getOrder(im)
 
-        if o.inProgress then NCResult("Are you sure that you want to cancel current order?", ASK_DIALOG)
-        else NCResult("Nothing to cancel.", ASK_RESULT)
+        o.getState match
+            case ORDER_VALID | ORDER_INVALID =>
+                o.setState(CANCEL_ASK)
+                NCResult("Are you sure that you want to cancel current order?", ASK_DIALOG)
+            case _ => NCResult("Nothing to cancel.", ASK_RESULT)
 
     @NCIntent("intent=order term(ps)={# == 'ord:pizza'}* term(ds)={# == 'ord:drink'}*")
     def onOrder(im: NCIntentMatch, @NCIntentTerm("ps") ps: List[NCEntity], @NCIntentTerm("ds") ds: List[NCEntity]): NCResult =
@@ -171,8 +184,9 @@ class OrderModel extends NCModelAdapter (
     def onOrderPizzaSize(im: NCIntentMatch, @NCIntentTerm("size") size: NCEntity): NCResult =
         val o = getOrder(im)
 
-        if !o.inProgress then throw NCRejection("") // TODO
-        o.setPizzaNoSize(extractPizzaSize(size))
+        o.getState match
+            case ORDER_INVALID => o.setPizzaNoSize(extractPizzaSize(size))
+            case _ => NCRejection("") // TODO
 
         mkOrderFinishDialog(o)
 
@@ -180,15 +194,19 @@ class OrderModel extends NCModelAdapter (
     def onStatus(im: NCIntentMatch, @NCIntentTerm("status") s: NCEntity): NCResult =
         val o = getOrder(im)
 
-        if o.inProgress then NCResult(OrderModel.toString(o), ASK_RESULT)
-        else NCResult("Nothing ordered.", ASK_RESULT)
+        o.getState match
+            case ORDER_VALID | ORDER_INVALID => NCResult(OrderModel.toString(o), ASK_RESULT)
+            case _ => NCResult("Nothing ordered.", ASK_RESULT)
 
     @NCIntent("intent=finish term(finish)={# == 'ord:finish'}")
     def onFinish(im: NCIntentMatch, @NCIntentTerm("finish") f: NCEntity): NCResult =
         val o = getOrder(im)
 
-        if o.inProgress then mkOrderReadyDialog(o)
-        else NCResult("Nothing to finish.", ASK_RESULT)
+        o.getState match
+            case ORDER_VALID | CONTINUE_ASK =>
+                o.setState(CONFIRM_ASK)
+                mkOrderConfirmDialog(o)
+            case _ => NCResult("Nothing to finish.", ASK_RESULT)
 
     @NCIntent("intent=menu term(menu)={# == 'ord:menu'}")
     def onMenu(im: NCIntentMatch, @NCIntentTerm("menu") m: NCEntity): NCResult =

@@ -22,29 +22,36 @@ import scala.collection.mutable
 case class Pizza(name: String, var size: Option[String], qty: Option[Int])
 case class Drink(name: String, qty: Option[Int])
 
-class OrderState:
+enum State:
+    case ORDER_EMPTY, ORDER_INVALID, ORDER_VALID, CONTINUE_ASK, CONFIRM_ASK, CANCEL_ASK
+
+import org.apache.nlpcraft.examples.order.State.*
+
+class Order:
+    private var state =  ORDER_EMPTY
     private val pizzas = mutable.LinkedHashMap.empty[String, Pizza]
     private val drinks = mutable.LinkedHashMap.empty[String, Drink]
 
-    private var wait4Appr = false
-
     private def findPizzaNoSize: Option[Pizza] = pizzas.values.find(_.size.isEmpty)
 
-    def addPizza(p: Pizza): Unit = pizzas += p.name -> p
-    def addDrink(d: Drink): Unit = drinks += d.name -> d
+    def addPizza(p: Pizza): Unit =
+        pizzas += p.name -> p
+        state = if findPizzaNoSize.nonEmpty then ORDER_INVALID else ORDER_VALID
+    def addDrink(d: Drink): Unit =
+        if state == ORDER_EMPTY then state = ORDER_VALID
+            drinks += d.name -> d
+
+    def getState: State = state
+    def setState(state: State) = this.state = state
 
     def getPizzas: Map[String, Pizza] = pizzas.toMap
     def getDrinks: Map[String, Drink] = drinks.toMap
 
-    def inProgress: Boolean = pizzas.nonEmpty || drinks.nonEmpty
-    def isValid: Boolean = (pizzas.nonEmpty || drinks.nonEmpty) && pizzas.forall(_._2.size.nonEmpty)
-    def isWait4Approve: Boolean = wait4Appr
-    def wait4Approve(): Unit = wait4Appr = true
     def getPizzaNoSize: Pizza =
-        require(!isValid)
+        require(state == ORDER_INVALID)
         findPizzaNoSize.get
     def setPizzaNoSize(size: String): Unit =
-        require(!isValid)
+        require(state == ORDER_INVALID)
         require(size != null)
         findPizzaNoSize.get.size = Option(size)
     def clear(): Unit =
