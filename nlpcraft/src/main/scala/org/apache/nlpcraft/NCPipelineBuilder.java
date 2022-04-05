@@ -333,6 +333,9 @@ public class NCPipelineBuilder {
     public NCPipeline build() {
         Objects.requireNonNull(tokParser, "Token parser cannot be null.");
 
+        // TODO: Text.
+        if (entParsers.isEmpty()) throw new IllegalStateException("At least oe entity parser should be defined.");
+
         return new NCPipeline() {
             @Override public NCTokenParser getTokenParser() {
                 return tokParser;
