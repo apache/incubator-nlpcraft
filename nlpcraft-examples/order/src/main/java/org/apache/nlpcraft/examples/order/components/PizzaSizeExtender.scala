@@ -26,38 +26,35 @@ import scala.jdk.CollectionConverters.*
 
 /**
   *
-  * @param id1
-  * @param id2
-  * @param newId
   */
-case class SimpleCombiner(id1: String, id2: String, newId: String) extends NCEntityMapper:
+class PizzaSizeExtender extends NCEntityMapper:
     private def extract(e: NCEntity): mutable.Seq[NCToken] = e.getTokens.asScala
     override def map(req: NCRequest, cfg: NCModelConfig, entities: util.List[NCEntity]): util.List[NCEntity] =
         var es = entities.asScala
-        val es1 = es.filter(_.getId == id1)
-        val es2 = es.filter(_.getId == id2)
+        val pizzas = es.filter(_.getId == "ord:pizza")
+        val sizes = es.filter(_.getId == "ord:pizza:size")
 
-        if es1.nonEmpty && es2.size == es1.size then
+        if pizzas.nonEmpty && sizes.nonEmpty then
+            if pizzas.size != sizes.size then throw new NCRejection("Pizza and their sizes should be defined together1")
             var ok = true
-
             val mapped =
-                for ((e1, e2) <- es1.zip(es2) if ok) yield
+                for ((e1, e2) <- pizzas.zip(sizes) if ok) yield
                     if e1.getId == e2.getId then
                         ok = false
                         null
                     else
+                        val (pizza, size) = if e1.getId == "ord:pizza" then (e1, e2) else (e2, e1)
                         new NCPropertyMapAdapter with NCEntity:
-                            override val getTokens: JList[NCToken] = (extract(e1) ++ extract(e2)).sortBy(_.getIndex).asJava
+                            // Copy from pizza.
+                            size.keysSet().forEach(k => put(k, size.get(k)))
+                            // New value from size.
+                            put[String]("ord:pizza:size", size.get[String]("ord:pizza:size:value").toLowerCase)
+
+                            override val getTokens: JList[NCToken] = (extract(pizza) ++ extract(size)).sortBy(_.getIndex).asJava
                             override val getRequestId: String = req.getRequestId
-                            override val getId: String = newId
+                            override val getId: String = pizza.getId
 
-            if ok then
-                es = es --= es1
-                es = es --= es2
-                (es ++ mapped).sortBy(extract(_).head.getIndex).asJava
-            else
-                entities
-        else
-            entities
-
-
+            es = es --= pizzas
+            es = es --= sizes
+            (es ++ mapped).sortBy(extract(_).head.getIndex).asJava
+        else entities

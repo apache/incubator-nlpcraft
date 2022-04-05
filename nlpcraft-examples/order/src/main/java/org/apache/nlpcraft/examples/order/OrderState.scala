@@ -19,83 +19,36 @@ package org.apache.nlpcraft.examples.order
 
 import scala.collection.mutable
 
-private enum PizzaSize:
-    case SMALL, MEDIUM, LARGE
+case class Pizza(name: String, var size: Option[String], qty: Option[Int])
+case class Drink(name: String, qty: Option[Int])
 
-object OrderState:
-    private val allPizzaSizeKinds: String = withComma(PizzaSize.values.map(_.toString.toLowerCase))
-
-    private def withComma(iter: Iterable[String]): String = iter.mkString(", ")
-    private def pizza2Str(name: String, size: PizzaSize): String =
-        if size != null then s"$name ${size.toString.toLowerCase} size" else name
-    private def seq2Str[T](name: String, seq: Seq[T], toStr: T => String = (t: T) => t.toString): String =
-        if seq.nonEmpty then s"$name: ${withComma(seq.map(toStr))}." else ""
-    private def norm(s: String) = s.trim.replaceAll("(?m)^[ \t]*\r?\n", "")
-
-import OrderState.*
-
-/**
-  * Contract.
-  * 1. 'mkSpecifyRequest' scans ordered data, finds first invalid element and asks to specify it.
-  * 2. 'specify' methods (specifyPizzaSize) should specify elements in the same order.
-  * So, we don't need to save which concrete element we treying to specify.
-  */
 class OrderState:
-    private val pizza = mutable.LinkedHashMap.empty[String, PizzaSize]
-    private val drinks = mutable.LinkedHashSet.empty[String]
+    private val pizzas = mutable.LinkedHashMap.empty[String, Pizza]
+    private val drinks = mutable.LinkedHashMap.empty[String, Drink]
 
-    def addDrink(name: String): Unit = drinks += name
-    def addPizza(name: String): Unit = pizza += name -> null
-    def addPizza(name: String, size: PizzaSize): Unit = pizza += name -> size
+    private var wait4Appr = false
 
-    def inProgress(): Boolean = pizza.nonEmpty || drinks.nonEmpty
+    private def findPizzaNoSize: Option[Pizza] = pizzas.values.find(_.size.isEmpty)
 
-    def isValid(): Boolean =
-        (pizza.nonEmpty || drinks.nonEmpty) &&
-        (pizza.isEmpty || pizza.forall{ (_, size) => size != null } )
+    def addPizza(p: Pizza): Unit = pizzas += p.name -> p
+    def addDrink(d: Drink): Unit = drinks += d.name -> d
 
-    def specifyPizzaSize(sz: PizzaSize): Boolean = pizza.find { (_, size) => size == null } match
-        case Some((name, _)) => pizza += name -> sz; true
-        case None => false
+    def getPizzas: Map[String, Pizza] = pizzas.toMap
+    def getDrinks: Map[String, Drink] = drinks.toMap
 
-    def ask2Specify(): String =
-        require(!isValid())
-
-        if pizza.isEmpty && drinks.isEmpty then
-            "Order is empty. Please order some pizza or drinks."
-        else
-            pizza.find { (_, size) => size == null } match
-                case Some((name, _)) => s"Please specify $name size? It can be $allPizzaSizeKinds"
-                case None => throw new AssertionError("Invalid state")
-
-    def ask2Confirm(): String =
-        require(isValid())
-        norm(
-            s"""
-           |Let me specify your order.
-           |${seq2Str("Pizza", pizza.toSeq, pizza2Str)}
-           |${seq2Str("Drinks", drinks.toSeq)}
-           |Is it correct?
-           """.stripMargin
-        )
-
-    def getState(): String =
-        norm(
-            s"""
-               |Current order state: '${if inProgress() then "in progress" else "empty"}'.
-               |${seq2Str("Pizza", pizza.toSeq, pizza2Str)}
-               |${seq2Str("Drinks", drinks.toSeq)}
-           """.stripMargin
-        )
-    
-    override def toString(): String =
-        norm(
-            s"""
-           |${seq2Str("Pizza", pizza.toSeq, pizza2Str)}
-           |${seq2Str("Drinks", drinks.toSeq)}
-           """.stripMargin
-        ).replaceAll("\n", " ")
-
+    def inProgress: Boolean = pizzas.nonEmpty || drinks.nonEmpty
+    def isValid: Boolean = (pizzas.nonEmpty || drinks.nonEmpty) && pizzas.forall(_._2.size.nonEmpty)
+    def isWait4Approve: Boolean = wait4Appr
+    def wait4Approve(): Unit = wait4Appr = true
+    def getPizzaNoSize: Pizza =
+        require(!isValid)
+        findPizzaNoSize.get
+    def setPizzaNoSize(size: String): Unit =
+        require(!isValid)
+        require(size != null)
+        findPizzaNoSize.get.size = Option(size)
     def clear(): Unit =
-        pizza.clear()
+        pizzas.clear()
         drinks.clear()
+
+

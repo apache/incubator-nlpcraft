@@ -28,195 +28,172 @@ import org.apache.nlpcraft.nlp.entity.parser.*
 
 import scala.collection.mutable
 import org.apache.nlpcraft.NCResultType.*
-import org.apache.nlpcraft.examples.order.components.SimpleCombiner
-import org.apache.nlpcraft.nlp.entity.parser.semantic.{NCSemanticEntityParser, NCSemanticStemmer}
-import org.apache.nlpcraft.nlp.entity.parser.stanford.NCStanfordNLPEntityParser
-import org.apache.nlpcraft.nlp.token.parser.stanford.NCStanfordNLPTokenParser
+import org.apache.nlpcraft.examples.order.components.*
+import org.apache.nlpcraft.nlp.entity.parser.semantic.*
+import org.apache.nlpcraft.nlp.entity.parser.stanford.*
+import org.apache.nlpcraft.nlp.token.parser.stanford.*
 
-import java.util.Properties
 import scala.jdk.CollectionConverters.*
+import java.util.Properties
+import scala.jdk.OptionConverters._
+
+object StanfordEn:
+    val PIPELINE: NCPipeline =
+        val stanford =
+            val props = new Properties()
+            props.setProperty("annotators", "tokenize, ssplit, pos, lemma, ner")
+            new StanfordCoreNLP(props)
+        val tokParser = new NCStanfordNLPTokenParser(stanford)
+        val stemmer = new NCSemanticStemmer():
+            private val ps = new PorterStemmer
+            override def stem(txt: String): String = ps.synchronized { ps.stem(txt) }
+
+        new NCPipelineBuilder().
+            withTokenParser(tokParser).
+            withEntityParser(new NCStanfordNLPEntityParser(stanford, "number")).
+            withEntityParser(new NCSemanticEntityParser(stemmer, tokParser, "order_model.yaml")).
+            withEntityMappers(Seq(new PizzaSizeExtender, new PizzaQtyExtender, new DrinkQtyExtender).asJava).
+            withEntityValidator(new OrderValidator).
+            build()
 
 object OrderModel extends LazyLogging:
-    private val STANFORD =
-        val props = new Properties()
-        props.setProperty("annotators", "tokenize, ssplit, pos, lemma, ner")
-        new StanfordCoreNLP(props)
-    private val TOK_PARSER = new NCStanfordNLPTokenParser(STANFORD)
+    private def norm(s: String) = s.trim.replaceAll("(?m)^[ \t]*\r?\n", "")
+    private def withComma[T](iter: Iterable[T]): String = iter.mkString(", ")
+    private def seq2Str[T](name: String, seq: Iterable[T]): String = if seq.nonEmpty then s"$name: ${withComma(seq)}." else ""
 
-    private def extractPizzaKind(e: NCEntity): String = e.get[String]("ord:pizza:kind:value")
-    private def extractPizzaSize(e: NCEntity): PizzaSize = PizzaSize.valueOf(e.get[String]("ord:pizza:size:value").toUpperCase)
-    private def extractDrink(e: NCEntity): String = e.get[String]("ord:drink:value")
-    private def isStopWord(t: NCToken): Boolean = t.get[Boolean]("stopword")
-    private def confirmOrSpecify(ord: OrderState): NCResult =
-        NCResult(if ord.isValid() then ord.ask2Confirm() else ord.ask2Specify(), ASK_DIALOG)
-    private def continue(ord: OrderState): NCResult =
-        NCResult(if ord.isValid() then s"OK, please continue your order: $ord" else ord.ask2Specify(), ASK_DIALOG)
+    private def extractPizzaSize(e: NCEntity): String = e.get[String]("ord:pizza:size:value")
+    private def extractQty(e: NCEntity, qty: String): Option[Int] = Option.when(e.contains(qty))(e.get[String](qty).toInt)
+    private def extractPizza(e: NCEntity): Pizza =
+        Pizza(e.get[String]("ord:pizza:value"), e.getOpt[String]("ord:pizza:size").toScala, extractQty(e, "ord:pizza:qty"))
+    private def extractDrink(e: NCEntity): Drink = Drink(e.get[String]("ord:drink:value"), extractQty(e, "ord:drink:qty"))
 
-    private def log(o: OrderState): Unit = logger.info(o.getState())
-    private def onStart(im: NCIntentMatch, o: OrderState): Unit =
-        logger.info(s"Initial state before request: ${im.getContext.getRequest.getText}")
-    private def onFinish(o: OrderState): Unit =
-        logger.info(s"Result state")
-        logger.info(o.getState())
+    private def getContent(o: OrderState): String =
+        s"""
+       |${seq2Str("Pizza", o.getPizzas.values.map(p => s"${p.name} ${p.size.getOrElse("undefined")} ${p.qty.getOrElse(1)}"))}
+       |${seq2Str("Drinks", o.getDrinks.values.map(p => s"${p.name} ${p.qty.getOrElse(1)}"))}
+        """.stripMargin
 
-    private def withRelations(
-        ents: Seq[NCEntity], relations: Seq[NCEntity], skip: Seq[NCEntity], allToks: Seq[NCToken]
-    ): Map[NCEntity, NCEntity] =
-        case class IdxHolder(from: Int, to: Int)
 
-        def getIndexes(e: NCEntity): IdxHolder =
-            val toks = e.getTokens.asScala
-            IdxHolder(toks.head.getIndex, toks.last.getIndex)
-
-        val skipIdxs = skip.flatMap(_.getTokens.asScala.map(_.getIndex)).toSet
-        val used = mutable.ArrayBuffer.empty[NCEntity]
-
-        def areNeighbours(i1: Int, i2: Int): Boolean =
-            if i2 == i1 + 1 then true else Range(i1 + 1, i2).forall(i => isStopWord(allToks(i)) || skipIdxs.contains(i))
-
-        ents.map(e => {
-            val eIdxs = getIndexes(e)
-            val r = relations.filter(r => !used.contains(r)).find(r => {
-                val rIdxs = getIndexes(r)
-                areNeighbours(rIdxs.to, eIdxs.from) || areNeighbours(eIdxs.to, rIdxs.from)
-            }).orNull
-
-            if r != null then used += r
-            e -> r
-        }).toMap
+    private def toString(o: OrderState): String =
+        norm(
+            s"""
+           |Order
+           |${getContent(o)}
+            """.stripMargin
+        )
 
 import org.apache.nlpcraft.examples.order.OrderModel.*
 /**
   *
   */
 class OrderModel extends NCModelAdapter (
-    new NCModelConfig("nlpcraft.order.ex", "Order Example Model", "1.0"),
-    new NCPipelineBuilder().
-        withTokenParser(TOK_PARSER).
-        withEntityParser(new NCStanfordNLPEntityParser(STANFORD, "number")).
-        withEntityParser(new NCSemanticEntityParser(
-            new NCSemanticStemmer():
-                final private val ps = new PorterStemmer
-                override def stem(txt: String): String = ps.synchronized { ps.stem(txt) }
-            ,
-            TOK_PARSER,
-            "order_model.yaml"
-        )).
-//        withEntityMappers(
-//            Seq(
-//                SimpleCombiner("ord:pizza:size", "ord:pizza:kind", "x"),
-//                SimpleCombiner("x", "stanford:number", "")
-//            ).asJava
-//        ).
-        build()
+    new NCModelConfig("nlpcraft.order.ex", "Order Example Model", "1.0"), StanfordEn.PIPELINE
 ) with LazyLogging:
     private val ords = mutable.HashMap.empty[String, OrderState]
 
     private def getOrder(im: NCIntentMatch): OrderState = ords.getOrElseUpdate(im.getContext.getRequest.getUserId, new OrderState)
+    private def getLastIntentId(im: NCIntentMatch): Option[String] =
+        im.getContext.getConversation.getDialogFlow.asScala.lastOption match
+            case Some(e) => Some(e.getIntentMatch.getIntentId)
+            case None => None
 
-    @NCIntent("intent=confirm term(confirm)={has(ent_groups, 'confirm')}")
-    def onConfirm(im: NCIntentMatch, @NCIntentTerm("confirm") confirm: NCEntity): NCResult =
-        val ord = getOrder(im)
-        onStart(im, ord)
-        val dlg = im.getContext.getConversation.getDialogFlow
+    private def mkOrderFinishDialog(o: OrderState): NCResult =
+        if o.isValid then new NCResult("Is order ready?", ASK_DIALOG)
+        else NCResult(s"What is size size (large, medium or small) for: ${o.getPizzaNoSize.name}", ASK_DIALOG)
 
-        def cancelAll(): NCResult =
-            ord.clear()
-            im.getContext.getConversation.clearStm(_ => true)
-            im.getContext.getConversation.clearDialog(_ => true)
-            NCResult("Order canceled. We are ready for new orders.", ASK_RESULT)
+    private def mkOrderContinueDialog(o: OrderState): NCResult =
+        require(o.inProgress)
+        NCResult("OK. Please continue", ASK_DIALOG)
 
-        val res =
-            // 'stop' command.
-            if !dlg.isEmpty && dlg.get(dlg.size() - 1).getIntentMatch.getIntentId == "stop" then
-                confirm.getId match
-                    case "ord:confirm:yes" => cancelAll()
-                    case "ord:confirm:no" => confirmOrSpecify(ord)
-                    case "ord:confirm:continue" => continue(ord)
-                    case _ => throw new AssertionError()
-            // 'confirm' command.
-            else
-                if !ord.inProgress() then throw new NCRejection("No orders in progress.")
+    private def mkOrderReadyDialog(o: OrderState): NCResult =
+        require(o.isValid)
+        NCResult(
+            norm(
+                s"""
+                   |Let me specify your order.
+                   |${getContent(o)}
+                   |Is it correct?
+                """.stripMargin
+            ),
+            ASK_DIALOG
+        )
 
-                confirm.getId match
-                    case "ord:confirm:yes" =>
-                        if ord.isValid() then
-                            logger.info(s"ORDER EXECUTED: $ord")
-                            ord.clear()
-                            NCResult("Congratulations. Your order executed. You can start make new orders.", ASK_RESULT)
-                        else
-                            NCResult(ord.ask2Specify(), ASK_DIALOG)
-                    case "ord:confirm:no" => cancelAll()
-                    case "ord:confirm:continue" => continue(ord)
-                    case _ => throw new AssertionError()
+    private def mkClearResult(im: NCIntentMatch, o: OrderState): NCResult =
+        o.clear()
+        val conv = im.getContext.getConversation
+        conv.clearStm(_ => true)
+        conv.clearDialog(_ => true)
+        NCResult("Order canceled. We are ready for new orders.", ASK_RESULT)
 
-        onFinish(ord)
-        res
+    private def mkExecuteResult(o: OrderState): NCResult =
+        println(s"EXECUTED:")
+        println(OrderModel.toString(o))
+        o.clear()
+        NCResult("Congratulations. Your order executed. You can start make new orders.", ASK_RESULT)
+
+    @NCIntent("intent=yes term(yes)={# == 'ord:yes'}")
+    def onYes(im: NCIntentMatch, @NCIntentTerm("yes") yes: NCEntity): NCResult =
+        val o = getOrder(im)
+        val lastIntentId = getLastIntentId(im).orNull
+
+        if lastIntentId == "stop" then mkOrderContinueDialog(o)
+        else if o.isWait4Approve then mkClearResult(im, o)
+        else mkOrderFinishDialog(o)
+
+    @NCIntent("intent=no term(no)={# == 'ord:no'}")
+    def onNo(im: NCIntentMatch, @NCIntentTerm("no") no: NCEntity): NCResult =
+        val o = getOrder(im)
+        val lastIntentId = getLastIntentId(im).orNull
+
+        if lastIntentId == "stop" then mkOrderContinueDialog(o)
+        else if o.isWait4Approve then mkClearResult(im, o)
+        else mkOrderFinishDialog(o)
 
     @NCIntent("intent=stop term(stop)={# == 'ord:stop'}")
-        def onStop(im: NCIntentMatch, @NCIntentTerm("stop") stop: NCEntity): NCResult =
-            val ord = getOrder(im)
-            onStart(im, ord)
-            val res =
-                if ord.inProgress() then NCResult("Are you sure that you want to cancel current order?", ASK_DIALOG)
-                else NCResult("Nothing to cancel", ASK_RESULT)
-            onFinish(ord)
-            res
+    def onStop(im: NCIntentMatch, @NCIntentTerm("stop") stop: NCEntity): NCResult =
+        val o = getOrder(im)
 
-    @NCIntent(
-        "intent=order " +
-        "  term(common)={# == 'ord:common'}* " +
-        "  term(pizzaList)={# == 'ord:pizza:kind'}*" +
-        "  term(pizzaSizesList)={# == 'ord:pizza:size'}* " +
-        "  term(drinkList)={# == 'ord:drink'}*"
-    )
-    def onCommonOrder(
-        im: NCIntentMatch,
-        @NCIntentTerm("common") common: List[NCEntity],
-        @NCIntentTerm("pizzaList") pizzaKinds: List[NCEntity],
-        @NCIntentTerm("pizzaSizesList") pizzaSizes: List[NCEntity],
-        @NCIntentTerm("drinkList") drinks: List[NCEntity]
-    ): NCResult =
-        if pizzaKinds.isEmpty && drinks.isEmpty then throw new NCRejection("Please order some pizza or drinks")
-        if pizzaSizes.size > pizzaKinds.size then throw new NCRejection("Pizza and their sizes cannot be recognized")
+        if o.inProgress then NCResult("Are you sure that you want to cancel current order?", ASK_DIALOG)
+        else NCResult("Nothing to cancel.", ASK_RESULT)
 
-        val ord = getOrder(im)
-        onStart(im, ord)
-        val m = withRelations(pizzaKinds, pizzaSizes, Seq.empty, im.getContext.getTokens.asScala.toSeq)
+    @NCIntent("intent=order term(ps)={# == 'ord:pizza'}* term(ds)={# == 'ord:drink'}*")
+    def onOrder(im: NCIntentMatch, @NCIntentTerm("ps") ps: List[NCEntity], @NCIntentTerm("ds") ds: List[NCEntity]): NCResult =
+        if ps.isEmpty && ds.isEmpty then throw new NCRejection("Please order some pizza or drinks")
 
-        for ((p, sz) <- m)
-            val pz = extractPizzaKind(p)
-            if sz != null then ord.addPizza(pz, extractPizzaSize(sz)) else ord.addPizza(pz)
+        val o = getOrder(im)
 
-        for (p <- drinks.map(extractDrink)) ord.addDrink(p)
+        for (p <- ps) o.addPizza(extractPizza(p))
+        for (d <- ds) o.addDrink(extractDrink(d))
 
-        val res = confirmOrSpecify(ord)
-        onFinish(ord)
-        res
+        mkOrderFinishDialog(o)
 
-    @NCIntent(
-        "intent=specifyPizzaSize " +
-        "  term(common)={# == 'ord:common'}* " +
-        "  term(size)={# == 'ord:pizza:size'} " +
-        "  term(pizza)={# == 'ord:pizza:kind'}?"
-    )
-    def onSpecifyPizzaSize(
-        im: NCIntentMatch,
-        @NCIntentTerm("common") common: List[NCEntity],
-        @NCIntentTerm("size") size: NCEntity,
-        @NCIntentTerm("pizza") pizzaOpt: Option[NCEntity]
-    ): NCResult =
-        val ord = getOrder(im)
-        require(!ord.isValid())
+    @NCIntent("intent=orderPizzaSize term(size)={# == 'ord:pizza:size'}")
+    def onOrderPizzaSize(im: NCIntentMatch, @NCIntentTerm("size") size: NCEntity): NCResult =
+        val o = getOrder(im)
 
-        onStart(im, ord)
+        if !o.inProgress then throw NCRejection("") // TODO
+        o.setPizzaNoSize(extractPizzaSize(size))
 
-        val sz = extractPizzaSize(size)
+        mkOrderFinishDialog(o)
 
-        pizzaOpt match
-            case Some(pizza) => ord.addPizza(extractPizzaKind(pizza), sz)
-            case None => if !ord.specifyPizzaSize(sz) then throw new NCRejection("What specified?")
+    @NCIntent("intent=status term(status)={# == 'ord:status'}")
+    def onStatus(im: NCIntentMatch, @NCIntentTerm("status") s: NCEntity): NCResult =
+        val o = getOrder(im)
 
-        val res = confirmOrSpecify(ord)
-        onFinish(ord)
-        res
+        if o.inProgress then NCResult(OrderModel.toString(o), ASK_RESULT)
+        else NCResult("Nothing ordered.", ASK_RESULT)
+
+    @NCIntent("intent=finish term(finish)={# == 'ord:finish'}")
+    def onFinish(im: NCIntentMatch, @NCIntentTerm("finish") f: NCEntity): NCResult =
+        val o = getOrder(im)
+
+        if o.inProgress then mkOrderReadyDialog(o)
+        else NCResult("Nothing to finish.", ASK_RESULT)
+
+    @NCIntent("intent=menu term(menu)={# == 'ord:menu'}")
+    def onMenu(im: NCIntentMatch, @NCIntentTerm("menu") m: NCEntity): NCResult =
+        NCResult(
+            "There are margherita, marbonara and marinara. Sizes: large, medium or small. " +
+            "Also there are tea, gren tea, coffee and cola.",
+            ASK_RESULT
+        )

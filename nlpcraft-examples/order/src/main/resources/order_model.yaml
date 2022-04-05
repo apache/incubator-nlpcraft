@@ -16,14 +16,7 @@
 #
 
 elements:
-  - id: "ord:common"
-    description: "Common words for order."
-    synonyms:
-      - "{pizza|food}"
-      - "{drink|lemonade}"
-      - "{buy|order|bring|delivery}"
-
-  - id: "ord:pizza:kind"
+  - id: "ord:pizza"
     description: "Kinds of pizza."
     values:
       "margherita": [ ]
@@ -45,27 +38,34 @@ elements:
       "coffee": [ ]
       "cola": ["{coca|cola|coca cola|cocacola|coca-cola}"]
 
-  - id: "ord:confirm:yes"
+  - id: "ord:yes"
     description: "Conformation (yes)."
-    groups: ["confirm"]
     synonyms:
       - "{yes|yeah|right|fine|nice|excellent|good}"
       - "{you are|_} {correct|right}"
 
-  - id: "ord:confirm:no"
+  - id: "ord:no"
     description: "Conformation (no)."
-    groups: ["confirm"]
     synonyms:
       - "{no|nope|incorrect|wrong}"
       - "{you are|_} {not|are not|aren't} {correct|right}"
-
-  - id: "ord:confirm:continue"
-    description: "Confirmation (continue)."
-    groups: ["confirm"]
-    synonyms:
-      - "continue"
 
   - id: "ord:stop"
     description: "Stop and cancel all."
     synonyms:
       - "{stop|cancel} {it|all|everything|_}"
+
+  - id: "ord:status"
+    description: "Order status information."
+    synonyms:
+      - "{order|_} {status|state}"
+
+  - id: "ord:finish"
+    description: "Order finish."
+    synonyms:
+      - "{order|I|_} {is|are|_} {ready|done|finish}"
+
+  - id: "ord:menu"
+    description: "Order menu."
+    synonyms:
+      - "menu"
