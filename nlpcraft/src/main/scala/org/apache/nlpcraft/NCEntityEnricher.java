@@ -39,7 +39,7 @@ public interface NCEntityEnricher extends NCLifecycle {
      * Enriches given list of entities by settings their properties.
      *
      * @param req Input request descriptor.
-     * @param cfg Configuration of the model this components is associated with.
+     * @param cfg Configuration of the model this component is associated with.
      * @param ents List of entities to enrich.
      * @throws NCException Thrown in case of any errors.
      * @see NCPropertyMap

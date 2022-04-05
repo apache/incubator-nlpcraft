@@ -38,7 +38,7 @@ public interface NCEntityValidator extends NCLifecycle {
     /**
      *
      * @param req Input request descriptor.
-     * @param cfg Configuration of the model this components is associated with.
+     * @param cfg Configuration of the model this component is associated with.
      * @param ents List of entities to validate.
      * @@throws NCException Thrown in case of any validation violations.
      */

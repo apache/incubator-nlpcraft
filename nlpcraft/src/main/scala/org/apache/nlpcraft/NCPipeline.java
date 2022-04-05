@@ -181,8 +181,6 @@ public interface NCPipeline {
     }
 
     /**
-     * TODO:
-     *
      * Gets optional list of entity mappers.
      *
      * @return Optional list of entity mappers. Can be empty but never {@code null}.
