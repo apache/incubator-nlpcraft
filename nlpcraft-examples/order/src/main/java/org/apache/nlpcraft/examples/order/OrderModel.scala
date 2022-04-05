@@ -165,7 +165,7 @@ class OrderModel extends NCModelAdapter (
 
         o.getState match
             case ORDER_VALID | ORDER_INVALID =>
-                o.setState(CANCEL_ASK)
+                o.setState(ASK_CANCEL)
                 NCResult("Are you sure that you want to cancel current order?", ASK_DIALOG)
             case _ => NCResult("Nothing to cancel.", ASK_RESULT)
 
@@ -203,8 +203,8 @@ class OrderModel extends NCModelAdapter (
         val o = getOrder(im)
 
         o.getState match
-            case ORDER_VALID | CONTINUE_ASK =>
-                o.setState(CONFIRM_ASK)
+            case ORDER_VALID | ASK_CONTINUE =>
+                o.setState(ASK_CONFIRM)
                 mkOrderConfirmDialog(o)
             case _ => NCResult("Nothing to finish.", ASK_RESULT)
 

@@ -23,7 +23,7 @@ case class Pizza(name: String, var size: Option[String], qty: Option[Int])
 case class Drink(name: String, qty: Option[Int])
 
 enum State:
-    case ORDER_EMPTY, ORDER_INVALID, ORDER_VALID, CONTINUE_ASK, CONFIRM_ASK, CANCEL_ASK
+    case ORDER_EMPTY, ORDER_INVALID, ORDER_VALID, ASK_CONTINUE, ASK_CONFIRM, ASK_CANCEL
 
 import org.apache.nlpcraft.examples.order.State.*
 
