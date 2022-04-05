@@ -27,19 +27,19 @@ import java.util.Optional;
  * An NLP pipeline is a container for various processing components that take the input text at the beginning of the
  * pipeline and produce the list of {@link NCEntity entities} at the end of the pipeline.
  * Schematically the pipeline looks like this:
- * &lt;pre&gt;
- *                                                ,---------.        ,----------.        ,-------.
- *   o/         *=========*    ,---------.    ,---'-------. |    ,---'--------. |    ,---'-----. |
- *  /|     -&gt;   :  Text   : -&gt; |  Token  | -&gt; | Token     | | -&gt; | Token      | | -&gt; | Entity  | |
- *  / \         :  Input  :    |  Parser |    | Enrichers |-'    | Validators |-'    | Parsers |-'
- *              *=========*    `---------'    `-----------'      `------------'      `---------'
- *                                                                                         |
- *                                                   ,----------.        ,---------.       |
- *              *============*    ,---------.    ,---'--------. |    ,---'-------. |       |
- * Intent   &lt;-  :  Entity    : &lt;- | Variant | &lt;- | Entity     | | &lt;- | Entity    | | &lt;-----'
- * Matching     :  Variants  :    | Filter  |    | Validators |-'    | Enrichers |-'
- *              *============*    `---------'    `------------'      `-----------'
- * &lt;/pre&gt;
+ * <pre>
+ *                                               ,---------.        ,----------.        ,-------.
+ *   o/         *=========*    ,--------.    ,---'-------. |    ,---'--------. |    ,---'-----. |
+ *  /|     -&gt;   :  Text   : -&gt; | Token  | -&gt; | Token     | | -&gt; | Token      | | -&gt; | Entity  | | -------.
+ *  / \         :  Input  :    | Parser |    | Enrichers |-'    | Validators |-'    | Parsers |-'        |
+ *              *=========*    `--------'    `-----------'      `------------'      `---------'          |
+ *                                                                                                       |
+ *                                                                 ,----------.        ,---------.       |
+ *              *============*    ,---------.    ,--------.    ,---'--------. |    ,---'-------. |       |
+ * Intent   &lt;-  :  Entity    : &lt;- | Variant | &lt;- | Entity | &lt;- | Entity     | | &lt;- | Entity    | | &lt;-----'
+ * Matching     :  Variants  :    | Filter  |    | Mapper |    | Validators |-'    | Enrichers |-'
+ *              *============*    `---------'    `--------'    `------------'      `-----------'
+ * </pre>
  * <p>
  * Pipeline has the following components:
  * <ul>
@@ -97,6 +97,15 @@ import java.util.Optional;
  *              token validators, entity validators allow to reject input request at the level of entity processing.
  *              Entity validators are optional and by default the list of entity validators is empty. Examples of the entity
  *              validators can be security checks, authentication and authorization, ACL checks, etc.
+ *         </p>
+ *     </li>
+ *     <li>
+ *         <p>
+ *             After entities have been validated they go through the list of optional entity mappers. Entity mapper's primary
+ *             role is to combine multiple entities into a new one without a need to modify entity parser or enrichers. More
+ *             than one entity mapper can be chained together to form a transformation sub-pipeline. For example,
+ *             if you have individual entities for pizza, pizza size and list of toppings, the entity mapper could combine all these
+ *             individual entities into a new single pizza order entity that would then be used in intent matching in much easier way.
  *         </p>
  *     </li>
  *     <li>
@@ -181,8 +190,6 @@ public interface NCPipeline {
     }
 
     /**
-     * TODO:
-     *
      * Gets optional list of entity mappers.
      *
      * @return Optional list of entity mappers. Can be empty but never {@code null}.

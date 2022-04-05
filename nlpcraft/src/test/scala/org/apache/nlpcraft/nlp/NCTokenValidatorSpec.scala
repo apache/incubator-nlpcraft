@@ -19,6 +19,7 @@ package org.apache.nlpcraft.nlp
 
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.util.NCResourceReader
+import org.apache.nlpcraft.nlp.entity.parser.NCNLPEntityParser
 import org.apache.nlpcraft.nlp.token.parser.NCOpenNLPTokenParser
 import org.apache.nlpcraft.nlp.util.NCTestUtils
 import org.junit.jupiter.api.Test
@@ -36,7 +37,11 @@ class NCTokenValidatorSpec:
 
         NCTestUtils.askSomething(mdl, ok)
 
-    private def mkBuilder(): NCPipelineBuilder = new NCPipelineBuilder().withTokenParser(new NCOpenNLPTokenParser(NCResourceReader.getPath("opennlp/en-token.bin")))
+    private def mkBuilder(): NCPipelineBuilder =
+        new NCPipelineBuilder().
+            withTokenParser(new NCOpenNLPTokenParser(NCResourceReader.getPath("opennlp/en-token.bin"))).
+            // At least one entity parser must be defined.
+            withEntityParser(new NCNLPEntityParser())
     private def mkPipeline(apply: NCPipelineBuilder => NCPipelineBuilder): NCPipeline = apply(mkBuilder()).build()
 
     @Test

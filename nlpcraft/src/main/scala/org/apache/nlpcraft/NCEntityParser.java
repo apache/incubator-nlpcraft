@@ -39,7 +39,7 @@ public interface NCEntityParser extends NCLifecycle {
      * Converts, parses, given list of tokens into the list of entities.
      *
      * @param req Input request descriptor.
-     * @param cfg Configuration of the model this components is associated with.
+     * @param cfg Configuration of the model this component is associated with.
      * @param toks List of tokens to convert.
      * @return List of parsed entities, potentially empty but never {@code null}.
      * @@throws NCException Thrown in case of any errors.
