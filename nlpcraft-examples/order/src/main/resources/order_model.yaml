@@ -63,9 +63,9 @@ elements:
   - id: "ord:finish"
     description: "Order finish."
     synonyms:
-      - "{order|I|_} {is|are|_} {ready|done|finish}"
+      - "{order|I|_} {is|are|have|has|_} {ready|done|finish}"
 
   - id: "ord:menu"
     description: "Order menu."
     synonyms:
-      - "menu"
+      - "{menu|order list}"

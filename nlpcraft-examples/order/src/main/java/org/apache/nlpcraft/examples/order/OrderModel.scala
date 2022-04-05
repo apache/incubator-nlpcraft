@@ -194,6 +194,6 @@ class OrderModel extends NCModelAdapter (
     def onMenu(im: NCIntentMatch, @NCIntentTerm("menu") m: NCEntity): NCResult =
         NCResult(
             "There are margherita, marbonara and marinara. Sizes: large, medium or small. " +
-            "Also there are tea, gren tea, coffee and cola.",
+            "Also there are tea, grean tea, coffee and cola.",
             ASK_RESULT
         )
