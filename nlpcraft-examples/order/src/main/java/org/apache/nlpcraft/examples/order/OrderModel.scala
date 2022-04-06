@@ -45,7 +45,7 @@ object OrderModel extends LazyLogging:
     private def extractPizzaSize(e: NCEntity): String = e.get[String]("ord:pizza:size:value")
     private def extractQty(e: NCEntity, qty: String): Option[Int] = Option.when(e.contains(qty))(e.get[String](qty).toDouble.toInt)
     private def extractPizza(e: NCEntity): Pizza =
-        Pizza(e.get[String]("ord:pizza:value"), e.getOpt[String]("ord:pizza:size").toScala, extractQty(e, "ord:pizza:qty"))
+        Pizza(e.get[String]("ord:pizza:value"), e.getOpt[String]("ord:pizza:size:value").toScala, extractQty(e, "ord:pizza:qty"))
     private def extractDrink(e: NCEntity): Drink =
         Drink(e.get[String]("ord:drink:value"), extractQty(e, "ord:drink:qty"))
 

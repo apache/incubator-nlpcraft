@@ -44,6 +44,9 @@ object StanfordPipeline:
             withTokenParser(tokParser).
             withEntityParser(new NCStanfordNLPEntityParser(stanford, "number")).
             withEntityParser(new NCSemanticEntityParser(stemmer, tokParser, "order_model.yaml")).
-            withEntityMappers(Seq(new PizzaSizeExtender, new PizzaQtyExtender, new DrinkQtyExtender).asJava).
-            withEntityValidator(new OrderValidator).
+            withEntityMappers(Seq(
+                DataExtenderMapper(key = "ord:pizza", prop = "ord:pizza:size", extKey = "ord:pizza:size", extProp = "ord:pizza:size:value"),
+                DataExtenderMapper(key = "ord:pizza", prop = "ord:pizza:qty", extKey = "stanford:number", extProp = "stanford:number:nne"),
+                DataExtenderMapper(key = "ord:drink", prop = "ord:drink:qty", extKey = "stanford:number", extProp = "stanford:number:nne")
+            ).asJava).
             build()

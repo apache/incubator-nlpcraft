@@ -27,34 +27,30 @@ import scala.jdk.CollectionConverters.*
 /**
   *
   */
-class PizzaSizeExtender extends NCEntityMapper:
+case class DataExtenderMapper(key: String, prop: String, extKey: String, extProp: String) extends NCEntityMapper:
     private def extract(e: NCEntity): mutable.Seq[NCToken] = e.getTokens.asScala
     override def map(req: NCRequest, cfg: NCModelConfig, entities: util.List[NCEntity]): util.List[NCEntity] =
         var es = entities.asScala
-        val pizzas = es.filter(_.getId == "ord:pizza")
-        val sizes = es.filter(_.getId == "ord:pizza:size")
+        val data = es.filter(_.getId == key)
+        val extData = es.filter(_.getId == extKey)
 
-        if pizzas.nonEmpty && sizes.nonEmpty then
-            if pizzas.size != sizes.size then throw new NCRejection("Pizza and their sizes should be defined together1")
+        if data.nonEmpty && data.size == extData.size then
             var ok = true
             val mapped =
-                for ((e1, e2) <- pizzas.zip(sizes) if ok) yield
+                for ((e1, e2) <- data.zip(extData) if ok) yield
                     if e1.getId == e2.getId then
                         ok = false
                         null
                     else
-                        val (pizza, size) = if e1.getId == "ord:pizza" then (e1, e2) else (e2, e1)
+                        val (data, extData) = if e1.getId == key then (e1, e2) else (e2, e1)
                         new NCPropertyMapAdapter with NCEntity:
-                            // Copy from pizza.
-                            size.keysSet().forEach(k => put(k, size.get(k)))
-                            // New value from size.
-                            put[String]("ord:pizza:size", size.get[String]("ord:pizza:size:value").toLowerCase)
-
-                            override val getTokens: JList[NCToken] = (extract(pizza) ++ extract(size)).sortBy(_.getIndex).asJava
+                            data.keysSet().forEach(k => put(k, data.get(k)))
+                            put[String](extProp, extData.get[String](extProp).toLowerCase)
+                            override val getTokens: JList[NCToken] = (extract(data) ++ extract(extData)).sortBy(_.getIndex).asJava
                             override val getRequestId: String = req.getRequestId
-                            override val getId: String = pizza.getId
+                            override val getId: String = data.getId
 
-            es = es --= pizzas
-            es = es --= sizes
+            es = es --= data
+            es = es --= extData
             (es ++ mapped).sortBy(extract(_).head.getIndex).asJava
         else entities
