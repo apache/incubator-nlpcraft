@@ -19,43 +19,86 @@ package org.apache.nlpcraft.examples.order
 
 import scala.collection.mutable
 
-case class Pizza(name: String, var size: Option[String], qty: Option[Int])
-case class Drink(name: String, qty: Option[Int])
-
+case class Pizza(name: String, var size: Option[String], var qty: Option[Int]):
+    require(name != null && name.nonEmpty)
+case class Drink(name: String, var qty: Option[Int]):
+    require(name != null && name.nonEmpty)
 enum State:
-    case ORDER_EMPTY, ORDER_INVALID, ORDER_VALID, ASK_CONTINUE, ASK_CONFIRM, ASK_CANCEL
+    case NO_DIALOG, DIALOG_IS_READY, DIALOG_SHOULD_CANCEL, DIALOG_SPECIFY, DIALOG_CONFIRM
 
 import org.apache.nlpcraft.examples.order.State.*
 
 class Order:
-    private var state =  ORDER_EMPTY
+    private var state = NO_DIALOG
     private val pizzas = mutable.LinkedHashMap.empty[String, Pizza]
     private val drinks = mutable.LinkedHashMap.empty[String, Drink]
 
-    private def findPizzaNoSize: Option[Pizza] = pizzas.values.find(_.size.isEmpty)
+    /**
+      *
+      * @return
+      */
+    def isEmpty: Boolean = pizzas.isEmpty && drinks.isEmpty
 
-    def addPizza(p: Pizza): Unit =
-        pizzas += p.name -> p
-        state = if findPizzaNoSize.nonEmpty then ORDER_INVALID else ORDER_VALID
-    def addDrink(d: Drink): Unit =
-        if state == ORDER_EMPTY then state = ORDER_VALID
-            drinks += d.name -> d
+    /**
+      *
+      * @return
+      */
+    def isValid: Boolean = !isEmpty && findPizzaNoSize.isEmpty
 
-    def getState: State = state
-    def setState(state: State) = this.state = state
+    /**
+      *
+      * @param ps
+      * @param ds
+      */
+    def add(ps: Seq[Pizza], ds: Seq[Drink]): Unit =
+        for (p <- ps)
+            pizzas.get(p.name) match
+                case Some(ex) =>
+                    if p.size.nonEmpty then ex.size = p.size
+                    if p.qty.nonEmpty then ex.qty = p.qty
+                case None => pizzas += p.name -> p
 
+        for (d <- ds)
+            drinks.get(d.name) match
+                case Some(ex) => if d.qty.nonEmpty then ex.qty = d.qty
+                case None => drinks += d.name -> d
+
+    /**
+      *
+      * @return
+      */
     def getPizzas: Map[String, Pizza] = pizzas.toMap
+
+    /**
+      *
+      * @return
+      */
     def getDrinks: Map[String, Drink] = drinks.toMap
 
-    def getPizzaNoSize: Pizza =
-        require(state == ORDER_INVALID)
-        findPizzaNoSize.get
-    def setPizzaNoSize(size: String): Unit =
-        require(state == ORDER_INVALID)
-        require(size != null)
-        findPizzaNoSize.get.size = Option(size)
-    def clear(): Unit =
-        pizzas.clear()
-        drinks.clear()
+    /**
+      *
+      * @return
+      */
+    def findPizzaNoSize: Option[Pizza] = pizzas.values.find(_.size.isEmpty)
 
+    /**
+      *
+       * @param size
+      */
+    def setPizzaNoSize(size: String): Boolean =
+        findPizzaNoSize match
+            case Some(p) =>
+                p.size = Option(size)
+                true
+            case None => false
+    /**
+      *
+      * @return
+      */
+    def getState: State = state
 
+    /**
+      *
+      * @param state
+      */
+    def setState(state: State): Unit = this.state = state

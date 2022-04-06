@@ -20,198 +20,240 @@ package org.apache.nlpcraft.examples.order
 import com.typesafe.scalalogging.LazyLogging
 import edu.stanford.nlp.pipeline.StanfordCoreNLP
 import opennlp.tools.stemmer.PorterStemmer
-import org.antlr.v4.runtime.misc.Predicate
 import org.apache.nlpcraft.*
+import org.apache.nlpcraft.NCResultType.*
+import org.apache.nlpcraft.examples.order.State.*
+import org.apache.nlpcraft.examples.order.components.*
 import org.apache.nlpcraft.internal.util.NCResourceReader
 import org.apache.nlpcraft.nlp.*
 import org.apache.nlpcraft.nlp.entity.parser.*
-
-import scala.collection.mutable
-import org.apache.nlpcraft.NCResultType.*
-import org.apache.nlpcraft.examples.order.components.*
 import org.apache.nlpcraft.nlp.entity.parser.semantic.*
 import org.apache.nlpcraft.nlp.entity.parser.stanford.*
 import org.apache.nlpcraft.nlp.token.parser.stanford.*
-import org.apache.nlpcraft.examples.order.State.*
 
-import scala.jdk.CollectionConverters.*
 import java.util.Properties
-import scala.jdk.OptionConverters._
+import scala.collection.mutable
+import scala.jdk.CollectionConverters.*
+import scala.jdk.OptionConverters.*
 
-object StanfordEn:
-    val PIPELINE: NCPipeline =
-        val stanford =
-            val props = new Properties()
-            props.setProperty("annotators", "tokenize, ssplit, pos, lemma, ner")
-            new StanfordCoreNLP(props)
-        val tokParser = new NCStanfordNLPTokenParser(stanford)
-        val stemmer = new NCSemanticStemmer():
-            private val ps = new PorterStemmer
-            override def stem(txt: String): String = ps.synchronized { ps.stem(txt) }
-
-        new NCPipelineBuilder().
-            withTokenParser(tokParser).
-            withEntityParser(new NCStanfordNLPEntityParser(stanford, "number")).
-            withEntityParser(new NCSemanticEntityParser(stemmer, tokParser, "order_model.yaml")).
-            withEntityMappers(Seq(new PizzaSizeExtender, new PizzaQtyExtender, new DrinkQtyExtender).asJava).
-            withEntityValidator(new OrderValidator).
-            build()
-
-object OrderModel extends LazyLogging:
-    private def norm(s: String) = s.trim.replaceAll("(?m)^[ \t]*\r?\n", "")
-    private def withComma[T](iter: Iterable[T]): String = iter.mkString(", ")
-    private def seq2Str[T](name: String, seq: Iterable[T]): String = if seq.nonEmpty then s"$name: ${withComma(seq)}." else ""
-
-    private def extractPizzaSize(e: NCEntity): String = e.get[String]("ord:pizza:size:value")
-    private def extractQty(e: NCEntity, qty: String): Option[Int] = Option.when(e.contains(qty))(e.get[String](qty).toInt)
-    private def extractPizza(e: NCEntity): Pizza =
-        Pizza(e.get[String]("ord:pizza:value"), e.getOpt[String]("ord:pizza:size").toScala, extractQty(e, "ord:pizza:qty"))
-    private def extractDrink(e: NCEntity): Drink = Drink(e.get[String]("ord:drink:value"), extractQty(e, "ord:drink:qty"))
-
-    private def getContent(o: Order): String =
-        s"""
-       |${seq2Str("Pizza", o.getPizzas.values.map(p => s"${p.name} ${p.size.getOrElse("undefined")} ${p.qty.getOrElse(1)}"))}
-       |${seq2Str("Drinks", o.getDrinks.values.map(p => s"${p.name} ${p.qty.getOrElse(1)}"))}
-        """.stripMargin
-
-
-    private def toString(o: Order): String =
-        norm(
-            s"""
-           |Order
-           |${getContent(o)}
-            """.stripMargin
-        )
-
-import org.apache.nlpcraft.examples.order.OrderModel.*
 /**
   *
   */
-class OrderModel extends NCModelAdapter (
-    new NCModelConfig("nlpcraft.order.ex", "Order Example Model", "1.0"), StanfordEn.PIPELINE
-) with LazyLogging:
-    private val ords = mutable.HashMap.empty[String, Order]
+object OrderModel extends LazyLogging:
+    private val DFLT_QTY = 1
+    private def toStr[T](name: String, seq: Iterable[T]): String = if seq.nonEmpty then s"$name: ${seq.mkString(", ")}." else ""
+    private def extractPizzaSize(e: NCEntity): String = e.get[String]("ord:pizza:size:value")
+    private def extractQty(e: NCEntity, qty: String): Option[Int] = Option.when(e.contains(qty))(e.get[String](qty).toDouble.toInt)
+    private def extractPizza(e: NCEntity): Pizza =
+        Pizza(e.get[String]("ord:pizza:value"), e.getOpt[String]("ord:pizza:size").toScala, extractQty(e, "ord:pizza:qty"))
+    private def extractDrink(e: NCEntity): Drink =
+        Drink(e.get[String]("ord:drink:value"), extractQty(e, "ord:drink:qty"))
 
-    private def getOrder(im: NCIntentMatch): Order = ords.getOrElseUpdate(im.getContext.getRequest.getUserId, new Order)
-    private def getLastIntentId(im: NCIntentMatch): Option[String] =
-        im.getContext.getConversation.getDialogFlow.asScala.lastOption match
-            case Some(e) => Some(e.getIntentMatch.getIntentId)
-            case None => None
+    private def getDescription(o: Order): String =
+        if !o.isEmpty then
+            val s1 = toStr("Pizza", o.getPizzas.values.map(p => s"${p.name} size: ${p.size.getOrElse("undefined")} count: ${p.qty.getOrElse(DFLT_QTY)}"))
+            val s2 = toStr("Drinks", o.getDrinks.values.map(p => s"${p.name} count: ${p.qty.getOrElse(DFLT_QTY)}"))
 
-    private def mkOrderFinishDialog(o: Order): NCResult =
-//        if o.isValid then
-//            o.wait4Approve(true)
-//            new NCResult("Is order ready?", ASK_DIALOG)
-//        else NCResult(s"What is size size (large, medium or small) for: ${o.getPizzaNoSize.name}", ASK_DIALOG)
-        null
+            if s2.isEmpty then s1
+            else if s1.isEmpty then s2 else s"$s1 $s2"
+        else "Nothing ordered."
 
-    private def mkOrderContinueDialog(o: Order): NCResult =
-//        require(o.inProgress)
-//        NCResult("OK. Please continue", ASK_DIALOG)
-        null
 
-    private def mkOrderConfirmDialog(o: Order): NCResult =
+import org.apache.nlpcraft.examples.order.OrderModel.*
+
+/**
+  *
+  */
+class OrderModel extends NCModelAdapter (new NCModelConfig("nlpcraft.order.ex", "Order Example Model", "1.0"), StanfordPipeline.PIPELINE) with LazyLogging:
+    private val userOrders = mutable.HashMap.empty[String, Order]
+
+    private def withLog(im: NCIntentMatch, body: Order => NCResult): NCResult =
+        val o = userOrders.getOrElseUpdate(im.getContext.getRequest.getUserId, new Order)
+        def getState: String = o.getState.toString.toLowerCase
+        val state = getState
+
+        try body.apply(o)
+        finally println(s"'${im.getIntentId}' called ($state -> $getState)")
+
+    private def askIsReady(o: Order): NCResult =
+        val res = NCResult(s"Is order ready?", ASK_DIALOG)
+        o.setState(DIALOG_IS_READY)
+        res
+
+    private def askSpecify(o: Order) =
+        require(!o.isValid)
+        val res = o.findPizzaNoSize match
+            case Some(p) => NCResult(s"Choose size (large, medium or small) for: '${p.name}'", ASK_DIALOG)
+            case None =>
+                require(o.isEmpty)
+                NCResult(s"Please order something. Ask `menu` to look what you can order.", ASK_DIALOG)
+        o.setState(DIALOG_SPECIFY)
+        res
+
+    private def askShouldStop(o: Order) =
+        val res = NCResult(s"Should current order be canceled?", ASK_DIALOG)
+        o.setState(DIALOG_SHOULD_CANCEL)
+        res
+
+    private def doShowMenu() =
         NCResult(
-            norm(
-                s"""
-                   |Let me specify your order.
-                   |${getContent(o)}
-                   |Is it correct?
-                """.stripMargin
-            ),
-            ASK_DIALOG
+            "There are accessible for order: margherita, carbonara and marinara. Sizes: large, medium or small. " +
+            "Also there are tea, green tea, coffee and cola.",
+            ASK_RESULT
         )
 
-    private def mkClearResult(im: NCIntentMatch, o: Order): NCResult =
-        o.clear()
+    private def doShowStatus(o: Order, newState: State) =
+        val res = NCResult(s"Current order state: ${getDescription(o)}", ASK_RESULT)
+        o.setState(newState)
+        res
+
+    private def askConfirm(o: Order): NCResult =
+        require(o.isValid)
+        val res = NCResult(s"Let's specify your order. ${getDescription(o)} Is it correct?", ASK_DIALOG)
+        o.setState(DIALOG_CONFIRM)
+        res
+
+    private def clear(im: NCIntentMatch, o: Order): Unit =
+        userOrders.remove(im.getContext.getRequest.getUserId)
         val conv = im.getContext.getConversation
         conv.clearStm(_ => true)
         conv.clearDialog(_ => true)
-        NCResult("Order canceled. We are ready for new orders.", ASK_RESULT)
 
-    private def mkExecuteResult(o: Order): NCResult =
-        println(s"EXECUTED:")
-        println(OrderModel.toString(o))
-        o.clear()
-        NCResult("Congratulations. Your order executed. You can start make new orders.", ASK_RESULT)
+    private def doExecute(im: NCIntentMatch, o: Order): NCResult =
+        require(o.isValid)
+        val res = NCResult(s"Executed: ${getDescription(o)}", ASK_RESULT)
+        clear(im, o)
+        res
 
+    private def doStop(im: NCIntentMatch, o: Order): NCResult =
+        val res =
+            if !o.isEmpty then NCResult(s"Everything cancelled. Ask `menu` to look what you can order.", ASK_RESULT)
+            else NCResult(s"Nothing to cancel. Ask `menu` to look what you can order.", ASK_RESULT)
+        clear(im, o)
+        res
+
+    private def doContinue(o: Order): NCResult =
+        val res = NCResult(s"OK, please continue.", ASK_RESULT)
+        o.setState(NO_DIALOG)
+        res
+
+    private def askConfirmOrAskSpecify(o: Order): NCResult = if o.isValid then askConfirm(o) else askSpecify(o)
+    private def askIsReadyOrAskSpecify(o: Order): NCResult = if o.isValid then askIsReady(o) else askSpecify(o)
+    private def doExecuteOrAskSpecify(im: NCIntentMatch, o: Order): NCResult = if o.isValid then doExecute(im, o) else askSpecify(o)
+    private def askStopOrDoStop(im: NCIntentMatch, o: Order): NCResult = if o.isValid then askShouldStop(o) else doStop(im, o)
+
+    /**
+      *
+      * @param im
+      * @return
+      */
     @NCIntent("intent=yes term(yes)={# == 'ord:yes'}")
-    def onYes(im: NCIntentMatch, @NCIntentTerm("yes") yes: NCEntity): NCResult =
-        val o = getOrder(im)
-        val lastIntentId = getLastIntentId(im).orNull
+    def onYes(im: NCIntentMatch): NCResult = withLog(
+        im,
+        (o: Order) => o.getState match
+            case DIALOG_CONFIRM =>
+                require(o.isValid);
+                doExecute(im, o)
+            case DIALOG_SHOULD_CANCEL => doStop(im, o)
+            case DIALOG_IS_READY => askConfirmOrAskSpecify(o)
+            case DIALOG_SPECIFY | NO_DIALOG => throw new NCRejection("Unexpected request.")
+    )
 
-//        if o.isWait4Approve then
-//            o.wait4Approve(false)
-//            mkOrderConfirmDialog(o)
-//        else if lastIntentId == "stop" then mkOrderContinueDialog(o)
-//        else mkOrderFinishDialog(o)
-        null
-
+    /**
+      *
+      * @param im
+      * @return
+      */
     @NCIntent("intent=no term(no)={# == 'ord:no'}")
-    def onNo(im: NCIntentMatch, @NCIntentTerm("no") no: NCEntity): NCResult =
-        val o = getOrder(im)
-        val lastIntentId = getLastIntentId(im).orNull
-
-//        if o.isWait4Approve then
-//            o.wait4Approve(false)
-//            mkClearResult(im, o)
-//        else if lastIntentId == "stop" then mkOrderContinueDialog(o)
-//        else mkOrderFinishDialog(o)
-        null
-
-    @NCIntent("intent=stop term(stop)={# == 'ord:stop'}")
-    def onStop(im: NCIntentMatch, @NCIntentTerm("stop") stop: NCEntity): NCResult =
-        val o = getOrder(im)
-
-        o.getState match
-            case ORDER_VALID | ORDER_INVALID =>
-                o.setState(ASK_CANCEL)
-                NCResult("Are you sure that you want to cancel current order?", ASK_DIALOG)
-            case _ => NCResult("Nothing to cancel.", ASK_RESULT)
-
-    @NCIntent("intent=order term(ps)={# == 'ord:pizza'}* term(ds)={# == 'ord:drink'}*")
-    def onOrder(im: NCIntentMatch, @NCIntentTerm("ps") ps: List[NCEntity], @NCIntentTerm("ds") ds: List[NCEntity]): NCResult =
-        if ps.isEmpty && ds.isEmpty then throw new NCRejection("Please order some pizza or drinks")
-
-        val o = getOrder(im)
-
-        for (p <- ps) o.addPizza(extractPizza(p))
-        for (d <- ds) o.addDrink(extractDrink(d))
-
-        mkOrderFinishDialog(o)
-
-    @NCIntent("intent=orderPizzaSize term(size)={# == 'ord:pizza:size'}")
-    def onOrderPizzaSize(im: NCIntentMatch, @NCIntentTerm("size") size: NCEntity): NCResult =
-        val o = getOrder(im)
-
-        o.getState match
-            case ORDER_INVALID => o.setPizzaNoSize(extractPizzaSize(size))
-            case _ => NCRejection("") // TODO
-
-        mkOrderFinishDialog(o)
-
-    @NCIntent("intent=status term(status)={# == 'ord:status'}")
-    def onStatus(im: NCIntentMatch, @NCIntentTerm("status") s: NCEntity): NCResult =
-        val o = getOrder(im)
-
-        o.getState match
-            case ORDER_VALID | ORDER_INVALID => NCResult(OrderModel.toString(o), ASK_RESULT)
-            case _ => NCResult("Nothing ordered.", ASK_RESULT)
-
-    @NCIntent("intent=finish term(finish)={# == 'ord:finish'}")
-    def onFinish(im: NCIntentMatch, @NCIntentTerm("finish") f: NCEntity): NCResult =
-        val o = getOrder(im)
-
-        o.getState match
-            case ORDER_VALID | ASK_CONTINUE =>
-                o.setState(ASK_CONFIRM)
-                mkOrderConfirmDialog(o)
-            case _ => NCResult("Nothing to finish.", ASK_RESULT)
-
-    @NCIntent("intent=menu term(menu)={# == 'ord:menu'}")
-    def onMenu(im: NCIntentMatch, @NCIntentTerm("menu") m: NCEntity): NCResult =
-        NCResult(
-            "There are margherita, marbonara and marinara. Sizes: large, medium or small. " +
-            "Also there are tea, grean tea, coffee and cola.",
-            ASK_RESULT
+    def onNo(im: NCIntentMatch): NCResult = withLog(
+        im,
+        (o: Order) => o.getState match
+            case DIALOG_CONFIRM | DIALOG_IS_READY => doContinue(o)
+            case DIALOG_SHOULD_CANCEL => askConfirmOrAskSpecify(o)
+            case DIALOG_SPECIFY | NO_DIALOG => throw new NCRejection("Unexpected request.")
         )
+    /**
+      *
+      * @param im
+      * @return
+      */
+    @NCIntent("intent=stop term(stop)={# == 'ord:stop'}")
+    def onStop(im: NCIntentMatch): NCResult = withLog(
+        im,
+        // It doesn't depend on order validity and dialog state.
+        (o: Order) => askStopOrDoStop(im, o)
+    )
+
+    /**
+      *
+      * @param im
+      * @param ps
+      * @param ds
+      * @return
+      */
+    @NCIntent("intent=order term(ps)={# == 'ord:pizza'}* term(ds)={# == 'ord:drink'}*")
+    def onOrder(im: NCIntentMatch, @NCIntentTerm("ps") ps: List[NCEntity], @NCIntentTerm("ds") ds: List[NCEntity]): NCResult = withLog(
+        im,
+        (o: Order) =>
+            if ps.isEmpty && ds.isEmpty then throw new NCRejection("Please order some pizza or drinks");
+            o.add(ps.map(extractPizza), ds.map(extractDrink)); // It doesn't depend on order validity and dialog state.
+            askIsReadyOrAskSpecify(o)
+        )
+    /**
+      *
+      * @param im
+      * @param size
+      * @return
+      */
+    @NCIntent("intent=orderPizzaSize term(size)={# == 'ord:pizza:size'}")
+    def onOrderPizzaSize(im: NCIntentMatch, @NCIntentTerm("size") size: NCEntity): NCResult = withLog(
+        im,
+        (o: Order) => o.getState match
+            case DIALOG_SPECIFY =>
+                if o.setPizzaNoSize(extractPizzaSize(size)) then
+                    o.setState(NO_DIALOG);
+                    askIsReadyOrAskSpecify(o)
+                else
+                    throw new NCRejection("Unexpected request.")
+            case DIALOG_CONFIRM | NO_DIALOG | DIALOG_IS_READY | DIALOG_SHOULD_CANCEL => throw new NCRejection("Unexpected request.")
+        )
+    /**
+      *
+      * @param im
+      * @return
+      */
+    @NCIntent("intent=status term(status)={# == 'ord:status'}")
+    def onStatus(im: NCIntentMatch): NCResult = withLog(
+        im,
+        (o: Order) => o.getState match
+            case DIALOG_CONFIRM =>
+                require(o.isValid);
+                askConfirm(o) // Ignore `status`, confirm again.
+            //case DIALOG_SPECIFY => askSpecify(o) // Ignore `status`, specify again.
+            case DIALOG_SHOULD_CANCEL => doShowStatus(o, NO_DIALOG) // Changes state.
+            case NO_DIALOG | DIALOG_IS_READY | DIALOG_SPECIFY => doShowStatus(o, o.getState)  // Keeps same state.
+        )
+    /**
+      *
+      * @param im
+      * @return
+      */
+    @NCIntent("intent=finish term(finish)={# == 'ord:finish'}")
+    def onFinish(im: NCIntentMatch): NCResult = withLog(
+        im,
+        (o: Order) => o.getState match
+            case DIALOG_CONFIRM => doExecuteOrAskSpecify(im, o) // Like YES  if valid.
+            case DIALOG_SPECIFY => askSpecify(o) // Ignore `finish`, specify again.
+            case NO_DIALOG | DIALOG_IS_READY | DIALOG_SHOULD_CANCEL => askConfirmOrAskSpecify(o)
+        )
+    /**
+      *
+      * @param im
+      * @return
+      */
+    @NCIntent("intent=menu term(menu)={# == 'ord:menu'}")
+    def onMenu(im: NCIntentMatch): NCResult = withLog(
+        im,
+        // It doesn't depend and doesn't influence on order validity and dialog state.
+        _ => doShowMenu()
+    )

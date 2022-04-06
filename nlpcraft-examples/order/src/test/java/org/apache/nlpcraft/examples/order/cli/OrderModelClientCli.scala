@@ -65,7 +65,11 @@ object OrderModelClientCli extends LazyLogging :
             print(s">>> ")
 
             try
-                println(ask(scala.io.StdIn.readLine()))
+                var in = scala.io.StdIn.readLine()
+
+                if in != null then
+                    in = in.trim
+                    if in.nonEmpty then println(ask(in))
                 println
             catch
                 case e: NCRejection => println(s"Request rejected: ${e.getMessage}")

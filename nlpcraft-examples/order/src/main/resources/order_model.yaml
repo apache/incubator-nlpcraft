@@ -20,7 +20,7 @@ elements:
     description: "Kinds of pizza."
     values:
       "margherita": [ ]
-      "marbonara": [ ]
+      "carbonara": [ ]
       "marinara": [ ]
 
   - id: "ord:pizza:size"
@@ -63,6 +63,7 @@ elements:
   - id: "ord:finish"
     description: "Order finish."
     synonyms:
+      - "order"
       - "{order|I|_} {is|are|have|has|_} {ready|done|finish}"
 
   - id: "ord:menu"
