@@ -45,7 +45,7 @@ case class DataExtenderMapper(key: String, prop: String, extKey: String, extProp
                         val (data, extData) = if e1.getId == key then (e1, e2) else (e2, e1)
                         new NCPropertyMapAdapter with NCEntity:
                             data.keysSet().forEach(k => put(k, data.get(k)))
-                            put[String](extProp, extData.get[String](extProp).toLowerCase)
+                            put[String](prop, extData.get[String](extProp).toLowerCase)
                             override val getTokens: JList[NCToken] = (extract(data) ++ extract(extData)).sortBy(_.getIndex).asJava
                             override val getRequestId: String = req.getRequestId
                             override val getId: String = data.getId

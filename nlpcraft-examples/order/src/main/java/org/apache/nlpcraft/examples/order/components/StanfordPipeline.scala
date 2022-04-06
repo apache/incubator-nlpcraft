@@ -22,7 +22,9 @@ import opennlp.tools.stemmer.PorterStemmer
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.nlp.entity.parser.semantic.*
 import org.apache.nlpcraft.nlp.entity.parser.stanford.NCStanfordNLPEntityParser
+import org.apache.nlpcraft.nlp.token.enricher.NCEnStopWordsTokenEnricher
 import org.apache.nlpcraft.nlp.token.parser.stanford.NCStanfordNLPTokenParser
+
 import scala.jdk.CollectionConverters.*
 import java.util.Properties
 
@@ -42,6 +44,7 @@ object StanfordPipeline:
 
         new NCPipelineBuilder().
             withTokenParser(tokParser).
+            withTokenEnricher(new NCEnStopWordsTokenEnricher()).
             withEntityParser(new NCStanfordNLPEntityParser(stanford, "number")).
             withEntityParser(new NCSemanticEntityParser(stemmer, tokParser, "order_model.yaml")).
             withEntityMappers(Seq(
