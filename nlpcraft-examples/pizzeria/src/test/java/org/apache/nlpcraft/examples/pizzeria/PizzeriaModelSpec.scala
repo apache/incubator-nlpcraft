@@ -22,6 +22,7 @@ import org.apache.nlpcraft.NCResultType.*
 import org.apache.nlpcraft.examples.pizzeria.State.*
 import org.junit.jupiter.api.*
 
+import scala.language.implicitConversions
 import scala.util.Using
 import scala.collection.mutable
 /**
@@ -37,7 +38,7 @@ class PizzeriaModelSpec:
         def getLastExecutedOrder: PizzeriaOrder = o
         def clearLastExecutedOrder(): Unit = o = null
 
-    class Builder:
+    private class Builder:
         private val o = new PizzeriaOrder
         o.setState(NO_DIALOG)
         def withPizza(name: String, size: String, qty: Int): Builder =
@@ -47,6 +48,7 @@ class PizzeriaModelSpec:
             o.add(Seq.empty, Seq(Drink(name, Some(qty))))
             this
         def build: PizzeriaOrder = o
+
 
     private val mdl = new ModelTestWrapper()
     private val client = new NCModelClient(mdl)
@@ -68,33 +70,36 @@ class PizzeriaModelSpec:
 
         require(errs.isEmpty)
 
-    private def dialog(exp: PizzeriaOrder, reqs: String*): Unit =
+    private def dialog(exp: PizzeriaOrder, reqs: (String , NCResultType)*): Unit =
         val testMsgs = mutable.ArrayBuffer.empty[String]
         msgs += testMsgs
 
         testMsgs += s"Test: $testNum"
 
-        for ((txt, idx) <- reqs.zipWithIndex)
+        for (((txt, expType), idx) <- reqs.zipWithIndex)
             try
                 mdl.clearLastExecutedOrder()
-
                 val resp = client.ask(txt, null, "userId")
 
                 testMsgs += s">> Request: $txt"
                 testMsgs += s">> Response: '${resp.getType}': ${resp.getBody}"
 
-                val expType = if idx == reqs.size - 1 then ASK_RESULT else ASK_DIALOG
-
                 if expType != resp.getType then
-                    errs += testNum -> new Exception(s"Unexpected result for test:$testNum [expected:\n$expType, type=${resp.getType}]")
+                    errs += testNum -> new Exception(s"Unexpected result type [num=$testNum, txt=$txt, expected=$expType, type=${resp.getType}]")
 
+                // Check execution result on last request.
                 if idx == reqs.size - 1 then
                     val lastOrder = mdl.getLastExecutedOrder
                     def s(o: PizzeriaOrder) = if o == null then null else s"Order [state=${o.getState}, desc=${o.getDesc}]"
                     val s1 = s(exp)
                     val s2 = s(lastOrder)
                     if s1 != s2 then
-                        errs += testNum -> new Exception(s"Unexpected result for test (excepted/real):$testNum\n$s1\n$s2")
+                        errs += testNum ->
+                            new Exception(
+                                s"Unexpected result [num=$testNum, txt=$txt]" +
+                                s"\nExpected: $s1" +
+                                s"\nReal    : $s2"
+                            )
             catch
                 case e: Exception => errs += testNum -> new Exception(s"Error during test [num=$testNum]", e)
 
@@ -108,11 +113,13 @@ class PizzeriaModelSpec:
 
     @Test
     def test(): Unit =
+        given Conversion[String, (String, NCResultType)] with
+            def apply(txt: String): (String, NCResultType) = (txt, ASK_DIALOG)
         dialog(
             new Builder().withDrink("tea", 1).build,
             "One tea",
             "yes",
-            "yes"
+            "yes" -> ASK_RESULT
         )
 
         dialog(
@@ -125,14 +132,14 @@ class PizzeriaModelSpec:
             "large size please",
             "smallest",
             "yes",
-            "correct"
+            "correct" -> ASK_RESULT
         )
 
         dialog(
             new Builder().withPizza("carbonara", "small", 2).build,
             "carbonara two small",
             "yes",
-            "yes"
+            "yes" -> ASK_RESULT
         )
 
         dialog(
@@ -140,13 +147,30 @@ class PizzeriaModelSpec:
             "carbonara",
             "small",
             "yes",
-            "yes"
+            "yes" -> ASK_RESULT
         )
 
         dialog(
             null,
             "marinara",
-            "stop"
+            "stop" -> ASK_RESULT
+        )
+
+        dialog(
+            new Builder().
+                withPizza("carbonara", "small", 2).
+                withPizza("marinara", "large", 4).
+                withDrink("cola", 3).
+                withDrink("tea", 1).
+                build,
+            "3 cola",
+            "one tea",
+            "carbonara 2",
+            "small",
+            "4 marinara big size",
+            "menu" -> ASK_RESULT,
+            "done",
+            "yes" -> ASK_RESULT
         )
 
         dialog(
@@ -155,9 +179,9 @@ class PizzeriaModelSpec:
                 withPizza("marinara", "small", 3).
                 withDrink("tea", 1).
                 build,
-            "margherita two, marinara and 3 tea",
+            "margherita two, marinara and three tea",
             "small",
             "small",
             "yes",
-            "yes"
+            "yes" -> ASK_RESULT
         )
