@@ -51,18 +51,20 @@ class PizzeriaModel extends NCModelAdapter (new NCModelConfig("nlpcraft.pizzeria
     private def withLog(im: NCIntentMatch, body: PizzeriaOrder => NCResult): NCResult =
         val usrId = im.getContext.getRequest.getUserId
         val data = im.getContext.getConversation.getData
-
         var o: PizzeriaOrder = data.get(usrId)
 
         if o == null then
             o = new PizzeriaOrder()
             data.put(usrId, o)
 
-        def getState: String = o.getState.toString.toLowerCase
-        val state = getState
+        val initState = o.getState.toString.toLowerCase
+        val initDesc = o.getDesc
 
         try body.apply(o)
-        finally println(s"'${im.getIntentId}' called ($state -> $getState)")
+        finally
+            println(s"'${im.getIntentId}' called.")
+            println(s"Initial state: $initDesc, state: $initState")
+            println(s"Finish state:  ${o.getDesc}, state:  ${o.getState.toString.toLowerCase}")
 
     private def askIsReady(o: PizzeriaOrder): NCResult =
         val res = NCResult(s"Is order ready?", ASK_DIALOG)
@@ -200,7 +202,7 @@ class PizzeriaModel extends NCModelAdapter (new NCModelConfig("nlpcraft.pizzeria
     def onOrderPizzaSize(im: NCIntentMatch, @NCIntentTerm("size") size: NCEntity): NCResult = withLog(
         im,
         (o: PizzeriaOrder) =>
-            // If order in progress and has pizza with unknown size -it doesn't depend on dialog state.
+            // If order in progress and has pizza with unknown size, it doesn't depend on dialog state.
             if !o.isEmpty then
                 if o.setPizzaNoSize(extractPizzaSize(size)) then askIsReadyOrAskSpecify(o) else throw UNEXPECTED_REQUEST
             else
@@ -218,7 +220,6 @@ class PizzeriaModel extends NCModelAdapter (new NCModelConfig("nlpcraft.pizzeria
             case DIALOG_CONFIRM =>
                 require(o.isValid);
                 askConfirm(o) // Ignore `status`, confirm again.
-            //case DIALOG_SPECIFY => askSpecify(o) // Ignore `status`, specify again.
             case DIALOG_SHOULD_CANCEL => doShowStatus(o, NO_DIALOG) // Changes state.
             case NO_DIALOG | DIALOG_IS_READY | DIALOG_SPECIFY => doShowStatus(o, o.getState)  // Keeps same state.
         )

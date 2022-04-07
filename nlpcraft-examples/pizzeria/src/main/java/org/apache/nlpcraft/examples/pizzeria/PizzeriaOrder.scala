@@ -142,7 +142,7 @@ class PizzeriaOrder:
         if !isEmpty then
             def s(name: String, seq: Iterable[String]): String = if seq.nonEmpty then s"$name: ${seq.mkString(", ")}" else ""
             def p2s(p: Pizza) = s"${p.name}, '${p.size.getOrElse("undefined size")}' ${p.qty.getOrElse(DFLT_QTY)} p."
-            def d2s(d: Drink) = s"${d.name},  ${d.qty.getOrElse(DFLT_QTY)} p."
+            def d2s(d: Drink) = s"${d.name}, ${d.qty.getOrElse(DFLT_QTY)} p."
 
             val s1 = s("Pizza", getPizzas.map(p2s))
             val s2 = s("Drinks", getDrinks.map(d2s))
