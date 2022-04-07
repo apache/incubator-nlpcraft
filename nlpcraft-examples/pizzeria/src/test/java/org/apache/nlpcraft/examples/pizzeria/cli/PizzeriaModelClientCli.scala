@@ -51,7 +51,7 @@ object PizzeriaModelClientCli extends LazyLogging :
     def main(args: Array[String]): Unit =
         println("Application started.")
 
-        // Clears possible saved sessions.
+        // Clears possible saved sessions.tea
         ask("stop")
 
         var applStarted = true

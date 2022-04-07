@@ -41,8 +41,8 @@ object PizzeriaModelServer:
 
         srv.createContext(
             s"/$path",
-            (e: HttpExchange) =>
-                def response(txt: String): Unit =
+            (e: HttpExchange) => {
+                def doResponse(txt: String): Unit =
                     Using.resource(new BufferedOutputStream(e.getResponseBody)) { out =>
                         val arr = txt.getBytes
                         e.sendResponseHeaders(200, arr.length)
@@ -53,25 +53,21 @@ object PizzeriaModelServer:
                     val req =
                         e.getRequestMethod match
                             case "GET" => e.getRequestURI.toString.split("\\?").last
-                            case "POST" =>
-                                Using.resource(new BufferedReader(new InputStreamReader(e.getRequestBody))) { r =>
-                                    r.readLine
-                                }
+                            case "POST" => Using.resource(new BufferedReader(new InputStreamReader(e.getRequestBody))) { _.readLine }
                             case _ => throw new Exception(s"Unsupported request method: ${e.getRequestMethod}")
 
                     if req == null || req.isEmpty then Exception(s"Empty request")
 
                     val resp = nlpClient.ask(req, null, "userId")
                     val prompt = if resp.getType == ASK_DIALOG then "(Your should answer on the model's question below)\n" else ""
-
-                    response(s"$prompt${resp.getBody}")
+                    doResponse(s"$prompt${resp.getBody}")
                 catch
-                    case e: NCRejection => response(s"Request rejected: ${e.getMessage}")
+                    case e: NCRejection => doResponse(s"Request rejected: ${e.getMessage}")
                     case e: Throwable =>
                         System.err.println("Unexpected error.")
                         e.printStackTrace()
-                        response(s"Unexpected error: ${e.getMessage}")
-            )
+                        doResponse(s"Unexpected error: ${e.getMessage}")
+            })
 
         srv.start()
 

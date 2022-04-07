@@ -142,8 +142,8 @@ class PizzeriaOrder:
       */
     def getDesc: String =
         if !isEmpty then
-            val ps = if pizzas.nonEmpty then s"Pizza: ${pizzas.mkString(", ")}" else ""
-            val ds = if drinks.nonEmpty then s"Drinks: ${drinks.mkString(", ")}" else ""
+            val ps = if pizzas.nonEmpty then s"pizza: ${pizzas.mkString(", ")}" else ""
+            val ds = if drinks.nonEmpty then s"drinks: ${drinks.mkString(", ")}" else ""
 
             if ds.isEmpty then ps else if ps.isEmpty then ds else s"$ps, $ds"
-        else "Nothing ordered."
+        else "nothing ordered"

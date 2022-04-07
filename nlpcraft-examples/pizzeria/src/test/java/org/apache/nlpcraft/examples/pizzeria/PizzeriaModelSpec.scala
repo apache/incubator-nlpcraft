@@ -49,7 +49,6 @@ class PizzeriaModelSpec:
             this
         def build: PizzeriaOrder = o
 
-
     private val mdl = new ModelTestWrapper()
     private val client = new NCModelClient(mdl)
 
@@ -70,7 +69,7 @@ class PizzeriaModelSpec:
 
         require(errs.isEmpty)
 
-    private def dialog(exp: PizzeriaOrder, reqs: (String , NCResultType)*): Unit =
+    private def dialog(exp: PizzeriaOrder, reqs: (String, NCResultType)*): Unit =
         val testMsgs = mutable.ArrayBuffer.empty[String]
         msgs += testMsgs
 
@@ -115,6 +114,7 @@ class PizzeriaModelSpec:
     def test(): Unit =
         given Conversion[String, (String, NCResultType)] with
             def apply(txt: String): (String, NCResultType) = (txt, ASK_DIALOG)
+            
         dialog(
             new Builder().withDrink("tea", 1).build,
             "One tea",
