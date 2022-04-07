@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.examples.order.components
+package org.apache.nlpcraft.examples.pizzeria.components
 
 import org.apache.nlpcraft.*
 

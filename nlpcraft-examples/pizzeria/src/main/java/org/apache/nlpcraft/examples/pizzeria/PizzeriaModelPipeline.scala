@@ -1,8 +1,8 @@
-package org.apache.nlpcraft.examples.order
+package org.apache.nlpcraft.examples.pizzeria
 
 import edu.stanford.nlp.pipeline.StanfordCoreNLP
 import opennlp.tools.stemmer.PorterStemmer
-import org.apache.nlpcraft.examples.order.components.*
+import org.apache.nlpcraft.examples.pizzeria.components.*
 import org.apache.nlpcraft.nlp.entity.parser.semantic.*
 import org.apache.nlpcraft.nlp.entity.parser.stanford.NCStanfordNLPEntityParser
 import org.apache.nlpcraft.nlp.token.enricher.NCEnStopWordsTokenEnricher

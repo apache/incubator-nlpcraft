@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.examples.order
+package org.apache.nlpcraft.examples.pizzeria
 
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.NCResultType.*
-import org.junit.jupiter.api.{AfterEach, BeforeEach, Test}
+import org.apache.nlpcraft.examples.pizzeria.State.*
+import org.junit.jupiter.api.*
 
 import scala.util.Using
 import scala.collection.mutable
@@ -27,13 +28,32 @@ import scala.collection.mutable
   *
   */
 class PizzeriaModelSpec:
+    private class TestWrapper extends PizzeriaModel:
+        private var o: PizzeriaOrder = _
+        override def doExecute(im: NCIntentMatch, o: PizzeriaOrder): NCResult =
+            val res = super.doExecute(im, o)
+            this.o = o
+            res
+        def getLastExecutedOrder: PizzeriaOrder = o
+
+    case class Builder(state: State):
+        private val o = new PizzeriaOrder
+        o.setState(state)
+        def withPizza(name: String, size: String, qty: Int): Builder =
+            o.add(Seq(Pizza(name, Some(size), Some(qty))), Seq.empty)
+            this
+        def withDrink(name: String, qty: Int): Builder =
+            o.add(Seq.empty, Seq(Drink(name, Some(qty))))
+            this
+        def build: PizzeriaOrder = o
+
+    private val mdl = new TestWrapper()
+    private val client = new NCModelClient(mdl)
+
     private val msgs = mutable.ArrayBuffer.empty[mutable.ArrayBuffer[String]]
     private val errs = mutable.HashMap.empty[Int, Throwable]
-
-    private var client: NCModelClient = _
     private var testNum: Int = 0
 
-    @BeforeEach def setUp(): Unit = client = new NCModelClient(new PizzeriaModel)
     @AfterEach def tearDown(): Unit =
         if client != null then client.close()
 
@@ -47,7 +67,9 @@ class PizzeriaModelSpec:
 
         require(errs.isEmpty)
 
-    private def dialog(reqs: String*): Unit =
+    private def dialog(reqs: String*): Unit = dialog(None, reqs*)
+    private def dialog(expResOrder: PizzeriaOrder, reqs: String*): Unit = dialog(Option(expResOrder), reqs*)
+    private def dialog(expResOrderOpt: Option[PizzeriaOrder], reqs: String*): Unit =
         val testMsgs = mutable.ArrayBuffer.empty[String]
         msgs += testMsgs
 
@@ -63,11 +85,28 @@ class PizzeriaModelSpec:
                 val expType = if idx == reqs.size - 1 then ASK_RESULT else ASK_DIALOG
 
                 if expType != resp.getType then
-                    errs += testNum -> new Exception(s"Error during test [num=$testNum, expRespType=$expType, type=${resp.getType}]")
+                    errs += testNum -> new Exception(s"Unexpected result for test:$testNum [expected:\n$expType, type=${resp.getType}]")
+
+                if idx == reqs.size - 1 then
+                    expResOrderOpt match
+                        case Some(expResOrder) =>
+                            val lastOrder = mdl.getLastExecutedOrder
+                            def s(o: PizzeriaOrder) = if o == null then null else s"Order [state=${o.getState}, desc=${o.getDescription}]"
+                            val s1 = s(expResOrder)
+                            val s2 = s(lastOrder)
+                            if s1 != s2 then
+                                errs += testNum -> new Exception(s"Unexpected result for test (excepted/real):$testNum\n$s1\n$s2")
+                        case None => // No-op.
             catch
                 case e: Exception => errs += testNum -> new Exception(s"Error during test [num=$testNum]", e)
 
         testNum += 1
+
+    private def mkOrder(state: State, ps: Seq[Pizza], ds: Seq[Drink]): PizzeriaOrder =
+        val o = new PizzeriaOrder
+        o.setState(state)
+        o.add(ps, ds)
+        o
 
     @Test
     def test(): Unit =
@@ -99,12 +138,16 @@ class PizzeriaModelSpec:
         )
 
         dialog(
-            "carbonara",
+            "marinara",
             "stop"
         )
-
         dialog(
-            "carbonara two, marinara and 2 tea",
+            Builder(NO_DIALOG).
+                withPizza("margherita", "small", 2).
+                withPizza("marinara", "small", 3).
+                withDrink("tea", 1).
+                build,
+            "margherita two, marinara and 3 tea",
             "small",
             "small",
             "yes",

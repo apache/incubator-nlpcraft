@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.examples.order
+package org.apache.nlpcraft.examples.pizzeria
 
+import java.util.Objects
 import scala.collection.mutable
-
 /**
   *
   */
@@ -45,11 +45,10 @@ case class Drink(name: String, var qty: Option[Int]) extends OrderElement
 enum State:
     case NO_DIALOG, DIALOG_IS_READY, DIALOG_SHOULD_CANCEL, DIALOG_SPECIFY, DIALOG_CONFIRM
 
-import org.apache.nlpcraft.examples.order.State.*
+import org.apache.nlpcraft.examples.pizzeria.State.*
 
-/**
-  *
-  */
+object PizzeriaOrder:
+    private val DFLT_QTY = 1
 class PizzeriaOrder:
     private var state = NO_DIALOG
     private val pizzas = mutable.ArrayBuffer.empty[Pizza]
@@ -132,3 +131,12 @@ class PizzeriaOrder:
       * @param state
       */
     def setState(state: State): Unit = this.state = state
+
+    def getDescription: String =
+        if !isEmpty then
+            def s(name: String, seq: Iterable[String]): String = if seq.nonEmpty then s"$name: ${seq.mkString(", ")}" else ""
+            val s1 = s("Pizza", getPizzas.map(p => s"${p.name}, '${p.size.getOrElse("undefined size")}' ${p.qty.getOrElse(PizzeriaOrder.DFLT_QTY)} p."))
+            val s2 = s("Drinks", getDrinks.map(p => s"${p.name} ${p.qty.getOrElse(PizzeriaOrder.DFLT_QTY)} p."))
+
+            if s2.isEmpty then s1 else if s1.isEmpty then s2 else s"$s1 $s2"
+        else "Nothing ordered."

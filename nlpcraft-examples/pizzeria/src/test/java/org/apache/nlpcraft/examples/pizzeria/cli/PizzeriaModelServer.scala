@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.examples.order.cli
+package org.apache.nlpcraft.examples.pizzeria.cli
 
 import com.sun.net.httpserver.*
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.NCResultType.*
-import org.apache.nlpcraft.examples.order.PizzeriaModel
+import org.apache.nlpcraft.examples.pizzeria.PizzeriaModel
 
 import java.io.*
 import java.net.InetSocketAddress

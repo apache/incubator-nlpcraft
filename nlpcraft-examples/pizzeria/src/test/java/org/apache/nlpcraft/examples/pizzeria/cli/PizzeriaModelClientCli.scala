@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.examples.order.cli
+package org.apache.nlpcraft.examples.pizzeria.cli
 
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.*

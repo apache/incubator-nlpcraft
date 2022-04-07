@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.examples.order
+package org.apache.nlpcraft.examples.pizzeria
 
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.NCResultType.*
-import org.apache.nlpcraft.examples.order.State.*
+import org.apache.nlpcraft.examples.pizzeria.State.*
 import org.apache.nlpcraft.nlp.*
 
 import java.util.Properties
@@ -32,7 +32,6 @@ import scala.jdk.OptionConverters.*
   *
   */
 object PizzeriaModel extends LazyLogging:
-    private val DFLT_QTY = 1
     private val UNEXPECTED_REQUEST = new NCRejection("Unexpected request for current dialog context.")
 
     private def extractPizzaSize(e: NCEntity): String = e.get[String]("ord:pizza:size:value")
@@ -42,17 +41,8 @@ object PizzeriaModel extends LazyLogging:
     private def extractDrink(e: NCEntity): Drink =
         Drink(e.get[String]("ord:drink:value"), extractQty(e, "ord:drink:qty"))
 
-    private def getDescription(o: PizzeriaOrder): String =
-        if !o.isEmpty then
-            def s(name: String, seq: Iterable[String]): String = if seq.nonEmpty then s"$name: ${seq.mkString(", ")}" else ""
-            val s1 = s("Pizza", o.getPizzas.map(p => s"${p.name}, '${p.size.getOrElse("undefined size")}' ${p.qty.getOrElse(DFLT_QTY)} p."))
-            val s2 = s("Drinks", o.getDrinks.map(p => s"${p.name} ${p.qty.getOrElse(DFLT_QTY)} p."))
 
-            if s2.isEmpty then s1 else if s1.isEmpty then s2 else s"$s1 $s2"
-        else "Nothing ordered."
-
-
-import org.apache.nlpcraft.examples.order.PizzeriaModel.*
+import org.apache.nlpcraft.examples.pizzeria.PizzeriaModel.*
 
 /**
   *
@@ -102,25 +92,26 @@ class PizzeriaModel extends NCModelAdapter (new NCModelConfig("nlpcraft.pizzeria
         )
 
     private def doShowStatus(o: PizzeriaOrder, newState: State) =
-        val res = NCResult(s"Current order state: ${getDescription(o)}", ASK_RESULT)
+        val res = NCResult(s"Current order state: ${o.getDescription}", ASK_RESULT)
         o.setState(newState)
         res
 
     private def askConfirm(o: PizzeriaOrder): NCResult =
         require(o.isValid)
-        val res = NCResult(s"Let's specify your order. ${getDescription(o)} Is it correct?", ASK_DIALOG)
+        val res = NCResult(s"Let's specify your order. ${o.getDescription} Is it correct?", ASK_DIALOG)
         o.setState(DIALOG_CONFIRM)
         res
 
     private def clear(im: NCIntentMatch, o: PizzeriaOrder): Unit =
+        o.setState(NO_DIALOG)
         im.getContext.getConversation.getData.remove(im.getContext.getRequest.getUserId)
         val conv = im.getContext.getConversation
         conv.clearStm(_ => true)
         conv.clearDialog(_ => true)
 
-    private def doExecute(im: NCIntentMatch, o: PizzeriaOrder): NCResult =
+    private[pizzeria] def doExecute(im: NCIntentMatch, o: PizzeriaOrder): NCResult =
         require(o.isValid)
-        val res = NCResult(s"Executed: ${getDescription(o)}", ASK_RESULT)
+        val res = NCResult(s"Executed: ${o.getDescription}", ASK_RESULT)
         clear(im, o)
         res
 
