@@ -62,9 +62,9 @@ class PizzeriaModel extends NCModelAdapter (new NCModelConfig("nlpcraft.pizzeria
 
         try body.apply(o)
         finally
-            println(s"'${im.getIntentId}' intent activated for text: '${im.getContext.getRequest.getText}'.")
-            println(s"Initial order state: $initDesc, state: $initState.")
-            println(s"Finish order state : ${o.getDesc}, state: ${o.getState}.")
+            logger.info(s"'${im.getIntentId}' intent activated for text: '${im.getContext.getRequest.getText}'.")
+            logger.info(s"Initial order state: $initDesc, state: $initState.")
+            logger.info(s"Finish order state : ${o.getDesc}, state: ${o.getState}.")
 
     private def askIsReady(o: PizzeriaOrder): NCResult =
         val res = NCResult(s"Is order ready?", ASK_DIALOG)
