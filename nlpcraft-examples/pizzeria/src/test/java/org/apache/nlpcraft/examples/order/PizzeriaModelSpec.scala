@@ -26,29 +26,35 @@ import scala.collection.mutable
 /**
   *
   */
-class OrderModelSpec:
+class PizzeriaModelSpec:
     @Test
     def test(): Unit =
         val buf = mutable.ArrayBuffer.empty[String]
 
-        def printDialog(): Unit = for (line <- buf) println(line)
+        def printDialog(): Unit = buf.foreach(println)
 
-        Using.resource(new NCModelClient(new OrderModel)) { client =>
+        Using.resource(new NCModelClient(new PizzeriaModel)) { client =>
             def ask(txt: String, expResType: NCResultType): Unit =
-                val resp = client.ask(txt, null, "userId")
+                try
+                    val resp = client.ask(txt, null, "userId")
 
-                buf += s">> $txt"
-                buf += s">> '${resp.getType}': ${resp.getBody}"
-                buf += ""
+                    buf += s">> Request: $txt"
+                    buf += s">> Response: '${resp.getType}': ${resp.getBody}"
+                    buf += ""
 
-                if expResType != resp.getType then
-                    printDialog()
-                    require(false, s"Unexpected type: ${resp.getType}, expected: $expResType.")
-
-            ask("I want to order margherita medium size, marbonara, marinara and tea", ASK_DIALOG)
+                    if expResType != resp.getType then
+                        printDialog()
+                        require(false, s"Unexpected type: ${resp.getType}, expected: $expResType.")
+                catch {
+                    case e: Exception =>
+                        printDialog()
+                        throw e
+                }
+            ask("I want to order carbonara, marinara and tea", ASK_DIALOG)
             ask("large size please", ASK_DIALOG)
             ask("smallest", ASK_DIALOG)
-            ask("you are right", ASK_RESULT)
+            ask("yes", ASK_DIALOG)
+            ask("correct", ASK_RESULT)
 
             printDialog()
         }

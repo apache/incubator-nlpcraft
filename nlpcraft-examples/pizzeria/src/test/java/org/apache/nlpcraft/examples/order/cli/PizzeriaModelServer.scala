@@ -20,7 +20,7 @@ package org.apache.nlpcraft.examples.order.cli
 import com.sun.net.httpserver.*
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.NCResultType.*
-import org.apache.nlpcraft.examples.order.OrderModel
+import org.apache.nlpcraft.examples.order.PizzeriaModel
 
 import java.io.*
 import java.net.InetSocketAddress
@@ -29,14 +29,14 @@ import scala.util.Using
 /**
   *
   */
-object OrderModelServer:
+object PizzeriaModelServer:
     private val host = "localhost"
     private val port = 8087
     private val path = "ask"
 
     val URI = s"http://$host:$port/$path"
 
-    def main(args: Array[String]): Unit = Using.resource(new NCModelClient(new OrderModel)) { nlpClient =>
+    def main(args: Array[String]): Unit = Using.resource(new NCModelClient(new PizzeriaModel)) { nlpClient =>
         val srv = HttpServer.create(new InetSocketAddress(host, port), 0)
 
         srv.createContext(

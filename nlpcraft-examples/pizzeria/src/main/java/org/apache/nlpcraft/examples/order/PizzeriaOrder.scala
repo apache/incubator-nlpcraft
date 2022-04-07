@@ -19,19 +19,41 @@ package org.apache.nlpcraft.examples.order
 
 import scala.collection.mutable
 
-case class Pizza(name: String, var size: Option[String], var qty: Option[Int]):
+/**
+  *
+  */
+private abstract class OrderElement:
+    val name: String
+    var qty: Option[Int]
     require(name != null && name.nonEmpty)
-case class Drink(name: String, var qty: Option[Int]):
-    require(name != null && name.nonEmpty)
+
+/**
+  *
+  * @param name
+  * @param size
+  * @param qty
+  */
+case class Pizza(name: String, var size: Option[String], var qty: Option[Int]) extends OrderElement
+
+/**
+  *
+  * @param name
+  * @param qty
+  */
+case class Drink(name: String, var qty: Option[Int]) extends OrderElement
+
 enum State:
     case NO_DIALOG, DIALOG_IS_READY, DIALOG_SHOULD_CANCEL, DIALOG_SPECIFY, DIALOG_CONFIRM
 
 import org.apache.nlpcraft.examples.order.State.*
 
-class Order:
+/**
+  *
+  */
+class PizzeriaOrder:
     private var state = NO_DIALOG
-    private val pizzas = mutable.LinkedHashMap.empty[String, Pizza]
-    private val drinks = mutable.LinkedHashMap.empty[String, Drink]
+    private val pizzas = mutable.ArrayBuffer.empty[Pizza]
+    private val drinks = mutable.ArrayBuffer.empty[Drink]
 
     /**
       *
@@ -51,35 +73,43 @@ class Order:
       * @param ds
       */
     def add(ps: Seq[Pizza], ds: Seq[Drink]): Unit =
+        def setByName[T <: OrderElement](buf: mutable.ArrayBuffer[T], t: T) =
+            buf.find(_.name == t.name) match
+                case Some(found) => if t.qty.nonEmpty then found.qty = t.qty
+                case None => buf += t
+
         for (p <- ps)
-            pizzas.get(p.name) match
-                case Some(ex) =>
-                    if p.size.nonEmpty then ex.size = p.size
-                    if p.qty.nonEmpty then ex.qty = p.qty
-                case None => pizzas += p.name -> p
+            def setPizza[T](pred: Pizza => Boolean, notFound: => () => Unit): Unit =
+                pizzas.find(pred) match
+                    case Some(found) =>
+                        if p.size.nonEmpty then found.size = p.size
+                        if p.qty.nonEmpty then found.qty = p.qty
+                    case None => notFound()
 
-        for (d <- ds)
-            drinks.get(d.name) match
-                case Some(ex) => if d.qty.nonEmpty then ex.qty = d.qty
-                case None => drinks += d.name -> d
+            if p.size.nonEmpty then setPizza(
+                x => x.name == p.name && x.size == p.size,
+                () => setPizza(x => x.name == p.name && x.size.isEmpty, () => pizzas += p)
+            )
+            else setByName(pizzas, p)
+
+        for (d <- ds) setByName(drinks, d)
+    /**
+      *
+      * @return
+      */
+    def getPizzas: Seq[Pizza] = pizzas.toSeq
 
     /**
       *
       * @return
       */
-    def getPizzas: Map[String, Pizza] = pizzas.toMap
+    def getDrinks: Seq[Drink] = drinks.toSeq
 
     /**
       *
       * @return
       */
-    def getDrinks: Map[String, Drink] = drinks.toMap
-
-    /**
-      *
-      * @return
-      */
-    def findPizzaNoSize: Option[Pizza] = pizzas.values.find(_.size.isEmpty)
+    def findPizzaNoSize: Option[Pizza] = pizzas.find(_.size.isEmpty)
 
     /**
       *

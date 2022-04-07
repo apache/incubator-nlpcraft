@@ -28,7 +28,7 @@ import java.net.http.HttpRequest.*
 import java.net.http.HttpResponse.*
 import scala.util.Using
 
-object OrderModelClientCli extends LazyLogging :
+object PizzeriaModelClientCli extends LazyLogging :
     private val client = HttpClient.newHttpClient()
 
     private def ask(req: String): String =
@@ -36,7 +36,7 @@ object OrderModelClientCli extends LazyLogging :
             val resp: HttpResponse[String] = client.send(
                 HttpRequest.
                     newBuilder().
-                    uri(new URI(OrderModelServer.URI)).
+                    uri(new URI(PizzeriaModelServer.URI)).
                     headers("Content-Type", "text/plain;charset=UTF-8").
                     POST(BodyPublishers.ofString(req)).
                     build(),

@@ -27,14 +27,14 @@ import scala.jdk.CollectionConverters.*
 /**
   *
   * @param id
-  * @param copyProperty
+  * @param property
   */
-case class EntityData(id: String, copyProperty: String)
+case class EntityData(id: String, property: String)
 
 /**
   *
   */
-case class EntityExtender(mainDataSeq: Seq[EntityData], extraData: EntityData) extends NCEntityMapper:
+case class ElementExtender(mainDataSeq: Seq[EntityData], extraData: EntityData) extends NCEntityMapper:
     private def getToks(e: NCEntity): mutable.Seq[NCToken] = e.getTokens.asScala
     override def map(req: NCRequest, cfg: NCModelConfig, entities: util.List[NCEntity]): util.List[NCEntity] =
         val mainDataMap = mainDataSeq.map(p => p.id -> p).toMap
@@ -54,7 +54,7 @@ case class EntityExtender(mainDataSeq: Seq[EntityData], extraData: EntityData) e
                         val (mEnt, eEnt) = if mainDataMap.contains(e1.getId) then (e1, e2) else (e2, e1)
                         new NCPropertyMapAdapter with NCEntity:
                             mEnt.keysSet().forEach(k => put(k, mEnt.get(k)))
-                            put[String](mainDataMap(mEnt.getId).copyProperty, eEnt.get[String](extraData.copyProperty).toLowerCase)
+                            put[String](mainDataMap(mEnt.getId).property, eEnt.get[String](extraData.property).toLowerCase)
                             override val getTokens: JList[NCToken] = (getToks(mEnt) ++ getToks(eEnt)).sortBy(_.getIndex).asJava
                             override val getRequestId: String = req.getRequestId
                             override val getId: String = mEnt.getId

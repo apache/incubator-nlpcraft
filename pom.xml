@@ -392,7 +392,7 @@
                 <module>nlpcraft-examples/lightswitch</module>
                 <module>nlpcraft-examples/lightswitch-ru</module>
                 <module>nlpcraft-examples/lightswitch-fr</module>
-                <module>nlpcraft-examples/order</module>
+                <module>nlpcraft-examples/pizzeria</module>
             </modules>
         </profile>
     </profiles>

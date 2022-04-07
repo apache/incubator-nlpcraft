@@ -27,8 +27,8 @@ elements:
     description: "Size of pizza."
     values:
       "small": [ "{small|smallest|min|minimal} {size|_}" ]
-      "medium": [ "{medium|intermediate} {size|_}" ]
-      "large": [ "{big|biggest|large|max|maximum} {size|_}" ]
+      "medium": [ "{medium|intermediate|normal|regular} {size|_}" ]
+      "large": [ "{big|biggest|large|max|maximum|huge} {size|_}" ]
 
   - id: "ord:drink"
     description: "Kinds of drinks."
@@ -41,7 +41,7 @@ elements:
   - id: "ord:yes"
     description: "Conformation (yes)."
     synonyms:
-      - "{yes|yeah|right|fine|nice|excellent|good}"
+      - "{yes|yeah|right|fine|nice|excellent|good|correct|sure}"
       - "{you are|_} {correct|right}"
 
   - id: "ord:no"
@@ -53,20 +53,20 @@ elements:
   - id: "ord:stop"
     description: "Stop and cancel all."
     synonyms:
-      - "{stop|cancel} {it|all|everything|_}"
+      - "{stop|cancel|clear} {it|all|everything|_}"
 
   - id: "ord:status"
     description: "Order status information."
     synonyms:
-      - "{order|_} {status|state}"
+      - "{current|_} {order|_} {status|state|info|information}"
 
   - id: "ord:finish"
     description: "Order finish."
     synonyms:
-      - "order"
-      - "{order|I|_} {is|are|have|has|_} {ready|done|finish}"
+      - "{i|everything|order|_} {is|_} {finish|ready|done}"
 
   - id: "ord:menu"
     description: "Order menu."
     synonyms:
-      - "{menu|order list}"
+      - "{menu|carte|card}"
+      - "{products|goods|food|_} list"

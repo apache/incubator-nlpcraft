@@ -22,7 +22,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <name>NLPCraft Example Order</name>
-    <artifactId>nlpcraft-example-order</artifactId>
+    <artifactId>nlpcraft-example-pizzeria</artifactId>
 
     <parent>
         <artifactId>nlpcraft-parent</artifactId>
