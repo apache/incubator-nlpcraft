@@ -17,10 +17,12 @@
 
 package org.apache.nlpcraft.examples.pizzeria
 
-import org.apache.nlpcraft.examples.pizzeria.PizzeriaOrder.DFLT_QTY
-
 import java.util.Objects
 import scala.collection.mutable
+
+object OrderElement:
+    val DFLT_QTY = 1
+
 /**
   *
   */
@@ -35,22 +37,22 @@ private abstract class OrderElement:
   * @param size
   * @param qty
   */
-case class Pizza(name: String, var size: Option[String], var qty: Option[Int]) extends OrderElement
+case class Pizza(name: String, var size: Option[String], var qty: Option[Int]) extends OrderElement:
+    override def toString = s"$name '${size.getOrElse("undefined size")}' ${qty.getOrElse(OrderElement.DFLT_QTY)} pcs"
 
 /**
   *
   * @param name
   * @param qty
   */
-case class Drink(name: String, var qty: Option[Int]) extends OrderElement
+case class Drink(name: String, var qty: Option[Int]) extends OrderElement:
+    override def toString = s"$name ${qty.getOrElse(OrderElement.DFLT_QTY)} pcs"
 
 enum State:
     case NO_DIALOG, DIALOG_IS_READY, DIALOG_SHOULD_CANCEL, DIALOG_SPECIFY, DIALOG_CONFIRM
 
 import org.apache.nlpcraft.examples.pizzeria.State.*
 
-object PizzeriaOrder:
-    private val DFLT_QTY = 1
 class PizzeriaOrder:
     private var state = NO_DIALOG
     private val pizzas = mutable.ArrayBuffer.empty[Pizza]
@@ -140,12 +142,8 @@ class PizzeriaOrder:
       */
     def getDesc: String =
         if !isEmpty then
-            def s(name: String, seq: Iterable[String]): String = if seq.nonEmpty then s"$name: ${seq.mkString(", ")}" else ""
-            def p2s(p: Pizza) = s"${p.name}, '${p.size.getOrElse("undefined size")}' ${p.qty.getOrElse(DFLT_QTY)} p."
-            def d2s(d: Drink) = s"${d.name}, ${d.qty.getOrElse(DFLT_QTY)} p."
+            val ps = if pizzas.nonEmpty then s"Pizza: ${pizzas.mkString(", ")}" else ""
+            val ds = if drinks.nonEmpty then s"Drinks: ${drinks.mkString(", ")}" else ""
 
-            val s1 = s("Pizza", getPizzas.map(p2s))
-            val s2 = s("Drinks", getDrinks.map(d2s))
-
-            if s2.isEmpty then s1 else if s1.isEmpty then s2 else s"$s1 $s2"
+            if ds.isEmpty then ps else if ps.isEmpty then ds else s"$ps, $ds"
         else "Nothing ordered."

@@ -94,13 +94,13 @@ class PizzeriaModel extends NCModelAdapter (new NCModelConfig("nlpcraft.pizzeria
         )
 
     private def doShowStatus(o: PizzeriaOrder, newState: State) =
-        val res = NCResult(s"Current order state: ${o.getDesc}", ASK_RESULT)
+        val res = NCResult(s"Current order state: ${o.getDesc}.", ASK_RESULT)
         o.setState(newState)
         res
 
     private def askConfirm(o: PizzeriaOrder): NCResult =
         require(o.isValid)
-        val res = NCResult(s"Let's specify your order. ${o.getDesc} Is it correct?", ASK_DIALOG)
+        val res = NCResult(s"Let's specify your order: ${o.getDesc}. Is it correct?", ASK_DIALOG)
         o.setState(DIALOG_CONFIRM)
         res
 
@@ -113,7 +113,7 @@ class PizzeriaModel extends NCModelAdapter (new NCModelConfig("nlpcraft.pizzeria
 
     private[pizzeria] def doExecute(im: NCIntentMatch, o: PizzeriaOrder): NCResult =
         require(o.isValid)
-        val res = NCResult(s"Executed: ${o.getDesc}", ASK_RESULT)
+        val res = NCResult(s"Executed: ${o.getDesc}.", ASK_RESULT)
         clear(im, o)
         res
 
@@ -232,7 +232,7 @@ class PizzeriaModel extends NCModelAdapter (new NCModelConfig("nlpcraft.pizzeria
     def onFinish(im: NCIntentMatch): NCResult = withLog(
         im,
         (o: PizzeriaOrder) => o.getState match
-            case DIALOG_CONFIRM => doExecuteOrAskSpecify(im, o) // Like YES  if valid.
+            case DIALOG_CONFIRM => doExecuteOrAskSpecify(im, o) // Like YES if valid.
             case DIALOG_SPECIFY => askSpecify(o) // Ignore `finish`, specify again.
             case NO_DIALOG | DIALOG_IS_READY | DIALOG_SHOULD_CANCEL => askConfirmOrAskSpecify(o)
         )
