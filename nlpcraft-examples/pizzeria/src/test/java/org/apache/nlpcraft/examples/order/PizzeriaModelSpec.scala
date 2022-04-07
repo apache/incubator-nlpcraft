@@ -19,7 +19,7 @@ package org.apache.nlpcraft.examples.order
 
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.NCResultType.*
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.{AfterEach, BeforeEach, Test}
 
 import scala.util.Using
 import scala.collection.mutable
@@ -27,34 +27,86 @@ import scala.collection.mutable
   *
   */
 class PizzeriaModelSpec:
+    private val msgs = mutable.ArrayBuffer.empty[mutable.ArrayBuffer[String]]
+    private val errs = mutable.HashMap.empty[Int, Throwable]
+
+    private var client: NCModelClient = _
+    private var testNum: Int = 0
+
+    @BeforeEach def setUp(): Unit = client = new NCModelClient(new PizzeriaModel)
+    @AfterEach def tearDown(): Unit =
+        if client != null then client.close()
+
+        for ((seq, num) <- msgs.zipWithIndex)
+            println("#################################################################################################")
+            for (line <- seq) println(line)
+            errs.get(num) match
+                case Some(err) => err.printStackTrace()
+                case None => // No-op.
+            println()
+
+        require(errs.isEmpty)
+
+    private def dialog(reqs: String*): Unit =
+        val testMsgs = mutable.ArrayBuffer.empty[String]
+        msgs += testMsgs
+
+        testMsgs += s"Test: $testNum"
+
+        for ((txt, idx) <- reqs.zipWithIndex)
+            try
+                val resp = client.ask(txt, null, "userId")
+
+                testMsgs += s">> Request: $txt"
+                testMsgs += s">> Response: '${resp.getType}': ${resp.getBody}"
+
+                val expType = if idx == reqs.size - 1 then ASK_RESULT else ASK_DIALOG
+
+                if expType != resp.getType then
+                    errs += testNum -> new Exception(s"Error during test [num=$testNum, expRespType=$expType, type=${resp.getType}]")
+            catch
+                case e: Exception => errs += testNum -> new Exception(s"Error during test [num=$testNum]", e)
+
+        testNum += 1
+
     @Test
     def test(): Unit =
-        val buf = mutable.ArrayBuffer.empty[String]
+        dialog(
+            "One tea",
+            "yes",
+            "yes"
+        )
 
-        def printDialog(): Unit = buf.foreach(println)
+        dialog(
+            "I want to order carbonara, marinara and tea",
+            "large size please",
+            "smallest",
+            "yes",
+            "correct"
+        )
 
-        Using.resource(new NCModelClient(new PizzeriaModel)) { client =>
-            def ask(txt: String, expResType: NCResultType): Unit =
-                try
-                    val resp = client.ask(txt, null, "userId")
+        dialog(
+            "carbonara two small",
+            "yes",
+            "yes"
+        )
 
-                    buf += s">> Request: $txt"
-                    buf += s">> Response: '${resp.getType}': ${resp.getBody}"
-                    buf += ""
+        dialog(
+            "carbonara",
+            "small",
+            "yes",
+            "yes"
+        )
 
-                    if expResType != resp.getType then
-                        printDialog()
-                        require(false, s"Unexpected type: ${resp.getType}, expected: $expResType.")
-                catch {
-                    case e: Exception =>
-                        printDialog()
-                        throw e
-                }
-            ask("I want to order carbonara, marinara and tea", ASK_DIALOG)
-            ask("large size please", ASK_DIALOG)
-            ask("smallest", ASK_DIALOG)
-            ask("yes", ASK_DIALOG)
-            ask("correct", ASK_RESULT)
+        dialog(
+            "carbonara",
+            "stop"
+        )
 
-            printDialog()
-        }
+        dialog(
+            "carbonara two, marinara and 2 tea",
+            "small",
+            "small",
+            "yes",
+            "yes"
+        )
