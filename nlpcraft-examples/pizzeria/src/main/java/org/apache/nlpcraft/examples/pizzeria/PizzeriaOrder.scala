@@ -17,6 +17,8 @@
 
 package org.apache.nlpcraft.examples.pizzeria
 
+import org.apache.nlpcraft.examples.pizzeria.PizzeriaOrder.DFLT_QTY
+
 import java.util.Objects
 import scala.collection.mutable
 /**
@@ -132,11 +134,18 @@ class PizzeriaOrder:
       */
     def setState(state: State): Unit = this.state = state
 
-    def getDescription: String =
+    /**
+      *
+      * @return
+      */
+    def getDesc: String =
         if !isEmpty then
             def s(name: String, seq: Iterable[String]): String = if seq.nonEmpty then s"$name: ${seq.mkString(", ")}" else ""
-            val s1 = s("Pizza", getPizzas.map(p => s"${p.name}, '${p.size.getOrElse("undefined size")}' ${p.qty.getOrElse(PizzeriaOrder.DFLT_QTY)} p."))
-            val s2 = s("Drinks", getDrinks.map(p => s"${p.name} ${p.qty.getOrElse(PizzeriaOrder.DFLT_QTY)} p."))
+            def p2s(p: Pizza) = s"${p.name}, '${p.size.getOrElse("undefined size")}' ${p.qty.getOrElse(DFLT_QTY)} p."
+            def d2s(d: Drink) = s"${d.name},  ${d.qty.getOrElse(DFLT_QTY)} p."
+
+            val s1 = s("Pizza", getPizzas.map(p2s))
+            val s2 = s("Drinks", getDrinks.map(d2s))
 
             if s2.isEmpty then s1 else if s1.isEmpty then s2 else s"$s1 $s2"
         else "Nothing ordered."

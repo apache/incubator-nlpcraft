@@ -92,13 +92,13 @@ class PizzeriaModel extends NCModelAdapter (new NCModelConfig("nlpcraft.pizzeria
         )
 
     private def doShowStatus(o: PizzeriaOrder, newState: State) =
-        val res = NCResult(s"Current order state: ${o.getDescription}", ASK_RESULT)
+        val res = NCResult(s"Current order state: ${o.getDesc}", ASK_RESULT)
         o.setState(newState)
         res
 
     private def askConfirm(o: PizzeriaOrder): NCResult =
         require(o.isValid)
-        val res = NCResult(s"Let's specify your order. ${o.getDescription} Is it correct?", ASK_DIALOG)
+        val res = NCResult(s"Let's specify your order. ${o.getDesc} Is it correct?", ASK_DIALOG)
         o.setState(DIALOG_CONFIRM)
         res
 
@@ -111,7 +111,7 @@ class PizzeriaModel extends NCModelAdapter (new NCModelConfig("nlpcraft.pizzeria
 
     private[pizzeria] def doExecute(im: NCIntentMatch, o: PizzeriaOrder): NCResult =
         require(o.isValid)
-        val res = NCResult(s"Executed: ${o.getDescription}", ASK_RESULT)
+        val res = NCResult(s"Executed: ${o.getDesc}", ASK_RESULT)
         clear(im, o)
         res
 
