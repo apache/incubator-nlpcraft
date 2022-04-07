@@ -32,7 +32,12 @@ import scala.jdk.CollectionConverters.*
 case class EntityData(id: String, property: String)
 
 /**
+  * Simple element extender.
+  * For each 'main' element it tries to find extra element. If it cane done instead of this pair new element created.
+  * This new element has 'main' element ID. Extra element configured property copied to this new element.
   *
+  * Note that for simplified implementation, it doesn't care about words between pairs elements and pairs,
+  * also it doesn't check correctness of words order.
   */
 case class ElementExtender(mainDataSeq: Seq[EntityData], extraData: EntityData) extends NCEntityMapper:
     private def getToks(e: NCEntity): mutable.Seq[NCToken] = e.getTokens.asScala
@@ -43,7 +48,7 @@ case class ElementExtender(mainDataSeq: Seq[EntityData], extraData: EntityData) 
         val main = es.filter(e => mainDataMap.contains(e.getId))
         val extra = es.filter(_.getId == extraData.id)
 
-        if main.nonEmpty && main.size == extra.size then
+        if main.nonEmpty && main.size >= extra.size then
             var ok = true
             val mapped =
                 for ((e1, e2) <- main.zip(extra) if ok) yield
@@ -59,7 +64,7 @@ case class ElementExtender(mainDataSeq: Seq[EntityData], extraData: EntityData) 
                             override val getRequestId: String = req.getRequestId
                             override val getId: String = mEnt.getId
 
-            es = es --= main
-            es = es --= extra
+            es = es --= main.take(mapped.size)
+            es = es --= extra.take(mapped.size)
             (es ++ mapped).sortBy(getToks(_).head.getIndex).asJava
         else entities

@@ -36,7 +36,9 @@ class RequestValidator extends NCEntityValidator:
         val cntNums = count("stanford:number")
         val cntSize = count("ord:pizza:size")
 
-        if cntNums != 1 && cntNums > cntPizza + cntDrink then
-            throw new NCRejection("Too many unrecognized numerics in the request.")
+        // Single size  - it is order specification request.
         if cntSize != 1 && cntSize > cntPizza then
-            throw new NCRejection("Too many unrecognized pizza sizes in the request.")
+            throw new NCRejection("There are unrecognized pizza sizes in the request.")
+
+        if cntNums > cntPizza + cntDrink then
+            throw new NCRejection("There are many unrecognized numerics in the request.")

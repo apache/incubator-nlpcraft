@@ -195,7 +195,8 @@ class PizzeriaModel extends NCModelAdapter (new NCModelConfig("nlpcraft.pizzeria
         im,
         (o: PizzeriaOrder) =>
             require(ps.nonEmpty || ds.nonEmpty);
-            o.add(ps.map(extractPizza), ds.map(extractDrink)); // It doesn't depend on order validity and dialog state.
+            // It doesn't depend on order validity and dialog state.
+            o.add(ps.map(extractPizza), ds.map(extractDrink));
             askIsReadyOrAskSpecify(o)
         )
     /**
@@ -207,13 +208,12 @@ class PizzeriaModel extends NCModelAdapter (new NCModelConfig("nlpcraft.pizzeria
     @NCIntent("intent=orderPizzaSize term(size)={# == 'ord:pizza:size'}")
     def onOrderPizzaSize(im: NCIntentMatch, @NCIntentTerm("size") size: NCEntity): NCResult = withLog(
         im,
-        (o: PizzeriaOrder) => o.getState match
-            case DIALOG_SPECIFY =>
-                if o.setPizzaNoSize(extractPizzaSize(size)) then
-                    o.setState(NO_DIALOG);
-                    askIsReadyOrAskSpecify(o)
-                else throw UNEXPECTED_REQUEST
-            case DIALOG_CONFIRM | NO_DIALOG | DIALOG_IS_READY | DIALOG_SHOULD_CANCEL => throw UNEXPECTED_REQUEST
+        (o: PizzeriaOrder) =>
+            // If order in progress and has pizza with unknown size -it doesn't depend on dialog state.
+            if !o.isEmpty then
+                if o.setPizzaNoSize(extractPizzaSize(size)) then askIsReadyOrAskSpecify(o) else throw UNEXPECTED_REQUEST
+            else
+                throw UNEXPECTED_REQUEST
         )
     /**
       *
