@@ -26,31 +26,40 @@ import scala.jdk.CollectionConverters.*
 
 /**
   *
+  * @param id
+  * @param copyProperty
   */
-case class DataExtenderMapper(key: String, prop: String, extKey: String, extProp: String) extends NCEntityMapper:
-    private def extract(e: NCEntity): mutable.Seq[NCToken] = e.getTokens.asScala
-    override def map(req: NCRequest, cfg: NCModelConfig, entities: util.List[NCEntity]): util.List[NCEntity] =
-        var es = entities.asScala
-        val data = es.filter(_.getId == key)
-        val extData = es.filter(_.getId == extKey)
+case class EntityData(id: String, copyProperty: String)
 
-        if data.nonEmpty && data.size == extData.size then
+/**
+  *
+  */
+case class EntityExtender(mainDataSeq: Seq[EntityData], extraData: EntityData) extends NCEntityMapper:
+    private def getToks(e: NCEntity): mutable.Seq[NCToken] = e.getTokens.asScala
+    override def map(req: NCRequest, cfg: NCModelConfig, entities: util.List[NCEntity]): util.List[NCEntity] =
+        val mainDataMap = mainDataSeq.map(p => p.id -> p).toMap
+
+        var es = entities.asScala
+        val main = es.filter(e => mainDataMap.contains(e.getId))
+        val extra = es.filter(_.getId == extraData.id)
+
+        if main.nonEmpty && main.size == extra.size then
             var ok = true
             val mapped =
-                for ((e1, e2) <- data.zip(extData) if ok) yield
+                for ((e1, e2) <- main.zip(extra) if ok) yield
                     if e1.getId == e2.getId then
                         ok = false
                         null
                     else
-                        val (data, extData) = if e1.getId == key then (e1, e2) else (e2, e1)
+                        val (mEnt, eEnt) = if mainDataMap.contains(e1.getId) then (e1, e2) else (e2, e1)
                         new NCPropertyMapAdapter with NCEntity:
-                            data.keysSet().forEach(k => put(k, data.get(k)))
-                            put[String](prop, extData.get[String](extProp).toLowerCase)
-                            override val getTokens: JList[NCToken] = (extract(data) ++ extract(extData)).sortBy(_.getIndex).asJava
+                            mEnt.keysSet().forEach(k => put(k, mEnt.get(k)))
+                            put[String](mainDataMap(mEnt.getId).copyProperty, eEnt.get[String](extraData.copyProperty).toLowerCase)
+                            override val getTokens: JList[NCToken] = (getToks(mEnt) ++ getToks(eEnt)).sortBy(_.getIndex).asJava
                             override val getRequestId: String = req.getRequestId
-                            override val getId: String = data.getId
+                            override val getId: String = mEnt.getId
 
-            es = es --= data
-            es = es --= extData
-            (es ++ mapped).sortBy(extract(_).head.getIndex).asJava
+            es = es --= main
+            es = es --= extra
+            (es ++ mapped).sortBy(getToks(_).head.getIndex).asJava
         else entities

@@ -42,14 +42,19 @@ object StanfordPipeline:
             private val ps = new PorterStemmer
             override def stem(txt: String): String = ps.synchronized { ps.stem(txt) }
 
+        import EntityExtender as Ex
+        import EntityData as D
+
         new NCPipelineBuilder().
             withTokenParser(tokParser).
             withTokenEnricher(new NCEnStopWordsTokenEnricher()).
             withEntityParser(new NCStanfordNLPEntityParser(stanford, "number")).
             withEntityParser(new NCSemanticEntityParser(stemmer, tokParser, "order_model.yaml")).
-            withEntityMappers(Seq(
-                DataExtenderMapper(key = "ord:pizza", prop = "ord:pizza:size", extKey = "ord:pizza:size", extProp = "ord:pizza:size:value"),
-                DataExtenderMapper(key = "ord:pizza", prop = "ord:pizza:qty", extKey = "stanford:number", extProp = "stanford:number:nne"),
-                DataExtenderMapper(key = "ord:drink", prop = "ord:drink:qty", extKey = "stanford:number", extProp = "stanford:number:nne")
-            ).asJava).
+            withEntityMappers(
+                Seq(
+                    Ex(Seq(D("ord:pizza", "ord:pizza:size")), D("ord:pizza:size", "ord:pizza:size:value")),
+                    Ex(Seq(D("ord:pizza", "ord:pizza:qty"), D("ord:drink", "ord:drink:qty")), D("stanford:number", "stanford:number:nne")),
+                ).asJava
+            ).
+            withEntityValidator(new RequestValidator()).
             build()

@@ -41,6 +41,7 @@ import scala.jdk.OptionConverters.*
   */
 object OrderModel extends LazyLogging:
     private val DFLT_QTY = 1
+    private val UNEXPECTED = new NCRejection("Unexpected request in given context.")
     private def toStr[T](name: String, seq: Iterable[T]): String = if seq.nonEmpty then s"$name: ${seq.mkString(", ")}." else ""
     private def extractPizzaSize(e: NCEntity): String = e.get[String]("ord:pizza:size:value")
     private def extractQty(e: NCEntity, qty: String): Option[Int] = Option.when(e.contains(qty))(e.get[String](qty).toDouble.toInt)
@@ -156,7 +157,7 @@ class OrderModel extends NCModelAdapter (new NCModelConfig("nlpcraft.order.ex", 
                 doExecute(im, o)
             case DIALOG_SHOULD_CANCEL => doStop(im, o)
             case DIALOG_IS_READY => askConfirmOrAskSpecify(o)
-            case DIALOG_SPECIFY | NO_DIALOG => throw new NCRejection("Unexpected request.")
+            case DIALOG_SPECIFY | NO_DIALOG => throw UNEXPECTED
     )
 
     /**
@@ -170,7 +171,7 @@ class OrderModel extends NCModelAdapter (new NCModelConfig("nlpcraft.order.ex", 
         (o: Order) => o.getState match
             case DIALOG_CONFIRM | DIALOG_IS_READY => doContinue(o)
             case DIALOG_SHOULD_CANCEL => askConfirmOrAskSpecify(o)
-            case DIALOG_SPECIFY | NO_DIALOG => throw new NCRejection("Unexpected request.")
+            case DIALOG_SPECIFY | NO_DIALOG => throw UNEXPECTED
         )
     /**
       *
@@ -195,7 +196,7 @@ class OrderModel extends NCModelAdapter (new NCModelConfig("nlpcraft.order.ex", 
     def onOrder(im: NCIntentMatch, @NCIntentTerm("ps") ps: List[NCEntity], @NCIntentTerm("ds") ds: List[NCEntity]): NCResult = withLog(
         im,
         (o: Order) =>
-            if ps.isEmpty && ds.isEmpty then throw new NCRejection("Please order some pizza or drinks");
+            require(ps.nonEmpty || ds.nonEmpty);
             o.add(ps.map(extractPizza), ds.map(extractDrink)); // It doesn't depend on order validity and dialog state.
             askIsReadyOrAskSpecify(o)
         )
@@ -213,9 +214,8 @@ class OrderModel extends NCModelAdapter (new NCModelConfig("nlpcraft.order.ex", 
                 if o.setPizzaNoSize(extractPizzaSize(size)) then
                     o.setState(NO_DIALOG);
                     askIsReadyOrAskSpecify(o)
-                else
-                    throw new NCRejection("Unexpected request.")
-            case DIALOG_CONFIRM | NO_DIALOG | DIALOG_IS_READY | DIALOG_SHOULD_CANCEL => throw new NCRejection("Unexpected request.")
+                else throw UNEXPECTED
+            case DIALOG_CONFIRM | NO_DIALOG | DIALOG_IS_READY | DIALOG_SHOULD_CANCEL => throw UNEXPECTED
         )
     /**
       *
