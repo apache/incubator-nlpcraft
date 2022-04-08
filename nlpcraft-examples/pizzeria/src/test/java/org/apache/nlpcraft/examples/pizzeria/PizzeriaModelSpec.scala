@@ -26,10 +26,7 @@ import scala.language.implicitConversions
 import scala.util.Using
 import scala.collection.mutable
 
-/**
-  *
-  */
-class PizzeriaModelSpec:
+object PizzeriaModelSpec:
     private class ModelTestWrapper extends PizzeriaModel:
         private var o: PizzeriaOrder = _
         override def doExecute(im: NCIntentMatch, o: PizzeriaOrder): NCResult =
@@ -50,23 +47,27 @@ class PizzeriaModelSpec:
             this
         def build: PizzeriaOrder = o
 
+import PizzeriaModelSpec.*
+/**
+  *
+  */
+class PizzeriaModelSpec:
     private val mdl = new ModelTestWrapper()
     private val client = new NCModelClient(mdl)
-
     private val msgs = mutable.ArrayBuffer.empty[mutable.ArrayBuffer[String]]
     private val errs = mutable.HashMap.empty[Int, Throwable]
+
     private var testNum: Int = 0
 
     @AfterEach def tearDown(): Unit =
         if client != null then client.close()
 
         for ((seq, num) <- msgs.zipWithIndex)
-            println("#################################################################################################")
+            println("#" * 150)
             for (line <- seq) println(line)
             errs.get(num) match
                 case Some(err) => err.printStackTrace()
                 case None => // No-op.
-            println()
 
         require(errs.isEmpty, s"There are ${errs.size} errors above.")
 
