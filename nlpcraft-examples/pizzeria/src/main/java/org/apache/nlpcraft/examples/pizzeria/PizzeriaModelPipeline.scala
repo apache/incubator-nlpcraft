@@ -26,8 +26,7 @@ object PizzeriaModelPipeline:
             private val ps = new PorterStemmer
             override def stem(txt: String): String = ps.synchronized { ps.stem(txt) }
 
-        import ElementExtender as Ex
-        import EntityData as D
+        import ElementExtender as Ex, EntityData as D
 
         new NCPipelineBuilder().
             withTokenParser(tokParser).

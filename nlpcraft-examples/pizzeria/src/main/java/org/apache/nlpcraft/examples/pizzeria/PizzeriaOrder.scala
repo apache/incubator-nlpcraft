@@ -48,10 +48,10 @@ case class Pizza(name: String, var size: Option[String], var qty: Option[Int]) e
 case class Drink(name: String, var qty: Option[Int]) extends OrderElement:
     override def toString = s"$name ${qty.getOrElse(OrderElement.DFLT_QTY)} pcs"
 
-enum State:
+enum OrderState:
     case NO_DIALOG, DIALOG_IS_READY, DIALOG_SHOULD_CANCEL, DIALOG_SPECIFY, DIALOG_CONFIRM
 
-import org.apache.nlpcraft.examples.pizzeria.State.*
+import org.apache.nlpcraft.examples.pizzeria.OrderState.*
 
 class PizzeriaOrder:
     private var state = NO_DIALOG
@@ -128,13 +128,13 @@ class PizzeriaOrder:
       *
       * @return
       */
-    def getState: State = state
+    def getState: OrderState = state
 
     /**
       *
       * @param state
       */
-    def setState(state: State): Unit = this.state = state
+    def setState(state: OrderState): Unit = this.state = state
 
     /**
       *
