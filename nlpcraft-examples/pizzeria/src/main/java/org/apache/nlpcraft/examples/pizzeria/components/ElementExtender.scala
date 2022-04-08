@@ -24,6 +24,7 @@ import java.util.List as JList
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
 import com.typesafe.scalalogging.LazyLogging
+import org.apache.nlpcraft.NCResultType.ASK_DIALOG
 
 /**
   *
@@ -34,55 +35,62 @@ case class EntityData(id: String, property: String)
 
 /**
   * Element extender.
-  * For each 'main' element it tries to find related extra element and to make new complex element instead of this pair.
-  * This new element has:
-  * 1. Same ID as main element, also all main element properties copied into this new element's properties.
-  * 2. Tokens from both elements.
-  * 3. Configured property from extra element copied into new element's properties.
+  * For each 'main' element it tries to find related extra element and convert this pair to new complex element.
+  * New element:
+  * 1. Gets same ID as main element, also all main element properties copied into this new one.
+  * 2. Gets tokens from both elements.
+  * 3. Configured extra element property copied into new element's properties.
   *
   * Note that it is simple example implementation.
   * It just tries to unite nearest neighbours and doesn't check intermediate words, order correctness etc.
   */
 object ElementExtender:
-    case class EntityHolder(element: NCEntity):
+    case class EntityHolder(entity: NCEntity):
         lazy val position: Double =
-            val toks = element.getTokens.asScala
+            val toks = entity.getTokens.asScala
             (toks.head.getIndex + toks.last.getIndex) / 2.0
-
-    private def toTokens(e: NCEntity): mutable.Seq[NCToken] = e.getTokens.asScala
+    private def extract(e: NCEntity): mutable.Seq[NCToken] = e.getTokens.asScala
 
 import ElementExtender.*
 
 /**
   *
-  * @param mainSeq
-  * @param extra
+  * @param mainDataSeq
+  * @param extraData
   */
-case class ElementExtender(mainSeq: Seq[EntityData], extra: EntityData) extends NCEntityMapper with LazyLogging:
+case class ElementExtender(mainDataSeq: Seq[EntityData], extraData: EntityData) extends NCEntityMapper with LazyLogging:
     override def map(req: NCRequest, cfg: NCModelConfig, entities: JList[NCEntity]): JList[NCEntity] =
-        def combine(m: NCEntity, mProp: String, e: NCEntity): NCEntity =
+        def combine(mainEnt: NCEntity, mainProp: String, extraEnt: NCEntity): NCEntity =
             new NCPropertyMapAdapter with NCEntity:
-                m.keysSet().forEach(k => put(k, m.get(k)))
-                put[String](mProp, e.get[String](extra.property).toLowerCase)
-                override val getTokens: JList[NCToken] = (toTokens(m) ++ toTokens(e)).sortBy(_.getIndex).asJava
+                mainEnt.keysSet().forEach(k => put(k, mainEnt.get(k)))
+                put[String](mainProp, extraEnt.get[String](extraData.property).toLowerCase)
+                override val getTokens: JList[NCToken] = (extract(mainEnt) ++ extract(extraEnt)).sortBy(_.getIndex).asJava
                 override val getRequestId: String = req.getRequestId
-                override val getId: String = m.getId
+                override val getId: String = mainEnt.getId
 
         val es = entities.asScala
-        val mainById = mainSeq.map(p => p.id -> p).toMap
-        val mainHs = mutable.HashSet.empty ++ es.filter(e => mainById.contains(e.getId)).map(p => EntityHolder(p))
-        val extraHs = es.filter(_.getId == extra.id).map(p => EntityHolder(p))
+        val mainById = mainDataSeq.map(p => p.id -> p).toMap
+        val main = mutable.HashSet.empty ++ es.filter(e => mainById.contains(e.getId)).map(p => EntityHolder(p))
+        val extra = es.filter(_.getId == extraData.id).map(p => EntityHolder(p))
 
-        if mainHs.nonEmpty && mainHs.size >= extraHs.size then
+        if main.nonEmpty && extra.nonEmpty && main.size >= extra.size then
+            val used = (main.map(_.entity) ++ extra.map(_.entity)).toSet
             val main2Extra = mutable.HashMap.empty[NCEntity, NCEntity]
 
-            for (e <- extraHs)
-                val m = mainHs.minBy(m => Math.abs(m.position - e.position))
-                mainHs -= m
-                main2Extra += m.element -> e.element
+            for (e <- extra)
+                val m = main.minBy(m => Math.abs(m.position - e.position))
+                main -= m
+                main2Extra += m.entity -> e.entity
 
-            val newEs = for ((m, e) <- main2Extra) yield combine(m, mainById(m.getId).property, e)
-            val used = (mainHs.map(_.element) ++ extraHs.map(_.element)).toSet
+            val unrelatedEs = es.filter(e => !used.contains(e))
+            val artificialEs = for ((m, e) <- main2Extra) yield combine(m, mainById(m.getId).property, e)
+            val unused = main.map(_.entity)
 
-            (es.filter(e => !used.contains(e)) ++ mainHs.map(_.element) ++ newEs).sortBy(toTokens(_).head.getIndex).asJava
+            val res = (unrelatedEs ++ artificialEs ++ unused).sortBy(extract(_).head.getIndex)
+
+            def str(es: mutable.Buffer[NCEntity]) =
+                es.map(e => s"id=${e.getId}(${extract(e).map(_.getIndex).mkString("[", ",", "]")})").mkString("{", ", ", "}")
+            logger.debug(s"Elements mapped [input=${str(es)}, output=${str(res)}]")
+
+            res.asJava
         else entities

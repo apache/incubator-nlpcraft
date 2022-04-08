@@ -46,16 +46,20 @@ import org.apache.nlpcraft.examples.pizzeria.PizzeriaModel.*
 /**
   *
   */
-class PizzeriaModel extends NCModelAdapter (new NCModelConfig("nlpcraft.pizzeria.ex", "Pizzeria Example Model", "1.0"), PizzeriaModelPipeline.PIPELINE) with LazyLogging:
-    private def withLog(im: NCIntentMatch, body: PizzeriaOrder => NCResult): NCResult =
-        val usrId = im.getContext.getRequest.getUserId
-        val data = im.getContext.getConversation.getData
-        var o: PizzeriaOrder = data.get(usrId)
+class PizzeriaModel extends NCModelAdapter(new NCModelConfig("nlpcraft.pizzeria.ex", "Pizzeria Example Model", "1.0"), PizzeriaModelPipeline.PIPELINE) with LazyLogging:
+    private def getOrder(ctx: NCContext): PizzeriaOrder =
+        val data = ctx.getConversation.getData
+        val usrId = ctx.getRequest.getUserId
+        val o: PizzeriaOrder = data.get(usrId)
 
-        if o == null then
-            o = new PizzeriaOrder()
+        if o != null then o
+        else
+            val o = new PizzeriaOrder()
             data.put(usrId, o)
+            o
 
+    private def withLog(im: NCIntentMatch, body: PizzeriaOrder => NCResult): NCResult =
+        val o = getOrder(im.getContext)
         val initState = o.getState.toString
         val initDesc = o.getDesc
 
@@ -88,7 +92,7 @@ class PizzeriaModel extends NCModelAdapter (new NCModelConfig("nlpcraft.pizzeria
     private def doShowMenu() =
         NCResult(
             "There are accessible for order: margherita, carbonara and marinara. Sizes: large, medium or small. " +
-            "Also there are tea, green tea, coffee and cola.",
+            "Also there are tea, coffee and cola.",
             ASK_RESULT
         )
 
@@ -237,3 +241,7 @@ class PizzeriaModel extends NCModelAdapter (new NCModelConfig("nlpcraft.pizzeria
             if !o.isEmpty && o.setPizzaNoSize(extractPizzaSize(size)) then askIsReadyOrAskSpecify(o)
             else throw UNEXPECTED_REQUEST
     )
+
+    override def onRejection(im: NCIntentMatch, e: NCRejection): NCResult =
+        // TODO: improve logic after https://issues.apache.org/jira/browse/NLPCRAFT-495 ticket resolving.
+        if im == null || getOrder(im.getContext).isEmpty then doShowMenu() else throw e

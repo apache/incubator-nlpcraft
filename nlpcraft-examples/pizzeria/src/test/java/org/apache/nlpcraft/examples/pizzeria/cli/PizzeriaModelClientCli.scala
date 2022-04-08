@@ -28,6 +28,14 @@ import java.net.http.HttpRequest.*
 import java.net.http.HttpResponse.*
 import scala.util.Using
 
+/**
+  * Use it for Pizzeria Model test.
+  *  - Run model server (PizzeriaModelServer) as application.
+  *  - Run client CLI (PizzeriaModelClientCli) as application.
+  *  Order pizza via CLI client.
+  *
+  *  Note that it supports only one default test user and only one user session at the same time.
+  */
 object PizzeriaModelClientCli extends LazyLogging :
     private val client = HttpClient.newHttpClient()
 
@@ -51,7 +59,8 @@ object PizzeriaModelClientCli extends LazyLogging :
     def main(args: Array[String]): Unit =
         println("Application started.")
 
-        // Clears possible saved sessions.tea
+        // Clears possible saved sessions.
+        // it is necessary because this test client/server implementation supports only one session for same test user.
         ask("stop")
 
         var applStarted = true
@@ -66,7 +75,6 @@ object PizzeriaModelClientCli extends LazyLogging :
 
             try
                 var in = scala.io.StdIn.readLine()
-
                 if in != null then
                     in = in.trim
                     if in.nonEmpty then println(ask(in))

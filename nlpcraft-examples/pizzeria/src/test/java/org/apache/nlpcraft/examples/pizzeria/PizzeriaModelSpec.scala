@@ -25,6 +25,7 @@ import org.junit.jupiter.api.*
 import scala.language.implicitConversions
 import scala.util.Using
 import scala.collection.mutable
+
 /**
   *
   */
@@ -67,7 +68,7 @@ class PizzeriaModelSpec:
                 case None => // No-op.
             println()
 
-        require(errs.isEmpty)
+        require(errs.isEmpty, s"There are ${errs.size} errors above.")
 
     private def dialog(exp: PizzeriaOrder, reqs: (String, NCResultType)*): Unit =
         val testMsgs = mutable.ArrayBuffer.empty[String]
@@ -114,10 +115,10 @@ class PizzeriaModelSpec:
     def test(): Unit =
         given Conversion[String, (String, NCResultType)] with
             def apply(txt: String): (String, NCResultType) = (txt, ASK_DIALOG)
-            
+
         dialog(
-            new Builder().withDrink("tea", 1).build,
-            "One tea",
+            new Builder().withDrink("tea", 2).build,
+            "Two tea",
             "yes",
             "yes" -> ASK_RESULT
         )
@@ -176,12 +177,35 @@ class PizzeriaModelSpec:
         dialog(
             new Builder().
                 withPizza("margherita", "small", 2).
-                withPizza("marinara", "small", 3).
-                withDrink("tea", 1).
+                withPizza("marinara", "small", 1).
+                withDrink("tea", 3).
                 build,
             "margherita two, marinara and three tea",
             "small",
             "small",
+            "yes",
+            "yes" -> ASK_RESULT
+        )
+
+        dialog(
+            new Builder().
+                withPizza("margherita", "small", 2).
+                withPizza("marinara", "large", 1).
+                withDrink("cola", 3).
+                build,
+            "small margherita two, marinara big one and three cola",
+            "yes",
+            "yes" -> ASK_RESULT
+        )
+
+        dialog(
+            new Builder().
+                withPizza("margherita", "small", 1).
+                withPizza("marinara", "large", 2).
+                withDrink("coffee", 2).
+                build,
+            "small margherita, 2 marinara and 2 coffee",
+            "large",
             "yes",
             "yes" -> ASK_RESULT
         )

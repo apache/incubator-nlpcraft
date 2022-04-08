@@ -34,14 +34,13 @@ elements:
     description: "Kinds of drinks."
     values:
       "tea": [ ]
-      "green tea": [ ]
       "coffee": [ ]
       "cola": ["{coca|cola|coca cola|cocacola|coca-cola}"]
 
   - id: "ord:yes"
     description: "Conformation (yes)."
     synonyms:
-      - "{yes|yeah|right|fine|nice|excellent|good|correct|sure}"
+      - "{yes|yeah|right|fine|nice|excellent|good|correct|sure|ok}"
       - "{you are|_} {correct|right}"
 
   - id: "ord:no"
@@ -70,3 +69,4 @@ elements:
     synonyms:
       - "{menu|carte|card}"
       - "{products|goods|food|_} list"
+      - "{hi|help|hallo}"

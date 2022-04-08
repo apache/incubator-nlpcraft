@@ -27,7 +27,12 @@ import java.net.InetSocketAddress
 import scala.util.Using
 
 /**
-  *
+  * Use it for Pizzeria Model test.
+  *  - Run model server (PizzeriaModelServer) as application.
+  *  - Run client CLI (PizzeriaModelClientCli) as application.
+  *  Order pizza via CLI client.
+  *  
+  *  Note that it supports only one default test user and only one user session at the same time.  
   */
 object PizzeriaModelServer:
     private val host = "localhost"
@@ -56,7 +61,7 @@ object PizzeriaModelServer:
                             case "POST" => Using.resource(new BufferedReader(new InputStreamReader(e.getRequestBody))) { _.readLine }
                             case _ => throw new Exception(s"Unsupported request method: ${e.getRequestMethod}")
 
-                    if req == null || req.isEmpty then Exception(s"Empty request")
+                    if req == null || req.isEmpty then Exception(s"Empty request.")
 
                     val resp = nlpClient.ask(req, null, "userId")
                     val prompt = if resp.getType == ASK_DIALOG then "(Your should answer on the model's question below)\n" else ""
