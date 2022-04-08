@@ -82,11 +82,11 @@ case class PizzeriaOrderExtender(mainDataSeq: Seq[EntityData], extraData: Entity
                 main -= m
                 main2Extra += m.entity -> e.entity
 
-            val unrelatedEs = es.filter(e => !used.contains(e))
-            val artificialEs = for ((m, e) <- main2Extra) yield combine(m, mainById(m.getId).property, e)
+            val unrelated = es.filter(e => !used.contains(e))
+            val artificial = for ((m, e) <- main2Extra) yield combine(m, mainById(m.getId).property, e)
             val unused = main.map(_.entity)
 
-            val res = (unrelatedEs ++ artificialEs ++ unused).sortBy(extract(_).head.getIndex)
+            val res = (unrelated ++ artificial ++ unused).sortBy(extract(_).head.getIndex)
 
             def str(es: mutable.Buffer[NCEntity]) =
                 es.map(e => s"id=${e.getId}(${extract(e).map(_.getIndex).mkString("[", ",", "]")})").mkString("{", ", ", "}")
