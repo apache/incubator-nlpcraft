@@ -26,9 +26,9 @@ elements:
   - id: "ord:pizza:size"
     description: "Size of pizza."
     values:
-      "small": [ "{small|smallest|min|minimal} {size|_}" ]
-      "medium": [ "{medium|intermediate|normal|regular} {size|_}" ]
-      "large": [ "{big|biggest|large|max|maximum|huge} {size|_}" ]
+      "small": [ "{small|smallest|min|minimal|tiny} {size|piece|_}" ]
+      "medium": [ "{medium|intermediate|normal|regular} {size|piece|_}" ]
+      "large": [ "{big|biggest|large|max|maximum|huge|enormous} {size|piece|_}" ]
 
   - id: "ord:drink"
     description: "Kinds of drinks."
@@ -38,13 +38,13 @@ elements:
       "cola": [ "{coca|cola|coca cola|cocacola|coca-cola}" ]
 
   - id: "ord:yes"
-    description: "Conformation (yes)."
+    description: "Confirmation (yes)."
     synonyms:
-      - "{yes|yeah|right|fine|nice|excellent|good|correct|sure|ok}"
+      - "{yes|yeah|right|fine|nice|excellent|good|correct|sure|ok|exact|exactly|agree}"
       - "{you are|_} {correct|right}"
 
   - id: "ord:no"
-    description: "Conformation (no)."
+    description: "Confirmation (no)."
     synonyms:
       - "{no|nope|incorrect|wrong}"
       - "{you are|_} {not|are not|aren't} {correct|right}"
@@ -52,21 +52,22 @@ elements:
   - id: "ord:stop"
     description: "Stop and cancel all."
     synonyms:
-      - "{stop|cancel|clear} {it|all|everything|_}"
+      - "{stop|cancel|clear|interrupt|quit|close} {it|all|everything|_}"
 
   - id: "ord:status"
     description: "Order status information."
     synonyms:
-      - "{current|_} {order|_} {status|state|info|information}"
+      - "{present|current|_} {order|_} {status|state|info|information}"
+      - "what {already|_} ordered"
 
   - id: "ord:finish"
-    description: "Order finish."
+    description: "The order is over."
     synonyms:
-      - "{i|everything|order|_} {is|_} {finish|ready|done}"
+      - "{i|everything|order|_} {is|_} {finish|ready|done|over|confirmed}"
 
   - id: "ord:menu"
     description: "Order menu."
     synonyms:
       - "{menu|carte|card}"
-      - "{products|goods|food|_} list"
+      - "{products|goods|food|item|_} list"
       - "{hi|help|hallo}"
