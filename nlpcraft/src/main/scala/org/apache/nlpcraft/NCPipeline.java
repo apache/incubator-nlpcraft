@@ -108,4 +108,16 @@ public interface NCPipeline {
     default Optional<NCVariantFilter> getVariantFilter() {
         return Optional.empty();
     }
+
+
+    /**
+     * TODO:
+     *
+     * Gets optional list of entity mappers.
+     *
+     * @return Optional list of entity mappers. Can be empty but never {@code null}.
+     */
+    default List<NCEntityMapper> getEntityMappers() {
+        return Collections.emptyList();
+    }
 }
