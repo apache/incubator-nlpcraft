@@ -43,7 +43,7 @@ class NCPipelineManagerSpec:
         def test(txt: String, variantCnt: Int, elements: NCSemanticElement*): Unit =
             val pipeline = mkEnPipeline
 
-            pipeline.getEntityParsers.add(NCTestUtils.mkENSemanticParser(elements.asJava))
+            pipeline.getEntityParsers.add(NCTestUtils.mkEnSemanticParser(elements.asJava))
 
             val res = new NCModelPipelineManager(CFG, pipeline).prepare(txt, null, "userId")
 

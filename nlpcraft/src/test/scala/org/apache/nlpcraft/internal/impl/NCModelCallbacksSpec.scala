@@ -62,7 +62,7 @@ class NCModelCallbacksSpec:
             override def onRejection(ctx: NCIntentMatch, e: NCRejection): NCResult = getOrElse(RejectionNotNull, RESULT_REJECTION, null)
             override def onError(ctx: NCContext, e: Throwable): NCResult = getOrElse(ErrorNotNull, RESULT_ERROR, null)
 
-    MDL.getPipeline.getEntityParsers.add(NCTestUtils.mkENSemanticParser(Seq(NCSemanticTestElement("x")).asJava))
+    MDL.getPipeline.getEntityParsers.add(NCTestUtils.mkEnSemanticParser(Seq(NCSemanticTestElement("x")).asJava))
 
     /**
       *

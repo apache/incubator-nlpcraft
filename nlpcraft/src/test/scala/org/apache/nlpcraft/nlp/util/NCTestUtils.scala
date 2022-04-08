@@ -138,13 +138,21 @@ object NCTestUtils:
       * @param macros
       * @return
       */
-    def mkENSemanticParser(elms: JList[NCSemanticElement], macros: JMap[String, String] = null): NCSemanticEntityParser =
+    def mkEnSemanticParser(elms: JList[NCSemanticElement], macros: JMap[String, String] = null): NCSemanticEntityParser =
         new NCSemanticEntityParser(mkSemanticStemmer, EN_TOK_PARSER, macros, elms)
+
+    /**
+      *
+      * @param elms
+      * @return
+      */
+    def mkEnSemanticParser(elms: NCSemanticElement*): NCSemanticEntityParser =
+        new NCSemanticEntityParser(mkSemanticStemmer, EN_TOK_PARSER, null, elms.asJava)
 
     /**
       *
       * @param src
       * @return
       */
-    def mkENSemanticParser(src: String): NCSemanticEntityParser =
+    def mkEnSemanticParser(src: String): NCSemanticEntityParser =
         new NCSemanticEntityParser(mkSemanticStemmer, EN_TOK_PARSER, src)

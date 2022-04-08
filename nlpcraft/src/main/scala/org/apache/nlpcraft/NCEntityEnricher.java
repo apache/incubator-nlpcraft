@@ -20,15 +20,29 @@ package org.apache.nlpcraft;
 import java.util.List;
 
 /**
+ * A pipeline component that enrichers entities by settings their properties.
+ * See {@link NCPipeline} for documentation on the overall processing pipeline. Note that this is
+ * an optional component in the pipeline.
  *
+ * @see NCPipeline#getEntityEnrichers()
+ * @see NCEntity
+ * @see NCToken
+ * @see NCTokenParser
+ * @see NCTokenEnricher
+ * @see NCTokenValidator
+ * @see NCEntityParser
+ * @see NCEntityEnricher
+ * @see NCEntityValidator
  */
 public interface NCEntityEnricher extends NCLifecycle {
     /**
+     * Enriches given list of entities by settings their properties.
      *
-     * @param req
-     * @param cfg 
-     * @param ents
-     * @throws NCException
+     * @param req Input request descriptor.
+     * @param cfg Configuration of the model this component is associated with.
+     * @param ents List of entities to enrich.
+     * @throws NCException Thrown in case of any errors.
+     * @see NCPropertyMap
      */
     void enrich(NCRequest req, NCModelConfig cfg, List<NCEntity> ents);
 }

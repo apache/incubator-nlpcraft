@@ -57,10 +57,11 @@ class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCPipeline) extends L
     private val entParsers = nvl(pipeline.getEntityParsers)
     private val tokVals = nvl(pipeline.getTokenValidators)
     private val entVals = nvl(pipeline.getEntityValidators)
+    private val entMappers = nvl(pipeline.getEntityMappers)
     private val varFilterOpt = pipeline.getVariantFilter.toScala
 
     private val allComps: Seq[NCLifecycle] =
-        tokEnrichers ++ entEnrichers ++ entParsers ++ tokVals ++ entVals ++ varFilterOpt.toSeq
+        tokEnrichers ++ entEnrichers ++ entParsers ++ tokVals ++ entVals ++ entMappers ++ varFilterOpt.toSeq
 
     /**
       * Processes pipeline components.
@@ -138,7 +139,7 @@ class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCPipeline) extends L
         // NOTE: we run validators regardless of whether token list is empty.
         for (v <- tokVals) v.validate(req, cfg, toks)
 
-        val entsList = new util.ArrayList[NCEntity]()
+        var entsList: util.List[NCEntity] = new util.ArrayList[NCEntity]()
 
         for (p <- entParsers) entsList.addAll(p.parse(req, cfg, toks))
 
@@ -147,6 +148,10 @@ class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCPipeline) extends L
 
         // NOTE: we run validators regardless of whether entity list is empty.
         for (v <- entVals) v.validate(req, cfg, entsList)
+
+        for (m <- entMappers)
+            entsList = m.map(req, cfg, entsList)
+            if entsList == null then E("Entity mapper cannot return null values.")
 
         val entities = entsList.asScala.toSeq
 

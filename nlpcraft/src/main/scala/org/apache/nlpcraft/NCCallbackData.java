@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,27 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.examples.time
+package org.apache.nlpcraft;
 
-import org.apache.nlpcraft.*
-import org.junit.jupiter.api.*
-
-import scala.util.Using
-import scala.jdk.CollectionConverters.*
+import java.util.List;
+import java.util.function.Function;
 
 /**
-  * JUnit model validation.
-  */
-class NCModelValidationSpec:
-    @Test
-    def test(): Unit = Using.resource(new NCModelClient(new EchoModel())) { client =>
-        val reqTxt = "Hello, please answer me!"
-        val resp = client.ask(
-            reqTxt,
-            Map("request-data-key" -> "request-data-value").asJava,
-            "test-user-id"
-        )
+ *
+ */
+public interface NCCallbackData {
+    /**
+     *
+     * @return
+     */
+    String getIntentId();
 
-        println(s"Request: $reqTxt")
-        println(s"Response:\n${resp.getBody}")
-    }
+    /**
+     *
+     * @return
+     */
+    List<List<NCEntity>> getCallbackArguments();
+
+    /**
+     *
+     * @return
+     */
+    Function<List<List<NCEntity>>, NCResult> getCallback();
+}

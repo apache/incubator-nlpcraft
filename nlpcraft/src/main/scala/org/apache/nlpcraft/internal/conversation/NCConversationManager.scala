@@ -61,7 +61,7 @@ class NCConversationManager(cfg: NCModelConfig) extends LazyLogging:
 
         for ((key, value) <- convs)
             if value.tstamp < now - cfg.getConversationTimeout then
-                value.conv.getUserData.clear()
+                value.conv.clear()
                 delKeys += key
 
         convs --= delKeys

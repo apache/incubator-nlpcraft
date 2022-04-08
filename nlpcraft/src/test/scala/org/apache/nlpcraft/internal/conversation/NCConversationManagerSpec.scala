@@ -65,22 +65,20 @@ class NCConversationManagerSpec:
         val t = NCTestToken()
         val reqId = "req1"
 
-        // TODO: important (error in code) - drop method and use saved conversation instead - error is thrown.
-        def getConversation: NCConversationData = mgr.getConversation("user1")
+        val conv = mgr.getConversation("user1")
 
         def checkSize(size: Int): Unit =
-            val conv = getConversation
             require(conv.getEntities.sizeIs == size, s"Unexpected entities size: ${conv.getEntities.size}, expected: $size")
 
         // Initial empty.
         checkSize(0)
 
         // Added. Still empty.
-        getConversation.addEntities(reqId, Seq(NCTestEntity("e1", reqId, tokens = t), NCTestEntity("e2", reqId, tokens = t)))
+        conv.addEntities(reqId, Seq(NCTestEntity("e1", reqId, tokens = t), NCTestEntity("e2", reqId, tokens = t)))
         checkSize(0)
 
         // Updated. Not empty.
-        getConversation.updateEntities()
+        conv.updateEntities()
         checkSize(2)
 
         // Cleared by timeout.

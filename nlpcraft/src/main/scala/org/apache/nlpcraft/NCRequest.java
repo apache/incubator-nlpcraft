@@ -20,7 +20,7 @@ package org.apache.nlpcraft;
 import java.util.Map;
 
 /**
- * Information about the user request.
+ * Descriptor for the input user request.
  *
  * @see NCContext#getRequest()
  */

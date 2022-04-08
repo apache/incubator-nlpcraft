@@ -48,7 +48,7 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
     private val convMgr = NCConversationManager(mdl.getConfig)
     private val dlgMgr = NCDialogFlowManager(mdl.getConfig)
     private val plMgr = NCModelPipelineManager(mdl.getConfig, mdl.getPipeline)
-    private val intentsMgr = NCIntentSolverManager(dlgMgr, intents.map(p => p.intent -> p.function).toMap)
+    private val intentsMgr = NCIntentSolverManager(dlgMgr, convMgr, intents.map(p => p.intent -> p.function).toMap)
 
     init()
 
@@ -75,18 +75,22 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
         dlgMgr.start()
         plMgr.start()
 
-     /*
+    /**
+      *
       * @param txt
       * @param data
       * @param usrId
+      * @param typ
       * @return
       */
-    def ask(txt: String, data: JMap[String, AnyRef], usrId: String): NCResult =
+    private def ask0(txt: String, data: JMap[String, AnyRef], usrId: String, typ: NCIntentSolveType): Either[NCResult, NCCallbackData] =
         val plData = plMgr.prepare(txt, data, usrId)
 
         val userId = plData.request.getUserId
         val convHldr = convMgr.getConversation(userId)
         val allEnts = plData.variants.flatMap(_.getEntities.asScala)
+
+        convHldr.updateEntities()
 
         val conv: NCConversation =
             new NCConversation:
@@ -105,7 +109,16 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
                 override val getVariants: util.Collection[NCVariant] = plData.variants.asJava
                 override val getTokens: JList[NCToken] = plData.tokens
 
-        intentsMgr.solve(mdl, ctx)
+        intentsMgr.solve(mdl, ctx, typ)
+
+     /*
+      * @param txt
+      * @param data
+      * @param usrId
+      * @return
+      */
+    def ask(txt: String, data: JMap[String, AnyRef], usrId: String): NCResult =
+        ask0(txt, data, usrId, NCIntentSolveType.REGULAR).swap.toOption.get
 
     /**
       *
@@ -187,3 +200,16 @@ class NCModelClientImpl(mdl: NCModel) extends LazyLogging:
         plMgr.close()
         dlgMgr.close()
         convMgr.close()
+        intentsMgr.close()
+
+    /**
+      *
+      * @param txt
+      * @param data
+      * @param usrId
+      * @param saveHist
+      * @return
+      */
+    def debugAsk(txt: String, data: JMap[String, AnyRef], usrId: String, saveHist: Boolean): NCCallbackData =
+        import NCIntentSolveType.*
+        ask0(txt, data, usrId, if saveHist then SEARCH else SEARCH_NO_HISTORY).toOption.get
