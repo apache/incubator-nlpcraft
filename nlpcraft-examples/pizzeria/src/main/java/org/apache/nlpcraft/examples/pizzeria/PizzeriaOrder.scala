@@ -22,7 +22,6 @@ import scala.collection.mutable
 
 object OrderElement:
     val DFLT_QTY = 1
-
 /**
   *
   */
@@ -50,13 +49,7 @@ case class Pizza(name: String, var size: Option[String], var qty: Option[Int]) e
 case class Drink(name: String, var qty: Option[Int]) extends OrderElement:
     override def toString = s"$name ${qty.getOrElse(OrderElement.DFLT_QTY)} pcs"
 
-/**
-  * Order states.
-  */
-enum OrderState:
-    case NO_DIALOG, DIALOG_IS_READY, DIALOG_SHOULD_CANCEL, DIALOG_SPECIFY, DIALOG_CONFIRM
-
-import org.apache.nlpcraft.examples.pizzeria.OrderState.*
+import org.apache.nlpcraft.examples.pizzeria.PizzeriaOrderState.*
 
 /**
   * Order.
@@ -137,13 +130,13 @@ class PizzeriaOrder:
       *
       * @return
       */
-    def getState: OrderState = state
+    def getState: PizzeriaOrderState = state
 
     /**
       *
       * @param state
       */
-    def setState(state: OrderState): Unit = this.state = state
+    def setState(state: PizzeriaOrderState): Unit = this.state = state
 
     /**
       *

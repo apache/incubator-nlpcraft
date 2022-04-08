@@ -26,7 +26,7 @@ object PizzeriaModelPipeline:
             private val ps = new PorterStemmer
             override def stem(txt: String): String = ps.synchronized { ps.stem(txt) }
 
-        import ElementExtender as Ex, EntityData as D
+        import PizzeriaOrderExtender as Ex, EntityData as D
 
         new NCPipelineBuilder().
             withTokenParser(tokParser).
@@ -39,5 +39,5 @@ object PizzeriaModelPipeline:
                     Ex(Seq(D("ord:pizza", "ord:pizza:qty"), D("ord:drink", "ord:drink:qty")), D("stanford:number", "stanford:number:nne")),
                 ).asJava
             ).
-            withEntityValidator(new RequestValidator()).
+            withEntityValidator(new PizzeriaOrderValidator()).
             build()

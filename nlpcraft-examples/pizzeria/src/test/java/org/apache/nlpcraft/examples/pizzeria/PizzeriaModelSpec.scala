@@ -19,7 +19,7 @@ package org.apache.nlpcraft.examples.pizzeria
 
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.NCResultType.*
-import org.apache.nlpcraft.examples.pizzeria.OrderState.*
+import org.apache.nlpcraft.examples.pizzeria.PizzeriaOrderState.*
 import org.junit.jupiter.api.*
 
 import scala.language.implicitConversions
@@ -106,7 +106,7 @@ class PizzeriaModelSpec:
 
         testNum += 1
 
-    private def mkOrder(state: OrderState, ps: Seq[Pizza], ds: Seq[Drink]): PizzeriaOrder =
+    private def mkOrder(state: PizzeriaOrderState, ps: Seq[Pizza], ds: Seq[Drink]): PizzeriaOrder =
         val o = new PizzeriaOrder
         o.setState(state)
         o.add(ps, ds)

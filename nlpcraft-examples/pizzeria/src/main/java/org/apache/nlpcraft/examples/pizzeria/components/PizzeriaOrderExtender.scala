@@ -44,21 +44,21 @@ case class EntityData(id: String, property: String)
   * Note that it is simple example implementation.
   * It just tries to unite nearest neighbours and doesn't check intermediate words, order correctness etc.
   */
-object ElementExtender:
+object PizzeriaOrderExtender:
     case class EntityHolder(entity: NCEntity):
         lazy val position: Double =
             val toks = entity.getTokens.asScala
             (toks.head.getIndex + toks.last.getIndex) / 2.0
     private def extract(e: NCEntity): mutable.Seq[NCToken] = e.getTokens.asScala
 
-import ElementExtender.*
+import PizzeriaOrderExtender.*
 
 /**
   *
   * @param mainDataSeq
   * @param extraData
   */
-case class ElementExtender(mainDataSeq: Seq[EntityData], extraData: EntityData) extends NCEntityMapper with LazyLogging:
+case class PizzeriaOrderExtender(mainDataSeq: Seq[EntityData], extraData: EntityData) extends NCEntityMapper with LazyLogging:
     override def map(req: NCRequest, cfg: NCModelConfig, entities: JList[NCEntity]): JList[NCEntity] =
         def combine(mainEnt: NCEntity, mainProp: String, extraEnt: NCEntity): NCEntity =
             new NCPropertyMapAdapter with NCEntity:
