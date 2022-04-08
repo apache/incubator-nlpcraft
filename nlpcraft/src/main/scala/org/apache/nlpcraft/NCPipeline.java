@@ -45,7 +45,8 @@ import java.util.Optional;
  * <ul>
  *     <li>
  *         {@link NCTokenParser} is responsible for taking the input text and tokenize it into a list of
- *         {@link NCToken}. This process is called tokenization, i.e. the process of demarcating and
+ *         {@link NCToken
+ *         }. This process is called tokenization, i.e. the process of demarcating and
  *         classifying sections of a string of input characters. There's only one token parser for the pipeline.
  *     </li>
  *     <li>
