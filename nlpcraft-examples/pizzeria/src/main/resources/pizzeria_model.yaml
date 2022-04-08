@@ -63,7 +63,7 @@ elements:
   - id: "ord:finish"
     description: "The order is over."
     synonyms:
-      - "{i|everything|order|_} {is|_} {finish|ready|done|over|confirmed}"
+      - "{i|everything|order|_} {be|_} {finish|ready|done|over|confirmed}"
 
   - id: "ord:menu"
     description: "Order menu."
