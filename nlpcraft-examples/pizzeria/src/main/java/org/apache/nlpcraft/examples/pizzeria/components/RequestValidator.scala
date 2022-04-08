@@ -23,7 +23,7 @@ import java.util
 import scala.jdk.CollectionConverters.*
 
 /**
-  *
+  * Rejects some invalid variant with more detailed information instead of standard rejections.
   */
 class RequestValidator extends NCEntityValidator:
     override def validate(req: NCRequest, cfg: NCModelConfig, ents: util.List[NCEntity]): Unit =

@@ -29,7 +29,7 @@ import scala.jdk.CollectionConverters.*
 import scala.jdk.OptionConverters.*
 
 /**
-  *
+  * * Pizza model helper.
   */
 object PizzeriaModel extends LazyLogging:
     private val UNEXPECTED_REQUEST = new NCRejection("Unexpected request for current dialog context.")
@@ -44,7 +44,10 @@ object PizzeriaModel extends LazyLogging:
 import org.apache.nlpcraft.examples.pizzeria.PizzeriaModel.*
 
 /**
-  *
+  * Pizza model.
+  * It keep order state for each user.
+  * Each order can in one of 5 state (org.apache.nlpcraft.examples.pizzeria.OrderState)
+  * Note that there is used custom states logic instead of STM, because complex states flow.
   */
 class PizzeriaModel extends NCModelAdapter(new NCModelConfig("nlpcraft.pizzeria.ex", "Pizzeria Example Model", "1.0"), PizzeriaModelPipeline.PIPELINE) with LazyLogging:
     private def getOrder(ctx: NCContext): PizzeriaOrder =

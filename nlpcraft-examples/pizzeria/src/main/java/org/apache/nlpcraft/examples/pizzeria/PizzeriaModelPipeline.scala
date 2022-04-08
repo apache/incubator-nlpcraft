@@ -13,7 +13,7 @@ import scala.jdk.CollectionConverters.*
 import java.util.Properties
 
 /**
-  *
+  * PizzeriaModel pipeline, based on Stanford NLP engine, including model custom components.
   */
 object PizzeriaModelPipeline:
     val PIPELINE: NCPipeline =

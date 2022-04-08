@@ -32,27 +32,35 @@ private abstract class OrderElement:
     require(name != null && name.nonEmpty)
 
 /**
+  * Pizza order data holder.
   *
-  * @param name
-  * @param size
-  * @param qty
+  * @param name Name.
+  * @param size Optional size.
+  * @param qty Optional quantity.
   */
 case class Pizza(name: String, var size: Option[String], var qty: Option[Int]) extends OrderElement:
     override def toString = s"$name '${size.getOrElse("undefined size")}' ${qty.getOrElse(OrderElement.DFLT_QTY)} pcs"
 
 /**
+  * Drink order data holder.
   *
-  * @param name
-  * @param qty
+  * @param name Name.
+  * @param qty Optional quantity.
   */
 case class Drink(name: String, var qty: Option[Int]) extends OrderElement:
     override def toString = s"$name ${qty.getOrElse(OrderElement.DFLT_QTY)} pcs"
 
+/**
+  * Order states.
+  */
 enum OrderState:
     case NO_DIALOG, DIALOG_IS_READY, DIALOG_SHOULD_CANCEL, DIALOG_SPECIFY, DIALOG_CONFIRM
 
 import org.apache.nlpcraft.examples.pizzeria.OrderState.*
 
+/**
+  * Order.
+  */
 class PizzeriaOrder:
     private var state = NO_DIALOG
     private val pizzas = mutable.ArrayBuffer.empty[Pizza]
@@ -96,6 +104,7 @@ class PizzeriaOrder:
             else setByName(pizzas, p)
 
         for (d <- ds) setByName(drinks, d)
+
     /**
       *
       * @return
