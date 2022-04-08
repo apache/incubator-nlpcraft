@@ -23,6 +23,7 @@ import java.util
 import java.util.List as JList
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
+import com.typesafe.scalalogging.LazyLogging
 
 /**
   *
@@ -32,39 +33,56 @@ import scala.jdk.CollectionConverters.*
 case class EntityData(id: String, property: String)
 
 /**
-  * Simple element extender.
-  * For each 'main' element it tries to find extra element. If it cane done instead of this pair new element created.
-  * This new element has 'main' element ID. Extra element configured property copied to this new element.
+  * Element extender.
+  * For each 'main' element it tries to find related extra element and to make new complex element instead of this pair.
+  * This new element has:
+  * 1. Same ID as main element, also all main element properties copied into this new element's properties.
+  * 2. Tokens from both elements.
+  * 3. Configured property from extra element copied into new element's properties.
   *
-  * Note that for simplified implementation, it doesn't care about words between pairs elements and pairs,
-  * also it doesn't check correctness of words order.
+  * Note that it is simple example implementation.
+  * It just tries to unite nearest neighbours and doesn't check intermediate words, order correctness etc.
   */
-case class ElementExtender(mainDataSeq: Seq[EntityData], extraData: EntityData) extends NCEntityMapper:
-    private def getToks(e: NCEntity): mutable.Seq[NCToken] = e.getTokens.asScala
-    override def map(req: NCRequest, cfg: NCModelConfig, entities: util.List[NCEntity]): util.List[NCEntity] =
-        val mainDataMap = mainDataSeq.map(p => p.id -> p).toMap
+object ElementExtender:
+    case class EntityHolder(element: NCEntity):
+        lazy val position: Double =
+            val toks = element.getTokens.asScala
+            (toks.head.getIndex + toks.last.getIndex) / 2.0
 
-        var es = entities.asScala
-        val main = es.filter(e => mainDataMap.contains(e.getId))
-        val extra = es.filter(_.getId == extraData.id)
+    private def toTokens(e: NCEntity): mutable.Seq[NCToken] = e.getTokens.asScala
 
-        if main.nonEmpty && main.size >= extra.size then
-            var ok = true
-            val mapped =
-                for ((e1, e2) <- main.zip(extra) if ok) yield
-                    if e1.getId == e2.getId then
-                        ok = false
-                        null
-                    else
-                        val (mEnt, eEnt) = if mainDataMap.contains(e1.getId) then (e1, e2) else (e2, e1)
-                        new NCPropertyMapAdapter with NCEntity:
-                            mEnt.keysSet().forEach(k => put(k, mEnt.get(k)))
-                            put[String](mainDataMap(mEnt.getId).property, eEnt.get[String](extraData.property).toLowerCase)
-                            override val getTokens: JList[NCToken] = (getToks(mEnt) ++ getToks(eEnt)).sortBy(_.getIndex).asJava
-                            override val getRequestId: String = req.getRequestId
-                            override val getId: String = mEnt.getId
+import ElementExtender.*
 
-            es = es --= main.take(mapped.size)
-            es = es --= extra.take(mapped.size)
-            (es ++ mapped).sortBy(getToks(_).head.getIndex).asJava
+/**
+  *
+  * @param mainSeq
+  * @param extra
+  */
+case class ElementExtender(mainSeq: Seq[EntityData], extra: EntityData) extends NCEntityMapper with LazyLogging:
+    override def map(req: NCRequest, cfg: NCModelConfig, entities: JList[NCEntity]): JList[NCEntity] =
+        def combine(m: NCEntity, mProp: String, e: NCEntity): NCEntity =
+            new NCPropertyMapAdapter with NCEntity:
+                m.keysSet().forEach(k => put(k, m.get(k)))
+                put[String](mProp, e.get[String](extra.property).toLowerCase)
+                override val getTokens: JList[NCToken] = (toTokens(m) ++ toTokens(e)).sortBy(_.getIndex).asJava
+                override val getRequestId: String = req.getRequestId
+                override val getId: String = m.getId
+
+        val es = entities.asScala
+        val mainById = mainSeq.map(p => p.id -> p).toMap
+        val mainHs = mutable.HashSet.empty ++ es.filter(e => mainById.contains(e.getId)).map(p => EntityHolder(p))
+        val extraHs = es.filter(_.getId == extra.id).map(p => EntityHolder(p))
+
+        if mainHs.nonEmpty && mainHs.size >= extraHs.size then
+            val main2Extra = mutable.HashMap.empty[NCEntity, NCEntity]
+
+            for (e <- extraHs)
+                val m = mainHs.minBy(m => Math.abs(m.position - e.position))
+                mainHs -= m
+                main2Extra += m.element -> e.element
+
+            val newEs = for ((m, e) <- main2Extra) yield combine(m, mainById(m.getId).property, e)
+            val used = (mainHs.map(_.element) ++ extraHs.map(_.element)).toSet
+
+            (es.filter(e => !used.contains(e)) ++ mainHs.map(_.element) ++ newEs).sortBy(toTokens(_).head.getIndex).asJava
         else entities
