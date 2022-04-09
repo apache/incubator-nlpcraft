@@ -75,3 +75,28 @@ class NCConversationSpec:
             // 'e1' received from conversation.
             execOk("e2")
         }
+
+    @Test
+    def testClearEmptyData(): Unit =
+        val mdl: NCModel =
+            new NCTestModelAdapter:
+                import NCSemanticTestElement as TE
+                override val getPipeline: NCPipeline =
+                    val pl = mkEnPipeline
+                    pl.getEntityParsers.add(NCTestUtils.mkEnSemanticParser(TE("e1")))
+                    pl
+
+                @NCIntent("intent=i1 term(t1)~{# == 'e1'}")
+                def onMatch(im: NCIntentMatch): NCResult =
+                    val conv = im.getContext.getConversation
+                    conv.clearStm(_ => true)
+                    conv.clearDialog(_ => true)
+                    new NCResult()
+
+        Using.resource(new NCModelClient(mdl)) { client =>
+            client.ask("e1", null, "userId")
+            client.clearDialog("userId1", _ => true)
+            client.clearDialog("userId2")
+            client.clearStm("userId3", _ => true)
+            client.clearStm("user4")
+        }

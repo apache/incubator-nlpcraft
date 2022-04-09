@@ -194,6 +194,10 @@ class NCDialogFlowManager(cfg: NCModelConfig) extends LazyLogging:
       */
     def clear(usrId: String, pred: NCDialogFlowItem => Boolean): Unit =
         flow.synchronized {
-            flow(usrId) = flow(usrId).filterNot(pred)
+            flow.get(usrId) match
+                case Some(fu) =>
+                    fu --= fu.filter(pred)
+                    if fu.isEmpty then flow -= usrId
+                case None => // No-op.
             flow.notifyAll()
         }
