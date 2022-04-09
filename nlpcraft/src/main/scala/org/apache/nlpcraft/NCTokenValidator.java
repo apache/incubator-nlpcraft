@@ -20,7 +20,16 @@ package org.apache.nlpcraft;
 import java.util.List;
 
 /**
- * 
+ *
+ * @see NCEntity
+ * @see NCToken
+ * @see NCTokenParser
+ * @see NCTokenEnricher
+ * @see NCTokenValidator
+ * @see NCEntityParser
+ * @see NCEntityEnricher
+ * @see NCEntityValidator
+ * @see NCEntityMapper
  */
 public interface NCTokenValidator extends NCLifecycle {
     /**

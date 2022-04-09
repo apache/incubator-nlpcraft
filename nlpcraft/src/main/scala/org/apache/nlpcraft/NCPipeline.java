@@ -64,6 +64,7 @@ public interface NCPipeline {
     NCTokenParser getTokenParser();
 
     /**
+     * Gets the list of entity parser. At least one entity parser is required.
      *
      * @return
      */
@@ -109,10 +110,7 @@ public interface NCPipeline {
         return Optional.empty();
     }
 
-
     /**
-     * TODO:
-     *
      * Gets optional list of entity mappers.
      *
      * @return Optional list of entity mappers. Can be empty but never {@code null}.

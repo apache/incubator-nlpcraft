@@ -34,6 +34,7 @@ import java.util.List;
  * @see NCEntityParser
  * @see NCEntityEnricher
  * @see NCEntityValidator
+ * @see NCEntityMapper
  */
 public interface NCEntityMapper extends NCLifecycle {
     /**
