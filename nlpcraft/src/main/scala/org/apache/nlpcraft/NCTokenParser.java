@@ -25,10 +25,15 @@ import java.util.List;
  * See {@link NCPipeline} for documentation on the token parser place
  * in the overall processing pipeline.
  *
+ * @see NCEntity
  * @see NCToken
+ * @see NCTokenParser
  * @see NCTokenEnricher
  * @see NCTokenValidator
- * @see NCPipeline
+ * @see NCEntityParser
+ * @see NCEntityEnricher
+ * @see NCEntityValidator
+ * @see NCEntityMapper
  */
 public interface NCTokenParser {
     /**

@@ -34,11 +34,15 @@ import java.util.stream.Collectors;
  * that allows them to store custom metadata properties. Parser, enrichers and validators for tokens
  * and entities use this capability to store and check their properties in tokens and entities.
  *
+ * @see NCEntity
  * @see NCToken
  * @see NCTokenParser
  * @see NCTokenEnricher
  * @see NCTokenValidator
- * @see NCPipeline
+ * @see NCEntityParser
+ * @see NCEntityEnricher
+ * @see NCEntityValidator
+ * @see NCEntityMapper
  */
 public interface NCEntity extends NCPropertyMap {
     /**

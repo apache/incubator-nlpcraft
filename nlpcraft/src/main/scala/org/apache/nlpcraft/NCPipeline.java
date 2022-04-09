@@ -109,7 +109,7 @@ public interface NCPipeline {
     default Optional<NCVariantFilter> getVariantFilter() {
         return Optional.empty();
     }
-    
+
     /**
      * Gets optional list of entity mappers.
      *
