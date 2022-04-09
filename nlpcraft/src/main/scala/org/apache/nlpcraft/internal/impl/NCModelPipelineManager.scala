@@ -176,9 +176,9 @@ class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCPipeline) extends L
         if varFilterOpt.isDefined then variants = varFilterOpt.get.filter(req, cfg, variants)
 
         // Skips empty variants.
-        val vrnts = variants.asScala.toSeq.filter(!_.getEntities.isEmpty)
+        val vrns = variants.asScala.toSeq.filter(!_.getEntities.isEmpty)
 
-        for ((v, i) <- vrnts.zipWithIndex)
+        for ((v, i) <- vrns.zipWithIndex)
             val tbl = NCAsciiTable("EntityId", "Tokens", "Tokens Position", "Properties")
 
             for (e <- v.getEntities.asScala)
@@ -189,9 +189,9 @@ class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCPipeline) extends L
                     toks.map(p => s"${p.getStartCharIndex}-${p.getEndCharIndex}").mkString("|"),
                     mkProps(e)
                 )
-            tbl.info(logger, Option(s"Variant: ${i + 1} (${vrnts.size})"))
+            tbl.info(logger, Option(s"Variant: ${i + 1} (${vrns.size})"))
 
-        NCPipelineData(req, vrnts, toks)
+        NCPipelineData(req, vrns, toks)
 
     def start(): Unit = processComponents(_.onStart(cfg), "started")
     /**

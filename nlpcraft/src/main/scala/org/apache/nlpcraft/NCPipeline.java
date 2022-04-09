@@ -135,7 +135,6 @@ public interface NCPipeline {
     NCTokenParser getTokenParser();
 
     /**
-     * TODO: can be empty.
      * Gets the list of entity parser. At least one entity parser is required.
      *
      * @return List of entity parser. List should contain at least one entity parser.
