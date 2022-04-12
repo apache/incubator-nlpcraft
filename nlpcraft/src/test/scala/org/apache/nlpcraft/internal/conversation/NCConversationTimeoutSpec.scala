@@ -42,7 +42,7 @@ class NCConversationTimeoutSpec:
         val mdl: NCModel =
             new NCTestModelAdapter:
                 override val getConfig: NCModelConfig =
-                    val cfg = new NCModelConfig("testId", "test", "1.0", "Test description", "Test origin")
+                    val cfg = CFG
                     cfg.setConversationTimeout(TIMEOUT)
                     cfg
 
