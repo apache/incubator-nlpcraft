@@ -21,7 +21,7 @@ import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.util.NCResourceReader
 import org.apache.nlpcraft.nlp.entity.parser.NCNLPEntityParser
 import org.apache.nlpcraft.nlp.token.parser.NCOpenNLPTokenParser
-import org.apache.nlpcraft.nlp.util.NCTestUtils
+import org.apache.nlpcraft.nlp.util.*
 import org.junit.jupiter.api.Test
 
 import java.util
@@ -41,7 +41,7 @@ class NCVariantFilterSpec:
 
     private def mkBuilder(): NCPipelineBuilder =
         new NCPipelineBuilder().
-            withTokenParser(new NCOpenNLPTokenParser(NCResourceReader.getPath("opennlp/en-token.bin"))).
+            withTokenParser(EN_TOK_PARSER).
             //  For intents matching, we have to add at least one entity parser.
             withEntityParser(new NCNLPEntityParser)
 
