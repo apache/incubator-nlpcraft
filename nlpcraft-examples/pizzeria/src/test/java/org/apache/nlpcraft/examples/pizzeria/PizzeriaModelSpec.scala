@@ -19,6 +19,7 @@ package org.apache.nlpcraft.examples.pizzeria
 
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.NCResultType.*
+import org.apache.nlpcraft.examples.pizzeria.PizzeriaModel.ResultState
 import org.apache.nlpcraft.examples.pizzeria.PizzeriaOrderState.*
 import org.junit.jupiter.api.*
 
@@ -29,7 +30,7 @@ import scala.collection.mutable
 object PizzeriaModelSpec:
     private class ModelTestWrapper extends PizzeriaModel:
         private var o: PizzeriaOrder = _
-        override def doExecute(im: NCIntentMatch, o: PizzeriaOrder): NCResult =
+        override def doExecute(im: NCIntentMatch, o: PizzeriaOrder): ResultState =
             val res = super.doExecute(im, o)
             this.o = o
             res
@@ -38,7 +39,7 @@ object PizzeriaModelSpec:
 
     private class Builder:
         private val o = new PizzeriaOrder
-        o.setState(NO_DIALOG)
+        o.setState(DIALOG_EMPTY)
         def withPizza(name: String, size: String, qty: Int): Builder =
             o.add(Seq(Pizza(name, Some(size), Some(qty))), Seq.empty)
             this

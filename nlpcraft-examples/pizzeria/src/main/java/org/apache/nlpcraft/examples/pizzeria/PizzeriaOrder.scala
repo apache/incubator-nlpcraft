@@ -55,7 +55,7 @@ import org.apache.nlpcraft.examples.pizzeria.PizzeriaOrderState.*
   * Order.
   */
 class PizzeriaOrder:
-    private var state = NO_DIALOG
+    private var state = DIALOG_EMPTY
     private val pizzas = mutable.ArrayBuffer.empty[Pizza]
     private val drinks = mutable.ArrayBuffer.empty[Drink]
 

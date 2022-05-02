@@ -21,4 +21,4 @@ package org.apache.nlpcraft.examples.pizzeria
   * Order states.
   */
 enum PizzeriaOrderState:
-    case NO_DIALOG, WAIT_IS_READY, WAIT_SHOULD_CANCEL, WAIT_SPECIFY, WAIT_CONFIRM
+    case DIALOG_EMPTY, DIALOG_IS_READY, DIALOG_SHOULD_CANCEL, DIALOG_SPECIFY, DIALOG_CONFIRM
