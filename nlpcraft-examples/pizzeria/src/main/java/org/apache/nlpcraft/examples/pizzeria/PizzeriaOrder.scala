@@ -20,7 +20,13 @@ package org.apache.nlpcraft.examples.pizzeria
 import java.util.Objects
 import scala.collection.mutable
 
-object OrderElement:
+/**
+  * Order states.
+  */
+enum PizzeriaOrderState:
+    case DIALOG_EMPTY, DIALOG_IS_READY, DIALOG_SHOULD_CANCEL, DIALOG_SPECIFY, DIALOG_CONFIRM
+
+private object OrderElement:
     val DFLT_QTY = 1
 /**
   *
@@ -120,7 +126,7 @@ class PizzeriaOrder:
       *
        * @param size
       */
-    def setPizzaNoSize(size: String): Boolean =
+    def fixPizzaNoSize(size: String): Boolean =
         findPizzaNoSize match
             case Some(p) =>
                 p.size = Option(size)
@@ -142,7 +148,7 @@ class PizzeriaOrder:
       *
       * @return
       */
-    def getDesc: String =
+    def getDescription: String =
         if !isEmpty then
             val ps = if pizzas.nonEmpty then s"pizza: ${pizzas.mkString(", ")}" else ""
             val ds = if drinks.nonEmpty then s"drinks: ${drinks.mkString(", ")}" else ""
