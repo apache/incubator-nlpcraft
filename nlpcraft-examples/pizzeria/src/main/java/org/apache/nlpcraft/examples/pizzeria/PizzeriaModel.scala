@@ -82,7 +82,7 @@ class PizzeriaModel extends NCModelAdapter(new NCModelConfig("nlpcraft.pizzeria.
     private def askSpecify(o: Order): ResultState =
         require(!o.isValid)
 
-        o.findPizzaNoSize match
+        o.findPizzaWithoutSize match
             case Some(p) =>
                 NCResult(s"Choose size (large, medium or small) for: '${p.name}'", ASK_DIALOG) -> DIALOG_SPECIFY
             case None =>
@@ -234,7 +234,7 @@ class PizzeriaModel extends NCModelAdapter(new NCModelConfig("nlpcraft.pizzeria.
     def onOrderSpecify(im: NCIntentMatch, @NCIntentTerm("size") size: NCEntity): NCResult = execute(
         im,
         // If order in progress and has pizza with unknown size, it doesn't depend on dialog state.
-        o => if !o.isEmpty && o.fixPizzaNoSize(extractPizzaSize(size)) then askIsReadyOrAskSpecify(o) else throw UNEXPECTED_REQUEST
+        o => if !o.isEmpty && o.fixPizzaWithoutSize(extractPizzaSize(size)) then askIsReadyOrAskSpecify(o) else throw UNEXPECTED_REQUEST
     )
 
     override def onRejection(im: NCIntentMatch, e: NCRejection): NCResult =

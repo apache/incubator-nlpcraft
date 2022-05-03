@@ -75,7 +75,7 @@ class PizzeriaOrder:
       *
       * @return
       */
-    def isValid: Boolean = !isEmpty && findPizzaNoSize.isEmpty
+    def isValid: Boolean = !isEmpty && findPizzaWithoutSize.isEmpty
 
     /**
       *
@@ -120,14 +120,14 @@ class PizzeriaOrder:
       *
       * @return
       */
-    def findPizzaNoSize: Option[Pizza] = pizzas.find(_.size.isEmpty)
+    def findPizzaWithoutSize: Option[Pizza] = pizzas.find(_.size.isEmpty)
 
     /**
       *
        * @param size
       */
-    def fixPizzaNoSize(size: String): Boolean =
-        findPizzaNoSize match
+    def fixPizzaWithoutSize(size: String): Boolean =
+        findPizzaWithoutSize match
             case Some(p) =>
                 p.size = Option(size)
                 true
