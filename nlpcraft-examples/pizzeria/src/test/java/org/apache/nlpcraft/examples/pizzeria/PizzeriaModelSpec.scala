@@ -19,7 +19,7 @@ package org.apache.nlpcraft.examples.pizzeria
 
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.NCResultType.*
-import org.apache.nlpcraft.examples.pizzeria.PizzeriaModel.ResultState
+import org.apache.nlpcraft.examples.pizzeria.PizzeriaModel.Result
 import org.apache.nlpcraft.examples.pizzeria.PizzeriaOrderState.*
 import org.junit.jupiter.api.*
 
@@ -30,8 +30,8 @@ import scala.collection.mutable
 object PizzeriaModelSpec:
     private class ModelTestWrapper extends PizzeriaModel:
         private var o: PizzeriaOrder = _
-        override def doExecute(im: NCIntentMatch, o: PizzeriaOrder): ResultState =
-            val res = super.doExecute(im, o)
+        override def doExecute(o: PizzeriaOrder)(using im: NCIntentMatch): Result =
+            val res = super.doExecute(o)
             this.o = o
             res
         def getLastExecutedOrder: PizzeriaOrder = o

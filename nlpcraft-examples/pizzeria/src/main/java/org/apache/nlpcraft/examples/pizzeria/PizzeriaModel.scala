@@ -42,7 +42,7 @@ object PizzeriaModel extends LazyLogging:
     private def extractDrink(e: NCEntity): Drink =
         Drink(e.get[String]("ord:drink:value"), extractQty(e, "ord:drink:qty"))
 
-    type ResultState = (NCResult, State)
+    type Result = (NCResult, State)
 
 import org.apache.nlpcraft.examples.pizzeria.PizzeriaModel.*
 
@@ -64,7 +64,7 @@ class PizzeriaModel extends NCModelAdapter(new NCModelConfig("nlpcraft.pizzeria.
             data.put(usrId, o)
             o
 
-    private def execute(im: NCIntentMatch, body: Order => ResultState): NCResult =
+    private def doRequest(body: Order => Result)(using im: NCIntentMatch): NCResult =
         val o = getOrder(im.getContext)
 
         logger.info(s"Intent '${im.getIntentId}' activated for text: '${im.getContext.getRequest.getText}'.")
@@ -73,13 +73,13 @@ class PizzeriaModel extends NCModelAdapter(new NCModelConfig("nlpcraft.pizzeria.
         val (res, resState) = body.apply(o)
         o.setState(resState)
 
-        logger.info(s"After call  [desc=${o.getDescription}, resState: $resState.")
+        logger.info(s"After call [desc=${o.getDescription}, resState: $resState.")
 
         res
 
-    private def askIsReady(): ResultState = NCResult(s"Is order ready?", ASK_DIALOG) -> DIALOG_IS_READY
+    private def askIsReady(): Result = NCResult(s"Is order ready?", ASK_DIALOG) -> DIALOG_IS_READY
 
-    private def askSpecify(o: Order): ResultState =
+    private def askSpecify(o: Order): Result =
         require(!o.isValid)
 
         o.findPizzaWithoutSize match
@@ -89,7 +89,7 @@ class PizzeriaModel extends NCModelAdapter(new NCModelConfig("nlpcraft.pizzeria.
                 require(o.isEmpty)
                 NCResult(s"Please order something. Ask `menu` to look what you can order.", ASK_DIALOG) -> DIALOG_SPECIFY
 
-    private def askShouldStop(): ResultState =
+    private def askShouldStop(): Result =
         NCResult(s"Should current order be canceled?", ASK_DIALOG) -> DIALOG_SHOULD_CANCEL
 
     private def doShowMenu(): NCResult =
@@ -101,11 +101,11 @@ class PizzeriaModel extends NCModelAdapter(new NCModelConfig("nlpcraft.pizzeria.
 
     private def doShowStatus(o: Order): NCResult = NCResult(s"Current order state: ${o.getDescription}.", ASK_RESULT)
 
-    private def askConfirm(o: Order): ResultState =
+    private def askConfirm(o: Order): Result =
         require(o.isValid)
         NCResult(s"Let's specify your order: ${o.getDescription}. Is it correct?", ASK_DIALOG) -> DIALOG_CONFIRM
 
-    private def withClear(res: NCResult, newState: State, im: NCIntentMatch): ResultState =
+    private def withClear(res: NCResult, newState: State, im: NCIntentMatch): Result =
         val ctx = im.getContext
         val conv = ctx.getConversation
         conv.getData.remove(ctx.getRequest.getUserId)
@@ -114,11 +114,11 @@ class PizzeriaModel extends NCModelAdapter(new NCModelConfig("nlpcraft.pizzeria.
         res -> newState
 
     // Access level set for tests reasons.
-    private[pizzeria] def doExecute(im: NCIntentMatch, o: Order): ResultState =
+    private[pizzeria] def doExecute(o: Order)(using im: NCIntentMatch): Result =
         require(o.isValid)
         withClear(NCResult(s"Executed: ${o.getDescription}.", ASK_RESULT), DIALOG_EMPTY, im)
 
-    private def doStop(im: NCIntentMatch, o: Order): ResultState =
+    private def doStop(o: Order)(using im: NCIntentMatch): Result =
         withClear(
             NCResult(
                 if !o.isEmpty then s"Everything cancelled. Ask `menu` to look what you can order."
@@ -129,26 +129,25 @@ class PizzeriaModel extends NCModelAdapter(new NCModelConfig("nlpcraft.pizzeria.
             im
         )
 
-    private def doContinue(): ResultState = NCResult(s"OK, please continue.", ASK_RESULT) -> DIALOG_EMPTY
-    private def askConfirmOrAskSpecify(o: Order): ResultState = if o.isValid then askConfirm(o) else askSpecify(o)
-    private def askIsReadyOrAskSpecify(o: Order): ResultState = if o.isValid then askIsReady() else askSpecify(o)
-    private def doExecuteOrAskSpecify(im: NCIntentMatch, o: Order): ResultState = if o.isValid then doExecute(im, o) else askSpecify(o)
-    private def askStopOrDoStop(im: NCIntentMatch, o: Order): ResultState = if o.isValid then askShouldStop() else doStop(im, o)
-
+    private def doContinue(): Result = NCResult(s"OK, please continue.", ASK_RESULT) -> DIALOG_EMPTY
+    private def askConfirmOrAskSpecify(o: Order): Result = if o.isValid then askConfirm(o) else askSpecify(o)
+    private def askIsReadyOrAskSpecify(o: Order): Result = if o.isValid then askIsReady() else askSpecify(o)
+    private def doExecuteOrAskSpecify(o: Order)(using im: NCIntentMatch): Result = if o.isValid then doExecute(o) else askSpecify(o)
     /**
       *
       * @param im
       * @return
       */
     @NCIntent("intent=yes term(yes)={# == 'ord:yes'}")
-    def onYes(im: NCIntentMatch): NCResult = execute(
-        im,
+    def onYes(using im: NCIntentMatch): NCResult = doRequest(
         o => o.getState match
-            case DIALOG_CONFIRM => doExecute(im, o)
-            case DIALOG_SHOULD_CANCEL => doStop(im, o)
+            case DIALOG_CONFIRM => doExecute(o)
+            case DIALOG_SHOULD_CANCEL => doStop(o)
             case DIALOG_IS_READY => askConfirmOrAskSpecify(o)
             case DIALOG_SPECIFY | DIALOG_EMPTY => throw UNEXPECTED_REQUEST
     )
+
+    private def askStopOrDoStop(o: Order)(using im: NCIntentMatch): Result = if o.isValid then askShouldStop() else doStop(o)
 
     /**
       *
@@ -156,13 +155,12 @@ class PizzeriaModel extends NCModelAdapter(new NCModelConfig("nlpcraft.pizzeria.
       * @return
       */
     @NCIntent("intent=no term(no)={# == 'ord:no'}")
-    def onNo(im: NCIntentMatch): NCResult = execute(
-        im,
+    def onNo(using im: NCIntentMatch): NCResult = doRequest(
         o => o.getState match
             case DIALOG_CONFIRM | DIALOG_IS_READY => doContinue()
             case DIALOG_SHOULD_CANCEL => askConfirmOrAskSpecify(o)
             case DIALOG_SPECIFY | DIALOG_EMPTY => throw UNEXPECTED_REQUEST
-        )
+    )
     /**
       *
       * @param im
@@ -170,7 +168,7 @@ class PizzeriaModel extends NCModelAdapter(new NCModelConfig("nlpcraft.pizzeria.
       */
     @NCIntent("intent=stop term(stop)={# == 'ord:stop'}")
     // It doesn't depend on order validity and dialog state.
-    def onStop(im: NCIntentMatch): NCResult = execute(im, o => askStopOrDoStop(im, o))
+    def onStop(using im: NCIntentMatch): NCResult = doRequest(askStopOrDoStop)
 
     /**
       *
@@ -178,26 +176,24 @@ class PizzeriaModel extends NCModelAdapter(new NCModelConfig("nlpcraft.pizzeria.
       * @return
       */
     @NCIntent("intent=status term(status)={# == 'ord:status'}")
-    def onStatus(im: NCIntentMatch): NCResult = execute(
-        im,
+    def onStatus(using im: NCIntentMatch): NCResult = doRequest(
         o => o.getState match
             case DIALOG_CONFIRM => askConfirm(o) // Ignore `status`, confirm again.
             case DIALOG_SHOULD_CANCEL => doShowStatus(o) -> DIALOG_EMPTY // Changes state.
             case DIALOG_EMPTY | DIALOG_IS_READY | DIALOG_SPECIFY => doShowStatus(o) -> o.getState  // Keeps same state.
-        )
+    )
     /**
       *
       * @param im
       * @return
       */
     @NCIntent("intent=finish term(finish)={# == 'ord:finish'}")
-    def onFinish(im: NCIntentMatch): NCResult = execute(
-        im,
+    def onFinish(using im: NCIntentMatch): NCResult = doRequest(
         o => o.getState match
-            case DIALOG_CONFIRM => doExecuteOrAskSpecify(im, o) // Like YES if valid.
+            case DIALOG_CONFIRM => doExecuteOrAskSpecify(o) // Like YES if valid.
             case DIALOG_SPECIFY => askSpecify(o) // Ignore `finish`, specify again.
             case DIALOG_EMPTY | DIALOG_IS_READY | DIALOG_SHOULD_CANCEL => askConfirmOrAskSpecify(o)
-        )
+    )
     /**
       *
       * @param im
@@ -205,7 +201,7 @@ class PizzeriaModel extends NCModelAdapter(new NCModelConfig("nlpcraft.pizzeria.
       */
     @NCIntent("intent=menu term(menu)={# == 'ord:menu'}")
     // It doesn't depend and doesn't influence on order validity and dialog state.
-    def onMenu(im: NCIntentMatch): NCResult = execute(im, o => doShowMenu() -> o.getState)
+    def onMenu(using im: NCIntentMatch): NCResult = doRequest(o => doShowMenu() -> o.getState)
 
     /**
       *
@@ -215,8 +211,7 @@ class PizzeriaModel extends NCModelAdapter(new NCModelConfig("nlpcraft.pizzeria.
       * @return
       */
     @NCIntent("intent=order term(ps)={# == 'ord:pizza'}* term(ds)={# == 'ord:drink'}*")
-    def onOrder(im: NCIntentMatch, @NCIntentTerm("ps") ps: List[NCEntity], @NCIntentTerm("ds") ds: List[NCEntity]): NCResult = execute(
-        im,
+    def onOrder(using im: NCIntentMatch, @NCIntentTerm("ps") ps: List[NCEntity], @NCIntentTerm("ds") ds: List[NCEntity]): NCResult = doRequest(
         o =>
             require(ps.nonEmpty || ds.nonEmpty);
             // It doesn't depend on order validity and dialog state.
@@ -231,8 +226,7 @@ class PizzeriaModel extends NCModelAdapter(new NCModelConfig("nlpcraft.pizzeria.
       * @return
       */
     @NCIntent("intent=orderSpecify term(size)={# == 'ord:pizza:size'}")
-    def onOrderSpecify(im: NCIntentMatch, @NCIntentTerm("size") size: NCEntity): NCResult = execute(
-        im,
+    def onOrderSpecify(using im: NCIntentMatch, @NCIntentTerm("size") size: NCEntity): NCResult = doRequest(
         // If order in progress and has pizza with unknown size, it doesn't depend on dialog state.
         o => if !o.isEmpty && o.fixPizzaWithoutSize(extractPizzaSize(size)) then askIsReadyOrAskSpecify(o) else throw UNEXPECTED_REQUEST
     )
