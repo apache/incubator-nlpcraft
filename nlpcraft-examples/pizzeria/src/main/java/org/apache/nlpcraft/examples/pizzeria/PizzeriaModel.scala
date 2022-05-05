@@ -83,13 +83,15 @@ object PizzeriaModel extends LazyLogging:
 
     private def askShouldStop(): Result = mkDialog(s"Should current order be canceled?") -> DIALOG_SHOULD_CANCEL
 
-    private def doShowMenu(): NCResult =
+    private def doShowMenuResult(): NCResult =
         mkResult(
             "There are accessible for order: margherita, carbonara and marinara. Sizes: large, medium or small. " +
-                "Also there are tea, coffee and cola."
+            "Also there are tea, coffee and cola."
         )
 
-    private def doShowStatus(o: Order): NCResult = mkResult(s"Current order state: ${o.getDescription}.")
+    private def doShowMenu(state: State): Result = doShowMenuResult() -> state
+
+    private def doShowStatus(o: Order, state: State): Result = mkResult(s"Current order state: ${o.getDescription}.") -> state
 
     private def askConfirm(o: Order): Result =
         require(o.isValid)
@@ -178,8 +180,8 @@ class PizzeriaModel extends NCModelAdapter(new NCModelConfig("nlpcraft.pizzeria.
     def onStatus(using im: NCIntentMatch): NCResult = doRequest(
         o => o.getState match
             case DIALOG_CONFIRM => askConfirm(o) // Ignore `status`, confirm again.
-            case DIALOG_SHOULD_CANCEL => doShowStatus(o) -> DIALOG_EMPTY // Changes state.
-            case DIALOG_EMPTY | DIALOG_IS_READY | DIALOG_SPECIFY => doShowStatus(o) -> o.getState  // Keeps same state.
+            case DIALOG_SHOULD_CANCEL => doShowStatus(o, DIALOG_EMPTY)  // Changes state.
+            case DIALOG_EMPTY | DIALOG_IS_READY | DIALOG_SPECIFY => doShowStatus(o, o.getState)  // Keeps same state.
     )
     /**
       *
@@ -200,7 +202,7 @@ class PizzeriaModel extends NCModelAdapter(new NCModelConfig("nlpcraft.pizzeria.
       */
     @NCIntent("intent=menu term(menu)={# == 'ord:menu'}")
     // It doesn't depend and doesn't influence on order validity and dialog state.
-    def onMenu(using im: NCIntentMatch): NCResult = doRequest(o => doShowMenu() -> o.getState)
+    def onMenu(using im: NCIntentMatch): NCResult = doRequest(o => doShowMenu(o.getState))
 
     /**
       *
@@ -232,4 +234,4 @@ class PizzeriaModel extends NCModelAdapter(new NCModelConfig("nlpcraft.pizzeria.
 
     override def onRejection(im: NCIntentMatch, e: NCRejection): NCResult =
         // TODO: improve logic after https://issues.apache.org/jira/browse/NLPCRAFT-495 ticket resolving.
-        if im == null || getOrder(im.getContext).isEmpty then doShowMenu() else throw e
+        if im == null || getOrder(im.getContext).isEmpty then throw e else doShowMenuResult()
