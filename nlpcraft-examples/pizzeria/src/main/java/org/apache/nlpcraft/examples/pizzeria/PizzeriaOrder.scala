@@ -83,7 +83,7 @@ class PizzeriaOrder:
       * @param ds
       */
     def add(ps: Seq[Pizza], ds: Seq[Drink]): Unit =
-        def setByName[T <: OrderElement](buf: mutable.ArrayBuffer[T], t: T) =
+        def setByName[T <: OrderElement](buf: mutable.ArrayBuffer[T], t: T): Unit =
             buf.find(_.name == t.name) match
                 case Some(found) => if t.qty.nonEmpty then found.qty = t.qty
                 case None => buf += t

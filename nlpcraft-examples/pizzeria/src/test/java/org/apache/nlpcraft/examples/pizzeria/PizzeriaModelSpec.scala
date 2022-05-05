@@ -28,12 +28,15 @@ import scala.util.Using
 import scala.collection.mutable
 
 object PizzeriaModelSpec:
+    type Request = (String, NCResultType)
     private class ModelTestWrapper extends PizzeriaModel:
         private var o: PizzeriaOrder = _
+
         override def doExecute(o: PizzeriaOrder)(using im: NCIntentMatch): Result =
             val res = super.doExecute(o)
             this.o = o
             res
+
         def getLastExecutedOrder: PizzeriaOrder = o
         def clearLastExecutedOrder(): Unit = o = null
 
@@ -72,7 +75,7 @@ class PizzeriaModelSpec:
 
         require(errs.isEmpty, s"There are ${errs.size} errors above.")
 
-    private def dialog(exp: PizzeriaOrder, reqs: (String, NCResultType)*): Unit =
+    private def dialog(exp: PizzeriaOrder, reqs: Request*): Unit =
         val testMsgs = mutable.ArrayBuffer.empty[String]
         msgs += testMsgs
 
@@ -109,8 +112,8 @@ class PizzeriaModelSpec:
 
     @Test
     def test(): Unit =
-        given Conversion[String, (String, NCResultType)] with
-            def apply(txt: String): (String, NCResultType) = (txt, ASK_DIALOG)
+        given Conversion[String, Request] with
+            def apply(txt: String): Request = (txt, ASK_DIALOG)
 
         dialog(
             new Builder().withDrink("tea", 2).build,
