@@ -45,11 +45,11 @@ case class EntityData(id: String, property: String)
   * It just tries to unite nearest neighbours and doesn't check intermediate words, order correctness etc.
   */
 object PizzeriaOrderExtender:
-    case class EntityHolder(entity: NCEntity):
-        lazy val position: Double =
+    extension(entity: NCEntity)
+        def position: Double =
             val toks = entity.getTokens.asScala
             (toks.head.getIndex + toks.last.getIndex) / 2.0
-    private def extract(e: NCEntity): mutable.Seq[NCToken] = e.getTokens.asScala
+        def tokens: mutable.Seq[NCToken] = entity.getTokens.asScala
 
 import PizzeriaOrderExtender.*
 
@@ -64,32 +64,32 @@ case class PizzeriaOrderExtender(mainDataSeq: Seq[EntityData], extraData: Entity
             new NCPropertyMapAdapter with NCEntity:
                 mainEnt.keysSet().forEach(k => put(k, mainEnt.get(k)))
                 put[String](mainProp, extraEnt.get[String](extraData.property).toLowerCase)
-                override val getTokens: JList[NCToken] = (extract(mainEnt) ++ extract(extraEnt)).sortBy(_.getIndex).asJava
+                override val getTokens: JList[NCToken] = (mainEnt.tokens ++ extraEnt.tokens).sortBy(_.getIndex).asJava
                 override val getRequestId: String = req.getRequestId
                 override val getId: String = mainEnt.getId
 
         val es = entities.asScala
         val mainById = mainDataSeq.map(p => p.id -> p).toMap
-        val main = mutable.HashSet.empty ++ es.filter(e => mainById.contains(e.getId)).map(p => EntityHolder(p))
-        val extra = es.filter(_.getId == extraData.id).map(p => EntityHolder(p))
+        val main = mutable.HashSet.empty ++ es.filter(e => mainById.contains(e.getId))
+        val extra = es.filter(_.getId == extraData.id)
 
         if main.nonEmpty && extra.nonEmpty && main.size >= extra.size then
-            val used = (main.map(_.entity) ++ extra.map(_.entity)).toSet
+            val used = (main ++ extra).toSet
             val main2Extra = mutable.HashMap.empty[NCEntity, NCEntity]
 
             for (e <- extra)
                 val m = main.minBy(m => Math.abs(m.position - e.position))
                 main -= m
-                main2Extra += m.entity -> e.entity
+                main2Extra += m -> e
 
             val unrelated = es.filter(e => !used.contains(e))
             val artificial = for ((m, e) <- main2Extra) yield combine(m, mainById(m.getId).property, e)
-            val unused = main.map(_.entity)
+            val unused = main
 
-            val res = (unrelated ++ artificial ++ unused).sortBy(extract(_).head.getIndex)
+            val res = (unrelated ++ artificial ++ unused).sortBy(_.tokens.head.getIndex)
 
             def str(es: mutable.Buffer[NCEntity]) =
-                es.map(e => s"id=${e.getId}(${extract(e).map(_.getIndex).mkString("[", ",", "]")})").mkString("{", ", ", "}")
+                es.map(e => s"id=${e.getId}(${e.tokens.map(_.getIndex).mkString("[", ",", "]")})").mkString("{", ", ", "}")
             logger.debug(s"Elements mapped [input=${str(es)}, output=${str(res)}]")
 
             res.asJava
