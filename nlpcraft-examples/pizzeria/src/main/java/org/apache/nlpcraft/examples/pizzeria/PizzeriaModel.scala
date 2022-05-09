@@ -45,14 +45,14 @@ object PizzeriaModel extends LazyLogging:
     private def getOrder(ctx: NCContext): Order =
         val data = ctx.getConversation.getData
         val usrId = ctx.getRequest.getUserId
-        val o: Order = data.get(usrId)
+        var o: Order = data.get(usrId)
 
-        if o != null then o
-        else
-            val o = new Order()
+        if o == null then
+            o = new Order()
             data.put(usrId, o)
 
-            o
+        o
+
     private def mkResult(msg: String): NCResult = NCResult(msg, ASK_RESULT)
     private def mkDialog(msg: String): NCResult = NCResult(msg, ASK_DIALOG)
 

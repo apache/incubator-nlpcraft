@@ -39,6 +39,6 @@ class PizzeriaOrderValidator extends NCEntityValidator:
         // Single size  - it is order specification request.
         if cntSize != 1 && cntSize > cntPizza then
             throw new NCRejection("There are unrecognized pizza sizes in the request, maybe because some misprints.")
-
+            
         if cntNums > cntPizza + cntDrink then
             throw new NCRejection("There are many unrecognized numerics in the request, maybe because some misprints.")
