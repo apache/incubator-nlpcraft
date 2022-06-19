@@ -19,6 +19,7 @@ package org.apache.nlpcraft.internal.impl
 
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.NCResultType.*
+import org.apache.nlpcraft.annotations.*
 import org.apache.nlpcraft.nlp.entity.parser.*
 import org.apache.nlpcraft.nlp.entity.parser.semantic.*
 import org.apache.nlpcraft.nlp.util.*
@@ -47,7 +48,7 @@ class NCModelCallbacksSpec:
     private val RESULT_REJECTION = new NCResult("result-rejection", NCResultType.ASK_RESULT)
     private val RESULT_ERROR = new NCResult("result-error", NCResultType.ASK_RESULT)
 
-    private val MDL: NCModel =
+    private val MDL: NCTestModelAdapter =
         new NCTestModelAdapter():
             @NCIntent("intent=x term(x)={# == 'x'}")
             def intent(im: NCIntentMatch, @NCIntentTerm("x") x: NCEntity): NCResult =
@@ -62,7 +63,7 @@ class NCModelCallbacksSpec:
             override def onRejection(ctx: NCIntentMatch, e: NCRejection): NCResult = getOrElse(RejectionNotNull, RESULT_REJECTION, null)
             override def onError(ctx: NCContext, e: Throwable): NCResult = getOrElse(ErrorNotNull, RESULT_ERROR, null)
 
-    MDL.getPipeline.getEntityParsers.add(NCTestUtils.mkEnSemanticParser(Seq(NCSemanticTestElement("x")).asJava))
+    MDL.pipeline.entParsers += NCTestUtils.mkEnSemanticParser(List(NCSemanticTestElement("x")))
 
     /**
       *
@@ -99,7 +100,7 @@ class NCModelCallbacksSpec:
       */
     private def testOk(client: NCModelClient, exp: NCResult, states: State*): Unit =
         set(states*)
-        require(client.ask("x", null, "userId").getBody == exp.getBody)
+        require(client.ask("x", null, "userId").body == exp.body)
 
     /**
       *

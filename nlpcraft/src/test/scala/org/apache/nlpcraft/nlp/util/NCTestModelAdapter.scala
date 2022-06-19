@@ -24,5 +24,7 @@ import org.apache.nlpcraft.nlp.util.*
   *
   */
 abstract class NCTestModelAdapter extends NCModel:
+    val pipeline: NCTestPipeline = mkEnPipeline
+
     override val getConfig: NCModelConfig = CFG
-    override val getPipeline: NCPipeline = mkEnPipeline
+    override val getPipeline: NCPipeline = pipeline

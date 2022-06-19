@@ -18,10 +18,11 @@
 package org.apache.nlpcraft.internal.conversation
 
 import org.apache.nlpcraft.*
+import org.apache.nlpcraft.annotations.*
 import org.apache.nlpcraft.nlp.entity.parser.semantic.NCSemanticTestElement
-import org.junit.jupiter.api.Test
 import org.apache.nlpcraft.nlp.util.*
-import org.junit.jupiter.api.Assertions.{assertFalse, assertTrue}
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Test
 
 import scala.jdk.CollectionConverters.*
 import scala.util.Using
@@ -32,6 +33,8 @@ import scala.util.Using
 class NCConversationSpec:
     private val usrId = "userId"
 
+    import NCSemanticTestElement as TE
+
     /**
       *
       */
@@ -39,10 +42,9 @@ class NCConversationSpec:
     def test(): Unit =
         val mdl: NCModel =
             new NCTestModelAdapter:
-                import NCSemanticTestElement as TE
                 override val getPipeline: NCPipeline =
                     val pl = mkEnPipeline
-                    pl.getEntityParsers.add(NCTestUtils.mkEnSemanticParser(TE("e1"), TE("e2")))
+                    pl.entParsers += NCTestUtils.mkEnSemanticParser(TE("e1"), TE("e2"))
                     pl
 
                 @NCIntent("intent=i1 term(t1)~{# == 'e1'} term(t2)~{# == 'e2'}?")
@@ -80,10 +82,9 @@ class NCConversationSpec:
     def testClearEmptyData(): Unit =
         val mdl: NCModel =
             new NCTestModelAdapter:
-                import NCSemanticTestElement as TE
                 override val getPipeline: NCPipeline =
                     val pl = mkEnPipeline
-                    pl.getEntityParsers.add(NCTestUtils.mkEnSemanticParser(TE("e1")))
+                    pl.entParsers += NCTestUtils.mkEnSemanticParser(TE("e1"))
                     pl
 
                 @NCIntent("intent=i1 term(t1)~{# == 'e1'}")

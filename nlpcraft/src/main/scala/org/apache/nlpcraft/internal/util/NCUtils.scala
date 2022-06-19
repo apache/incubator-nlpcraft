@@ -37,7 +37,6 @@ import scala.concurrent.duration.Duration
 import scala.io.*
 import scala.sys.SystemProperties
 import scala.util.Using
-
 /**
   * 
   */
@@ -776,12 +775,13 @@ object NCUtils extends LazyLogging:
         catch
             case e: IOException => E(s"Failed to read stream.", e)
 
+
     /**
       *
       * @param bodies
       * @param ec
       */
-    def execPar(bodies: (() => Any)*)(ec: ExecutionContext): Unit =
+    def execPar(bodies: Seq[() => Any])(ec: ExecutionContext): Unit =
         val errs = new CopyOnWriteArrayList[Throwable]()
 
         bodies.map(body => Future {

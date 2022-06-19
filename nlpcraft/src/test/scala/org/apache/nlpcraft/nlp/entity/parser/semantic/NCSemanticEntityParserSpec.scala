@@ -25,19 +25,17 @@ import org.apache.nlpcraft.nlp.util.*
 import org.junit.jupiter.api.*
 
 import java.util
-import java.util.{List as JList, Map as JMap, Set as JSet}
 import scala.collection.mutable
 import scala.concurrent.ExecutionContext
-import scala.jdk.CollectionConverters.*
-import scala.jdk.OptionConverters.RichOptional
+
 /**
   *
   */
 class NCSemanticEntityParserSpec:
-    import NCSemanticTestElement as E
     private val semParser: NCSemanticEntityParser =
+        import NCSemanticTestElement as E
         NCTestUtils.mkEnSemanticParser(
-            Seq(
+            List(
                 // Standard.
                 E("t1", synonyms = Set("t1")),
                 // No extra synonyms.
@@ -52,7 +50,7 @@ class NCSemanticEntityParserSpec:
                 E("t6", props = Map("testKey" -> "testValue")),
                 // Regex.
                 E("t7", synonyms = Set("x //[a-d]+//"))
-            ).asJava
+            )
         )
 
     /**
@@ -69,9 +67,9 @@ class NCSemanticEntityParserSpec:
         EN_TOK_LEMMA_POS_ENRICHER.enrich(req, CFG, toks)
         EN_TOK_STOP_ENRICHER.enrich(req, CFG, toks)
 
-        NCTestUtils.printTokens(toks.asScala.toSeq)
+        NCTestUtils.printTokens(toks)
 
-        val ents = semParser.parse(req, CFG, toks).asScala.toSeq
+        val ents = semParser.parse(req, CFG, toks)
 
         NCTestUtils.printEntities(txt, ents)
         require(ents.sizeIs == 1)
@@ -98,9 +96,9 @@ class NCSemanticEntityParserSpec:
         EN_TOK_LEMMA_POS_ENRICHER.enrich(req, CFG, toks)
         EN_TOK_STOP_ENRICHER.enrich(req, CFG, toks)
 
-        NCTestUtils.printTokens(toks.asScala.toSeq)
+        NCTestUtils.printTokens(toks)
 
-        val ents = semParser.parse(req, CFG, toks).asScala.toSeq
+        val ents = semParser.parse(req, CFG, toks)
 
         NCTestUtils.printEntities(txt, ents)
         require(ents.sizeIs == ids.size)

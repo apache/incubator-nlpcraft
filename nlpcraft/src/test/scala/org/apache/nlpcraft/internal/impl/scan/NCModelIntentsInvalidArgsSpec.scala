@@ -18,6 +18,7 @@
 package org.apache.nlpcraft.internal.impl.scan
 
 import org.apache.nlpcraft.*
+import org.apache.nlpcraft.annotations.*
 import org.apache.nlpcraft.internal.impl.NCModelScanner
 import org.apache.nlpcraft.nlp.util.*
 import org.junit.jupiter.api.Test
@@ -64,20 +65,20 @@ class NCModelIntentsInvalidArgsSpec:
     private val INTENT_MATCH =
         val e = NCTestEntity("id", "reqId", tokens = NCTestToken())
 
-        def col[T](t: T): util.List[T] = java.util.Collections.singletonList(t)
+        def col[T](t: T): List[T] = List(t)
 
         new NCIntentMatch:
             override val getContext: NCContext = null
             override val getIntentId: String = "intentId"
-            override val getIntentEntities: util.List[util.List[NCEntity]] = col(col(e))
-            override def getTermEntities(idx: Int): util.List[NCEntity] = col(e)
-            override def getTermEntities(termId: String): util.List[NCEntity] = col(e)
+            override val getIntentEntities: List[List[NCEntity]] = col(col(e))
+            override def getTermEntities(idx: Int): List[NCEntity] = col(e)
+            override def getTermEntities(termId: String): List[NCEntity] = col(e)
             override val getVariant: NCVariant = new NCVariant:
-                override val getEntities: util.List[NCEntity] = col(e)
+                override val getEntities: List[NCEntity] = col(e)
 
     private def mkResult0(obj: Any): NCResult =
         println(s"Result body: $obj, class=${obj.getClass}")
-        new NCResult(obj, NCResultType.ASK_RESULT)
+        NCResult(obj, NCResultType.ASK_RESULT)
 
     private def processOptInt(opt: Option[Int]): NCResult =
         // Access and cast.

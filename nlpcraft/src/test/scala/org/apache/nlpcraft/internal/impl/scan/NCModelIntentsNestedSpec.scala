@@ -18,10 +18,10 @@
 package org.apache.nlpcraft.internal.impl.scan
 
 import org.apache.nlpcraft.*
+import org.apache.nlpcraft.annotations.*
 import org.apache.nlpcraft.internal.impl.NCModelScanner
 import org.apache.nlpcraft.nlp.util.*
 import org.junit.jupiter.api.Test
-
 /**
   * It tests imports and nested objects usage.
   */

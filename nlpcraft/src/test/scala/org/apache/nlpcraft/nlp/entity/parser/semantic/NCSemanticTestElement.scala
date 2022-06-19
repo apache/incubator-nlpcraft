@@ -21,7 +21,6 @@ import org.apache.nlpcraft.*
 import org.apache.nlpcraft.nlp.entity.parser.*
 
 import java.util
-import java.util.{List as JList, Map as JMap, Set as JSet}
 import scala.jdk.CollectionConverters.*
 
 /**
@@ -39,10 +38,10 @@ case class NCSemanticTestElement(
     props: Map[String, AnyRef] = Map.empty
 ) extends NCSemanticElement:
     override val getId: String = id
-    override val getGroups: JSet[String] = groups.toSet.asJava
-    override val getValues: JMap[String, JSet[String]] = values.map { (k, v) => k -> v.asJava }.asJava
-    override val getSynonyms: JSet[String] = synonyms.asJava
-    override val getProperties: JMap[String, Object] = props.asJava
+    override val getGroups: Set[String] = groups.toSet
+    override val getValues: Map[String, Set[String]] = values
+    override val getSynonyms: Set[String] = synonyms
+    override val getProperties: Map[String, Object] = props
 
 /**
   *

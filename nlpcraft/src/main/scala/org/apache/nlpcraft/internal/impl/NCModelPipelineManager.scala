@@ -30,11 +30,9 @@ import java.util
 import java.util.concurrent.*
 import java.util.concurrent.atomic.*
 import java.util.function.Predicate
-import java.util.{ArrayList, Objects, UUID, Collections as JColls, List as JList, Map as JMap}
-import scala.collection.{immutable, mutable}
+import java.util.{Objects, UUID}
 import scala.concurrent.ExecutionContext
 import scala.jdk.CollectionConverters.*
-import scala.jdk.OptionConverters.*
 
 /**
   *
@@ -42,7 +40,7 @@ import scala.jdk.OptionConverters.*
   * @param variants
   * @param tokens
   */
-case class NCPipelineData(request: NCRequest, variants: Seq[NCVariant], tokens: JList[NCToken])
+case class NCPipelineData(request: NCRequest, variants: List[NCVariant], tokens: List[NCToken])
 
 /**
   *
@@ -58,7 +56,7 @@ class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCPipeline) extends L
     private val tokVals = nvl(pipeline.getTokenValidators)
     private val entVals = nvl(pipeline.getEntityValidators)
     private val entMappers = nvl(pipeline.getEntityMappers)
-    private val varFilterOpt = pipeline.getVariantFilter.toScala
+    private val varFilterOpt = pipeline.getVariantFilter
 
     private val allComps: Seq[NCLifecycle] =
         tokEnrichers ++ entEnrichers ++ entParsers ++ tokVals ++ entVals ++ entMappers ++ varFilterOpt.toSeq
@@ -75,7 +73,7 @@ class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCPipeline) extends L
                 act(p)
                 logger.info(s"Component $actVerb: '${p.getClass.getName}'")
             }
-        )*)(ExecutionContext.Implicits.global)
+        ))(ExecutionContext.Implicits.global)
 
     /**
       *
@@ -83,7 +81,7 @@ class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCPipeline) extends L
       * @tparam T
       * @return
       */
-    private def nvl[T](list: JList[T]): Seq[T] = if list == null then Seq.empty else list.asScala.toSeq
+    private def nvl[T](list: List[T]): Seq[T] = if list == null then List.empty else list
 
     /**
       *
@@ -91,8 +89,8 @@ class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCPipeline) extends L
       * @return
       */
     private def mkProps(m: NCPropertyMap): String =
-        if m.keysSet().isEmpty then ""
-        else m.keysSet().asScala.toSeq.sorted.map(p => s"$p=${m.get[Any](p)}").mkString("{", ", ", "}")
+        if m.keysSet.isEmpty then ""
+        else m.keysSet.toSeq.sorted.map(p => s"$p=${m.get[Any](p)}").mkString("{", ", ", "}")
 
     /**
       *
@@ -101,7 +99,7 @@ class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCPipeline) extends L
       * @param usrId
       * @return
       */
-    def prepare(txt: String, data: JMap[String, AnyRef], usrId: String): NCPipelineData =
+    def prepare(txt: String, data: Map[String, Any], usrId: String): NCPipelineData =
         require(txt != null && usrId != null)
 
         /**
@@ -109,25 +107,25 @@ class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCPipeline) extends L
           * @param ents
           * @return
           */
-        def newVariant(ents: Seq[NCEntity]): NCVariant =
+        def newVariant(ents: List[NCEntity]): NCVariant =
             new NCVariant:
-                override val getEntities: JList[NCEntity] = ents.asJava
+                override val getEntities: List[NCEntity] = ents
 
         val req: NCRequest = new NCRequest:
             override val getUserId: String = usrId
             override val getRequestId: String = UUID.randomUUID().toString
             override val getText: String = txt
             override val getReceiveTimestamp: Long = System.currentTimeMillis()
-            override val getRequestData: JMap[String, AnyRef] = data
+            override val getRequestData: Map[String, Any] = data
 
         val toks = tokParser.tokenize(txt)
 
-        if toks.size() > 0 then
+        if toks.nonEmpty then
             for (e <- tokEnrichers) e.enrich(req, cfg, toks)
 
         val tbl = NCAsciiTable("Text", "Start index", "End index", "Properties")
 
-        for (t <- toks.asScala)
+        for (t <- toks)
             tbl += (
                 t.getText,
                 t.getStartCharIndex,
@@ -139,50 +137,48 @@ class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCPipeline) extends L
         // NOTE: we run validators regardless of whether token list is empty.
         for (v <- tokVals) v.validate(req, cfg, toks)
 
-        var entsList: util.List[NCEntity] = new util.ArrayList[NCEntity]()
+        var entities: List[NCEntity] = List.empty
 
-        for (p <- entParsers) entsList.addAll(p.parse(req, cfg, toks))
+        for (p <- entParsers) entities ++= p.parse(req, cfg, toks)
 
-        if entsList.size() > 0 then
-            for (e <- entEnrichers) e.enrich(req, cfg, entsList)
+        if entities.nonEmpty then
+            for (e <- entEnrichers) e.enrich(req, cfg, entities)
 
         // NOTE: we run validators regardless of whether entity list is empty.
-        for (v <- entVals) v.validate(req, cfg, entsList)
+        for (v <- entVals) v.validate(req, cfg, entities)
 
         for (m <- entMappers)
-            entsList = m.map(req, cfg, entsList)
-            if entsList == null then E("Entity mapper cannot return null values.")
-
-        val entities = entsList.asScala.toSeq
+            entities = m.map(req, cfg, entities)
+            if entities == null then E("Entity mapper cannot return null values.")
 
         val overlapEnts: Seq[Set[NCEntity]] =
-            toks.asScala.
+            toks.
             // Looks at each token.
             map(t => t.getIndex -> entities.filter(_.getTokens.contains(t))).
             // Collects all overlapped entities.
-            map { case (_, ents) => if (ents.sizeIs > 1) ents.toSet else Set.empty }.filter(_.nonEmpty).toSeq
+            map { case (_, ents) => if ents.sizeIs > 1 then ents.toSet else Set.empty }.filter(_.nonEmpty)
 
-        var variants: JList[NCVariant] =
+        var variants: List[NCVariant] =
             if overlapEnts.nonEmpty then
                 NCModelPipelineHelper.
-                    findCombinations(overlapEnts.map(_.asJava).asJava, pool).
-                    asScala.map(_.asScala).map(delComb =>
+                    findCombinations(overlapEnts.map(_.asJava).asJava, pool).asScala.
+                    map(_.asScala).map(delComb =>
                         val delSet = delComb.toSet
                         newVariant(entities.filter(!delSet.contains(_)))
-                    ).asJava
+                    ).toList
             else
-                Seq(newVariant(entities)).asJava
+                List(newVariant(entities))
 
         if varFilterOpt.isDefined then variants = varFilterOpt.get.filter(req, cfg, variants)
 
         // Skips empty variants.
-        val vrns = variants.asScala.toSeq.filter(!_.getEntities.isEmpty)
+        val vrns = variants.filter(_.getEntities.nonEmpty)
 
         for ((v, i) <- vrns.zipWithIndex)
             val tbl = NCAsciiTable("EntityId", "Tokens", "Tokens Position", "Properties")
 
-            for (e <- v.getEntities.asScala)
-                val toks = e.getTokens.asScala
+            for (e <- v.getEntities)
+                val toks = e.getTokens
                 tbl += (
                     e.getId,
                     toks.map(_.getText).mkString("|"),

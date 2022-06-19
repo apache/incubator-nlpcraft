@@ -24,7 +24,6 @@ import org.apache.nlpcraft.nlp.token.parser.NCOpenNLPTokenParser
 import org.apache.nlpcraft.nlp.util.*
 import org.junit.jupiter.api.Test
 
-import java.util.List as JList
 import scala.util.Using
 
 /**
@@ -43,21 +42,21 @@ class NCEntityValidatorSpec:
             // At least one entity parser must be defined.
             withEntityParser(new NCNLPEntityParser())
 
-    private def mkPipeline(apply: NCPipelineBuilder => NCPipelineBuilder): NCPipeline = apply(mkBuilder()).build()
+    private def mkPipeline(apply: NCPipelineBuilder => NCPipelineBuilder): NCPipeline = apply(mkBuilder()).build
 
     @Test
     def test(): Unit =
         test0(
-            mkBuilder().build(),
+            mkBuilder().build,
             true
         )
 
         test0(
-            mkPipeline(_.withEntityValidator((req: NCRequest, cfg: NCModelConfig, ents: JList[NCEntity]) => throw new RuntimeException("Runtime Exception"))),
+            mkPipeline(_.withEntityValidator((_: NCRequest, _: NCModelConfig, _: List[NCEntity]) => throw new RuntimeException("Runtime Exception"))),
             false
         )
 
         test0(
-            mkPipeline(_.withEntityValidator((req: NCRequest, cfg: NCModelConfig, ents: JList[NCEntity]) => throw new NCException("Checked Exception"))),
+            mkPipeline(_.withEntityValidator((_: NCRequest, _: NCModelConfig, _: List[NCEntity]) => throw new NCException("Checked Exception"))),
             false
         )

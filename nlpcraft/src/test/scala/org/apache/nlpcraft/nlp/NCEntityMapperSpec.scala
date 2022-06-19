@@ -18,58 +18,59 @@
 package org.apache.nlpcraft.nlp
 
 import org.apache.nlpcraft.*
+import org.apache.nlpcraft.annotations.*
 import org.apache.nlpcraft.internal.util.NCResourceReader
 import org.apache.nlpcraft.nlp.entity.parser.semantic.NCSemanticTestElement
 import org.apache.nlpcraft.nlp.token.parser.NCOpenNLPTokenParser
-import org.apache.nlpcraft.nlp.util.NCTestUtils
-import org.junit.jupiter.api.Test
 import org.apache.nlpcraft.nlp.util.*
+import org.junit.jupiter.api.Test
 
-import java.util.List as JList
-import scala.util.Using
 import scala.jdk.CollectionConverters.*
+import scala.util.Using
 
 /**
   *
   */
 class NCEntityMapperSpec:
     private case class Combiner(ids: String*) extends NCEntityMapper:
-        override def map(req: NCRequest, cfg: NCModelConfig, entities: JList[NCEntity]): JList[NCEntity] =
-            val es = entities.asScala
+        override def map(req: NCRequest, cfg: NCModelConfig, es: List[NCEntity]): List[NCEntity] =
             val replaced = es.filter(p => ids.contains(p.getId))
 
             if replaced.isEmpty then
-                entities
+                es
             else
                 val newEntity: NCEntity = new NCPropertyMapAdapter with NCEntity:
-                    override val getTokens: JList[NCToken] = replaced.flatMap(_.getTokens.asScala).sortBy(_.getIndex).asJava
+                    override val getTokens: List[NCToken] = replaced.flatMap(_.getTokens).sortBy(_.getIndex).toList
                     override val getRequestId: String = req.getRequestId
                     override val getId: String = ids.mkString
 
-                es --= replaced
-                (es :+ newEntity).sortBy(_.getTokens.asScala.head.getIndex).asJava
+                val buf = collection.mutable.ArrayBuffer.empty[NCEntity]
+                buf ++= es
+
+                buf --= replaced
+                (buf :+ newEntity).sortBy(_.getTokens.head.getIndex).toList
 
     private val mdl = new NCTestModelAdapter:
-        import NCSemanticTestElement as TE
         override val getPipeline: NCPipeline =
+            import NCSemanticTestElement as TE
             val pl = mkEnPipeline
-            val ms = pl.getEntityMappers
+            val ms = pl.entMappers
 
-            pl.getEntityParsers.add(NCTestUtils.mkEnSemanticParser(TE("a"), TE("b"), TE("c"), TE("d")))
+            pl.entParsers += NCTestUtils.mkEnSemanticParser(TE("a"), TE("b"), TE("c"), TE("d"))
 
             // Replaces [a, b] -> [ab]
-            ms.add(Combiner("a", "b"))
+            ms += Combiner("a", "b")
             // Replaces [c, d] -> [cd]
-            ms.add(Combiner("c", "d"))
+            ms += Combiner("c", "d")
             // Replaces [ab, cd] -> [abcd]
-            ms.add(Combiner("ab", "cd"))
+            ms += Combiner("ab", "cd")
 
             pl
 
         @NCIntent("intent=abcd term(abcd)={# == 'abcd'}")
-        def onMatch(@NCIntentTerm("abcd") abcd: NCEntity): NCResult = new NCResult("OK", NCResultType.ASK_RESULT)
+        def onMatch(@NCIntentTerm("abcd") abcd: NCEntity): NCResult = NCResult("OK", NCResultType.ASK_RESULT)
 
     @Test
     def test(): Unit = Using.resource(new NCModelClient(mdl)) { client =>
-        require(client.ask("a b c d", null, "userId").getIntentId == "abcd")
+        require(client.ask("a b c d", null, "userId").intentId == "abcd")
     }

@@ -24,7 +24,6 @@ import org.apache.nlpcraft.nlp.token.parser.NCOpenNLPTokenParser
 import org.apache.nlpcraft.nlp.util.*
 import org.junit.jupiter.api.Test
 
-import java.util.List as JList
 import scala.util.Using
 
 /**
@@ -42,21 +41,21 @@ class NCTokenValidatorSpec:
             withTokenParser(EN_TOK_PARSER).
             // At least one entity parser must be defined.
             withEntityParser(new NCNLPEntityParser())
-    private def mkPipeline(apply: NCPipelineBuilder => NCPipelineBuilder): NCPipeline = apply(mkBuilder()).build()
+    private def mkPipeline(apply: NCPipelineBuilder => NCPipelineBuilder): NCPipeline = apply(mkBuilder()).build
 
     @Test
     def test(): Unit =
         test0(
-            mkBuilder().build(),
+            mkBuilder().build,
             true
         )
 
         test0(
-            mkPipeline(_.withTokenValidator((req: NCRequest, cfg: NCModelConfig, toks: JList[NCToken]) => throw new RuntimeException("Runtime Exception"))),
+            mkPipeline(_.withTokenValidator((_: NCRequest, _: NCModelConfig, _: List[NCToken]) => throw new RuntimeException("Runtime Exception"))),
             false
         )
 
         test0(
-            mkPipeline(_.withTokenValidator((req: NCRequest, cfg: NCModelConfig, toks: JList[NCToken]) => throw new NCException("Checked Exception"))),
+            mkPipeline(_.withTokenValidator((req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]) => throw new NCException("Checked Exception"))),
             false
         )

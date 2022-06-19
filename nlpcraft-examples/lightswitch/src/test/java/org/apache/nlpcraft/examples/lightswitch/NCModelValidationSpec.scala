@@ -29,13 +29,4 @@ class NCModelValidationSpec:
     private def test(mdl: NCModel): Unit = Using.resource(new NCModelClient(mdl)) { _.validateSamples() }
 
     @Test
-    def testJava(): Unit = test(new LightSwitchJavaModel())
-
-    @Test
-    def testGroovy(): Unit = test(new LightSwitchGroovyModel())
-
-    @Test
-    def testKotlin(): Unit = test(new LightSwitchKotlinModel())
-
-    @Test
-    def testScala(): Unit = test(new LightSwitchScalaModel())
+    def test(): Unit = test(new LightSwitchScalaModel())

@@ -20,7 +20,6 @@ package org.apache.nlpcraft.internal.makro
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.util.NCUtils
 
-import scala.jdk.CollectionConverters.*
 
 object NCMacroParser:
     private final val ESC_CHARS = """{}\<>_[]|,"""
@@ -78,7 +77,7 @@ object NCMacroParser:
 class NCMacroParser:
     import NCMacroParser.*
 
-    private val macros = new java.util.concurrent.ConcurrentHashMap[String, String]().asScala
+    private val macros = scala.collection.mutable.HashMap.empty[String, String]
 
     /**
       * Trims all duplicate spaces.
@@ -138,13 +137,6 @@ class NCMacroParser:
 
         NCUtils.distinct(NCMacroCompiler.compile(s).toList map trimDupSpaces map processEscapes)
 
-    /**
-      * Expand given string.
-      *
-      * @param txt Text to expand.
-      */
-    def expandJava(txt: String): java.util.Set[String] =
-        expand(txt).toSet.asJava
 
     /**
       * Checks macro name.

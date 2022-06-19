@@ -24,9 +24,7 @@ import org.apache.nlpcraft.internal.util.*
 
 import java.util
 import java.util.concurrent.ConcurrentHashMap
-import java.util.function.Predicate
 import scala.collection.mutable
-import scala.jdk.CollectionConverters.*
 
 /**
   * An active conversation is an ordered set of utterances for the specific user and data model.
@@ -116,11 +114,11 @@ case class NCConversationData(
       *
       * @param p Java-side predicate.
       */
-    def clear(p: Predicate[NCEntity]): Unit =
+    def clear(p: NCEntity => Boolean): Unit =
         stm.synchronized {
-            for (item <- stm) item.holders --= item.holders.filter(h => p.test(h.entity))
+            for (item <- stm) item.holders --= item.holders.filter(h => p(h.entity))
             squeezeEntities()
-            replaceContext(ctx.filter(ent => !p.test(ent)))
+            replaceContext(ctx.filter(ent => !p(ent)))
         }
 
         logger.trace(s"STM is cleared [usrId=$usrId, mdlId=$mdlId]")
@@ -138,7 +136,7 @@ case class NCConversationData(
       * @param reqId Server request ID.
       * @param ents Entities to add to the conversation STM.
       */
-    def addEntities(reqId: String, ents: Seq[NCEntity]): Unit =
+    def addEntities(reqId: String, ents: List[NCEntity]): Unit =
         stm.synchronized {
             depth = 0
             lastEnts += ents // Last used entities processing.
@@ -159,7 +157,7 @@ case class NCConversationData(
                 stepLogEntity(ents)
 
                 val registered = mutable.HashSet.empty[Seq[String]]
-                for (item <- stm.reverse; (gs, hs) <- item.holders.groupBy(t => if (t.entity.getGroups != null) t.entity.getGroups.asScala else Seq.empty))
+                for (item <- stm.reverse; (gs, hs) <- item.holders.groupBy(t => if t.entity.getGroups != null then t.entity.getGroups else Seq.empty))
                     val grps = gs.toSeq.sorted
 
                     // Reversed iteration.
@@ -192,7 +190,7 @@ case class NCConversationData(
             val tbl = NCAsciiTable("Entity ID", "Groups", "Request ID")
             ctx.foreach(ent => tbl += (
                 ent.getId,
-                ent.getGroups.asScala.mkString(", "),
+                ent.getGroups.mkString(", "),
                 ent.getRequestId
             ))
             logger.info(s"Current STM for [$z]:\n${tbl.toString()}")
@@ -201,9 +199,9 @@ case class NCConversationData(
       *
       * @return
       */
-    def getEntities: Seq[NCEntity] = stm.synchronized {
+    def getEntities: List[NCEntity] = stm.synchronized {
         val reqIds = ctx.map(_.getRequestId).distinct.zipWithIndex.toMap
-        ctx.groupBy(_.getRequestId).toSeq.sortBy(p => reqIds(p._1)).reverse.flatMap(_._2)
+        ctx.groupBy(_.getRequestId).toList.sortBy(p => reqIds(p._1)).reverse.flatMap(_._2)
     }
 
     /**

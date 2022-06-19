@@ -44,9 +44,9 @@ class NCOpenNLPEntityParserSpec:
                 "opennlp/en-ner-organization.bin",
                 "opennlp/en-ner-date.bin",
                 "opennlp/en-ner-percentage.bin"
-            ).map(p => () => list.add(NCResourceReader.getPath(p)))*)(ExecutionContext.Implicits.global)
+            ).map(p => () => list.add(NCResourceReader.getPath(p))))(ExecutionContext.Implicits.global)
 
-        new NCOpenNLPEntityParser(list)
+        new NCOpenNLPEntityParser(list.asScala.toList)
 
     /**
       *
@@ -56,12 +56,12 @@ class NCOpenNLPEntityParserSpec:
     private def check(txt: String, expected: String): Unit =
         val req = NCTestRequest(txt)
         val toks = EN_TOK_PARSER.tokenize(txt)
-        val ents = parser.parse(req, CFG, toks).asScala.toSeq
+        val ents = parser.parse(req, CFG, toks)
 
         NCTestUtils.printEntities(txt, ents)
 
         require(ents.sizeIs == 1)
-        require(ents.exists(_.getOpt(s"opennlp:$expected:probability").isPresent))
+        require(ents.exists(_.getOpt(s"opennlp:$expected:probability").isDefined))
 
     /**
       *
