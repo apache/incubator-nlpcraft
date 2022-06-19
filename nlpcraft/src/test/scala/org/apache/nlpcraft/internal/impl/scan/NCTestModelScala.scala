@@ -31,7 +31,7 @@ object NCTestModelScala:
             @NCIntentTerm("single") single: NCEntity,
             @NCIntentTerm("list") list: Seq[NCEntity],
             @NCIntentTerm("opt") opt: Option[NCEntity]
-        ): NCResult = new NCResult()
+        ): NCResult = NCResult()
 
         @NCIntent("import('scan/idl.idl')")
         @NCIntentSampleRef("scan/samples.txt")
@@ -39,7 +39,7 @@ object NCTestModelScala:
             @NCIntentTerm("single") single: NCEntity,
             @NCIntentTerm("list") list: List[NCEntity],
             @NCIntentTerm("opt") opt: Option[NCEntity]
-        ): NCResult = new NCResult()
+        ): NCResult = NCResult()
 
     @NCIntent("import('scan/idl.idl')")
     class NCTestModelScalaClass extends NCTestModelAdapter :
@@ -49,7 +49,7 @@ object NCTestModelScala:
             @NCIntentTerm("single") single: NCEntity,
             @NCIntentTerm("list") list: Seq[NCEntity],
             @NCIntentTerm("opt") opt: Option[NCEntity]
-        ) = new NCResult()
+        ) = NCResult()
 
         @NCIntentRef("impIntId")
         @NCIntentSampleRef("scan/samples.txt")
@@ -57,7 +57,7 @@ object NCTestModelScala:
             @NCIntentTerm("single") single: NCEntity,
             @NCIntentTerm("list") list: List[NCEntity],
             @NCIntentTerm("opt") opt: Option[NCEntity]
-        ) = new NCResult()
+        ) = NCResult()
 
     /**
       *
@@ -70,7 +70,7 @@ object NCTestModelScala:
             @NCIntentTerm("single") single: NCEntity,
             @NCIntentTerm("list") list: Seq[NCEntity],
             @NCIntentTerm("opt") opt: Option[NCEntity]
-        ): NCResult = new NCResult()
+        ): NCResult = NCResult()
 
         @NCIntent("import('scan/idl.idl')")
         @NCIntentSampleRef("scan/samples.txt")
@@ -78,4 +78,4 @@ object NCTestModelScala:
             @NCIntentTerm("single") single: NCEntity,
             @NCIntentTerm("list") list: List[NCEntity],
             @NCIntentTerm("opt") opt: Option[NCEntity]
-        ): NCResult = new NCResult()
+        ): NCResult = NCResult()

@@ -27,7 +27,15 @@ import java.util.function.Predicate
   *
   */
 class NCConversationManagerSpec:
-    case class ModelConfigMock(timeout: Long = Long.MaxValue) extends NCModelConfig("testId", "test", "1.0", "Test description", "Test origin"):
+    class ModelConfigMock(timeout: Long = Long.MaxValue) extends NCModelConfig(
+        "testId",
+        "test",
+        "1.0",
+        "Test description",
+        "Test origin",
+        NCModelConfig.DFLT_CONV_TIMEOUT,
+        NCModelConfig.DFLT_CONV_DEPTH
+    ):
         override val conversationTimeout: Long = timeout
 
     @Test

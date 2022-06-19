@@ -20,8 +20,8 @@ package org.apache.nlpcraft
 import org.apache.nlpcraft.NCResultType.*
 
 object NCResult:
-    def apply(): NCResult = new NCResult()
-    def apply(body: Any, resultType: NCResultType): NCResult = new NCResult(body = body, resultType = resultType)
+    def apply(): NCResult = new NCResult(body = null, resultType = null, intentId = null)
+    def apply(body: Any, resultType: NCResultType): NCResult = new NCResult(body = body, resultType = resultType, intentId = null)
     def apply(body: Any, resultType: NCResultType, intentId: String): NCResult = new NCResult(body = body, resultType =resultType, intentId)
 
-class NCResult(var body: Any = null, var resultType: NCResultType = null, var intentId: String = null)
+case class NCResult(body: Any, resultType: NCResultType, intentId: String)

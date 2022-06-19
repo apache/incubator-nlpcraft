@@ -34,7 +34,7 @@ class NCEntityEnricherSpec:
     private def test0(pipeline: NCPipeline, ok: Boolean): Unit =
         val mdl: NCModel = new NCModelAdapter(new NCModelConfig("test.id", "Test model", "1.0"), pipeline):
             @NCIntent("intent=i term(any)={meta_ent('k1') == 'v1'}")
-            def onMatch(): NCResult = new NCResult("OK", NCResultType.ASK_RESULT)
+            def onMatch(): NCResult = NCResult("OK", NCResultType.ASK_RESULT)
 
         NCTestUtils.askSomething(mdl, ok)
 

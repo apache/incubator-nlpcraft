@@ -68,7 +68,7 @@ class NCModelClientSpec:
             new NCTestModelAdapter():
                 @NCIntentSample(Array("Lights on at second floor kitchen"))
                 @NCIntent("intent=ls term(act)={# == 'ls:on'} term(loc)={# == 'ls:loc'}*")
-                def onMatch(@NCIntentTerm("act") act: NCEntity, @NCIntentTerm("loc") locs: List[NCEntity]): NCResult = new NCResult()
+                def onMatch(@NCIntentTerm("act") act: NCEntity, @NCIntentTerm("loc") locs: List[NCEntity]): NCResult = NCResult()
         )
 
     /**
@@ -80,6 +80,6 @@ class NCModelClientSpec:
             new NCTestModelAdapter():
                 @NCIntent("intent=ls term(act)={has(ent_groups, 'act')} term(loc)={# == 'ls:loc'}*")
                 @NCIntentSample(Array("Lights on at second floor kitchen"))
-                def onMatch(@NCIntentTerm("act") act: NCEntity, @NCIntentTerm("loc") locs: List[NCEntity]): NCResult = new NCResult()
+                def onMatch(@NCIntentTerm("act") act: NCEntity, @NCIntentTerm("loc") locs: List[NCEntity]): NCResult = NCResult()
         )
 

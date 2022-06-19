@@ -34,7 +34,7 @@ import scala.util.Using
 class NCModelPingPongSpec:
     private var client: NCModelClient = _
 
-    private case class R(resType: NCResultType, txt: String) extends NCResult(txt, resType):
+    private class R(resType: NCResultType, txt: String) extends NCResult(txt, resType, null):
         override def toString: String = s"$resType ($txt)"
 
     private val MDL: NCTestModelAdapter =

@@ -28,12 +28,12 @@ object NCModelConfig:
     def apply(id: String, name: String, version: String, description: String, origin: String) = new NCModelConfig(id, name, version, description, origin)
 import org.apache.nlpcraft.NCModelConfig.*
 
-class NCModelConfig(
-    val id: String,
-    val name: String,
-    val version: String,
-    val description: String = null,
-    val origin: String = null,
-    var conversationTimeout: Long = DFLT_CONV_TIMEOUT,
-    var conversationDepth: Int = DFLT_CONV_DEPTH
+case class NCModelConfig(
+    id: String,
+    name: String,
+    version: String,
+    description: String = null,
+    origin: String = null,
+    conversationTimeout: Long = DFLT_CONV_TIMEOUT,
+    conversationDepth: Int = DFLT_CONV_DEPTH
 ) extends NCPropertyMapAdapter

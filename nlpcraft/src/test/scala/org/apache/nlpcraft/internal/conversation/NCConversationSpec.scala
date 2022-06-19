@@ -48,7 +48,7 @@ class NCConversationSpec:
                     pl
 
                 @NCIntent("intent=i1 term(t1)~{# == 'e1'} term(t2)~{# == 'e2'}?")
-                def onMatch(@NCIntentTerm("t1") t1: NCEntity, @NCIntentTerm("t2") t2: Option[NCEntity]): NCResult = new NCResult()
+                def onMatch(@NCIntentTerm("t1") t1: NCEntity, @NCIntentTerm("t2") t2: Option[NCEntity]): NCResult = NCResult()
 
         Using.resource(new NCModelClient(mdl)) { cli =>
             def execOk(txt: String): Unit = cli.ask(txt, null, usrId)
@@ -92,7 +92,7 @@ class NCConversationSpec:
                     val conv = im.getContext.getConversation
                     conv.clearStm(_ => true)
                     conv.clearDialog(_ => true)
-                    new NCResult()
+                    NCResult()
 
         Using.resource(new NCModelClient(mdl)) { client =>
             client.ask("e1", null, "userId")

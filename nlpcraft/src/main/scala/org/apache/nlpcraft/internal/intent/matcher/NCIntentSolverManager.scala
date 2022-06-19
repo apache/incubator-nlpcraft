@@ -709,9 +709,9 @@ class NCIntentSolverManager(
                         logger.info(s"Intent '${intentRes.intentId}' for variant #${intentRes.variantIdx + 1} selected as the <|best match|>")
 
                     def executeCallback(im: NCIntentMatch): NCResult =
-                        val cbRes = intentRes.fn(im)
+                        var cbRes = intentRes.fn(im)
                         // Store winning intent match in the input.
-                        if cbRes.intentId == null then cbRes.intentId = intentRes.intentId
+                        if cbRes.intentId == null then cbRes = NCResult(cbRes.body, cbRes.resultType, intentRes.intentId)
                         cbRes
 
                     def finishSearch(): Unit =
@@ -743,7 +743,7 @@ class NCIntentSolverManager(
                             saveHistory(cbRes, im)
                             Loop.finish(IterationResult(Left(cbRes), im))
                         case SEARCH =>
-                            saveHistory(new NCResult(), im) // Added dummy result.
+                            saveHistory(NCResult(), im) // Added dummy result.
                             finishSearch()
                         case SEARCH_NO_HISTORY =>
                             finishSearch()

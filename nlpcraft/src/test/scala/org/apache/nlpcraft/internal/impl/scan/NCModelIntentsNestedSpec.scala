@@ -32,20 +32,20 @@ class NCModelIntentsNestedSpec:
             @NCIntentObject
             val nested2: Object = new Object():
                 @NCIntent("intent=intent3 term(x)~{true}")
-                def intent1(@NCIntentTerm("x") x: NCEntity) = new NCResult()
+                def intent1(@NCIntentTerm("x") x: NCEntity) = NCResult()
 
             @NCIntent("intent=intent2 term(x)~{true}")
-            def intent1(@NCIntentTerm("x") x: NCEntity) = new NCResult()
+            def intent1(@NCIntentTerm("x") x: NCEntity) = NCResult()
 
         @NCIntent("intent=intent1 term(x)~{true}")
-        def intent1(@NCIntentTerm("x") x: NCEntity) = new NCResult()
+        def intent1(@NCIntentTerm("x") x: NCEntity) = NCResult()
 
         @NCIntent("import('scan/idl.idl')")
         def intent4(
             @NCIntentTerm("single") single: NCEntity,
             @NCIntentTerm("list") list: List[NCEntity],
             @NCIntentTerm("opt") opt: Option[NCEntity]
-        ): NCResult = new NCResult()
+        ): NCResult = NCResult()
 
     private val MDL_VALID2: NCModel = new NCTestModelAdapter:
         @NCIntent("import('scan/idl.idl')")
@@ -56,20 +56,20 @@ class NCModelIntentsNestedSpec:
             @NCIntentObject
             val nested2 = new RefClass():
                 @NCIntent("intent=intent3 term(x)~{true}")
-                def intent1(@NCIntentTerm("x") x: NCEntity) = new NCResult()
+                def intent1(@NCIntentTerm("x") x: NCEntity) = NCResult()
 
             @NCIntent("intent=intent2 term(x)~{true}")
-            def intent1(@NCIntentTerm("x") x: NCEntity) = new NCResult()
+            def intent1(@NCIntentTerm("x") x: NCEntity) = NCResult()
 
         @NCIntent("intent=intent1 term(x)~{true}")
-        def intent1(@NCIntentTerm("x") x: NCEntity) = new NCResult()
+        def intent1(@NCIntentTerm("x") x: NCEntity) = NCResult()
 
         @NCIntentRef("impIntId") // Reference via nested2 (RefClass)
         def intent4(
             @NCIntentTerm("single") single: NCEntity,
             @NCIntentTerm("list") list: List[NCEntity],
             @NCIntentTerm("opt") opt: Option[NCEntity]
-        ): NCResult = new NCResult()
+        ): NCResult = NCResult()
 
     private val MDL_INVALID: NCModel = new NCTestModelAdapter :
         @NCIntentObject

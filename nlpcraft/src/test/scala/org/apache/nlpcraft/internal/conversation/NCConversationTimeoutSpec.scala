@@ -45,9 +45,7 @@ class NCConversationTimeoutSpec:
         val mdl: NCModel =
             new NCTestModelAdapter:
                 override val getConfig: NCModelConfig =
-                    val cfg = CFG
-                    cfg.conversationTimeout = TIMEOUT
-                    cfg
+                    new NCModelConfig(CFG.id, CFG.name, CFG.version, CFG.description, CFG.origin, TIMEOUT, CFG.conversationDepth)
 
                 override val getPipeline: NCPipeline =
                     val pl = mkEnPipeline
@@ -57,7 +55,7 @@ class NCConversationTimeoutSpec:
                 @NCIntent("intent=i term(e)~{# == 'test'}")
                 def onMatch(im: NCIntentMatch, @NCIntentTerm("e") e: NCEntity): NCResult =
                     val conv = im.getContext.getConversation
-                    val res = new NCResult(conv.getData.getOpt("key").getOrElse(EMPTY), NCResultType.ASK_RESULT)
+                    val res = NCResult(conv.getData.getOpt("key").getOrElse(EMPTY), NCResultType.ASK_RESULT)
 
                     // For next calls.
                     conv.getData.put("key", VALUE)

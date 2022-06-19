@@ -75,7 +75,7 @@ class LightSwitchRuModel extends NCModelAdapter(
 
         // Add HomeKit, Arduino or other integration here.
         // By default - just return a descriptive action string.
-        new NCResult(
+        NCResult(
            new Gson().toJson(Map("locations" -> locations, "action" -> action).asJava),
            NCResultType.ASK_RESULT
         )
