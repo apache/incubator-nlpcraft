@@ -224,8 +224,8 @@ class NCSemanticEntityParser(
         val cache = mutable.HashSet.empty[Seq[Int]] // Variants (tokens without stopwords) can be repeated.
 
         case class Holder(elemId: String, tokens: List[NCToken], value: Option[String]):
-            val tokensSet = tokens.toSet
-            val idxs = tokensSet.map(_.getIndex)
+            val tokensSet: Set[NCToken] = tokens.toSet
+            val idxs: Set[Int] = tokensSet.map(_.getIndex)
 
             def isSuperSet(toks: Seq[NCToken]): Boolean = idxs.size > toks.size && toks.map(_.getIndex).toSet.subsetOf(idxs)
 
