@@ -17,6 +17,11 @@
 
 package org.apache.nlpcraft
 
+/**
+  *
+  * @param cfg
+  * @param pipeline
+  */
 class NCModelAdapter(cfg: NCModelConfig, pipeline: NCPipeline) extends NCModel:
-    def getConfig: NCModelConfig = cfg
-    def getPipeline: NCPipeline = pipeline
+    override def getConfig: NCModelConfig = cfg
+    override def getPipeline: NCPipeline = pipeline

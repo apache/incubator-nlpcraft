@@ -26,23 +26,24 @@ class NCPropertyMapAdapter extends NCPropertyMap:
     private val map = new ConcurrentHashMap[String, Any]
 
     // TODO: or error?
-    def get[T](key: String): T = getOpt(key).orNull.asInstanceOf[T]
 
-    def getOpt[T](key: String): Option[T] =
+    override def get[T](key: String): T = getOpt(key).orNull.asInstanceOf[T]
+
+    override def getOpt[T](key: String): Option[T] =
         map.get(key) match
             case null => None
             case x => Some(x.asInstanceOf[T])
 
-    def put[T](key: String, obj: Any): T = map.put(key, obj).asInstanceOf[T]
+    override def put[T](key: String, obj: Any): T = map.put(key, obj).asInstanceOf[T]
 
-    def putIfAbsent[T](key: String, obj: T): T = map.putIfAbsent(key, obj).asInstanceOf[T]
+    override def putIfAbsent[T](key: String, obj: T): T = map.putIfAbsent(key, obj).asInstanceOf[T]
 
-    def contains(key: String): Boolean = map.containsKey(key)
+    override def contains(key: String): Boolean = map.containsKey(key)
 
-    def remove[T](key: String): T = map.remove(key).asInstanceOf[T]
+    override def remove[T](key: String): T = map.remove(key).asInstanceOf[T]
 
-    def remove(key: String, obj: Any): Boolean = map.remove(key, obj)
+    override def remove(key: String, obj: Any): Boolean = map.remove(key, obj)
 
-    def keysSet = map.keys().asScala.toSet
+    override def keysSet = map.keys().asScala.toSet
 
-    def clear(): Unit = map.clear()
+    override def clear(): Unit = map.clear()

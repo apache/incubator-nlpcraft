@@ -17,9 +17,15 @@
 
 package org.apache.nlpcraft
 
+/**
+  *
+  */
 trait NCVariantFilter extends NCLifecycle:
     /**
+      *
       * @param req
       * @param cfg
-      * @param vars */
+      * @param vars
+      * @return
+      */
     def filter(req: NCRequest, cfg: NCModelConfig, vars: List[NCVariant]): List[NCVariant]

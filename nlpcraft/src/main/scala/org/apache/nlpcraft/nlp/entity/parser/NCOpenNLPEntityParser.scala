@@ -32,6 +32,9 @@ import scala.jdk.CollectionConverters.*
 import scala.language.postfixOps
 import scala.util.Using
 
+/**
+  *
+  */
 object NCOpenNLPEntityParser:
     def apply(src: String): NCOpenNLPEntityParser =
         Objects.requireNonNull(src, "Model source cannot be null.")

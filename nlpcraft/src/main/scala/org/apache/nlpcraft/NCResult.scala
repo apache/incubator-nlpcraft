@@ -19,9 +19,18 @@ package org.apache.nlpcraft
 
 import org.apache.nlpcraft.NCResultType.*
 
+/**
+  *
+  */
 object NCResult:
     def apply(): NCResult = new NCResult(body = null, resultType = null, intentId = null)
     def apply(body: Any, resultType: NCResultType): NCResult = new NCResult(body = body, resultType = resultType, intentId = null)
     def apply(body: Any, resultType: NCResultType, intentId: String): NCResult = new NCResult(body = body, resultType =resultType, intentId)
 
+/**
+  *
+  * @param body
+  * @param resultType
+  * @param intentId
+  */
 case class NCResult(body: Any, resultType: NCResultType, intentId: String)

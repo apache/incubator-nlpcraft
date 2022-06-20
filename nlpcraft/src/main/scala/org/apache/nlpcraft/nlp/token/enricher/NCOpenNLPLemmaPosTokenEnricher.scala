@@ -34,7 +34,7 @@ import scala.concurrent.ExecutionContext
   *  - tagger: http://opennlp.sourceforge.net/models-1.5/en-pos-maxent.bin
   *  - lemmatizer: https://raw.githubusercontent.com/richardwilly98/elasticsearch-opennlp-auto-tagging/master/src/main/resources/models/en-lemmatizer.dict
   */
-class NCOpenNLPLemmaPosTokenEnricher(posMdlSrc: String, lemmaDicSrc: String) extends NCTokenEnricher with LazyLogging:
+class NCOpenNLPLemmaPosTokenEnricher(posMdlSrc: String = null, lemmaDicSrc: String = null) extends NCTokenEnricher with LazyLogging:
     private var tagger: POSTaggerME = _
     private var lemmatizer: DictionaryLemmatizer = _
 
@@ -47,11 +47,13 @@ class NCOpenNLPLemmaPosTokenEnricher(posMdlSrc: String, lemmaDicSrc: String) ext
                     if posMdlSrc != null then
                         tagger = new POSTaggerME(new POSModel(NCUtils.getStream(posMdlSrc)))
                         logger.trace(s"Loaded resource: $posMdlSrc")
+                    else logger.warn("POS tagger is not configured.")
                 },
                 () => {
                     if lemmaDicSrc != null then
                         lemmatizer = new DictionaryLemmatizer(NCUtils.getStream(lemmaDicSrc))
                         logger.trace(s"Loaded resource: $lemmaDicSrc")
+                    else logger.warn("Lemmatizer is not configured.")
                 }
             )
         )(ExecutionContext.Implicits.global)
@@ -87,4 +89,3 @@ class NCOpenNLPLemmaPosTokenEnricher(posMdlSrc: String, lemmaDicSrc: String) ext
                 () // Otherwise - NPE.
             }
         }
-

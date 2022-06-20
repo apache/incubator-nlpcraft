@@ -63,18 +63,39 @@ trait NCPipeline:
       * @return */
     def getEntityParsers: List[NCEntityParser]
 
+    /**
+      *
+      * @return
+      */
     def getTokenEnrichers: List[NCTokenEnricher] = List.empty
 
+    /**
+      *
+      * @return
+      */
     def getEntityEnrichers: List[NCEntityEnricher] = List.empty
 
+    /**
+      *
+      * @return
+      */
     def getTokenValidators: List[NCTokenValidator] = List.empty
 
+    /**
+      *
+      * @return
+      */
     def getEntityValidators: List[NCEntityValidator] = List.empty
 
+    /**
+      *
+      * @return
+      */
     def getVariantFilter: Option[NCVariantFilter] = None
 
     /**
       * Gets optional list of entity mappers.
       *
-      * @return Optional list of entity mappers. Can be empty but never {@code null}. */
+      * @return Optional list of entity mappers. Can be empty but never {@code null}.
+      */
     def getEntityMappers: List[NCEntityMapper] = List.empty

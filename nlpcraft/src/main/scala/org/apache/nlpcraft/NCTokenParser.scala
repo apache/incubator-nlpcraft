@@ -33,4 +33,9 @@ package org.apache.nlpcraft
   * @see NCEntityValidator
   * @see NCEntityMapper */
 trait NCTokenParser:
+    /**
+      *
+      * @param text
+      * @return
+      */
     def tokenize(text: String): List[NCToken]

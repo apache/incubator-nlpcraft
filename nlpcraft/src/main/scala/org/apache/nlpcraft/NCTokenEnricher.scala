@@ -29,4 +29,10 @@ package org.apache.nlpcraft
   * @see NCEntityValidator
   * @see NCEntityMapper */
 trait NCTokenEnricher extends NCLifecycle:
+    /**
+      *
+      * @param req
+      * @param cfg
+      * @param toks
+      */
     def enrich(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): Unit

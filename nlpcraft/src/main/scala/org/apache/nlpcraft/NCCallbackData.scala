@@ -17,7 +17,24 @@
 
 package org.apache.nlpcraft
 
+/**
+  * 
+  */
 trait NCCallbackData:
+    /**
+      * 
+      * @return
+      */
     def getIntentId: String
+
+    /**
+      * 
+      * @return
+      */
     def getCallbackArguments: List[List[NCEntity]]
+
+    /**
+      * 
+      * @return
+      */
     def getCallback: List[List[NCEntity]] => NCResult

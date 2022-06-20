@@ -20,6 +20,9 @@ package org.apache.nlpcraft
 import java.time.Duration
 
 
+/**
+  *
+  */
 object NCModelConfig:
     val DFLT_CONV_TIMEOUT: Long = Duration.ofMinutes(60).toMillis
     val DFLT_CONV_DEPTH = 3
@@ -28,6 +31,16 @@ object NCModelConfig:
     def apply(id: String, name: String, version: String, description: String, origin: String) = new NCModelConfig(id, name, version, description, origin)
 import org.apache.nlpcraft.NCModelConfig.*
 
+/**
+  *
+  * @param id
+  * @param name
+  * @param version
+  * @param description
+  * @param origin
+  * @param conversationTimeout
+  * @param conversationDepth
+  */
 case class NCModelConfig(
     id: String,
     name: String,

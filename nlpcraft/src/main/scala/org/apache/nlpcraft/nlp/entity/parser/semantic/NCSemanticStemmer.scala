@@ -16,5 +16,13 @@
  */
 package org.apache.nlpcraft.nlp.entity.parser.semantic
 
+/**
+  *
+  */
 trait NCSemanticStemmer:
+    /**
+      *
+      * @param txt
+      * @return
+      */
     def stem(txt: String): String

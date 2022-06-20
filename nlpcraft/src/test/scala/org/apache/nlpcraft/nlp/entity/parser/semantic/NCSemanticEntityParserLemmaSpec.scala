@@ -68,7 +68,7 @@ class NCSemanticEntityParserLemmaSpec:
                     toks.foreach(t => t.put("lemma", wrap(t.get[String]("lemma"))))
                 ).
                 // 2. Semantic parser with fixed stemmer which stems only lemmas.
-                withEntityParser(new NCSemanticEntityParser(lemmaStemmer, EN_TOK_PARSER, elements = elems)).
+                withEntityParser(NCSemanticEntityParser(lemmaStemmer, EN_TOK_PARSER, elems)).
                 build
         )
 

@@ -49,9 +49,7 @@ private[impl] case class NCSemanticSynonymChunk(
   * @param chunks
   * @param value
   */
-private[impl] case class NCSemanticSynonym(
-    chunks: Seq[NCSemanticSynonymChunk], value: String = null
-) extends Comparable[NCSemanticSynonym]:
+private[impl] case class NCSemanticSynonym(chunks: Seq[NCSemanticSynonymChunk], value: String = null) extends Comparable[NCSemanticSynonym]:
     require(chunks != null)
     require(chunks.nonEmpty)
 

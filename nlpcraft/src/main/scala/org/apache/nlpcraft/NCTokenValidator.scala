@@ -29,6 +29,12 @@ package org.apache.nlpcraft
   * @see NCEntityValidator
   * @see NCEntityMapper */
 trait NCTokenValidator extends NCLifecycle:
+    /**
+      *
+      * @param req
+      * @param cfg
+      * @param toks
+      */
     def validate(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): Unit
 
 

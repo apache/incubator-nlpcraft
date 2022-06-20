@@ -17,6 +17,9 @@
 
 package org.apache.nlpcraft
 
+/**
+  * 
+  */
 trait NCIntentMatch:
     /**
       * Gets ID of the matched intent.

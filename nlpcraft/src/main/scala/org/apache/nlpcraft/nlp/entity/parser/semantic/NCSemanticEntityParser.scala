@@ -40,30 +40,53 @@ object NCSemanticEntityParser:
       * @param stemmer
       * @param parser
       * @param macros
-      * @param elms
+      * @param elements
       * @return
       */
     def apply(
         stemmer: NCSemanticStemmer,
         parser: NCTokenParser,
         macros: Map[String, String],
-        elms: List[NCSemanticElement]
+        elements: List[NCSemanticElement]
     ): NCSemanticEntityParser =
-        require(elms != null)
+        Objects.requireNonNull(stemmer, "Stemmer cannot be null.")
+        Objects.requireNonNull(parser, "Parser cannot be null.")
+        Objects.requireNonNull(macros, "Macros cannot be null.")
+        Objects.requireNonNull(elements, "Elements cannot be null.")
 
-        new NCSemanticEntityParser(stemmer, parser, macros = macros, elements = elms)
+        new NCSemanticEntityParser(stemmer, parser, macros = macros, elements = elements)
 
     /**
       *
       * @param stemmer
       * @param parser
-      * @param src
+      * @param elements
       * @return
       */
-    def apply(stemmer: NCSemanticStemmer, parser: NCTokenParser, src: String): NCSemanticEntityParser =
-        require(src != null)
+    def apply(
+        stemmer: NCSemanticStemmer,
+        parser: NCTokenParser,
+        elements: List[NCSemanticElement]
+    ): NCSemanticEntityParser =
+        Objects.requireNonNull(stemmer, "Stemmer cannot be null.")
+        Objects.requireNonNull(parser, "Parser cannot be null.")
+        Objects.requireNonNull(elements, "Elements cannot be null.")
 
-        new NCSemanticEntityParser(stemmer, parser, mdlSrc = src)
+        new NCSemanticEntityParser(stemmer, parser, macros = Map.empty, elements = elements)
+
+    /**
+      *
+      * @param stemmer
+      * @param parser
+      * @param mdlSrc
+      * @return
+      */
+    def apply(stemmer: NCSemanticStemmer, parser: NCTokenParser, mdlSrc: String): NCSemanticEntityParser =
+        Objects.requireNonNull(stemmer, "Stemmer cannot be null.")
+        Objects.requireNonNull(parser, "Parser cannot be null.")
+        Objects.requireNonNull(mdlSrc, "Model source cannot be null.")
+
+        new NCSemanticEntityParser(stemmer, parser, mdlSrc = mdlSrc)
 
     /**
       * @param baseTokens Tokens.
@@ -168,11 +191,10 @@ class NCSemanticEntityParser(
     elements: List[NCSemanticElement] = List.empty,
     mdlSrc: String = null
 ) extends NCEntityParser with LazyLogging:
-    Objects.requireNonNull(stemmer, "Stemmer cannot be null.")
-    Objects.requireNonNull(parser, "Parser cannot be null.")
-
-    // TODO: exception.
-    require(elements != null && elements.nonEmpty || mdlSrc != null && mdlSrc.nonEmpty)
+    require(stemmer != null)
+    require(parser != null)
+    require(macros != null)
+    require(elements != null && elements.nonEmpty || mdlSrc != null)
 
     private val scrType = if mdlSrc != null then NCSemanticSourceType.detect(mdlSrc) else null
 

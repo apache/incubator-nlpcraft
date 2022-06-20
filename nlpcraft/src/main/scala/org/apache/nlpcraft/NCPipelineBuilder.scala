@@ -193,7 +193,7 @@ class NCPipelineBuilder:
         lang.toUpperCase match
             case "EN" =>
                 setEnComponents()
-                this.entParsers += new NCSemanticEntityParser(mkEnStemmer, mkEnOpenNLPTokenParser, macros, elms)
+                this.entParsers += NCSemanticEntityParser(mkEnStemmer, mkEnOpenNLPTokenParser, macros, elms)
             case _ => throw new IllegalArgumentException("Unsupported language: " + lang)
         this
 
@@ -207,16 +207,17 @@ class NCPipelineBuilder:
     /**
       *
       * @param lang
-      * @param src
-      * @return */
-    def withSemantic(lang: String, src: String): NCPipelineBuilder =
+      * @param mdlSrc
+      * @return
+      */
+    def withSemantic(lang: String, mdlSrc: String): NCPipelineBuilder =
         Objects.requireNonNull(lang, "Language cannot be null.")
-        Objects.requireNonNull(src, "Model source cannot be null.")
+        Objects.requireNonNull(mdlSrc, "Model source cannot be null.")
         lang.toUpperCase match
             case "EN" =>
                 setEnComponents()
-                this.entParsers += new NCSemanticEntityParser(mkEnStemmer, mkEnOpenNLPTokenParser, mdlSrc = src)
-            case _ => throw new IllegalArgumentException("Unsupported language: " + lang)
+                this.entParsers += NCSemanticEntityParser(mkEnStemmer, mkEnOpenNLPTokenParser, mdlSrc)
+            case _ => throw new IllegalArgumentException(s"Unsupported language: $lang")
         this
 
 

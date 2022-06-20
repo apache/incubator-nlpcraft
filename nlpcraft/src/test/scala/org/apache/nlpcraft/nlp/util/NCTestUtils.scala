@@ -137,8 +137,8 @@ object NCTestUtils:
       * @param macros
       * @return
       */
-    def mkEnSemanticParser(elms: List[NCSemanticElement], macros: Map[String, String] = null): NCSemanticEntityParser =
-        new NCSemanticEntityParser(mkSemanticStemmer, EN_TOK_PARSER, macros, elms)
+    def mkEnSemanticParser(elms: List[NCSemanticElement], macros: Map[String, String] = Map.empty): NCSemanticEntityParser =
+        NCSemanticEntityParser(mkSemanticStemmer, EN_TOK_PARSER, macros, elms)
 
     /**
       *
@@ -146,12 +146,12 @@ object NCTestUtils:
       * @return
       */
     def mkEnSemanticParser(elms: NCSemanticElement*): NCSemanticEntityParser =
-        new NCSemanticEntityParser(mkSemanticStemmer, EN_TOK_PARSER, null, elms.toList)
+        NCSemanticEntityParser(mkSemanticStemmer, EN_TOK_PARSER, elms.toList)
 
     /**
       *
-      * @param src
+      * @param mdlSrc
       * @return
       */
-    def mkEnSemanticParser(src: String): NCSemanticEntityParser =
-        new NCSemanticEntityParser(mkSemanticStemmer, EN_TOK_PARSER, mdlSrc = src)
+    def mkEnSemanticParser(mdlSrc: String): NCSemanticEntityParser =
+        NCSemanticEntityParser(mkSemanticStemmer, EN_TOK_PARSER, mdlSrc)
