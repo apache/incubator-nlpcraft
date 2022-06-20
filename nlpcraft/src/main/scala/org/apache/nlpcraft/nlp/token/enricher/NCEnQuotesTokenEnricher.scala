@@ -21,7 +21,7 @@ import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.*
 
 /**
-  *
+  * TODO: enriches with <code>quoted</code> property.
   */
 class NCEnQuotesTokenEnricher extends NCTokenEnricher with LazyLogging:
     private final val Q_POS: Set[String] = Set("``", "''")

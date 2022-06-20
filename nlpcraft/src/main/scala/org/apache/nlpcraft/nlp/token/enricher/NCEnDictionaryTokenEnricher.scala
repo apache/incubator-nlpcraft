@@ -21,7 +21,7 @@ import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.util.NCUtils
 
 /**
-  *
+  * TODO: enriches with <code>dict</code> property.
   */
 class NCEnDictionaryTokenEnricher extends NCTokenEnricher:
     private var dict: Set[String] = _

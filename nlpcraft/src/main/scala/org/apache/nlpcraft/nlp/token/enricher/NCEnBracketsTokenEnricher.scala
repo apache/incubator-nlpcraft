@@ -24,7 +24,7 @@ import java.io.*
 import scala.collection.mutable
 
 /**
-  *
+  * TODO: enriches with <code>brackets</code> property.
   */
 class NCEnBracketsTokenEnricher extends NCTokenEnricher with LazyLogging:
     override def enrich(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): Unit =

@@ -29,7 +29,7 @@ import scala.collection.*
 import scala.concurrent.ExecutionContext
 
 /**
-  *
+  * TODO: enriches with <code>stopword</code> property.
   */
 object NCEnStopWordsTokenEnricher:
     // Condition types.

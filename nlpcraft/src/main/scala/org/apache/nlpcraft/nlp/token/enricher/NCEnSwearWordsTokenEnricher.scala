@@ -26,7 +26,8 @@ import java.io.*
 import java.util.Objects
 
 /**
-  * 
+  * TODO: enriches with <code>swear</code> property.
+  *
   * @param res
   */
 class NCEnSwearWordsTokenEnricher(res: String) extends NCTokenEnricher with LazyLogging:

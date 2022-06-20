@@ -510,7 +510,7 @@ object NCModelScanner extends LazyLogging:
 
         def processClassAnnotations(cls: Class[_]): Unit =
             if cls != null && processed.add(cls) then
-                for (ann <- cls.getAnnotationsByType(CLS_INTENT).reverse; intent <- NCIDLCompiler.compile(ann.value, cfg, class2Str(cls)))
+                for (ann <- cls.getAnnotationsByType(CLS_INTENT); intent <- NCIDLCompiler.compile(ann.value, cfg, class2Str(cls)))
                     addDecl(intent)
 
                 processClassAnnotations(cls.getSuperclass)
