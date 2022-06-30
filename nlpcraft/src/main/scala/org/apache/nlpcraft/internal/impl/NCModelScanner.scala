@@ -25,13 +25,8 @@ import org.apache.nlpcraft.internal.intent.compiler.*
 import org.apache.nlpcraft.internal.makro.NCMacroParser
 import org.apache.nlpcraft.internal.util.NCUtils
 
-import java.io.*
 import java.lang.annotation.Annotation
 import java.lang.reflect.*
-import java.util
-import java.util.function.Function
-import java.util.stream.Collectors
-import javax.lang.model.util.Elements.Origin
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
 import scala.util.Using
@@ -53,12 +48,9 @@ object NCModelScanner extends LazyLogging:
     private final val CLS_SAMPLE_REF = classOf[NCIntentSampleRef]
     private final val CLS_INTENT_OBJ = classOf[NCIntentObject]
 
-    // Java and scala lists.
     private final val CLS_SCALA_SEQ = classOf[Seq[_]]
     private final val CLS_SCALA_LST = classOf[List[_]]
     private final val CLS_SCALA_OPT = classOf[Option[_]]
-    private final val CLS_JAVA_LST = classOf[util.List[_]]
-    private final val CLS_JAVA_OPT = classOf[util.Optional[_]]
 
     private final val CLS_ENTITY = classOf[NCEntity]
 
@@ -71,9 +63,7 @@ object NCModelScanner extends LazyLogging:
     private final val COMP_CLS: Set[Class[_]] = Set(
         CLS_SCALA_SEQ,
         CLS_SCALA_LST,
-        CLS_SCALA_OPT,
-        CLS_JAVA_LST,
-        CLS_JAVA_OPT
+        CLS_SCALA_OPT
     )
 
     /**
@@ -160,24 +150,15 @@ object NCModelScanner extends LazyLogging:
             // Array of entities.
             else if paramCls.isArray then
                 argList.toArray
-            // Scala and Java list of entities.
             else if paramCls == CLS_SCALA_SEQ then
                 argList
             else if paramCls == CLS_SCALA_LST then
                 argList
-            else if paramCls == CLS_JAVA_LST then
-                argList
-            // Scala and java optional entity.
             else if paramCls == CLS_SCALA_OPT then
                 entsCnt match
                     case 0 => None
                     case 1 => Option(argList.head)
                     case _ => E(s"Too many entities ($entsCnt) for 'scala.Option[_]' $IT annotated argument [$z]")
-            else if paramCls == CLS_JAVA_OPT then
-                entsCnt match
-                    case 0 => util.Optional.empty()
-                    case 1 => util.Optional.of(argList.head)
-                    case _ => E(s"Too many entities ($entsCnt) for 'java.util.Optional' $IT annotated argument [$z]")
             else
                 // All allowed arguments types already checked.
                 throw new AssertionError(s"Unexpected type for callback's $IT argument [$z]")
@@ -351,21 +332,18 @@ object NCModelScanner extends LazyLogging:
                             E(s"Unexpected generic types count for $IT annotated argument [count=${compTypes.length}, $z]")
                         val compType = compTypes.head
                         compType match
-                            // Java, Scala, Groovy.
                             case _: Class[_] =>
                                 val genClass = compTypes.head.asInstanceOf[Class[_]]
                                 if genClass != CLS_ENTITY then
                                     E(s"Unexpected generic type for $IT annotated argument [$z]")
-                            // Kotlin.
                             case _: WildcardType =>
                                 val wildcardType = compTypes.head.asInstanceOf[WildcardType]
                                 val lowBounds = wildcardType.getLowerBounds
                                 val upBounds = wildcardType.getUpperBounds
                                 if lowBounds.nonEmpty || upBounds.size != 1 || upBounds(0) != CLS_ENTITY then
-                                    E(s"Unexpected Kotlin generic type for $IT annotated argument [$z]")
+                                    E(s"Unexpected generic type for $IT annotated argument [$z]")
                             case _ => E(s"Unexpected generic type for $IT annotated argument [$z]")
                     case _ =>
-                        // Scala.
                         if COMP_CLS.exists(_ == paramGenType) then
                             if !warned then
                                 warned = true
@@ -402,10 +380,10 @@ object NCModelScanner extends LazyLogging:
             else if cls != CLS_ENTITY && (min == 1 && max == 1) then
                 E(s"Intent term has [1,1] quantifier but $p1 is not a single value [$p2]")
             // Argument is optional but defined as not optional.
-            else if (cls == CLS_SCALA_OPT || cls == CLS_JAVA_OPT) && (min != 0 || max != 1) then
+            else if cls == CLS_SCALA_OPT && (min != 0 || max != 1) then
                 E(s"Intent term must have [0,1] quantifier because $p1 is optional [$p2]")
             // Argument is not optional but defined as optional.
-            else if (cls != CLS_SCALA_OPT && cls != CLS_JAVA_OPT) && (min == 0 && max == 1) then
+            else if cls != CLS_SCALA_OPT && (min == 0 && max == 1) then
                 E(s"Intent term has [0,1] quantifier but $p1 is not optional [$p2]")
         }
 
