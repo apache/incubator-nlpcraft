@@ -1,28 +1,17 @@
-// Generated from /Users/nivanov/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/internal/makro/antlr4/NCMacroDsl.g4 by ANTLR 4.9.2
+// Generated from /Users/nivanov/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/internal/makro/antlr4/NCMacroDsl.g4 by ANTLR 4.10.1
 package org.apache.nlpcraft.internal.makro.antlr4;
-
-import org.antlr.v4.runtime.FailedPredicateException;
-import org.antlr.v4.runtime.NoViableAltException;
-import org.antlr.v4.runtime.Parser;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.RecognitionException;
-import org.antlr.v4.runtime.RuleContext;
-import org.antlr.v4.runtime.RuntimeMetaData;
-import org.antlr.v4.runtime.Token;
-import org.antlr.v4.runtime.TokenStream;
-import org.antlr.v4.runtime.Vocabulary;
-import org.antlr.v4.runtime.VocabularyImpl;
-import org.antlr.v4.runtime.atn.ATN;
-import org.antlr.v4.runtime.atn.ATNDeserializer;
-import org.antlr.v4.runtime.atn.ParserATNSimulator;
-import org.antlr.v4.runtime.atn.PredictionContextCache;
+import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
-import org.antlr.v4.runtime.tree.ParseTreeListener;
-import org.antlr.v4.runtime.tree.TerminalNode;
+import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.misc.*;
+import org.antlr.v4.runtime.tree.*;
+import java.util.List;
+import java.util.Iterator;
+import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class NCMacroDslParser extends Parser {
-	static { RuntimeMetaData.checkVersion("4.9.2", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.10.1", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
@@ -624,23 +613,45 @@ public class NCMacroDslParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\20D\4\2\t\2\4\3\t"+
-		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\3\2\3\2\3\2\3\3\3\3"+
-		"\3\3\3\3\3\3\7\3\33\n\3\f\3\16\3\36\13\3\3\4\3\4\5\4\"\n\4\3\5\3\5\3\6"+
-		"\3\6\3\6\3\6\5\6*\n\6\3\7\3\7\3\7\3\7\3\7\5\7\61\n\7\3\7\3\7\3\7\3\7\3"+
-		"\7\3\7\7\79\n\7\f\7\16\7<\13\7\3\b\3\b\5\b@\n\b\3\t\3\t\3\t\2\4\4\f\n"+
-		"\2\4\6\b\n\f\16\20\2\3\3\2\13\r\2B\2\22\3\2\2\2\4\25\3\2\2\2\6!\3\2\2"+
-		"\2\b#\3\2\2\2\n%\3\2\2\2\f\60\3\2\2\2\16?\3\2\2\2\20A\3\2\2\2\22\23\5"+
-		"\4\3\2\23\24\7\2\2\3\24\3\3\2\2\2\25\26\b\3\1\2\26\27\5\6\4\2\27\34\3"+
-		"\2\2\2\30\31\f\3\2\2\31\33\5\6\4\2\32\30\3\2\2\2\33\36\3\2\2\2\34\32\3"+
-		"\2\2\2\34\35\3\2\2\2\35\5\3\2\2\2\36\34\3\2\2\2\37\"\5\b\5\2 \"\5\n\6"+
-		"\2!\37\3\2\2\2! \3\2\2\2\"\7\3\2\2\2#$\t\2\2\2$\t\3\2\2\2%&\7\3\2\2&\'"+
-		"\5\f\7\2\')\7\4\2\2(*\5\16\b\2)(\3\2\2\2)*\3\2\2\2*\13\3\2\2\2+,\b\7\1"+
-		"\2,\61\5\4\3\2-.\7\7\2\2./\7\5\2\2/\61\5\f\7\3\60+\3\2\2\2\60-\3\2\2\2"+
-		"\61:\3\2\2\2\62\63\f\5\2\2\63\64\7\5\2\2\649\5\4\3\2\65\66\f\4\2\2\66"+
-		"\67\7\5\2\2\679\7\7\2\28\62\3\2\2\28\65\3\2\2\29<\3\2\2\2:8\3\2\2\2:;"+
-		"\3\2\2\2;\r\3\2\2\2<:\3\2\2\2=@\5\20\t\2>@\7\16\2\2?=\3\2\2\2?>\3\2\2"+
-		"\2@\17\3\2\2\2AB\7\n\2\2B\21\3\2\2\2\t\34!)\608:?";
+		"\u0004\u0001\u000eB\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0002"+
+		"\u0002\u0007\u0002\u0002\u0003\u0007\u0003\u0002\u0004\u0007\u0004\u0002"+
+		"\u0005\u0007\u0005\u0002\u0006\u0007\u0006\u0002\u0007\u0007\u0007\u0001"+
+		"\u0000\u0001\u0000\u0001\u0000\u0001\u0001\u0001\u0001\u0001\u0001\u0001"+
+		"\u0001\u0001\u0001\u0005\u0001\u0019\b\u0001\n\u0001\f\u0001\u001c\t\u0001"+
+		"\u0001\u0002\u0001\u0002\u0003\u0002 \b\u0002\u0001\u0003\u0001\u0003"+
+		"\u0001\u0004\u0001\u0004\u0001\u0004\u0001\u0004\u0003\u0004(\b\u0004"+
+		"\u0001\u0005\u0001\u0005\u0001\u0005\u0001\u0005\u0001\u0005\u0003\u0005"+
+		"/\b\u0005\u0001\u0005\u0001\u0005\u0001\u0005\u0001\u0005\u0001\u0005"+
+		"\u0001\u0005\u0005\u00057\b\u0005\n\u0005\f\u0005:\t\u0005\u0001\u0006"+
+		"\u0001\u0006\u0003\u0006>\b\u0006\u0001\u0007\u0001\u0007\u0001\u0007"+
+		"\u0000\u0002\u0002\n\b\u0000\u0002\u0004\u0006\b\n\f\u000e\u0000\u0001"+
+		"\u0001\u0000\t\u000b@\u0000\u0010\u0001\u0000\u0000\u0000\u0002\u0013"+
+		"\u0001\u0000\u0000\u0000\u0004\u001f\u0001\u0000\u0000\u0000\u0006!\u0001"+
+		"\u0000\u0000\u0000\b#\u0001\u0000\u0000\u0000\n.\u0001\u0000\u0000\u0000"+
+		"\f=\u0001\u0000\u0000\u0000\u000e?\u0001\u0000\u0000\u0000\u0010\u0011"+
+		"\u0003\u0002\u0001\u0000\u0011\u0012\u0005\u0000\u0000\u0001\u0012\u0001"+
+		"\u0001\u0000\u0000\u0000\u0013\u0014\u0006\u0001\uffff\uffff\u0000\u0014"+
+		"\u0015\u0003\u0004\u0002\u0000\u0015\u001a\u0001\u0000\u0000\u0000\u0016"+
+		"\u0017\n\u0001\u0000\u0000\u0017\u0019\u0003\u0004\u0002\u0000\u0018\u0016"+
+		"\u0001\u0000\u0000\u0000\u0019\u001c\u0001\u0000\u0000\u0000\u001a\u0018"+
+		"\u0001\u0000\u0000\u0000\u001a\u001b\u0001\u0000\u0000\u0000\u001b\u0003"+
+		"\u0001\u0000\u0000\u0000\u001c\u001a\u0001\u0000\u0000\u0000\u001d \u0003"+
+		"\u0006\u0003\u0000\u001e \u0003\b\u0004\u0000\u001f\u001d\u0001\u0000"+
+		"\u0000\u0000\u001f\u001e\u0001\u0000\u0000\u0000 \u0005\u0001\u0000\u0000"+
+		"\u0000!\"\u0007\u0000\u0000\u0000\"\u0007\u0001\u0000\u0000\u0000#$\u0005"+
+		"\u0001\u0000\u0000$%\u0003\n\u0005\u0000%\'\u0005\u0002\u0000\u0000&("+
+		"\u0003\f\u0006\u0000\'&\u0001\u0000\u0000\u0000\'(\u0001\u0000\u0000\u0000"+
+		"(\t\u0001\u0000\u0000\u0000)*\u0006\u0005\uffff\uffff\u0000*/\u0003\u0002"+
+		"\u0001\u0000+,\u0005\u0005\u0000\u0000,-\u0005\u0003\u0000\u0000-/\u0003"+
+		"\n\u0005\u0001.)\u0001\u0000\u0000\u0000.+\u0001\u0000\u0000\u0000/8\u0001"+
+		"\u0000\u0000\u000001\n\u0003\u0000\u000012\u0005\u0003\u0000\u000027\u0003"+
+		"\u0002\u0001\u000034\n\u0002\u0000\u000045\u0005\u0003\u0000\u000057\u0005"+
+		"\u0005\u0000\u000060\u0001\u0000\u0000\u000063\u0001\u0000\u0000\u0000"+
+		"7:\u0001\u0000\u0000\u000086\u0001\u0000\u0000\u000089\u0001\u0000\u0000"+
+		"\u00009\u000b\u0001\u0000\u0000\u0000:8\u0001\u0000\u0000\u0000;>\u0003"+
+		"\u000e\u0007\u0000<>\u0005\f\u0000\u0000=;\u0001\u0000\u0000\u0000=<\u0001"+
+		"\u0000\u0000\u0000>\r\u0001\u0000\u0000\u0000?@\u0005\b\u0000\u0000@\u000f"+
+		"\u0001\u0000\u0000\u0000\u0007\u001a\u001f\'.68=";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {
