@@ -187,6 +187,7 @@ class NCPipelineBuilder:
       * @return */
     def withSemantic(lang: String, macros: Map[String, String], elms: List[NCSemanticElement]): NCPipelineBuilder =
         Objects.requireNonNull(lang, "Language cannot be null.")
+        Objects.requireNonNull(macros, "Macros elements cannot be null.")
         Objects.requireNonNull(elms, "Model elements cannot be null.")
         if elms.isEmpty then throw new IllegalArgumentException("Model elements cannot be empty.")
 
@@ -202,7 +203,7 @@ class NCPipelineBuilder:
       * @param lang
       * @param elms
       * @return */
-    def withSemantic(lang: String, elms: List[NCSemanticElement]): NCPipelineBuilder = withSemantic(lang, null, elms)
+    def withSemantic(lang: String, elms: List[NCSemanticElement]): NCPipelineBuilder = withSemantic(lang, Map.empty, elms)
 
     /**
       *
