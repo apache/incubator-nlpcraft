@@ -157,7 +157,7 @@ case class NCConversationData(
                 stepLogEntity(ents)
 
                 val registered = mutable.HashSet.empty[Seq[String]]
-                for (item <- stm.reverse; (gs, hs) <- item.holders.groupBy(t => if t.entity.getGroups != null then t.entity.getGroups else Seq.empty))
+                for (item <- stm.reverse; (gs, hs) <- item.holders.groupBy(t => if t.entity.getGroups.nonEmpty then t.entity.getGroups else Seq.empty))
                     val grps = gs.toSeq.sorted
 
                     // Reversed iteration.

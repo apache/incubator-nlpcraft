@@ -188,12 +188,13 @@ class NCPipelineBuilder:
     def withSemantic(lang: String, macros: Map[String, String], elms: List[NCSemanticElement]): NCPipelineBuilder =
         Objects.requireNonNull(lang, "Language cannot be null.")
         Objects.requireNonNull(elms, "Model elements cannot be null.")
+        Objects.requireNonNull(macros, "Macros cannot be null.")
         if elms.isEmpty then throw new IllegalArgumentException("Model elements cannot be empty.")
 
         lang.toUpperCase match
             case "EN" =>
                 setEnComponents()
-                this.entParsers += NCSemanticEntityParser(mkEnStemmer, mkEnOpenNLPTokenParser, macros, elms)
+                entParsers += NCSemanticEntityParser(mkEnStemmer, mkEnOpenNLPTokenParser, macros, elms)
             case _ => throw new IllegalArgumentException("Unsupported language: " + lang)
         this
 
