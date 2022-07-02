@@ -41,7 +41,7 @@ package org.apache.nlpcraft
 trait NCEntity extends NCPropertyMap:
 
     /**
-      * Gets the list of tokens this entity is comprised of. Ruturned list is never empty or {@code null}.
+      * Gets the list of tokens this entity is comprised of. Returned list is never empty or {@code null}.
       *
       * @return List of tokens that are part of this entity. */
     def getTokens: List[NCToken]
@@ -51,7 +51,7 @@ trait NCEntity extends NCPropertyMap:
       * result and performs text construction on each call. Make sure to cache the result to avoid
       * unnecessary parasitic workload if and when method {@link # getTokens ( )} does not change.
       *
-      * @return Constructuted textual representation of this entity. Note that returned value is not
+      * @return Constructed text value representation of this entity. Note that returned value is not
       * cached and created anew every time this method is called. */
     def mkText: String = getTokens.map(_.getText.trim).mkString(" ").trim
 
