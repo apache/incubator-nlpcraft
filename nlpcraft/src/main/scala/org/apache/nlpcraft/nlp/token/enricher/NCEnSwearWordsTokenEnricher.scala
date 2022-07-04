@@ -31,7 +31,7 @@ import java.util.Objects
   * @param res
   */
 class NCEnSwearWordsTokenEnricher(res: String) extends NCTokenEnricher with LazyLogging:
-    Objects.requireNonNull(res, "Swear words model file cannot be null.")
+    require(res != null, "Swear words model file cannot be null.")
 
     private final val stemmer = new PorterStemmer
     private var swearWords: Set[String] = _

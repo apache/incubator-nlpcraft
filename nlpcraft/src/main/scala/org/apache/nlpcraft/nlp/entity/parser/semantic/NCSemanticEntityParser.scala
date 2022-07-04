@@ -49,10 +49,10 @@ object NCSemanticEntityParser:
         macros: Map[String, String],
         elements: List[NCSemanticElement]
     ): NCSemanticEntityParser =
-        Objects.requireNonNull(stemmer, "Stemmer cannot be null.")
-        Objects.requireNonNull(parser, "Parser cannot be null.")
-        Objects.requireNonNull(macros, "Macros cannot be null.")
-        Objects.requireNonNull(elements, "Elements cannot be null.")
+        require(stemmer != null, "Stemmer cannot be null.")
+        require(parser != null, "Parser cannot be null.")
+        require(macros != null, "Macros cannot be null.")
+        require(elements != null, "Elements cannot be null.")
 
         new NCSemanticEntityParser(stemmer, parser, macros = macros, elements = elements)
 
@@ -68,9 +68,9 @@ object NCSemanticEntityParser:
         parser: NCTokenParser,
         elements: List[NCSemanticElement]
     ): NCSemanticEntityParser =
-        Objects.requireNonNull(stemmer, "Stemmer cannot be null.")
-        Objects.requireNonNull(parser, "Parser cannot be null.")
-        Objects.requireNonNull(elements, "Elements cannot be null.")
+        require(stemmer != null, "Stemmer cannot be null.")
+        require(parser != null, "Parser cannot be null.")
+        require(elements != null, "Elements cannot be null.")
 
         new NCSemanticEntityParser(stemmer, parser, macros = Map.empty, elements = elements)
 
@@ -82,9 +82,9 @@ object NCSemanticEntityParser:
       * @return
       */
     def apply(stemmer: NCSemanticStemmer, parser: NCTokenParser, mdlSrc: String): NCSemanticEntityParser =
-        Objects.requireNonNull(stemmer, "Stemmer cannot be null.")
-        Objects.requireNonNull(parser, "Parser cannot be null.")
-        Objects.requireNonNull(mdlSrc, "Model source cannot be null.")
+        require(stemmer != null, "Stemmer cannot be null.")
+        require(parser != null, "Parser cannot be null.")
+        require(mdlSrc != null, "Model source cannot be null.")
 
         new NCSemanticEntityParser(stemmer, parser, mdlSrc = mdlSrc)
 

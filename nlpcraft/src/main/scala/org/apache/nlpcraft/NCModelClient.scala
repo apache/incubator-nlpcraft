@@ -51,16 +51,16 @@ class NCModelClient(mdl: NCModel) extends LazyLogging, AutoCloseable:
       *
       */
     private def verify(): Unit =
-        Objects.requireNonNull(mdl, "Model cannot be null.")
+        require(mdl != null, "Model cannot be null.")
 
         val cfg = mdl.getConfig
         val pipeline = mdl.getPipeline
 
-        Objects.requireNonNull(cfg.id, "Model ID cannot be null.")
-        Objects.requireNonNull(cfg.name, "Model name cannot be null.")
-        Objects.requireNonNull(cfg.version, "Model version cannot be null.")
-        Objects.requireNonNull(pipeline.getTokenParser, "Token parser cannot be null.")
-        Objects.requireNonNull(pipeline.getEntityParsers, "List of entity parsers in the pipeline cannot be null.")
+        require(cfg.id != null, "Model ID cannot be null.")
+        require(cfg.name != null, "Model name cannot be null.")
+        require(cfg.version != null, "Model version cannot be null.")
+        require(pipeline.getTokenParser != null, "Token parser cannot be null.")
+        require(pipeline.getEntityParsers != null, "List of entity parsers in the pipeline cannot be null.")
 
     /**
       *

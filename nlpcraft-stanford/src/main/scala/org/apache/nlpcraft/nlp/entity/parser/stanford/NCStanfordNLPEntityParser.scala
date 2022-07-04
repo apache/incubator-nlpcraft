@@ -31,8 +31,8 @@ import scala.jdk.CollectionConverters.*
   * @param supported
   */
 class NCStanfordNLPEntityParser(stanford: StanfordCoreNLP, supported: Set[String]) extends NCEntityParser:
-    Objects.requireNonNull(stanford, "Stanford instance cannot be null.");
-    Objects.requireNonNull(supported, "Supported elements set cannot be null.");
+    require(stanford != null, "Stanford instance cannot be null.");
+    require(supported != null, "Supported elements set cannot be null.");
 
     override def parse(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): List[NCEntity] =
         val doc = new CoreDocument(req.getText)

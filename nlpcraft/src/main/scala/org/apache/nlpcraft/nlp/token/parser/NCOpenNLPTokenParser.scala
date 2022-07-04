@@ -33,7 +33,7 @@ import java.util.Objects
   * @param tokMdl
   */
 class NCOpenNLPTokenParser(tokMdl: String) extends NCTokenParser with LazyLogging:
-    Objects.requireNonNull(tokMdl, "Tokenizer model path cannot be null.")
+    require(tokMdl != null, "Tokenizer model path cannot be null.")
 
     @volatile private var tokenizer: TokenizerME = _
 

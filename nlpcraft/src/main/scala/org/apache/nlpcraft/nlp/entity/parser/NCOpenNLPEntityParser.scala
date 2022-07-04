@@ -37,7 +37,7 @@ import scala.util.Using
   */
 object NCOpenNLPEntityParser:
     def apply(src: String): NCOpenNLPEntityParser =
-        Objects.requireNonNull(src, "Model source cannot be null.")
+        require(src != null, "Model source cannot be null.")
         new NCOpenNLPEntityParser(List(src))
 
 /**
@@ -45,7 +45,7 @@ object NCOpenNLPEntityParser:
   * @param srcs
   */
 class NCOpenNLPEntityParser(srcs: List[String]) extends NCEntityParser with LazyLogging:
-    Objects.requireNonNull(srcs, "Models source cannot be null.")
+    require(srcs != null, "Models source cannot be null.")
 
     private var finders: Seq[NameFinderME] = _
     private case class Holder(start: Int, end: Int, name: String, probability: Double)

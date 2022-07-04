@@ -33,7 +33,7 @@ import scala.jdk.CollectionConverters.*
   * @param stanford
   */
 class NCStanfordNLPTokenParser(stanford: StanfordCoreNLP) extends NCTokenParser:
-    Objects.requireNonNull(stanford, "Stanford instance cannot be null.")
+    require(stanford != null, "Stanford instance cannot be null.")
 
     private def nvl(v: String, dflt : => String): String = if v != null then v else dflt
 

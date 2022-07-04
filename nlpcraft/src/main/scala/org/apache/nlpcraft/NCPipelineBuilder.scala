@@ -52,8 +52,8 @@ class NCPipelineBuilder:
       * @param tokEnrichers
       * @return This instance for call chaining. */
     def withTokenEnrichers(tokEnrichers: List[NCTokenEnricher]): NCPipelineBuilder =
-        Objects.requireNonNull(tokEnrichers, "List of token enrichers cannot be null.")
-        tokEnrichers.foreach((p: NCTokenEnricher) => Objects.requireNonNull(p, "Token enricher cannot be null."))
+        require(tokEnrichers != null, "List of token enrichers cannot be null.")
+        tokEnrichers.foreach((p: NCTokenEnricher) => require(p != null, "Token enricher cannot be null."))
         this.tokEnrichers ++= tokEnrichers
         this
 
@@ -61,7 +61,7 @@ class NCPipelineBuilder:
       * @param tokEnricher
       * @return This instance for call chaining. */
     def withTokenEnricher(tokEnricher: NCTokenEnricher): NCPipelineBuilder =
-        Objects.requireNonNull(tokEnricher, "Token enricher cannot be null.")
+        require(tokEnricher != null, "Token enricher cannot be null.")
         this.tokEnrichers += tokEnricher
         this
 
@@ -69,8 +69,8 @@ class NCPipelineBuilder:
       * @param entEnrichers
       * @return This instance for call chaining. */
     def withEntityEnrichers(entEnrichers: List[NCEntityEnricher]): NCPipelineBuilder =
-        Objects.requireNonNull(entEnrichers, "List of entity enrichers cannot be null.")
-        entEnrichers.foreach((p: NCEntityEnricher) => Objects.requireNonNull(p, "Entity enrichers cannot be null."))
+        require(entEnrichers != null, "List of entity enrichers cannot be null.")
+        entEnrichers.foreach((p: NCEntityEnricher) => require(p != null, "Entity enrichers cannot be null."))
         this.entEnrichers ++= entEnrichers
         this
 
@@ -78,7 +78,7 @@ class NCPipelineBuilder:
       * @param entEnricher
       * @return This instance for call chaining. */
     def withEntityEnricher(entEnricher: NCEntityEnricher): NCPipelineBuilder = 
-        Objects.requireNonNull(entEnricher, "Entity enricher cannot be null.")
+        require(entEnricher != null, "Entity enricher cannot be null.")
         this.entEnrichers += entEnricher
         this
 
@@ -86,8 +86,8 @@ class NCPipelineBuilder:
       * @param entParsers
       * @return This instance for call chaining. */
     def withEntityParsers(entParsers: List[NCEntityParser]): NCPipelineBuilder =
-        Objects.requireNonNull(entParsers, "List of entity parsers cannot be null.")
-        entParsers.foreach((p: NCEntityParser) => Objects.requireNonNull(p, "Entity parser cannot be null."))
+        require(entParsers != null, "List of entity parsers cannot be null.")
+        entParsers.foreach((p: NCEntityParser) => require(p != null, "Entity parser cannot be null."))
         this.entParsers ++= entParsers
         this
 
@@ -95,7 +95,7 @@ class NCPipelineBuilder:
       * @param entParser
       * @return This instance for call chaining. */
     def withEntityParser(entParser: NCEntityParser): NCPipelineBuilder =
-        Objects.requireNonNull(entParser, "Entity parser cannot be null.")
+        require(entParser != null, "Entity parser cannot be null.")
         this.entParsers += entParser
         this
 
@@ -103,8 +103,8 @@ class NCPipelineBuilder:
       * @param tokVals
       * @return This instance for call chaining. */
     def withTokenValidators(tokVals: List[NCTokenValidator]): NCPipelineBuilder =
-        Objects.requireNonNull(tokVals, "List of token validators cannot be null.")
-        tokVals.foreach((p: NCTokenValidator) => Objects.requireNonNull(p, "Token validator cannot be null."))
+        require(tokVals != null, "List of token validators cannot be null.")
+        tokVals.foreach((p: NCTokenValidator) => require(p != null, "Token validator cannot be null."))
         this.tokVals ++= tokVals
         this
 
@@ -113,7 +113,7 @@ class NCPipelineBuilder:
       * @param tokVal
       * @return This instance for call chaining. */
     def withTokenValidator(tokVal: NCTokenValidator): NCPipelineBuilder =
-        Objects.requireNonNull(tokVal, "Token validator cannot be null.")
+        require(tokVal != null, "Token validator cannot be null.")
         this.tokVals += tokVal
         this
 
@@ -121,8 +121,8 @@ class NCPipelineBuilder:
       * @param entVals
       * @return This instance for call chaining. */
     def withEntityValidators(entVals: List[NCEntityValidator]): NCPipelineBuilder =
-        Objects.requireNonNull(entVals, "List of entity validators cannot be null.")
-        entVals.foreach((p: NCEntityValidator) => Objects.requireNonNull(p, "Entity validators cannot be null."))
+        require(entVals != null, "List of entity validators cannot be null.")
+        entVals.foreach((p: NCEntityValidator) => require(p != null, "Entity validators cannot be null."))
         this.entVals ++= entVals
         this
 
@@ -130,7 +130,7 @@ class NCPipelineBuilder:
       * @param entVal
       * @return This instance for call chaining. */
     def withEntityValidator(entVal: NCEntityValidator): NCPipelineBuilder =
-        Objects.requireNonNull(entVal, "Entity validator cannot be null.")
+        require(entVal != null, "Entity validator cannot be null.")
         this.entVals += entVal
         this
 
@@ -146,7 +146,7 @@ class NCPipelineBuilder:
       * @param tokParser
       * @return */
     def withTokenParser(tokParser: NCTokenParser): NCPipelineBuilder =
-        Objects.requireNonNull(tokParser, "Token parser cannot be null.")
+        require(tokParser != null, "Token parser cannot be null.")
         this.tokParser = Some(tokParser)
         this
 
@@ -155,8 +155,8 @@ class NCPipelineBuilder:
       * @param entMappers
       * @return This instance for call chaining. */
     def withEntityMappers(entMappers: List[NCEntityMapper]): NCPipelineBuilder =
-        Objects.requireNonNull(entMappers, "List of entity mappers cannot be null.")
-        entMappers.foreach((p: NCEntityMapper) => Objects.requireNonNull(p, "Entity mapper cannot be null."))
+        require(entMappers != null, "List of entity mappers cannot be null.")
+        entMappers.foreach((p: NCEntityMapper) => require(p != null, "Entity mapper cannot be null."))
         this.entMappers ++= entMappers
         this
 
@@ -164,7 +164,7 @@ class NCPipelineBuilder:
       * @param entMapper
       * @return This instance for call chaining. */
     def withEntityMapper(entMapper: NCEntityMapper): NCPipelineBuilder =
-        Objects.requireNonNull(entMapper, "Entity mapper cannot be null.")
+        require(entMapper != null, "Entity mapper cannot be null.")
         this.entMappers += entMapper
         this
 
@@ -186,17 +186,17 @@ class NCPipelineBuilder:
       * @param elms
       * @return */
     def withSemantic(lang: String, macros: Map[String, String], elms: List[NCSemanticElement]): NCPipelineBuilder =
-        Objects.requireNonNull(lang, "Language cannot be null.")
-        Objects.requireNonNull(macros, "Macros elements cannot be null.")
-        Objects.requireNonNull(elms, "Model elements cannot be null.")
-        Objects.requireNonNull(macros, "Macros cannot be null.")
-        if elms.isEmpty then throw new IllegalArgumentException("Model elements cannot be empty.")
+        require(lang != null, "Language cannot be null.")
+        require(macros != null, "Macros elements cannot be null.")
+        require(elms != null, "Model elements cannot be null.")
+        require(macros != null, "Macros cannot be null.")
+        require(elms.nonEmpty, "Model elements cannot be empty.")
 
         lang.toUpperCase match
             case "EN" =>
                 setEnComponents()
                 entParsers += NCSemanticEntityParser(mkEnStemmer, mkEnOpenNLPTokenParser, macros, elms)
-            case _ => throw new IllegalArgumentException("Unsupported language: " + lang)
+            case _ => require(false, s"Unsupported language: $lang")
         this
 
     /**
@@ -213,13 +213,13 @@ class NCPipelineBuilder:
       * @return
       */
     def withSemantic(lang: String, mdlSrc: String): NCPipelineBuilder =
-        Objects.requireNonNull(lang, "Language cannot be null.")
-        Objects.requireNonNull(mdlSrc, "Model source cannot be null.")
+        require(lang != null, "Language cannot be null.")
+        require(mdlSrc != null, "Model source cannot be null.")
         lang.toUpperCase match
             case "EN" =>
                 setEnComponents()
                 this.entParsers += NCSemanticEntityParser(mkEnStemmer, mkEnOpenNLPTokenParser, mdlSrc)
-            case _ => throw new IllegalArgumentException(s"Unsupported language: $lang")
+            case _ => require(false, s"Unsupported language: $lang")
         this
 
 
@@ -227,8 +227,8 @@ class NCPipelineBuilder:
       * @return */
     def build: NCPipeline =
         // TODO: Text.
-        if tokParser.isEmpty then throw new IllegalArgumentException("Token parser cannot be null.")
-        if entParsers.isEmpty then throw new IllegalStateException("At least oe entity parser should be defined.")
+        require(tokParser.nonEmpty, "Token parser should be defined.")
+        require(entParsers.nonEmpty, "At least oe entity parser should be defined.")
 
         new NCPipeline():
             override def getTokenParser: NCTokenParser = tokParser.get
