@@ -49,7 +49,9 @@ class NCSemanticEntityParserSpec:
                 // Elements data.
                 E("t6", props = Map("testKey" -> "testValue")),
                 // Regex.
-                E("t7", synonyms = Set("x //[a-d]+//"))
+                E("t7", synonyms = Set("x //[a-d]+//")),
+                // Empty synonyms.
+                E("t8", synonyms = Set("{A|_} {B|_}"))
             )
         )
 
@@ -119,5 +121,8 @@ class NCSemanticEntityParserSpec:
         check("value the 5", "t5", value = Option("value5")) // With stopword inside.
         check("t6", "t6", elemData = Option(Map("testKey" -> "testValue")))
         check("the x abc x abe", "t7") // `x abc` should be matched, `x abe` shouldn't.
+        check("A B", "t8")
+        check("A", "t8")
+        check("B", "t8")
 
         checkMultiple("t1 the x abc the x the abc", "t1", "t7", "t7")

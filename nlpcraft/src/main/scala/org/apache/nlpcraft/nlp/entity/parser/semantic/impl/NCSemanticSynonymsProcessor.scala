@@ -150,7 +150,7 @@ private[semantic] object NCSemanticSynonymsProcessor extends LazyLogging:
         macroParser: NCMacroParser,
         elemId: String,
         syns: Set[String]
-    ): Seq[Seq[NCSemanticSynonymChunk]] =
+    ): List[List[NCSemanticSynonymChunk]] =
         case class RegexHolder(text: String, var used: Boolean = false):
             private def stripSuffix(fix: String, s: String): String = s.slice(fix.length, s.length - fix.length)
 
@@ -195,8 +195,8 @@ private[semantic] object NCSemanticSynonymsProcessor extends LazyLogging:
                                 regex.used = true
                                 Option(regex.mkChunk())
                         case None => Option(NCSemanticSynonymChunk(TEXT, tok.getText, stemmer.stem(tok.getText.toLowerCase)))
-                ).toSeq
-            }).toSeq
+                ).toList
+            }).toList.filter(_.nonEmpty)
 
     /**
       *
