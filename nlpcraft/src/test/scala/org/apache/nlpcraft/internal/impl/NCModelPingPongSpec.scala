@@ -71,7 +71,7 @@ class NCModelPingPongSpec:
     def tearDown(): Unit = client.close()
 
     private def ask(txt: String, typ: NCResultType): Unit =
-        val res = client.ask(txt, null, "userId")
+        val res = client.ask(txt, "userId")
         println(s"Request [text=$txt, result=$res]")
         require(res.resultType == typ)
 

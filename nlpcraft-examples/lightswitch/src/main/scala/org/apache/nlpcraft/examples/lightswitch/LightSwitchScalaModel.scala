@@ -76,6 +76,8 @@ class LightSwitchScalaModel extends NCModelAdapter(
         "Kill the illumination now!"
     ))
     def onMatch(
+        ctx: NCContext,
+        im: NCIntentMatch,
         @NCIntentTerm("act") actEnt: NCEntity,
         @NCIntentTerm("loc") locEnts: List[NCEntity]
     ): NCResult =

@@ -83,6 +83,8 @@ class LightSwitchFrModel extends NCModelAdapter(
         "Tuez l'illumination maintenant."
     ))
     def onMatch(
+        ctx: NCContext,
+        im: NCIntentMatch,
         @NCIntentTerm("act") actEnt: NCEntity,
         @NCIntentTerm("loc") locEnts: List[NCEntity]
     ): NCResult =

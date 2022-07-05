@@ -113,32 +113,47 @@ class NCModelClient(mdl: NCModel) extends LazyLogging, AutoCloseable:
       * @return
       */
     def ask(txt: String, data: Map[String, AnyRef], usrId: String): NCResult =
+        require(txt != null, "Input text cannot be null.")
+        require(data != null, "Data cannot be null.")
+        require(usrId != null, "User id cannot be null.")
         ask0(txt, data, usrId, NCIntentSolveType.REGULAR).swap.toOption.get
+
+    def ask(txt: String, usrId: String): NCResult = ask(txt, Map.empty, usrId)
 
     /**
       *
       * @param usrId
       */
-    def clearStm(usrId: String): Unit = convMgr.getConversation(usrId).clear(_ => true)
+    def clearStm(usrId: String): Unit =
+        require(usrId != null, "User id cannot be null.")
+        convMgr.getConversation(usrId).clear(_ => true)
 
     /**
       *
       * @param usrId
       * @param filter
       */
-    def clearStm(usrId: String, filter: NCEntity => Boolean): Unit = convMgr.getConversation(usrId).clear(filter)
+    def clearStm(usrId: String, filter: NCEntity => Boolean): Unit =
+        require(usrId != null, "User id cannot be null.")
+        require(filter != null, "Filter cannot be null.")
+        convMgr.getConversation(usrId).clear(filter)
 
     /**
       *
       * @param usrId
       */
-    def clearDialog(usrId: String): Unit = dlgMgr.clear(usrId)
+    def clearDialog(usrId: String): Unit =
+        require(usrId != null, "User id cannot be null.")
+        dlgMgr.clear(usrId)
 
     /**
       *
       * @param usrId
       */
-    def clearDialog(usrId: String, filter: NCDialogFlowItem => Boolean): Unit = dlgMgr.clear(usrId, (i: NCDialogFlowItem) => filter(i))
+    def clearDialog(usrId: String, filter: NCDialogFlowItem => Boolean): Unit =
+        require(usrId != null, "User id cannot be null.")
+        require(usrId != null, "Filter cannot be null.")
+        dlgMgr.clear(usrId, (i: NCDialogFlowItem) => filter(i))
 
     /**
       *
@@ -157,7 +172,7 @@ class NCModelClient(mdl: NCModel) extends LazyLogging, AutoCloseable:
 
                 val err: Option[String] =
                     try
-                        val r = ask(sample, null, userId)
+                        val r = ask(sample, Map.empty, userId)
 
                         Option.when(r.intentId != i.intent.id)(s"Unexpected intent ID: '${r.intentId}'")
                     catch case e: Throwable =>
@@ -206,5 +221,10 @@ class NCModelClient(mdl: NCModel) extends LazyLogging, AutoCloseable:
       * @return
       */
     def debugAsk(txt: String, data: Map[String, AnyRef], usrId: String, saveHist: Boolean): NCCallbackData =
+        require(txt != null, "Input text cannot be null.")
+        require(data != null, "Data cannot be null.")
+        require(usrId != null, "User id cannot be null.")
         import NCIntentSolveType.*
         ask0(txt, data, usrId, if saveHist then SEARCH else SEARCH_NO_HISTORY).toOption.get
+
+    def debugAsk(txt: String, usrId: String, saveHist: Boolean): NCCallbackData = debugAsk(txt, Map.empty, usrId, saveHist)

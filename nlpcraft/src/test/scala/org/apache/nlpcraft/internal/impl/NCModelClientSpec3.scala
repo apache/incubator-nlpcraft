@@ -47,7 +47,7 @@ class NCModelClientSpec3:
             def onMatch(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("t1") t1: NCEntity): NCResult = NCResult("Data", NCResultType.ASK_RESULT)
 
         Using.resource(new NCModelClient(mdl)) { client =>
-            def ask(): NCCallbackData = client.debugAsk("e1", null, "userId", true)
+            def ask(): NCCallbackData = client.debugAsk("e1", "userId", true)
             def execCallback(cb: NCCallbackData): NCResult = cb.getCallback.apply(cb.getCallbackArguments)
             def execCallbackOk(cb: NCCallbackData): Unit = println(s"Result: ${execCallback(cb).body}")
             def execCallbackFail(cb: NCCallbackData): Unit =

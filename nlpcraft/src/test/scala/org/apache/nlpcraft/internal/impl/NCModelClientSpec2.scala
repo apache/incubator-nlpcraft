@@ -49,7 +49,7 @@ class NCModelClientSpec2:
 
         Using.resource(new NCModelClient(mdl)) { client =>
             case class Result(txt: String):
-                private val wi = client.debugAsk(txt, null, "userId", true)
+                private val wi = client.debugAsk(txt, "userId", true)
                 private val allArgs: List[List[NCEntity]] = wi.getCallbackArguments
 
                 val intentId: String = wi.getIntentId
@@ -89,7 +89,7 @@ class NCModelClientSpec2:
 
             // 3. No winners.
             try
-                client.debugAsk("x", null, "userId", false)
+                client.debugAsk("x", "userId", false)
 
                 require(false)
             catch

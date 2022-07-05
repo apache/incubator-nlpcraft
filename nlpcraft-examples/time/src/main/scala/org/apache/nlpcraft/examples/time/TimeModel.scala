@@ -89,7 +89,7 @@ class TimeModel extends NCModelAdapter(
         "Show me time of the day in London.",
         "Can you please give me the Tokyo's current date and time."
     ))
-    private def onRemoteMatch(@NCIntentTerm("city") cityEnt: NCEntity): NCResult =
+    private def onRemoteMatch(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("city") cityEnt: NCEntity): NCResult =
         val cityName: String = cityEnt.mkText
 
         // We don't have timezone mapping for parsed GEO location.
@@ -107,7 +107,7 @@ class TimeModel extends NCModelAdapter(
       * @return Query result. */
     @NCIntentRef("intent1")
     @NCIntentSample(Array("What's the local time?"))
-    private def onLocalMatch(ctx: NCIntentMatch): NCResult =  // NOTE:
+    private def onLocalMatch(ctx: NCContext, im: NCIntentMatch): NCResult =  // NOTE:
         // We need to have two intents vs. one intent with an optional GEO. The reason is that
         // first intent isn't using the conversation to make sure we can always ask
         // for local time **no matter** what was asked before... Note that non-conversational
@@ -117,7 +117,7 @@ class TimeModel extends NCModelAdapter(
         // That's an indication of asking for local time only.
         // Get local GEO data from sentence metadata defaulting to
         // Silicon Valley location in case we are missing that info.
-        val geo = GeoManager.get(ctx.getContext.getRequest).getOrElse(GeoManager.getSiliconValley)
+        val geo = GeoManager.get(ctx.getRequest).getOrElse(GeoManager.getSiliconValley)
 
         mkResult(geo.city, geo.country_name, geo.timezone, geo.latitude, geo.longitude)
 

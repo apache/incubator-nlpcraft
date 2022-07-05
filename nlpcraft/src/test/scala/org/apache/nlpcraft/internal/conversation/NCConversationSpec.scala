@@ -51,10 +51,10 @@ class NCConversationSpec:
                 def onMatch(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("t1") t1: NCEntity, @NCIntentTerm("t2") t2: Option[NCEntity]): NCResult = NCTestResult()
 
         Using.resource(new NCModelClient(mdl)) { cli =>
-            def execOk(txt: String): Unit = cli.ask(txt, null, usrId)
+            def execOk(txt: String): Unit = cli.ask(txt, usrId)
             def execReject(txt: String): Unit =
                 try
-                    cli.ask(txt, null, usrId)
+                    cli.ask(txt, usrId)
                     require(false)
                 catch
                     case e: NCRejection => // OK.
@@ -95,7 +95,7 @@ class NCConversationSpec:
                     NCTestResult()
 
         Using.resource(new NCModelClient(mdl)) { client =>
-            client.ask("e1", null, "userId")
+            client.ask("e1", "userId")
             client.clearDialog("userId1", _ => true)
             client.clearDialog("userId2")
             client.clearStm("userId3", _ => true)

@@ -67,6 +67,8 @@ class LightSwitchRuModel extends NCModelAdapter(
         "Зажги лампу на кухне"
     ))
     def onMatch(
+        ctx: NCContext, 
+        im: NCIntentMatch,
         @NCIntentTerm("act") actEnt: NCEntity,
         @NCIntentTerm("loc") locEnts: List[NCEntity]
     ): NCResult =

@@ -64,7 +64,7 @@ class NCConversationTimeoutSpec:
 
         Using.resource(new NCModelClient(mdl)) { cli =>
             def check(hasValue: Boolean): Unit =
-                require(cli.ask("test", null, "userId").body.toString == (if hasValue then VALUE else EMPTY))
+                require(cli.ask("test", "userId").body.toString == (if hasValue then VALUE else EMPTY))
 
             check(false)
             check(true)

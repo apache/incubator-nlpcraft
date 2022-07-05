@@ -47,14 +47,14 @@ class NCModelClientSpec:
         mdl.pipeline.entParsers += NCTestUtils.mkEnSemanticParser("models/lightswitch_model.yaml")
 
         Using.resource(new NCModelClient(mdl)) { client =>
-            val res = client.ask("Lights on at second floor kitchen", null, "userId")
+            val res = client.ask("Lights on at second floor kitchen", "userId")
 
             println(s"Intent: ${res.intentId}")
             println(s"Body: ${res.body}")
 
             client.validateSamples()
 
-            val winner = client.debugAsk("Lights on at second floor kitchen", null, "userId", true)
+            val winner = client.debugAsk("Lights on at second floor kitchen", "userId", true)
             println(s"Winner intent: ${winner.getIntentId}")
             println("Entities: \n" + winner.getCallbackArguments.map(p => p.map(s).mkString(", ")).mkString("\n"))
         }
