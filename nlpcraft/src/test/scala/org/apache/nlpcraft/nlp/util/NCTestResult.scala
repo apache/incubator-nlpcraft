@@ -29,4 +29,4 @@ object  NCTestResult {
 /**
   *
   */
-class NCTestResult extends NCResult("test", NCResultType.ASK_RESULT, null)
+class NCTestResult extends NCResult("test", NCResultType.ASK_RESULT)

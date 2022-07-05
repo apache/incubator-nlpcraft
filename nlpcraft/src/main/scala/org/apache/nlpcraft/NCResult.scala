@@ -23,8 +23,8 @@ import org.apache.nlpcraft.NCResultType.*
   *
   */
 object NCResult:
-    def apply(body: Any, resultType: NCResultType, intentId: String): NCResult = new NCResult(body = body, resultType = resultType, intentId)
-    def apply(body: Any, resultType: NCResultType): NCResult = apply(body, resultType, intentId = null)
+    def apply(body: Any, resultType: NCResultType, intentId: String): NCResult = new NCResult(body = body, resultType = resultType, Some(intentId))
+    def apply(body: Any, resultType: NCResultType): NCResult = apply(body, resultType, intentId = None)
 
 
 /**
@@ -33,4 +33,4 @@ object NCResult:
   * @param resultType
   * @param intentId
   */
-case class NCResult(body: Any, resultType: NCResultType, intentId: String)
+case class NCResult(body: Any, resultType: NCResultType, intentId: Option[String] = None)
