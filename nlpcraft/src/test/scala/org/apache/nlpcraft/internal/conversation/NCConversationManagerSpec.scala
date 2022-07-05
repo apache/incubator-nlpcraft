@@ -31,8 +31,8 @@ class NCConversationManagerSpec:
         "testId",
         "test",
         "1.0",
-        "Test description",
-        "Test origin",
+        Some("Test description"),
+        Some("Test origin"),
         NCModelConfig.DFLT_CONV_TIMEOUT,
         NCModelConfig.DFLT_CONV_DEPTH
     ):

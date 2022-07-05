@@ -44,7 +44,7 @@ class NCDialogFlowManagerSpec:
         override def getVariants: List[NCVariant] = null
         override def getTokens: List[NCToken] = null
 
-    class ModelConfigMock(timeout: Long = Long.MaxValue) extends NCModelConfig("testId", "test", "1.0", "Test description", "Test origin", NCModelConfig.DFLT_CONV_TIMEOUT, NCModelConfig.DFLT_CONV_DEPTH):
+    class ModelConfigMock(timeout: Long = Long.MaxValue) extends NCModelConfig("testId", "test", "1.0", Some("Test description"), Some("Test origin"), NCModelConfig.DFLT_CONV_TIMEOUT, NCModelConfig.DFLT_CONV_DEPTH):
         override val conversationTimeout: Long = timeout
 
     private var mgr: NCDialogFlowManager = _
