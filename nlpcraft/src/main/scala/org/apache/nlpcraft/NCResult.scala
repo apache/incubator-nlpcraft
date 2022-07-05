@@ -26,7 +26,6 @@ object NCResult:
     def apply(body: Any, resultType: NCResultType, intentId: String): NCResult = new NCResult(body = body, resultType = resultType, Some(intentId))
     def apply(body: Any, resultType: NCResultType): NCResult = apply(body, resultType, intentId = None)
 
-
 /**
   *
   * @param body

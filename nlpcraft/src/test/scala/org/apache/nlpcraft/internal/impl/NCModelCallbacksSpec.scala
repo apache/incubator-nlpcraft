@@ -58,10 +58,10 @@ class NCModelCallbacksSpec:
 
             override def onMatchedIntent(ctx: NCContext, im: NCIntentMatch): Boolean = getOrElse(MatchFalse, false, true)
             override def onVariant(vrn: NCVariant): Boolean = getOrElse(VariantFalse, false, true)
-            override def onContext(ctx: NCContext): NCResult = getOrElse(ContextNotNull, RESULT_CONTEXT, null)
-            override def onResult(ctx: NCContext, im: NCIntentMatch, res: NCResult): NCResult = getOrElse(ResultNotNull, RESULT_RESULT, null)
-            override def onRejection(ctx: NCContext, im: NCIntentMatch, e: NCRejection): NCResult = getOrElse(RejectionNotNull, RESULT_REJECTION, null)
-            override def onError(ctx: NCContext, e: Throwable): NCResult = getOrElse(ErrorNotNull, RESULT_ERROR, null)
+            override def onContext(ctx: NCContext): Option[NCResult] = getOrElse(ContextNotNull, Some(RESULT_CONTEXT), None)
+            override def onResult(ctx: NCContext, im: NCIntentMatch, res: NCResult): Option[NCResult] = getOrElse(ResultNotNull, Some(RESULT_RESULT), None)
+            override def onRejection(ctx: NCContext, im: Option[NCIntentMatch], e: NCRejection): Option[NCResult] = getOrElse(RejectionNotNull, Some(RESULT_REJECTION), None)
+            override def onError(ctx: NCContext, e: Throwable): Option[NCResult] = getOrElse(ErrorNotNull, Some(RESULT_ERROR), None)
 
     MDL.pipeline.entParsers += NCTestUtils.mkEnSemanticParser(List(NCSemanticTestElement("x")))
 

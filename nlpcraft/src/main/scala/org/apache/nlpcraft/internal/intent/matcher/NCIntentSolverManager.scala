@@ -772,50 +772,50 @@ class NCIntentSolverManager(
         val key = UserModelKey(ctx.getRequest.getUserId, mdl.getConfig.id)
         reqIds.synchronized { reqIds.put(key, ctx.getRequest.getRequestId)}
 
-        val mdlCtxRes = mdl.onContext(ctx)
+        mdl.onContext(ctx) match
+            case Some(mdlCtxRes) =>
+                if typ != REGULAR then E("'onContext()' method is overridden, intents cannot be found.")
+                if intents.nonEmpty then logger.warn("'onContext()' method overrides existing intents - they are ignored.")
 
-        if mdlCtxRes != null then
-            if typ != REGULAR then E("'onContext()' method is overridden, intents cannot be found.")
-            if intents.nonEmpty then logger.warn("'onContext()' method overrides existing intents - they are ignored.")
+                Left(mdlCtxRes)
+            case None =>
+                if intents.isEmpty then
+                    throw NCRejection("There are no registered intents and model's 'onContext()' method returns 'null' result.")
 
-            Left(mdlCtxRes)
-        else
-            if intents.isEmpty then
-                throw NCRejection("There are no registered intents and model's 'onContext()' method returns 'null' result.")
+                var loopRes: IterationResult = null
 
-            var loopRes: IterationResult = null
+                try
+                    while (loopRes == null)
+                        solveIteration(mdl, ctx, typ, key) match
+                            case Some(iterRes) => loopRes = iterRes
+                            case None => // No-op.
 
-            try
-                while (loopRes == null)
-                    solveIteration(mdl, ctx, typ, key) match
-                        case Some(iterRes) => loopRes = iterRes
-                        case None => // No-op.
-
-                typ match
-                    case REGULAR =>
-                        mdl.onResult(ctx, loopRes.intentMatch, loopRes.result.swap.toOption.get) match
-                            case null => loopRes.result
-                            case mdlRes => Left(mdlRes)
-                    case _ => loopRes.result
-            catch
-                case e: NCRejection =>
                     typ match
                         case REGULAR =>
-                            mdl.onRejection(ctx, if loopRes != null then loopRes.intentMatch else null, e) match
-                                case null => throw e
-                                case mdlRejRes => Left(mdlRejRes)
-                        case _ => throw e
+                            mdl.onResult(ctx, loopRes.intentMatch, loopRes.result.swap.toOption.get) match
+                                case Some(mdlRes) => Left(mdlRes)
+                                case None => loopRes.result
 
-                case e: Throwable =>
-                    typ match
-                        case REGULAR =>
-                            mdl.onError(ctx, e) match
-                                case null => throw e
-                                case mdlErrRes =>
-                                    logger.warn("Error during execution.", e)
-                                    Left(mdlErrRes)
-                        case _ => throw e
+                        case _ => loopRes.result
+                catch
+                    case e: NCRejection =>
+                        typ match
+                            case REGULAR =>
+                                mdl.onRejection(ctx, Option.when(loopRes != null)(loopRes.intentMatch), e) match
+                                    case Some(mdlRejRes) => Left(mdlRejRes)
+                                    case None => throw e
 
+                            case _ => throw e
+
+                    case e: Throwable =>
+                        typ match
+                            case REGULAR =>
+                                mdl.onError(ctx, e) match
+                                    case Some(mdlErrRes) =>
+                                        logger.warn("Error during execution.", e)
+                                        Left(mdlErrRes)
+                                    case None => throw e
+                            case _ => throw e
     /**
       *
       */

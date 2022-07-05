@@ -105,7 +105,7 @@ trait NCModel:
       * returns a non-{@code null} result, it will be returned to the caller immediately overriding default behavior.
       * If the method returns {@code null} - the default processing flow will continue.
       * @throws NCRejection This callback can throw the rejection exception to abort input query processing. */
-    @throws[NCRejection] def onContext(ctx: NCContext): NCResult = null
+    @throws[NCRejection] def onContext(ctx: NCContext): Option[NCResult] = None
 
     /**
       * A callback that is called when intent was successfully matched but right before its callback is called. This
@@ -150,7 +150,7 @@ trait NCModel:
       * method returns a non-{@code null} result, it will be returned to the caller immediately overriding
       * default behavior and existing query result or error processing, if any. If the method returns {@code null} -
       * the default processing flow will continue. */
-    def onResult(ctx: NCContext, im: NCIntentMatch, res: NCResult): NCResult = null
+    def onResult(ctx: NCContext, im: NCIntentMatch, res: NCResult): Option[NCResult] = None
 
     /**
       * A callback that is called when intent callback threw NCRejection exception. This callback is called
@@ -168,7 +168,7 @@ trait NCModel:
       * returns a non-{@code null} result, it will be returned to the caller immediately overriding default behavior
       * and existing query result or error processing, if any. If the method returns {@code null} - the default
       * processing flow will continue. */
-    def onRejection(ctx: NCContext, im: NCIntentMatch, e: NCRejection): NCResult = null
+    def onRejection(ctx: NCContext, im: Option[NCIntentMatch], e: NCRejection): Option[NCResult] = None
 
     /**
       * A callback that is called when intent callback failed with unexpected exception. Note that this callback may
@@ -184,4 +184,4 @@ trait NCModel:
       * returns a non-{@code null} result, it will be returned to the caller immediately overriding default
       * behavior and existing query result or error processing, if any. If the method returns {@code null} - the
       * default processing flow will continue. */
-    def onError(ctx: NCContext, e: Throwable): NCResult = null
+    def onError(ctx: NCContext, e: Throwable): Option[NCResult] = None

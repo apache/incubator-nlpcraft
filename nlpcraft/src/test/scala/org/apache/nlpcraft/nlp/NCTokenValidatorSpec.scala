@@ -32,7 +32,7 @@ import scala.util.Using
 class NCTokenValidatorSpec:
     private def test0(pipeline: NCPipeline, ok: Boolean): Unit =
         val mdl: NCModel = new NCModelAdapter(new NCModelConfig("test.id", "Test model", "1.0"), pipeline):
-            override def onContext(ctx: NCContext): NCResult = NCResult("OK", NCResultType.ASK_RESULT)
+            override def onContext(ctx: NCContext): Option[NCResult] = Option(NCResult("OK", NCResultType.ASK_RESULT))
 
         NCTestUtils.askSomething(mdl, ok)
 

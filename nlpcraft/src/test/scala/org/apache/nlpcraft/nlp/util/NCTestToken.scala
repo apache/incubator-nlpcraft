@@ -39,9 +39,9 @@ case class NCTestToken(
     end: Int = -1,
     lemma: String = null,
     pos: String = null,
-    data: Map[String, AnyRef] = null
+    data: Map[String, AnyRef] = Map.empty
 ) extends NCPropertyMapAdapter with NCToken:
-    if data != null then data.foreach { (k, v) => put(k, v)}
+    data.foreach { (k, v) => put(k, v)}
 
     override def getText: String = txt
     override def getIndex: Int = idx
