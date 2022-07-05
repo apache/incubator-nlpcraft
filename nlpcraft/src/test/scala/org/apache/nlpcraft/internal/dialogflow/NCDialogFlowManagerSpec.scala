@@ -29,8 +29,7 @@ import java.util.function.Predicate
   *
   */
 class NCDialogFlowManagerSpec:
-    case class IntentMatchMock(intentId: String, ctx: NCContext) extends NCIntentMatch:
-        override val getContext: NCContext = ctx
+    case class IntentMatchMock(intentId: String) extends NCIntentMatch:
         override val getIntentId: String = intentId
         override val getIntentEntities: List[List[NCEntity]] = null
         override def getTermEntities(idx: Int): List[NCEntity] = null
@@ -70,7 +69,7 @@ class NCDialogFlowManagerSpec:
       * @param id
       * @param ctx
       */
-    private def addMatchedIntent(id: String, ctx: NCContext): Unit = mgr.addMatchedIntent(IntentMatchMock(id, ctx), null, ctx)
+    private def addMatchedIntent(id: String, ctx: NCContext): Unit = mgr.addMatchedIntent(IntentMatchMock(id), null, ctx)
 
     /**
       *

@@ -28,36 +28,44 @@ object NCTestModelScala:
         @NCIntent("intent=locInt term(single)~{# == 'id1'} term(list)~{# == 'id2'}[0,10] term(opt)~{# == 'id3'}?")
         @NCIntentSample(Array("What are the least performing categories for the last quarter?"))
         def intent(
+            ctx: NCContext,
+            im: NCIntentMatch,
             @NCIntentTerm("single") single: NCEntity,
             @NCIntentTerm("list") list: Seq[NCEntity],
             @NCIntentTerm("opt") opt: Option[NCEntity]
-        ): NCResult = NCResult()
+        ): NCResult = NCTestResult()
 
         @NCIntent("import('scan/idl.idl')")
         @NCIntentSampleRef("scan/samples.txt")
         def intentImport(
+            ctx: NCContext,
+            im: NCIntentMatch,
             @NCIntentTerm("single") single: NCEntity,
             @NCIntentTerm("list") list: List[NCEntity],
             @NCIntentTerm("opt") opt: Option[NCEntity]
-        ): NCResult = NCResult()
+        ): NCResult = NCTestResult()
 
     @NCIntent("import('scan/idl.idl')")
     class NCTestModelScalaClass extends NCTestModelAdapter :
         @NCIntent("intent=locInt term(single)~{# == 'id1'} term(list)~{# == 'id2'}[0,10] term(opt)~{# == 'id3'}?")
         @NCIntentSample(Array("What are the least performing categories for the last quarter?"))
         def intent(
+            ctx: NCContext,
+            im: NCIntentMatch,
             @NCIntentTerm("single") single: NCEntity,
             @NCIntentTerm("list") list: Seq[NCEntity],
             @NCIntentTerm("opt") opt: Option[NCEntity]
-        ) = NCResult()
+        ) = NCTestResult()
 
         @NCIntentRef("impIntId")
         @NCIntentSampleRef("scan/samples.txt")
         def intentImport(
+            ctx: NCContext,
+            im: NCIntentMatch,
             @NCIntentTerm("single") single: NCEntity,
             @NCIntentTerm("list") list: List[NCEntity],
             @NCIntentTerm("opt") opt: Option[NCEntity]
-        ) = NCResult()
+        ) = NCTestResult()
 
     /**
       *
@@ -67,15 +75,19 @@ object NCTestModelScala:
         @NCIntent("intent=locInt term(single)~{# == 'id1'} term(list)~{# == 'id2'}[0,10] term(opt)~{# == 'id3'}?")
         @NCIntentSample(Array("What are the least performing categories for the last quarter?"))
         def intent(
+            ctx: NCContext,
+            im: NCIntentMatch,
             @NCIntentTerm("single") single: NCEntity,
             @NCIntentTerm("list") list: Seq[NCEntity],
             @NCIntentTerm("opt") opt: Option[NCEntity]
-        ): NCResult = NCResult()
+        ): NCResult = NCTestResult()
 
         @NCIntent("import('scan/idl.idl')")
         @NCIntentSampleRef("scan/samples.txt")
         def intentImport(
+            ctx: NCContext,
+            im: NCIntentMatch,
             @NCIntentTerm("single") single: NCEntity,
             @NCIntentTerm("list") list: List[NCEntity],
             @NCIntentTerm("opt") opt: Option[NCEntity]
-        ): NCResult = NCResult()
+        ): NCResult = NCTestResult()

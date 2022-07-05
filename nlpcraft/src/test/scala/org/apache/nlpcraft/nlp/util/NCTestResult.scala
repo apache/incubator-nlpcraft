@@ -15,22 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft
+package org.apache.nlpcraft.nlp.util
 
-import org.apache.nlpcraft.NCResultType.*
+import org.apache.nlpcraft.{NCResult, NCResultType}
 
 /**
   *
   */
-object NCResult:
-    def apply(body: Any, resultType: NCResultType, intentId: String): NCResult = new NCResult(body = body, resultType = resultType, intentId)
-    def apply(body: Any, resultType: NCResultType): NCResult = apply(body, resultType, intentId = null)
-
+object  NCTestResult {
+    def apply(): NCTestResult = new NCTestResult()
+}
 
 /**
   *
-  * @param body
-  * @param resultType
-  * @param intentId
   */
-case class NCResult(body: Any, resultType: NCResultType, intentId: String)
+class NCTestResult extends NCResult("test", NCResultType.ASK_RESULT, null)

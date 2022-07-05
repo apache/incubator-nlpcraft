@@ -22,6 +22,7 @@ import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.ascii.NCAsciiTable
 import org.apache.nlpcraft.internal.conversation.NCConversationManager
 import org.apache.nlpcraft.internal.dialogflow.NCDialogFlowManager
+import org.apache.nlpcraft.internal.impl.NCCallbackInput
 import org.apache.nlpcraft.internal.intent.*
 
 import java.util.function.Function
@@ -98,7 +99,7 @@ object NCIntentSolverManager:
       * @param variant
       * @param variantIdx
       */
-    private case class IntentSolverResult(intentId: String, fn: NCIntentMatch => NCResult, groups: List[IntentTermEntities], variant: IntentSolverVariant, variantIdx: Int)
+    private case class IntentSolverResult(intentId: String, fn: NCCallbackInput => NCResult, groups: List[IntentTermEntities], variant: IntentSolverVariant, variantIdx: Int)
 
     /**
       * NOTE: not thread-safe.
@@ -238,7 +239,7 @@ object NCIntentSolverManager:
       */
     private case class MatchHolder(
         intentMatch: IntentMatchHolder, // Match.
-        callback: NCIntentMatch => NCResult, // Callback function.
+        callback: NCCallbackInput => NCResult, // Callback function.
         variant: IntentSolverVariant, // Variant used for the match.
         variantIdx: Int // Variant index.
     )
@@ -258,7 +259,7 @@ import org.apache.nlpcraft.internal.intent.matcher.NCIntentSolverManager.*
 class NCIntentSolverManager(
     dialog: NCDialogFlowManager,
     conv: NCConversationManager,
-    intents: Map[NCIDLIntent, NCIntentMatch => NCResult]
+    intents: Map[NCIDLIntent, NCCallbackInput => NCResult]
 ) extends LazyLogging:
     private final val reqIds = mutable.HashMap.empty[UserModelKey, String]
 
@@ -270,7 +271,7 @@ class NCIntentSolverManager(
      * @param intents Intents to match for.
      * @return
      */
-    private def solveIntents(mdl: NCModel, ctx: NCContext, intents: Map[NCIDLIntent, NCIntentMatch => NCResult]): List[IntentSolverResult] =
+    private def solveIntents(mdl: NCModel, ctx: NCContext, intents: Map[NCIDLIntent, NCCallbackInput => NCResult]): List[IntentSolverResult] =
         dialog.ack(ctx.getRequest.getUserId)
 
         val matches = mutable.ArrayBuffer.empty[MatchHolder]
@@ -683,7 +684,6 @@ class NCIntentSolverManager(
         for (intentRes <- intentResults.filter(_ != null) if Loop.hasNext)
             def mkIntentMatch(arg: List[List[NCEntity]]): NCIntentMatch =
                 new NCIntentMatch:
-                    override val getContext: NCContext = ctx
                     override val getIntentId: String = intentRes.intentId
                     override val getIntentEntities: List[List[NCEntity]] = intentRes.groups.map(_.entities)
                     override def getTermEntities(idx: Int): List[NCEntity] = intentRes.groups(idx).entities
@@ -697,19 +697,19 @@ class NCIntentSolverManager(
 
             val im = mkIntentMatch(intentRes.groups.map(_.entities))
             try
-                if mdl.onMatchedIntent(im) then
+                if mdl.onMatchedIntent(ctx, im) then
                     // This can throw NCIntentSkip exception.
                     import NCIntentSolveType.*
 
-                    def saveHistory(res: NCResult, im: NCIntentMatch): Unit =
+                    def saveHistory(res: Option[NCResult], im: NCIntentMatch): Unit =
                         dialog.addMatchedIntent(im, res, ctx)
                         conv.getConversation(req.getUserId).addEntities(
                             req.getRequestId, im.getIntentEntities.flatten.distinct
                         )
                         logger.info(s"Intent '${intentRes.intentId}' for variant #${intentRes.variantIdx + 1} selected as the <|best match|>")
 
-                    def executeCallback(im: NCIntentMatch): NCResult =
-                        var cbRes = intentRes.fn(im)
+                    def executeCallback(in: NCCallbackInput): NCResult =
+                        var cbRes = intentRes.fn(in)
                         // Store winning intent match in the input.
                         if cbRes.intentId == null then cbRes = NCResult(cbRes.body, cbRes.resultType, intentRes.intentId)
                         cbRes
@@ -729,21 +729,21 @@ class NCIntentSolverManager(
                             typ match
                                 case SEARCH =>
                                     val imNew = mkIntentMatch(args)
-                                    val cbRes = executeCallback(imNew)
+                                    val cbRes = executeCallback(NCCallbackInput(ctx, imNew))
                                     dialog.replaceLastItem(imNew, cbRes, ctx)
                                     cbRes
-                                case SEARCH_NO_HISTORY => executeCallback(mkIntentMatch(args))
+                                case SEARCH_NO_HISTORY => executeCallback(NCCallbackInput(ctx, mkIntentMatch(args)))
                                 case _ => throw new AssertionError(s"Unexpected state: $typ")
 
                         Loop.finish(IterationResult(Right(CallbackDataImpl(im.getIntentId, im.getIntentEntities, f)), im))
 
                     typ match
                         case REGULAR =>
-                            val cbRes = executeCallback(im)
-                            saveHistory(cbRes, im)
+                            val cbRes = executeCallback(NCCallbackInput(ctx, im))
+                            saveHistory(Some(cbRes), im)
                             Loop.finish(IterationResult(Left(cbRes), im))
                         case SEARCH =>
-                            saveHistory(NCResult(), im) // Added dummy result.
+                            saveHistory(None, im)
                             finishSearch()
                         case SEARCH_NO_HISTORY =>
                             finishSearch()
@@ -793,7 +793,7 @@ class NCIntentSolverManager(
 
                 typ match
                     case REGULAR =>
-                        mdl.onResult(loopRes.intentMatch, loopRes.result.swap.toOption.get) match
+                        mdl.onResult(ctx, loopRes.intentMatch, loopRes.result.swap.toOption.get) match
                             case null => loopRes.result
                             case mdlRes => Left(mdlRes)
                     case _ => loopRes.result
@@ -801,7 +801,7 @@ class NCIntentSolverManager(
                 case e: NCRejection =>
                     typ match
                         case REGULAR =>
-                            mdl.onRejection(if loopRes != null then loopRes.intentMatch else null, e) match
+                            mdl.onRejection(ctx, if loopRes != null then loopRes.intentMatch else null, e) match
                                 case null => throw e
                                 case mdlRejRes => Left(mdlRejRes)
                         case _ => throw e

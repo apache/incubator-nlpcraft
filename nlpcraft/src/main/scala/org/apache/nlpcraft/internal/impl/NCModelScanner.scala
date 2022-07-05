@@ -33,16 +33,24 @@ import scala.util.Using
 
 /**
   *
+  * @param ctx
+  * @param im
+  */
+case class NCCallbackInput(ctx: NCContext, im: NCIntentMatch)
+
+/**
+  *
   * @param intent
   * @param function
   * @param samples
   */
-case class NCModelIntent(intent: NCIDLIntent, function: NCIntentMatch => NCResult, samples: Seq[Seq[String]])
+case class NCModelIntent(intent: NCIDLIntent, function: NCCallbackInput => NCResult, samples: Seq[Seq[String]])
 
 object NCModelScanner extends LazyLogging:
     private final val CLS_INTENT = classOf[NCIntent]
     private final val CLS_INTENT_REF = classOf[NCIntentRef]
     private final val CLS_QRY_RES = classOf[NCResult]
+    private final val CLS_CTX = classOf[NCContext]
     private final val CLS_INTENT_MATCH = classOf[NCIntentMatch]
     private final val CLS_SAMPLE = classOf[NCIntentSample]
     private final val CLS_SAMPLE_REF = classOf[NCIntentSampleRef]
@@ -72,7 +80,7 @@ object NCModelScanner extends LazyLogging:
       * @param function
       * @param method
       */
-    private case class IntentHolder(intent: NCIDLIntent, function: NCIntentMatch => NCResult, method: Method)
+    private case class IntentHolder(intent: NCIDLIntent, function: NCCallbackInput => NCResult, method: Method)
 
     /**
       *
@@ -132,12 +140,11 @@ object NCModelScanner extends LazyLogging:
       * @param mtd
       * @param prmClss
       * @param argsList
-      * @param ctxFirstPrm
       * @return
       */
-    private def prepareParams(cfg: NCModelConfig, mtd: Method, prmClss: List[Class[_]], argsList: List[List[NCEntity]], ctxFirstPrm: Boolean): Seq[AnyRef] =
+    private def prepareParams(cfg: NCModelConfig, mtd: Method, prmClss: List[Class[_]], argsList: List[List[NCEntity]]): Seq[AnyRef] =
         prmClss.zip(argsList).zipWithIndex.map { case ((paramCls, argList), i) =>
-            def mkArg(): String = arg2Str(mtd, i, ctxFirstPrm)
+            def mkArg(): String = arg2Str(mtd, i)
 
             lazy val z = s"mdlId=${cfg.id}, type=$paramCls, arg=${mkArg()}"
             val entsCnt = argList.size
@@ -229,10 +236,8 @@ object NCModelScanner extends LazyLogging:
       *
       * @param mtd
       * @param argIdx
-      * @param cxtFirstParam
       */
-    private def arg2Str(mtd: Method, argIdx: Int, cxtFirstParam: Boolean): String =
-        s"#${argIdx + (if cxtFirstParam then 1 else 0)} of ${method2Str(mtd)}"
+    private def arg2Str(mtd: Method, argIdx: Int): String = s"#${argIdx + 2} of ${method2Str(mtd)}"
 
     /**
       * Gets its own methods including private and accessible from parents.
@@ -304,15 +309,14 @@ object NCModelScanner extends LazyLogging:
       * @param mtd
       * @param argClasses
       * @param paramGenTypes
-      * @param ctxFirstParam
       */
-    private def checkTypes(cfg: NCModelConfig, mtd: Method, argClasses: Seq[Class[_]], paramGenTypes: Seq[Type], ctxFirstParam: Boolean): Unit =
+    private def checkTypes(cfg: NCModelConfig, mtd: Method, argClasses: Seq[Class[_]], paramGenTypes: Seq[Type]): Unit =
         require(argClasses.sizeIs == paramGenTypes.length)
 
         var warned = false
 
         argClasses.zip(paramGenTypes).zipWithIndex.foreach { case ((argClass, paramGenType), i) =>
-            def mkArg(): String = arg2Str(mtd, i, ctxFirstParam)
+            def mkArg(): String = arg2Str(mtd, i)
 
             lazy val z = s"mdlId=${cfg.id}, type=${class2Str(argClass)}, arg=${mkArg()}"
 
@@ -362,13 +366,12 @@ object NCModelScanner extends LazyLogging:
       * @param mtd
       * @param paramCls
       * @param limits
-      * @param ctxFirstParam
       */
-    private def checkMinMax(cfg: NCModelConfig, mtd: Method, paramCls: Seq[Class[_]], limits: Seq[(Int, Int)], ctxFirstParam: Boolean): Unit =
+    private def checkMinMax(cfg: NCModelConfig, mtd: Method, paramCls: Seq[Class[_]], limits: Seq[(Int, Int)]): Unit =
         require(paramCls.sizeIs == limits.length)
 
         paramCls.zip(limits).zipWithIndex.foreach { case ((cls, (min, max)), i) =>
-            def mkArg(): String = arg2Str(mtd, i, ctxFirstParam)
+            def mkArg(): String = arg2Str(mtd, i)
 
             val p1 = "its $IT annotated argument"
             val p2 = s"mdlId=${cfg.id}, arg=${mkArg()}"
@@ -395,23 +398,24 @@ object NCModelScanner extends LazyLogging:
       * @param intent
       * @return
       */
-    private def prepareCallback(cfg: NCModelConfig, method: Method, obj: AnyRef, intent: NCIDLIntent): NCIntentMatch => NCResult =
+    private def prepareCallback(cfg: NCModelConfig, method: Method, obj: AnyRef, intent: NCIDLIntent): NCCallbackInput => NCResult =
         lazy val z = s"mdlId=${cfg.id}, intentId=${intent.id}, type=${class2Str(method.getReturnType)}, callback=${method2Str(method)}"
 
         // Checks method result type.
-        if method.getReturnType != CLS_QRY_RES then E(s"Unexpected result type for @NCIntent annotated method [$z]")
+        if method.getReturnType != CLS_QRY_RES && !CLS_QRY_RES.isAssignableFrom(method.getReturnType) then
+            E(s"Unexpected result type for @NCIntent annotated method [$z]")
 
         val allParamTypes = method.getParameterTypes.toList
-        val ctxFirstParam = allParamTypes.nonEmpty && allParamTypes.head == CLS_INTENT_MATCH
 
-        def getList[T](data: List[T]): List[T] =
-            if data == null then List.empty
-            else if ctxFirstParam then data.drop(1)
-            else data
+        // TODO: texts
+        if allParamTypes.size < 2 then E(s"Unexpected parameters count for $I annotated method [count=${allParamTypes.size}, method=$z]")
+        // TODO: texts
+        if allParamTypes.head != CLS_CTX then E(s"First parameter for $I annotated method must be NCContext [method=$z]")
+        // TODO: texts
+        if allParamTypes(1) != CLS_INTENT_MATCH then E(s"Second parameter for $I annotated method must be NCIntentMatch [method=$z]")
 
-        val allAnns = method.getParameterAnnotations
-        val tokParamAnns = getList(allAnns.toList).filter(_ != null)
-        val tokParamTypes = getList(allParamTypes)
+        val tokParamAnns = method.getParameterAnnotations.toList.drop(2).filter(_ != null)
+        val tokParamTypes = allParamTypes.drop(2)
 
         // Checks entities parameters annotations count.
         if tokParamAnns.sizeIs != tokParamTypes.length then
@@ -420,7 +424,7 @@ object NCModelScanner extends LazyLogging:
         // Gets terms IDs.
         val termIds = tokParamAnns.zipWithIndex.map {
             case (annArr, idx) =>
-                def mkArg(): String = arg2Str(method, idx, ctxFirstParam)
+                def mkArg(): String = arg2Str(method, idx)
 
                 val termAnns = annArr.filter(_.isInstanceOf[NCIntentTerm])
 
@@ -448,17 +452,18 @@ object NCModelScanner extends LazyLogging:
             E(s"Unknown term ID in $IT annotation [termId=${invalidIds.head}, $z]")
 
         // Checks parameters.
-        val paramGenTypes = getList(method.getGenericParameterTypes.toList)
-        checkTypes(cfg, method, tokParamTypes, paramGenTypes, ctxFirstParam)
+        val paramGenTypes = method.getGenericParameterTypes.toList.drop(2)
+        checkTypes(cfg, method, tokParamTypes, paramGenTypes)
 
         // Checks limits.
         val allLimits = terms.map(t => t.id.orNull -> (t.min, t.max)).toMap
-        checkMinMax(cfg, method, tokParamTypes, termIds.map(allLimits), ctxFirstParam)
+        checkMinMax(cfg, method, tokParamTypes, termIds.map(allLimits))
 
-        (ctx: NCIntentMatch) =>
+        (cbData: NCCallbackInput) =>
             val args = mutable.Buffer.empty[AnyRef]
-            if ctxFirstParam then args += ctx
-            args ++= prepareParams(cfg, method, tokParamTypes, termIds.map(id => ctx.getTermEntities(id)), ctxFirstParam)
+            args += cbData.ctx
+            args += cbData.im
+            args ++= prepareParams(cfg, method, tokParamTypes, termIds.map(id => cbData.im.getTermEntities(id)))
             invoke(cfg, method, obj, args.toArray)
 
     /**

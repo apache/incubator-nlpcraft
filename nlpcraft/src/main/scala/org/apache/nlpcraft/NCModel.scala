@@ -123,7 +123,7 @@ trait NCModel:
       * <p>
       * By default, this method returns {@code true}.
       *
-      * @param ctx Intent match context - the same instance that's passed to the matched intent callback.
+      * @param im Intent match context - the same instance that's passed to the matched intent callback.
       * @return If {@code true} is returned than the default workflow will continue and the matched intent's
       * callback will be called. However, if {@code false} is returned than the entire existing set of
       * parsing variants will be matched against all declared intents again. Returning false allows this
@@ -132,7 +132,7 @@ trait NCModel:
       * careful not to induce infinite loop in this behavior.
       * @throws NCRejection This callback can throw the rejection exception to abort user request processing. In this
       * case the {@link # onRejection ( NCIntentMatch, NCRejection)} callback will be called next. */
-    @throws[NCRejection] def onMatchedIntent(ctx: NCIntentMatch) = true
+    @throws[NCRejection] def onMatchedIntent(ctx: NCContext, im: NCIntentMatch) = true
 
     /**
       * A callback that is called when successful result is obtained from the intent callback and right before
@@ -143,14 +143,14 @@ trait NCModel:
       * <p>
       * Default implementation is a no-op returning {@code null}.
       *
-      * @param ctx Intent match context - the same instance that's passed to the matched intent callback
+      * @param im Intent match context - the same instance that's passed to the matched intent callback
       * that produced this result.
       * @param res Existing result.
       * @return Optional query result to return interrupting the default workflow. Specifically, if this
       * method returns a non-{@code null} result, it will be returned to the caller immediately overriding
       * default behavior and existing query result or error processing, if any. If the method returns {@code null} -
       * the default processing flow will continue. */
-    def onResult(ctx: NCIntentMatch, res: NCResult): NCResult = null
+    def onResult(ctx: NCContext, im: NCIntentMatch, res: NCResult): NCResult = null
 
     /**
       * A callback that is called when intent callback threw NCRejection exception. This callback is called
@@ -168,7 +168,7 @@ trait NCModel:
       * returns a non-{@code null} result, it will be returned to the caller immediately overriding default behavior
       * and existing query result or error processing, if any. If the method returns {@code null} - the default
       * processing flow will continue. */
-    def onRejection(ctx: NCIntentMatch, e: NCRejection): NCResult = null
+    def onRejection(ctx: NCContext, im: NCIntentMatch, e: NCRejection): NCResult = null
 
     /**
       * A callback that is called when intent callback failed with unexpected exception. Note that this callback may

@@ -40,13 +40,13 @@ class NCModelPingPongSpec:
     private val MDL: NCTestModelAdapter =
         new NCTestModelAdapter():
             @NCIntent("intent=command term(command)={# == 'command'}")
-            def onCommand(im: NCIntentMatch, @NCIntentTerm("command") command: NCEntity): NCResult =
+            def onCommand(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("command") command: NCEntity): NCResult =
                 R(ASK_DIALOG, s"Confirm your request 'command'")
 
             @NCIntent("intent=confirmCommand term(confirm)={# == 'confirm'}")
-            def onConfirmCommand(im: NCIntentMatch, @NCIntentTerm("confirm") confirm: NCEntity): NCResult =
+            def onConfirmCommand(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("confirm") confirm: NCEntity): NCResult =
                 val lastIntentId =
-                    im.getContext.
+                    ctx.
                         getConversation.
                         getDialogFlow.lastOption.
                         flatMap(p => Option(p.getIntentMatch.getIntentId)).orNull
@@ -59,7 +59,7 @@ class NCModelPingPongSpec:
                 R(ASK_RESULT, s"'dialog' confirmed.")
 
             @NCIntent("intent=other term(other)={# == 'other'}")
-            def onOther(im: NCIntentMatch, @NCIntentTerm("other") other: NCEntity): NCResult =
+            def onOther(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("other") other: NCEntity): NCResult =
                 R(ASK_RESULT, s"Some request by: ${other.mkText}")
 
     MDL.pipeline.entParsers += NCTestUtils.mkEnSemanticParser(List(STE("command"), STE("confirm"), STE("other")))

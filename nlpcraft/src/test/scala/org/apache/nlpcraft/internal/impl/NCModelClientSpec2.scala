@@ -44,7 +44,7 @@ class NCModelClientSpec2:
                 pl
 
             @NCIntent("intent=i1 term(t1)={# == 'e1'} term(t2List)={# == 'e2'}*")
-            def onMatch(@NCIntentTerm("t1") act: NCEntity, @NCIntentTerm("t2List") locs: List[NCEntity]): NCResult =
+            def onMatch(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("t1") act: NCEntity, @NCIntentTerm("t2List") locs: List[NCEntity]): NCResult =
                 E("Shouldn't be called.")
 
         Using.resource(new NCModelClient(mdl)) { client =>

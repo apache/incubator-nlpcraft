@@ -68,7 +68,7 @@ class NCEntityMapperSpec:
             pl
 
         @NCIntent("intent=abcd term(abcd)={# == 'abcd'}")
-        def onMatch(@NCIntentTerm("abcd") abcd: NCEntity): NCResult = NCResult("OK", NCResultType.ASK_RESULT)
+        def onMatch(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("abcd") abcd: NCEntity): NCResult = NCResult("OK", NCResultType.ASK_RESULT)
 
     @Test
     def test(): Unit = Using.resource(new NCModelClient(mdl)) { client =>

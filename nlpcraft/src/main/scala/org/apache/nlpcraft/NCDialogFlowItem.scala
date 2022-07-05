@@ -42,6 +42,6 @@ trait NCDialogFlowItem:
     /**
       * Gets the winning intent's result.
       *
-      * @return Winning intent's result.
+      * @return Winning intent's result. // TODO: None for debugAsk.
       */
-    def getResult: NCResult
+    def getResult: Option[NCResult]

@@ -71,9 +71,3 @@ trait NCIntentMatch:
       * @return Parsing variant that produced the matching for this intent.
       * @see #getIntentEntities() */
     def getVariant: NCVariant
-
-    /**
-      * Gets context of the user input query.
-      *
-      * @return Original query context. */
-    def getContext: NCContext

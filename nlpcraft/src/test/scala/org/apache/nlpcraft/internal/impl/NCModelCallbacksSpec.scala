@@ -51,16 +51,16 @@ class NCModelCallbacksSpec:
     private val MDL: NCTestModelAdapter =
         new NCTestModelAdapter():
             @NCIntent("intent=x term(x)={# == 'x'}")
-            def intent(im: NCIntentMatch, @NCIntentTerm("x") x: NCEntity): NCResult =
+            def intent(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("x") x: NCEntity): NCResult =
                 if has(IntentError) then throw new RuntimeException("Error")
                 else if has(IntentReject) then throw new NCRejection("Rejection")
                 else RESULT_INTENT
 
-            override def onMatchedIntent(ctx: NCIntentMatch): Boolean = getOrElse(MatchFalse, false, true)
+            override def onMatchedIntent(ctx: NCContext, im: NCIntentMatch): Boolean = getOrElse(MatchFalse, false, true)
             override def onVariant(vrn: NCVariant): Boolean = getOrElse(VariantFalse, false, true)
             override def onContext(ctx: NCContext): NCResult = getOrElse(ContextNotNull, RESULT_CONTEXT, null)
-            override def onResult(ctx: NCIntentMatch, res: NCResult): NCResult = getOrElse(ResultNotNull, RESULT_RESULT, null)
-            override def onRejection(ctx: NCIntentMatch, e: NCRejection): NCResult = getOrElse(RejectionNotNull, RESULT_REJECTION, null)
+            override def onResult(ctx: NCContext, im: NCIntentMatch, res: NCResult): NCResult = getOrElse(ResultNotNull, RESULT_RESULT, null)
+            override def onRejection(ctx: NCContext, im: NCIntentMatch, e: NCRejection): NCResult = getOrElse(RejectionNotNull, RESULT_REJECTION, null)
             override def onError(ctx: NCContext, e: Throwable): NCResult = getOrElse(ErrorNotNull, RESULT_ERROR, null)
 
     MDL.pipeline.entParsers += NCTestUtils.mkEnSemanticParser(List(NCSemanticTestElement("x")))

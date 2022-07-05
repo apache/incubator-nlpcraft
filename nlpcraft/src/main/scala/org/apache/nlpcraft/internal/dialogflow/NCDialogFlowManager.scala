@@ -66,11 +66,11 @@ class NCDialogFlowManager(cfg: NCModelConfig) extends LazyLogging:
       * @param ctx
       * @return
       */
-    private def mkItem(intentMatch: NCIntentMatch, res: NCResult, ctx: NCContext): NCDialogFlowItem =
+    private def mkItem(intentMatch: NCIntentMatch, res: Option[NCResult], ctx: NCContext): NCDialogFlowItem =
         new NCDialogFlowItem:
             override val getIntentMatch: NCIntentMatch = intentMatch
             override val getRequest: NCRequest = ctx.getRequest
-            override val getResult: NCResult = res
+            override val getResult: Option[NCResult] = res
 
     /**
       *
@@ -105,10 +105,10 @@ class NCDialogFlowManager(cfg: NCModelConfig) extends LazyLogging:
       * Adds matched (winning) intent to the dialog flow.
       *
       * @param intentMatch
-      * @param res Intent callback result.
+      * @param res Intent callback result. // TODO: Option if debugAsk.
       * @param ctx Original query context.
       */
-    def addMatchedIntent(intentMatch: NCIntentMatch, res: NCResult, ctx: NCContext): Unit =
+    def addMatchedIntent(intentMatch: NCIntentMatch, res: Option[NCResult], ctx: NCContext): Unit =
         val item = mkItem(intentMatch, res, ctx)
 
         flow.synchronized {
@@ -123,7 +123,7 @@ class NCDialogFlowManager(cfg: NCModelConfig) extends LazyLogging:
       * @param ctx
       */
     def replaceLastItem(intentMatch: NCIntentMatch, res: NCResult, ctx: NCContext): Unit =
-        val item = mkItem(intentMatch, res, ctx)
+        val item = mkItem(intentMatch, Some(res), ctx)
 
         flow.synchronized {
             val buf = flow.getOrElseUpdate(ctx.getRequest.getUserId, mutable.ArrayBuffer.empty[NCDialogFlowItem])
