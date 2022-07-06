@@ -199,7 +199,7 @@ object NCIDLCompiler extends LazyLogging:
         override def exitFlowDecl(ctx: IDP.FlowDeclContext): Unit =
             val regex = NCUtils.trimQuotes(ctx.qstring().getText)
 
-            if regex != null && regex.length > 2 then flowRegex = if regex.nonEmpty then Option(regex) else None
+            if regex != null && regex.length > 2 then flowRegex = Option.when(regex.nonEmpty)(regex)
             if flowRegex.isDefined then // Pre-check.
                 try Pattern.compile(flowRegex.get)
                 catch case e: PatternSyntaxException => SE(s"${e.getDescription} in intent flow regex '${e.getPattern}' near index ${e.getIndex}.")(ctx.qstring())
