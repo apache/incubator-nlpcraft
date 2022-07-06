@@ -27,6 +27,6 @@ trait NCVariant:
     /**
       * Gets the list of entities for this variant.
       *
-      * @return List of entities for this variant. Can be empty but never {@code null}.
+      * @return List of entities for this variant. Can be empty but never `null`.
       */
     def getEntities: List[NCEntity]

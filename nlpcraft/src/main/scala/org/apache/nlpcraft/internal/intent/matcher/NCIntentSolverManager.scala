@@ -740,7 +740,7 @@ class NCIntentSolverManager(
                     typ match
                         case REGULAR =>
                             val cbRes = executeCallback(NCCallbackInput(ctx, im))
-                            saveHistory(Some(cbRes), im)
+                            saveHistory(Option(cbRes), im)
                             Loop.finish(IterationResult(Left(cbRes), im))
                         case SEARCH =>
                             saveHistory(None, im)

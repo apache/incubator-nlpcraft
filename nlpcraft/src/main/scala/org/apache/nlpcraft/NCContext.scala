@@ -20,41 +20,48 @@ package org.apache.nlpcraft
 /**
   * A context containing a fully parsed data from the input query.
   *
-  * @see NCModel#onContext(NCContext) */
+  * @see NCModel#onContext(NCContext)
+  */
 trait NCContext:
     /**
       * Tests if given entity is part of the query this context is associated with.
       *
-      * @param ent Entity to check. */
+      * @param ent Entity to check.
+      */
     def isOwnerOf(ent: NCEntity): Boolean
 
     /**
       * Gets configuration of the model this context is associated with.
       *
-      * @return Model. */
+      * @return Model.
+      */
     def getModelConfig: NCModelConfig
 
     /**
       * Gets user request container.
       *
-      * @return User request. */
+      * @return User request.
+      */
     def getRequest: NCRequest
 
     /**
       * Gets current conversation for this context.
       *
-      * @return Current conversation. */
+      * @return Current conversation.
+      */
     def getConversation: NCConversation
 
     /**
       * Gets the list of parsing variants. Returned list always contains as least one parsing variant.
       *
       * @return A non-empty list of parsing variants.
-      * @see NCModel#onVariant(NCVariant) */
+      * @see NCModel#onVariant(NCVariant)
+      */
     def getVariants: List[NCVariant]
 
     /**
       * Gets the list of all tokens for the input query this context is associated with.
       *
-      * @return List of tokens for this context. Can be empty but never {@code null}. */
+      * @return List of tokens for this context. Can be empty but never `null`.
+      */
     def getTokens: List[NCToken]

@@ -18,18 +18,18 @@
 package org.apache.nlpcraft
 
 /**
-  * Map-like container that provides support for mutable runtime-only propertes or metadata.
+  * Map-like container that provides support for mutable runtime-only properties or metadata.
   *
   * @see NCPropertyMapAdapter
   * @see NCToken
   * @see NCEntity */
 trait NCPropertyMap:
     /**
-      * Returns the value to which the specified key is mapped, or {@code null} if this map contains no mapping for the key.
+      * Returns the value to which the specified key is mapped, or `null` if this map contains no mapping for the key.
       *
       * @param key The key whose associated value is to be returned.
       * @param <T> Type of the returned value.
-      * @return The value to which the specified key is mapped, or {@code null} if this map contains no mapping for the key. */
+      * @return The value to which the specified key is mapped, or `null` if this map contains no mapping for the key. */
     def get[T](key: String): T
 
     /**
@@ -50,23 +50,23 @@ trait NCPropertyMap:
       * @param key Key with which the specified value is to be associated.
       * @param obj Value to be associated with the specified key.
       * @param <T> Type of the value.
-      * @return The previous value associated with key, or {@code null} if there was no mapping for key. */
+      * @return The previous value associated with key, or `null` if there was no mapping for key. */
     def put[T](key: String, obj: Any): T
 
     /**
-      * If the specified key is not already associated with a value (or is mapped to {@code null}) associates it with
-      * the given value and returns {@code null}, else returns the current value.
+      * If the specified key is not already associated with a value (or is mapped to `null`) associates it with
+      * the given value and returns `null`, else returns the current value.
       *
       * @param key Key with which the specified value is to be associate
       * @param obj Value to be associated with the specified key
       * @param <T> Type of the value.
-      * @return The previous value associated with the specified key, or {@code null} if there was no mapping for the key. */
+      * @return The previous value associated with the specified key, or `null` if there was no mapping for the key. */
     def putIfAbsent[T](key: String, obj: T): T
 
     /**
-      * Returns {@code true} if this map contains a mapping for the specified key.
+      * Returns `true` if this map contains a mapping for the specified key.
       *
-      * @return {@code true} if this map contains a mapping for the specified key. */
+      * @return `true` if this map contains a mapping for the specified key. */
     def contains(key: String): Boolean
 
     /**
@@ -74,7 +74,7 @@ trait NCPropertyMap:
       *
       * @param key Key whose mapping is to be removed from the map.
       * @param <T> Type of the value.
-      * @return The previous value associated with key, or {@code null} if there was no mapping for key. */
+      * @return The previous value associated with key, or `null` if there was no mapping for key. */
     def remove[T](key: String): T
 
     /**
@@ -82,7 +82,7 @@ trait NCPropertyMap:
       *
       * @param key Key with which the specified value is associated value.
       * @param obj Value expected to be associated with the specified key.
-      * @return {@code true} if the value was removed */
+      * @return `true` if the value was removed */
     def remove(key: String, obj: Any): Boolean
 
     /**

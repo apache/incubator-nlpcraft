@@ -75,7 +75,7 @@ class TimeModel extends NCModelAdapter(
       * @param s
       * @return */
     private def capitalize(s: String): String =
-        if s == null || s.isEmpty then s else s.substring(0, 1).toUpperCase + s.substring(1, s.length)
+        if s == null || s.isEmpty then s else s"${s.substring(0, 1).toUpperCase}${s.substring(1, s.length)}"
 
     /**
       * Callback on remote time intent match.

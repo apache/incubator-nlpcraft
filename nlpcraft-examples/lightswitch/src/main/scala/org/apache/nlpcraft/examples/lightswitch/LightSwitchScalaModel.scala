@@ -84,8 +84,7 @@ class LightSwitchScalaModel extends NCModelAdapter(
         val status = if actEnt.getId == "ls:on" then "on" else "off"
         val locations = if locEnts.isEmpty then "entire house" else locEnts.map(_.mkText).mkString(", ")
 
-        // Add HomeKit, Arduino or other integration here.
-
+        // Add HomeKit, Arduino or other integration here.=
         // By default - just return a descriptive action string.
         NCResult(
             s"Lights are [$status] in [${locations.toLowerCase}].",

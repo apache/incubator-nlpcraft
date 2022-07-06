@@ -92,9 +92,7 @@ class LightSwitchFrModel extends NCModelAdapter(
         val locations = if locEnts.isEmpty then "toute la maison" else locEnts.map(_.mkText).mkString(", ")
 
         // Add HomeKit, Arduino or other integration here.
-
         // By default - just return a descriptive action string.
-
         NCResult(
             new Gson().toJson(Map("locations" -> locations, "action" -> action).asJava),
             NCResultType.ASK_RESULT

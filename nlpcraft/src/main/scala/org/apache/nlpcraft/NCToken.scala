@@ -53,13 +53,13 @@ trait NCToken extends NCPropertyMap:
       * Gets the inclusive start position of this token's text in the original input text supplied to
       * {@link NCTokenParser# tokenize ( String )} method.
       *
-      * @return Start position (inlcusive) of this token's text in the original input text. */
+      * @return Start position (inclusive) of this token's text in the original input text. */
     def getStartCharIndex: Int
 
     /**
       * Gets the inclusive end position of this token's text in the original input text supplied to
       * {@link NCTokenParser# tokenize ( String )} method.
       *
-      * @return End position (invlusvie) of this token's text in the original input text.
+      * @return End position (inclusive) of this token's text in the original input text.
       * @return */
     def getEndCharIndex: Int

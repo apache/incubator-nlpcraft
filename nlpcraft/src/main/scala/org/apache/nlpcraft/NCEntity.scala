@@ -41,7 +41,7 @@ package org.apache.nlpcraft
 trait NCEntity extends NCPropertyMap:
 
     /**
-      * Gets the list of tokens this entity is comprised of. Returned list is never empty or {@code null}.
+      * Gets the list of tokens this entity is comprised of. Returned list is never empty or `null`.
       *
       * @return List of tokens that are part of this entity. */
     def getTokens: List[NCToken]
@@ -64,7 +64,7 @@ trait NCEntity extends NCPropertyMap:
     /**
       * Gets optional set of groups this entity belongs to.
       *
-      * @return Optional set of groups this entity belongs to. Returned set can be empty but never {@code null}. */
+      * @return Optional set of groups this entity belongs to. Returned set can be empty but never `null`. */
     def getGroups: Set[String] = Set(getId)
 
     /**

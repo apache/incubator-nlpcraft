@@ -407,11 +407,8 @@ object NCModelScanner extends LazyLogging:
 
         val allParamTypes = method.getParameterTypes.toList
 
-        // TODO: texts
-        if allParamTypes.size < 2 then E(s"Unexpected parameters count for $I annotated method [count=${allParamTypes.size}, method=$z]")
-        // TODO: texts
+        if allParamTypes.sizeIs < 2 then E(s"Unexpected parameters count for $I annotated method [count=${allParamTypes.size}, method=$z]")
         if allParamTypes.head != CLS_CTX then E(s"First parameter for $I annotated method must be NCContext [method=$z]")
-        // TODO: texts
         if allParamTypes(1) != CLS_INTENT_MATCH then E(s"Second parameter for $I annotated method must be NCIntentMatch [method=$z]")
 
         val tokParamAnns = method.getParameterAnnotations.toList.drop(2).filter(_ != null)

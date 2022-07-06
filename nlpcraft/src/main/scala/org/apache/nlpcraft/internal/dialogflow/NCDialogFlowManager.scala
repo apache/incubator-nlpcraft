@@ -123,7 +123,7 @@ class NCDialogFlowManager(cfg: NCModelConfig) extends LazyLogging:
       * @param ctx
       */
     def replaceLastItem(intentMatch: NCIntentMatch, res: NCResult, ctx: NCContext): Unit =
-        val item = mkItem(intentMatch, Some(res), ctx)
+        val item = mkItem(intentMatch, Option(res), ctx)
 
         flow.synchronized {
             val buf = flow.getOrElseUpdate(ctx.getRequest.getUserId, mutable.ArrayBuffer.empty[NCDialogFlowItem])

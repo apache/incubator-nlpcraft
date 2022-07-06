@@ -54,7 +54,7 @@ trait NCConversation:
       * policy as the conversation it belongs to. Specifically, this returned container will be cleared when the
       * conversation gets cleared automatically (by timeout or depth) or manually.
       *
-      * @return User-defined conversation data container. Can be empty but never {@code null}. */
+      * @return User-defined conversation data container. Can be empty but never `null`. */
     def getData: NCPropertyMap
 
     /**
@@ -66,7 +66,7 @@ trait NCConversation:
       * should not rely on any observed behavior of how STM stores and evicts its content).
       *
       * @return List of entities for this conversation's STM. The list can be empty which indicates that conversation
-      * is brand new or expired - but never {@code null}. */
+      * is brand new or expired - but never `null`. */
     def getStm: List[NCEntity]
 
     /**

@@ -55,5 +55,5 @@ trait NCRequest:
     /**
       * Gets optional user request data.
       *
-      * @return Optional user request data, can be empty but never {@code null}. */
+      * @return Optional user request data, can be empty but never `null`. */
     def getRequestData: Map[String, Any]

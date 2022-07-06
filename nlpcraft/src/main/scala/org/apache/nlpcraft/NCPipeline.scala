@@ -96,6 +96,6 @@ trait NCPipeline:
     /**
       * Gets optional list of entity mappers.
       *
-      * @return Optional list of entity mappers. Can be empty but never {@code null}.
+      * @return Optional list of entity mappers. Can be empty but never `null`.
       */
     def getEntityMappers: List[NCEntityMapper] = List.empty

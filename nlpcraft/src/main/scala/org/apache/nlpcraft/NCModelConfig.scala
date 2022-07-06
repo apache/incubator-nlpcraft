@@ -27,9 +27,9 @@ object NCModelConfig:
     val DFLT_CONV_TIMEOUT: Long = Duration.ofMinutes(60).toMillis
     val DFLT_CONV_DEPTH = 3
 
-    def apply(id: String, name: String, version: String) = new NCModelConfig(id, name, version)
-    def apply(id: String, name: String, version: String, description: String, origin: String) =
-        new NCModelConfig(id, name, version, Some(description), Some(origin))
+    def apply(id: String, name: String, ver: String) = new NCModelConfig(id, name, ver)
+    def apply(id: String, name: String, ver: String, desc: String, orig: String) =
+        new NCModelConfig(id, name, ver, Option(desc), Option(orig))
 import org.apache.nlpcraft.NCModelConfig.*
 
 /**

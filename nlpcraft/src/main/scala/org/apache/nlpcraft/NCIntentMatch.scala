@@ -29,7 +29,7 @@ trait NCIntentMatch:
 
     /**
       * Gets a subset of entities representing matched intent. This subset is grouped by the matched terms
-      * where a {@code null} sub-list defines an optional term. Order and index of sub-lists corresponds
+      * where a `null` sub-list defines an optional term. Order and index of sub-lists corresponds
       * to the order and index of terms in the matching intent. Number of sub-lists will always be the same
       * as the number of terms in the matched intent.
       * <p>
@@ -46,7 +46,7 @@ trait NCIntentMatch:
       * Consider using {@link NCIntentTerm} annotation instead for simpler access to the intent entities.
       *
       * @param idx Index of the term (starting from <code>0</code>).
-      * @return List of entities, potentially {@code null}, for given term.
+      * @return List of entities, potentially `null`, for given term.
       * @see NCIntentTerm
       * @see #getTermEntities(String) */
     def getTermEntities(idx: Int): List[NCEntity]
@@ -57,10 +57,10 @@ trait NCIntentMatch:
       * Consider using {@link NCIntentTerm} annotation instead for simpler access to the intent entities.
       *
       * @param termId ID of the term for which to get entities.
-      * @return List of entities, potentially {@code null}, for given term.
+      * @return List of entities, potentially `null`, for given term.
       * @see NCIntentTerm
       * @see #getTermEntities(int) */
-    def getTermEntities(termId: String):  List[NCEntity]
+    def getTermEntities(termId: String): List[NCEntity]
 
     /**
       * Gets parsing variant that produced the matching for this intent. Returned variant is one of the
