@@ -90,7 +90,7 @@ object NCResourceReader extends LazyLogging:
         val nameLen = f.getName.length
 
         md5.
-            flatMap { (resPath, md5) => if path.endsWith(resPath) && resPath.length >= nameLen then Option(md5) else None }.
+            flatMap { (resPath, md5) => Option.when(path.endsWith(resPath) && resPath.length >= nameLen)(md5) }.
             to(LazyList).
             headOption.
             getOrElse(throw new NCException(s"MD5 data not found for: '$path'"))
