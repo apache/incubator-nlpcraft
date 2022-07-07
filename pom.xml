@@ -107,7 +107,7 @@
         <scalatest.ver>3.2.11</scalatest.ver>
         <jackson.ver>2.13.2</jackson.ver>
         <jackson.yaml.ver>2.13.2</jackson.yaml.ver>
-        <apache.opennlp.ver>1.9.4</apache.opennlp.ver>
+        <apache.opennlp.ver>2.0.0</apache.opennlp.ver>
         <jmh.version>1.35</jmh.version>
         <gson.ver>2.9.0</gson.ver>
 
