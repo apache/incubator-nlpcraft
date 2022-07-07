@@ -23,7 +23,7 @@
 [![Documentation Status](https://img.shields.io/:docs-latest-green.svg)](https://nlpcraft.apache.org/docs.html)
 [![Gitter](https://badges.gitter.im/apache-nlpcraft/community.svg)](https://gitter.im/apache-nlpcraft/community)
 
-### Light Switch Example
+### Pizzeria Example
 TODO:
 ### Documentation
 TODO:

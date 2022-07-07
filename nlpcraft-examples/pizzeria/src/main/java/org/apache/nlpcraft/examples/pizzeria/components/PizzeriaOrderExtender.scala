@@ -56,7 +56,7 @@ import PizzeriaOrderExtender.*
   * @param extraData
   */
 case class PizzeriaOrderExtender(mainDataSeq: Seq[EntityData], extraData: EntityData) extends NCEntityMapper with LazyLogging:
-    override def map(req: NCRequest, cfg: NCModelConfig, entities: List[NCEntity]): List[NCEntity] =
+    override def map(req: NCRequest, cfg: NCModelConfig, ents: List[NCEntity]): List[NCEntity] =
         def combine(mainEnt: NCEntity, mainProp: String, extraEnt: NCEntity): NCEntity =
             new NCPropertyMapAdapter with NCEntity:
                 mainEnt.keysSet.foreach(k => put(k, mainEnt.get(k)))
@@ -66,8 +66,8 @@ case class PizzeriaOrderExtender(mainDataSeq: Seq[EntityData], extraData: Entity
                 override val getId: String = mainEnt.getId
 
         val mainById = mainDataSeq.map(p => p.id -> p).toMap
-        val main = mutable.HashSet.empty ++ entities.filter(e => mainById.contains(e.getId))
-        val extra = entities.filter(_.getId == extraData.id)
+        val main = mutable.HashSet.empty ++ ents.filter(e => mainById.contains(e.getId))
+        val extra = ents.filter(_.getId == extraData.id)
 
         if main.nonEmpty && extra.nonEmpty && main.size >= extra.size then
             val used = (main ++ extra).toSet
@@ -78,15 +78,15 @@ case class PizzeriaOrderExtender(mainDataSeq: Seq[EntityData], extraData: Entity
                 main -= m
                 main2Extra += m -> e
 
-            val unrelated = entities.filter(e => !used.contains(e))
+            val unrelated = ents.filter(e => !used.contains(e))
             val artificial = for ((m, e) <- main2Extra) yield combine(m, mainById(m.getId).property, e)
             val unused = main
 
             val res = (unrelated ++ artificial ++ unused).sortBy(_.tokens.head.getIndex)
 
             def s(es: Iterable[NCEntity]) =
-                entities.map(e => s"id=${e.getId}(${e.tokens.map(_.getIndex).mkString("[", ",", "]")})").mkString("{", ", ", "}")
-            logger.debug(s"Elements mapped [input=${s(entities)}, output=${s(res)}]")
+                ents.map(e => s"id=${e.getId}(${e.tokens.map(_.getIndex).mkString("[", ",", "]")})").mkString("{", ", ", "}")
+            logger.debug(s"Elements mapped [input=${s(ents)}, output=${s(res)}]")
 
             res
-        else entities
+        else ents

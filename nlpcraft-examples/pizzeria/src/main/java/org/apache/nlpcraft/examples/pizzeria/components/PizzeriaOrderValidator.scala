@@ -23,8 +23,8 @@ import org.apache.nlpcraft.*
   * Rejects some invalid variant with more detailed information instead of standard rejections.
   */
 class PizzeriaOrderValidator extends NCEntityValidator:
-    override def validate(req: NCRequest, cfg: NCModelConfig, entities: List[NCEntity]): Unit =
-        def count(id: String): Int = entities.count(_.getId == id)
+    override def validate(req: NCRequest, cfg: NCModelConfig, ents: List[NCEntity]): Unit =
+        def count(id: String): Int = ents.count(_.getId == id)
 
         val cntPizza = count("ord:pizza")
         val cntDrink = count("ord:drink")

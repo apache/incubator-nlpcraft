@@ -100,7 +100,6 @@ object PizzeriaModel extends LazyLogging:
         conv.clearDialog(_ => true)
         mkResult(msg) -> DIALOG_EMPTY
 
-
     private def doStop(o: Order)(using ctx: NCContext, im: NCIntentMatch): Result =
         doResultWithClear(
             if !o.isEmpty then s"Everything cancelled. Ask `menu` to look what you can order."
