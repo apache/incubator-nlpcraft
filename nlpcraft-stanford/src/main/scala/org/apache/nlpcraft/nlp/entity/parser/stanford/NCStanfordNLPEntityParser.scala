@@ -21,8 +21,6 @@ import edu.stanford.nlp.ling.CoreAnnotations.NormalizedNamedEntityTagAnnotation
 import edu.stanford.nlp.pipeline.*
 import org.apache.nlpcraft.*
 
-import java.util
-import java.util.stream.Collectors
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
 
@@ -32,8 +30,8 @@ import scala.jdk.CollectionConverters.*
   * @param supported
   */
 class NCStanfordNLPEntityParser(stanford: StanfordCoreNLP, supported: Set[String]) extends NCEntityParser:
-    require(stanford != null, "Stanford instance cannot be null.")
-    require(supported != null, "Supported elements set cannot be null.")
+    require(stanford != null, "Stanford instance cannot be null.");
+    require(supported != null && supported.nonEmpty, "Supported elements set cannot be null or empty.");
 
     private val supportedLc = supported.map(_.toLowerCase)
 
