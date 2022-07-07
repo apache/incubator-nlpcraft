@@ -86,7 +86,7 @@ object NCSemanticEntityParser:
         require(parser != null, "Parser cannot be null.")
         require(mdlSrc != null, "Model source cannot be null.")
 
-        new NCSemanticEntityParser(stemmer, parser, mdlSrc = mdlSrc)
+        new NCSemanticEntityParser(stemmer, parser, mdlSrcOpt = Option(mdlSrc))
 
     /**
       * @param baseTokens Tokens.
@@ -182,21 +182,23 @@ import org.apache.nlpcraft.nlp.entity.parser.semantic.NCSemanticEntityParser.*
   * @param parser
   * @param macros
   * @param elements
-  * @param mdlSrc
+  * @param mdlSrcOpt
   */
 class NCSemanticEntityParser(
     stemmer: NCSemanticStemmer,
     parser: NCTokenParser,
     macros: Map[String, String] = Map.empty,
     elements: List[NCSemanticElement] = List.empty,
-    mdlSrc: String = null
+    mdlSrcOpt: Option[String] = None
 ) extends NCEntityParser with LazyLogging:
     require(stemmer != null)
     require(parser != null)
     require(macros != null)
-    require(elements != null && elements.nonEmpty || mdlSrc != null)
+    require(elements != null && elements.nonEmpty || mdlSrcOpt.isDefined)
 
-    private val scrType = if mdlSrc != null then NCSemanticSourceType.detect(mdlSrc) else null
+    private lazy val scrType =
+        require(mdlSrcOpt.isDefined)
+        NCSemanticSourceType.detect(mdlSrcOpt.get)
 
     private var synsHolder: NCSemanticSynonymsHolder = _
     private var elemsMap: Map[String, NCSemanticElement] = _
@@ -209,12 +211,12 @@ class NCSemanticEntityParser(
         val (macros, elements, elemsMap) =
             def toMap(elems: Seq[NCSemanticElement]): Map[String, NCSemanticElement] = elems.map(p => p.getId -> p).toMap
 
-            if mdlSrc != null then
-                val src = NCSemanticSourceReader.read(new BufferedInputStream(NCUtils.getStream(mdlSrc)), scrType)
-                logger.trace(s"Loaded resource: $mdlSrc")
-                (src.macros, src.elements, toMap(src.elements))
-            else
-                (this.macros, this.elements, toMap(this.elements))
+            mdlSrcOpt match
+                case Some(mdlSrc) =>
+                    val src = NCSemanticSourceReader.read(new BufferedInputStream(NCUtils.getStream(mdlSrc)), scrType)
+                    logger.trace(s"Loaded resource: $mdlSrcOpt")
+                    (src.macros, src.elements, toMap(src.elements))
+                case None => (this.macros, this.elements, toMap(this.elements))
 
         this.synsHolder = NCSemanticSynonymsProcessor.prepare(stemmer, parser, macros, elements)
         this.elemsMap = elemsMap
