@@ -21,7 +21,6 @@ import edu.stanford.nlp.ling.CoreAnnotations.NormalizedNamedEntityTagAnnotation
 import edu.stanford.nlp.pipeline.*
 import org.apache.nlpcraft.*
 
-import java.util.Objects
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
 
@@ -34,6 +33,8 @@ class NCStanfordNLPEntityParser(stanford: StanfordCoreNLP, supported: Set[String
     require(stanford != null, "Stanford instance cannot be null.")
     require(supported != null && supported.nonEmpty, "Supported elements set cannot be null or empty.")
 
+    private val supportedLc = supported.map(_.toLowerCase)
+
     override def parse(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): List[NCEntity] =
         val doc = new CoreDocument(req.getText)
         stanford.annotate(doc)
@@ -43,7 +44,7 @@ class NCStanfordNLPEntityParser(stanford: StanfordCoreNLP, supported: Set[String
         for (e <- doc.entityMentions().asScala)
             val typ = e.entityType().toLowerCase
 
-            if supported.contains(typ) then
+            if supportedLc.contains(typ) then
                 val offsets = e.charOffsets()
                 val t1 = toks.find(_.getStartCharIndex == offsets.first)
                 lazy val t2 = toks.find(_.getEndCharIndex == offsets.second)
