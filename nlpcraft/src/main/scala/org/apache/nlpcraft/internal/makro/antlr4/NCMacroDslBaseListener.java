@@ -1,4 +1,4 @@
-// Generated from /Users/nivanov/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/internal/makro/antlr4/NCMacroDsl.g4 by ANTLR 4.9.2
+// Generated from /Users/nivanov/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/internal/makro/antlr4/NCMacroDsl.g4 by ANTLR 4.10.1
 package org.apache.nlpcraft.internal.makro.antlr4;
 
 import org.antlr.v4.runtime.ParserRuleContext;

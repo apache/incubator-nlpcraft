@@ -41,7 +41,7 @@ class NCSemanticEntityParserYamlSpec:
       */
     private def check(txt: String, id: String): Unit =
         val req = NCTestRequest(txt)
-        val ents = semParser.parse(req, CFG, EN_TOK_PARSER.tokenize(req.txt)).asScala.toSeq
+        val ents = semParser.parse(req, CFG, EN_TOK_PARSER.tokenize(req.txt))
 
         NCTestUtils.printEntities(txt, ents)
 

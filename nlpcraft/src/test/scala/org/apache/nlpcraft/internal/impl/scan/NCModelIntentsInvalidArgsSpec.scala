@@ -18,7 +18,8 @@
 package org.apache.nlpcraft.internal.impl.scan
 
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.internal.impl.NCModelScanner
+import org.apache.nlpcraft.annotations.*
+import org.apache.nlpcraft.internal.impl.{NCCallbackInput, NCModelScanner}
 import org.apache.nlpcraft.nlp.util.*
 import org.junit.jupiter.api.Test
 
@@ -31,53 +32,71 @@ import java.util
 class NCModelIntentsInvalidArgsSpec:
     class DefinedClassModelValid extends NCTestModelAdapter:
         @NCIntent("intent=validList term(list)~{# == 'x'}[0,10]")
-        def validList(@NCIntentTerm("list") list: List[NCEntity]): NCResult = processListEntity(list)
+        def validList(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("list") list: List[NCEntity]): NCResult = processListEntity(list)
 
         @NCIntent("intent=validOpt term(opt)~{# == 'x'}?")
-        def validOpt(@NCIntentTerm("opt") opt: Option[NCEntity]): NCResult = processOptEntity(opt)
+        def validOpt(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("opt") opt: Option[NCEntity]): NCResult = processOptEntity(opt)
 
     class DefinedClassModelInvalidLst extends NCTestModelAdapter:
         @NCIntent("intent=invalidList term(list)~{# == 'x'}[0,10]")
-        def invalidList(@NCIntentTerm("list") list: List[Int]): NCResult = processListInt(list)
+        def invalidList(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("list") list: List[Int]): NCResult = processListInt(list)
+
+    class DefinedClassModelInvalidArg1 extends NCTestModelAdapter:
+        @NCIntent("intent=invalidList term(list)~{# == 'x'}[0,10]")
+        def invalidArg(ctx: NCContext, @NCIntentTerm("list") list: List[Int]): NCResult = processListInt(list)
+
+    class DefinedClassModelInvalidArg2 extends NCTestModelAdapter:
+        @NCIntent("intent=invalidList term(list)~{# == 'x'}[0,10]")
+        def invalidArg(im: NCIntentMatch, @NCIntentTerm("list") list: List[Int]): NCResult = processListInt(list)
+
+    class DefinedClassModelInvalidArg3 extends NCTestModelAdapter:
+        @NCIntent("intent=invalidList term(list)~{# == 'x'}[0,10]")
+        def invalidList(im: NCIntentMatch, ctx: NCContext, @NCIntentTerm("list") list: List[Int]): NCResult = processListInt(list)
 
     class DefinedClassModelInvalidOpt extends NCTestModelAdapter:
         @NCIntent("intent=invalidOpt term(opt)~{# == 'x'}?")
-        def invalidOpt(@NCIntentTerm("opt") opt: Option[Int]): NCResult = processOptInt(opt)
+        def invalidOpt(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("opt") opt: Option[Int]): NCResult = processOptInt(opt)
 
     private val CHECKED_MDL_VALID: NCModel = new DefinedClassModelValid
     private val CHECKED_MDL_INVALID_LST: NCModel = new DefinedClassModelInvalidLst
     private val CHECKED_MDL_INVALID_OPT: NCModel = new DefinedClassModelInvalidOpt
+
+    private val CHECKED_MDL_INVALID_ARG1: NCModel = new DefinedClassModelInvalidArg1
+    private val CHECKED_MDL_INVALID_ARG2: NCModel = new DefinedClassModelInvalidArg2
+    private val CHECKED_MDL_INVALID_ARG3: NCModel = new DefinedClassModelInvalidArg3
+
     private val UNCHECKED_MDL: NCModel =
         new NCTestModelAdapter:
             @NCIntent("intent=validList term(list)~{# == 'x'}[0,10]")
-            def validList(@NCIntentTerm("list") list: List[NCEntity]): NCResult = processListEntity(list)
+            def validList(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("list") list: List[NCEntity]): NCResult = processListEntity(list)
 
             @NCIntent("intent=validOpt term(opt)~{# == 'x'}?")
-            def validOpt(@NCIntentTerm("opt") opt: Option[NCEntity]): NCResult = processOptEntity(opt)
+            def validOpt(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("opt") opt: Option[NCEntity]): NCResult = processOptEntity(opt)
 
             @NCIntent("intent=invalidList term(list)~{# == 'x'}[0,10]")
-            def invalidList(@NCIntentTerm("list") list: List[Int]): NCResult = processListInt(list)
+            def invalidList(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("list") list: List[Int]): NCResult = processListInt(list)
 
             @NCIntent("intent=invalidOpt term(opt)~{# == 'x'}?")
-            def invalidOpt(@NCIntentTerm("opt") opt: Option[Int]): NCResult = processOptInt(opt)
+            def invalidOpt(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("opt") opt: Option[Int]): NCResult = processOptInt(opt)
 
-    private val INTENT_MATCH =
+    private val INPUT =
         val e = NCTestEntity("id", "reqId", tokens = NCTestToken())
 
-        def col[T](t: T): util.List[T] = java.util.Collections.singletonList(t)
+        def col[T](t: T): List[T] = List(t)
 
-        new NCIntentMatch:
-            override val getContext: NCContext = null
+        val im = new NCIntentMatch:
             override val getIntentId: String = "intentId"
-            override val getIntentEntities: util.List[util.List[NCEntity]] = col(col(e))
-            override def getTermEntities(idx: Int): util.List[NCEntity] = col(e)
-            override def getTermEntities(termId: String): util.List[NCEntity] = col(e)
+            override val getIntentEntities: List[List[NCEntity]] = col(col(e))
+            override def getTermEntities(idx: Int): List[NCEntity] = col(e)
+            override def getTermEntities(termId: String): List[NCEntity] = col(e)
             override val getVariant: NCVariant = new NCVariant:
-                override val getEntities: util.List[NCEntity] = col(e)
+                override val getEntities: List[NCEntity] = col(e)
+
+        NCCallbackInput(null, im)
 
     private def mkResult0(obj: Any): NCResult =
         println(s"Result body: $obj, class=${obj.getClass}")
-        new NCResult(obj, NCResultType.ASK_RESULT)
+        NCResult(obj, NCResultType.ASK_RESULT)
 
     private def processOptInt(opt: Option[Int]): NCResult =
         // Access and cast.
@@ -102,13 +121,13 @@ class NCModelIntentsInvalidArgsSpec:
     private def testOk(mdl: NCModel, intentId: String): Unit =
         val i = NCModelScanner.scan(mdl).find(_.intent.id == intentId).get
 
-        println(s"Test finished [modelClass=${mdl.getClass}, intent=$intentId, result=${i.function(INTENT_MATCH)}")
+        println(s"Test finished [modelClass=${mdl.getClass}, intent=$intentId, result=${i.function(INPUT)}")
 
     private def testRuntimeClassCast(mdl: NCModel, intentId: String): Unit =
         val i = NCModelScanner.scan(mdl).find(_.intent.id == intentId).get
 
         try
-            i.function(INTENT_MATCH)
+            i.function(INPUT)
 
             require(false)
         catch
@@ -137,6 +156,11 @@ class NCModelIntentsInvalidArgsSpec:
         // Errors thrown on scan phase if error found in any intent.
         testScanValidation(CHECKED_MDL_INVALID_LST)
         testScanValidation(CHECKED_MDL_INVALID_OPT)
+
+        // Missed or wrong 2 mandatory callback arguments.
+        testScanValidation(CHECKED_MDL_INVALID_ARG1)
+        testScanValidation(CHECKED_MDL_INVALID_ARG2)
+        testScanValidation(CHECKED_MDL_INVALID_ARG3)
 
         testOk(UNCHECKED_MDL, "validList")
         testOk(UNCHECKED_MDL, "validOpt")

@@ -18,6 +18,7 @@
 package org.apache.nlpcraft.internal.impl
 
 import org.apache.nlpcraft.*
+import org.apache.nlpcraft.annotations.*
 import org.apache.nlpcraft.nlp.entity.parser.*
 import org.apache.nlpcraft.nlp.entity.parser.semantic.NCSemanticEntityParser
 import org.apache.nlpcraft.nlp.util.*
@@ -36,26 +37,26 @@ class NCModelClientSpec:
       * @return
       */
     private def s(e: NCEntity): String =
-        s"Entity [id=${e.getId}, text=${e.mkText()}, properties={${e.keysSet().asScala.map(k => s"$k=${e.get(k)}")}}]"
+        s"Entity [id=${e.getId}, text=${e.mkText}, properties={${e.keysSet.map(k => s"$k=${e.get(k)}")}}]"
 
     /**
       *
       * @param mdl
       */
     private def test0(mdl: NCTestModelAdapter): Unit =
-        mdl.getPipeline.getEntityParsers.add(NCTestUtils.mkEnSemanticParser("models/lightswitch_model.yaml"))
+        mdl.pipeline.entParsers += NCTestUtils.mkEnSemanticParser("models/lightswitch_model.yaml")
 
         Using.resource(new NCModelClient(mdl)) { client =>
-            val res = client.ask("Lights on at second floor kitchen", null, "userId")
+            val res = client.ask("Lights on at second floor kitchen", "userId")
 
-            println(s"Intent: ${res.getIntentId}")
-            println(s"Body: ${res.getBody}")
+            println(s"Intent: ${res.intentId}")
+            println(s"Body: ${res.body}")
 
             client.validateSamples()
 
-            val winner = client.debugAsk("Lights on at second floor kitchen", null, "userId", true)
+            val winner = client.debugAsk("Lights on at second floor kitchen", "userId", true)
             println(s"Winner intent: ${winner.getIntentId}")
-            println("Entities: \n" + winner.getCallbackArguments.asScala.map(p => p.asScala.map(s).mkString(", ")).mkString("\n"))
+            println("Entities: \n" + winner.getCallbackArguments.map(p => p.map(s).mkString(", ")).mkString("\n"))
         }
 
     /**
@@ -67,9 +68,8 @@ class NCModelClientSpec:
             new NCTestModelAdapter():
                 @NCIntentSample(Array("Lights on at second floor kitchen"))
                 @NCIntent("intent=ls term(act)={# == 'ls:on'} term(loc)={# == 'ls:loc'}*")
-                def onMatch(@NCIntentTerm("act") act: NCEntity, @NCIntentTerm("loc") locs: List[NCEntity]): NCResult = new NCResult()
+                def onMatch(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("act") act: NCEntity, @NCIntentTerm("loc") locs: List[NCEntity]): NCResult = NCResult("test", NCResultType.ASK_RESULT)
         )
-
     /**
       * 
       */
@@ -79,6 +79,6 @@ class NCModelClientSpec:
             new NCTestModelAdapter():
                 @NCIntent("intent=ls term(act)={has(ent_groups, 'act')} term(loc)={# == 'ls:loc'}*")
                 @NCIntentSample(Array("Lights on at second floor kitchen"))
-                def onMatch(@NCIntentTerm("act") act: NCEntity, @NCIntentTerm("loc") locs: List[NCEntity]): NCResult = new NCResult()
+                def onMatch(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("act") act: NCEntity, @NCIntentTerm("loc") locs: List[NCEntity]): NCResult = NCResult("test", NCResultType.ASK_RESULT)
         )
 

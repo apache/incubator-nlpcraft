@@ -19,6 +19,7 @@ package org.apache.nlpcraft.internal.impl
 
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.NCResultType.*
+import org.apache.nlpcraft.annotations.*
 import org.apache.nlpcraft.nlp.entity.parser.*
 import org.apache.nlpcraft.nlp.entity.parser.semantic.*
 import org.apache.nlpcraft.nlp.util.*
@@ -41,28 +42,28 @@ class NCModelCallbacksSpec:
 
     private val states = collection.mutable.HashSet.empty[State]
 
-    private val RESULT_INTENT = new NCResult("result-intent", NCResultType.ASK_RESULT)
-    private val RESULT_CONTEXT = new NCResult("result-context", NCResultType.ASK_RESULT)
-    private val RESULT_RESULT = new NCResult("result-result", NCResultType.ASK_RESULT)
-    private val RESULT_REJECTION = new NCResult("result-rejection", NCResultType.ASK_RESULT)
-    private val RESULT_ERROR = new NCResult("result-error", NCResultType.ASK_RESULT)
+    private val RESULT_INTENT = NCResult("result-intent", NCResultType.ASK_RESULT)
+    private val RESULT_CONTEXT = NCResult("result-context", NCResultType.ASK_RESULT)
+    private val RESULT_RESULT = NCResult("result-result", NCResultType.ASK_RESULT)
+    private val RESULT_REJECTION = NCResult("result-rejection", NCResultType.ASK_RESULT)
+    private val RESULT_ERROR = NCResult("result-error", NCResultType.ASK_RESULT)
 
-    private val MDL: NCModel =
+    private val MDL: NCTestModelAdapter =
         new NCTestModelAdapter():
             @NCIntent("intent=x term(x)={# == 'x'}")
-            def intent(im: NCIntentMatch, @NCIntentTerm("x") x: NCEntity): NCResult =
+            def intent(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("x") x: NCEntity): NCResult =
                 if has(IntentError) then throw new RuntimeException("Error")
                 else if has(IntentReject) then throw new NCRejection("Rejection")
                 else RESULT_INTENT
 
-            override def onMatchedIntent(ctx: NCIntentMatch): Boolean = getOrElse(MatchFalse, false, true)
+            override def onMatchedIntent(ctx: NCContext, im: NCIntentMatch): Boolean = getOrElse(MatchFalse, false, true)
             override def onVariant(vrn: NCVariant): Boolean = getOrElse(VariantFalse, false, true)
-            override def onContext(ctx: NCContext): NCResult = getOrElse(ContextNotNull, RESULT_CONTEXT, null)
-            override def onResult(ctx: NCIntentMatch, res: NCResult): NCResult = getOrElse(ResultNotNull, RESULT_RESULT, null)
-            override def onRejection(ctx: NCIntentMatch, e: NCRejection): NCResult = getOrElse(RejectionNotNull, RESULT_REJECTION, null)
-            override def onError(ctx: NCContext, e: Throwable): NCResult = getOrElse(ErrorNotNull, RESULT_ERROR, null)
+            override def onContext(ctx: NCContext): Option[NCResult] = getOrElse(ContextNotNull, Some(RESULT_CONTEXT), None)
+            override def onResult(ctx: NCContext, im: NCIntentMatch, res: NCResult): Option[NCResult] = getOrElse(ResultNotNull, Some(RESULT_RESULT), None)
+            override def onRejection(ctx: NCContext, im: Option[NCIntentMatch], e: NCRejection): Option[NCResult] = getOrElse(RejectionNotNull, Some(RESULT_REJECTION), None)
+            override def onError(ctx: NCContext, e: Throwable): Option[NCResult] = getOrElse(ErrorNotNull, Some(RESULT_ERROR), None)
 
-    MDL.getPipeline.getEntityParsers.add(NCTestUtils.mkEnSemanticParser(Seq(NCSemanticTestElement("x")).asJava))
+    MDL.pipeline.entParsers += NCTestUtils.mkEnSemanticParser(List(NCSemanticTestElement("x")))
 
     /**
       *
@@ -99,7 +100,7 @@ class NCModelCallbacksSpec:
       */
     private def testOk(client: NCModelClient, exp: NCResult, states: State*): Unit =
         set(states*)
-        require(client.ask("x", null, "userId").getBody == exp.getBody)
+        require(client.ask("x", "userId").body == exp.body)
 
     /**
       *

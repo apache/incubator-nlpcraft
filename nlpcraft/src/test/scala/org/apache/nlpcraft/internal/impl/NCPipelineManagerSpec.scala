@@ -19,14 +19,12 @@ package org.apache.nlpcraft.internal.impl
 
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.nlp.entity.parser.*
-import org.apache.nlpcraft.nlp.entity.parser.impl.NCNLPEntityParserImpl
 import org.apache.nlpcraft.nlp.entity.parser.semantic.*
 import org.apache.nlpcraft.nlp.util.*
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.function.Executable
 
 import java.util
-import java.util.List as JList
 import java.util.concurrent.*
 import scala.concurrent.CancellationException
 import scala.jdk.CollectionConverters.*
@@ -43,14 +41,14 @@ class NCPipelineManagerSpec:
         def test(txt: String, variantCnt: Int, elements: NCSemanticElement*): Unit =
             val pipeline = mkEnPipeline
 
-            pipeline.getEntityParsers.add(NCTestUtils.mkEnSemanticParser(elements.asJava))
+            pipeline.entParsers += NCTestUtils.mkEnSemanticParser(elements*)
 
             val res = new NCModelPipelineManager(CFG, pipeline).prepare(txt, null, "userId")
 
             println(s"Variants count: ${res.variants.size}")
             for ((v, idx) <- res.variants.zipWithIndex)
                 println(s"Variant: $idx")
-                NCTestUtils.printEntities(txt, v.getEntities.asScala.toSeq)
+                NCTestUtils.printEntities(txt, v.getEntities)
 
             require(res.variants.sizeIs == variantCnt)
 

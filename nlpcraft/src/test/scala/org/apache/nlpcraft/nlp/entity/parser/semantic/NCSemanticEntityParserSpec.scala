@@ -25,19 +25,17 @@ import org.apache.nlpcraft.nlp.util.*
 import org.junit.jupiter.api.*
 
 import java.util
-import java.util.{List as JList, Map as JMap, Set as JSet}
 import scala.collection.mutable
 import scala.concurrent.ExecutionContext
-import scala.jdk.CollectionConverters.*
-import scala.jdk.OptionConverters.RichOptional
+
 /**
   *
   */
 class NCSemanticEntityParserSpec:
-    import NCSemanticTestElement as E
     private val semParser: NCSemanticEntityParser =
+        import NCSemanticTestElement as E
         NCTestUtils.mkEnSemanticParser(
-            Seq(
+            List(
                 // Standard.
                 E("t1", synonyms = Set("t1")),
                 // No extra synonyms.
@@ -51,8 +49,10 @@ class NCSemanticEntityParserSpec:
                 // Elements data.
                 E("t6", props = Map("testKey" -> "testValue")),
                 // Regex.
-                E("t7", synonyms = Set("x //[a-d]+//"))
-            ).asJava
+                E("t7", synonyms = Set("x //[a-d]+//")),
+                // Empty synonyms.
+                E("t8", synonyms = Set("{A|_} {B|_}"))
+            )
         )
 
     /**
@@ -69,9 +69,9 @@ class NCSemanticEntityParserSpec:
         EN_TOK_LEMMA_POS_ENRICHER.enrich(req, CFG, toks)
         EN_TOK_STOP_ENRICHER.enrich(req, CFG, toks)
 
-        NCTestUtils.printTokens(toks.asScala.toSeq)
+        NCTestUtils.printTokens(toks)
 
-        val ents = semParser.parse(req, CFG, toks).asScala.toSeq
+        val ents = semParser.parse(req, CFG, toks)
 
         NCTestUtils.printEntities(txt, ents)
         require(ents.sizeIs == 1)
@@ -98,9 +98,9 @@ class NCSemanticEntityParserSpec:
         EN_TOK_LEMMA_POS_ENRICHER.enrich(req, CFG, toks)
         EN_TOK_STOP_ENRICHER.enrich(req, CFG, toks)
 
-        NCTestUtils.printTokens(toks.asScala.toSeq)
+        NCTestUtils.printTokens(toks)
 
-        val ents = semParser.parse(req, CFG, toks).asScala.toSeq
+        val ents = semParser.parse(req, CFG, toks)
 
         NCTestUtils.printEntities(txt, ents)
         require(ents.sizeIs == ids.size)
@@ -121,5 +121,8 @@ class NCSemanticEntityParserSpec:
         check("value the 5", "t5", value = Option("value5")) // With stopword inside.
         check("t6", "t6", elemData = Option(Map("testKey" -> "testValue")))
         check("the x abc x abe", "t7") // `x abc` should be matched, `x abe` shouldn't.
+        check("A B", "t8")
+        check("A", "t8")
+        check("B", "t8")
 
         checkMultiple("t1 the x abc the x the abc", "t1", "t7", "t7")

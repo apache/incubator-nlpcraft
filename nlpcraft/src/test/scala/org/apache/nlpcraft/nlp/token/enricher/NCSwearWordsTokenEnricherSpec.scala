@@ -33,12 +33,12 @@ class NCSwearWordsTokenEnricherSpec:
 
     @Test
     def test(): Unit =
-        val toks = EN_TOK_PARSER.tokenize("english ass").asScala.toSeq
+        val toks = EN_TOK_PARSER.tokenize("english ass")
 
         require(toks.head.getOpt[Boolean]("swear:en").isEmpty)
         require(toks.last.getOpt[Boolean]("swear:en").isEmpty)
 
-        swEnricher.enrich(null, null, toks.asJava)
+        swEnricher.enrich(null, null, toks)
 
         NCTestUtils.printTokens(toks)
 

@@ -37,16 +37,15 @@ class NCStopWordsEnricherSpec:
       * @param boolVals
       */
     private def test(stopEnricher: NCEnStopWordsTokenEnricher, txt: String, boolVals: Boolean*): Unit =
-        val toksList = EN_TOK_PARSER.tokenize(txt)
-        require(toksList.size == boolVals.size)
-        val toks = toksList.asScala.toSeq
+        val toks = EN_TOK_PARSER.tokenize(txt)
+        require(toks.size == boolVals.size)
 
         toks.foreach(tok => require(tok.getOpt[Boolean]("stopword").isEmpty))
 
         val req = NCTestRequest(txt)
 
-        EN_TOK_LEMMA_POS_ENRICHER.enrich(req, CFG, toksList)
-        stopEnricher.enrich(req, CFG, toksList)
+        EN_TOK_LEMMA_POS_ENRICHER.enrich(req, CFG, toks)
+        stopEnricher.enrich(req, CFG, toks)
 
         NCTestUtils.printTokens(toks)
         toks.zip(boolVals).foreach { (tok, boolVal) => require(tok.get[Boolean]("stopword") == boolVal) }
@@ -60,7 +59,7 @@ class NCStopWordsEnricherSpec:
             false
         )
         test(
-            new NCEnStopWordsTokenEnricher(Set("test").asJava, Set("the").asJava),
+            new NCEnStopWordsTokenEnricher(Set("test"), Set("the")),
             "the test",
             false,
             true

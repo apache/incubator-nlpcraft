@@ -24,8 +24,6 @@ import org.apache.nlpcraft.internal.util.NCUtils
 
 import java.text.DateFormat
 import java.time.format.DateTimeFormatter
-import java.util
-import java.util.*
 import scala.collection.*
 
 /**
@@ -42,7 +40,7 @@ class NCDialogFlowManager(cfg: NCModelConfig) extends LazyLogging:
     private def clearForTimeout(): Long =
         require(Thread.holdsLock(flow))
 
-        val timeout = cfg.getConversationTimeout
+        val timeout = cfg.conversationTimeout
         val bound = NCUtils.now() - timeout
         var next = Long.MaxValue
 
@@ -68,18 +66,18 @@ class NCDialogFlowManager(cfg: NCModelConfig) extends LazyLogging:
       * @param ctx
       * @return
       */
-    private def mkItem(intentMatch: NCIntentMatch, res: NCResult, ctx: NCContext): NCDialogFlowItem =
+    private def mkItem(intentMatch: NCIntentMatch, res: Option[NCResult], ctx: NCContext): NCDialogFlowItem =
         new NCDialogFlowItem:
             override val getIntentMatch: NCIntentMatch = intentMatch
             override val getRequest: NCRequest = ctx.getRequest
-            override val getResult: NCResult = res
+            override val getResult: Option[NCResult] = res
 
     /**
       *
       * @return
       */
     def start(): Unit =
-        gc = NCUtils.mkThread("dialog-mgr-gc", cfg.getId) { t =>
+        gc = NCUtils.mkThread("dialog-mgr-gc", cfg.id) { t =>
             while (!t.isInterrupted)
                 try
                     flow.synchronized {
@@ -107,10 +105,10 @@ class NCDialogFlowManager(cfg: NCModelConfig) extends LazyLogging:
       * Adds matched (winning) intent to the dialog flow.
       *
       * @param intentMatch
-      * @param res Intent callback result.
+      * @param res Intent callback result. // TODO: Option if debugAsk.
       * @param ctx Original query context.
       */
-    def addMatchedIntent(intentMatch: NCIntentMatch, res: NCResult, ctx: NCContext): Unit =
+    def addMatchedIntent(intentMatch: NCIntentMatch, res: Option[NCResult], ctx: NCContext): Unit =
         val item = mkItem(intentMatch, res, ctx)
 
         flow.synchronized {
@@ -125,7 +123,7 @@ class NCDialogFlowManager(cfg: NCModelConfig) extends LazyLogging:
       * @param ctx
       */
     def replaceLastItem(intentMatch: NCIntentMatch, res: NCResult, ctx: NCContext): Unit =
-        val item = mkItem(intentMatch, res, ctx)
+        val item = mkItem(intentMatch, Option(res), ctx)
 
         flow.synchronized {
             val buf = flow.getOrElseUpdate(ctx.getRequest.getUserId, mutable.ArrayBuffer.empty[NCDialogFlowItem])
@@ -144,10 +142,10 @@ class NCDialogFlowManager(cfg: NCModelConfig) extends LazyLogging:
       * @param usrId User ID.
       * @return Dialog flow.
       */
-    def getDialogFlow(usrId: String): Seq[NCDialogFlowItem] =
+    def getDialogFlow(usrId: String): List[NCDialogFlowItem] =
         flow.synchronized { flow.get(usrId) } match
-            case Some(buf) => buf.toSeq
-            case None => Seq.empty
+            case Some(buf) => buf.toList
+            case None => List.empty
 
     /**
       * Prints out ASCII table for current dialog flow.
@@ -169,11 +167,11 @@ class NCDialogFlowManager(cfg: NCModelConfig) extends LazyLogging:
                 itm.getIntentMatch.getIntentId,
                 itm.getRequest.getRequestId,
                 itm.getRequest.getText,
-                DateFormat.getDateTimeInstance.format(new Date(itm.getRequest.getReceiveTimestamp))
+                DateFormat.getDateTimeInstance.format(new java.util.Date(itm.getRequest.getReceiveTimestamp))
             )
         }
 
-        logger.info(s"""Current dialog flow (oldest first) for [mdlId=${cfg.getId}, usrId=$usrId]\n${tbl.toString()}""")
+        logger.info(s"""Current dialog flow (oldest first) for [mdlId=${cfg.id}, usrId=$usrId]\n${tbl.toString()}""")
 
     /**
       * Clears dialog history for given user ID.

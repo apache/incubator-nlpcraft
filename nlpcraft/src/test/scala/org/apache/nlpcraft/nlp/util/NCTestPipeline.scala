@@ -21,8 +21,6 @@ import org.apache.nlpcraft.*
 import org.apache.nlpcraft.nlp.token.parser.NCOpenNLPTokenParser
 import org.apache.nlpcraft.nlp.util.NCTestPipeline.*
 
-import java.util.{Optional, ArrayList as JList}
-
 /**
   *
   * @param tokParser
@@ -30,13 +28,21 @@ import java.util.{Optional, ArrayList as JList}
 case class NCTestPipeline(tokParser: NCTokenParser) extends NCPropertyMapAdapter with NCPipeline:
     require(tokParser != null)
 
-    var variantFilter: Optional[NCVariantFilter] = Optional.empty()
+    import scala.collection.mutable.ArrayBuffer as Buf
 
-    override val getTokenParser: NCTokenParser = tokParser
-    override val getTokenEnrichers = new JList[NCTokenEnricher]()
-    override val getEntityEnrichers = new JList[NCEntityEnricher]()
-    override val getEntityParsers = new JList[NCEntityParser]()
-    override val getTokenValidators = new JList[NCTokenValidator]()
-    override val getEntityValidators = new JList[NCEntityValidator]()
-    override val getEntityMappers = new JList[NCEntityMapper]()
-    override def getVariantFilter: Optional[NCVariantFilter] = variantFilter
+    val tokEnrichers: Buf[NCTokenEnricher] = Buf.empty
+    val entEnrichers: Buf[NCEntityEnricher] = Buf.empty
+    val entParsers: Buf[NCEntityParser] = Buf.empty
+    val tokVals: Buf[NCTokenValidator] = Buf.empty
+    val entVals: Buf[NCEntityValidator] = Buf.empty
+    val entMappers: Buf[NCEntityMapper] = Buf.empty
+    var varFilter: Option[NCVariantFilter] = None
+
+    override def getTokenParser: NCTokenParser = tokParser
+    override def getTokenEnrichers: List[NCTokenEnricher] = tokEnrichers.toList
+    override def getEntityEnrichers: List[NCEntityEnricher] = entEnrichers.toList
+    override def getEntityParsers: List[NCEntityParser] = entParsers.toList
+    override def getTokenValidators: List[NCTokenValidator] = tokVals.toList
+    override def getEntityValidators: List[NCEntityValidator] = entVals.toList
+    override def getEntityMappers: List[NCEntityMapper] = entMappers.toList
+    override def getVariantFilter: Option[NCVariantFilter] = varFilter

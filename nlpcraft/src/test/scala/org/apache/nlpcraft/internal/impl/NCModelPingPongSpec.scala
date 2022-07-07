@@ -19,6 +19,7 @@ package org.apache.nlpcraft.internal.impl
 
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.NCResultType.*
+import org.apache.nlpcraft.annotations.*
 import org.apache.nlpcraft.nlp.entity.parser.*
 import org.apache.nlpcraft.nlp.entity.parser.semantic.{NCSemanticTestElement as STE, *}
 import org.apache.nlpcraft.nlp.util.*
@@ -33,21 +34,21 @@ import scala.util.Using
 class NCModelPingPongSpec:
     private var client: NCModelClient = _
 
-    private case class R(resType: NCResultType, txt: String) extends NCResult(txt, resType):
+    private class R(resType: NCResultType, txt: String) extends NCResult(txt, resType):
         override def toString: String = s"$resType ($txt)"
 
-    private val MDL: NCModel =
+    private val MDL: NCTestModelAdapter =
         new NCTestModelAdapter():
             @NCIntent("intent=command term(command)={# == 'command'}")
-            def onCommand(im: NCIntentMatch, @NCIntentTerm("command") command: NCEntity): NCResult =
+            def onCommand(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("command") command: NCEntity): NCResult =
                 R(ASK_DIALOG, s"Confirm your request 'command'")
 
             @NCIntent("intent=confirmCommand term(confirm)={# == 'confirm'}")
-            def onConfirmCommand(im: NCIntentMatch, @NCIntentTerm("confirm") confirm: NCEntity): NCResult =
+            def onConfirmCommand(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("confirm") confirm: NCEntity): NCResult =
                 val lastIntentId =
-                    im.getContext.
+                    ctx.
                         getConversation.
-                        getDialogFlow.asScala.lastOption.
+                        getDialogFlow.lastOption.
                         flatMap(p => Option(p.getIntentMatch.getIntentId)).orNull
 
                 if lastIntentId != "command" then
@@ -58,10 +59,10 @@ class NCModelPingPongSpec:
                 R(ASK_RESULT, s"'dialog' confirmed.")
 
             @NCIntent("intent=other term(other)={# == 'other'}")
-            def onOther(im: NCIntentMatch, @NCIntentTerm("other") other: NCEntity): NCResult =
-                R(ASK_RESULT, s"Some request by: ${other.mkText()}")
+            def onOther(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("other") other: NCEntity): NCResult =
+                R(ASK_RESULT, s"Some request by: ${other.mkText}")
 
-    MDL.getPipeline.getEntityParsers.add(NCTestUtils.mkEnSemanticParser(Seq(STE("command"), STE("confirm"), STE("other")).asJava))
+    MDL.pipeline.entParsers += NCTestUtils.mkEnSemanticParser(List(STE("command"), STE("confirm"), STE("other")))
 
     @BeforeEach
     def setUp(): Unit = client = new NCModelClient(MDL)
@@ -70,9 +71,9 @@ class NCModelPingPongSpec:
     def tearDown(): Unit = client.close()
 
     private def ask(txt: String, typ: NCResultType): Unit =
-        val res = client.ask(txt, null, "userId")
+        val res = client.ask(txt, "userId")
         println(s"Request [text=$txt, result=$res]")
-        require(res.getType == typ)
+        require(res.resultType == typ)
 
     private def askForDialog(txt: String): Unit = ask(txt, ASK_DIALOG)
     private def askForResult(txt: String): Unit = ask(txt, ASK_RESULT)

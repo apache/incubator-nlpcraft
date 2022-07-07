@@ -20,9 +20,6 @@ package org.apache.nlpcraft.nlp.util
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.nlp.util.NCTestPipeline.*
 
-import java.util.{List as JList, Set as JSet}
-import scala.jdk.CollectionConverters.*
-
 /**
   * Entity test implementation.
   *
@@ -41,7 +38,7 @@ case class NCTestEntity(
 ) extends NCPropertyMapAdapter with NCEntity:
     if meta != null then meta.foreach { (k, v) => put(k, v) }
 
-    override def getTokens: JList[NCToken] = tokens.asJava
+    override def getTokens: List[NCToken] = tokens.toList
     override def getRequestId: String = reqId
-    override def getGroups: JSet[String] = (if groups != null then groups else Set(id)).asJava
+    override def getGroups: Set[String] = if groups != null then groups else Set(id)
     override def getId: String = id

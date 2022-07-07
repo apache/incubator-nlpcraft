@@ -17,21 +17,19 @@
 
 package org.apache.nlpcraft.internal.intent.compiler
 
+import org.antlr.v4.runtime.ParserRuleContext as PRC
+import org.antlr.v4.runtime.tree.TerminalNode as TN
+import org.apache.commons.collections4.CollectionUtils
 import org.apache.commons.lang3.StringUtils
 import org.apache.nlpcraft.*
+import org.apache.nlpcraft.internal.intent.{NCIDLStackItem as Z, *}
 import org.apache.nlpcraft.internal.util.*
-import org.antlr.v4.runtime.{ParserRuleContext => PRC}
-import org.antlr.v4.runtime.tree.{TerminalNode => TN}
-import org.apache.commons.collections4.CollectionUtils
-import org.apache.nlpcraft.internal.intent.*
-import org.apache.nlpcraft.internal.intent.{NCIDLStackItem => Z}
 
-import java.lang.{Byte => JByte, Double => JDouble, Float => JFloat, Integer => JInt, Long => JLong, Short => JShort}
-import java.util.{Calendar, Collections, Collection => JColl, List => JList, Map => JMap}
+import java.lang.{Byte as JByte, Double as JDouble, Float as JFloat, Integer as JInt, Long as JLong, Short as JShort}
 import java.time.temporal.IsoFields
-import java.time.{LocalDate, LocalTime}
+import java.time.*
 import java.util
-
+import java.util.{Calendar, Collections, Collection as JColl, List as JList, Map as JMap}
 import scala.jdk.CollectionConverters.*
 
 trait NCIDLCodeGenerator:
@@ -913,17 +911,17 @@ trait NCIDLCodeGenerator:
                 case "or_else" => doOrElse()
 
                 // Model configuration.
-                case "mdl_id" => z0(() => Z(idlCtx.mdlCfg.getId, 0))
-                case "mdl_name" => z0(() => Z(idlCtx.mdlCfg.getName, 0))
-                case "mdl_ver" => z0(() => Z(idlCtx.mdlCfg.getVersion, 0))
-                case "mdl_origin" => z0(() => Z(idlCtx.mdlCfg.getOrigin, 0))
+                case "mdl_id" => z0(() => Z(idlCtx.mdlCfg.id, 0))
+                case "mdl_name" => z0(() => Z(idlCtx.mdlCfg.name, 0))
+                case "mdl_ver" => z0(() => Z(idlCtx.mdlCfg.version, 0))
+                case "mdl_origin" => z0(() => Z(idlCtx.mdlCfg.origin, 0))
 
                 // Entity functions.
                 case "ent_id" => arg1Tok() match { case x => stack.push(() => Z(toEntity(x().value).impl.getId, 1)) }
                 case "ent_index" => arg1Tok() match { case x => stack.push(() => Z(toEntity(x().value).index, 1)) }
                 case "ent_text" => arg1Tok() match { case x => stack.push(() => Z(toEntity(x().value).text, 1)) }
                 case "ent_count" => checkAvail(); z0(() => Z(idlCtx.entities.size, 0))
-                case "ent_groups" => arg1Tok() match { case x => stack.push(() => Z(JList.copyOf(toEntity(x().value).impl.getGroups), 1)) }
+                case "ent_groups" => arg1Tok() match { case x => stack.push(() => Z(JList.copyOf(toEntity(x().value).impl.getGroups.asJava), 1)) }
                 case "ent_all" => checkAvail(); z0(() => Z(idlCtx.entities.asJava, 0))
                 case "ent_all_for_id" => checkAvail(); doForAll((e, id) => e.impl.getId == id)
                 case "ent_all_for_group" => checkAvail(); doForAll((e, grp) => e.impl.getGroups.contains(grp))

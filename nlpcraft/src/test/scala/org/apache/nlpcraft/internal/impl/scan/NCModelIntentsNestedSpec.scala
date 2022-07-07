@@ -18,10 +18,10 @@
 package org.apache.nlpcraft.internal.impl.scan
 
 import org.apache.nlpcraft.*
+import org.apache.nlpcraft.annotations.*
 import org.apache.nlpcraft.internal.impl.NCModelScanner
 import org.apache.nlpcraft.nlp.util.*
 import org.junit.jupiter.api.Test
-
 /**
   * It tests imports and nested objects usage.
   */
@@ -32,20 +32,22 @@ class NCModelIntentsNestedSpec:
             @NCIntentObject
             val nested2: Object = new Object():
                 @NCIntent("intent=intent3 term(x)~{true}")
-                def intent1(@NCIntentTerm("x") x: NCEntity) = new NCResult()
+                def intent1(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("x") x: NCEntity) = NCTestResult()
 
             @NCIntent("intent=intent2 term(x)~{true}")
-            def intent1(@NCIntentTerm("x") x: NCEntity) = new NCResult()
+            def intent1(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("x") x: NCEntity) = NCTestResult()
 
         @NCIntent("intent=intent1 term(x)~{true}")
-        def intent1(@NCIntentTerm("x") x: NCEntity) = new NCResult()
+        def intent1(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("x") x: NCEntity) = NCTestResult()
 
         @NCIntent("import('scan/idl.idl')")
         def intent4(
+            ctx: NCContext,
+            im: NCIntentMatch,
             @NCIntentTerm("single") single: NCEntity,
             @NCIntentTerm("list") list: List[NCEntity],
             @NCIntentTerm("opt") opt: Option[NCEntity]
-        ): NCResult = new NCResult()
+        ): NCResult = NCTestResult()
 
     private val MDL_VALID2: NCModel = new NCTestModelAdapter:
         @NCIntent("import('scan/idl.idl')")
@@ -56,20 +58,22 @@ class NCModelIntentsNestedSpec:
             @NCIntentObject
             val nested2 = new RefClass():
                 @NCIntent("intent=intent3 term(x)~{true}")
-                def intent1(@NCIntentTerm("x") x: NCEntity) = new NCResult()
+                def intent1(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("x") x: NCEntity) = NCTestResult()
 
             @NCIntent("intent=intent2 term(x)~{true}")
-            def intent1(@NCIntentTerm("x") x: NCEntity) = new NCResult()
+            def intent1(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("x") x: NCEntity) = NCTestResult()
 
         @NCIntent("intent=intent1 term(x)~{true}")
-        def intent1(@NCIntentTerm("x") x: NCEntity) = new NCResult()
+        def intent1(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("x") x: NCEntity) = NCTestResult()
 
         @NCIntentRef("impIntId") // Reference via nested2 (RefClass)
         def intent4(
+            ctx: NCContext,
+            im: NCIntentMatch,
             @NCIntentTerm("single") single: NCEntity,
             @NCIntentTerm("list") list: List[NCEntity],
             @NCIntentTerm("opt") opt: Option[NCEntity]
-        ): NCResult = new NCResult()
+        ): NCResult = NCTestResult()
 
     private val MDL_INVALID: NCModel = new NCTestModelAdapter :
         @NCIntentObject

@@ -18,6 +18,7 @@
 package org.apache.nlpcraft.internal.conversation
 
 import org.apache.nlpcraft.*
+import org.apache.nlpcraft.annotations.*
 import org.apache.nlpcraft.nlp.entity.parser.semantic.NCSemanticTestElement
 import org.apache.nlpcraft.nlp.util.*
 import org.junit.jupiter.api.Assertions.*
@@ -39,23 +40,22 @@ class NCConversationTimeoutSpec:
       */
     @Test
     def test(): Unit =
+        import NCSemanticTestElement as TE
+
         val mdl: NCModel =
             new NCTestModelAdapter:
                 override val getConfig: NCModelConfig =
-                    val cfg = CFG
-                    cfg.setConversationTimeout(TIMEOUT)
-                    cfg
+                    new NCModelConfig(CFG.id, CFG.name, CFG.version, CFG.description, CFG.origin, TIMEOUT, CFG.conversationDepth)
 
                 override val getPipeline: NCPipeline =
                     val pl = mkEnPipeline
-                    import NCSemanticTestElement as TE
-                    pl.getEntityParsers.add(NCTestUtils.mkEnSemanticParser(TE("test")))
+                    pl.entParsers += NCTestUtils.mkEnSemanticParser(TE("test"))
                     pl
 
                 @NCIntent("intent=i term(e)~{# == 'test'}")
-                def onMatch(im: NCIntentMatch, @NCIntentTerm("e") e: NCEntity): NCResult =
-                    val conv = im.getContext.getConversation
-                    val res = new NCResult(conv.getData.getOpt("key").orElse(EMPTY), NCResultType.ASK_RESULT)
+                def onMatch(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("e") e: NCEntity): NCResult =
+                    val conv = ctx.getConversation
+                    val res = NCResult(conv.getData.getOpt("key").getOrElse(EMPTY), NCResultType.ASK_RESULT)
 
                     // For next calls.
                     conv.getData.put("key", VALUE)
@@ -64,7 +64,7 @@ class NCConversationTimeoutSpec:
 
         Using.resource(new NCModelClient(mdl)) { cli =>
             def check(hasValue: Boolean): Unit =
-                require(cli.ask("test", null, "userId").getBody.toString == (if hasValue then VALUE else EMPTY))
+                require(cli.ask("test", "userId").body.toString == (if hasValue then VALUE else EMPTY))
 
             check(false)
             check(true)

@@ -17,6 +17,7 @@
 
 package org.apache.nlpcraft.nlp.util
 
+import opennlp.tools.stemmer.PorterStemmer
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.ascii.NCAsciiTable
 import org.apache.nlpcraft.internal.util.NCResourceReader
@@ -24,11 +25,9 @@ import org.apache.nlpcraft.nlp.entity.parser.semantic.*
 import org.apache.nlpcraft.nlp.token.parser.NCOpenNLPTokenParser
 
 import java.util
-import java.util.{Map as JMap, List as JList}
 import scala.jdk.CollectionConverters.*
 import scala.jdk.OptionConverters.RichOptional
 import scala.util.Using
-import opennlp.tools.stemmer.PorterStemmer
 
 /**
   *
@@ -40,19 +39,19 @@ object NCTestUtils:
       * @return
       */
     private def mkProps(m: NCPropertyMap): String =
-        m.keysSet().asScala.toSeq.sorted.map(p => s"$p=${m.get[Any](p)}").mkString("{", ", ", "}")
+        m.keysSet.toSeq.sorted.map(p => s"$p=${m.get[Any](p)}").mkString("{", ", ", "}")
 
     /**
       * @param toks
       */
-    def printTokens(toks: Seq[NCToken]): Unit =
+    def printTokens(toks: Iterable[NCToken]): Unit =
         val tbl = NCAsciiTable("Text", "Index", "Stopword", "Start", "End", "Properties")
 
         for (t <- toks)
             tbl += (
                 t.getText,
                 t.getIndex,
-                t.getOpt[Boolean]("stopword").toScala match
+                t.getOpt[Boolean]("stopword") match
                     case Some(b) => b.toString
                     case None => "undef."
                 ,
@@ -72,7 +71,7 @@ object NCTestUtils:
         val tbl = NCAsciiTable("EntityId", "Tokens", "Tokens Position", "Properties")
 
         for (e <- ents)
-            val toks = e.getTokens.asScala
+            val toks = e.getTokens
             tbl += (
                 e.getId,
                 toks.map(_.getText).mkString("|"),
@@ -93,8 +92,8 @@ object NCTestUtils:
         for ((v, idx) <- vs.zipWithIndex)
             val tbl = NCAsciiTable("EntityId", "Tokens", "Tokens Position", "Properties")
 
-            for (e <- v.getEntities.asScala)
-                val toks = e.getTokens.asScala
+            for (e <- v.getEntities)
+                val toks = e.getTokens
                 tbl += (
                     e.getId,
                     toks.map(_.getText).mkString("|"),
@@ -111,10 +110,10 @@ object NCTestUtils:
       */
     def askSomething(mdl: NCModel, expectedOk: Boolean): Unit =
         Using.resource(new NCModelClient(mdl)) { client =>
-            def ask(): NCResult = client.ask("test", null, "userId")
+            def ask(): NCResult = client.ask("test", "userId")
 
             if expectedOk then
-                println(ask().getBody)
+                println(ask().body)
             else
                 try
                     ask()
@@ -138,8 +137,8 @@ object NCTestUtils:
       * @param macros
       * @return
       */
-    def mkEnSemanticParser(elms: JList[NCSemanticElement], macros: JMap[String, String] = null): NCSemanticEntityParser =
-        new NCSemanticEntityParser(mkSemanticStemmer, EN_TOK_PARSER, macros, elms)
+    def mkEnSemanticParser(elms: List[NCSemanticElement], macros: Map[String, String] = Map.empty): NCSemanticEntityParser =
+        NCSemanticEntityParser(mkSemanticStemmer, EN_TOK_PARSER, macros, elms)
 
     /**
       *
@@ -147,12 +146,12 @@ object NCTestUtils:
       * @return
       */
     def mkEnSemanticParser(elms: NCSemanticElement*): NCSemanticEntityParser =
-        new NCSemanticEntityParser(mkSemanticStemmer, EN_TOK_PARSER, null, elms.asJava)
+        NCSemanticEntityParser(mkSemanticStemmer, EN_TOK_PARSER, elms.toList)
 
     /**
       *
-      * @param src
+      * @param mdlSrc
       * @return
       */
-    def mkEnSemanticParser(src: String): NCSemanticEntityParser =
-        new NCSemanticEntityParser(mkSemanticStemmer, EN_TOK_PARSER, src)
+    def mkEnSemanticParser(mdlSrc: String): NCSemanticEntityParser =
+        NCSemanticEntityParser(mkSemanticStemmer, EN_TOK_PARSER, mdlSrc)

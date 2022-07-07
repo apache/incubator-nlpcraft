@@ -22,14 +22,13 @@ import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.ascii.NCAsciiTable
 import org.apache.nlpcraft.internal.conversation.NCConversationManager
 import org.apache.nlpcraft.internal.dialogflow.NCDialogFlowManager
+import org.apache.nlpcraft.internal.impl.NCCallbackInput
 import org.apache.nlpcraft.internal.intent.*
 
 import java.util.function.Function
-import java.util.{Collections, List as JList}
 import scala.annotation.targetName
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
-import scala.jdk.CollectionConverters.*
 import scala.language.postfixOps
 
 /**
@@ -47,7 +46,7 @@ object NCIntentSolverManager:
       *
       * @param entities
       */
-    private case class IntentSolverVariant(entities: Seq[NCEntity]) extends Ordered[IntentSolverVariant]:
+    private case class IntentSolverVariant(entities: List[NCEntity]) extends Ordered[IntentSolverVariant]:
         private lazy val weights = calcWeight()
 
         private def calcSparsity(toks: Seq[NCToken]): Int =
@@ -55,7 +54,7 @@ object NCIntentSolverManager:
             idxs.zipWithIndex.tail.map { (v, i) => Math.abs(v - idxs(i - 1)) }.sum - idxs.length + 1
 
         private def calcWeight(): Seq[Int] =
-            val toks: Seq[Seq[NCToken]] = entities.map(_.getTokens.asScala.toSeq)
+            val toks: Seq[Seq[NCToken]] = entities.map(_.getTokens.toSeq)
 
             val toksCnt = toks.map(_.size).sum
             val avgToksPerEntity = if toksCnt > 0 then Math.round((entities.size.toFloat / toksCnt) * 100) else 0
@@ -78,7 +77,7 @@ object NCIntentSolverManager:
       * @param termId
       * @param entities
       */
-    private case class IntentTermEntities(termId: Option[String], entities: Seq[NCEntity])
+    private case class IntentTermEntities(termId: Option[String], entities: List[NCEntity])
 
     /**
       *
@@ -88,8 +87,8 @@ object NCIntentSolverManager:
       */
     private case class CallbackDataImpl(
         getIntentId: String,
-        getCallbackArguments: JList[JList[NCEntity]],
-        getCallback: Function[JList[JList[NCEntity]], NCResult]
+        getCallbackArguments: List[List[NCEntity]],
+        getCallback: List[List[NCEntity]] => NCResult
     ) extends NCCallbackData
 
     /**
@@ -100,7 +99,7 @@ object NCIntentSolverManager:
       * @param variant
       * @param variantIdx
       */
-    private case class IntentSolverResult(intentId: String, fn: NCIntentMatch => NCResult, groups: Seq[IntentTermEntities], variant: IntentSolverVariant, variantIdx: Int)
+    private case class IntentSolverResult(intentId: String, fn: NCCallbackInput => NCResult, groups: List[IntentTermEntities], variant: IntentSolverVariant, variantIdx: Int)
 
     /**
       * NOTE: not thread-safe.
@@ -198,8 +197,8 @@ object NCIntentSolverManager:
       * @param usedEntities
       * @param weight
       */
-    private case class TermMatch(termId: Option[String], usedEntities: Seq[IntentEntity], weight: Weight):
-        private lazy val maxIndex: Int = usedEntities.map(_.entity.getTokens.asScala.map(_.getIndex).max).max
+    private case class TermMatch(termId: Option[String], usedEntities: List[IntentEntity], weight: Weight):
+        private lazy val maxIndex: Int = usedEntities.map(_.entity.getTokens.map(_.getIndex).max).max
 
         def after(tm: TermMatch): Boolean = maxIndex > tm.maxIndex
 
@@ -207,7 +206,7 @@ object NCIntentSolverManager:
       *
       * @param entities
       */
-    private case class PredicateMatch(entities: Seq[IntentEntity], weight: Weight)
+    private case class PredicateMatch(entities: List[IntentEntity], weight: Weight)
 
     /**
       *
@@ -216,7 +215,7 @@ object NCIntentSolverManager:
       */
     private case class TermEntitiesGroup(
         term: NCIDLTerm,
-        usedEntities: Seq[IntentEntity]
+        usedEntities: List[IntentEntity]
     )
 
     /**
@@ -240,7 +239,7 @@ object NCIntentSolverManager:
       */
     private case class MatchHolder(
         intentMatch: IntentMatchHolder, // Match.
-        callback: NCIntentMatch => NCResult, // Callback function.
+        callback: NCCallbackInput => NCResult, // Callback function.
         variant: IntentSolverVariant, // Variant used for the match.
         variantIdx: Int // Variant index.
     )
@@ -260,7 +259,7 @@ import org.apache.nlpcraft.internal.intent.matcher.NCIntentSolverManager.*
 class NCIntentSolverManager(
     dialog: NCDialogFlowManager,
     conv: NCConversationManager,
-    intents: Map[NCIDLIntent, NCIntentMatch => NCResult]
+    intents: Map[NCIDLIntent, NCCallbackInput => NCResult]
 ) extends LazyLogging:
     private final val reqIds = mutable.HashMap.empty[UserModelKey, String]
 
@@ -272,31 +271,31 @@ class NCIntentSolverManager(
      * @param intents Intents to match for.
      * @return
      */
-    private def solveIntents(mdl: NCModel, ctx: NCContext, intents: Map[NCIDLIntent, NCIntentMatch => NCResult]): List[IntentSolverResult] =
+    private def solveIntents(mdl: NCModel, ctx: NCContext, intents: Map[NCIDLIntent, NCCallbackInput => NCResult]): List[IntentSolverResult] =
         dialog.ack(ctx.getRequest.getUserId)
 
         val matches = mutable.ArrayBuffer.empty[MatchHolder]
 
         // Find all matches across all intents and sentence variants.
         for (
-            (vrn, vrnIdx) <- ctx.getVariants.asScala.zipWithIndex if mdl.onVariant(vrn);
-            ents = vrn.getEntities.asScala;
-            varEntsGroups = ents.filter(t => t.getGroups != null && !t.getGroups.isEmpty).map(_.getGroups.asScala);
+            (vrn, vrnIdx) <- ctx.getVariants.zipWithIndex if mdl.onVariant(vrn);
+            ents = vrn.getEntities;
+            varEntsGroups = ents.filter(t => t.getGroups != null && t.getGroups.nonEmpty).map(_.getGroups);
             (intent, callback) <- intents
         )
             val convEnts: Seq[IntentEntity] =
                 if intent.terms.exists(_.conv) then
                     // We do not mix tokens with same group from the conversation and given sentence.
-                    ctx.getConversation.getStm.asScala.toSeq.
-                        map(ent => ent -> (if ent.getGroups == null then Set.empty[String] else ent.getGroups.asScala)).
-                        filter { (ent, entGroups)  => !varEntsGroups.exists(_.subsetOf(entGroups)) }.
+                    ctx.getConversation.getStm.
+                        map(ent => ent -> (if ent.getGroups == null then Set.empty else ent.getGroups)).
+                        filter { (_, entGroups)  => !varEntsGroups.exists(_.subsetOf(entGroups)) }.
                         map { (e, _) => IntentEntity(used = false, conv = true, e) }
                 else
                     Seq.empty
 
             // Solve intent in isolation.
-            solveIntent(ctx, intent, ents.map(IntentEntity(false, false, _)).toSeq, convEnts, vrnIdx) match
-                case Some(intentMatch) => matches += MatchHolder(intentMatch, callback, IntentSolverVariant(vrn.getEntities.asScala.toSeq), vrnIdx)
+            solveIntent(ctx, intent, ents.map(IntentEntity(false, false, _)), convEnts, vrnIdx) match
+                case Some(intentMatch) => matches += MatchHolder(intentMatch, callback, IntentSolverVariant(vrn.getEntities), vrnIdx)
                 case None => // No-op.
 
         val sorted = matches.sortWith((m1: MatchHolder, m2: MatchHolder) =>
@@ -320,7 +319,7 @@ class NCIntentSolverManager(
                                 val variantPart =
                                     m.variant.
                                         entities.
-                                        map(t => s"${t.getId}${t.getGroups}${t.mkText()}").
+                                        map(t => s"${t.getId}${t.getGroups}${t.mkText}").
                                         mkString("")
 
                                 val intentPart = m.intentMatch.intent.toString
@@ -369,7 +368,7 @@ class NCIntentSolverManager(
                         var entIdx = 0
                         for (e <- grp.usedEntities)
                             val conv = if e.conv then "(conv) " else ""
-                            ents += s"    #$entIdx: $conv${e.entity.getId}(${e.entity.mkText()})"
+                            ents += s"    #$entIdx: $conv${e.entity.getId}(${e.entity.mkText})"
                             entIdx += 1
                     else
                         ents += "    <empty>"
@@ -449,7 +448,7 @@ class NCIntentSolverManager(
             var abort = false
             var lastTermMatch: TermMatch = null
             val sess = ctx.getConversation.getData // Conversation metadata (shared across all terms).
-            val convMeta = sess.keysSet().asScala.map(k => k -> sess.get(k).asInstanceOf[Object]).toMap
+            val convMeta = sess.keysSet.map(k => k -> sess.get(k).asInstanceOf[Object]).toMap
             val ents = senEnts.map(_.entity)
 
             // Check terms.
@@ -487,8 +486,8 @@ class NCIntentSolverManager(
             else
                 val usedSenEnts = senEnts.filter(_.used)
                 val usedConvEnts = convEnts.filter(_.used)
-                val usedToks = usedSenEnts.flatMap(_.entity.getTokens.asScala)
-                val unusedToks = ctx.getTokens.asScala.filter(p => !usedToks.contains(p))
+                val usedToks = usedSenEnts.flatMap(_.entity.getTokens)
+                val unusedToks = ctx.getTokens.filter(p => !usedToks.contains(p))
 
                 if !opts.allowStmEntityOnly && usedSenEnts.isEmpty && usedConvEnts.nonEmpty then
                     logger.info(
@@ -514,7 +513,7 @@ class NCIntentSolverManager(
                     // Number of remaining (unused) non-free words in the sentence is a measure of exactness of the match.
                     // The match is exact when all non-free words are used in that match.
                     // Negate to make sure the bigger (smaller negative number) is better.
-                    val nonFreeWordNum = -(ctx.getTokens.size() - senEnts.map(_.entity.getTokens.size()).sum)
+                    val nonFreeWordNum = -(ctx.getTokens.size - senEnts.map(_.entity.getTokens.size).sum)
 
                     intentW.prepend(nonFreeWordNum)
 
@@ -538,8 +537,8 @@ class NCIntentSolverManager(
         tbl += (
             "Matched Entities",
             termMatch.usedEntities.map(t =>
-                val txt = t.entity.mkText()
-                val idx = t.entity.getTokens.asScala.map(_.getIndex).mkString("{", ",", "}")
+                val txt = t.entity.mkText
+                val idx = t.entity.getTokens.map(_.getIndex).mkString("{", ",", "}")
 
                 s"$txt${s"[$idx]"}").mkString(" ")
         )
@@ -651,7 +650,7 @@ class NCIntentSolverManager(
             // Mark found entities as used.
             for (e <- usedEnts) e.used = true
 
-            Option(PredicateMatch(usedEnts.toSeq, new Weight(senTokNum, convDepthsSum, usesSum)))
+            Option(PredicateMatch(usedEnts.toList, new Weight(senTokNum, convDepthsSum, usesSum)))
 
     /**
       *
@@ -683,74 +682,73 @@ class NCIntentSolverManager(
                 data
 
         for (intentRes <- intentResults.filter(_ != null) if Loop.hasNext)
-            def mkIntentMatch(arg: JList[JList[NCEntity]]): NCIntentMatch =
+            def mkIntentMatch(arg: List[List[NCEntity]]): NCIntentMatch =
                 new NCIntentMatch:
-                    override val getContext: NCContext = ctx
                     override val getIntentId: String = intentRes.intentId
-                    override val getIntentEntities: JList[JList[NCEntity]] = intentRes.groups.map(_.entities).map(_.asJava).asJava
-                    override def getTermEntities(idx: Int): JList[NCEntity] = intentRes.groups(idx).entities.asJava
-                    override def getTermEntities(termId: String): JList[NCEntity] =
+                    override val getIntentEntities: List[List[NCEntity]] = intentRes.groups.map(_.entities)
+                    override def getTermEntities(idx: Int): List[NCEntity] = intentRes.groups(idx).entities
+                    override def getTermEntities(termId: String): List[NCEntity] =
                         intentRes.groups.find(_.termId === termId) match
-                            case Some(g) => g.entities.asJava
-                            case None => Collections.emptyList()
+                            case Some(g) => g.entities
+                            case None => List.empty
                     override val getVariant: NCVariant =
                         new NCVariant:
-                            override def getEntities: JList[NCEntity] = intentRes.variant.entities.asJava
+                            override def getEntities: List[NCEntity] = intentRes.variant.entities
 
-            val im = mkIntentMatch(intentRes.groups.map(_.entities).map(_.asJava).asJava)
+            val im = mkIntentMatch(intentRes.groups.map(_.entities))
             try
-                if mdl.onMatchedIntent(im) then
+                if mdl.onMatchedIntent(ctx, im) then
                     // This can throw NCIntentSkip exception.
                     import NCIntentSolveType.*
 
-                    def saveHistory(res: NCResult, im: NCIntentMatch): Unit =
+                    def saveHistory(res: Option[NCResult], im: NCIntentMatch): Unit =
                         dialog.addMatchedIntent(im, res, ctx)
                         conv.getConversation(req.getUserId).addEntities(
-                            req.getRequestId, im.getIntentEntities.asScala.flatMap(_.asScala).toSeq.distinct
+                            req.getRequestId, im.getIntentEntities.flatten.distinct
                         )
                         logger.info(s"Intent '${intentRes.intentId}' for variant #${intentRes.variantIdx + 1} selected as the <|best match|>")
 
-                    def executeCallback(im: NCIntentMatch): NCResult =
-                        val cbRes = intentRes.fn(im)
+                    def executeCallback(in: NCCallbackInput): NCResult =
+                        var cbRes = intentRes.fn(in)
                         // Store winning intent match in the input.
-                        if cbRes.getIntentId == null then cbRes.setIntentId(intentRes.intentId)
+                        if cbRes.intentId.isEmpty then cbRes = NCResult(cbRes.body, cbRes.resultType, intentRes.intentId)
                         cbRes
 
                     def finishSearch(): Unit =
-                        val cb = new Function[JList[JList[NCEntity]], NCResult]:
-                            @volatile private var called = false
-                            override def apply(args: JList[JList[NCEntity]]): NCResult =
-                                if called then E("Callback was already called.")
-                                called = true
+                        @volatile var called = false
 
-                                val reqId = reqIds.synchronized { reqIds.getOrElse(key, null) }
+                        def f(args: List[List[NCEntity]]): NCResult =
+                            if called then E("Callback was already called.")
+                            called = true
 
-                                // TODO: text.
-                                if reqId != ctx.getRequest.getRequestId then E("Callback is out of date.")
+                            val reqId = reqIds.synchronized { reqIds.getOrElse(key, null) }
 
-                                typ match
-                                    case SEARCH =>
-                                        val imNew = mkIntentMatch(args)
-                                        val cbRes = executeCallback(imNew)
-                                        dialog.replaceLastItem(imNew, cbRes, ctx)
-                                        cbRes
-                                    case SEARCH_NO_HISTORY => executeCallback(mkIntentMatch(args))
-                                    case _ => throw new AssertionError(s"Unexpected state: $typ")
+                            // TODO: text.
+                            if reqId != ctx.getRequest.getRequestId then E("Callback is out of date.")
 
-                        Loop.finish(IterationResult(Right(CallbackDataImpl(im.getIntentId, im.getIntentEntities, cb)), im))
+                            typ match
+                                case SEARCH =>
+                                    val imNew = mkIntentMatch(args)
+                                    val cbRes = executeCallback(NCCallbackInput(ctx, imNew))
+                                    dialog.replaceLastItem(imNew, cbRes, ctx)
+                                    cbRes
+                                case SEARCH_NO_HISTORY => executeCallback(NCCallbackInput(ctx, mkIntentMatch(args)))
+                                case _ => throw new AssertionError(s"Unexpected state: $typ")
+
+                        Loop.finish(IterationResult(Right(CallbackDataImpl(im.getIntentId, im.getIntentEntities, f)), im))
 
                     typ match
                         case REGULAR =>
-                            val cbRes = executeCallback(im)
-                            saveHistory(cbRes, im)
+                            val cbRes = executeCallback(NCCallbackInput(ctx, im))
+                            saveHistory(Option(cbRes), im)
                             Loop.finish(IterationResult(Left(cbRes), im))
                         case SEARCH =>
-                            saveHistory(new NCResult(), im) // Added dummy result.
+                            saveHistory(None, im)
                             finishSearch()
                         case SEARCH_NO_HISTORY =>
                             finishSearch()
                 else
-                    logger.info(s"Model '${ctx.getModelConfig.getId}' triggered rematching of intents by intent '${intentRes.intentId}' on variant #${intentRes.variantIdx + 1}.")
+                    logger.info(s"Model '${ctx.getModelConfig.id}' triggered rematching of intents by intent '${intentRes.intentId}' on variant #${intentRes.variantIdx + 1}.")
                     Loop.finish()
                 catch
                     case e: NCIntentSkip =>
@@ -771,53 +769,53 @@ class NCIntentSolverManager(
     def solve(mdl: NCModel, ctx: NCContext, typ: NCIntentSolveType): ResultData =
         import NCIntentSolveType.REGULAR
 
-        val key = UserModelKey(ctx.getRequest.getUserId, mdl.getConfig.getId)
+        val key = UserModelKey(ctx.getRequest.getUserId, mdl.getConfig.id)
         reqIds.synchronized { reqIds.put(key, ctx.getRequest.getRequestId)}
 
-        val mdlCtxRes = mdl.onContext(ctx)
+        mdl.onContext(ctx) match
+            case Some(mdlCtxRes) =>
+                if typ != REGULAR then E("'onContext()' method is overridden, intents cannot be found.")
+                if intents.nonEmpty then logger.warn("'onContext()' method overrides existing intents - they are ignored.")
 
-        if mdlCtxRes != null then
-            if typ != REGULAR then E("'onContext()' method is overridden, intents cannot be found.")
-            if intents.nonEmpty then logger.warn("'onContext()' method overrides existing intents - they are ignored.")
+                Left(mdlCtxRes)
+            case None =>
+                if intents.isEmpty then
+                    throw NCRejection("There are no registered intents and model's 'onContext()' method returns 'null' result.")
 
-            Left(mdlCtxRes)
-        else
-            if intents.isEmpty then
-                throw NCRejection("There are no registered intents and model's 'onContext()' method returns 'null' result.")
+                var loopRes: IterationResult = null
 
-            var loopRes: IterationResult = null
+                try
+                    while (loopRes == null)
+                        solveIteration(mdl, ctx, typ, key) match
+                            case Some(iterRes) => loopRes = iterRes
+                            case None => // No-op.
 
-            try
-                while (loopRes == null)
-                    solveIteration(mdl, ctx, typ, key) match
-                        case Some(iterRes) => loopRes = iterRes
-                        case None => // No-op.
-
-                typ match
-                    case REGULAR =>
-                        mdl.onResult(loopRes.intentMatch, loopRes.result.swap.toOption.get) match
-                            case null => loopRes.result
-                            case mdlRes => Left(mdlRes)
-                    case _ => loopRes.result
-            catch
-                case e: NCRejection =>
                     typ match
                         case REGULAR =>
-                            mdl.onRejection(if loopRes != null then loopRes.intentMatch else null, e) match
-                                case null => throw e
-                                case mdlRejRes => Left(mdlRejRes)
-                        case _ => throw e
+                            mdl.onResult(ctx, loopRes.intentMatch, loopRes.result.swap.toOption.get) match
+                                case Some(mdlRes) => Left(mdlRes)
+                                case None => loopRes.result
 
-                case e: Throwable =>
-                    typ match
-                        case REGULAR =>
-                            mdl.onError(ctx, e) match
-                                case null => throw e
-                                case mdlErrRes =>
-                                    logger.warn("Error during execution.", e)
-                                    Left(mdlErrRes)
-                        case _ => throw e
+                        case _ => loopRes.result
+                catch
+                    case e: NCRejection =>
+                        typ match
+                            case REGULAR =>
+                                mdl.onRejection(ctx, Option.when(loopRes != null)(loopRes.intentMatch), e) match
+                                    case Some(mdlRejRes) => Left(mdlRejRes)
+                                    case None => throw e
 
+                            case _ => throw e
+
+                    case e: Throwable =>
+                        typ match
+                            case REGULAR =>
+                                mdl.onError(ctx, e) match
+                                    case Some(mdlErrRes) =>
+                                        logger.warn("Error during execution.", e)
+                                        Left(mdlErrRes)
+                                    case None => throw e
+                            case _ => throw e
     /**
       *
       */

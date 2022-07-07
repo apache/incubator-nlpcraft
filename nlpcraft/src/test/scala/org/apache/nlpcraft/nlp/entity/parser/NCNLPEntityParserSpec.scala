@@ -42,12 +42,12 @@ class NCNLPEntityParserSpec:
     def test(): Unit =
         val req = NCTestRequest("I had the lunch")
         val toks = EN_TOK_PARSER.tokenize(req.txt)
-        val entities = parser.parse(req, CFG, toks).asScala.toSeq
+        val entities = parser.parse(req, CFG, toks)
 
         NCTestUtils.printEntities(req.txt, entities)
 
-        require(entities.sizeIs == toks.size())
+        require(entities.sizeIs == toks.size)
         entities.zipWithIndex.foreach { (ent, idx) =>
-            require(ent.getTokens.size() == 1)
-            require(ent.getTokens.get(0) == toks.get(idx))
+            require(ent.getTokens.size == 1)
+            require(ent.getTokens.head == toks(idx))
         }

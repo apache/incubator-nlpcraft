@@ -29,12 +29,11 @@ import java.util.function.Predicate
   *
   */
 class NCDialogFlowManagerSpec:
-    case class IntentMatchMock(intentId: String, ctx: NCContext) extends NCIntentMatch:
-        override val getContext: NCContext = ctx
+    case class IntentMatchMock(intentId: String) extends NCIntentMatch:
         override val getIntentId: String = intentId
-        override val getIntentEntities: util.List[util.List[NCEntity]] = null
-        override def getTermEntities(idx: Int): util.List[NCEntity] = null
-        override def getTermEntities(termId: String): util.List[NCEntity] = null
+        override val getIntentEntities: List[List[NCEntity]] = null
+        override def getTermEntities(idx: Int): List[NCEntity] = null
+        override def getTermEntities(termId: String): List[NCEntity] = null
         override val getVariant: NCVariant = null
 
     case class ContextMock(userId: String, reqTs: Long = NCUtils.now()) extends NCContext:
@@ -42,11 +41,11 @@ class NCDialogFlowManagerSpec:
         override def getModelConfig: NCModelConfig = null
         override def getRequest: NCRequest = NCTestRequest(txt = "Any", userId = userId, ts = reqTs)
         override def getConversation: NCConversation = null
-        override def getVariants: util.Collection[NCVariant] = null
-        override def getTokens: util.List[NCToken] = null
+        override def getVariants: List[NCVariant] = null
+        override def getTokens: List[NCToken] = null
 
-    case class ModelConfigMock(timeout: Long = Long.MaxValue) extends NCModelConfig("testId", "test", "1.0", "Test description", "Test origin"):
-        override def getConversationTimeout: Long = timeout
+    class ModelConfigMock(timeout: Long = Long.MaxValue) extends NCModelConfig("testId", "test", "1.0", Some("Test description"), Some("Test origin"), NCModelConfig.DFLT_CONV_TIMEOUT, NCModelConfig.DFLT_CONV_DEPTH):
+        override val conversationTimeout: Long = timeout
 
     private var mgr: NCDialogFlowManager = _
 
@@ -70,7 +69,7 @@ class NCDialogFlowManagerSpec:
       * @param id
       * @param ctx
       */
-    private def addMatchedIntent(id: String, ctx: NCContext): Unit = mgr.addMatchedIntent(IntentMatchMock(id, ctx), null, ctx)
+    private def addMatchedIntent(id: String, ctx: NCContext): Unit = mgr.addMatchedIntent(IntentMatchMock(id), null, ctx)
 
     /**
       *

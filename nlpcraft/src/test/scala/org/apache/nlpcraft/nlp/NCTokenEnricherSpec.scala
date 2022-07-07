@@ -18,13 +18,13 @@
 package org.apache.nlpcraft.nlp
 
 import org.apache.nlpcraft.*
+import org.apache.nlpcraft.annotations.*
 import org.apache.nlpcraft.internal.util.NCResourceReader
 import org.apache.nlpcraft.nlp.entity.parser.NCNLPEntityParser
 import org.apache.nlpcraft.nlp.token.parser.NCOpenNLPTokenParser
 import org.apache.nlpcraft.nlp.util.*
 import org.junit.jupiter.api.Test
 
-import java.util.List as JList
 import scala.util.Using
 
 /**
@@ -34,7 +34,7 @@ class NCTokenEnricherSpec:
     private def test0(pipeline: NCPipeline, ok: Boolean): Unit =
         val mdl: NCModel = new NCModelAdapter(new NCModelConfig("test.id", "Test model", "1.0"), pipeline):
             @NCIntent("intent=i term(any)={meta_ent('nlp:token:k1') == 'v1'}")
-            def onMatch(): NCResult = new NCResult("OK", NCResultType.ASK_RESULT)
+            def onMatch(ctx: NCContext, im: NCIntentMatch): NCResult = NCResult("OK", NCResultType.ASK_RESULT)
 
         NCTestUtils.askSomething(mdl, ok)
 
@@ -44,18 +44,18 @@ class NCTokenEnricherSpec:
             //  For intents matching, we have to add at least one entity parser.
             withEntityParser(new NCNLPEntityParser)
 
-    private def mkPipeline(apply: NCPipelineBuilder => NCPipelineBuilder): NCPipeline = apply(mkBuilder()).build()
+    private def mkPipeline(apply: NCPipelineBuilder => NCPipelineBuilder): NCPipeline = apply(mkBuilder()).build
 
     @Test
     def test(): Unit =
         test0(
-            mkBuilder().build(),
+            mkBuilder().build,
             false
         )
 
         test0(
             mkPipeline(_.withTokenEnricher(
-                (req: NCRequest, cfg: NCModelConfig, toks: JList[NCToken]) => toks.forEach(_.put("k1", "v1"))
+                (_: NCRequest, _: NCModelConfig, toks: List[NCToken]) => toks.foreach(_.put("k1", "v1"))
             )),
             true
         )
