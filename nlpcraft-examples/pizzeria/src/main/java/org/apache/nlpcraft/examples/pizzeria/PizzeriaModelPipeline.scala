@@ -1,16 +1,15 @@
 package org.apache.nlpcraft.examples.pizzeria
 
 import edu.stanford.nlp.pipeline.StanfordCoreNLP
+import java.util.Properties
 import opennlp.tools.stemmer.PorterStemmer
 import org.apache.nlpcraft.examples.pizzeria.components.*
 import org.apache.nlpcraft.nlp.entity.parser.semantic.*
-import org.apache.nlpcraft.nlp.entity.parser.stanford.NCStanfordNLPEntityParser
 import org.apache.nlpcraft.nlp.token.enricher.NCEnStopWordsTokenEnricher
 import org.apache.nlpcraft.nlp.token.parser.stanford.NCStanfordNLPTokenParser
 import org.apache.nlpcraft.*
+import org.apache.nlpcraft.nlp.entity.parser.stanford.NCStanfordNLPEntityParser
 
-import scala.jdk.CollectionConverters.*
-import java.util.Properties
 
 /**
   * PizzeriaModel pipeline, based on Stanford NLP engine, including model custom components.
@@ -31,13 +30,13 @@ object PizzeriaModelPipeline:
         new NCPipelineBuilder().
             withTokenParser(tokParser).
             withTokenEnricher(new NCEnStopWordsTokenEnricher()).
-            withEntityParser(new NCStanfordNLPEntityParser(stanford, "number")).
-            withEntityParser(new NCSemanticEntityParser(stemmer, tokParser, "pizzeria_model.yaml")).
+            withEntityParser(new NCStanfordNLPEntityParser(stanford, Set("number"))).
+            withEntityParser(NCSemanticEntityParser(stemmer, tokParser, "pizzeria_model.yaml")).
             withEntityMappers(
-                Seq(
+                List(
                     Ex(Seq(D("ord:pizza", "ord:pizza:size")), D("ord:pizza:size", "ord:pizza:size:value")),
                     Ex(Seq(D("ord:pizza", "ord:pizza:qty"), D("ord:drink", "ord:drink:qty")), D("stanford:number", "stanford:number:nne")),
-                ).asJava
+                )
             ).
             withEntityValidator(new PizzeriaOrderValidator()).
-            build()
+            build

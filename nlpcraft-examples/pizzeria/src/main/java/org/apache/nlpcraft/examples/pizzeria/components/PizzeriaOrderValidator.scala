@@ -19,17 +19,12 @@ package org.apache.nlpcraft.examples.pizzeria.components
 
 import org.apache.nlpcraft.*
 
-import java.util
-import scala.jdk.CollectionConverters.*
-
 /**
   * Rejects some invalid variant with more detailed information instead of standard rejections.
   */
 class PizzeriaOrderValidator extends NCEntityValidator:
-    override def validate(req: NCRequest, cfg: NCModelConfig, ents: util.List[NCEntity]): Unit =
-        val es = ents.asScala
-
-        def count(id: String): Int = es.count(_.getId == id)
+    override def validate(req: NCRequest, cfg: NCModelConfig, entities: List[NCEntity]): Unit =
+        def count(id: String): Int = entities.count(_.getId == id)
 
         val cntPizza = count("ord:pizza")
         val cntDrink = count("ord:drink")

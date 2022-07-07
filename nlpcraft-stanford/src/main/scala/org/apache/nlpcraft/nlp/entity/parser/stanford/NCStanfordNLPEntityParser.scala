@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.nlp.entity.parser.stanford.impl
+package org.apache.nlpcraft.nlp.entity.parser.stanford
 
 import edu.stanford.nlp.ling.CoreAnnotations.NormalizedNamedEntityTagAnnotation
 import edu.stanford.nlp.pipeline.*
@@ -23,7 +23,6 @@ import org.apache.nlpcraft.*
 
 import java.util
 import java.util.stream.Collectors
-import java.util.{Properties, ArrayList as JAList, List as JList, Set as JSet}
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
 
@@ -32,11 +31,11 @@ import scala.jdk.CollectionConverters.*
   * @param stanford
   * @param supported
   */
-class NCStanfordNLPEntityParserImpl(stanford: StanfordCoreNLP, supported: Set[String]) extends NCEntityParser:
+class NCStanfordNLPEntityParser(stanford: StanfordCoreNLP, supported: Set[String]) extends NCEntityParser:
     require(stanford != null, "Stanford instance cannot be null.")
     require(supported != null, "Supported elements set cannot be null.")
 
-    private val supportedLc = supported.asScala.map(_.toLowerCase)
+    private val supportedLc = supported.map(_.toLowerCase)
 
     override def parse(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): List[NCEntity] =
         val doc = new CoreDocument(req.getText)

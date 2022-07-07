@@ -64,8 +64,8 @@ object PizzeriaModelServer:
                     if req == null || req.isEmpty then Exception(s"Empty request.")
 
                     val resp = nlpClient.ask(req, null, "userId")
-                    val prompt = if resp.getType == ASK_DIALOG then "(Your should answer on the model's question below)\n" else ""
-                    doResponse(s"$prompt${resp.getBody}")
+                    val prompt = if resp.resultType == ASK_DIALOG then "(Your should answer on the model's question below)\n" else ""
+                    doResponse(s"$prompt${resp.body}")
                 catch
                     case e: NCRejection => doResponse(s"Request rejected: ${e.getMessage}")
                     case e: Throwable =>

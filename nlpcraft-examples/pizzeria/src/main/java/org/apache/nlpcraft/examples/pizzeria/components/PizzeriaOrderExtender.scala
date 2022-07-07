@@ -19,12 +19,9 @@ package org.apache.nlpcraft.examples.pizzeria.components
 
 import org.apache.nlpcraft.*
 
-import java.util
-import java.util.List as JList
-import scala.collection.mutable
-import scala.jdk.CollectionConverters.*
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.NCResultType.ASK_DIALOG
+import scala.collection.*
 
 /**
   *
@@ -47,9 +44,9 @@ case class EntityData(id: String, property: String)
 object PizzeriaOrderExtender:
     extension(entity: NCEntity)
         def position: Double =
-            val toks = entity.getTokens.asScala
+            val toks = entity.getTokens
             (toks.head.getIndex + toks.last.getIndex) / 2.0
-        def tokens: mutable.Seq[NCToken] = entity.getTokens.asScala
+        def tokens: List[NCToken] = entity.getTokens
 
 import PizzeriaOrderExtender.*
 
@@ -59,19 +56,18 @@ import PizzeriaOrderExtender.*
   * @param extraData
   */
 case class PizzeriaOrderExtender(mainDataSeq: Seq[EntityData], extraData: EntityData) extends NCEntityMapper with LazyLogging:
-    override def map(req: NCRequest, cfg: NCModelConfig, entities: JList[NCEntity]): JList[NCEntity] =
+    override def map(req: NCRequest, cfg: NCModelConfig, entities: List[NCEntity]): List[NCEntity] =
         def combine(mainEnt: NCEntity, mainProp: String, extraEnt: NCEntity): NCEntity =
             new NCPropertyMapAdapter with NCEntity:
-                mainEnt.keysSet().forEach(k => put(k, mainEnt.get(k)))
+                mainEnt.keysSet.foreach(k => put(k, mainEnt.get(k)))
                 put[String](mainProp, extraEnt.get[String](extraData.property).toLowerCase)
-                override val getTokens: JList[NCToken] = (mainEnt.tokens ++ extraEnt.tokens).sortBy(_.getIndex).asJava
+                override val getTokens: List[NCToken] = (mainEnt.tokens ++ extraEnt.tokens).sortBy(_.getIndex)
                 override val getRequestId: String = req.getRequestId
                 override val getId: String = mainEnt.getId
 
-        val es = entities.asScala
         val mainById = mainDataSeq.map(p => p.id -> p).toMap
-        val main = mutable.HashSet.empty ++ es.filter(e => mainById.contains(e.getId))
-        val extra = es.filter(_.getId == extraData.id)
+        val main = mutable.HashSet.empty ++ entities.filter(e => mainById.contains(e.getId))
+        val extra = entities.filter(_.getId == extraData.id)
 
         if main.nonEmpty && extra.nonEmpty && main.size >= extra.size then
             val used = (main ++ extra).toSet
@@ -82,15 +78,15 @@ case class PizzeriaOrderExtender(mainDataSeq: Seq[EntityData], extraData: Entity
                 main -= m
                 main2Extra += m -> e
 
-            val unrelated = es.filter(e => !used.contains(e))
+            val unrelated = entities.filter(e => !used.contains(e))
             val artificial = for ((m, e) <- main2Extra) yield combine(m, mainById(m.getId).property, e)
             val unused = main
 
             val res = (unrelated ++ artificial ++ unused).sortBy(_.tokens.head.getIndex)
 
             def s(es: Iterable[NCEntity]) =
-                es.map(e => s"id=${e.getId}(${e.tokens.map(_.getIndex).mkString("[", ",", "]")})").mkString("{", ", ", "}")
-            logger.debug(s"Elements mapped [input=${s(es)}, output=${s(res)}]")
+                entities.map(e => s"id=${e.getId}(${e.tokens.map(_.getIndex).mkString("[", ",", "]")})").mkString("{", ", ", "}")
+            logger.debug(s"Elements mapped [input=${s(entities)}, output=${s(res)}]")
 
-            res.asJava
+            res
         else entities

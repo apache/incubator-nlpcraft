@@ -17,7 +17,6 @@
 
 package org.apache.nlpcraft.examples.pizzeria
 
-import java.util.Objects
 import scala.collection.mutable
 
 /**

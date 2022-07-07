@@ -32,7 +32,7 @@ object PizzeriaModelSpec:
     private class ModelTestWrapper extends PizzeriaModel:
         private var o: PizzeriaOrder = _
 
-        override def doExecute(o: PizzeriaOrder)(using im: NCIntentMatch): Result =
+        override def doExecute(o: PizzeriaOrder)(using ctx: NCContext, im: NCIntentMatch): Result =
             val res = super.doExecute(o)
             this.o = o
             res
@@ -84,13 +84,13 @@ class PizzeriaModelSpec:
         for (((txt, expType), idx) <- reqs.zipWithIndex)
             try
                 mdl.clearLastExecutedOrder()
-                val resp = client.ask(txt, null, "userId")
+                val resp = client.ask(txt, "userId")
 
                 testMsgs += s">> Request: $txt"
-                testMsgs += s">> Response: '${resp.getType}': ${resp.getBody}"
+                testMsgs += s">> Response: '${resp.resultType}': ${resp.body}"
 
-                if expType != resp.getType then
-                    errs += testNum -> new Exception(s"Unexpected result type [num=$testNum, txt=$txt, expected=$expType, type=${resp.getType}]")
+                if expType != resp.resultType then
+                    errs += testNum -> new Exception(s"Unexpected result type [num=$testNum, txt=$txt, expected=$expType, type=${resp.resultType}]")
 
                 // Check execution result on last request.
                 if idx == reqs.size - 1 then
