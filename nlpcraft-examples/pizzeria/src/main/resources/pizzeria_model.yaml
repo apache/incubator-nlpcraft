@@ -35,7 +35,7 @@ elements:
     values:
       "tea": [ ]
       "coffee": [ ]
-      "cola": [ "{coca|cola|coca cola|cocacola|coca-cola}" ]
+      "cola": [ "{pepsi|sprite|dr. pepper|dr pepper|fanta|soda|cola|coca cola|cocacola|coca-cola}" ]
 
   - id: "ord:yes"
     description: "Confirmation (yes)."
