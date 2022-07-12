@@ -85,7 +85,7 @@ case class PizzeriaOrderExtender(mainDataSeq: Seq[EntityData], extraData: Entity
             val res = (unrelated ++ artificial ++ unused).sortBy(_.tokens.head.getIndex)
 
             def s(es: Iterable[NCEntity]) =
-                ents.map(e => s"id=${e.getId}(${e.tokens.map(_.getIndex).mkString("[", ",", "]")})").mkString("{", ", ", "}")
+                es.map(e => s"id=${e.getId}(${e.tokens.map(_.getIndex).mkString("[", ",", "]")})").mkString("{", ", ", "}")
             logger.debug(s"Elements mapped [input=${s(ents)}, output=${s(res)}]")
 
             res
