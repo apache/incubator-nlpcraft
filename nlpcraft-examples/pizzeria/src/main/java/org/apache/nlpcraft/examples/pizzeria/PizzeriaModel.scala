@@ -60,12 +60,12 @@ object PizzeriaModel extends LazyLogging:
         val o = getCurrentOrder()
 
         logger.info(s"Intent '${im.getIntentId}' activated for text: '${ctx.getRequest.getText}'.")
-        logger.info(s"Before call [desc=${o.getState.toString}, resState: ${o.getDescription}.")
+        logger.info(s"Before call [desc=${o.getState.toString}, resState: $o.")
 
         val (res, resState) = body.apply(o)
         o.setState(resState)
 
-        logger.info(s"After call [desc=${o.getDescription}, resState: $resState.")
+        logger.info(s"After call [desc=$o, resState: $resState.")
 
         res
 
@@ -91,11 +91,11 @@ object PizzeriaModel extends LazyLogging:
 
     private def doShowMenu(state: State): Result = doShowMenuResult() -> state
 
-    private def doShowStatus(o: Order, state: State): Result = mkResult(s"Current order state: ${o.getDescription}.") -> state
+    private def doShowStatus(o: Order, state: State): Result = mkResult(s"Current order state: $o.") -> state
 
     private def askConfirm(o: Order): Result =
         require(o.isValid)
-        mkDialog(s"Let's specify your order: ${o.getDescription}. Is it correct?") -> DIALOG_CONFIRM
+        mkDialog(s"Let's specify your order: $o. Is it correct?") -> DIALOG_CONFIRM
 
     private def doResultWithClear(msg: String)(using ctx: NCContext, im: NCIntentMatch): Result =
         val conv = ctx.getConversation
@@ -127,7 +127,7 @@ class PizzeriaModel extends NCModelAdapter(new NCModelConfig("nlpcraft.pizzeria.
     // This method is defined in class scope and has package access level for tests reasons.
     private[pizzeria] def doExecute(o: Order)(using ctx: NCContext, im: NCIntentMatch): Result =
         require(o.isValid)
-        doResultWithClear(s"Executed: ${o.getDescription}.")
+        doResultWithClear(s"Executed: $o.")
 
     private def doExecuteOrAskSpecify(o: Order)(using ctx: NCContext, im: NCIntentMatch): Result = if o.isValid then doExecute(o) else askSpecify(o)
 

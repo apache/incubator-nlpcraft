@@ -84,7 +84,7 @@ class PizzeriaOrder:
     def add(ps: Seq[Pizza], ds: Seq[Drink]): Unit =
         def setByName[T <: OrderPosition](buf: mutable.ArrayBuffer[T], t: T): Unit =
             buf.find(_.name == t.name) match
-                case Some(found) => if t.qty.nonEmpty then found.qty = t.qty
+                case Some(foundT) => if t.qty.nonEmpty then foundT.qty = t.qty
                 case None => buf += t
 
         for (p <- ps)
@@ -102,18 +102,6 @@ class PizzeriaOrder:
             else setByName(pizzas, p)
 
         for (d <- ds) setByName(drinks, d)
-
-    /**
-      *
-      * @return
-      */
-    def getPizzas: Seq[Pizza] = pizzas.toSeq
-
-    /**
-      *
-      * @return
-      */
-    def getDrinks: Seq[Drink] = drinks.toSeq
 
     /**
       *
@@ -143,11 +131,7 @@ class PizzeriaOrder:
       */
     def setState(state: PizzeriaOrderState): Unit = this.state = state
 
-    /**
-      *
-      * @return
-      */
-    def getDescription: String =
+    override def toString: String =
         if !isEmpty then
             val ps = if pizzas.nonEmpty then s"pizza: ${pizzas.mkString(", ")}" else ""
             val ds = if drinks.nonEmpty then s"drinks: ${drinks.mkString(", ")}" else ""

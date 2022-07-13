@@ -65,22 +65,22 @@ case class PizzeriaOrderMapper(extra: PizzeriaOrderMapperDesc, dests: Seq[Pizzer
                 override val getRequestId: String = req.getRequestId
                 override val getId: String = destEnt.getId
 
-        val mainById = dests.map(p => p.elementId -> p).toMap
-        val descEnts = mutable.HashSet.empty ++ ents.filter(e => mainById.contains(e.getId))
+        val destsMap = dests.map(p => p.elementId -> p).toMap
+        val destEnts = mutable.HashSet.empty ++ ents.filter(e => destsMap.contains(e.getId))
         val extraEnts = ents.filter(_.getId == extra.elementId)
 
-        if descEnts.nonEmpty && extraEnts.nonEmpty && descEnts.size >= extraEnts.size then
-            val used = (descEnts ++ extraEnts).toSet
-            val main2Extra = mutable.HashMap.empty[NCEntity, NCEntity]
+        if destEnts.nonEmpty && extraEnts.nonEmpty && destEnts.size >= extraEnts.size then
+            val used = (destEnts ++ extraEnts).toSet
+            val dest2Extra = mutable.HashMap.empty[NCEntity, NCEntity]
 
-            for (e <- extraEnts)
-                val m = descEnts.minBy(m => Math.abs(m.position - e.position))
-                descEnts -= m
-                main2Extra += m -> e
+            for (extraEnt <- extraEnts)
+                val destEnt = destEnts.minBy(m => Math.abs(m.position - extraEnt.position))
+                destEnts -= destEnt
+                dest2Extra += destEnt -> extraEnt
 
             val unrelated = ents.filter(e => !used.contains(e))
-            val artificial = for ((m, e) <- main2Extra) yield map(m, mainById(m.getId).propertyName, e)
-            val unused = descEnts
+            val artificial = for ((m, e) <- dest2Extra) yield map(m, destsMap(m.getId).propertyName, e)
+            val unused = destEnts
 
             val res = (unrelated ++ artificial ++ unused).sortBy(_.tokens.head.getIndex)
 

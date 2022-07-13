@@ -95,7 +95,7 @@ class PizzeriaModelSpec:
                 // Check execution result on last request.
                 if idx == reqs.size - 1 then
                     val lastOrder = mdl.getLastExecutedOrder
-                    def s(o: PizzeriaOrder) = if o == null then null else s"Order [state=${o.getState}, desc=${o.getDescription}]"
+                    def s(o: PizzeriaOrder) = if o == null then null else s"Order [state=${o.getState}, desc=$o]"
                     val s1 = s(exp)
                     val s2 = s(lastOrder)
                     if s1 != s2 then
