@@ -31,7 +31,7 @@ class PizzeriaOrderValidator extends NCEntityValidator:
         val cntNums = count("stanford:number")
         val cntSize = count("ord:pizza:size")
 
-        // Single size  - it is order specification request.
+        // Single size - it is order specification request.
         if cntSize != 1 && cntSize > cntPizza then
             throw new NCRejection("There are unrecognized pizza sizes in the request, maybe because some misprints.")
             

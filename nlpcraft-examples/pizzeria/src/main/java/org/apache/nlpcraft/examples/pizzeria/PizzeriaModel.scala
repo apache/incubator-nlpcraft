@@ -23,12 +23,14 @@ import org.apache.nlpcraft.NCResultType.*
 import org.apache.nlpcraft.annotations.*
 import org.apache.nlpcraft.examples.pizzeria.{PizzeriaOrder as Order, PizzeriaOrderState as State}
 import org.apache.nlpcraft.examples.pizzeria.PizzeriaOrderState.*
+import org.apache.nlpcraft.examples.pizzeria.components.PizzeriaModelPipeline
 import org.apache.nlpcraft.nlp.*
 
 /**
   * * Pizza model helper.
   */
 object PizzeriaModel extends LazyLogging:
+    type Result = (NCResult, State)
     private val UNEXPECTED_REQUEST = new NCRejection("Unexpected request for current dialog context.")
 
     private def extractPizzaSize(e: NCEntity): String = e.get[String]("ord:pizza:size:value")
@@ -41,13 +43,12 @@ object PizzeriaModel extends LazyLogging:
     private def getOrder(ctx: NCContext): Order =
         val data = ctx.getConversation.getData
         val usrId = ctx.getRequest.getUserId
-        var o: Order = data.get(usrId)
-
-        if o == null then
-            o = new Order()
-            data.put(usrId, o)
-
-        o
+        data.getOpt[Order](usrId) match
+            case Some(ord) => ord
+            case None =>
+                val ord = new Order()
+                data.put(usrId, ord)
+                ord
 
     private def mkResult(msg: String): NCResult = NCResult(msg, ASK_RESULT)
     private def mkDialog(msg: String): NCResult = NCResult(msg, ASK_DIALOG)
@@ -110,8 +111,6 @@ object PizzeriaModel extends LazyLogging:
     private def askConfirmOrAskSpecify(o: Order): Result = if o.isValid then askConfirm(o) else askSpecify(o)
     private def askIsReadyOrAskSpecify(o: Order): Result = if o.isValid then askIsReady() else askSpecify(o)
     private def askStopOrDoStop(o: Order)(using ctx: NCContext, im: NCIntentMatch): Result = if o.isValid then askShouldStop() else doStop(o)
-
-    type Result = (NCResult, State)
 
 import org.apache.nlpcraft.examples.pizzeria.PizzeriaModel.*
 

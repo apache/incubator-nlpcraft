@@ -25,12 +25,12 @@ import scala.collection.mutable
 enum PizzeriaOrderState:
     case DIALOG_EMPTY, DIALOG_IS_READY, DIALOG_SHOULD_CANCEL, DIALOG_SPECIFY, DIALOG_CONFIRM
 
-private object OrderElement:
+private object OrderPosition:
     val DFLT_QTY = 1
 /**
   *
   */
-private abstract class OrderElement:
+private trait OrderPosition:
     val name: String
     var qty: Option[Int]
     require(name != null && name.nonEmpty)
@@ -42,8 +42,8 @@ private abstract class OrderElement:
   * @param size Optional size.
   * @param qty Optional quantity.
   */
-case class Pizza(name: String, var size: Option[String], var qty: Option[Int]) extends OrderElement:
-    override def toString = s"$name '${size.getOrElse("undefined size")}' ${qty.getOrElse(OrderElement.DFLT_QTY)} pcs"
+case class Pizza(name: String, var size: Option[String], var qty: Option[Int]) extends OrderPosition:
+    override def toString = s"$name '${size.getOrElse("undefined size")}' ${qty.getOrElse(OrderPosition.DFLT_QTY)} pcs"
 
 /**
   * Drink order data holder.
@@ -51,8 +51,8 @@ case class Pizza(name: String, var size: Option[String], var qty: Option[Int]) e
   * @param name Name.
   * @param qty Optional quantity.
   */
-case class Drink(name: String, var qty: Option[Int]) extends OrderElement:
-    override def toString = s"$name ${qty.getOrElse(OrderElement.DFLT_QTY)} pcs"
+case class Drink(name: String, var qty: Option[Int]) extends OrderPosition:
+    override def toString = s"$name ${qty.getOrElse(OrderPosition.DFLT_QTY)} pcs"
 
 import org.apache.nlpcraft.examples.pizzeria.PizzeriaOrderState.*
 
@@ -82,7 +82,7 @@ class PizzeriaOrder:
       * @param ds
       */
     def add(ps: Seq[Pizza], ds: Seq[Drink]): Unit =
-        def setByName[T <: OrderElement](buf: mutable.ArrayBuffer[T], t: T): Unit =
+        def setByName[T <: OrderPosition](buf: mutable.ArrayBuffer[T], t: T): Unit =
             buf.find(_.name == t.name) match
                 case Some(found) => if t.qty.nonEmpty then found.qty = t.qty
                 case None => buf += t

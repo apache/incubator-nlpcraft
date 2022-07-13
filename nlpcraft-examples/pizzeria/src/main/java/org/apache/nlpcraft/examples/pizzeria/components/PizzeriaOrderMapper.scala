@@ -25,14 +25,14 @@ import scala.collection.*
 
 /**
   *
-  * @param id
-  * @param property
+  * @param elementId Element.
+  * @param propertyName Element's property name.
   */
-case class EntityData(id: String, property: String)
+case class MapperDesc(elementId: String, propertyName: String)
 
 /**
   * Element extender.
-  * For each 'main' element it tries to find related extra element and convert this pair to new complex element.
+  * For each 'main' dest element it tries to find related extra element and convert this pair to new complex element.
   * New element:
   * 1. Gets same ID as main element, also all main element properties copied into this new one.
   * 2. Gets tokens from both elements.
@@ -41,52 +41,50 @@ case class EntityData(id: String, property: String)
   * Note that it is simple example implementation.
   * It just tries to unite nearest neighbours and doesn't check intermediate words, order correctness etc.
   */
-object PizzeriaOrderExtender:
+object PizzeriaOrderMapper:
     extension(entity: NCEntity)
         def position: Double =
             val toks = entity.getTokens
             (toks.head.getIndex + toks.last.getIndex) / 2.0
         def tokens: List[NCToken] = entity.getTokens
 
-import PizzeriaOrderExtender.*
+    private def str(es: Iterable[NCEntity]): String =
+        es.map(e => s"id=${e.getId}(${e.tokens.map(_.getIndex).mkString("[", ",", "]")})").mkString("{", ", ", "}")
 
-/**
-  *
-  * @param mainDataSeq
-  * @param extraData
-  */
-case class PizzeriaOrderExtender(mainDataSeq: Seq[EntityData], extraData: EntityData) extends NCEntityMapper with LazyLogging:
+    def apply(extra: MapperDesc, dests: MapperDesc*): PizzeriaOrderMapper = new PizzeriaOrderMapper(extra, dests)
+
+import PizzeriaOrderMapper.*
+
+case class PizzeriaOrderMapper(extra: MapperDesc, dests: Seq[MapperDesc]) extends NCEntityMapper with LazyLogging:
     override def map(req: NCRequest, cfg: NCModelConfig, ents: List[NCEntity]): List[NCEntity] =
-        def combine(mainEnt: NCEntity, mainProp: String, extraEnt: NCEntity): NCEntity =
+        def map(destEnt: NCEntity, destProp: String, extraEnt: NCEntity): NCEntity =
             new NCPropertyMapAdapter with NCEntity:
-                mainEnt.keysSet.foreach(k => put(k, mainEnt.get(k)))
-                put[String](mainProp, extraEnt.get[String](extraData.property).toLowerCase)
-                override val getTokens: List[NCToken] = (mainEnt.tokens ++ extraEnt.tokens).sortBy(_.getIndex)
+                destEnt.keysSet.foreach(k => put(k, destEnt.get(k)))
+                put[String](destProp, extraEnt.get[String](extra.propertyName).toLowerCase)
+                override val getTokens: List[NCToken] = (destEnt.tokens ++ extraEnt.tokens).sortBy(_.getIndex)
                 override val getRequestId: String = req.getRequestId
-                override val getId: String = mainEnt.getId
+                override val getId: String = destEnt.getId
 
-        val mainById = mainDataSeq.map(p => p.id -> p).toMap
-        val main = mutable.HashSet.empty ++ ents.filter(e => mainById.contains(e.getId))
-        val extra = ents.filter(_.getId == extraData.id)
+        val mainById = dests.map(p => p.elementId -> p).toMap
+        val descEnts = mutable.HashSet.empty ++ ents.filter(e => mainById.contains(e.getId))
+        val extraEnts = ents.filter(_.getId == extra.elementId)
 
-        if main.nonEmpty && extra.nonEmpty && main.size >= extra.size then
-            val used = (main ++ extra).toSet
+        if descEnts.nonEmpty && extraEnts.nonEmpty && descEnts.size >= extraEnts.size then
+            val used = (descEnts ++ extraEnts).toSet
             val main2Extra = mutable.HashMap.empty[NCEntity, NCEntity]
 
-            for (e <- extra)
-                val m = main.minBy(m => Math.abs(m.position - e.position))
-                main -= m
+            for (e <- extraEnts)
+                val m = descEnts.minBy(m => Math.abs(m.position - e.position))
+                descEnts -= m
                 main2Extra += m -> e
 
             val unrelated = ents.filter(e => !used.contains(e))
-            val artificial = for ((m, e) <- main2Extra) yield combine(m, mainById(m.getId).property, e)
-            val unused = main
+            val artificial = for ((m, e) <- main2Extra) yield map(m, mainById(m.getId).propertyName, e)
+            val unused = descEnts
 
             val res = (unrelated ++ artificial ++ unused).sortBy(_.tokens.head.getIndex)
 
-            def s(es: Iterable[NCEntity]) =
-                es.map(e => s"id=${e.getId}(${e.tokens.map(_.getIndex).mkString("[", ",", "]")})").mkString("{", ", ", "}")
-            logger.debug(s"Elements mapped [input=${s(ents)}, output=${s(res)}]")
+            logger.debug(s"Elements mapped [input=${str(ents)}, output=${str(res)}]")
 
             res
         else ents
