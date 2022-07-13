@@ -90,9 +90,9 @@ class PizzeriaOrder:
         for (p <- ps)
             def setPizza(pred: Pizza => Boolean, notFound: => () => Unit): Unit =
                 pizzas.find(pred) match
-                    case Some(found) =>
-                        if p.size.nonEmpty then found.size = p.size
-                        if p.qty.nonEmpty then found.qty = p.qty
+                    case Some(foundPizza) =>
+                        if p.size.nonEmpty then foundPizza.size = p.size
+                        if p.qty.nonEmpty then foundPizza.qty = p.qty
                     case None => notFound()
 
             if p.size.nonEmpty then setPizza(

@@ -23,7 +23,7 @@ object PizzeriaModelPipeline:
             private val ps = new PorterStemmer
             override def stem(txt: String): String = ps.synchronized { ps.stem(txt) }
 
-        import MapperDesc as D
+        import PizzeriaOrderMapperDesc as D
 
         new NCPipelineBuilder().
             withTokenParser(tokParser).

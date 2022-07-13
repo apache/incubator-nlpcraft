@@ -28,7 +28,7 @@ import scala.collection.*
   * @param elementId Element.
   * @param propertyName Element's property name.
   */
-case class MapperDesc(elementId: String, propertyName: String)
+case class PizzeriaOrderMapperDesc(elementId: String, propertyName: String)
 
 /**
   * Element extender.
@@ -51,11 +51,11 @@ object PizzeriaOrderMapper:
     private def str(es: Iterable[NCEntity]): String =
         es.map(e => s"id=${e.getId}(${e.tokens.map(_.getIndex).mkString("[", ",", "]")})").mkString("{", ", ", "}")
 
-    def apply(extra: MapperDesc, dests: MapperDesc*): PizzeriaOrderMapper = new PizzeriaOrderMapper(extra, dests)
+    def apply(extra: PizzeriaOrderMapperDesc, dests: PizzeriaOrderMapperDesc*): PizzeriaOrderMapper = new PizzeriaOrderMapper(extra, dests)
 
 import PizzeriaOrderMapper.*
 
-case class PizzeriaOrderMapper(extra: MapperDesc, dests: Seq[MapperDesc]) extends NCEntityMapper with LazyLogging:
+case class PizzeriaOrderMapper(extra: PizzeriaOrderMapperDesc, dests: Seq[PizzeriaOrderMapperDesc]) extends NCEntityMapper with LazyLogging:
     override def map(req: NCRequest, cfg: NCModelConfig, ents: List[NCEntity]): List[NCEntity] =
         def map(destEnt: NCEntity, destProp: String, extraEnt: NCEntity): NCEntity =
             new NCPropertyMapAdapter with NCEntity:

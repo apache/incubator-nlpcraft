@@ -26,6 +26,16 @@ import org.apache.nlpcraft.examples.pizzeria.PizzeriaOrderState.*
 import org.apache.nlpcraft.examples.pizzeria.components.PizzeriaModelPipeline
 import org.apache.nlpcraft.nlp.*
 
+object PizzeriaExtractors:
+    def extractPizzaSize(e: NCEntity): String = e.get[String]("ord:pizza:size:value")
+    def extractQty(e: NCEntity, qty: String): Option[Int] = Option.when(e.contains(qty))(e.get[String](qty).toDouble.toInt)
+    def extractPizza(e: NCEntity): Pizza =
+        Pizza(e.get[String]("ord:pizza:value"), e.getOpt[String]("ord:pizza:size"), extractQty(e, "ord:pizza:qty"))
+    def extractDrink(e: NCEntity): Drink =
+        Drink(e.get[String]("ord:drink:value"), extractQty(e, "ord:drink:qty"))
+
+import PizzeriaExtractors.*
+
 /**
   * * Pizza model helper.
   */
@@ -33,28 +43,21 @@ object PizzeriaModel extends LazyLogging:
     type Result = (NCResult, State)
     private val UNEXPECTED_REQUEST = new NCRejection("Unexpected request for current dialog context.")
 
-    private def extractPizzaSize(e: NCEntity): String = e.get[String]("ord:pizza:size:value")
-    private def extractQty(e: NCEntity, qty: String): Option[Int] = Option.when(e.contains(qty))(e.get[String](qty).toDouble.toInt)
-    private def extractPizza(e: NCEntity): Pizza =
-        Pizza(e.get[String]("ord:pizza:value"), e.getOpt[String]("ord:pizza:size"), extractQty(e, "ord:pizza:qty"))
-    private def extractDrink(e: NCEntity): Drink =
-        Drink(e.get[String]("ord:drink:value"), extractQty(e, "ord:drink:qty"))
-
-    private def getOrder(ctx: NCContext): Order =
-        val data = ctx.getConversation.getData
+    private def getCurrentOrder()(using ctx: NCContext): Order =
+        val sess = ctx.getConversation.getData
         val usrId = ctx.getRequest.getUserId
-        data.getOpt[Order](usrId) match
+        sess.getOpt[Order](usrId) match
             case Some(ord) => ord
             case None =>
                 val ord = new Order()
-                data.put(usrId, ord)
+                sess.put(usrId, ord)
                 ord
 
     private def mkResult(msg: String): NCResult = NCResult(msg, ASK_RESULT)
     private def mkDialog(msg: String): NCResult = NCResult(msg, ASK_DIALOG)
 
     private def doRequest(body: Order => Result)(using ctx: NCContext, im: NCIntentMatch): NCResult =
-        val o = getOrder(ctx)
+        val o = getCurrentOrder()
 
         logger.info(s"Intent '${im.getIntentId}' activated for text: '${ctx.getRequest.getText}'.")
         logger.info(s"Before call [desc=${o.getState.toString}, resState: ${o.getDescription}.")
@@ -224,6 +227,6 @@ class PizzeriaModel extends NCModelAdapter(new NCModelConfig("nlpcraft.pizzeria.
         o => if !o.isEmpty && o.fixPizzaWithoutSize(extractPizzaSize(size)) then askIsReadyOrAskSpecify(o) else throw UNEXPECTED_REQUEST
     )
 
-    override def onRejection(ctx: NCContext, im: Option[NCIntentMatch], e: NCRejection): Option[NCResult] =
-        if im.isEmpty || getOrder(ctx).isEmpty then throw e
+    override def onRejection(using ctx: NCContext, im: Option[NCIntentMatch], e: NCRejection): Option[NCResult] =
+        if im.isEmpty || getCurrentOrder().isEmpty then throw e
         Option(doShowMenuResult())
