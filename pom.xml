@@ -109,7 +109,7 @@
         <jackson.yaml.ver>2.13.2</jackson.yaml.ver>
         <apache.opennlp.ver>1.9.4</apache.opennlp.ver>
         <jmh.version>1.35</jmh.version>
-        <gson.ver>2.9.0</gson.ver>
+        <gson.ver>2.9.1</gson.ver>
 
         <!-- Force specific encoding on text resources. -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
