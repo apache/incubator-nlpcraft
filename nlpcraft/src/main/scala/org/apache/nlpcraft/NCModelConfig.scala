@@ -30,6 +30,7 @@ object NCModelConfig:
     def apply(id: String, name: String, ver: String) = new NCModelConfig(id, name, ver)
     def apply(id: String, name: String, ver: String, desc: String, orig: String) =
         new NCModelConfig(id, name, ver, Option(desc), Option(orig))
+        
 import org.apache.nlpcraft.NCModelConfig.*
 
 /**

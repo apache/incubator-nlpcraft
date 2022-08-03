@@ -18,7 +18,7 @@
 package org.apache.nlpcraft
 
 /**
-  * An enenity is a collection if one or more {@link NCToken tokens}. An entity typically has a
+  * An entity is a collection if one or more {@link NCToken tokens}. An entity typically has a
   * consistent semantic meaning and usually denotes a real-world object, such as persons, locations, number,
   * date and time, organizations, products, etc. - where such objects can be abstract or have a physical existence.
   * Entities are produced by {@link NCEntityParser}. See {@link NCPipeline} for documentation on the entities in the
