@@ -44,6 +44,6 @@ class NCPropertyMapAdapter extends NCPropertyMap:
 
     override def remove(key: String, obj: Any): Boolean = map.remove(key, obj)
 
-    override def keysSet = map.keys().asScala.toSet
+    override def keysSet: Set[String] = map.keys().asScala.toSet
 
     override def clear(): Unit = map.clear()

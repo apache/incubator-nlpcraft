@@ -18,42 +18,51 @@
 package org.apache.nlpcraft
 
 /**
-  * Descriptor for the input user request.
+  * Descriptor for the input user request. User request descriptor can be obtained via
+  * [[NCContext.getRequest]] method.
   *
-  * @see NCContext#getRequest() */
+  * @see [[NCContext.getRequest]]
+  */
 trait NCRequest:
     /**
       * Gets ID of the user on behalf of which this request was submitted. User ID is used by
-      * NLPCraft to manage the conversation state. It can be any value as long as it is constant
+      * NLPCraft to manage the conversation state. It can be any value as long as it is stable
       * and globally unique for the given user.
       *
-      * @return User ID. */
+      * @return User ID.
+      */
     def getUserId: String
 
     /**
       * Gets globally unique ID of the current request.
-      * <p>
+      *
       * A request is defined as a processing of a one user input request.
       * Note that the model can be accessed multiple times during processing of a single user request
       * and therefore multiple instances of this interface can return the same request ID. In fact, users
       * of this interfaces can use this fact by using this ID, for example, as a map key for a session
       * scoped storage.
       *
-      * @return Request ID. */
+      * @return Request ID.
+      */
     def getRequestId: String
 
     /**
-      * @return */
+      * Gets the original input text of this request.
+      *
+      * @return Input text of this request.
+      */
     def getText: String
 
     /**
-      * Gets UTC/GMT timestamp in millis when user input was received.
+      * Gets UTC/GMT timestamp in milliseconds when user input was received.
       *
-      * @return UTC/GMT timestamp in ms when user input was received. */
+      * @return UTC/GMT timestamp in milliseconds when user input was received.
+      */
     def getReceiveTimestamp: Long
 
     /**
-      * Gets optional user request data.
+      * Gets optional data associated with this user request.
       *
-      * @return Optional user request data, can be empty but never `null`. */
+      * @return Optional user request data, can be empty but never `null`.
+      */
     def getRequestData: Map[String, Any]

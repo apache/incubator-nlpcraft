@@ -17,7 +17,11 @@
 
 package org.apache.nlpcraft
 
+/**
+  *
+  */
 enum NCResultType:
     /**
-      * Final result is ready and Ask user back engaging in dialog. */
+      * Final result is ready and Ask user back engaging in dialog.
+      */
     case ASK_RESULT, ASK_DIALOG

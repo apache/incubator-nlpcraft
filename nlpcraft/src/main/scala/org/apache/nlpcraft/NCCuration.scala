@@ -19,10 +19,13 @@ package org.apache.nlpcraft
 
 /**
   * A type of rejection indicating that human curation is required. Curation is typically an indication that input
-  * query is likely valid but needs a human correction like a type fix, slang resolution, etc.
-  * <p>
+  * query is likely valid but needs a human correction like a typo fix, slang resolution, etc.
+  *
   * Note that NLPCraft does not handle the curation process itself but only allows to indicate the curation
-  * request by throwing this exception. Curation is a special type of rejection. User code is responsible for the actual
-  * handling of the curation logic.
+  * request by throwing this exception. Curation is a special type of rejection. The user code is responsible for
+  * he actual handling of the curation logic.
+  *
+  * @param msg Curation message.
+  * @param cause Optional cause of this exception.
   */
 class NCCuration(msg: String, cause: Throwable = null) extends NCRejection(msg, cause)

@@ -18,51 +18,52 @@
 package org.apache.nlpcraft
 
 /**
-  * User data model
-  * <p>
-  * Data model is a holder for user-define NLP processing logic that provides an interface to your data sources like a
-  * database or a SaaS application. NLPCraft employs model-as-a-code approach where entire data model is an
-  * implementation of this interface which can be developed using any JVM programming language like Java, Scala,
-  * Kotlin, or Groovy. The instance of this interface is passed to {@link NCModelClient} class and contains:
-  * <ul>
-  * <li>Model {@link # getConfig ( ) configurfation}.</li>
-  * <li>Model {@link # getPipeline ( ) processing pipeline}.</li>
-  * <li>Life-cycle callbacks.</li>
-  * </ul>
-  * Note that model-as-a-code approach natively supports any software life cycle tools and frameworks like various
-  * build tools, CI/SCM tools, IDEs, etc. You don't need an additional web-based tools to manage
+  * User data model.
+  *
+  * Data model is a holder for user-defined NLP processing logic. NLPCraft employs model-as-a-code approach where
+  * entire data model is an implementation of this interface which can be simply developed using any JVM programming
+  * language like Java, Scala, Kotlin, or Groovy.
+  *
+  * The instance of this interface is passed to [[NCModelClient]] class and contains:
+  *  - Model [[NCModel.getConfig configuration]].
+  *  - Model [[NCModel.getPipeline processing pipeline]].
+  *  - Life-cycle callbacks.
+  *
+  * Note that this model-as-a-code approach natively supports any software life cycle tools and frameworks like various
+  * build tools, CI/SCM tools, IDEs, etc. You don't need any additional tools to manage
   * some aspects of your data models - your entire model and all of its components are part of your project's source code.
-  * <p>
-  * In most cases, one would use a convenient {@link NCModelAdapter} adapter to implement this interface. Here's a snippet
+  *
+  * In most cases, one would use a convenient [[NCModelAdapter]] adapter to implement this interface. Here's a snippet
   * of the user data model from LightSwitch example:
-  * <pre class="brush: java, highlight: [1]">
+  * {{{
   * public class LightSwitchJavaModel extends NCModelAdapter {
-  * public LightSwitchJavaModel() {
-  * super(
-  * new NCModelConfig("nlpcraft.lightswitch.java.ex", "LightSwitch Example Model", "1.0"),
-  * new NCPipelineBuilder().withSemantic("en", "lightswitch_model.yaml").build()
-  * );
-  * }
+  *     public LightSwitchJavaModel() {
+  *         super(
+  *             new NCModelConfig("nlpcraft.lightswitch.java.ex", "LightSwitch Example Model", "1.0"),
+  *             new NCPipelineBuilder().withSemantic("en", "lightswitch_model.yaml").build()
+  *         );
+  *     }
   *
-  * &#64;NCIntent("intent=ls term(act)={has(ent_groups, 'act')} term(loc)={# == 'ls:loc'}*")
-  * NCResult onMatch(
-  * &#64;NCIntentTerm("act") NCEntity actEnt,
-  * &#64;NCIntentTerm("loc") List&lt;NCEntity&gt; locEnts
-  * ) {
-  * String status=actEnt.getId().equals("ls:on")?"on":"off";
-  * String locations=locEnts.isEmpty() ? "entire house":
-  * locEnts.stream().map(NCEntity::mkText).collect(Collectors.joining(", "));
+  *     &#64;NCIntent("intent=ls term(act)={has(ent_groups, 'act')} term(loc)={# == 'ls:loc'}*")
+  *     NCResult onMatch(
+  *         &#64;NCIntentTerm("act") NCEntity actEnt,
+  *         &#64;NCIntentTerm("loc") List&lt;NCEntity&gt; locEnts
+  *     ) {
+  *         String status=actEnt.getId().equals("ls:on")?"on":"off";
+  *         String locations=locEnts.isEmpty() ? "entire house":
+  *         locEnts.stream().map(NCEntity::mkText).collect(Collectors.joining(", "));
   *
-  * return new NCResult(
-  * "Lights are [" + status + "] in [" + locations.toLowerCase() + "].",
-  * NCResultType.ASK_RESULT
-  * );
+  *         return new NCResult(
+  *             "Lights are [" + status + "] in [" + locations.toLowerCase() + "].",
+  *             NCResultType.ASK_RESULT
+  *         );
+  *     }
   * }
-  * }
-  * </pre>
+  * }}}
   *
-  * @see NCModelClient
-  * @see NCModelAdapter */
+  * @see [[NCModelClient]]
+  * @see [[NCModelAdapter]]
+  */
 trait NCModel:
     /**
       * Gets model configuration.
