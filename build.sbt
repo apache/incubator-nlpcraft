@@ -46,7 +46,7 @@ val stanfordCorenlpVer  = "4.4.0"
 
 // Examples libraries.
 val languagetoolVer = "5.6"
-val luceneAnalyzersCommonVer = "8.11.1"
+val luceneAnalyzersCommonVer = "8.11.2"
 
 ThisBuild / scalaVersion := s"$scalaMajVer.$scalaMinVer"
 ThisBuild / version := nlpcraftVer
