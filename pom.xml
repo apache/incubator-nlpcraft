@@ -123,7 +123,7 @@
             for NLPCraft. It is licensed under GPLv3 and has to be downloaded separately by
             the end user, when required.
         -->
-        <stanford.corenlp.ver>4.4.0</stanford.corenlp.ver>
+        <stanford.corenlp.ver>4.5.0</stanford.corenlp.ver>
     </properties>
 
     <dependencyManagement>
