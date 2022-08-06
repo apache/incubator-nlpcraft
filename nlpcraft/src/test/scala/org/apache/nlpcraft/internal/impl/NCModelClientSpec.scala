@@ -49,8 +49,8 @@ class NCModelClientSpec:
         Using.resource(new NCModelClient(mdl)) { client =>
             val res = client.ask("Lights on at second floor kitchen", "userId")
 
-            println(s"Intent: ${res.intentId}")
-            println(s"Body: ${res.body}")
+            println(s"Intent: ${res.getIntentId}")
+            println(s"Body: ${res.getBody}")
 
             client.validateSamples()
 

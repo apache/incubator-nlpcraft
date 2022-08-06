@@ -49,7 +49,7 @@ class NCModelClientSpec3:
         Using.resource(new NCModelClient(mdl)) { client =>
             def ask(): NCCallbackData = client.debugAsk("e1", "userId", true)
             def execCallback(cb: NCCallbackData): NCResult = cb.getCallback.apply(cb.getCallbackArguments)
-            def execCallbackOk(cb: NCCallbackData): Unit = println(s"Result: ${execCallback(cb).body}")
+            def execCallbackOk(cb: NCCallbackData): Unit = println(s"Result: ${execCallback(cb).getBody}")
             def execCallbackFail(cb: NCCallbackData): Unit =
                 try execCallback(cb)
                 catch case e: NCException => println(s"Expected error: ${e.getMessage}")

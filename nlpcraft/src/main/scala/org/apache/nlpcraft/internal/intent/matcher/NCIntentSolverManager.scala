@@ -711,7 +711,7 @@ class NCIntentSolverManager(
                     def executeCallback(in: NCCallbackInput): NCResult =
                         var cbRes = intentRes.fn(in)
                         // Store winning intent match in the input.
-                        if cbRes.intentId.isEmpty then cbRes = NCResult(cbRes.body, cbRes.resultType, intentRes.intentId)
+                        if cbRes.getIntentId.isEmpty then cbRes = NCResult(cbRes.getBody, cbRes.getType, intentRes.intentId)
                         cbRes
 
                     def finishSearch(): Unit =

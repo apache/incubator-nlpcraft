@@ -174,7 +174,7 @@ class NCModelClient(mdl: NCModel) extends LazyLogging, AutoCloseable:
                     try
                         val r = ask(sample, Map.empty, userId)
 
-                        Option.when(r.intentId.isEmpty || r.intentId.get!= i.intent.id)(s"Unexpected intent ID: '${r.intentId.getOrElse("(not set)")}'")
+                        Option.when(r.getIntentId.isEmpty || r.getIntentId.get != i.intent.id)(s"Unexpected intent ID: '${r.getIntentId.getOrElse("(not set)")}'")
                     catch case e: Throwable =>
                         logger.warn("Unexpected error.", e) 
                         Option(e.getLocalizedMessage)

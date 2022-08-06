@@ -87,10 +87,10 @@ class PizzeriaModelSpec:
                 val resp = client.ask(txt, "userId")
 
                 testMsgs += s">> Request: $txt"
-                testMsgs += s">> Response: '${resp.resultType}': ${resp.body}"
+                testMsgs += s">> Response: '${resp.getType}': ${resp.getBody}"
 
-                if expType != resp.resultType then
-                    errs += testNum -> new Exception(s"Unexpected result type [num=$testNum, txt=$txt, expected=$expType, type=${resp.resultType}]")
+                if expType != resp.getType then
+                    errs += testNum -> new Exception(s"Unexpected result type [num=$testNum, txt=$txt, expected=$expType, type=${resp.getType}]")
 
                 // Check execution result on last request.
                 if idx == reqs.size - 1 then

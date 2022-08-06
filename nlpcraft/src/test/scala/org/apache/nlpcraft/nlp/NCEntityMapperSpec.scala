@@ -72,5 +72,5 @@ class NCEntityMapperSpec:
 
     @Test
     def test(): Unit = Using.resource(new NCModelClient(mdl)) { client =>
-        require(client.ask("a b c d", "userId").intentId.orNull == "abcd")
+        require(client.ask("a b c d", "userId").getIntentId.orNull == "abcd")
     }

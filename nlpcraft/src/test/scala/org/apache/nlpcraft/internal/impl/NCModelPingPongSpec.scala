@@ -34,14 +34,18 @@ import scala.util.Using
 class NCModelPingPongSpec:
     private var client: NCModelClient = _
 
-    private class R(resType: NCResultType, txt: String) extends NCResult(txt, resType):
-        override def toString: String = s"$resType ($txt)"
+    def mkResult(resType: NCResultType, txt: String): NCResult =
+        new NCResult ():
+            override def getBody: Any = txt
+            override def getType: NCResultType = resType
+            override def getIntentId: Option[String] = None
+            override def toString: String = s"$resType ($txt)"
 
     private val MDL: NCTestModelAdapter =
         new NCTestModelAdapter():
             @NCIntent("intent=command term(command)={# == 'command'}")
             def onCommand(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("command") command: NCEntity): NCResult =
-                R(ASK_DIALOG, s"Confirm your request 'command'")
+                mkResult(ASK_DIALOG, s"Confirm your request 'command'")
 
             @NCIntent("intent=confirmCommand term(confirm)={# == 'confirm'}")
             def onConfirmCommand(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("confirm") confirm: NCEntity): NCResult =
@@ -56,11 +60,11 @@ class NCModelPingPongSpec:
 
                 println("'Command' confirmed and can be be executed here.")
 
-                R(ASK_RESULT, s"'dialog' confirmed.")
+                mkResult(ASK_RESULT, s"'dialog' confirmed.")
 
             @NCIntent("intent=other term(other)={# == 'other'}")
             def onOther(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("other") other: NCEntity): NCResult =
-                R(ASK_RESULT, s"Some request by: ${other.mkText}")
+                mkResult(ASK_RESULT, s"Some request by: ${other.mkText}")
 
     MDL.pipeline.entParsers += NCTestUtils.mkEnSemanticParser(List(STE("command"), STE("confirm"), STE("other")))
 
@@ -73,7 +77,7 @@ class NCModelPingPongSpec:
     private def ask(txt: String, typ: NCResultType): Unit =
         val res = client.ask(txt, "userId")
         println(s"Request [text=$txt, result=$res]")
-        require(res.resultType == typ)
+        require(res.getType == typ)
 
     private def askForDialog(txt: String): Unit = ask(txt, ASK_DIALOG)
     private def askForResult(txt: String): Unit = ask(txt, ASK_RESULT)

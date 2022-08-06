@@ -113,7 +113,7 @@ object NCTestUtils:
             def ask(): NCResult = client.ask("test", "userId")
 
             if expectedOk then
-                println(ask().body)
+                println(ask().getBody)
             else
                 try
                     ask()
