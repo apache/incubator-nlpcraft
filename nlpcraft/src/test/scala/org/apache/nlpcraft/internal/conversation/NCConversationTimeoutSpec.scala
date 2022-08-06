@@ -45,7 +45,7 @@ class NCConversationTimeoutSpec:
         val mdl: NCModel =
             new NCTestModelAdapter:
                 override val getConfig: NCModelConfig =
-                    new NCModelConfig(CFG.id, CFG.name, CFG.version, CFG.description, CFG.origin, TIMEOUT, CFG.conversationDepth)
+                    NCModelConfig(CFG.getId, CFG.getName, CFG.getVersion, "Test desc", "Test origin", TIMEOUT, CFG.getConversationDepth)
 
                 override val getPipeline: NCPipeline =
                     val pl = mkEnPipeline

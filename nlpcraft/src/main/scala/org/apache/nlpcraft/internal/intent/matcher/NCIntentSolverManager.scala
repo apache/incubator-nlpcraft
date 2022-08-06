@@ -748,7 +748,7 @@ class NCIntentSolverManager(
                         case SEARCH_NO_HISTORY =>
                             finishSearch()
                 else
-                    logger.info(s"Model '${ctx.getModelConfig.id}' triggered rematching of intents by intent '${intentRes.intentId}' on variant #${intentRes.variantIdx + 1}.")
+                    logger.info(s"Model '${ctx.getModelConfig.getId}' triggered rematching of intents by intent '${intentRes.intentId}' on variant #${intentRes.variantIdx + 1}.")
                     Loop.finish()
                 catch
                     case e: NCIntentSkip =>
@@ -769,7 +769,7 @@ class NCIntentSolverManager(
     def solve(mdl: NCModel, ctx: NCContext, typ: NCIntentSolveType): ResultData =
         import NCIntentSolveType.REGULAR
 
-        val key = UserModelKey(ctx.getRequest.getUserId, mdl.getConfig.id)
+        val key = UserModelKey(ctx.getRequest.getUserId, mdl.getConfig.getId)
         reqIds.synchronized { reqIds.put(key, ctx.getRequest.getRequestId)}
 
         mdl.onContext(ctx) match

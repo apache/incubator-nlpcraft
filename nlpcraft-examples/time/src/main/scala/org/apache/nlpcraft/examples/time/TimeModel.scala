@@ -34,7 +34,7 @@ import java.time.*
 @NCIntent("intent=intent2 term~{# == 'x:time'} fragment(city)")
 @NCIntent("intent=intent1 term={# == 'x:time'}")
 class TimeModel extends NCModelAdapter(
-    new NCModelConfig("nlpcraft.time.ex", "Time Example Model", "1.0"),
+    NCModelConfig("nlpcraft.time.ex", "Time Example Model", "1.0"),
     new NCPipelineBuilder().
         withSemantic("en", "time_model.yaml").
         withEntityParser(NCOpenNLPEntityParser(NCResourceReader.getPath("opennlp/en-ner-location.bin"))).

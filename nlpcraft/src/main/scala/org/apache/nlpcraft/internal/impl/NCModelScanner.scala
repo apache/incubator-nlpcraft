@@ -146,7 +146,7 @@ object NCModelScanner extends LazyLogging:
         prmClss.zip(argsList).zipWithIndex.map { case ((paramCls, argList), i) =>
             def mkArg(): String = arg2Str(mtd, i)
 
-            lazy val z = s"mdlId=${cfg.id}, type=$paramCls, arg=${mkArg()}"
+            lazy val z = s"mdlId=${cfg.getId}, type=$paramCls, arg=${mkArg()}"
             val entsCnt = argList.size
 
             // Single entity.
@@ -182,7 +182,7 @@ object NCModelScanner extends LazyLogging:
     private def invoke(cfg: NCModelConfig, mtd: Method, obj: AnyRef, args: scala.Array[AnyRef]): NCResult =
         val methodObj = if Modifier.isStatic(mtd.getModifiers) then null else obj
         var flag = mtd.canAccess(methodObj)
-        lazy val z = s"mdlId=${cfg.id}, callback=${method2Str(mtd)}"
+        lazy val z = s"mdlId=${cfg.getId}, callback=${method2Str(mtd)}"
         try
             if !flag then
                 mtd.setAccessible(true)
@@ -214,7 +214,7 @@ object NCModelScanner extends LazyLogging:
         lazy val fStr = field2Str(field)
         val fieldObj = if Modifier.isStatic(field.getModifiers) then null else obj
         var flag = field.canAccess(fieldObj)
-        lazy val z = s"mdlId=${cfg.id}, field=$fStr"
+        lazy val z = s"mdlId=${cfg.getId}, field=$fStr"
         val res =
             try
                 if !flag then
@@ -318,7 +318,7 @@ object NCModelScanner extends LazyLogging:
         argClasses.zip(paramGenTypes).zipWithIndex.foreach { case ((argClass, paramGenType), i) =>
             def mkArg(): String = arg2Str(mtd, i)
 
-            lazy val z = s"mdlId=${cfg.id}, type=${class2Str(argClass)}, arg=${mkArg()}"
+            lazy val z = s"mdlId=${cfg.getId}, type=${class2Str(argClass)}, arg=${mkArg()}"
 
             // Entity.
             if argClass == CLS_ENTITY then () // No-op.
@@ -374,7 +374,7 @@ object NCModelScanner extends LazyLogging:
             def mkArg(): String = arg2Str(mtd, i)
 
             val p1 = "its $IT annotated argument"
-            val p2 = s"mdlId=${cfg.id}, arg=${mkArg()}"
+            val p2 = s"mdlId=${cfg.getId}, arg=${mkArg()}"
 
             // Argument is single entity but defined as not single entity.
             if cls == CLS_ENTITY && (min != 1 || max != 1) then
@@ -399,7 +399,7 @@ object NCModelScanner extends LazyLogging:
       * @return
       */
     private def prepareCallback(cfg: NCModelConfig, method: Method, obj: AnyRef, intent: NCIDLIntent): NCCallbackInput => NCResult =
-        lazy val z = s"mdlId=${cfg.id}, intentId=${intent.id}, type=${class2Str(method.getReturnType)}, callback=${method2Str(method)}"
+        lazy val z = s"mdlId=${cfg.getId}, intentId=${intent.id}, type=${class2Str(method.getReturnType)}, callback=${method2Str(method)}"
 
         // Checks method result type.
         if method.getReturnType != CLS_QRY_RES && !CLS_QRY_RES.isAssignableFrom(method.getReturnType) then
@@ -471,7 +471,7 @@ object NCModelScanner extends LazyLogging:
         require(mdl != null)
 
         val cfg = mdl.getConfig
-        lazy val z = s"mdlId=${cfg.id}"
+        lazy val z = s"mdlId=${cfg.getId}"
         val intentsMtds = mutable.HashMap.empty[Method, IntentHolder]
         val intentDecls = mutable.HashMap.empty[String, NCIDLIntent]
         val objs = mutable.Buffer.empty[AnyRef]
@@ -548,6 +548,6 @@ object NCModelScanner extends LazyLogging:
                 case ids if ids.nonEmpty => E(s"Duplicate intent IDs [$z, ids=${col2Str(ids)}]")
                 case _ => // No-op.
         else
-            logger.warn(s"Model has no intent: ${cfg.id}")
+            logger.warn(s"Model has no intent: ${cfg.getId}")
 
         intents.map(i => NCModelIntent(i.intent, i.function, samples.getOrElse(i.method, Map.empty).getOrElse(i.intent.id, Seq.empty))).toSeq

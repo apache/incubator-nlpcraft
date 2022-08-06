@@ -40,7 +40,7 @@ import org.apache.nlpcraft.nlp.token.parser.NCOpenNLPTokenParser
   */
 
 class LightSwitchScalaModel extends NCModelAdapter(
-    new NCModelConfig("nlpcraft.lightswitch.java.ex", "LightSwitch Example Model", "1.0"),
+    NCModelConfig("nlpcraft.lightswitch.java.ex", "LightSwitch Example Model", "1.0"),
     new NCPipelineBuilder().withSemantic("en", "lightswitch_model.yaml").build
 ):
     /**

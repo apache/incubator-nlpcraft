@@ -34,8 +34,8 @@ class NCIDLFunctionsModel extends NCIDLFunctions:
         def mkTestDesc(truth: String): TestDesc = TestDesc(truth = truth, idlCtx = idlCtx)
 
         test(
-            mkTestDesc(s"mdl_id == '${idlCtx.mdlCfg.id}'"),
-            mkTestDesc(s"mdl_name == '${idlCtx.mdlCfg.name}'"),
-            mkTestDesc(s"mdl_ver == '${idlCtx.mdlCfg.version}'"),
-            mkTestDesc(s"mdl_origin == '${idlCtx.mdlCfg.origin}'")
+            mkTestDesc(s"mdl_id == '${idlCtx.mdlCfg.getId}'"),
+            mkTestDesc(s"mdl_name == '${idlCtx.mdlCfg.getName}'"),
+            mkTestDesc(s"mdl_ver == '${idlCtx.mdlCfg.getVersion}'"),
+            mkTestDesc(s"mdl_origin == '${idlCtx.mdlCfg.getOrigin}'")
         )

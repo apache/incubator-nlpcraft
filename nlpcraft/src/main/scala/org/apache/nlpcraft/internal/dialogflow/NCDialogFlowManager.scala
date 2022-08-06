@@ -40,7 +40,7 @@ class NCDialogFlowManager(cfg: NCModelConfig) extends LazyLogging:
     private def clearForTimeout(): Long =
         require(Thread.holdsLock(flow))
 
-        val timeout = cfg.conversationTimeout
+        val timeout = cfg.getConversationTimeout
         val bound = NCUtils.now() - timeout
         var next = Long.MaxValue
 
@@ -77,7 +77,7 @@ class NCDialogFlowManager(cfg: NCModelConfig) extends LazyLogging:
       * @return
       */
     def start(): Unit =
-        gc = NCUtils.mkThread("dialog-mgr-gc", cfg.id) { t =>
+        gc = NCUtils.mkThread("dialog-mgr-gc", cfg.getId) { t =>
             while (!t.isInterrupted)
                 try
                     flow.synchronized {
@@ -171,7 +171,7 @@ class NCDialogFlowManager(cfg: NCModelConfig) extends LazyLogging:
             )
         }
 
-        logger.info(s"""Current dialog flow (oldest first) for [mdlId=${cfg.id}, usrId=$usrId]\n${tbl.toString()}""")
+        logger.info(s"""Current dialog flow (oldest first) for [mdlId=${cfg.getId}, usrId=$usrId]\n${tbl.toString()}""")
 
     /**
       * Clears dialog history for given user ID.

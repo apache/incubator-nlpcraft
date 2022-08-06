@@ -181,12 +181,12 @@ object NCIDLCompiler extends LazyLogging:
 
         override def exitFragId(ctx: IDP.FragIdContext): Unit =
             fragId = ctx.id().getText
-            if NCIDLGlobal.getFragment(mdlCfg.id, fragId).isDefined then SE(s"Duplicate fragment ID: $fragId")(ctx.id())
+            if NCIDLGlobal.getFragment(mdlCfg.getId, fragId).isDefined then SE(s"Duplicate fragment ID: $fragId")(ctx.id())
 
         override def exitFragRef(ctx: IDP.FragRefContext): Unit =
             val id = ctx.id().getText
 
-            NCIDLGlobal.getFragment(mdlCfg.id, id) match
+            NCIDLGlobal.getFragment(mdlCfg.getId, id) match
                 case Some(frag) =>
                     val meta = if fragMeta == null then Map.empty[String, Any] else fragMeta
                     for (fragTerm <- frag.terms)
@@ -256,7 +256,7 @@ object NCIDLCompiler extends LazyLogging:
             }
 
         override def exitFrag(ctx: IDP.FragContext): Unit =
-            NCIDLGlobal.addFragment(mdlCfg.id, NCIDLFragment(fragId, terms.toList))
+            NCIDLGlobal.addFragment(mdlCfg.getId, NCIDLFragment(fragId, terms.toList))
             terms.clear()
             fragId = null
 
@@ -393,8 +393,8 @@ object NCIDLCompiler extends LazyLogging:
             case s: String => s"$s."
 
         s"""IDL $kind error in '$srcName' at line $line - $aMsg
-          |-- Model ID: ${mdlCfg.id}
-          |-- Model origin: ${mdlCfg.origin}
+          |-- Model ID: ${mdlCfg.getId}
+          |-- Model origin: ${mdlCfg.getOrigin}
           |-- Intent origin: $origin
           |--
           |-- Line:  ${hold.origStr}
