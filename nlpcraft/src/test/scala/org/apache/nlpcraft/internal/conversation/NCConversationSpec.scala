@@ -18,10 +18,11 @@
 package org.apache.nlpcraft.internal.conversation
 
 import org.apache.nlpcraft.*
+import org.apache.nlpcraft.annotations.*
 import org.apache.nlpcraft.nlp.entity.parser.semantic.NCSemanticTestElement
-import org.junit.jupiter.api.Test
 import org.apache.nlpcraft.nlp.util.*
-import org.junit.jupiter.api.Assertions.{assertFalse, assertTrue}
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Test
 
 import scala.jdk.CollectionConverters.*
 import scala.util.Using
@@ -32,6 +33,8 @@ import scala.util.Using
 class NCConversationSpec:
     private val usrId = "userId"
 
+    import NCSemanticTestElement as TE
+
     /**
       *
       */
@@ -39,20 +42,19 @@ class NCConversationSpec:
     def test(): Unit =
         val mdl: NCModel =
             new NCTestModelAdapter:
-                import NCSemanticTestElement as TE
                 override val getPipeline: NCPipeline =
                     val pl = mkEnPipeline
-                    pl.getEntityParsers.add(NCTestUtils.mkEnSemanticParser(TE("e1"), TE("e2")))
+                    pl.entParsers += NCTestUtils.mkEnSemanticParser(TE("e1"), TE("e2"))
                     pl
 
                 @NCIntent("intent=i1 term(t1)~{# == 'e1'} term(t2)~{# == 'e2'}?")
-                def onMatch(@NCIntentTerm("t1") t1: NCEntity, @NCIntentTerm("t2") t2: Option[NCEntity]): NCResult = new NCResult()
+                def onMatch(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("t1") t1: NCEntity, @NCIntentTerm("t2") t2: Option[NCEntity]): NCResult = NCTestResult()
 
         Using.resource(new NCModelClient(mdl)) { cli =>
-            def execOk(txt: String): Unit = cli.ask(txt, null, usrId)
+            def execOk(txt: String): Unit = cli.ask(txt, usrId)
             def execReject(txt: String): Unit =
                 try
-                    cli.ask(txt, null, usrId)
+                    cli.ask(txt, usrId)
                     require(false)
                 catch
                     case e: NCRejection => // OK.
@@ -80,21 +82,20 @@ class NCConversationSpec:
     def testClearEmptyData(): Unit =
         val mdl: NCModel =
             new NCTestModelAdapter:
-                import NCSemanticTestElement as TE
                 override val getPipeline: NCPipeline =
                     val pl = mkEnPipeline
-                    pl.getEntityParsers.add(NCTestUtils.mkEnSemanticParser(TE("e1")))
+                    pl.entParsers += NCTestUtils.mkEnSemanticParser(TE("e1"))
                     pl
 
                 @NCIntent("intent=i1 term(t1)~{# == 'e1'}")
-                def onMatch(im: NCIntentMatch): NCResult =
-                    val conv = im.getContext.getConversation
+                def onMatch(ctx: NCContext, im: NCIntentMatch): NCResult =
+                    val conv = ctx.getConversation
                     conv.clearStm(_ => true)
                     conv.clearDialog(_ => true)
-                    new NCResult()
+                    NCTestResult()
 
         Using.resource(new NCModelClient(mdl)) { client =>
-            client.ask("e1", null, "userId")
+            client.ask("e1", "userId")
             client.clearDialog("userId1", _ => true)
             client.clearDialog("userId2")
             client.clearStm("userId3", _ => true)

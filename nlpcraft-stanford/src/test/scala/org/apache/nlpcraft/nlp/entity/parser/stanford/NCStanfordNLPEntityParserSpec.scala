@@ -17,27 +17,23 @@
 
 package org.apache.nlpcraft.nlp.entity.parser.stanford
 
-import org.apache.nlpcraft.nlp.util.NCTestUtils
-import org.apache.nlpcraft.nlp.util.NCTestRequest
+import org.apache.nlpcraft.nlp.util.{CFG, *}
 import org.apache.nlpcraft.nlp.util.stanford.*
 import org.junit.jupiter.api.Test
-
-import scala.jdk.CollectionConverters.*
-
 /**
   *
   */
 class NCStanfordNLPEntityParserSpec:
-    private val parser = NCStanfordNLPEntityParser(STANFORD, Set("city", "date", "number", "email").asJava)
+    private val parser = NCStanfordNLPEntityParser(STANFORD, Set("city", "date", "number", "email"))
 
     @Test
     def test(): Unit =
         val txt = "Los Angeles, 23 August, 23 and sergeykamov@apache.org, tomorrow"
 
         val toks = TOK_STANFORD_PARSER.tokenize(txt)
-        NCTestUtils.printTokens(toks.asScala.toSeq)
+        NCTestUtils.printTokens(toks)
 
         val res = parser.parse(NCTestRequest(txt), CFG, toks)
-        NCTestUtils.printEntities(txt, res.asScala.toSeq)
+        NCTestUtils.printEntities(txt, res)
 
-        require(res.size() == 5)
+        require(res.size == 5)

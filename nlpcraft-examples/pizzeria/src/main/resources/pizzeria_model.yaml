@@ -1,0 +1,73 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+elements:
+  - id: "ord:pizza"
+    description: "Kinds of pizza."
+    values:
+      "margherita": [ ]
+      "carbonara": [ ]
+      "marinara": [ ]
+
+  - id: "ord:pizza:size"
+    description: "Size of pizza."
+    values:
+      "small": [ "{small|smallest|min|minimal|tiny} {size|piece|_}" ]
+      "medium": [ "{medium|intermediate|normal|regular} {size|piece|_}" ]
+      "large": [ "{big|biggest|large|max|maximum|huge|enormous} {size|piece|_}" ]
+
+  - id: "ord:drink"
+    description: "Kinds of drinks."
+    values:
+      "tea": [ ]
+      "coffee": [ ]
+      "cola": [ "{pepsi|sprite|dr. pepper|dr pepper|fanta|soda|cola|coca cola|cocacola|coca-cola}" ]
+
+  - id: "ord:yes"
+    description: "Confirmation (yes)."
+    synonyms:
+      - "{yes|yeah|right|fine|nice|excellent|good|correct|sure|ok|exact|exactly|agree}"
+      - "{you are|_} {correct|right}"
+
+  - id: "ord:no"
+    description: "Confirmation (no)."
+    synonyms:
+      - "{no|nope|incorrect|wrong}"
+      - "{you are|_} {not|are not|aren't} {correct|right}"
+
+  - id: "ord:stop"
+    description: "Stop and cancel all."
+    synonyms:
+      - "{stop|cancel|clear|interrupt|quit|close} {it|all|everything|_}"
+
+  - id: "ord:status"
+    description: "Order status information."
+    synonyms:
+      - "{present|current|_} {order|_} {status|state|info|information}"
+      - "what {already|_} ordered"
+
+  - id: "ord:finish"
+    description: "The order is over."
+    synonyms:
+      - "{i|everything|order|_} {be|_} {finish|ready|done|over|confirmed}"
+
+  - id: "ord:menu"
+    description: "Order menu."
+    synonyms:
+      - "{menu|carte|card}"
+      - "{products|goods|food|item|_} list"
+      - "{hi|help|hallo}"

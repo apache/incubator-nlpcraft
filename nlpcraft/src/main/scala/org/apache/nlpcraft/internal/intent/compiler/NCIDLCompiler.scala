@@ -118,7 +118,7 @@ object NCIDLCompiler extends LazyLogging:
                     case b: java.lang.Boolean if b != null => b
                     case _ => SE(s"Expecting boolean value for intent option: $k")(ctx)
 
-            import NCIDLIntentOptions._
+            import NCIDLIntentOptions.*
 
             for ((k, v) <- json)
                 if k == JSON_ORDERED then opts.ordered = boolVal(k, v)
@@ -181,12 +181,12 @@ object NCIDLCompiler extends LazyLogging:
 
         override def exitFragId(ctx: IDP.FragIdContext): Unit =
             fragId = ctx.id().getText
-            if NCIDLGlobal.getFragment(mdlCfg.getId, fragId).isDefined then SE(s"Duplicate fragment ID: $fragId")(ctx.id())
+            if NCIDLGlobal.getFragment(mdlCfg.id, fragId).isDefined then SE(s"Duplicate fragment ID: $fragId")(ctx.id())
 
         override def exitFragRef(ctx: IDP.FragRefContext): Unit =
             val id = ctx.id().getText
 
-            NCIDLGlobal.getFragment(mdlCfg.getId, id) match
+            NCIDLGlobal.getFragment(mdlCfg.id, id) match
                 case Some(frag) =>
                     val meta = if fragMeta == null then Map.empty[String, Any] else fragMeta
                     for (fragTerm <- frag.terms)
@@ -199,7 +199,7 @@ object NCIDLCompiler extends LazyLogging:
         override def exitFlowDecl(ctx: IDP.FlowDeclContext): Unit =
             val regex = NCUtils.trimQuotes(ctx.qstring().getText)
 
-            if regex != null && regex.length > 2 then flowRegex = if (regex.nonEmpty) Option(regex) else None
+            if regex != null && regex.length > 2 then flowRegex = Option.when(regex.nonEmpty)(regex)
             if flowRegex.isDefined then // Pre-check.
                 try Pattern.compile(flowRegex.get)
                 catch case e: PatternSyntaxException => SE(s"${e.getDescription} in intent flow regex '${e.getPattern}' near index ${e.getIndex}.")(ctx.qstring())
@@ -256,7 +256,7 @@ object NCIDLCompiler extends LazyLogging:
             }
 
         override def exitFrag(ctx: IDP.FragContext): Unit =
-            NCIDLGlobal.addFragment(mdlCfg.getId, NCIDLFragment(fragId, terms.toList))
+            NCIDLGlobal.addFragment(mdlCfg.id, NCIDLFragment(fragId, terms.toList))
             terms.clear()
             fragId = null
 
@@ -393,8 +393,8 @@ object NCIDLCompiler extends LazyLogging:
             case s: String => s"$s."
 
         s"""IDL $kind error in '$srcName' at line $line - $aMsg
-          |-- Model ID: ${mdlCfg.getId}
-          |-- Model origin: ${mdlCfg.getOrigin}
+          |-- Model ID: ${mdlCfg.id}
+          |-- Model origin: ${mdlCfg.origin}
           |-- Intent origin: $origin
           |--
           |-- Line:  ${hold.origStr}

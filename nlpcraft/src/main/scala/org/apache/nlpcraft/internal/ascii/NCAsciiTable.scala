@@ -23,9 +23,7 @@ import org.apache.nlpcraft.internal.ascii.NCAsciiTable.*
 import org.apache.nlpcraft.internal.util.NCUtils
 
 import java.io.*
-import java.util.List as JList
 import scala.collection.mutable
-import scala.jdk.CollectionConverters.CollectionHasAsScala
 import scala.util.Using
 
 /**
@@ -206,9 +204,9 @@ class NCAsciiTable:
       *
       * @param cells Row cells.
       */
-    def addRow(cells: JList[Any]): NCAsciiTable =
+    def addRow(cells: List[Any]): NCAsciiTable =
         startRow()
-        cells.asScala.foreach(p => addRowCell(p))
+        cells.foreach(p => addRowCell(p))
         endRow()
         this
 
@@ -249,8 +247,8 @@ class NCAsciiTable:
       *
       * @param cells Header cells.
       */
-    def addHeaders(cells: JList[Any]): NCAsciiTable =
-        cells.asScala.foreach(addHeaderCell(_))
+    def addHeaders(cells: List[Any]): NCAsciiTable =
+        cells.foreach(addHeaderCell(_))
         this
 
     /**
@@ -259,8 +257,8 @@ class NCAsciiTable:
       * @param style Style top use.
       * @param cells Header cells.
       */
-    def addStyledHeaders(style: String, cells: JList[Any]): NCAsciiTable =
-        cells.asScala.foreach(addHeaderCell(style, _))
+    def addStyledHeaders(style: String, cells: List[Any]): NCAsciiTable =
+        cells.foreach(addHeaderCell(style, _))
         this
 
     // Handles the 'null' strings.

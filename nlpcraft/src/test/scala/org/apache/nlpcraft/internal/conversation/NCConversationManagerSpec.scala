@@ -27,8 +27,16 @@ import java.util.function.Predicate
   *
   */
 class NCConversationManagerSpec:
-    case class ModelConfigMock(timeout: Long = Long.MaxValue) extends NCModelConfig("testId", "test", "1.0", "Test description", "Test origin"):
-        override def getConversationTimeout: Long = timeout
+    class ModelConfigMock(timeout: Long = Long.MaxValue) extends NCModelConfig(
+        "testId",
+        "test",
+        "1.0",
+        Some("Test description"),
+        Some("Test origin"),
+        NCModelConfig.DFLT_CONV_TIMEOUT,
+        NCModelConfig.DFLT_CONV_DEPTH
+    ):
+        override val conversationTimeout: Long = timeout
 
     @Test
     def test(): Unit =
@@ -45,7 +53,7 @@ class NCConversationManagerSpec:
         checkSize(0)
 
         // Added. Still empty.
-        conv.addEntities(reqId, Seq(NCTestEntity("e1", reqId, tokens = t), NCTestEntity("e2", reqId, tokens = t)))
+        conv.addEntities(reqId, List(NCTestEntity("e1", reqId, tokens = t), NCTestEntity("e2", reqId, tokens = t)))
         checkSize(0)
 
         // Updated. Not empty.
@@ -74,7 +82,7 @@ class NCConversationManagerSpec:
         checkSize(0)
 
         // Added. Still empty.
-        conv.addEntities(reqId, Seq(NCTestEntity("e1", reqId, tokens = t), NCTestEntity("e2", reqId, tokens = t)))
+        conv.addEntities(reqId, List(NCTestEntity("e1", reqId, tokens = t), NCTestEntity("e2", reqId, tokens = t)))
         checkSize(0)
 
         // Updated. Not empty.

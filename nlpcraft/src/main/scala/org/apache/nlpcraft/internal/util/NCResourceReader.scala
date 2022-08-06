@@ -25,7 +25,7 @@ import org.apache.nlpcraft.internal.util.NCUtils.*
 
 import java.io.*
 import java.net.URL
-import java.nio.file.Files
+import java.nio.file.{Files, Path}
 import scala.collection.immutable.Map
 import scala.io.Source
 import scala.util.Using
@@ -57,7 +57,7 @@ object NCResourceReader extends LazyLogging:
       * @param url
       * @return
       */
-    private def readMd5(url: String): Map[String, String] =
+    private def readMd5(url: String): Map[Path, String] =
         try
             Using.resource(Source.fromURL(url)) { src =>
                 src.getLines().map(_.trim()).filter(s => s.nonEmpty && !s.startsWith("#")).map(p => {
@@ -66,7 +66,10 @@ object NCResourceReader extends LazyLogging:
                     if seq.length != 2 || seq.exists(_.isEmpty) then
                         throw new NCException(s"Unexpected '$url' file line format: '$p'")
 
-                    seq.head -> seq.last
+                    val file = seq.head
+                    val md5 = seq.last
+
+                    Path.of(file) -> md5
                 }).toList.toMap
             }
         catch case e: IOException => throw new NCException(s"Failed to read: '$url'", e)
@@ -85,12 +88,12 @@ object NCResourceReader extends LazyLogging:
       * @param md5
       * @return
       */
-    private def getMd5(f: File, md5: Map[String, String]): String =
-        val path = f.getAbsolutePath
+    private def getMd5(f: File, md5: Map[Path, String]): String =
+        val path = Path.of(f.getAbsolutePath)
         val nameLen = f.getName.length
 
         md5.
-            flatMap { (resPath, md5) => if path.endsWith(resPath) && resPath.length >= nameLen then Option(md5) else None }.
+            flatMap { (resPath, md5) => Option.when(path.endsWith(resPath) && resPath.toString.length >= nameLen)(md5) }.
             to(LazyList).
             headOption.
             getOrElse(throw new NCException(s"MD5 data not found for: '$path'"))
@@ -101,7 +104,7 @@ object NCResourceReader extends LazyLogging:
       * @param md5
       * @return
       */
-    private def isValid(f: File, md5: Map[String, String]): Boolean =
+    private def isValid(f: File, md5: Map[Path, String]): Boolean =
         val v1 = getMd5(f, md5)
         val v2 =
             try Using.resource(Files.newInputStream(f.toPath)) { in => DigestUtils.md5Hex(in) }
@@ -124,7 +127,7 @@ object NCResourceReader extends LazyLogging:
       * @param md5
       * @return
       */
-    private def download(path: String, outFile: String, md5: Map[String, String]): File =
+    private def download(path: String, outFile: String, md5: Map[Path, String]): File =
         mkDir(new File(outFile).getParent)
         val url = s"$BASE_URL/$path"
         try

@@ -38,14 +38,13 @@ class NCQuotesTokenEnricherSpec:
       */
     private def check(txt: String, quotes: Set[Integer]): Unit =
         val toks = EN_TOK_PARSER.tokenize(txt)
-        val toksSeq = toks.asScala.toSeq
 
         val req = NCTestRequest(txt)
         EN_TOK_LEMMA_POS_ENRICHER.enrich(req, CFG, toks)
         quoteEnricher.enrich(req, CFG, toks)
         
-        NCTestUtils.printTokens(toksSeq)
-        toksSeq.foreach (tok => require(!(tok.get[Boolean]("quoted") ^ quotes.contains(tok.getIndex))))
+        NCTestUtils.printTokens(toks)
+        toks.foreach (tok => require(!(tok.get[Boolean]("quoted") ^ quotes.contains(tok.getIndex))))
 
     @Test
     def test(): Unit =

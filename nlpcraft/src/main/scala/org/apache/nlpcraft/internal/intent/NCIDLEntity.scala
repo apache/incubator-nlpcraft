@@ -19,12 +19,10 @@ package org.apache.nlpcraft.internal.intent
 
 import org.apache.nlpcraft.*
 
-import scala.jdk.CollectionConverters.*
-
 /**
   *
   * @param impl
   * @param index
   */
 case class NCIDLEntity(impl: NCEntity, index: Int):
-    lazy val text: String = impl.mkText()
+    lazy val text: String = impl.mkText

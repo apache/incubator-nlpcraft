@@ -31,7 +31,7 @@ import scala.jdk.CollectionConverters.*
 class NCStanfordNLPTokenParserSpec:
     @Test
     def test(): Unit =
-        val toks = TOK_STANFORD_PARSER.tokenize("I had a lunch with brand names 'AAA'").asScala.toSeq
+        val toks = TOK_STANFORD_PARSER.tokenize("I had a lunch with brand names 'AAA'")
 
         require(toks.sizeIs > 1)
         NCTestUtils.printTokens(toks)

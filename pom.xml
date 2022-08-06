@@ -81,7 +81,7 @@
         <timestamp>${maven.build.timestamp}</timestamp>
 
         <!-- Versions. -->
-        <scala.plugin.ver>4.5.4</scala.plugin.ver>
+        <scala.plugin.ver>4.6.3</scala.plugin.ver>
         <log4j.ver>2.17.2</log4j.ver>
         <scala.config.ver>1.3.4</scala.config.ver>
         <scala.logging.ver>3.9.4</scala.logging.ver>
@@ -92,11 +92,12 @@
         <maven.enforcer.plugin.ver>1.4.1</maven.enforcer.plugin.ver>
         <maven.surefire.plugin.ver>2.22.1</maven.surefire.plugin.ver>
         <maven.shade.plugin.ver>3.2.1</maven.shade.plugin.ver>
+        <maven.project.info.reports.plugin.ver>2.2</maven.project.info.reports.plugin.ver>
         <maven.install.plugin.ver>2.5.2</maven.install.plugin.ver>
         <maven.source.plugin.ver>3.0.1</maven.source.plugin.ver>
         <maven.clean.plugin.ver>3.1.0</maven.clean.plugin.ver>
         <maven.javadoc.plugin.ver>3.2.0</maven.javadoc.plugin.ver>
-        <org.antlr4.ver>4.9.3</org.antlr4.ver>
+        <org.antlr4.ver>4.10.1</org.antlr4.ver>
         <jline.ver>3.21.0</jline.ver>
         <commons.io.ver>2.11.0</commons.io.ver>
         <commons.lang3.ver>3.12.0</commons.lang3.ver>
@@ -392,6 +393,7 @@
                 <module>nlpcraft-examples/lightswitch</module>
                 <module>nlpcraft-examples/lightswitch-ru</module>
                 <module>nlpcraft-examples/lightswitch-fr</module>
+                <module>nlpcraft-examples/pizzeria</module>
             </modules>
         </profile>
     </profiles>

@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.nlp.token.enricher.impl
 
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.nlp.token.enricher.impl.NCEnStopWordsTokenEnricherImpl
+import org.apache.nlpcraft.nlp.token.enricher.NCEnStopWordsTokenEnricher
 import org.apache.nlpcraft.nlp.util.*
 import org.junit.jupiter.api.*
 
@@ -37,13 +37,12 @@ class NCStopWordsImplSpec:
       * @param expected
       */
     private def test0(words: Seq[W], expected: Seq[String]): Unit =
-        val toksList = EN_TOK_PARSER.tokenize(words.map(_.text).mkString(" "))
-        require(toksList.size == words.size)
-        val toks = toksList.asScala
+        val toks = EN_TOK_PARSER.tokenize(words.map(_.text).mkString(" "))
+        require(toks.size == words.size)
 
         toks.zip(words).foreach { (t, w) => t.put("stopword", w.stop) }
 
-        val mix = NCEnStopWordsTokenEnricherImpl.tokenMixWithStopWords(toks)
+        val mix = NCEnStopWordsTokenEnricher.tokenMixWithStopWords(toks)
 
         val resSorted = mix.map(_.map(_.getText).mkString).sorted
         val expectedSorted = expected.sorted

@@ -99,7 +99,7 @@ private[functions] object NCIDLFunctions:
       * @param e
       * @return
       */
-    private def e2s(e: NCEntity): String = s"${e.getId} (${e.getTokens.asScala.map(_.getText).mkString(" ")})"
+    private def e2s(e: NCEntity): String = s"${e.getId} (${e.getTokens.map(_.getText).mkString(" ")})"
 
     /**
       *
@@ -182,9 +182,9 @@ private[functions] trait NCIDLFunctions:
                     val ent = f.entity.orNull
                     val idEnt =
                         if ent != null then
-                            require(ent.getTokens != null && !ent.getTokens.isEmpty)
+                            require(ent.getTokens != null && ent.getTokens.nonEmpty)
 
-                            NCIDLEntity(ent, ent.getTokens.asScala.minBy(_.getIndex).getIndex)
+                            NCIDLEntity(ent, ent.getTokens.minBy(_.getIndex).getIndex)
                         else
                             null
 

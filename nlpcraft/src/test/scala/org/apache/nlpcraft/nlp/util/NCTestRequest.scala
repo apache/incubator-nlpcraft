@@ -21,8 +21,6 @@ import org.apache.nlpcraft.*
 import org.apache.nlpcraft.nlp.util.NCTestPipeline.*
 
 import java.util
-import java.util.Map as JMap
-import scala.jdk.CollectionConverters.*
 
 /**
   * Request test implementation.
@@ -44,7 +42,7 @@ case class NCTestRequest(
     override def getRequestId: String = reqId
     override def getText: String = txt
     override def getReceiveTimestamp: Long = ts
-    override def getRequestData: JMap[String, AnyRef] = data.asJava
+    override def getRequestData: Map[String, AnyRef] = data
 
 /**
   * Java side helper.

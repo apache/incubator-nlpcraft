@@ -18,6 +18,7 @@
 package org.apache.nlpcraft.internal.impl.scan
 
 import org.apache.nlpcraft.*
+import org.apache.nlpcraft.annotations.*
 import org.apache.nlpcraft.internal.impl.NCModelScanner
 import org.apache.nlpcraft.nlp.util.*
 import org.junit.jupiter.api.Test
@@ -47,7 +48,7 @@ class NCModelIntentsInvalidIntentsSpec:
             new NCTestModelAdapter():
                 @NCIntent("intent=validList1 term(list)~{# == 'x'}[0,10]")
                 @NCIntent("intent=validList2 term(list)~{# == 'x'}[0,10]")
-                def x(@NCIntentTerm("list") list: List[NCEntity]): NCResult = null
+                def x(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("list") list: List[NCEntity]): NCResult = null
         )
 
     /**
@@ -58,7 +59,7 @@ class NCModelIntentsInvalidIntentsSpec:
         testError(
             new NCTestModelAdapter():
                 @NCIntentRef("missed")
-                def x(@NCIntentTerm("list") list: List[NCEntity]): NCResult = null
+                def x(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("list") list: List[NCEntity]): NCResult = null
         )
 
     /**
@@ -69,7 +70,7 @@ class NCModelIntentsInvalidIntentsSpec:
         testError(
             new NCTestModelAdapter():
                 @NCIntentSample(Array("sample"))
-                def x(@NCIntentTerm("list") list: List[NCEntity]): NCResult = null
+                def x(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("list") list: List[NCEntity]): NCResult = null
         )
 
     /**
@@ -96,7 +97,7 @@ class NCModelIntentsInvalidIntentsSpec:
         testError(
             new NCTestModelAdapter():
                 @NCIntent("intent=validList1 term(list)~{# == 'x'}[0,10]")
-                def x(@NCIntentTerm("list") e: NCEntity): NCResult = null
+                def x(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("list") e: NCEntity): NCResult = null
         )
 
     /**
@@ -108,7 +109,7 @@ class NCModelIntentsInvalidIntentsSpec:
             new NCTestModelAdapter():
                 @NCIntent("intent=validList1 term(list)~{# == 'x'}[0,10]")
                 @NCIntentSample(Array("x", "x"))
-                def x(@NCIntentTerm("list") list: List[NCEntity]): NCResult = null
+                def x(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("list") list: List[NCEntity]): NCResult = null
         )
 
     /**
@@ -119,5 +120,5 @@ class NCModelIntentsInvalidIntentsSpec:
         NCModelScanner.scan(
             new NCTestModelAdapter():
                 @NCIntent("intent=validList1 term(list)~{# == 'x'}[0,10]")
-                def x(@NCIntentTerm("list") list: List[NCEntity]): NCResult = null
+                def x(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("list") list: List[NCEntity]): NCResult = null
         )

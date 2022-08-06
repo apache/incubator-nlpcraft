@@ -33,15 +33,15 @@ class NCDictionaryTokenEnricherSpec:
     @Test
     def test(): Unit =
         val txt = "milk XYZ"
-        val toks = EN_TOK_PARSER.tokenize(txt).asScala.toSeq
+        val toks = EN_TOK_PARSER.tokenize(txt)
 
         require(toks.head.getOpt[Boolean]("dict:en").isEmpty)
         require(toks.last.getOpt[Boolean]("dict:en").isEmpty)
 
         val req = NCTestRequest(txt)
 
-        EN_TOK_LEMMA_POS_ENRICHER.enrich(req, CFG, toks.asJava)
-        dictEnricher.enrich(req, CFG, toks.asJava)
+        EN_TOK_LEMMA_POS_ENRICHER.enrich(req, CFG, toks)
+        dictEnricher.enrich(req, CFG, toks)
         NCTestUtils.printTokens(toks)
 
         require(toks.head.get[Boolean]("dict"))

@@ -18,11 +18,14 @@
 package org.apache.nlpcraft.nlp.util
 
 import org.apache.nlpcraft.NCModelConfig
+import org.apache.nlpcraft.internal.util.NCResourceReader as R
+import org.apache.nlpcraft.nlp.token.enricher.*
 import org.apache.nlpcraft.nlp.token.parser.NCOpenNLPTokenParser
 import org.apache.nlpcraft.nlp.util.*
 
-final val CFG = NCTestConfigJava.CFG
-final val EN_TOK_PARSER = NCTestConfigJava.EN_TOK_PARSER
-final val EN_TOK_STOP_ENRICHER = NCTestConfigJava.EN_TOK_STOP_ENRICHER
-final val EN_TOK_LEMMA_POS_ENRICHER = NCTestConfigJava.EN_TOK_LEMMA_POS_ENRICHER
-final def mkEnPipeline = NCTestConfigJava.mkEnPipeline()
+final val CFG = new NCModelConfig("testId", "test", "1.0", description = Some("Test description"), origin = Some("Test origin"))
+final val EN_TOK_PARSER = new NCOpenNLPTokenParser(R.getPath("opennlp/en-token.bin"))
+final val EN_TOK_STOP_ENRICHER = new NCEnStopWordsTokenEnricher
+final val EN_TOK_LEMMA_POS_ENRICHER =
+    new NCOpenNLPLemmaPosTokenEnricher(R.getPath("opennlp/en-pos-maxent.bin"), R.getPath("opennlp/en-lemmatizer.dict"))
+final def mkEnPipeline = NCTestPipeline(EN_TOK_PARSER)

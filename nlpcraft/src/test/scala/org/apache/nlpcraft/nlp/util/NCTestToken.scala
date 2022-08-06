@@ -18,11 +18,8 @@
 package org.apache.nlpcraft.nlp.util
 
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.nlp.util.NCTestPipeline.*
 
 import java.util
-import java.util.Map as JMap
-import scala.jdk.CollectionConverters.*
 
 /**
   * Request test implementation.
@@ -42,9 +39,9 @@ case class NCTestToken(
     end: Int = -1,
     lemma: String = null,
     pos: String = null,
-    data: JMap[String, AnyRef] = null
+    data: Map[String, AnyRef] = Map.empty
 ) extends NCPropertyMapAdapter with NCToken:
-    if data != null then data.asScala.foreach { (k, v) => put(k, v)}
+    data.foreach { (k, v) => put(k, v)}
 
     override def getText: String = txt
     override def getIndex: Int = idx

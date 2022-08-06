@@ -17,17 +17,15 @@
 
 package org.apache.nlpcraft.internal.makro
 
-import org.apache.nlpcraft.*
 import com.typesafe.scalalogging.LazyLogging
-import org.antlr.v4.runtime.tree.ParseTreeWalker
 import org.antlr.v4.runtime.*
+import org.antlr.v4.runtime.tree.ParseTreeWalker
+import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.*
 import org.apache.nlpcraft.internal.antlr4.*
-import NCMacroCompiler.FiniteStateMachine
+import org.apache.nlpcraft.internal.makro.NCMacroCompiler.FiniteStateMachine
 import org.apache.nlpcraft.internal.makro.antlr4.*
 import org.apache.nlpcraft.internal.util.*
-import org.apache.nlpcraft.NCException
-import org.apache.nlpcraft.internal.makro.antlr4.NCMacroDslLexer
 
 import scala.collection.mutable
 

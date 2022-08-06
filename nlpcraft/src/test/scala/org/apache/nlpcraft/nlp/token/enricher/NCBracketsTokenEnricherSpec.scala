@@ -38,11 +38,10 @@ class NCBracketsTokenEnricherSpec:
     private def check(txt: String, brackets: Set[Integer]): Unit =
         val toks = EN_TOK_PARSER.tokenize(txt)
         bracketsEnricher.enrich(NCTestRequest(txt), CFG, toks)
-        val seq = toks.asScala.toSeq
-        
-        NCTestUtils.printTokens(seq)
-        
-        seq.foreach (tok => require(!(tok.get[Boolean]("brackets") ^ brackets.contains(tok.getIndex))))
+
+        NCTestUtils.printTokens(toks)
+
+        toks.foreach (tok => require(!(tok.get[Boolean]("brackets") ^ brackets.contains(tok.getIndex))))
 
     @Test
     def test(): Unit =
