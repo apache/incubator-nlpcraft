@@ -45,7 +45,7 @@ val jmhVer = "1.35"
 val stanfordCorenlpVer  = "4.4.0"
 
 // Examples libraries.
-val languagetoolVer = "5.6"
+val languagetoolVer = "5.8"
 val luceneAnalyzersCommonVer = "8.11.1"
 
 ThisBuild / scalaVersion := s"$scalaMajVer.$scalaMinVer"
