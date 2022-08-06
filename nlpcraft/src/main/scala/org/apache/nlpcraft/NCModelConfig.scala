@@ -41,26 +41,19 @@ object NCModelConfig:
             override val getDescription: Option[String] = Option(desc)
             override val getOrigin: Option[String] = Option(orig)
 
-    def apply(id: String, name: String, ver: String, desc: String, orig: String, conversationTimeout: Long, conversationDepth: Int): NCModelConfig = new NCModelConfig() :
+    def apply(id: String, name: String, ver: String, desc: String, orig: String, convTimeout: Long, convDepth: Int): NCModelConfig = new NCModelConfig() :
         override val getId: String = id
         override val getName: String = name
         override val getVersion: String = ver
         override val getDescription: Option[String] = Option(desc)
         override val getOrigin: Option[String] = Option(orig)
-        override val getConversationTimeout: Long = conversationTimeout
-        override val getConversationDepth: Int = conversationDepth
+        override val getConversationTimeout: Long = convTimeout
+        override val getConversationDepth: Int = convDepth
 
 import org.apache.nlpcraft.NCModelConfig.*
 
 /**
   *
-  * @param id
-  * @param name
-  * @param version
-  * @param description
-  * @param origin
-  * @param conversationTimeout
-  * @param conversationDepth
   */
 trait NCModelConfig extends NCPropertyMapAdapter:
     def getId: String

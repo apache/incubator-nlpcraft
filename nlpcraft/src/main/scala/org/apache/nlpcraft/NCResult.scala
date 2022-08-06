@@ -27,7 +27,6 @@ object NCResult:
             def getType: NCResultType = resultType
             def getIntentId: Option[String] = Option(intentId)
 
-
     def apply(body: Any, resultType: NCResultType): NCResult =
         new NCResult():
             def getBody: Any = body
