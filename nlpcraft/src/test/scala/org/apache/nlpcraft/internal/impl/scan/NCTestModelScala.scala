@@ -26,7 +26,6 @@ import org.apache.nlpcraft.nlp.util.*
 object NCTestModelScala:
     object NCTestModelScalaObj extends NCTestModelAdapter :
         @NCIntent("intent=locInt term(single)~{# == 'id1'} term(list)~{# == 'id2'}[0,10] term(opt)~{# == 'id3'}?")
-        @NCIntentSample(Array("What are the least performing categories for the last quarter?"))
         def intent(
             ctx: NCContext,
             im: NCIntentMatch,
@@ -36,7 +35,6 @@ object NCTestModelScala:
         ): NCResult = NCTestResult()
 
         @NCIntent("import('scan/idl.idl')")
-        @NCIntentSampleRef("scan/samples.txt")
         def intentImport(
             ctx: NCContext,
             im: NCIntentMatch,
@@ -48,7 +46,6 @@ object NCTestModelScala:
     @NCIntent("import('scan/idl.idl')")
     class NCTestModelScalaClass extends NCTestModelAdapter :
         @NCIntent("intent=locInt term(single)~{# == 'id1'} term(list)~{# == 'id2'}[0,10] term(opt)~{# == 'id3'}?")
-        @NCIntentSample(Array("What are the least performing categories for the last quarter?"))
         def intent(
             ctx: NCContext,
             im: NCIntentMatch,
@@ -58,7 +55,6 @@ object NCTestModelScala:
         ) = NCTestResult()
 
         @NCIntentRef("impIntId")
-        @NCIntentSampleRef("scan/samples.txt")
         def intentImport(
             ctx: NCContext,
             im: NCIntentMatch,
@@ -73,7 +69,6 @@ object NCTestModelScala:
       */
     def mkModel: NCModel = new NCTestModelAdapter() :
         @NCIntent("intent=locInt term(single)~{# == 'id1'} term(list)~{# == 'id2'}[0,10] term(opt)~{# == 'id3'}?")
-        @NCIntentSample(Array("What are the least performing categories for the last quarter?"))
         def intent(
             ctx: NCContext,
             im: NCIntentMatch,
@@ -83,7 +78,6 @@ object NCTestModelScala:
         ): NCResult = NCTestResult()
 
         @NCIntent("import('scan/idl.idl')")
-        @NCIntentSampleRef("scan/samples.txt")
         def intentImport(
             ctx: NCContext,
             im: NCIntentMatch,

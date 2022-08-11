@@ -111,7 +111,7 @@ class NCModelCallbacksSpec:
         set(states*)
 
         try
-            client.ask("x", null, "userId")
+            client.ask("x", "userId")
 
             require(false)
         catch

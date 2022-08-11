@@ -83,12 +83,6 @@ class TimeModel extends NCModelAdapter(
       * @param cityEnt Token for 'geo' term.
       * @return Query result. */
     @NCIntentRef("intent2")
-    @NCIntentSample(Array(
-        "What time is it now in New York City?",
-        "What's the current time in Moscow?",
-        "Show me time of the day in London.",
-        "Can you please give me the Tokyo's current date and time."
-    ))
     private def onRemoteMatch(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("city") cityEnt: NCEntity): NCResult =
         val cityName: String = cityEnt.mkText
 
@@ -106,7 +100,6 @@ class TimeModel extends NCModelAdapter(
       * @param ctx Intent solver context.
       * @return Query result. */
     @NCIntentRef("intent1")
-    @NCIntentSample(Array("What's the local time?"))
     private def onLocalMatch(ctx: NCContext, im: NCIntentMatch): NCResult =  // NOTE:
         // We need to have two intents vs. one intent with an optional GEO. The reason is that
         // first intent isn't using the conversation to make sure we can always ask

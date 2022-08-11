@@ -78,7 +78,7 @@ class NCModelClient(mdl: NCModel) extends LazyLogging, AutoCloseable:
       * @param typ
       * @return
       */
-    private def ask0(txt: String, data: Map[String, Any], usrId: String, typ: NCIntentSolveType): Either[NCResult, NCCallbackData] =
+    private def ask0(txt: String, data: Map[String, Any], usrId: String, typ: NCIntentSolveType): Either[NCResult, NCFiredIntent] =
         val plData = plMgr.prepare(txt, data, usrId)
 
         val userId = plData.request.getUserId
@@ -112,13 +112,11 @@ class NCModelClient(mdl: NCModel) extends LazyLogging, AutoCloseable:
       * @param usrId
       * @return
       */
-    def ask(txt: String, data: Map[String, AnyRef], usrId: String): NCResult =
+    def ask(txt: String, usrId: String, data: Map[String, AnyRef] = Map.empty): NCResult =
         require(txt != null, "Input text cannot be null.")
         require(data != null, "Data cannot be null.")
         require(usrId != null, "User id cannot be null.")
         ask0(txt, data, usrId, NCIntentSolveType.REGULAR).swap.toOption.get
-
-    def ask(txt: String, usrId: String): NCResult = ask(txt, Map.empty, usrId)
 
     /**
       *
@@ -158,55 +156,7 @@ class NCModelClient(mdl: NCModel) extends LazyLogging, AutoCloseable:
     /**
       *
       */
-    def validateSamples(): Unit =
-        case class Result(intentId: String, text: String, error: Option[String], time: Long)
-
-        val userId = UUID.randomUUID().toString
-        val res = scala.collection.mutable.ArrayBuffer.empty[Result]
-
-        def now: Long = System.currentTimeMillis()
-
-        for (i <- intents; samples <- i.samples)
-            for (sample <- samples)
-                val start = now
-
-                val err: Option[String] =
-                    try
-                        val r = ask(sample, Map.empty, userId)
-
-                        Option.when(r.getIntentId.isEmpty || r.getIntentId.get != i.intent.id)(s"Unexpected intent ID: '${r.getIntentId.getOrElse("(not set)")}'")
-                    catch case e: Throwable =>
-                        logger.warn("Unexpected error.", e) 
-                        Option(e.getLocalizedMessage)
-
-                res += Result(i.intent.id, sample, err, now - start)
-
-            clearDialog(userId)
-            clearStm(userId)
-
-        val tbl = NCAsciiTable()
-        tbl #= ("Intent ID", "+/-", "Text", "Error", "ms.")
-
-        for (res <- res)
-            tbl += (
-                res.intentId,
-                if res.error.isEmpty then "OK" else "FAIL",
-                res.text,
-                res.error.getOrElse(""),
-                res.time
-            )
-
-        val passCnt = res.count(_.error.isEmpty)
-        val failCnt = res.count(_.error.isDefined)
-
-        tbl.info(logger, Option(s"Model auto-validation results: OK $passCnt, FAIL $failCnt:"))
-
-        if failCnt > 0 then require(false, "Some tests failed.")
-
-    /**
-      *
-      */
-    def close(): Unit =
+    override def close(): Unit =
         plMgr.close()
         dlgMgr.close()
         convMgr.close()
@@ -220,11 +170,9 @@ class NCModelClient(mdl: NCModel) extends LazyLogging, AutoCloseable:
       * @param saveHist
       * @return
       */
-    def debugAsk(txt: String, data: Map[String, AnyRef], usrId: String, saveHist: Boolean): NCCallbackData =
+    def debugAsk(txt: String, usrId: String, saveHist: Boolean, data: Map[String, AnyRef] = Map.empty): NCFiredIntent =
         require(txt != null, "Input text cannot be null.")
         require(data != null, "Data cannot be null.")
         require(usrId != null, "User id cannot be null.")
         import NCIntentSolveType.*
         ask0(txt, data, usrId, if saveHist then SEARCH else SEARCH_NO_HISTORY).toOption.get
-
-    def debugAsk(txt: String, usrId: String, saveHist: Boolean): NCCallbackData = debugAsk(txt, Map.empty, usrId, saveHist)

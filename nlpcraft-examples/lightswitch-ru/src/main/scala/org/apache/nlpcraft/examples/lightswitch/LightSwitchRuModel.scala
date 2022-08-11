@@ -51,21 +51,6 @@ class LightSwitchRuModel extends NCModelAdapter(
       * @return Query result to be sent to the REST caller.
       */
     @NCIntent("intent=ls term(act)={has(ent_groups, 'act')} term(loc)={# == 'ls:loc'}*")
-    @NCIntentSample(Array(
-        "Выключи свет по всем доме",
-        "Выруби электричество!",
-        "Включи свет в детской",
-        "Включай повсюду освещение",
-        "Включайте лампы в детской комнате",
-        "Свет на кухне, пожалуйста, приглуши",
-        "Нельзя ли повсюду выключить свет?",
-        "Пожалуйста без света",
-        "Отключи электричество в ванной",
-        "Выключи, пожалуйста, тут всюду свет",
-        "Выключай все!",
-        "Свет пожалуйста везде включи",
-        "Зажги лампу на кухне"
-    ))
     def onMatch(
         ctx: NCContext, 
         im: NCIntentMatch,

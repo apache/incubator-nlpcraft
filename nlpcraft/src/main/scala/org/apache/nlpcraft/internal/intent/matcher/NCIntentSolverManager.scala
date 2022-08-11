@@ -89,7 +89,7 @@ object NCIntentSolverManager:
         getIntentId: String,
         getCallbackArguments: List[List[NCEntity]],
         getCallback: List[List[NCEntity]] => NCResult
-    ) extends NCCallbackData
+    ) extends NCFiredIntent
 
     /**
       *
@@ -183,7 +183,7 @@ object NCIntentSolverManager:
       */
     private case class IntentEntity(var used: Boolean, var conv: Boolean, entity: NCEntity)
 
-    type ResultData = Either[NCResult, NCCallbackData]
+    type ResultData = Either[NCResult, NCFiredIntent]
 
     /**
       *

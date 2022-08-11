@@ -20,7 +20,9 @@ package org.apache.nlpcraft
 /**
   * 
   */
-trait NCCallbackData:
+trait NCFiredIntent:
+    type NCArguments = List[List[NCEntity]]
+
     /**
       * 
       * @return
@@ -31,10 +33,10 @@ trait NCCallbackData:
       * 
       * @return
       */
-    def getCallbackArguments: List[List[NCEntity]]
+    def getCallbackArguments: NCArguments
 
     /**
       * 
       * @return
       */
-    def getCallback: List[List[NCEntity]] => NCResult
+    def getCallback: NCArguments => NCResult

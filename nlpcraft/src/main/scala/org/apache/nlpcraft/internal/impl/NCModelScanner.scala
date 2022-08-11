@@ -42,9 +42,8 @@ case class NCCallbackInput(ctx: NCContext, im: NCIntentMatch)
   *
   * @param intent
   * @param function
-  * @param samples
   */
-case class NCModelIntent(intent: NCIDLIntent, function: NCCallbackInput => NCResult, samples: Seq[Seq[String]])
+case class NCModelIntent(intent: NCIDLIntent, function: NCCallbackInput => NCResult)
 
 object NCModelScanner extends LazyLogging:
     private final val CLS_INTENT = classOf[NCIntent]
@@ -52,8 +51,6 @@ object NCModelScanner extends LazyLogging:
     private final val CLS_QRY_RES = classOf[NCResult]
     private final val CLS_CTX = classOf[NCContext]
     private final val CLS_INTENT_MATCH = classOf[NCIntentMatch]
-    private final val CLS_SAMPLE = classOf[NCIntentSample]
-    private final val CLS_SAMPLE_REF = classOf[NCIntentSampleRef]
     private final val CLS_INTENT_OBJ = classOf[NCIntentObject]
 
     private final val CLS_SCALA_SEQ = classOf[Seq[_]]
@@ -65,8 +62,6 @@ object NCModelScanner extends LazyLogging:
     private lazy val I = "@NCIntent"
     private lazy val IT = "@NCIntentTerm"
     private lazy val IR = "@NCIntentRef"
-    private lazy val S = "@NCIntentSample"
-    private lazy val SR = "@NCIntentSampleRef"
 
     private final val COMP_CLS: Set[Class[_]] = Set(
         CLS_SCALA_SEQ,
@@ -88,13 +83,6 @@ object NCModelScanner extends LazyLogging:
     private object IntentHolder:
         def apply(cfg: NCModelConfig, intent: NCIDLIntent, obj: AnyRef, mtd: Method): IntentHolder =
             new IntentHolder(intent, prepareCallback(cfg, mtd, obj, intent), mtd)
-
-    /**
-      *
-      * @param wct
-      * @return
-      */
-    private def wc2Str(wct: WildcardType): String = if wct == null then "null" else s"'${wct.getTypeName}'"
 
     /**
       *
@@ -263,50 +251,6 @@ object NCModelScanner extends LazyLogging:
       *
       * @param cfg
       * @param mtd
-      * @return
-      */
-    private def scanSamples(cfg: NCModelConfig, mtd: Method): Map[String, Seq[Seq[String]]] =
-        val smpAnns = mtd.getAnnotationsByType(CLS_SAMPLE)
-        val smpAnnsRef = mtd.getAnnotationsByType(CLS_SAMPLE_REF)
-        lazy val mtdStr = method2Str(mtd)
-        lazy val intAnns = mtd.getAnnotationsByType(CLS_INTENT)
-        lazy val refAnns = mtd.getAnnotationsByType(CLS_INTENT_REF)
-        lazy val samples = mutable.HashMap.empty[String, Seq[Seq[String]]]
-
-        if smpAnns.nonEmpty || smpAnnsRef.nonEmpty then
-            if intAnns.isEmpty && refAnns.isEmpty then
-                E(s"$S or $SR annotations without corresponding $I or $IR annotations: $mtdStr")
-            else
-                def read[T](annArr: scala.Array[T], annName: String, getSamples: T => Seq[String], getSource: Option[T => String]): Seq[Seq[String]] =
-                    for (ann <- annArr.toSeq) yield
-                        val samples = getSamples(ann).map(_.strip).filter(s => s.nonEmpty && s.head != '#')
-                        if samples.isEmpty then
-                            getSource match
-                                case None => logger.warn(s"$annName annotation has no samples: $mtdStr")
-                                case Some(f) => logger.warn(s"$annName annotation references '${f(ann)}' file that has no samples: $mtdStr")
-                            Seq.empty
-                        else
-                            samples.filter(_.nonEmpty)
-
-                val seqSeq =
-                    read[NCIntentSample](smpAnns, S, _.value.toSeq, None) ++
-                    read[NCIntentSampleRef](smpAnnsRef, SR, a => NCUtils.readResource(a.value), Option(_.value))
-
-                if NCUtils.containsDups(seqSeq.flatMap(_.toSeq).toList) then
-                    logger.warn(s"$S and $SR annotations have duplicates: $mtdStr")
-
-                val distinct = seqSeq.map(_.distinct).distinct
-                for (ann <- intAnns; intent <- NCIDLCompiler.compile(ann.value, cfg, mtdStr)) samples += intent.id -> distinct
-                for (ann <- refAnns) samples += ann.value -> distinct
-        else if intAnns.nonEmpty || refAnns.nonEmpty then
-            logger.warn(s"$S or $SR annotations are missing for: $mtdStr")
-
-        samples.toMap
-
-    /**
-      *
-      * @param cfg
-      * @param mtd
       * @param argClasses
       * @param paramGenTypes
       */
@@ -421,8 +365,6 @@ object NCModelScanner extends LazyLogging:
         // Gets terms IDs.
         val termIds = tokParamAnns.zipWithIndex.map {
             case (annArr, idx) =>
-                def mkArg(): String = arg2Str(method, idx)
-
                 val termAnns = annArr.filter(_.isInstanceOf[NCIntentTerm])
 
                 // Each method arguments (second and later) must have one 'NCIntentTerm' annotation.
@@ -476,7 +418,6 @@ object NCModelScanner extends LazyLogging:
         val intentDecls = mutable.HashMap.empty[String, NCIDLIntent]
         val objs = mutable.Buffer.empty[AnyRef]
         val processed = mutable.HashSet.empty[Class[_]]
-        val samples = mutable.HashMap.empty[Method, Map[String, Seq[Seq[String]]]]
 
         def addDecl(intent: NCIDLIntent): Unit =
             intentDecls.get(intent.id) match
@@ -498,14 +439,11 @@ object NCModelScanner extends LazyLogging:
 
         // First phase scan.
         // For given object finds references via fields (NCIntentObject). Scans also each reference recursively and collects them.
-        // For all methods of processed object collects samples (NCIntentSample, NCIntentSampleRef) and intents (NCIntent)
+        // For all methods of processed object collects  intents (NCIntent)
         def scan(obj: AnyRef): Unit =
             objs += obj
             processClassAnnotations(obj.getClass)
             val methods = getAllMethods(obj)
-
-            // Collects samples for each method.
-            for (mtd <- methods) samples += mtd -> scanSamples(cfg, mtd)
 
             // // Collects intents for each method.
             for (
@@ -550,4 +488,4 @@ object NCModelScanner extends LazyLogging:
         else
             logger.warn(s"Model has no intent: ${cfg.getId}")
 
-        intents.map(i => NCModelIntent(i.intent, i.function, samples.getOrElse(i.method, Map.empty).getOrElse(i.intent.id, Seq.empty))).toSeq
+        intents.map(i => NCModelIntent(i.intent, i.function)).toSeq

@@ -52,8 +52,6 @@ class NCModelClientSpec:
             println(s"Intent: ${res.getIntentId}")
             println(s"Body: ${res.getBody}")
 
-            client.validateSamples()
-
             val winner = client.debugAsk("Lights on at second floor kitchen", "userId", true)
             println(s"Winner intent: ${winner.getIntentId}")
             println("Entities: \n" + winner.getCallbackArguments.map(p => p.map(s).mkString(", ")).mkString("\n"))
@@ -66,7 +64,6 @@ class NCModelClientSpec:
     def test(): Unit =
         test0(
             new NCTestModelAdapter():
-                @NCIntentSample(Array("Lights on at second floor kitchen"))
                 @NCIntent("intent=ls term(act)={# == 'ls:on'} term(loc)={# == 'ls:loc'}*")
                 def onMatch(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("act") act: NCEntity, @NCIntentTerm("loc") locs: List[NCEntity]): NCResult = NCResult("test", NCResultType.ASK_RESULT)
         )
@@ -78,7 +75,6 @@ class NCModelClientSpec:
         test0(
             new NCTestModelAdapter():
                 @NCIntent("intent=ls term(act)={has(ent_groups, 'act')} term(loc)={# == 'ls:loc'}*")
-                @NCIntentSample(Array("Lights on at second floor kitchen"))
                 def onMatch(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("act") act: NCEntity, @NCIntentTerm("loc") locs: List[NCEntity]): NCResult = NCResult("test", NCResultType.ASK_RESULT)
         )
 
