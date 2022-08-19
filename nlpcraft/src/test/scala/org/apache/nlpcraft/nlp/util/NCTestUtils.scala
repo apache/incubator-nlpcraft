@@ -21,8 +21,9 @@ import opennlp.tools.stemmer.PorterStemmer
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.ascii.NCAsciiTable
 import org.apache.nlpcraft.internal.util.NCResourceReader
-import org.apache.nlpcraft.nlp.entity.parser.semantic.*
-import org.apache.nlpcraft.nlp.token.parser.NCOpenNLPTokenParser
+import org.apache.nlpcraft.nlp.parsers.*
+import org.apache.nlpcraft.nlp.parsers
+import org.apache.nlpcraft.nlp.parsers.{NCOpenNLPTokenParser, NCSemanticElement, NCSemanticEntityParser, NCSemanticStemmer}
 
 import java.util
 import scala.jdk.CollectionConverters.*
@@ -138,7 +139,7 @@ object NCTestUtils:
       * @return
       */
     def mkEnSemanticParser(elms: List[NCSemanticElement], macros: Map[String, String] = Map.empty): NCSemanticEntityParser =
-        NCSemanticEntityParser(mkSemanticStemmer, EN_TOK_PARSER, macros, elms)
+        parsers.NCSemanticEntityParser(mkSemanticStemmer, EN_TOK_PARSER, macros, elms)
 
     /**
       *
@@ -146,7 +147,7 @@ object NCTestUtils:
       * @return
       */
     def mkEnSemanticParser(elms: NCSemanticElement*): NCSemanticEntityParser =
-        NCSemanticEntityParser(mkSemanticStemmer, EN_TOK_PARSER, elms.toList)
+        parsers.NCSemanticEntityParser(mkSemanticStemmer, EN_TOK_PARSER, elms.toList)
 
     /**
       *
@@ -154,4 +155,4 @@ object NCTestUtils:
       * @return
       */
     def mkEnSemanticParser(mdlSrc: String): NCSemanticEntityParser =
-        NCSemanticEntityParser(mkSemanticStemmer, EN_TOK_PARSER, mdlSrc)
+        parsers.NCSemanticEntityParser(mkSemanticStemmer, EN_TOK_PARSER, mdlSrc)

@@ -18,8 +18,8 @@
 package org.apache.nlpcraft.internal.conversation
 
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.nlp.util.*
 import org.junit.jupiter.api.Test
+import org.apache.nlpcraft.nlp.util.*
 
 import java.util.function.Predicate
 

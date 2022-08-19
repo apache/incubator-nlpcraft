@@ -18,8 +18,9 @@
 package org.apache.nlpcraft.internal.impl.scan
 
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.annotations.*
-import org.apache.nlpcraft.nlp.util.*
+import annotations.*
+import nlp.util.*
+
 /**
   *
   */

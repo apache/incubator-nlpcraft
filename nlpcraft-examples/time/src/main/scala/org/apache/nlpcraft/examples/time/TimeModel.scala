@@ -24,7 +24,7 @@ import org.apache.nlpcraft.annotations.*
 import org.apache.nlpcraft.examples.time.utils.cities.*
 import org.apache.nlpcraft.examples.time.utils.keycdn.GeoManager
 import org.apache.nlpcraft.internal.util.NCResourceReader
-import org.apache.nlpcraft.nlp.entity.parser.NCOpenNLPEntityParser
+import org.apache.nlpcraft.nlp.parsers.NCOpenNLPEntityParser
 
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle.MEDIUM

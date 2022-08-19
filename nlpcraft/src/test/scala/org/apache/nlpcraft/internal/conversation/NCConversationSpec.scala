@@ -18,12 +18,12 @@
 package org.apache.nlpcraft.internal.conversation
 
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.annotations.*
-import org.apache.nlpcraft.nlp.entity.parser.semantic.NCSemanticTestElement
-import org.apache.nlpcraft.nlp.util.*
+import annotations.*
+import nlp.util.*
+import nlp.parsers.*
+
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
-
 import scala.jdk.CollectionConverters.*
 import scala.util.Using
 

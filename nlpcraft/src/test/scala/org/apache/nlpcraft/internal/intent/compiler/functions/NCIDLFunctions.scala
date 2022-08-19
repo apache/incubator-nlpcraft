@@ -21,7 +21,6 @@ import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.intent.*
 import org.apache.nlpcraft.internal.intent.compiler.*
 import org.apache.nlpcraft.internal.intent.compiler.functions.*
-import org.apache.nlpcraft.nlp.util.*
 import org.junit.jupiter.api.BeforeEach
 
 import java.util

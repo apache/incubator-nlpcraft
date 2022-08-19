@@ -20,9 +20,7 @@ package org.apache.nlpcraft.nlp
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.annotations.*
 import org.apache.nlpcraft.internal.util.NCResourceReader
-import org.apache.nlpcraft.nlp.entity.parser.semantic.NCSemanticTestElement
-import org.apache.nlpcraft.nlp.token.parser.NCOpenNLPTokenParser
-import org.apache.nlpcraft.nlp.util.*
+import org.apache.nlpcraft.nlp.parsers.*
 import org.junit.jupiter.api.Test
 
 import scala.jdk.CollectionConverters.*

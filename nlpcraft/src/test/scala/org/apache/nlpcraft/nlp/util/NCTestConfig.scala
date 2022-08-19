@@ -19,8 +19,9 @@ package org.apache.nlpcraft.nlp.util
 
 import org.apache.nlpcraft.NCModelConfig
 import org.apache.nlpcraft.internal.util.NCResourceReader as R
-import org.apache.nlpcraft.nlp.token.enricher.*
-import org.apache.nlpcraft.nlp.token.parser.NCOpenNLPTokenParser
+import org.apache.nlpcraft.nlp.enrichers.{NCEnStopWordsTokenEnricher, NCOpenNLPLemmaPosTokenEnricher}
+import org.apache.nlpcraft.nlp.parsers.NCOpenNLPTokenParser
+import org.apache.nlpcraft.nlp.enrichers.*
 import org.apache.nlpcraft.nlp.util.*
 
 final val CFG = NCModelConfig("testId", "test", "1.0", desc = "Test description", orig = "Test origin")

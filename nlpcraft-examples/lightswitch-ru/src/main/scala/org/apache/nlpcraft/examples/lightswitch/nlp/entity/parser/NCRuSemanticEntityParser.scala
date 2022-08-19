@@ -19,8 +19,7 @@ package org.apache.nlpcraft.examples.lightswitch.nlp.entity.parser
 
 import opennlp.tools.stemmer.snowball.SnowballStemmer
 import org.apache.nlpcraft.examples.lightswitch.nlp.token.parser.NCRuTokenParser
-import org.apache.nlpcraft.nlp.entity.parser.*
-import org.apache.nlpcraft.nlp.entity.parser.semantic.*
+import org.apache.nlpcraft.nlp.parsers.*
 
 /**
   *

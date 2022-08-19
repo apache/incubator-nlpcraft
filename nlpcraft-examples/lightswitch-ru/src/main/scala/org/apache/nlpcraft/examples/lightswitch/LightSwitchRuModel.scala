@@ -22,11 +22,9 @@ import org.apache.nlpcraft.*
 import org.apache.nlpcraft.examples.lightswitch.nlp.entity.parser.NCRuSemanticEntityParser
 import org.apache.nlpcraft.examples.lightswitch.nlp.token.enricher.*
 import org.apache.nlpcraft.examples.lightswitch.nlp.token.parser.NCRuTokenParser
-import org.apache.nlpcraft.nlp.entity.parser.NCNLPEntityParser
-import org.apache.nlpcraft.nlp.entity.parser.semantic.NCSemanticEntityParser
-import org.apache.nlpcraft.nlp.token.enricher.NCEnStopWordsTokenEnricher
-import org.apache.nlpcraft.nlp.token.parser.NCOpenNLPTokenParser
 import org.apache.nlpcraft.annotations.*
+import org.apache.nlpcraft.nlp.enrichers.NCEnStopWordsTokenEnricher
+import org.apache.nlpcraft.nlp.parsers.{NCNLPEntityParser, NCOpenNLPTokenParser, NCSemanticEntityParser}
 import java.util
 import scala.jdk.CollectionConverters.*
 

@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.nlp.util
 
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.nlp.token.parser.NCOpenNLPTokenParser
+import org.apache.nlpcraft.nlp.parsers.NCOpenNLPTokenParser
 import org.apache.nlpcraft.nlp.util.NCTestPipeline.*
 
 /**

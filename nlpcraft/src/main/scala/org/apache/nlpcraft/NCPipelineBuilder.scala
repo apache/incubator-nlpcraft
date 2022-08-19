@@ -19,9 +19,8 @@ package org.apache.nlpcraft
 
 import opennlp.tools.stemmer.PorterStemmer
 import org.apache.nlpcraft.internal.util.NCResourceReader
-import org.apache.nlpcraft.nlp.entity.parser.semantic.*
-import org.apache.nlpcraft.nlp.token.enricher.*
-import org.apache.nlpcraft.nlp.token.parser.NCOpenNLPTokenParser
+import org.apache.nlpcraft.nlp.parsers.*
+import org.apache.nlpcraft.nlp.enrichers.*
 
 import java.util.Objects
 
