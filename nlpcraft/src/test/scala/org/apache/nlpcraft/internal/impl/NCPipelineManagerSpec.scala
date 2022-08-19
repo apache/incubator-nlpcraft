@@ -18,7 +18,8 @@
 package org.apache.nlpcraft.internal.impl
 
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.nlp.parsers.*
+import nlp.parsers.*
+import nlp.util.*
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.function.Executable
 

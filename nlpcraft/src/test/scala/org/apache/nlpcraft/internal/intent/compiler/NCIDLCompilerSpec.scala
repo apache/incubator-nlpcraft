@@ -18,6 +18,7 @@
 package org.apache.nlpcraft.internal.intent.compiler
 
 import org.apache.nlpcraft.*
+import nlp.util.*
 import org.junit.jupiter.api.Test
 
 /**

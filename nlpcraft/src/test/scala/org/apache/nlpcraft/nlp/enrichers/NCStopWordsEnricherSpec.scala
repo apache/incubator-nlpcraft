@@ -18,8 +18,8 @@
 package org.apache.nlpcraft.nlp.enrichers
 
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.internal.util.NCResourceReader
-import org.apache.nlpcraft.nlp.enrichers.NCEnStopWordsTokenEnricher
+import internal.util.NCResourceReader
+import nlp.enrichers.NCEnStopWordsTokenEnricher
 import org.junit.jupiter.api.*
 
 import java.util

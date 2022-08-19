@@ -18,10 +18,12 @@
 package org.apache.nlpcraft.internal.impl.scan
 
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.annotations.*
-import org.apache.nlpcraft.internal.impl.{NCCallbackInput, NCModelScanner}
-import org.junit.jupiter.api.Test
+import annotations.*
+import nlp.enrichers.*
+import nlp.util.*
+import internal.impl.{NCCallbackInput, NCModelScanner}
 
+import org.junit.jupiter.api.Test
 import java.util
 
 /**

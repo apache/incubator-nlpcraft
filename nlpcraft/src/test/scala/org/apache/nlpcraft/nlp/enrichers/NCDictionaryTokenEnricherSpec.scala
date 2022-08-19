@@ -17,8 +17,11 @@
 
 package org.apache.nlpcraft.nlp.enrichers
 
-import org.apache.nlpcraft.internal.util.NCResourceReader
-import org.apache.nlpcraft.nlp.enrichers.NCEnDictionaryTokenEnricher
+import org.apache.nlpcraft.*
+import annotations.*
+import nlp.enrichers.*
+import nlp.util.*
+import internal.util.NCResourceReader
 import org.junit.jupiter.api.*
 
 import scala.jdk.CollectionConverters.*

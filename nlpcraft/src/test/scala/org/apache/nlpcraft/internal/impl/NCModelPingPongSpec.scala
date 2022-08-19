@@ -18,9 +18,10 @@
 package org.apache.nlpcraft.internal.impl
 
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.NCResultType.*
-import org.apache.nlpcraft.annotations.*
-import org.apache.nlpcraft.nlp.parsers.*
+import annotations.*
+import nlp.parsers.*
+import nlp.util.*
+import NCResultType.*
 import org.junit.jupiter.api.*
 
 import scala.jdk.CollectionConverters.*

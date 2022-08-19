@@ -18,9 +18,9 @@
 package org.apache.nlpcraft.nlp.parsers
 
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.internal.impl.*
-import org.apache.nlpcraft.internal.util.*
-import org.apache.nlpcraft.nlp.parsers.{NCSemanticEntityParser, NCSemanticStemmer}
+import annotations.*
+import nlp.parsers.*
+import nlp.util.*
 import org.junit.jupiter.api.*
 
 import java.util

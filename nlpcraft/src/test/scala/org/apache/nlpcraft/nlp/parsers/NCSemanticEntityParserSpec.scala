@@ -18,10 +18,11 @@
 package org.apache.nlpcraft.nlp.parsers
 
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.internal.util.*
-import org.apache.nlpcraft.nlp.parsers.NCSemanticEntityParser
-import org.junit.jupiter.api.*
+import annotations.*
+import nlp.parsers.*
+import nlp.util.*
 
+import org.junit.jupiter.api.*
 import java.util
 import scala.collection.mutable
 import scala.concurrent.ExecutionContext
