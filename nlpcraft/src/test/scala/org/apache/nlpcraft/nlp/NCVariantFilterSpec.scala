@@ -33,7 +33,7 @@ import scala.util.Using
   */
 class NCVariantFilterSpec:
     private def test0(pipeline: NCPipeline, ok: Boolean): Unit =
-        val mdl: NCModel = new NCModelAdapter(new NCModelConfig("test.id", "Test model", "1.0"), pipeline):
+        val mdl: NCModel = new NCModelAdapter(NCModelConfig("test.id", "Test model", "1.0"), pipeline):
             @NCIntent("intent=i term(any)={true}")
             def onMatch(ctx: NCContext, im: NCIntentMatch): NCResult = NCResult("OK", NCResultType.ASK_RESULT)
 

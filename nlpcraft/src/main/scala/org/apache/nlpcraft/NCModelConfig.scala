@@ -27,28 +27,39 @@ object NCModelConfig:
     val DFLT_CONV_TIMEOUT: Long = Duration.ofMinutes(60).toMillis
     val DFLT_CONV_DEPTH = 3
 
-    def apply(id: String, name: String, ver: String) = new NCModelConfig(id, name, ver)
-    def apply(id: String, name: String, ver: String, desc: String, orig: String) =
-        new NCModelConfig(id, name, ver, Option(desc), Option(orig))
-        
+    def apply(id: String, name: String, ver: String): NCModelConfig =
+        new NCModelConfig ():
+            override val getId: String = id
+            override val getName: String = name
+            override val getVersion: String = ver
+
+    def apply(id: String, name: String, ver: String, desc: String, orig: String): NCModelConfig =
+        new NCModelConfig() :
+            override val getId: String = id
+            override val getName: String = name
+            override val getVersion: String = ver
+            override val getDescription: Option[String] = Option(desc)
+            override val getOrigin: Option[String] = Option(orig)
+
+    def apply(id: String, name: String, ver: String, desc: String, orig: String, convTimeout: Long, convDepth: Int): NCModelConfig = new NCModelConfig() :
+        override val getId: String = id
+        override val getName: String = name
+        override val getVersion: String = ver
+        override val getDescription: Option[String] = Option(desc)
+        override val getOrigin: Option[String] = Option(orig)
+        override val getConversationTimeout: Long = convTimeout
+        override val getConversationDepth: Int = convDepth
+
 import org.apache.nlpcraft.NCModelConfig.*
 
 /**
   *
-  * @param id
-  * @param name
-  * @param version
-  * @param description
-  * @param origin
-  * @param conversationTimeout
-  * @param conversationDepth
   */
-case class NCModelConfig(
-    id: String,
-    name: String,
-    version: String,
-    description: Option[String] = None,
-    origin: Option[String] = None,
-    conversationTimeout: Long = DFLT_CONV_TIMEOUT,
-    conversationDepth: Int = DFLT_CONV_DEPTH
-) extends NCPropertyMapAdapter
+trait NCModelConfig extends NCPropertyMapAdapter:
+    def getId: String
+    def getName: String
+    def getVersion: String
+    def getDescription: Option[String] = None
+    def getOrigin: Option[String] = None
+    def getConversationTimeout: Long = DFLT_CONV_TIMEOUT
+    def getConversationDepth: Int = DFLT_CONV_DEPTH

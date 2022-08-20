@@ -38,9 +38,8 @@ import org.apache.nlpcraft.nlp.token.parser.NCOpenNLPTokenParser
   * <p>
   * See 'README.md' file in the same folder for running and testing instructions.
   */
-
 class LightSwitchScalaModel extends NCModelAdapter(
-    new NCModelConfig("nlpcraft.lightswitch.java.ex", "LightSwitch Example Model", "1.0"),
+    NCModelConfig("nlpcraft.lightswitch.java.ex", "LightSwitch Example Model", "1.0"),
     new NCPipelineBuilder().withSemantic("en", "lightswitch_model.yaml").build
 ):
     /**
@@ -51,30 +50,6 @@ class LightSwitchScalaModel extends NCModelAdapter(
       * @return Query result to be sent to the REST caller.
       */
     @NCIntent("intent=ls term(act)={has(ent_groups, 'act')} term(loc)={# == 'ls:loc'}*")
-    @NCIntentSample(Array(
-        "Turn the lights off in the entire house.",
-        "Turn off all lights now",
-        "Switch on the illumination in the master bedroom closet.",
-        "Get the lights on.",
-        "Off the lights on the 1st floor",
-        "Lights up in the kitchen.",
-        "Please, put the light out in the upstairs bedroom.",
-        "Set the lights on in the entire house.",
-        "Turn the lights off in the guest bedroom.",
-        "Could you please switch off all the lights?",
-        "Dial off illumination on the 2nd floor.",
-        "Turn down lights in 1st floor bedroom",
-        "Lights on at second floor kitchen",
-        "Please, no lights!",
-        "Kill off all the lights now!",
-        "Down the lights in the garage",
-        "Lights down in the kitchen!",
-        "Turn up the illumination in garage and master bedroom",
-        "Turn down all the light now!",
-        "No lights in the bedroom, please.",
-        "Light up the garage, please!",
-        "Kill the illumination now!"
-    ))
     def onMatch(
         ctx: NCContext,
         im: NCIntentMatch,

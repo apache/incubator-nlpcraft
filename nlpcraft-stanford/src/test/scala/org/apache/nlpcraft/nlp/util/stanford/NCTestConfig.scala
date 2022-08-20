@@ -24,7 +24,7 @@ import org.apache.nlpcraft.nlp.util.NCTestPipeline
 
 import java.util.Properties
 
-final val CFG = new NCModelConfig("testId", "test", "1.0")
+final val CFG = NCModelConfig("testId", "test", "1.0")
 
 /**
   *

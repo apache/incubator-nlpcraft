@@ -31,8 +31,6 @@ package org.apache.nlpcraft
   * @see NCIntent
   * @see NCIntentTerm
   * @see NCIntentRef
-  * @see NCIntentSample
-  * @see NCIntentSampleRef
   * @see NCIntentMatch
   * @see NCModel#onMatchedIntent(NCIntentMatch) */
 class NCIntentSkip(msg: String, cause: Throwable = null) extends NCException(msg, cause)

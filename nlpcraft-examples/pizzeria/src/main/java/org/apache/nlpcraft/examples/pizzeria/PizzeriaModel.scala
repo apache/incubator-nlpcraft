@@ -123,7 +123,7 @@ import org.apache.nlpcraft.examples.pizzeria.PizzeriaModel.*
   * Each order can in one of 5 state (org.apache.nlpcraft.examples.pizzeria.OrderState)
   * Note that there is used custom states logic instead of STM, because complex states flow.
   */
-class PizzeriaModel extends NCModelAdapter(new NCModelConfig("nlpcraft.pizzeria.ex", "Pizzeria Example Model", "1.0"), PizzeriaModelPipeline.PIPELINE) with LazyLogging:
+class PizzeriaModel extends NCModelAdapter(NCModelConfig("nlpcraft.pizzeria.ex", "Pizzeria Example Model", "1.0"), PizzeriaModelPipeline.PIPELINE) with LazyLogging:
     // This method is defined in class scope and has package access level for tests reasons.
     private[pizzeria] def doExecute(o: Order)(using ctx: NCContext, im: NCIntentMatch): Result =
         require(o.isValid)

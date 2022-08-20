@@ -23,10 +23,10 @@ import org.apache.nlpcraft.{NCResult, NCResultType}
   *
   */
 object  NCTestResult {
-    def apply(): NCTestResult = new NCTestResult()
+    def apply(): NCResult = TEST_RESULT
 }
 
 /**
   *
   */
-class NCTestResult extends NCResult("test", NCResultType.ASK_RESULT)
+val TEST_RESULT = NCResult("test", NCResultType.ASK_RESULT)

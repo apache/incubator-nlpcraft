@@ -49,10 +49,8 @@ class NCModelClientSpec:
         Using.resource(new NCModelClient(mdl)) { client =>
             val res = client.ask("Lights on at second floor kitchen", "userId")
 
-            println(s"Intent: ${res.intentId}")
-            println(s"Body: ${res.body}")
-
-            client.validateSamples()
+            println(s"Intent: ${res.getIntentId}")
+            println(s"Body: ${res.getBody}")
 
             val winner = client.debugAsk("Lights on at second floor kitchen", "userId", true)
             println(s"Winner intent: ${winner.getIntentId}")
@@ -66,7 +64,6 @@ class NCModelClientSpec:
     def test(): Unit =
         test0(
             new NCTestModelAdapter():
-                @NCIntentSample(Array("Lights on at second floor kitchen"))
                 @NCIntent("intent=ls term(act)={# == 'ls:on'} term(loc)={# == 'ls:loc'}*")
                 def onMatch(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("act") act: NCEntity, @NCIntentTerm("loc") locs: List[NCEntity]): NCResult = NCResult("test", NCResultType.ASK_RESULT)
         )
@@ -78,7 +75,6 @@ class NCModelClientSpec:
         test0(
             new NCTestModelAdapter():
                 @NCIntent("intent=ls term(act)={has(ent_groups, 'act')} term(loc)={# == 'ls:loc'}*")
-                @NCIntentSample(Array("Lights on at second floor kitchen"))
                 def onMatch(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("act") act: NCEntity, @NCIntentTerm("loc") locs: List[NCEntity]): NCResult = NCResult("test", NCResultType.ASK_RESULT)
         )
 

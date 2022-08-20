@@ -911,10 +911,10 @@ trait NCIDLCodeGenerator:
                 case "or_else" => doOrElse()
 
                 // Model configuration.
-                case "mdl_id" => z0(() => Z(idlCtx.mdlCfg.id, 0))
-                case "mdl_name" => z0(() => Z(idlCtx.mdlCfg.name, 0))
-                case "mdl_ver" => z0(() => Z(idlCtx.mdlCfg.version, 0))
-                case "mdl_origin" => z0(() => Z(idlCtx.mdlCfg.origin, 0))
+                case "mdl_id" => z0(() => Z(idlCtx.mdlCfg.getId, 0))
+                case "mdl_name" => z0(() => Z(idlCtx.mdlCfg.getName, 0))
+                case "mdl_ver" => z0(() => Z(idlCtx.mdlCfg.getVersion, 0))
+                case "mdl_origin" => z0(() => Z(idlCtx.mdlCfg.getOrigin, 0))
 
                 // Entity functions.
                 case "ent_id" => arg1Tok() match { case x => stack.push(() => Z(toEntity(x().value).impl.getId, 1)) }

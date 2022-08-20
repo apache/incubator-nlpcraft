@@ -63,21 +63,10 @@ class NCModelIntentsInvalidIntentsSpec:
         )
 
     /**
-      * Samples without intent.
-      */
-    @Test
-    def testError3(): Unit =
-        testError(
-            new NCTestModelAdapter():
-                @NCIntentSample(Array("sample"))
-                def x(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("list") list: List[NCEntity]): NCResult = null
-        )
-
-    /**
       * Duplicated intents definitions.
       */
     @Test
-    def testError4(): Unit =
+    def testError3(): Unit =
         @NCIntent("intent=validList1 term(list)~{# == 'x'}[0,10]")
         @NCIntent("intent=validList1 term(list)~{# == 'x'}[0,11]")
         class X:
@@ -93,32 +82,9 @@ class NCModelIntentsInvalidIntentsSpec:
       * Invalid argument type.
       */
     @Test
-    def testError5(): Unit =
+    def testError4(): Unit =
         testError(
             new NCTestModelAdapter():
                 @NCIntent("intent=validList1 term(list)~{# == 'x'}[0,10]")
                 def x(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("list") e: NCEntity): NCResult = null
-        )
-
-    /**
-      * Duplicated samples definitions.
-      */
-    @Test
-    def testWarning1(): Unit =
-        NCModelScanner.scan(
-            new NCTestModelAdapter():
-                @NCIntent("intent=validList1 term(list)~{# == 'x'}[0,10]")
-                @NCIntentSample(Array("x", "x"))
-                def x(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("list") list: List[NCEntity]): NCResult = null
-        )
-
-    /**
-      * Missed samples.
-      */
-    @Test
-    def testWarning2(): Unit =
-        NCModelScanner.scan(
-            new NCTestModelAdapter():
-                @NCIntent("intent=validList1 term(list)~{# == 'x'}[0,10]")
-                def x(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("list") list: List[NCEntity]): NCResult = null
         )

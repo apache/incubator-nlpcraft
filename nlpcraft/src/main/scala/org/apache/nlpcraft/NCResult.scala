@@ -17,19 +17,23 @@
 
 package org.apache.nlpcraft
 
-import org.apache.nlpcraft.NCResultType.*
-
 /**
   *
   */
 object NCResult:
-    def apply(body: Any, resultType: NCResultType, intentId: String): NCResult = new NCResult(body = body, resultType = resultType, Option(intentId))
-    def apply(body: Any, resultType: NCResultType): NCResult = apply(body, resultType, intentId = None)
+    def apply(body: Any, resultType: NCResultType, intentId: String): NCResult =
+        new NCResult():
+            def getBody: Any = body
+            def getType: NCResultType = resultType
+            def getIntentId: Option[String] = Option(intentId)
 
-/**
-  *
-  * @param body
-  * @param resultType
-  * @param intentId
-  */
-case class NCResult(body: Any, resultType: NCResultType, intentId: Option[String] = None)
+    def apply(body: Any, resultType: NCResultType): NCResult =
+        new NCResult():
+            def getBody: Any = body
+            def getType: NCResultType = resultType
+            def getIntentId: Option[String] = None
+
+trait NCResult:
+    def getBody: Any
+    def getType: NCResultType
+    def getIntentId: Option[String]

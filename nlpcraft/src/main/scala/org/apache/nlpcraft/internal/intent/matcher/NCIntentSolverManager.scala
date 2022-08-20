@@ -89,7 +89,7 @@ object NCIntentSolverManager:
         getIntentId: String,
         getCallbackArguments: List[List[NCEntity]],
         getCallback: List[List[NCEntity]] => NCResult
-    ) extends NCCallbackData
+    ) extends NCFiredIntent
 
     /**
       *
@@ -183,7 +183,7 @@ object NCIntentSolverManager:
       */
     private case class IntentEntity(var used: Boolean, var conv: Boolean, entity: NCEntity)
 
-    type ResultData = Either[NCResult, NCCallbackData]
+    type ResultData = Either[NCResult, NCFiredIntent]
 
     /**
       *
@@ -711,7 +711,7 @@ class NCIntentSolverManager(
                     def executeCallback(in: NCCallbackInput): NCResult =
                         var cbRes = intentRes.fn(in)
                         // Store winning intent match in the input.
-                        if cbRes.intentId.isEmpty then cbRes = NCResult(cbRes.body, cbRes.resultType, intentRes.intentId)
+                        if cbRes.getIntentId.isEmpty then cbRes = NCResult(cbRes.getBody, cbRes.getType, intentRes.intentId)
                         cbRes
 
                     def finishSearch(): Unit =
@@ -748,7 +748,7 @@ class NCIntentSolverManager(
                         case SEARCH_NO_HISTORY =>
                             finishSearch()
                 else
-                    logger.info(s"Model '${ctx.getModelConfig.id}' triggered rematching of intents by intent '${intentRes.intentId}' on variant #${intentRes.variantIdx + 1}.")
+                    logger.info(s"Model '${ctx.getModelConfig.getId}' triggered rematching of intents by intent '${intentRes.intentId}' on variant #${intentRes.variantIdx + 1}.")
                     Loop.finish()
                 catch
                     case e: NCIntentSkip =>
@@ -769,7 +769,7 @@ class NCIntentSolverManager(
     def solve(mdl: NCModel, ctx: NCContext, typ: NCIntentSolveType): ResultData =
         import NCIntentSolveType.REGULAR
 
-        val key = UserModelKey(ctx.getRequest.getUserId, mdl.getConfig.id)
+        val key = UserModelKey(ctx.getRequest.getUserId, mdl.getConfig.getId)
         reqIds.synchronized { reqIds.put(key, ctx.getRequest.getRequestId)}
 
         mdl.onContext(ctx) match

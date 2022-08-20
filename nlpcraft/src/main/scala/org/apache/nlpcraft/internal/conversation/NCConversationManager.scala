@@ -41,7 +41,7 @@ class NCConversationManager(cfg: NCModelConfig) extends LazyLogging:
         convs.synchronized {
             val v = convs.getOrElseUpdate(
                 usrId,
-                Value(NCConversationData(usrId, cfg.id, cfg.conversationTimeout, cfg.conversationDepth))
+                Value(NCConversationData(usrId, cfg.getId, cfg.getConversationTimeout, cfg.getConversationDepth))
             )
 
             v.tstamp = NCUtils.nowUtcMs()
@@ -59,7 +59,7 @@ class NCConversationManager(cfg: NCModelConfig) extends LazyLogging:
         val delKeys = mutable.HashSet.empty[String]
 
         for ((key, value) <- convs)
-            if value.tstamp < now - cfg.conversationTimeout then
+            if value.tstamp < now - cfg.getConversationTimeout then
                 value.conv.clear()
                 delKeys += key
 
@@ -73,7 +73,7 @@ class NCConversationManager(cfg: NCModelConfig) extends LazyLogging:
       * @return
       */
     def start(): Unit =
-        gc = NCUtils.mkThread("conv-mgr-gc", cfg.id) { t =>
+        gc = NCUtils.mkThread("conv-mgr-gc", cfg.getId) { t =>
             while (!t.isInterrupted)
                 try
                     convs.synchronized {

@@ -100,7 +100,7 @@ class NCModelCallbacksSpec:
       */
     private def testOk(client: NCModelClient, exp: NCResult, states: State*): Unit =
         set(states*)
-        require(client.ask("x", "userId").body == exp.body)
+        require(client.ask("x", "userId").getBody == exp.getBody)
 
     /**
       *
@@ -111,7 +111,7 @@ class NCModelCallbacksSpec:
         set(states*)
 
         try
-            client.ask("x", null, "userId")
+            client.ask("x", "userId")
 
             require(false)
         catch

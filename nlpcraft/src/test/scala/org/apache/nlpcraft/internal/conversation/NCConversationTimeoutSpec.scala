@@ -45,7 +45,7 @@ class NCConversationTimeoutSpec:
         val mdl: NCModel =
             new NCTestModelAdapter:
                 override val getConfig: NCModelConfig =
-                    new NCModelConfig(CFG.id, CFG.name, CFG.version, CFG.description, CFG.origin, TIMEOUT, CFG.conversationDepth)
+                    NCModelConfig(CFG.getId, CFG.getName, CFG.getVersion, "Test desc", "Test origin", TIMEOUT, CFG.getConversationDepth)
 
                 override val getPipeline: NCPipeline =
                     val pl = mkEnPipeline
@@ -64,7 +64,7 @@ class NCConversationTimeoutSpec:
 
         Using.resource(new NCModelClient(mdl)) { cli =>
             def check(hasValue: Boolean): Unit =
-                require(cli.ask("test", "userId").body.toString == (if hasValue then VALUE else EMPTY))
+                require(cli.ask("test", "userId").getBody.toString == (if hasValue then VALUE else EMPTY))
 
             check(false)
             check(true)

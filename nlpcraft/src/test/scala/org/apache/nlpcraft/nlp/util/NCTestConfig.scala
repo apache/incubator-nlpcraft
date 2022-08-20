@@ -23,7 +23,7 @@ import org.apache.nlpcraft.nlp.token.enricher.*
 import org.apache.nlpcraft.nlp.token.parser.NCOpenNLPTokenParser
 import org.apache.nlpcraft.nlp.util.*
 
-final val CFG = new NCModelConfig("testId", "test", "1.0", description = Some("Test description"), origin = Some("Test origin"))
+final val CFG = NCModelConfig("testId", "test", "1.0", desc = "Test description", orig = "Test origin")
 final val EN_TOK_PARSER = new NCOpenNLPTokenParser(R.getPath("opennlp/en-token.bin"))
 final val EN_TOK_STOP_ENRICHER = new NCEnStopWordsTokenEnricher
 final val EN_TOK_LEMMA_POS_ENRICHER =

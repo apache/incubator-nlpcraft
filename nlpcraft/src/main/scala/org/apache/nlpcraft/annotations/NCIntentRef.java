@@ -35,8 +35,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * 
  * @see NCIntent
  * @see NCIntentTerm
- * @see NCIntentSample
- * @see NCIntentSampleRef
  * @see NCModelAddClasses
  * @see NCModelAddPackage
  * @see NCIntentSkip

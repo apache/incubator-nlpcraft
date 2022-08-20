@@ -22,18 +22,14 @@ val scalaMajVer = "3"
 val scalaMinVer = "1.3"
 val log4jVer = "2.17.2"
 val scalaLoggingVer = "3.9.4"
-val scalatestVer = "3.2.11"
-val scalaParColections = "1.0.4"
 val orgAntlr4Ver = "4.10.1"
 val jlineVer = "3.21.0"
 val commonsIoVer = "2.11.0"
 val commonsLang3Ver = "3.12.0"
 val commonsCodecVer = "1.15"
 val commonsCollectionsVer = "4.4"
-val scala3RefVer = "1.1.4"
 val gsonVer = "2.9.0"
 val jacksonVer = "2.13.2"
-val jacksonYamlVer = "2.13.2"
 val apacheOpennlpVer = "1.9.4"
 
 // Test libraries.
@@ -42,7 +38,7 @@ val junitVer = "5.8.2"
 val jmhVer = "1.35"
 
 // Stanford project libraries.
-val stanfordCorenlpVer  = "4.4.0"
+val stanfordCoreNLPVer  = "4.4.0"
 
 // Examples libraries.
 val languagetoolVer = "5.6"
@@ -51,7 +47,7 @@ val luceneAnalyzersCommonVer = "8.11.1"
 ThisBuild / scalaVersion := s"$scalaMajVer.$scalaMinVer"
 ThisBuild / version := nlpcraftVer
 ThisBuild / organization := "org.apache"
-ThisBuild / organizationName := "NlpCraft"
+ThisBuild / organizationName := "nlpcraft"
 ThisBuild / description := "An open source API to convert natural language into actions."
 ThisBuild / licenses := List("Apache-2.0" -> url("https://github.com/sbt/sbt/blob/develop/LICENSE"))
 ThisBuild / homepage := Some(url("https://nlpcraft.apache.org/"))
@@ -82,7 +78,8 @@ lazy val libs = Seq(
 )
 
 val commonScalaDoc = Seq(
-    "-project-footer", "Apache, Nlpcraft",
+    "-skip-by-regex:org.apache.nlpcraft.internal",
+    "-project-footer", "Apache, NLPCraft",
     "-project-version", nlpcraftVer,
     "-siteroot", ".",
     "-doc-root-content", "scaladoc/docroot.md",
@@ -92,7 +89,7 @@ val commonScalaDoc = Seq(
 
 lazy val nlpcraft = (project in file("nlpcraft"))
     .settings(
-        name := "NlpCraft",
+        name := "NLPCraft",
         version := nlpcraftVer,
 
         // Scaladoc config.
@@ -107,7 +104,7 @@ lazy val nlpcraft = (project in file("nlpcraft"))
 lazy val nlpcraftStanford = (project in file("nlpcraft-stanford"))
     .dependsOn(nlpcraft)
     .settings(
-        name := "NlpCraft Stanford",
+        name := "NLPCraft Stanford",
         version := nlpcraftVer,
 
         // Scaladoc config.
@@ -115,14 +112,14 @@ lazy val nlpcraftStanford = (project in file("nlpcraft-stanford"))
 
         // Dependencies.
         libraryDependencies ++= libs,
-        libraryDependencies += "edu.stanford.nlp" % "stanford-corenlp" % stanfordCorenlpVer,
-        libraryDependencies += "edu.stanford.nlp" % "stanford-corenlp" % stanfordCorenlpVer classifier "models"
+        libraryDependencies += "edu.stanford.nlp" % "stanford-corenlp" % stanfordCoreNLPVer,
+        libraryDependencies += "edu.stanford.nlp" % "stanford-corenlp" % stanfordCoreNLPVer classifier "models"
     )
 
 lazy val timeExample = (project in file("nlpcraft-examples/time"))
     .dependsOn(nlpcraft)
     .settings(
-        name := "NlpCraft Time Example",
+        name := "NLPCraft Time Example",
         version := nlpcraftVer,
 
         // Scaladoc config.
@@ -135,7 +132,7 @@ lazy val timeExample = (project in file("nlpcraft-examples/time"))
 lazy val lightSwitchExample = (project in file("nlpcraft-examples/lightswitch"))
     .dependsOn(nlpcraft)
     .settings(
-        name := "NlpCraft LightSwitch Example",
+        name := "NLPCraft LightSwitch Example",
         version := nlpcraftVer,
 
         // Scaladoc config.
@@ -148,7 +145,7 @@ lazy val lightSwitchExample = (project in file("nlpcraft-examples/lightswitch"))
 lazy val lightSwitchRuExample = (project in file("nlpcraft-examples/lightswitch-ru"))
     .dependsOn(nlpcraft)
     .settings(
-        name := "NlpCraft LightSwitch RU Example",
+        name := "NLPCraft LightSwitch RU Example",
         version := nlpcraftVer,
 
         // Scaladoc config.
@@ -164,7 +161,7 @@ lazy val lightSwitchRuExample = (project in file("nlpcraft-examples/lightswitch-
 lazy val lightSwitchFrExample = (project in file("nlpcraft-examples/lightswitch-fr"))
     .dependsOn(nlpcraft)
     .settings(
-        name := "NlpCraft LightSwitch FR Example",
+        name := "NLPCraft LightSwitch FR Example",
         version := nlpcraftVer,
 
         // Scaladoc config.
