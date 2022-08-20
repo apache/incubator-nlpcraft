@@ -79,6 +79,7 @@ lazy val libs = Seq(
 
 val commonScalaDoc = Seq(
     "-skip-by-regex:org.apache.nlpcraft.internal",
+    "-skip-by-regex:org.apache.nlpcraft.nlp.enrichers.tools",
     "-project-footer", "Apache, NLPCraft",
     "-project-version", nlpcraftVer,
     "-siteroot", ".",
