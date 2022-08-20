@@ -20,6 +20,7 @@ package org.apache.nlpcraft.nlp.parsers
 import org.apache.nlpcraft.*
 import annotations.*
 import nlp.parsers.*
+import internal.impl.*
 import nlp.util.*
 import org.junit.jupiter.api.*
 
@@ -96,20 +97,20 @@ class NCSemanticEntityParserLemmaSpec:
         // Lemma.
         ask(
             "my test",
-            List(E("X", synonyms = Set(deepWrap("my test")))),
+            List(NCSemanticTestElement("X", synonyms = Set(deepWrap("my test")))),
             List(List(Data("my test", "X")))
         )
 
         // Regex.
         ask(
             "my test",
-            List(E("X", synonyms = Set(wrap("my //[a-z]+//")))),
+            List(NCSemanticTestElement("X", synonyms = Set(wrap("my //[a-z]+//")))),
             List(List(Data("my test", "X")))
         )
 
         // Both.
         ask(
             "my test",
-            List(E("X", synonyms = Set(deepWrap("my test"), wrap("my //[a-z]+//")))),
+            List(NCSemanticTestElement("X", synonyms = Set(deepWrap("my test"), wrap("my //[a-z]+//")))),
             List(List(Data("my test", "X")))
         )

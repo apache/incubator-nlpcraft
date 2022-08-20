@@ -19,9 +19,10 @@ package org.apache.nlpcraft.nlp.enrichers
 
 import org.apache.nlpcraft.*
 import internal.util.NCResourceReader
+import nlp.util.*
 import nlp.enrichers.NCEnStopWordsTokenEnricher
-import org.junit.jupiter.api.*
 
+import org.junit.jupiter.api.*
 import java.util
 import scala.jdk.CollectionConverters.*
 

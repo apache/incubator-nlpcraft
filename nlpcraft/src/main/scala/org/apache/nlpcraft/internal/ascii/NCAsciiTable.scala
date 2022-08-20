@@ -19,8 +19,8 @@ package org.apache.nlpcraft.internal.ascii
 
 import com.typesafe.scalalogging.Logger
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.internal.ascii.NCAsciiTable.*
-import org.apache.nlpcraft.internal.util.NCUtils
+import internal.ascii.NCAsciiTable.*
+import internal.util.NCUtils
 
 import java.io.*
 import scala.collection.mutable

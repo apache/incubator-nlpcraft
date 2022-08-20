@@ -18,6 +18,7 @@
 package org.apache.nlpcraft.nlp.parsers
 
 import org.apache.nlpcraft.*
+import internal.util.*
 import nlp.parsers.*
 import nlp.util.*
 

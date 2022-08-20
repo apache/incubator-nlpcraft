@@ -19,6 +19,7 @@ package org.apache.nlpcraft.internal.impl.scan
 
 import org.apache.nlpcraft.*
 import annotations.*
+import nlp.util.*
 import internal.impl.NCModelScanner
 
 import org.junit.jupiter.api.Test

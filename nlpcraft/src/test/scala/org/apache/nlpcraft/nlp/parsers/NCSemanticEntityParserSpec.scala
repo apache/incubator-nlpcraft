@@ -35,21 +35,21 @@ class NCSemanticEntityParserSpec:
         NCTestUtils.mkEnSemanticParser(
             List(
                 // Standard.
-                E("t1", synonyms = Set("t1")),
+                NCSemanticTestElement("t1", synonyms = Set("t1")),
                 // No extra synonyms.
-                E("t2"),
+                NCSemanticTestElement("t2"),
                 // Multiple words.
-                E("t3", synonyms = Set("t3 t3")),
+                NCSemanticTestElement("t3", synonyms = Set("t3 t3")),
                 // Value. No extra synonyms.
-                E("t4", values = Map("value4" -> Set.empty)),
+                NCSemanticTestElement("t4", values = Map("value4" -> Set.empty)),
                 // Value. Multiple words.
-                E("t5", values = Map("value5" -> Set("value 5"))),
+                NCSemanticTestElement("t5", values = Map("value5" -> Set("value 5"))),
                 // Elements data.
-                E("t6", props = Map("testKey" -> "testValue")),
+                NCSemanticTestElement("t6", props = Map("testKey" -> "testValue")),
                 // Regex.
-                E("t7", synonyms = Set("x //[a-d]+//")),
+                NCSemanticTestElement("t7", synonyms = Set("x //[a-d]+//")),
                 // Empty synonyms.
-                E("t8", synonyms = Set("{A|_} {B|_}"))
+                NCSemanticTestElement("t8", synonyms = Set("{A|_} {B|_}"))
             )
         )
 

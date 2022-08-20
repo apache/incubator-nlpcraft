@@ -65,7 +65,11 @@ class NCModelPingPongSpec:
             def onOther(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("other") other: NCEntity): NCResult =
                 mkResult(ASK_RESULT, s"Some request by: ${other.mkText}")
 
-    MDL.pipeline.entParsers += NCTestUtils.mkEnSemanticParser(List(STE("command"), STE("confirm"), STE("other")))
+    MDL.pipeline.entParsers += NCTestUtils.mkEnSemanticParser(List(
+        NCSemanticTestElement("command"),
+        NCSemanticTestElement("confirm"),
+        NCSemanticTestElement("other")
+    ))
 
     @BeforeEach
     def setUp(): Unit = client = new NCModelClient(MDL)
