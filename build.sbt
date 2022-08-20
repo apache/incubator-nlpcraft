@@ -38,7 +38,7 @@ val junitVer = "5.8.2"
 val jmhVer = "1.35"
 
 // Stanford project libraries.
-val stanfordCoreNLPVer  = "4.4.0"
+val stanfordCoreNLPVer  = "4.5.0"
 
 // Examples libraries.
 val languagetoolVer = "5.6"
