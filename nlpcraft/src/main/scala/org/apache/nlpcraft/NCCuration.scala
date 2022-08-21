@@ -23,7 +23,8 @@ package org.apache.nlpcraft
   *
   * Note that NLPCraft does not handle the curation process itself but only allows to indicate the curation
   * request by throwing this exception. Curation is a special type of rejection. The user code is responsible for
-  * he actual handling of the curation logic.
+  * he actual handling of the curation logic, e.g. giving the user an option to fix the input and resubmitting the
+  * request.
   *
   * @param msg Curation message.
   * @param cause Optional cause of this exception.

@@ -35,17 +35,17 @@ package org.apache.nlpcraft
   * conversation since the last mention.
   *
   * You can also maintain user state-machine between requests using conversation's session. Conversation's
-  * [[NCConversation#getData data]] is a mutable thread-safe container that can hold any arbitrary user data
+  * [[NCConversation.getData data]] is a mutable thread-safe container that can hold any arbitrary user data
   * while supporting the same expiration logic as the rest of the conversation elements (i.e. tokens and
   * previously matched intent IDs).
   *
   * Conversation expiration policy is configured by two configuration properties:
-  *  - [[NCModelConfig#getConversationDepth]]
-  *  - [[NCModelConfig#getConversationTimeout]]
+  *  - [[NCModelConfig.getConversationDepth]]
+  *  - [[NCModelConfig.getConversationTimeout]]
   *
-  * @see [[NCContext#getConversation()]]
-  * @see [[NCModelConfig#getConversationDepth()]]
-  * @see [[NCModelConfig#getConversationTimeout()]]
+  * @see [[NCContext.getConversation()]]
+  * @see [[NCModelConfig.getConversationDepth()]]
+  * @see [[NCModelConfig.getConversationTimeout()]]
   */
 trait NCConversation:
     /**

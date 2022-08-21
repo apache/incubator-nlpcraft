@@ -20,7 +20,7 @@ package org.apache.nlpcraft
 /**
   * A context containing a fully parsed data from the input query.
   *
-  * @see NCModel#onContext(NCContext)
+  * @see [[NCModel.onContext()]]
   */
 trait NCContext:
     /**
@@ -55,7 +55,7 @@ trait NCContext:
       * Gets the list of parsing variants. Returned list always contains as least one parsing variant.
       *
       * @return A non-empty list of parsing variants.
-      * @see NCModel#onVariant(NCVariant)
+      * @see [[NCModel.onVariant()]]
       */
     def getVariants: List[NCVariant]
 

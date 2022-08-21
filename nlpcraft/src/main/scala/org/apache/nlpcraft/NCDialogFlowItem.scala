@@ -22,7 +22,7 @@ package org.apache.nlpcraft
   * represents a snapshot of winning intent's match and its associated data. List of dialog flow items
   * is passed into a custom user-defined dialog flow match method.
   *
-  * @see NCConversation#getDialogFlow()
+  * @see [[NCConversation#getDialogFlow()]]
   */
 trait NCDialogFlowItem:
     /**
@@ -40,8 +40,9 @@ trait NCDialogFlowItem:
     def getRequest: NCRequest
 
     /**
-      * Gets the winning intent's result.
+      * Gets the optional winning intent's result. Note that result is not available if the caller used
+      * [[NCModelClient.debugAsk()]] method to initiate the request.
       *
-      * @return Winning intent's result. // TODO: None for debugAsk.
+      * @return Winning intent's result.
       */
     def getResult: Option[NCResult]
