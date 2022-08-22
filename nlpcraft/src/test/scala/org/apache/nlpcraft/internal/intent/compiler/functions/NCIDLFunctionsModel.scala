@@ -32,11 +32,22 @@ class NCIDLFunctionsModel extends NCIDLFunctions:
     def test(): Unit =
         val idlCtx = mkIdlContext(cfg = CFG)
 
+        require(idlCtx.mdlCfg.getOrigin.nonEmpty)
+
         def mkTestDesc(truth: String): TestDesc = TestDesc(truth = truth, idlCtx = idlCtx)
 
         test(
             mkTestDesc(s"mdl_id == '${idlCtx.mdlCfg.getId}'"),
             mkTestDesc(s"mdl_name == '${idlCtx.mdlCfg.getName}'"),
             mkTestDesc(s"mdl_ver == '${idlCtx.mdlCfg.getVersion}'"),
-            mkTestDesc(s"mdl_origin == '${idlCtx.mdlCfg.getOrigin}'")
+            mkTestDesc(s"mdl_origin == '${idlCtx.mdlCfg.getOrigin.orNull}'")
         )
+
+    @Test
+    def testEmptyOrigin(): Unit =
+        val idlCtx = mkIdlContext(cfg = NCModelConfig("testId", "test", "1.0"))
+
+        require(idlCtx.mdlCfg.getOrigin.isEmpty)
+
+        test(TestDesc(truth = s"null == ${idlCtx.mdlCfg.getOrigin.orNull}", idlCtx = idlCtx))
+

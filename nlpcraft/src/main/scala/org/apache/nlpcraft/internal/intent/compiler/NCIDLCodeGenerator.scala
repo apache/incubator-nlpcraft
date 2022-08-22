@@ -897,7 +897,7 @@ trait NCIDLCodeGenerator:
                 // Metadata access.
                 case "meta_ent" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(ent.impl.get[Object](toStr(v))), 0) })
                 case "meta_cfg" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(idlCtx.mdlCfg.get[Object](toStr(v))), 0) })
-                case "meta_req" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(idlCtx.req.getRequestData.get(toStr(v))), 0) })
+                case "meta_req" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(idlCtx.req.getRequestData.get(toStr(v)).orNull.asInstanceOf[Object]), 0) })
                 case "meta_intent" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(idlCtx.intentMeta.get(toStr(v)).orNull), 0) })
                 case "meta_conv" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(idlCtx.convMeta.get(toStr(v)).orNull), 0) })
                 case "meta_frag" => z[ST](arg1, { x => val Z(v, f) = x(); Z(box(idlCtx.fragMeta.get(toStr(v)).orNull), f) })
@@ -914,7 +914,7 @@ trait NCIDLCodeGenerator:
                 case "mdl_id" => z0(() => Z(idlCtx.mdlCfg.getId, 0))
                 case "mdl_name" => z0(() => Z(idlCtx.mdlCfg.getName, 0))
                 case "mdl_ver" => z0(() => Z(idlCtx.mdlCfg.getVersion, 0))
-                case "mdl_origin" => z0(() => Z(idlCtx.mdlCfg.getOrigin, 0))
+                case "mdl_origin" => z0(() => Z(idlCtx.mdlCfg.getOrigin.orNull, 0))
 
                 // Entity functions.
                 case "ent_id" => arg1Tok() match { case x => stack.push(() => Z(toEntity(x().value).impl.getId, 1)) }
