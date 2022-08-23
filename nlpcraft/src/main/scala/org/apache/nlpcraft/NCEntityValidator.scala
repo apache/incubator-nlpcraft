@@ -22,16 +22,16 @@ package org.apache.nlpcraft
   * See {@link NCPipeline} for documentation on the overall processing pipeline. Note that this is an
   * optional component.
   *
-  * @see NCPipeline#getEntityValidators()
-  * @see NCEntity
-  * @see NCToken
-  * @see NCTokenParser
-  * @see NCTokenEnricher
-  * @see NCTokenValidator
-  * @see NCEntityParser
-  * @see NCEntityEnricher
-  * @see NCEntityValidator
-  * @see NCEntityMapper */
+  * @see [[NCPipeline#getEntityValidators()
+  * @see [[NCEntity
+  * @see [[NCToken
+  * @see [[NCTokenParser
+  * @see [[NCTokenEnricher
+  * @see [[NCTokenValidator
+  * @see [[NCEntityParser
+  * @see [[NCEntityEnricher
+  * @see [[NCEntityValidator
+  * @see [[NCEntityMapper */
 trait NCEntityValidator extends NCLifecycle:
     /**
       *

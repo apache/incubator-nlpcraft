@@ -20,9 +20,9 @@ package org.apache.nlpcraft
 /**
   * Map-like container that provides support for mutable runtime-only properties or metadata.
   *
-  * @see NCPropertyMapAdapter
-  * @see NCToken
-  * @see NCEntity */
+  * @see [[NCPropertyMapAdapter
+  * @see [[NCToken
+  * @see [[NCEntity */
 trait NCPropertyMap:
     /**
       * Returns the value to which the specified key is mapped, or `null` if this map contains no mapping for the key.

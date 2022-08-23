@@ -19,15 +19,15 @@ package org.apache.nlpcraft
 
 /**
   *
-  * @see NCEntity
-  * @see NCToken
-  * @see NCTokenParser
-  * @see NCTokenEnricher
-  * @see NCTokenValidator
-  * @see NCEntityParser
-  * @see NCEntityEnricher
-  * @see NCEntityValidator
-  * @see NCEntityMapper */
+  * @see [[NCEntity
+  * @see [[NCToken
+  * @see [[NCTokenParser
+  * @see [[NCTokenEnricher
+  * @see [[NCTokenValidator
+  * @see [[NCEntityParser
+  * @see [[NCEntityEnricher
+  * @see [[NCEntityValidator
+  * @see [[NCEntityMapper */
 trait NCTokenEnricher extends NCLifecycle:
     /**
       *
