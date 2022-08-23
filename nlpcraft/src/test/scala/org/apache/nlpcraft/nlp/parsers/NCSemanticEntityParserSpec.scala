@@ -78,10 +78,10 @@ class NCSemanticEntityParserSpec:
         require(e.getId == id)
 
         value match
-            case Some(v) => require(e.get[Any](s"$id:value") == v)
+            case Some(v) => require(e[Any](s"$id:value") == v)
             case None => // No-op.
         elemData match
-            case Some(m) => m.foreach { (k, v) => require(e.get[Any](s"$id:$k") == v) }
+            case Some(m) => m.foreach { (k, v) => require(e[Any](s"$id:$k") == v) }
             case None => // No-op.
 
     /**

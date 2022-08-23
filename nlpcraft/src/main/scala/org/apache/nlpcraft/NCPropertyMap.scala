@@ -30,7 +30,7 @@ trait NCPropertyMap:
       * @param key The key whose associated value is to be returned.
       * @param <T> Type of the returned value.
       * @return The value to which the specified key is mapped, or `null` if this map contains no mapping for the key. */
-    def get[T](key: String): T
+    def apply[T](key: String): T
 
     /**
       * Returns the value to which the specified key is mapped as an optional. This method is equivalent to:
@@ -41,7 +41,7 @@ trait NCPropertyMap:
       * @param key The key whose associated value is to be returned.
       * @param <T> Type of the returned value.
       * @return The value to which the specified key is mapped as an optional. */
-    def getOpt[T](key: String): Option[T]
+    def get[T](key: String): Option[T]
 
     /**
       * Associates the specified value with the specified key in this map. If the map previously contained a mapping

@@ -61,7 +61,7 @@ class NCOpenNLPEntityParserSpec:
         NCTestUtils.printEntities(txt, ents)
 
         require(ents.sizeIs == 1)
-        require(ents.exists(_.getOpt(s"opennlp:$expected:probability").isDefined))
+        require(ents.exists(_.get(s"opennlp:$expected:probability").isDefined))
 
     /**
       *

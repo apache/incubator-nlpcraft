@@ -46,7 +46,7 @@ class NCQuotesTokenEnricherSpec:
         quoteEnricher.enrich(req, CFG, toks)
         
         NCTestUtils.printTokens(toks)
-        toks.foreach (tok => require(!(tok.get[Boolean]("quoted") ^ quotes.contains(tok.getIndex))))
+        toks.foreach (tok => require(!(tok[Boolean]("quoted") ^ quotes.contains(tok.getIndex))))
 
     @Test
     def test(): Unit =

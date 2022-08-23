@@ -448,7 +448,7 @@ class NCIntentSolverManager(
             var abort = false
             var lastTermMatch: TermMatch = null
             val sess = ctx.getConversation.getData // Conversation metadata (shared across all terms).
-            val convMeta = sess.keysSet.map(k => k -> sess.get(k).asInstanceOf[Object]).toMap
+            val convMeta = sess.keysSet.map(k => k -> sess(k).asInstanceOf[Object]).toMap
             val ents = senEnts.map(_.entity)
 
             // Check terms.

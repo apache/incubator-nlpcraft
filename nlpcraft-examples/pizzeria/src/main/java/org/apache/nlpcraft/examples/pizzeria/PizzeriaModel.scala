@@ -27,12 +27,12 @@ import org.apache.nlpcraft.examples.pizzeria.components.PizzeriaModelPipeline
 import org.apache.nlpcraft.nlp.*
 
 object PizzeriaExtractors:
-    def extractPizzaSize(e: NCEntity): String = e.get[String]("ord:pizza:size:value")
-    def extractQty(e: NCEntity, qty: String): Option[Int] = Option.when(e.contains(qty))(e.get[String](qty).toDouble.toInt)
+    def extractPizzaSize(e: NCEntity): String = e[String]("ord:pizza:size:value")
+    def extractQty(e: NCEntity, qty: String): Option[Int] = Option.when(e.contains(qty))(e[String](qty).toDouble.toInt)
     def extractPizza(e: NCEntity): Pizza =
-        Pizza(e.get[String]("ord:pizza:value"), e.getOpt[String]("ord:pizza:size"), extractQty(e, "ord:pizza:qty"))
+        Pizza(e[String]("ord:pizza:value"), e.get[String]("ord:pizza:size"), extractQty(e, "ord:pizza:qty"))
     def extractDrink(e: NCEntity): Drink =
-        Drink(e.get[String]("ord:drink:value"), extractQty(e, "ord:drink:qty"))
+        Drink(e[String]("ord:drink:value"), extractQty(e, "ord:drink:qty"))
 
 import PizzeriaExtractors.*
 
@@ -46,7 +46,7 @@ object PizzeriaModel extends LazyLogging:
     private def getCurrentOrder()(using ctx: NCContext): Order =
         val sess = ctx.getConversation.getData
         val usrId = ctx.getRequest.getUserId
-        sess.getOpt[Order](usrId) match
+        sess.get[Order](usrId) match
             case Some(ord) => ord
             case None =>
                 val ord = new Order()

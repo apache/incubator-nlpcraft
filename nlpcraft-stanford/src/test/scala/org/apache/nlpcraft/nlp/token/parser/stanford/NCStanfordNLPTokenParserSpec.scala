@@ -37,5 +37,5 @@ class NCStanfordNLPTokenParserSpec:
         NCTestUtils.printTokens(toks)
 
         val words = toks.map(_.getText)
-        require(toks.map(_.get["String"]("pos")).filter(_ != null).distinct.sizeIs > 1)
-        require(toks.map(_.get[String]("lemma")).filter(_ != null).zip(words).exists {_ != _})
+        require(toks.map(_["String"]("pos")).filter(_ != null).distinct.sizeIs > 1)
+        require(toks.map(_[String]("lemma")).filter(_ != null).zip(words).exists {_ != _})

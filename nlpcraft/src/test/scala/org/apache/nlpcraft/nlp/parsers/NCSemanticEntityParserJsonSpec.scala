@@ -50,7 +50,7 @@ class NCSemanticEntityParserJsonSpec:
         
         require(tok.getId == id)
         elemData match
-            case Some(m) => m.foreach { (k, v) => require(tok.get[Any](s"$id:$k") == v) }
+            case Some(m) => m.foreach { (k, v) => require(tok[Any](s"$id:$k") == v) }
             case None => // No-op.
 
     /**

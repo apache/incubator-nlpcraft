@@ -40,7 +40,7 @@ object NCTestUtils:
       * @return
       */
     private def mkProps(m: NCPropertyMap): String =
-        m.keysSet.toSeq.sorted.map(p => s"$p=${m.get[Any](p)}").mkString("{", ", ", "}")
+        m.keysSet.toSeq.sorted.map(p => s"$p=${m[Any](p)}").mkString("{", ", ", "}")
 
     /**
       * @param toks
@@ -52,7 +52,7 @@ object NCTestUtils:
             tbl += (
                 t.getText,
                 t.getIndex,
-                t.getOpt[Boolean]("stopword") match
+                t.get[Boolean]("stopword") match
                     case Some(b) => b.toString
                     case None => "undef."
                 ,

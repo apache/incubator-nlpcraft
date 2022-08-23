@@ -41,7 +41,7 @@ class NCNLPEntityParser extends NCEntityParser:
                 put(s"$id:index", t.getIndex)
                 put(s"$id:startCharIndex", t.getStartCharIndex)
 
-                t.keysSet.foreach(key => put(s"$id:$key", t.get(key)))
+                t.keysSet.foreach(key => put(s"$id:$key", t(key)))
 
                 override val getTokens: List[NCToken] = List(t)
                 override val getRequestId: String = req.getRequestId

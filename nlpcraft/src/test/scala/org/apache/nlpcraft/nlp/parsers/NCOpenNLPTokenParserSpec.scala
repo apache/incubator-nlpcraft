@@ -31,7 +31,7 @@ import scala.jdk.CollectionConverters.*
   *
   */
 class NCOpenNLPTokenParserSpec:
-    private def isStopWord(t: NCToken): Boolean = t.get[Boolean]("stopword")
+    private def isStopWord(t: NCToken): Boolean = t[Boolean]("stopword")
 
     private def test(txt: String, validate: Seq[NCToken] => _): Unit =
         val toks = EN_TOK_PARSER.tokenize(txt)

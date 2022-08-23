@@ -29,8 +29,8 @@ import scala.jdk.CollectionConverters.*
 class NCFrStopWordsTokenEnricher extends NCTokenEnricher:
     private final val stops = FrenchAnalyzer.getDefaultStopSet
 
-    private def getPos(t: NCToken): String = t.getOpt("pos").getOrElse(throw new NCException("POS not found in token."))
-    private def getLemma(t: NCToken): String = t.getOpt("lemma").getOrElse(throw new NCException("Lemma not found in token."))
+    private def getPos(t: NCToken): String = t.get("pos").getOrElse(throw new NCException("POS not found in token."))
+    private def getLemma(t: NCToken): String = t.get("lemma").getOrElse(throw new NCException("Lemma not found in token."))
 
     override def enrich(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): Unit =
         for (t <- toks)

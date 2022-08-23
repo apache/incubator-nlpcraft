@@ -25,7 +25,7 @@ import org.apache.nlpcraft.*
   */
 class NCEnQuotesTokenEnricher extends NCTokenEnricher with LazyLogging:
     private final val Q_POS: Set[String] = Set("``", "''")
-    private def getPos(t: NCToken): String = t.getOpt("pos").getOrElse(throw new NCException("POS not found in token."))
+    private def getPos(t: NCToken): String = t.get("pos").getOrElse(throw new NCException("POS not found in token."))
     private def isQuote(t: NCToken): Boolean = Q_POS.contains(getPos(t))
 
     override def enrich(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): Unit =

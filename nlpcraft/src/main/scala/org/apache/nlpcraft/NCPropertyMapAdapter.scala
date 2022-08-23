@@ -25,11 +25,9 @@ import java.util.concurrent.ConcurrentHashMap
 class NCPropertyMapAdapter extends NCPropertyMap:
     private val map = new ConcurrentHashMap[String, Any]
 
-    // TODO: or error?
+    override def apply[T](key: String): T = get(key).getOrElse(throw new NoSuchElementException(s"Key not found: $key"))
 
-    override def get[T](key: String): T = getOpt(key).orNull.asInstanceOf[T]
-
-    override def getOpt[T](key: String): Option[T] =
+    override def get[T](key: String): Option[T] =
         map.get(key) match
             case null => None
             case x => Some(x.asInstanceOf[T])

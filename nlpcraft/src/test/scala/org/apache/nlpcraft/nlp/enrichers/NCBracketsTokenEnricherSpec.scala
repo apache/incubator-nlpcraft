@@ -41,7 +41,7 @@ class NCBracketsTokenEnricherSpec:
 
         NCTestUtils.printTokens(toks)
 
-        toks.foreach (tok => require(!(tok.get[Boolean]("brackets") ^ brackets.contains(tok.getIndex))))
+        toks.foreach (tok => require(!(tok[Boolean]("brackets") ^ brackets.contains(tok.getIndex))))
 
     @Test
     def test(): Unit =

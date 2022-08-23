@@ -90,7 +90,7 @@ class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCPipeline) extends L
       */
     private def mkProps(m: NCPropertyMap): String =
         if m.keysSet.isEmpty then ""
-        else m.keysSet.toSeq.sorted.map(p => s"$p=${m.get[Any](p)}").mkString("{", ", ", "}")
+        else m.keysSet.toSeq.sorted.map(p => s"$p=${m(p)}").mkString("{", ", ", "}")
 
     /**
       *

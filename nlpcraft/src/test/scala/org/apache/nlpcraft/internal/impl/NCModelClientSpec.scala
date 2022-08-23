@@ -36,7 +36,7 @@ class NCModelClientSpec:
       * @return
       */
     private def s(e: NCEntity): String =
-        s"Entity [id=${e.getId}, text=${e.mkText}, properties={${e.keysSet.map(k => s"$k=${e.get(k)}")}}]"
+        s"Entity [id=${e.getId}, text=${e.mkText}, properties={${e.keysSet.map(k => s"$k=${e(k)}")}}]"
 
     /**
       *

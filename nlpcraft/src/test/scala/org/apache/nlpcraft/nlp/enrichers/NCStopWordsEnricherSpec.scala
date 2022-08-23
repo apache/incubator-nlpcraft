@@ -40,7 +40,7 @@ class NCStopWordsEnricherSpec:
         val toks = EN_TOK_PARSER.tokenize(txt)
         require(toks.size == boolVals.size)
 
-        toks.foreach(tok => require(tok.getOpt[Boolean]("stopword").isEmpty))
+        toks.foreach(tok => require(tok.get[Boolean]("stopword").isEmpty))
 
         val req = NCTestRequest(txt)
 
@@ -48,7 +48,7 @@ class NCStopWordsEnricherSpec:
         stopEnricher.enrich(req, CFG, toks)
 
         NCTestUtils.printTokens(toks)
-        toks.zip(boolVals).foreach { (tok, boolVal) => require(tok.get[Boolean]("stopword") == boolVal) }
+        toks.zip(boolVals).foreach { (tok, boolVal) => require(tok[Boolean]("stopword") == boolVal) }
 
     @Test
     def test(): Unit =

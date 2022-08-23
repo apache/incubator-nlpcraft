@@ -62,7 +62,7 @@ class NCSemanticEntityParserLemmaSpec:
                 withTokenEnricher(EN_TOK_STOP_ENRICHER).
                 // 1. Wraps lemmas.
                 withTokenEnricher((_: NCRequest, _: NCModelConfig, toks: List[NCToken]) =>
-                    toks.foreach(t => t.put("lemma", wrap(t.get[String]("lemma"))))
+                    toks.foreach(t => t.put("lemma", wrap(t[String]("lemma"))))
                 ).
                 // 2. Semantic parser with fixed stemmer which stems only lemmas.
                 withEntityParser(NCSemanticEntityParser(lemmaStemmer, EN_TOK_PARSER, elems)).

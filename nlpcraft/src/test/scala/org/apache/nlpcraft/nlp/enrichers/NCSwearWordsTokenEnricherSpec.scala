@@ -36,12 +36,12 @@ class NCSwearWordsTokenEnricherSpec:
     def test(): Unit =
         val toks = EN_TOK_PARSER.tokenize("english ass")
 
-        require(toks.head.getOpt[Boolean]("swear:en").isEmpty)
-        require(toks.last.getOpt[Boolean]("swear:en").isEmpty)
+        require(toks.head.get[Boolean]("swear:en").isEmpty)
+        require(toks.last.get[Boolean]("swear:en").isEmpty)
 
         swEnricher.enrich(null, null, toks)
 
         NCTestUtils.printTokens(toks)
 
-        require(!toks.head.get[Boolean]("swear"))
-        require(toks.last.get[Boolean]("swear"))
+        require(!toks.head[Boolean]("swear"))
+        require(toks.last[Boolean]("swear"))

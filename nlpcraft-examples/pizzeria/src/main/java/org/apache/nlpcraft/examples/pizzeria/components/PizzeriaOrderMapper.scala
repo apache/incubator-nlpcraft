@@ -59,8 +59,8 @@ case class PizzeriaOrderMapper(extra: PizzeriaOrderMapperDesc, dests: Seq[Pizzer
     override def map(req: NCRequest, cfg: NCModelConfig, ents: List[NCEntity]): List[NCEntity] =
         def map(destEnt: NCEntity, destProp: String, extraEnt: NCEntity): NCEntity =
             new NCPropertyMapAdapter with NCEntity:
-                destEnt.keysSet.foreach(k => put(k, destEnt.get(k)))
-                put[String](destProp, extraEnt.get[String](extra.propertyName).toLowerCase)
+                destEnt.keysSet.foreach(k => put(k, destEnt(k)))
+                put[String](destProp, extraEnt[String](extra.propertyName).toLowerCase)
                 override val getTokens: List[NCToken] = (destEnt.tokens ++ extraEnt.tokens).sortBy(_.getIndex)
                 override val getRequestId: String = req.getRequestId
                 override val getId: String = destEnt.getId

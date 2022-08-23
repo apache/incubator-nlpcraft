@@ -29,7 +29,7 @@ class NCEnDictionaryTokenEnricher extends NCTokenEnricher:
     init()
 
     private def init(): Unit = dict = NCUtils.readResource("moby/354984si.ngl", "iso-8859-1").toSet
-    private def getLemma(t: NCToken): String = t.getOpt("lemma").getOrElse(throw new NCException("Lemma not found in token."))
+    private def getLemma(t: NCToken): String = t.get("lemma").getOrElse(throw new NCException("Lemma not found in token."))
 
     override def enrich(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): Unit =
         toks.foreach(t => t.put("dict", dict.contains(getLemma(t))))

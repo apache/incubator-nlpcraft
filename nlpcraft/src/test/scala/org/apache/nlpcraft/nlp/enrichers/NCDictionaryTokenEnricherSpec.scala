@@ -37,8 +37,8 @@ class NCDictionaryTokenEnricherSpec:
         val txt = "milk XYZ"
         val toks = EN_TOK_PARSER.tokenize(txt)
 
-        require(toks.head.getOpt[Boolean]("dict:en").isEmpty)
-        require(toks.last.getOpt[Boolean]("dict:en").isEmpty)
+        require(toks.head.get[Boolean]("dict:en").isEmpty)
+        require(toks.last.get[Boolean]("dict:en").isEmpty)
 
         val req = NCTestRequest(txt)
 
@@ -46,5 +46,5 @@ class NCDictionaryTokenEnricherSpec:
         dictEnricher.enrich(req, CFG, toks)
         NCTestUtils.printTokens(toks)
 
-        require(toks.head.get[Boolean]("dict"))
-        require(!toks.last.get[Boolean]("dict"))
+        require(toks.head[Boolean]("dict"))
+        require(!toks.last[Boolean]("dict"))

@@ -99,7 +99,7 @@ object NCSemanticEntityParser:
       * @param t
       * @return
       */
-    private def isStopWord(t: NCToken): Boolean = t.getOpt[Boolean]("stopword").getOrElse(false)
+    private def isStopWord(t: NCToken): Boolean = t.get[Boolean]("stopword").getOrElse(false)
 
     /**
       *
@@ -228,13 +228,13 @@ class NCSemanticEntityParser(
     private def warnMissedProperty(name: String): Unit = logger.warn(s"'$name' property not found. Is proper token enricher configured?")
 
     override def parse(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): List[NCEntity] =
-        if toks.exists(_.getOpt[String]("stopword").isEmpty) then warnMissedProperty("stopword")
+        if toks.exists(_.get[String]("stopword").isEmpty) then warnMissedProperty("stopword")
 
         val stems = toks.map(p => p -> stemmer.stem(p.getText.toLowerCase)).toMap
         val stems4Lemms =
             var ok = true
             val seq =
-                for (t <- toks; lemmaOpt = t.getOpt[String]("lemma") if ok)
+                for (t <- toks; lemmaOpt = t.get[String]("lemma") if ok)
                     yield
                         ok = lemmaOpt.isDefined
                         t -> lemmaOpt.orNull

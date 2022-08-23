@@ -95,13 +95,13 @@ object NCEnStopWordsTokenEnricher:
         "percent"
     )
 
-    private def getPos(t: NCToken): String = t.getOpt("pos").getOrElse(throw new NCException(s"POS not found in token: ${t.keysSet}"))
-    private def getLemma(t: NCToken): String = t.getOpt("lemma").getOrElse(throw new NCException(s"Lemma not found in token: ${t.keysSet}"))
+    private def getPos(t: NCToken): String = t.get("pos").getOrElse(throw new NCException(s"POS not found in token: ${t.keysSet}"))
+    private def getLemma(t: NCToken): String = t.get("lemma").getOrElse(throw new NCException(s"Lemma not found in token: ${t.keysSet}"))
     private def isQuote(t: NCToken): Boolean = Q_POS.contains(getPos(t))
     private def toLemmaKey(toks: Seq[NCToken]): String = toks.map(getLemma).mkString(" ")
     private def toValueKey(toks: Seq[NCToken]): String = toks.map(_.getText.toLowerCase).mkString(" ")
     private def toOriginalKey(toks: Seq[NCToken]): String = toks.map(_.getText).mkString(" ")
-    private def isStopWord(t: NCToken): Boolean = t.getOpt[Boolean]("stopword").getOrElse(false)
+    private def isStopWord(t: NCToken): Boolean = t.get[Boolean]("stopword").getOrElse(false)
 
     /**
       * Gets all sequential permutations of tokens in this NLP sentence.
