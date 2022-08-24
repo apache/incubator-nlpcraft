@@ -414,6 +414,19 @@ object NCModelScanner extends LazyLogging:
 
         var compiler = new NCIDLCompiler(mdl.getConfig)
 
+        def callNoCache[T](f: () => T): T =
+            val cp = compiler.clone()
+            try f()
+            finally compiler = cp
+
+        def callNoCacheOnError[T](f: () => T): T =
+            val cp = compiler.clone()
+            try
+                f()
+            catch case e: Throwable =>
+                compiler = cp
+                throw e
+
         val cfg = mdl.getConfig
         lazy val z = s"mdlId=${cfg.getId}"
         val intentsMtds = mutable.HashMap.empty[Method, IntentHolder]
@@ -443,13 +456,8 @@ object NCModelScanner extends LazyLogging:
 
             // 1. First pass.
             for (ann <- anns)
-                val copy = compiler.clone()
-                try
-                    addIntents(ann)
-                catch
-                    case _: NCException =>
-                        compiler = copy
-                        errAnns += ann
+                try callNoCacheOnError(() => addIntents(ann))
+                catch case _: NCException => errAnns += ann
 
             // 2. Second pass.
             for (ann <- errAnns) addIntents(ann)
@@ -480,16 +488,13 @@ object NCModelScanner extends LazyLogging:
 
             // // Collects intents for each method.
             for (mtd <- methods)
-                val copy = compiler.clone()
+                callNoCache(
+                    () =>
+                        for (ann <- mtd.getAnnotationsByType(CLS_INTENT); intent <- compiler.compile(ann.value, method2Str(mtd)))
+                            addDecl(intent)
+                            addIntent(intent, mtd, obj)
+                )
 
-                try
-                    for (
-                        ann <- mtd.getAnnotationsByType(CLS_INTENT);
-                        intent <- compiler.compile(ann.value, method2Str(mtd))
-                    )
-                        addDecl(intent)
-                        addIntent(intent, mtd, obj)
-                finally compiler = copy
         scan(mdl)
 
         // Second phase. For model and all its references scans each method and finds intents references (NCIntentRef)
