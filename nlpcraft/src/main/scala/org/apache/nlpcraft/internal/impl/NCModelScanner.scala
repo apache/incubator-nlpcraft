@@ -421,11 +421,8 @@ object NCModelScanner extends LazyLogging:
 
         def callNoCacheOnError[T](f: () => T): T =
             val cp = compiler.clone()
-            try
-                f()
-            catch case e: Throwable =>
-                compiler = cp
-                throw e
+            try f()
+            catch case e: Throwable => { compiler = cp; throw e }
 
         val cfg = mdl.getConfig
         lazy val z = s"mdlId=${cfg.getId}"
