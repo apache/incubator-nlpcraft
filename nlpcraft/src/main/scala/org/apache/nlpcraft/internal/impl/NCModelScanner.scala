@@ -429,10 +429,31 @@ object NCModelScanner extends LazyLogging:
             if intentsMtds.contains(mtd) then E(s"The callback cannot have more one intent [$z, callback=${method2Str(mtd)}]")
             intentsMtds += mtd -> IntentHolder(cfg, intent, obj, mtd)
 
+        /**
+          *  It is done such way because intents can contain references to 'fragments',
+          *  but annotations can be received via java reflection in inordered way.
+          */
+        def addIntent2Phases(anns: scala.Array[NCIntent], origin: String): Iterable[NCIDLIntent] =
+            val errAnns = mutable.ArrayBuffer.empty[NCIntent]
+            val intents = mutable.ArrayBuffer.empty[NCIDLIntent]
+
+            def addIntents(ann: NCIntent) = intents ++= NCIDLCompiler.compile(ann.value, cfg, origin)
+
+            // 1. First pass.
+            for (ann <- anns) try addIntents(ann)
+            catch case _: NCException => errAnns += ann
+
+            // 2. Second pass.
+            for (ann <- errAnns) addIntents(ann)
+
+            // Process all compiled intents.
+            for (intent <- intents) addDecl(intent)
+
+            intents
+
         def processClassAnnotations(cls: Class[_]): Unit =
             if cls != null && processed.add(cls) then
-                for (ann <- cls.getAnnotationsByType(CLS_INTENT); intent <- NCIDLCompiler.compile(ann.value, cfg, class2Str(cls)))
-                    addDecl(intent)
+                addIntent2Phases(cls.getAnnotationsByType(CLS_INTENT), class2Str(cls))
 
                 processClassAnnotations(cls.getSuperclass)
                 cls.getInterfaces.foreach(processClassAnnotations)
@@ -446,13 +467,11 @@ object NCModelScanner extends LazyLogging:
             val methods = getAllMethods(obj)
 
             // // Collects intents for each method.
-            for (
-                mtd <- methods;
-                ann <- mtd.getAnnotationsByType(CLS_INTENT);
-                intent <- NCIDLCompiler.compile(ann.value, cfg, method2Str(mtd))
-            )
-                addDecl(intent)
-                addIntent(intent, mtd, obj)
+            for (mtd <- methods)
+                val anns = mtd.getAnnotationsByType(CLS_INTENT)
+                val intents = addIntent2Phases(anns, method2Str(mtd))
+
+                for (intent <- intents) addIntent(intent, mtd, obj)
 
             // Scans annotated fields.
             for (f <- getAllFields(obj) if f.isAnnotationPresent(CLS_INTENT_OBJ)) scan(getFieldObject(cfg, f, obj))
