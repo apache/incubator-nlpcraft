@@ -23,15 +23,15 @@ package org.apache.nlpcraft
   * See {@link NCPipeline} for documentation on the token parser place
   * in the overall processing pipeline.
   *
-  * @see NCEntity
-  * @see NCToken
-  * @see NCTokenParser
-  * @see NCTokenEnricher
-  * @see NCTokenValidator
-  * @see NCEntityParser
-  * @see NCEntityEnricher
-  * @see NCEntityValidator
-  * @see NCEntityMapper */
+  * @see [[NCEntity
+  * @see [[NCToken
+  * @see [[NCTokenParser
+  * @see [[NCTokenEnricher
+  * @see [[NCTokenValidator
+  * @see [[NCEntityParser
+  * @see [[NCEntityEnricher
+  * @see [[NCEntityValidator
+  * @see [[NCEntityMapper */
 trait NCTokenParser:
     /**
       *

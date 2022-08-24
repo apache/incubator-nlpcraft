@@ -18,5 +18,9 @@
 package org.apache.nlpcraft
 
 /**
-  * Base NLPCraft exception. */
+  * Base NLPCraft exception.
+  *
+  * @param msg Error message.
+  * @param cause Optional cause exception.
+  */
 class NCException(msg: String, cause: Throwable = null) extends RuntimeException(msg, cause)

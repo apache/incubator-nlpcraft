@@ -22,7 +22,7 @@ package org.apache.nlpcraft
   * query can have one or more possible different parsing variants. Depending on model configuration a user input
   * can produce hundreds or even thousands of parsing variants.
   *
-  * @see NCModel#onVariant(NCVariant) */
+  * @see [[NCModel#onVariant(NCVariant) */
 trait NCVariant:
     /**
       * Gets the list of entities for this variant.

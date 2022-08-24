@@ -20,19 +20,19 @@ package org.apache.nlpcraft
 /**
   * A pipeline component that allows to map one set of entities into another after the entities were parsed
   * and enriched. Entity mapper is an optional component and the pipeline can have zero or more entity mappers. Mappers
-  * are typically used for combine several existing entities into a new one without necessarily touching the entity
-  * parser or enrichers. See {@link NCPipeline} for documentation on the overall processing pipeline.
+  * are typically used for combining several existing entities into a new one without necessarily touching the entity
+  * parser or enrichers. See [[NCPipeline]] for documentation on the overall processing pipeline.
   *
-  * @see NCPipeline#getEntityMappers()
-  * @see NCEntity
-  * @see NCToken
-  * @see NCTokenParser
-  * @see NCTokenEnricher
-  * @see NCTokenValidator
-  * @see NCEntityParser
-  * @see NCEntityEnricher
-  * @see NCEntityValidator
-  * @see NCEntityMapper
+  * @see [[NCPipeline.getEntityMappers]]
+  * @see [[NCEntity]]
+  * @see [[NCToken]]
+  * @see [[NCTokenParser]]
+  * @see [[NCTokenEnricher]]
+  * @see [[NCTokenValidator]]
+  * @see [[NCEntityParser]]
+  * @see [[NCEntityEnricher]]
+  * @see [[NCEntityValidator]]
+  * @see [[NCEntityMapper]]
   */
 trait NCEntityMapper extends NCLifecycle:
     /**
