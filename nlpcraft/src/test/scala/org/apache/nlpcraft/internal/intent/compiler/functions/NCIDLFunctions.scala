@@ -51,7 +51,7 @@ private[functions] object NCIDLFunctions:
         entitiesUsed: Option[Int] = None
     ):
         lazy val term: NCIDLTerm =
-            val intents = NCIDLCompiler.compile(s"intent=i term(t)={$truth}", idlCtx.mdlCfg, MODEL_ID)
+            val intents = new NCIDLCompiler(idlCtx.mdlCfg).compile(s"intent=i term(t)={$truth}", MODEL_ID)
 
             require(intents.size == 1)
             require(intents.head.terms.sizeIs == 1)
@@ -164,9 +164,6 @@ import org.apache.nlpcraft.internal.intent.compiler.functions.NCIDLFunctions.*
   * Tests for IDL functions.
   */
 private[functions] trait NCIDLFunctions:
-    @BeforeEach
-    def before(): Unit = NCIDLGlobal.clearCache(MODEL_ID)
-
     /**
       *
       * @param funcs

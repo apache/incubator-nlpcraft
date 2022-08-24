@@ -27,13 +27,15 @@ import org.junit.jupiter.api.Test
 class NCIDLCompilerSpec:
     private final val MODEL_ID = "test.mdl.id"
 
+    private final val compiler = new NCIDLCompiler(CFG)
+
     /**
      *
      * @param idl
      */
     private def checkCompileOk(idl: String): Unit =
         try
-            NCIDLCompiler.compile(idl, CFG, MODEL_ID)
+            compiler.compile(idl,  MODEL_ID)
             assert(true)
         catch case e: Exception => assert(assertion = false, e)
 
@@ -43,7 +45,7 @@ class NCIDLCompilerSpec:
      */
     private def checkCompileError(txt: String): Unit =
         try
-            NCIDLCompiler.compile(txt, CFG, MODEL_ID)
+            compiler.compile(txt, MODEL_ID)
             assert(false)
         catch
             case e: NCException =>
@@ -53,8 +55,6 @@ class NCIDLCompilerSpec:
     @Test
     @throws[NCException]
     def testInlineCompileOk(): Unit =
-        NCIDLGlobal.clearCache(MODEL_ID)
-    
         checkCompileOk(
             """
               |import('org/apache/nlpcraft/internal/intent/compiler/test_ok.idl')
@@ -120,8 +120,6 @@ class NCIDLCompilerSpec:
     @Test
     @throws[NCException]
     def testInlineCompileFail(): Unit =
-        NCIDLGlobal.clearCache(MODEL_ID)
-
         checkCompileError(
             """
               |intent=i1
@@ -292,13 +290,13 @@ class NCIDLCompilerSpec:
         )
 
     @Test
-    def testImport(): Unit = require(NCIDLCompiler.compile("import('scan/idl.idl')", CFG, "test-origin").size == 1)
+    def testImport(): Unit = require(compiler.compile("import('scan/idl.idl')", "test-origin").size == 1)
 
     @Test
     def testEmpty(): Unit =
         def test0(idl: String): Unit =
             try
-                NCIDLCompiler.compile(idl, CFG, "test-origin")
+                compiler.compile(idl, "test-origin")
                 require(true)
             catch
                 case e: NCException => println(s"Unexpected error: $e")

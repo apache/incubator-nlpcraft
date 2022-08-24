@@ -32,12 +32,39 @@ import java.io.*
 import java.net.*
 import java.util.Optional
 import java.util.regex.*
+import scala.collection.concurrent.TrieMap
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
 
-object NCIDLCompiler extends LazyLogging:
+class NCIDLCompiler(cfg: NCModelConfig) extends LazyLogging with scala.collection.mutable.Cloneable[NCIDLCompiler]:
     // Compiler caches.
-    private val cache = new mutable.HashMap[String, Set[NCIDLIntent]]
+    private val cacheIntents = new mutable.HashMap[String, Set[NCIDLIntent]]
+    private val fragCache = TrieMap.empty[String /* Model ID. */ , mutable.Map[String, NCIDLFragment]]
+    private val importCache = mutable.HashSet.empty[String]
+
+    private def getFragment(mdlId: String, fragId: String): Option[NCIDLFragment] = fragCache.get(mdlId).flatMap(_.get(fragId))
+
+    private def addFragment(mdlId: String, frag: NCIDLFragment): Unit =
+        fragCache.getOrElse(mdlId, {
+            val m = mutable.HashMap.empty[String, NCIDLFragment]
+
+            fragCache += mdlId -> m
+
+            m
+        }) += (frag.id -> frag)
+
+    private def addImport(imp: String): Unit = importCache.synchronized {
+        importCache += imp
+    }
+
+    /**
+      *
+      * @param imp
+      * @return
+      */
+    private def hasImport(imp: String): Boolean = importCache.synchronized {
+        importCache.contains(imp)
+    }
 
     /**
       *
@@ -181,12 +208,12 @@ object NCIDLCompiler extends LazyLogging:
 
         override def exitFragId(ctx: IDP.FragIdContext): Unit =
             fragId = ctx.id().getText
-            if NCIDLGlobal.getFragment(mdlCfg.getId, fragId).isDefined then SE(s"Duplicate fragment ID: $fragId")(ctx.id())
+            if getFragment(mdlCfg.getId, fragId).isDefined then SE(s"Duplicate fragment ID: $fragId")(ctx.id())
 
         override def exitFragRef(ctx: IDP.FragRefContext): Unit =
             val id = ctx.id().getText
 
-            NCIDLGlobal.getFragment(mdlCfg.getId, id) match
+            getFragment(mdlCfg.getId, id) match
                 case Some(frag) =>
                     val meta = if fragMeta == null then Map.empty[String, Any] else fragMeta
                     for (fragTerm <- frag.terms)
@@ -256,7 +283,7 @@ object NCIDLCompiler extends LazyLogging:
             }
 
         override def exitFrag(ctx: IDP.FragContext): Unit =
-            NCIDLGlobal.addFragment(mdlCfg.getId, NCIDLFragment(fragId, terms.toList))
+            addFragment(mdlCfg.getId, NCIDLFragment(fragId, terms.toList))
             terms.clear()
             fragId = null
 
@@ -290,9 +317,9 @@ object NCIDLCompiler extends LazyLogging:
         override def exitImprt(ctx: IDP.ImprtContext): Unit =
                 val x = NCUtils.trimQuotes(ctx.qstring().getText)
 
-                if NCIDLGlobal.hasImport(x) then logger.warn(s"Ignoring already processed IDL import '$x' in: $origin")
+                if hasImport(x) then logger.warn(s"Ignoring already processed IDL import '$x' in: $origin")
                 else
-                    NCIDLGlobal.addImport(x)
+                   addImport(x)
 
                     var imports: Set[NCIDLIntent] = null
                     val file = new File(x)
@@ -300,20 +327,20 @@ object NCIDLCompiler extends LazyLogging:
                     // First, try absolute path.
                     if file.exists() then
                         val idl = NCUtils.readFile(file).mkString("\n")
-                        imports = NCIDLCompiler.compile(idl, mdlCfg, x)
+                        imports = compile(idl, x)
 
                     // Second, try as a classloader resource.
                     if imports == null then
                         val in = mdlCfg.getClass.getClassLoader.getResourceAsStream(x)
                         if (in != null)
                             val idl = NCUtils.readStream(in).mkString("\n")
-                            imports = NCIDLCompiler.compile(idl, mdlCfg, x)
+                            imports = compile(idl, x)
 
                     // Finally, try as URL resource.
                     if imports == null then
                         try
                             val idl = NCUtils.readStream(new URL(x).openStream()).mkString("\n")
-                            imports = NCIDLCompiler.compile(idl, mdlCfg, x )
+                            imports = compile(idl,  x)
                         catch case _: Exception => throw newRuntimeError(s"Invalid or unknown import location: $x")(ctx.qstring())
 
                     require(imports != null)
@@ -436,22 +463,17 @@ object NCIDLCompiler extends LazyLogging:
     /**
       *
       * @param idl
-      * @param mdlCfg
       * @param srcName
       * @return
       */
-    private def parseIntents(
-        idl: String,
-        mdlCfg: NCModelConfig,
-        srcName: String
-    ): Set[NCIDLIntent] =
+    private def parseIntents(idl: String, srcName: String): Set[NCIDLIntent] =
         require(idl != null)
-        require(mdlCfg != null)
+        require(cfg != null)
         require(srcName != null)
 
         val x = idl.strip()
-        val intents: Set[NCIDLIntent] = cache.getOrElseUpdate(x, {
-            val (fsm, parser) = antlr4Armature(x, mdlCfg, srcName)
+        val intents: Set[NCIDLIntent] = cacheIntents.getOrElseUpdate(x, {
+            val (fsm, parser) = antlr4Armature(x, cfg, srcName)
 
             // Parse the input IDL and walk built AST.
             (new ParseTreeWalker).walk(fsm, parser.idl())
@@ -487,10 +509,17 @@ object NCIDLCompiler extends LazyLogging:
       * map keyed by model ID. Only intents are returned, if any.
       *
       * @param idl Intent IDL to compile.
-      * @param mdlCfg Model configuration.
       * @param origin Optional source name.
       * @return
       */
     @throws[NCException]
-    def compile(idl: String, mdlCfg: NCModelConfig, origin: String): Set[NCIDLIntent] =
-        parseIntents(idl, mdlCfg, origin)
+    def compile(idl: String, origin: String): Set[NCIDLIntent] = parseIntents(idl,  origin)
+
+    override def clone(): NCIDLCompiler =
+        val copy = new NCIDLCompiler(cfg)
+        this.cacheIntents ++= cacheIntents.clone()
+        this.importCache ++= importCache.clone()
+        this.fragCache ++= fragCache.clone()
+        copy
+
+
