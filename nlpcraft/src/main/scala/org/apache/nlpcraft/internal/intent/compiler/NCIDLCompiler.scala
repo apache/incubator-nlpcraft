@@ -37,34 +37,41 @@ import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
 
 class NCIDLCompiler(cfg: NCModelConfig) extends LazyLogging with scala.collection.mutable.Cloneable[NCIDLCompiler]:
+    private val intents = mutable.HashMap.empty[String, Set[NCIDLIntent]]
+
     // Compiler caches.
-    private val cacheIntents = new mutable.HashMap[String, Set[NCIDLIntent]]
-    private val fragCache = TrieMap.empty[String /* Model ID. */ , mutable.Map[String, NCIDLFragment]]
+    private val fragCache = mutable.HashMap.empty[String, NCIDLFragment]
     private val importCache = mutable.HashSet.empty[String]
 
-    private def getFragment(mdlId: String, fragId: String): Option[NCIDLFragment] = fragCache.get(mdlId).flatMap(_.get(fragId))
+    /**
+      *
+      * @param fragId
+      * @return
+      */
+    private def getFragment(fragId: String): Option[NCIDLFragment] = fragCache.get(fragId)
 
-    private def addFragment(mdlId: String, frag: NCIDLFragment): Unit =
-        fragCache.getOrElse(mdlId, {
-            val m = mutable.HashMap.empty[String, NCIDLFragment]
+    /**
+      *
+      * @param fragId
+      * @return
+      */
+    private def hasFragment(fragId: String): Boolean = fragCache.contains(fragId)
 
-            fragCache += mdlId -> m
+    /**
+      *
+      * @param mdlId
+      * @param frag
+      */
+    private def addFragment(mdlId: String, frag: NCIDLFragment): Unit = fragCache += frag.id -> frag
 
-            m
-        }) += (frag.id -> frag)
-
-    private def addImport(imp: String): Unit = importCache.synchronized {
-        importCache += imp
-    }
+    private def addImport(imp: String): Unit = importCache += imp
 
     /**
       *
       * @param imp
       * @return
       */
-    private def hasImport(imp: String): Boolean = importCache.synchronized {
-        importCache.contains(imp)
-    }
+    private def hasImport(imp: String): Boolean = importCache.contains(imp)
 
     /**
       *
@@ -208,12 +215,12 @@ class NCIDLCompiler(cfg: NCModelConfig) extends LazyLogging with scala.collectio
 
         override def exitFragId(ctx: IDP.FragIdContext): Unit =
             fragId = ctx.id().getText
-            if getFragment(mdlCfg.getId, fragId).isDefined then SE(s"Duplicate fragment ID: $fragId")(ctx.id())
+            if hasFragment(fragId) then SE(s"Duplicate fragment ID: $fragId")(ctx.id())
 
         override def exitFragRef(ctx: IDP.FragRefContext): Unit =
             val id = ctx.id().getText
 
-            getFragment(mdlCfg.getId, id) match
+            getFragment(id) match
                 case Some(frag) =>
                     val meta = if fragMeta == null then Map.empty[String, Any] else fragMeta
                     for (fragTerm <- frag.terms)
@@ -471,9 +478,9 @@ class NCIDLCompiler(cfg: NCModelConfig) extends LazyLogging with scala.collectio
         require(cfg != null)
         require(srcName != null)
 
-        val x = idl.strip()
-        val intents: Set[NCIDLIntent] = cacheIntents.getOrElseUpdate(x, {
-            val (fsm, parser) = antlr4Armature(x, cfg, srcName)
+        val idlNorm = idl.strip()
+        intents.getOrElseUpdate(idlNorm, {
+            val (fsm, parser) = antlr4Armature(idlNorm, cfg, srcName)
 
             // Parse the input IDL and walk built AST.
             (new ParseTreeWalker).walk(fsm, parser.idl())
@@ -481,8 +488,6 @@ class NCIDLCompiler(cfg: NCModelConfig) extends LazyLogging with scala.collectio
             // Return the compiled intents.
             fsm.getCompiledIntents
         })
-
-        intents
 
     /**
       *
@@ -515,11 +520,11 @@ class NCIDLCompiler(cfg: NCModelConfig) extends LazyLogging with scala.collectio
     @throws[NCException]
     def compile(idl: String, origin: String): Set[NCIDLIntent] = parseIntents(idl,  origin)
 
-    override def clone(): NCIDLCompiler =
-        val copy = new NCIDLCompiler(cfg)
-        this.cacheIntents ++= cacheIntents.clone()
-        this.importCache ++= importCache.clone()
-        this.fragCache ++= fragCache.clone()
-        copy
+    def clone(cp: NCIDLCompiler): NCIDLCompiler =
+        val cp = new NCIDLCompiler(cfg)
+        cp.intents ++= cp.intents.clone()
+        cp.importCache ++= importCache.clone()
+        cp.fragCache ++= fragCache.clone()
+        cp
 
-
+    override def clone(): NCIDLCompiler = clone(this)

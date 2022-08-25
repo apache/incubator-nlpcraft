@@ -417,9 +417,9 @@ object NCModelScanner extends LazyLogging:
         def callNoCache[T](f: () => T): T =
             val cp = compiler.clone()
             try f()
-            finally compiler = cp
+            finally compiler = cp.clone(compiler)
 
-        def callNoCacheOnError[T](f: () => T): T =
+        def callClear[T](f: () => T): T =
             val cp = compiler.clone()
             try f()
             catch case e: Throwable => { compiler = cp; throw e }
@@ -453,7 +453,7 @@ object NCModelScanner extends LazyLogging:
 
             // 1. First pass.
             for (ann <- anns)
-                try callNoCacheOnError(() => addIntents(ann))
+                try callClear(() => addIntents(ann))
                 catch case _: NCException => errAnns += ann
 
             // 2. Second pass.
