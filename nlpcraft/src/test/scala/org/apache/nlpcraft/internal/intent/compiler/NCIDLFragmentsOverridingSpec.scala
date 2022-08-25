@@ -30,18 +30,20 @@ class NCIDLFragmentsOverridingSpec:
     @NCIntent("fragment=f term(x)~{# == 'x1'}")
     class M extends NCTestModelAdapter:
         // Uses fragment defined on class level.
-        @NCIntent("intent=i2 fragment(f)")
-        private def onX(ctx: NCContext, im: NCIntentMatch): NCResult = NCResult(1)
+        @NCIntent("intent=i1 fragment(f)")
+        private def on1(ctx: NCContext, im: NCIntentMatch): NCResult = NCResult(1)
 
         // Overrides fragment defined on class level by its own.
-        @NCIntent("fragment=f term(y)~{# == 'x2'} intent=i1 fragment(f)")
-        private def onY(ctx: NCContext, im: NCIntentMatch): NCResult = NCResult(2)
+        @NCIntent("fragment=f term(y)~{# == 'x2'} intent=i2 fragment(f)")
+        private def on2(ctx: NCContext, im: NCIntentMatch): NCResult = NCResult(2)
 
         override val getPipeline: NCPipeline = mkEnPipeline(TE("x1"), TE("x2"))
 
     @Test
     def test(): Unit =
         Using.resource(new NCModelClient(new M())) { client =>
-            require(client.ask("x1", "usr").getBody == 1)
-            require(client.ask("x2", "usr").getBody == 2)
+            def test(ps: (String, Int)*): Unit =
+                ps.foreach { case (txt, res) => require(client.ask(txt, "usr").getBody == res) }
+
+            test("x1" -> 1, "x2" -> 2)
         }

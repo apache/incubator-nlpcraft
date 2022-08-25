@@ -46,7 +46,7 @@ class NCIDLFragmentsOverridingSpec2:
     @Test
     def test(): Unit =
         Using.resource(new NCModelClient(new M())) { client =>
-            require(client.ask("x1", "usr").getBody == 1)
-            require(client.ask("x2", "usr").getBody == 2)
-            require(client.ask("x3", "usr").getBody == 3)
+            def test(ps: (String, Int)*): Unit = ps.foreach { case (txt, res) => require(client.ask(txt, "usr").getBody == res) }
+
+            test("x1" -> 1, "x2" -> 2, "x3" -> 3)
         }
