@@ -29,6 +29,10 @@ import scala.util.Using
 class NCIDLFragmentsOverridingSpec2:
     @NCIntent("import('org/apache/nlpcraft/internal/intent/compiler/impl_level2.idl')")
     class M extends NCTestModelAdapter:
+        // Uses initial fragment version (with intent), defined in impl_level1.idl.
+        @NCIntent("import('org/apache/nlpcraft/internal/intent/compiler/impl_level1.idl')")
+        @NCIntentRef("i1") private def on1(ctx: NCContext, im: NCIntentMatch): NCResult = NCResult(1)
+
         // Uses fragment, defined on impl_level2.idl, which overrides impl_level1.idl.
         @NCIntent("intent=i2 fragment(f)")
         private def on2(ctx: NCContext, im: NCIntentMatch): NCResult = NCResult(2)
@@ -36,11 +40,6 @@ class NCIDLFragmentsOverridingSpec2:
         // Uses own fragment, which overrides all.
         @NCIntent("fragment=f term(z)~{# == 'x3'} intent=i3 fragment(f)")
         private def on3(ctx: NCContext, im: NCIntentMatch): NCResult = NCResult(3)
-
-        // Uses initial fragment version (with intent), defined in impl_level1.idl.
-        @NCIntent("import('org/apache/nlpcraft/internal/intent/compiler/impl_level1.idl')")
-        @NCIntentRef("i1")
-        private def on1(ctx: NCContext, im: NCIntentMatch): NCResult = NCResult(1)
 
         override val getPipeline: NCPipeline =
             val pl = mkEnPipeline
