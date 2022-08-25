@@ -21,24 +21,45 @@ package org.apache.nlpcraft
   *
   */
 object NCResult:
+    /**
+      * 
+      * @param body
+      * @param resultType
+      * @param intentId
+      * @return
+      */
     def apply(body: Any, resultType: NCResultType, intentId: String): NCResult =
         new NCResult():
             def getBody: Any = body
             def getType: NCResultType = resultType
             def getIntentId: Option[String] = Option(intentId)
 
+    /**
+      * 
+      * @param body
+      * @param resultType
+      * @return
+      */
     def apply(body: Any, resultType: NCResultType): NCResult =
         new NCResult():
             def getBody: Any = body
             def getType: NCResultType = resultType
             def getIntentId: Option[String] = None
 
+    /**
+      * 
+      * @param body
+      * @return
+      */
     def apply(body: Any): NCResult =
         new NCResult() :
             def getBody: Any = body
             def getType: NCResultType = NCResultType.ASK_RESULT
             def getIntentId: Option[String] = None
 
+/**
+  * 
+  */
 trait NCResult:
     def getBody: Any
     def getType: NCResultType
