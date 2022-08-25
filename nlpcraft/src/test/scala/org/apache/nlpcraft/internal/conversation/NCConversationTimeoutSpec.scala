@@ -52,7 +52,7 @@ class NCConversationTimeoutSpec:
                 @NCIntent("intent=i term(e)~{# == 'test'}")
                 def onMatch(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("e") e: NCEntity): NCResult =
                     val conv = ctx.getConversation
-                    val res = NCResult(conv.getData.getOpt("key").getOrElse(EMPTY))
+                    val res = NCResult(conv.getData.get("key").getOrElse(EMPTY))
 
                     // For next calls.
                     conv.getData.put("key", VALUE)
