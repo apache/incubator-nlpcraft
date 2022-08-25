@@ -489,9 +489,12 @@ class NCIDLCompiler(cfg: NCModelConfig) extends LazyLogging with mutable.Cloneab
 
     def clone(cp: NCIDLCompiler): NCIDLCompiler =
         val cp = new NCIDLCompiler(cfg)
+
         cp.intents ++= cp.intents.clone()
-        cp.importCache ++= importCache.clone()
-        cp.fragCache ++= fragCache.clone()
+
+        cp.importCache ++= this.importCache.clone()
+        cp.fragCache ++= this.fragCache.clone()
+
         cp
 
     override def clone(): NCIDLCompiler = clone(this)
