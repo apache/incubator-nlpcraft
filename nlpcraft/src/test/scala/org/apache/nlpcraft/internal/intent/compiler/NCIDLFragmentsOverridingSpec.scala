@@ -27,24 +27,24 @@ import org.junit.jupiter.api.Test
 import scala.util.Using
 
 class NCIDLFragmentsOverridingSpec:
-    @NCIntent("fragment=f term(x)~{# == 'x'}")
+    @NCIntent("fragment=f term(x)~{# == 'x1'}")
     class M extends NCTestModelAdapter:
         // Uses fragment defined on class level.
         @NCIntent("intent=i2 fragment(f)")
-        private def onX(ctx: NCContext, im: NCIntentMatch): NCResult = NCResult("onX")
+        private def onX(ctx: NCContext, im: NCIntentMatch): NCResult = NCResult(1)
 
-        // Overrides fragment defined on class level.
-        @NCIntent("fragment=f term(y)~{# == 'y'} intent=i1 fragment(f)")
-        private def onY(ctx: NCContext, im: NCIntentMatch): NCResult = NCResult("onY")
+        // Overrides fragment defined on class level by its own.
+        @NCIntent("fragment=f term(y)~{# == 'x2'} intent=i1 fragment(f)")
+        private def onY(ctx: NCContext, im: NCIntentMatch): NCResult = NCResult(2)
 
         override val getPipeline: NCPipeline =
             val pl = mkEnPipeline
-            pl.entParsers += NCTestUtils.mkEnSemanticParser(TE("x"), TE("y"))
+            pl.entParsers += NCTestUtils.mkEnSemanticParser(TE("x1"), TE("x2"))
             pl
 
     @Test
     def test(): Unit =
         Using.resource(new NCModelClient(new M())) { client =>
-            require(client.ask("x", "usr").getBody == "onX")
-            require(client.ask("y", "usr").getBody == "onY")
+            require(client.ask("x1", "usr").getBody == 1)
+            require(client.ask("x2", "usr").getBody == 2)
         }

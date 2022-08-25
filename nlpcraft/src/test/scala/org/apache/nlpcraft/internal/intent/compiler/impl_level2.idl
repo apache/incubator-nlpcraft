@@ -19,6 +19,6 @@
 // Test content.
 // ============================
 
-import('org/apache/nlpcraft/internal/intent/compiler/imp1.idl')
+import('org/apache/nlpcraft/internal/intent/compiler/impl_level1.idl')
 // Overrides fragment.
 fragment=f term={# == 'x2'}
