@@ -414,7 +414,7 @@ object NCModelScanner extends LazyLogging:
 
         var compiler = new NCIDLCompiler(mdl.getConfig)
 
-        // Overrides current compiler with new intents but without any cache (imports ang fragments)
+        // Overrides current compiler with new intents but without any cache (imports and fragments)
         def callNoCache[T](f: () => T): T =
             val cp = compiler.clone()
             try f()
