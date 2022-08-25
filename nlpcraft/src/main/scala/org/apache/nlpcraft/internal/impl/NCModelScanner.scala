@@ -489,7 +489,7 @@ object NCModelScanner extends LazyLogging:
             for (mtd <- methods)
                 callNoCache(
                     () =>
-                        for (ann <- mtd.getAnnotationsByType(CLS_INTENT); intent <- compiler.compile(ann.value, method2Str(mtd)))
+                        for (ann <- mtd.getAnnotationsByType(CLS_INTENT); intent <- compiler.compile(ann.value, method2Str(mtd), isMethodLevel = true))
                             addDecl(intent)
                             addIntent(intent, mtd, obj)
                 )

@@ -45,8 +45,9 @@ class NCIDLCompiler(cfg: NCModelConfig) extends LazyLogging with mutable.Cloneab
       *
       * @param origin
       * @param idl
+      * @param isMethodLevel
       */
-    class FiniteStateMachine(origin: String, idl: String) extends NCIDLBaseListener with NCIDLCodeGenerator:
+    class FiniteStateMachine(origin: String, idl: String, isMethodLevel: Boolean) extends NCIDLBaseListener with NCIDLCodeGenerator:
         // Actual value for '*' as in min/max shortcut.
         final private val MINMAX_MAX = 100
 
@@ -260,7 +261,12 @@ class NCIDLCompiler(cfg: NCModelConfig) extends LazyLogging with mutable.Cloneab
 
             fragCache.get(frag.id) match
                 case Some(exFrag) =>
-                    if frag.terms != exFrag.terms then logger.warn(s"Fragment '${frag.id}' was overriden for origin: '${this.origin}'.")
+                    if frag.terms != exFrag.terms then
+                        // TODO: text
+                        if isMethodLevel then
+                            logger.warn(s"Fragment '${frag.id}' was overriden just for for origin: '${this.origin}'.")
+                        else
+                            logger.warn(s"Fragment '${frag.id}' was overriden in origin: '${this.origin}' permanently.")
                 case None => // No-op.
 
             fragCache += frag.id -> frag
@@ -444,32 +450,11 @@ class NCIDLCompiler(cfg: NCModelConfig) extends LazyLogging with mutable.Cloneab
     /**
       *
       * @param idl
-      * @param srcName
-      * @return
-      */
-    private def parseIntents(idl: String, srcName: String): Set[NCIDLIntent] =
-        require(idl != null)
-        require(cfg != null)
-        require(srcName != null)
-
-        val idlNorm = idl.strip()
-        intents.getOrElseUpdate(idlNorm, {
-            val (fsm, parser) = antlr4Armature(idlNorm, srcName)
-
-            // Parse the input IDL and walk built AST.
-            (new ParseTreeWalker).walk(fsm, parser.idl())
-
-            // Return the compiled intents.
-            fsm.getCompiledIntents
-        })
-
-    /**
-      *
-      * @param idl
       * @param origin
+      * @param isMethodLevel
       * @return
       */
-    private def antlr4Armature(idl: String, origin: String): (FiniteStateMachine, IDP) =
+    private def antlr4Armature(idl: String, origin: String, isMethodLevel: Boolean): (FiniteStateMachine, IDP) =
         val lexer = new NCIDLLexer(CharStreams.fromString(idl, origin))
         val parser = new IDP(new CommonTokenStream(lexer))
 
@@ -480,7 +465,7 @@ class NCIDLCompiler(cfg: NCModelConfig) extends LazyLogging with mutable.Cloneab
         parser.addErrorListener(new CompilerErrorListener(idl, cfg, origin))
 
         // State automata + it's parser.
-        new FiniteStateMachine(origin, idl) -> parser
+        new FiniteStateMachine(origin, idl, isMethodLevel) -> parser
 
     /**
       * Compiles inline (supplied) fragments and/or intents. Note that fragments are accumulated in a static
@@ -488,10 +473,25 @@ class NCIDLCompiler(cfg: NCModelConfig) extends LazyLogging with mutable.Cloneab
       *
       * @param idl Intent IDL to compile.
       * @param origin Optional source name.
+      * @param isMethodLevel Flag.
       * @return
       */
     @throws[NCException]
-    def compile(idl: String, origin: String): Set[NCIDLIntent] = parseIntents(idl,  origin)
+    def compile(idl: String, origin: String, isMethodLevel: Boolean = false): Set[NCIDLIntent] =
+        require(idl != null)
+        require(origin != null)
+
+        val x = idl.strip()
+
+        intents.getOrElseUpdate(x, {
+            val (fsm, parser) = antlr4Armature(x, origin, isMethodLevel)
+
+            // Parse the input IDL and walk built AST.
+            (new ParseTreeWalker).walk(fsm, parser.idl())
+
+            // Return the compiled intents.
+            fsm.getCompiledIntents
+        })
 
     def clone(cp: NCIDLCompiler): NCIDLCompiler =
         val cp = new NCIDLCompiler(cfg)
