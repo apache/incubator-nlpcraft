@@ -37,8 +37,7 @@ class NCModelClientSpec2:
         val mdl = new NCTestModelAdapter:
             import NCSemanticTestElement as TE
             override val getPipeline =
-                val pl = mkEnPipeline
-                pl.entParsers += NCTestUtils.mkEnSemanticParser(TE("e1"), TE("e2"))
+                val pl = mkEnPipeline(TE("e1"), TE("e2"))
                 pl.tokEnrichers += EN_TOK_LEMMA_POS_ENRICHER
                 pl
 

@@ -37,7 +37,7 @@ trait NCIntentMatch:
       *
       * @return List of lists of entities representing matched intent.
       * @see #getVariant()
-      * @see NCIntentTerm */
+      * @see [[NCIntentTerm */
     def getIntentEntities: List[List[NCEntity]]
 
     /**
@@ -47,7 +47,7 @@ trait NCIntentMatch:
       *
       * @param idx Index of the term (starting from <code>0</code>).
       * @return List of entities, potentially `null`, for given term.
-      * @see NCIntentTerm
+      * @see [[NCIntentTerm
       * @see #getTermEntities(String) */
     def getTermEntities(idx: Int): List[NCEntity]
 
@@ -58,7 +58,7 @@ trait NCIntentMatch:
       *
       * @param termId ID of the term for which to get entities.
       * @return List of entities, potentially `null`, for given term.
-      * @see NCIntentTerm
+      * @see [[NCIntentTerm
       * @see #getTermEntities(int) */
     def getTermEntities(termId: String): List[NCEntity]
 

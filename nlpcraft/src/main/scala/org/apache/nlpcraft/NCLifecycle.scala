@@ -20,21 +20,24 @@ package org.apache.nlpcraft
 /**
   * Lifecycle callbacks for various pipeline components.
   *
-  * @see NCTokenParser
-  * @see NCTokenEnricher
-  * @see NCTokenValidator
-  * @see NCEntityParser
-  * @see NCEntityEnricher
-  * @see NCEntityValidator */
+  * @see [[NCTokenParser]]
+  * @see [[NCTokenEnricher]]
+  * @see [[NCTokenValidator]]
+  * @see [[NCEntityParser]]
+  * @see [[NCEntityEnricher]]
+  * @see [[NCEntityValidator]]
+  */
 trait NCLifecycle:
     /**
       * Called when the component starts. Default implementation is no-op.
       *
-      * @param cfg Configuration of the model this component is associated with. */
+      * @param cfg Configuration of the model this component is associated with.
+      */
     def onStart(cfg: NCModelConfig): Unit = () // No-op.
 
     /**
       * Called when the component stops. Default implementation is no-op.
       *
-      * @param cfg Configuration of the model this component is associated with. */
+      * @param cfg Configuration of the model this component is associated with.
+      */
     def onStop(cfg: NCModelConfig): Unit = () // No-op.

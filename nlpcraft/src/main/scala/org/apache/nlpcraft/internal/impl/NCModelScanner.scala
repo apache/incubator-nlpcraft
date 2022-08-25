@@ -412,6 +412,20 @@ object NCModelScanner extends LazyLogging:
     def scan(mdl: NCModel): Seq[NCModelIntent] =
         require(mdl != null)
 
+        var compiler = new NCIDLCompiler(mdl.getConfig)
+
+        // Overrides current compiler with new intents but without any cache (imports ang fragments)
+        def callNoCache[T](f: () => T): T =
+            val cp = compiler.clone()
+            try f()
+            finally compiler = cp.clone(compiler)
+
+        // Recovers initial compiler state if any error occur, clears all intermediate results.
+        def callClear[T](f: () => T): T =
+            val cp = compiler.clone()
+            try f()
+            catch case e: Throwable => { compiler = cp; throw e }
+
         val cfg = mdl.getConfig
         lazy val z = s"mdlId=${cfg.getId}"
         val intentsMtds = mutable.HashMap.empty[Method, IntentHolder]
@@ -429,10 +443,32 @@ object NCModelScanner extends LazyLogging:
             if intentsMtds.contains(mtd) then E(s"The callback cannot have more one intent [$z, callback=${method2Str(mtd)}]")
             intentsMtds += mtd -> IntentHolder(cfg, intent, obj, mtd)
 
+        /**
+          *  It is done such way because intents can contain references to 'fragments',
+          *  but annotations can be received via java reflection in inordered way.
+          */
+        def addIntent2Phases(anns: scala.Array[NCIntent], origin: String): Iterable[NCIDLIntent] =
+            val errAnns = mutable.ArrayBuffer.empty[NCIntent]
+            val intents = mutable.ArrayBuffer.empty[NCIDLIntent]
+
+            def addIntents(ann: NCIntent) = intents ++= compiler.compile(ann.value, origin)
+
+            // 1. First pass.
+            for (ann <- anns)
+                try callClear(() => addIntents(ann))
+                catch case _: NCException => errAnns += ann
+
+            // 2. Second pass.
+            for (ann <- errAnns) addIntents(ann)
+
+            // Process all compiled intents.
+            for (intent <- intents) addDecl(intent)
+
+            intents
+
         def processClassAnnotations(cls: Class[_]): Unit =
             if cls != null && processed.add(cls) then
-                for (ann <- cls.getAnnotationsByType(CLS_INTENT); intent <- NCIDLCompiler.compile(ann.value, cfg, class2Str(cls)))
-                    addDecl(intent)
+                addIntent2Phases(cls.getAnnotationsByType(CLS_INTENT), class2Str(cls))
 
                 processClassAnnotations(cls.getSuperclass)
                 cls.getInterfaces.foreach(processClassAnnotations)
@@ -443,19 +479,20 @@ object NCModelScanner extends LazyLogging:
         def scan(obj: AnyRef): Unit =
             objs += obj
             processClassAnnotations(obj.getClass)
-            val methods = getAllMethods(obj)
-
-            // // Collects intents for each method.
-            for (
-                mtd <- methods;
-                ann <- mtd.getAnnotationsByType(CLS_INTENT);
-                intent <- NCIDLCompiler.compile(ann.value, cfg, method2Str(mtd))
-            )
-                addDecl(intent)
-                addIntent(intent, mtd, obj)
 
             // Scans annotated fields.
             for (f <- getAllFields(obj) if f.isAnnotationPresent(CLS_INTENT_OBJ)) scan(getFieldObject(cfg, f, obj))
+
+            val methods = getAllMethods(obj)
+
+            // // Collects intents for each method.
+            for (mtd <- methods)
+                callNoCache(
+                    () =>
+                        for (ann <- mtd.getAnnotationsByType(CLS_INTENT); intent <- compiler.compile(ann.value, method2Str(mtd), isMethodLevel = true))
+                            addDecl(intent)
+                            addIntent(intent, mtd, obj)
+                )
 
         scan(mdl)
 

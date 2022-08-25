@@ -28,9 +28,9 @@ package org.apache.nlpcraft
   * matching can happen inside the intent callback's user logic. If it is determined that intent in fact does
   * not match then throwing this exception allows to try next best matching intent, if any.
   *
-  * @see NCIntent
-  * @see NCIntentTerm
-  * @see NCIntentRef
-  * @see NCIntentMatch
-  * @see NCModel#onMatchedIntent(NCIntentMatch) */
+  * @see [[NCIntent
+  * @see [[NCIntentTerm
+  * @see [[NCIntentRef
+  * @see [[NCIntentMatch
+  * @see [[NCModel#onMatchedIntent(NCIntentMatch) */
 class NCIntentSkip(msg: String, cause: Throwable = null) extends NCException(msg, cause)

@@ -41,11 +41,11 @@ class NCModelCallbacksSpec:
 
     private val states = collection.mutable.HashSet.empty[State]
 
-    private val RESULT_INTENT = NCResult("result-intent", NCResultType.ASK_RESULT)
-    private val RESULT_CONTEXT = NCResult("result-context", NCResultType.ASK_RESULT)
-    private val RESULT_RESULT = NCResult("result-result", NCResultType.ASK_RESULT)
-    private val RESULT_REJECTION = NCResult("result-rejection", NCResultType.ASK_RESULT)
-    private val RESULT_ERROR = NCResult("result-error", NCResultType.ASK_RESULT)
+    private val RESULT_INTENT = NCResult("result-intent")
+    private val RESULT_CONTEXT = NCResult("result-context")
+    private val RESULT_RESULT = NCResult("result-result")
+    private val RESULT_REJECTION = NCResult("result-rejection")
+    private val RESULT_ERROR = NCResult("result-error")
 
     private val MDL: NCTestModelAdapter =
         new NCTestModelAdapter():

@@ -64,7 +64,7 @@ class NCModelClientSpec:
         test0(
             new NCTestModelAdapter():
                 @NCIntent("intent=ls term(act)={# == 'ls:on'} term(loc)={# == 'ls:loc'}*")
-                def onMatch(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("act") act: NCEntity, @NCIntentTerm("loc") locs: List[NCEntity]): NCResult = NCResult("test", NCResultType.ASK_RESULT)
+                def onMatch(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("act") act: NCEntity, @NCIntentTerm("loc") locs: List[NCEntity]): NCResult = TEST_RESULT
         )
     /**
       * 
@@ -74,6 +74,6 @@ class NCModelClientSpec:
         test0(
             new NCTestModelAdapter():
                 @NCIntent("intent=ls term(act)={has(ent_groups, 'act')} term(loc)={# == 'ls:loc'}*")
-                def onMatch(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("act") act: NCEntity, @NCIntentTerm("loc") locs: List[NCEntity]): NCResult = NCResult("test", NCResultType.ASK_RESULT)
+                def onMatch(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("act") act: NCEntity, @NCIntentTerm("loc") locs: List[NCEntity]): NCResult = TEST_RESULT
         )
 

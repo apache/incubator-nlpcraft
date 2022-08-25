@@ -19,21 +19,21 @@ package org.apache.nlpcraft
 
 /**
   * A pipeline component that enrichers entities by settings their properties.
-  * See {@link NCPipeline} for documentation on the overall processing pipeline. Note that this is
+  * See [[NCPipeline]] for documentation on the overall processing pipeline. Note that this is
   * an optional component in the pipeline.
   *
-  * @see NCPipeline#getEntityEnrichers()
-  * @see NCEntity
-  * @see NCToken
-  * @see NCTokenParser
-  * @see NCTokenEnricher
-  * @see NCTokenValidator
-  * @see NCEntityParser
-  * @see NCEntityEnricher
-  * @see NCEntityValidator
-  * @see NCEntityMapper
+  * @see [[NCPipeline.getEntityEnrichers]]
+  * @see [[NCEntity]]
+  * @see [[NCToken]]
+  * @see [[NCTokenParser]]
+  * @see [[NCTokenEnricher]]
+  * @see [[NCTokenValidator]]
+  * @see [[NCEntityParser]]
+  * @see [[NCEntityEnricher]]
+  * @see [[NCEntityValidator]]
+  * @see [[NCEntityMapper]]
   */
-trait NCEntityEnricher extends NCLifecycle :
+trait NCEntityEnricher extends NCLifecycle:
     /**
       * Enriches given list of entities by settings their properties.
       *
@@ -41,5 +41,6 @@ trait NCEntityEnricher extends NCLifecycle :
       * @param cfg Configuration of the model this component is associated with.
       * @param ents List of entities to enrich.
       * @throws NCException Thrown in case of any errors.
-      * @see NCPropertyMap */
+      * @see [[NCPropertyMap]]
+      */
     def enrich(req: NCRequest, cfg: NCModelConfig, ents: List[NCEntity]): Unit

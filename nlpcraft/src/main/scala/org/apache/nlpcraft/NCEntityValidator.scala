@@ -19,25 +19,27 @@ package org.apache.nlpcraft
 
 /**
   * A pipeline components that validates the final list of parsed and enriched entities.
-  * See {@link NCPipeline} for documentation on the overall processing pipeline. Note that this is an
+  * See [[NCPipeline]] for documentation on the overall processing pipeline. Note that this is an
   * optional component.
   *
-  * @see NCPipeline#getEntityValidators()
-  * @see NCEntity
-  * @see NCToken
-  * @see NCTokenParser
-  * @see NCTokenEnricher
-  * @see NCTokenValidator
-  * @see NCEntityParser
-  * @see NCEntityEnricher
-  * @see NCEntityValidator
-  * @see NCEntityMapper */
+  * @see [[NCPipeline.getEntityValidators]]
+  * @see [[NCEntity]]
+  * @see [[NCToken]]
+  * @see [[NCTokenParser]]
+  * @see [[NCTokenEnricher]]
+  * @see [[NCTokenValidator]]
+  * @see [[NCEntityParser]]
+  * @see [[NCEntityEnricher]]
+  * @see [[NCEntityValidator]]
+  * @see [[NCEntityMapper]]
+  */
 trait NCEntityValidator extends NCLifecycle:
     /**
       *
       * @param req Input request descriptor.
       * @param cfg Configuration of the model this component is associated with.
       * @param ents List of entities to validate.
-      * @@throws NCException Thrown in case of any validation violations. */
+      * @throws NCException Thrown in case of any validation violations.
+      */
     def validate(req: NCRequest, cfg: NCModelConfig, ents: List[NCEntity]): Unit
 

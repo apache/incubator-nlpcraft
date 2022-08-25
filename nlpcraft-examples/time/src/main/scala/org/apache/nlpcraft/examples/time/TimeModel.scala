@@ -66,7 +66,7 @@ class TimeModel extends NCModelAdapter(
             )
 
         try
-            NCResult(new ObjectMapper(new YAMLFactory).writeValueAsString(m), NCResultType.ASK_RESULT)
+            NCResult(new ObjectMapper(new YAMLFactory).writeValueAsString(m))
         catch
             case e: JsonProcessingException => throw new RuntimeException("YAML conversion error.", e)
 
