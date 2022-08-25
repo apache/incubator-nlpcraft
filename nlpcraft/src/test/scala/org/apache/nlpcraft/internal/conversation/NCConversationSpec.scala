@@ -42,10 +42,7 @@ class NCConversationSpec:
     def test(): Unit =
         val mdl: NCModel =
             new NCTestModelAdapter:
-                override val getPipeline: NCPipeline =
-                    val pl = mkEnPipeline
-                    pl.entParsers += NCTestUtils.mkEnSemanticParser(TE("e1"), TE("e2"))
-                    pl
+                override val getPipeline: NCPipeline = mkEnPipeline(TE("e1"), TE("e2"))
 
                 @NCIntent("intent=i1 term(t1)~{# == 'e1'} term(t2)~{# == 'e2'}?")
                 def onMatch(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("t1") t1: NCEntity, @NCIntentTerm("t2") t2: Option[NCEntity]): NCResult = NCTestResult()
@@ -82,10 +79,7 @@ class NCConversationSpec:
     def testClearEmptyData(): Unit =
         val mdl: NCModel =
             new NCTestModelAdapter:
-                override val getPipeline: NCPipeline =
-                    val pl = mkEnPipeline
-                    pl.entParsers += NCTestUtils.mkEnSemanticParser(TE("e1"))
-                    pl
+                override val getPipeline: NCPipeline = mkEnPipeline(TE("e1"))
 
                 @NCIntent("intent=i1 term(t1)~{# == 'e1'}")
                 def onMatch(ctx: NCContext, im: NCIntentMatch): NCResult =

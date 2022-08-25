@@ -37,10 +37,7 @@ class NCIDLFragmentsOverridingSpec:
         @NCIntent("fragment=f term(y)~{# == 'x2'} intent=i1 fragment(f)")
         private def onY(ctx: NCContext, im: NCIntentMatch): NCResult = NCResult(2)
 
-        override val getPipeline: NCPipeline =
-            val pl = mkEnPipeline
-            pl.entParsers += NCTestUtils.mkEnSemanticParser(TE("x1"), TE("x2"))
-            pl
+        override val getPipeline: NCPipeline = mkEnPipeline(TE("x1"), TE("x2"))
 
     @Test
     def test(): Unit =

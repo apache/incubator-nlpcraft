@@ -37,10 +37,7 @@ class NCModelClientSpec3:
         import NCSemanticTestElement as TE
 
         val mdl: NCTestModelAdapter = new NCTestModelAdapter:
-            override val getPipeline: NCPipeline =
-                val pl = mkEnPipeline
-                pl.entParsers += NCTestUtils.mkEnSemanticParser(TE("e1"))
-                pl
+            override val getPipeline: NCPipeline = mkEnPipeline(TE("e1"))
 
             @NCIntent("intent=i1 term(t1)={# == 'e1'}")
             def onMatch(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("t1") t1: NCEntity): NCResult = TEST_RESULT
