@@ -261,12 +261,11 @@ class NCIDLCompiler(cfg: NCModelConfig) extends LazyLogging with mutable.Cloneab
 
             fragCache.get(frag.id) match
                 case Some(exFrag) =>
-                    if frag.terms != exFrag.terms then
-                        // TODO: text
-                        if isMethodLevel then
-                            logger.warn(s"Fragment '${frag.id}' was overriden just for for origin: '${this.origin}'.")
-                        else
-                            logger.warn(s"Fragment '${frag.id}' was overriden in origin: '${this.origin}' permanently.")
+                    // TODO: text
+                    if isMethodLevel then
+                        logger.warn(s"Fragment '${frag.id}' was overriden just for for origin: '${this.origin}'.")
+                    else
+                        logger.warn(s"Fragment '${frag.id}' was overriden in origin: '${this.origin}' permanently.")
                 case None => // No-op.
 
             fragCache += frag.id -> frag
