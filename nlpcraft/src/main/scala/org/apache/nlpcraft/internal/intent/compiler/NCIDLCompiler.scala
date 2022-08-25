@@ -34,6 +34,20 @@ import java.util.Optional
 import java.util.regex.*
 import scala.collection.mutable
 
+/**
+  * IDL fragment.
+  *
+  * @param id ID of this fragment (must be unique within a model).
+  * @param terms List of terms this fragment defines.
+  */
+case class NCIDLFragment(id: String, terms: List[NCIDLTerm]):
+    require(id != null)
+    require(terms.nonEmpty)
+
+/**
+  *
+  * @param cfg
+  */
 class NCIDLCompiler(cfg: NCModelConfig) extends LazyLogging with mutable.Cloneable[NCIDLCompiler]:
     private val intents = mutable.HashMap.empty[String, Set[NCIDLIntent]]
 
