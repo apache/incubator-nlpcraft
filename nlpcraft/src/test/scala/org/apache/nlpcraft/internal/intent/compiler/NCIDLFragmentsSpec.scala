@@ -17,8 +17,8 @@
 
 package org.apache.nlpcraft.internal.intent.compiler
 
-import org.apache.nlpcraft.annotations.NCIntent
 import org.apache.nlpcraft.*
+import org.apache.nlpcraft.annotations.NCIntent
 import org.apache.nlpcraft.internal.impl.NCModelScanner
 import org.apache.nlpcraft.nlp.util.*
 import org.junit.jupiter.api.Test
@@ -26,53 +26,49 @@ import org.junit.jupiter.api.Test
 import scala.util.Using
 
 class NCIDLFragmentsSpec:
-    private val PL = mkEnPipeline
-
-    private def mkCfg(id: String): NCModelConfig = NCModelConfig(id, "test", "1.0", desc = "Test", orig = "Test")
-
     // Normal models.
 
     // Fragment. One annotations order.
-    @NCIntent("fragment=f term(city)~{# == 'opennlp:location'}")
-    @NCIntent("intent=intent2 term~{# == 'x:time'} fragment(f)")
-    class M1 extends NCModelAdapter(mkCfg("m1"), PL)
+    @NCIntent("fragment=f term(x)~{# == 'x1'}")
+    @NCIntent("intent=i1 term~{# == 'x2'} fragment(f)")
+    class M1 extends NCModelAdapter(CFG, mkEnPipeline)
 
     // Fragment. Another annotations order.
-    @NCIntent("intent=intent2 term~{# == 'x:time'} fragment(f)")
-    @NCIntent("fragment=f term(city)~{# == 'opennlp:location'}")
-    class M2 extends NCModelAdapter(mkCfg("m2"), PL)
+    @NCIntent("intent=i1 term~{# == 'x2'} fragment(f)")
+    @NCIntent("fragment=f term(x)~{# == 'x1'}")
+    class M2 extends NCModelAdapter(CFG, mkEnPipeline)
 
     // Fragment. Reference from method to class.
-    @NCIntent("fragment=f term(city)~{# == 'opennlp:location'}")
-    class M3 extends NCModelAdapter(mkCfg("m3"), PL):
-        @NCIntent("intent=intent2 term~{# == 'x:time'} fragment(f)")
+    @NCIntent("fragment=f term(x)~{# == 'x1'}")
+    class M3 extends NCModelAdapter(CFG, mkEnPipeline):
+        @NCIntent("intent=i1 term~{# == 'x2'} fragment(f)")
         private def m(ctx: NCContext, im: NCIntentMatch): NCResult = null
 
     // Fragment. Reference from method (inside).
-    class M4 extends NCModelAdapter(mkCfg("m4"), PL) :
-        @NCIntent("fragment=f term(city)~{# == 'opennlp:location'} intent=intent2 term~{# == 'x:time'} fragment(f)")
+    class M4 extends NCModelAdapter(CFG, mkEnPipeline) :
+        @NCIntent("fragment=f term(x)~{# == 'x1'} intent=i1 term~{# == 'x2'} fragment(f)")
         private def m(ctx: NCContext, im: NCIntentMatch): NCResult = null
 
     // Bad models.
 
     // Missed fragment definition.
-    @NCIntent("intent=intent2 term~{# == 'x:time'} fragment(f)")
-    class E1 extends NCModelAdapter(mkCfg("e1"), PL)
+    @NCIntent("intent=i2 term~{# == 'x2'} fragment(f)")
+    class E1 extends NCModelAdapter(CFG, mkEnPipeline)
 
     // Attempt to reference on fragment defined in method.
-    class E2 extends NCModelAdapter(mkCfg("e2"), PL):
-        @NCIntent("fragment=f term(city)~{# == 'opennlp:location'} intent=intent1 term~{# == 'x:time'} fragment(f)")
+    class E2 extends NCModelAdapter(CFG, mkEnPipeline):
+        @NCIntent("fragment=f term(x)~{# == 'x1'} intent=i1 term~{# == 'x2'} fragment(f)")
         private def m1(ctx: NCContext, im: NCIntentMatch): NCResult = null
 
-        @NCIntent("intent=intent2 term~{# == 'x:time'} fragment(f)")
+        @NCIntent("intent=i2 term~{# == 'x2'} fragment(f)")
         private def m2(ctx: NCContext, im: NCIntentMatch): NCResult = null
 
     // Attempt to reference on fragment defined in method.
-    class E3 extends NCModelAdapter(mkCfg("e3"), PL):
-        @NCIntent("fragment=f term(city)~{# == 'opennlp:location'} intent=intent1 term~{# == 'x:time'} fragment(f)")
+    class E3 extends NCModelAdapter(CFG, mkEnPipeline):
+        @NCIntent("fragment=f term(x)~{# == 'x1'} intent=i1 term~{# == 'x2'} fragment(f)")
         private def m2(ctx: NCContext, im: NCIntentMatch): NCResult = null
 
-        @NCIntent("intent=intent2 term~{# == 'x:time'} fragment(f)")
+        @NCIntent("intent=i2 term~{# == 'x2'} fragment(f)")
         private def m1(ctx: NCContext, im: NCIntentMatch): NCResult = null
 
     private def testOk(mdls: NCModel*): Unit =
