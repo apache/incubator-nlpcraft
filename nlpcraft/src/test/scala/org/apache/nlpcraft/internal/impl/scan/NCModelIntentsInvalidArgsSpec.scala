@@ -97,7 +97,7 @@ class NCModelIntentsInvalidArgsSpec:
 
     private def mkResult0(obj: Any): NCResult =
         println(s"Result body: $obj, class=${obj.getClass}")
-        NCResult(obj, NCResultType.ASK_RESULT)
+        NCResult(obj)
 
     private def processOptInt(opt: Option[Int]): NCResult =
         // Access and cast.

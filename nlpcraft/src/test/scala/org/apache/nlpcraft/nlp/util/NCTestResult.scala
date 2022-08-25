@@ -17,16 +17,15 @@
 
 package org.apache.nlpcraft.nlp.util
 
-import org.apache.nlpcraft.{NCResult, NCResultType}
+import org.apache.nlpcraft.*
 
 /**
   *
   */
-object  NCTestResult {
+object NCTestResult:
     def apply(): NCResult = TEST_RESULT
-}
 
 /**
   *
   */
-val TEST_RESULT = NCResult("test", NCResultType.ASK_RESULT)
+val TEST_RESULT = NCResult("test")

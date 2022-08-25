@@ -182,7 +182,6 @@ class NCIDLCompiler(cfg: NCModelConfig) extends LazyLogging with mutable.Cloneab
 
         override def exitFragId(ctx: IDP.FragIdContext): Unit =
             fragId = ctx.id().getText
-            if fragCache.contains(fragId) then SE(s"Duplicate fragment ID: $fragId")(ctx.id())
 
         override def exitFragRef(ctx: IDP.FragRefContext): Unit =
             val id = ctx.id().getText
@@ -258,7 +257,15 @@ class NCIDLCompiler(cfg: NCModelConfig) extends LazyLogging with mutable.Cloneab
 
         override def exitFrag(ctx: IDP.FragContext): Unit =
             val frag = NCIDLFragment(fragId, terms.toList)
+
+            fragCache.get(frag.id) match
+                case Some(exFrag) =>
+                    if frag.terms != exFrag.terms then logger.warn(s"Fragment '${frag.id}' was override for origin: '${this.origin}'.")
+                case None => // No-op.
+
             fragCache += frag.id -> frag
+
+
             terms.clear()
             fragId = null
 
@@ -279,7 +286,7 @@ class NCIDLCompiler(cfg: NCModelConfig) extends LazyLogging with mutable.Cloneab
                     idl,
                     intentId,
                     intentOpts,
-                    if (intentMeta == null) Map.empty else intentMeta,
+                    if intentMeta == null then Map.empty else intentMeta,
                     flowRegex,
                     terms.toList
                 )
@@ -307,7 +314,7 @@ class NCIDLCompiler(cfg: NCModelConfig) extends LazyLogging with mutable.Cloneab
                     // Second, try as a classloader resource.
                     if imports == null then
                         val in = cfg.getClass.getClassLoader.getResourceAsStream(x)
-                        if (in != null)
+                        if in != null then
                             val idl = NCUtils.readStream(in).mkString("\n")
                             imports = compile(idl, x)
 

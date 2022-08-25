@@ -59,7 +59,4 @@ class LightSwitchScalaModel extends NCModelAdapter(
 
         // Add HomeKit, Arduino or other integration here.=
         // By default - just return a descriptive action string.
-        NCResult(
-            s"Lights are [$status] in [${locations.toLowerCase}].",
-            NCResultType.ASK_RESULT
-        )
+        NCResult(s"Lights are [$status] in [${locations.toLowerCase}].")

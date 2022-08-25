@@ -43,7 +43,7 @@ class NCModelClientSpec3:
                 pl
 
             @NCIntent("intent=i1 term(t1)={# == 'e1'}")
-            def onMatch(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("t1") t1: NCEntity): NCResult = NCResult("Data", NCResultType.ASK_RESULT)
+            def onMatch(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("t1") t1: NCEntity): NCResult = TEST_RESULT
 
         Using.resource(new NCModelClient(mdl)) { client =>
             def ask(): NCFiredIntent = client.debugAsk("e1", "userId", true)

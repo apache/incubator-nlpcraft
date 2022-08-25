@@ -33,6 +33,12 @@ object NCResult:
             def getType: NCResultType = resultType
             def getIntentId: Option[String] = None
 
+    def apply(body: Any): NCResult =
+        new NCResult() :
+            def getBody: Any = body
+            def getType: NCResultType = NCResultType.ASK_RESULT
+            def getIntentId: Option[String] = None
+
 trait NCResult:
     def getBody: Any
     def getType: NCResultType
