@@ -29,11 +29,6 @@ import scala.util.Using
 class NCIDLFragmentsOverridingSpec:
     @NCIntent("fragment=f term(x)~{# == 'x'}")
     class M extends NCTestModelAdapter:
-        override val getPipeline: NCPipeline =
-            val pl = mkEnPipeline
-            pl.entParsers += NCTestUtils.mkEnSemanticParser(TE("x"), TE("y"))
-            pl
-
         // Uses fragment defined on class level.
         @NCIntent("intent=i2 fragment(f)")
         private def onX(ctx: NCContext, im: NCIntentMatch): NCResult = NCResult("onX")
@@ -41,7 +36,12 @@ class NCIDLFragmentsOverridingSpec:
         // Overrides fragment defined on class level.
         @NCIntent("fragment=f term(y)~{# == 'y'} intent=i1 fragment(f)")
         private def onY(ctx: NCContext, im: NCIntentMatch): NCResult = NCResult("onY")
-    
+
+        override val getPipeline: NCPipeline =
+            val pl = mkEnPipeline
+            pl.entParsers += NCTestUtils.mkEnSemanticParser(TE("x"), TE("y"))
+            pl
+
     @Test
     def test(): Unit =
         Using.resource(new NCModelClient(new M())) { client =>
