@@ -32,11 +32,9 @@ import java.io.*
 import java.net.*
 import java.util.Optional
 import java.util.regex.*
-import scala.collection.concurrent.TrieMap
 import scala.collection.mutable
-import scala.jdk.CollectionConverters.*
 
-class NCIDLCompiler(cfg: NCModelConfig) extends LazyLogging with scala.collection.mutable.Cloneable[NCIDLCompiler]:
+class NCIDLCompiler(cfg: NCModelConfig) extends LazyLogging with mutable.Cloneable[NCIDLCompiler]:
     private val intents = mutable.HashMap.empty[String, Set[NCIDLIntent]]
 
     // Compiler caches.
@@ -45,41 +43,10 @@ class NCIDLCompiler(cfg: NCModelConfig) extends LazyLogging with scala.collectio
 
     /**
       *
-      * @param fragId
-      * @return
-      */
-    private def getFragment(fragId: String): Option[NCIDLFragment] = fragCache.get(fragId)
-
-    /**
-      *
-      * @param fragId
-      * @return
-      */
-    private def hasFragment(fragId: String): Boolean = fragCache.contains(fragId)
-
-    /**
-      *
-      * @param mdlId
-      * @param frag
-      */
-    private def addFragment(mdlId: String, frag: NCIDLFragment): Unit = fragCache += frag.id -> frag
-
-    private def addImport(imp: String): Unit = importCache += imp
-
-    /**
-      *
-      * @param imp
-      * @return
-      */
-    private def hasImport(imp: String): Boolean = importCache.contains(imp)
-
-    /**
-      *
       * @param origin
       * @param idl
-      * @param mdlCfg
       */
-    class FiniteStateMachine(origin: String, idl: String, mdlCfg: NCModelConfig) extends NCIDLBaseListener with NCIDLCodeGenerator:
+    class FiniteStateMachine(origin: String, idl: String) extends NCIDLBaseListener with NCIDLCodeGenerator:
         // Actual value for '*' as in min/max shortcut.
         final private val MINMAX_MAX = 100
 
@@ -215,12 +182,12 @@ class NCIDLCompiler(cfg: NCModelConfig) extends LazyLogging with scala.collectio
 
         override def exitFragId(ctx: IDP.FragIdContext): Unit =
             fragId = ctx.id().getText
-            if hasFragment(fragId) then SE(s"Duplicate fragment ID: $fragId")(ctx.id())
+            if fragCache.contains(fragId) then SE(s"Duplicate fragment ID: $fragId")(ctx.id())
 
         override def exitFragRef(ctx: IDP.FragRefContext): Unit =
             val id = ctx.id().getText
 
-            getFragment(id) match
+            fragCache.get(id) match
                 case Some(frag) =>
                     val meta = if fragMeta == null then Map.empty[String, Any] else fragMeta
                     for (fragTerm <- frag.terms)
@@ -290,7 +257,8 @@ class NCIDLCompiler(cfg: NCModelConfig) extends LazyLogging with scala.collectio
             }
 
         override def exitFrag(ctx: IDP.FragContext): Unit =
-            addFragment(mdlCfg.getId, NCIDLFragment(fragId, terms.toList))
+            val frag = NCIDLFragment(fragId, terms.toList)
+            fragCache += frag.id -> frag
             terms.clear()
             fragId = null
 
@@ -324,9 +292,9 @@ class NCIDLCompiler(cfg: NCModelConfig) extends LazyLogging with scala.collectio
         override def exitImprt(ctx: IDP.ImprtContext): Unit =
                 val x = NCUtils.trimQuotes(ctx.qstring().getText)
 
-                if hasImport(x) then logger.warn(s"Ignoring already processed IDL import '$x' in: $origin")
+                if importCache.contains(x) then logger.warn(s"Ignoring already processed IDL import '$x' in: $origin")
                 else
-                   addImport(x)
+                   importCache += x
 
                     var imports: Set[NCIDLIntent] = null
                     val file = new File(x)
@@ -338,7 +306,7 @@ class NCIDLCompiler(cfg: NCModelConfig) extends LazyLogging with scala.collectio
 
                     // Second, try as a classloader resource.
                     if imports == null then
-                        val in = mdlCfg.getClass.getClassLoader.getResourceAsStream(x)
+                        val in = cfg.getClass.getClassLoader.getResourceAsStream(x)
                         if (in != null)
                             val idl = NCUtils.readStream(in).mkString("\n")
                             imports = compile(idl, x)
@@ -354,10 +322,10 @@ class NCIDLCompiler(cfg: NCModelConfig) extends LazyLogging with scala.collectio
                     imports.foreach(addIntent(_)(ctx.qstring()))
 
         override def syntaxError(errMsg: String, srcName: String, line: Int, pos: Int): NCException =
-            throw new NCException(mkSyntaxError(errMsg, srcName, line, pos, idl, origin, mdlCfg))
+            throw new NCException(mkSyntaxError(errMsg, srcName, line, pos, idl, origin, cfg))
 
         override def runtimeError(errMsg: String, srcName: String, line: Int, pos: Int, cause: Exception = null): NCException =
-            throw new NCException(mkRuntimeError(errMsg, srcName, line, pos, idl, origin, mdlCfg), cause)
+            throw new NCException(mkRuntimeError(errMsg, srcName, line, pos, idl, origin, cfg), cause)
 
     /**
       *
@@ -480,7 +448,7 @@ class NCIDLCompiler(cfg: NCModelConfig) extends LazyLogging with scala.collectio
 
         val idlNorm = idl.strip()
         intents.getOrElseUpdate(idlNorm, {
-            val (fsm, parser) = antlr4Armature(idlNorm, cfg, srcName)
+            val (fsm, parser) = antlr4Armature(idlNorm, srcName)
 
             // Parse the input IDL and walk built AST.
             (new ParseTreeWalker).walk(fsm, parser.idl())
@@ -492,22 +460,21 @@ class NCIDLCompiler(cfg: NCModelConfig) extends LazyLogging with scala.collectio
     /**
       *
       * @param idl
-      * @param mdlCfg
       * @param origin
       * @return
       */
-    private def antlr4Armature(idl: String, mdlCfg: NCModelConfig, origin: String): (FiniteStateMachine, IDP) =
+    private def antlr4Armature(idl: String, origin: String): (FiniteStateMachine, IDP) =
         val lexer = new NCIDLLexer(CharStreams.fromString(idl, origin))
         val parser = new IDP(new CommonTokenStream(lexer))
 
         // Set custom error handlers.
         lexer.removeErrorListeners()
         parser.removeErrorListeners()
-        lexer.addErrorListener(new CompilerErrorListener(idl, mdlCfg, origin))
-        parser.addErrorListener(new CompilerErrorListener(idl, mdlCfg, origin))
+        lexer.addErrorListener(new CompilerErrorListener(idl, cfg, origin))
+        parser.addErrorListener(new CompilerErrorListener(idl, cfg, origin))
 
         // State automata + it's parser.
-        new FiniteStateMachine(origin, idl, mdlCfg) -> parser
+        new FiniteStateMachine(origin, idl) -> parser
 
     /**
       * Compiles inline (supplied) fragments and/or intents. Note that fragments are accumulated in a static
