@@ -48,17 +48,18 @@ class NCIDLFragmentsSpec:
         @NCIntent("intent=intent2 term~{# == 'x:time'} fragment(f)")
         private def m(ctx: NCContext, im: NCIntentMatch): NCResult = null
 
-    // Fragment. Reference from method (inside a).
+    // Fragment. Reference from method (inside).
     class M4 extends NCModelAdapter(mkCfg("m4"), PL) :
         @NCIntent("fragment=f term(city)~{# == 'opennlp:location'} intent=intent2 term~{# == 'x:time'} fragment(f)")
         private def m(ctx: NCContext, im: NCIntentMatch): NCResult = null
 
     // Bad models.
 
-    // Invalid fragment.
+    // Missed fragment definition.
     @NCIntent("intent=intent2 term~{# == 'x:time'} fragment(f)")
     class E1 extends NCModelAdapter(mkCfg("e1"), PL)
 
+    // Attempt to reference on fragment defined in method.
     class E2 extends NCModelAdapter(mkCfg("e2"), PL):
         @NCIntent("fragment=f term(city)~{# == 'opennlp:location'} intent=intent1 term~{# == 'x:time'} fragment(f)")
         private def m1(ctx: NCContext, im: NCIntentMatch): NCResult = null
@@ -66,6 +67,7 @@ class NCIDLFragmentsSpec:
         @NCIntent("intent=intent2 term~{# == 'x:time'} fragment(f)")
         private def m2(ctx: NCContext, im: NCIntentMatch): NCResult = null
 
+    // Attempt to reference on fragment defined in method.
     class E3 extends NCModelAdapter(mkCfg("e3"), PL):
         @NCIntent("fragment=f term(city)~{# == 'opennlp:location'} intent=intent1 term~{# == 'x:time'} fragment(f)")
         private def m2(ctx: NCContext, im: NCIntentMatch): NCResult = null
