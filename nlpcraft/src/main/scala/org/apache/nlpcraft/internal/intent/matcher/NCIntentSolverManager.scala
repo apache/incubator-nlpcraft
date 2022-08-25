@@ -723,7 +723,6 @@ class NCIntentSolverManager(
 
                             val reqId = reqIds.synchronized { reqIds.getOrElse(key, null) }
 
-                            // TODO: text.
                             if reqId != ctx.getRequest.getRequestId then E("Callback is out of date.")
 
                             typ match

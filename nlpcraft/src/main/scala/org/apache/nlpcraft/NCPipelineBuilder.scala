@@ -225,9 +225,8 @@ class NCPipelineBuilder:
     /**
       * @return */
     def build: NCPipeline =
-        // TODO: Text.
-        require(tokParser.nonEmpty, "Token parser should be defined.")
-        require(entParsers.nonEmpty, "At least oe entity parser should be defined.")
+        require(tokParser.nonEmpty, "Token parser must be defined.")
+        require(entParsers.nonEmpty, "At least one entity parser must be defined.")
 
         new NCPipeline():
             override def getTokenParser: NCTokenParser = tokParser.get
