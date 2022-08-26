@@ -20,29 +20,27 @@ val nlpcraftVer = "1.0.0"
 // Common libraries.
 val scalaMajVer = "3"
 val scalaMinVer = "1.3"
-val log4jVer = "2.17.2"
-val scalaLoggingVer = "3.9.4"
+val log4jVer = "2.18.0"
+val scalaLoggingVer = "3.9.5"
 val orgAntlr4Ver = "4.10.1"
 val jlineVer = "3.21.0"
 val commonsIoVer = "2.11.0"
 val commonsLang3Ver = "3.12.0"
 val commonsCodecVer = "1.15"
 val commonsCollectionsVer = "4.4"
-val gsonVer = "2.9.0"
-val jacksonVer = "2.13.2"
-val apacheOpennlpVer = "1.9.4"
+val gsonVer = "2.9.1"
+val jacksonVer = "2.13.3"
+val apacheOpennlpVer = "2.0.0"
 
 // Test libraries.
-val junitVer = "5.8.2"
-
-val jmhVer = "1.35"
+val junitVer = "5.9.0"
 
 // Stanford project libraries.
-val stanfordCoreNLPVer  = "4.4.0"
+val stanfordCoreNLPVer  = "4.5.0"
 
 // Examples libraries.
-val languagetoolVer = "5.6"
-val luceneAnalyzersCommonVer = "8.11.1"
+val languagetoolVer = "5.8"
+val luceneAnalyzersCommonVer = "8.11.2"
 
 ThisBuild / scalaVersion := s"$scalaMajVer.$scalaMinVer"
 ThisBuild / version := nlpcraftVer
@@ -98,8 +96,7 @@ lazy val nlpcraft = (project in file("nlpcraft"))
 
         // Dependencies.
         libraryDependencies ++= libs,
-        libraryDependencies += "org.apache.commons" % "commons-lang3" % commonsLang3Ver,
-        libraryDependencies += "org.openjdk.jmh" % "jmh-core" % jmhVer % Test
+        libraryDependencies += "org.apache.commons" % "commons-lang3" % commonsLang3Ver
     )
 
 lazy val nlpcraftStanford = (project in file("nlpcraft-stanford"))
