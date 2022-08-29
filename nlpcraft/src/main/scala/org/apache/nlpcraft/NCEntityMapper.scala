@@ -36,12 +36,13 @@ package org.apache.nlpcraft
   */
 trait NCEntityMapper extends NCLifecycle:
     /**
-      * Maps given of entities into a new list of entities.
+      * Maps given of entities into a new list of entities. Used typically to combine several entities into one
+      * or to introduce a synthetic entity.
       *
       * @param req Input request descriptor.
       * @param cfg Configuration of the model this component is associated with.
       * @param ents List of entities to map.
       * @return List of entities (new or existing ones).
       */
-    def map(req: NCRequest, cfg: NCModelConfig, ents: List[NCEntity]) :List[NCEntity]
+    def map(req: NCRequest, cfg: NCModelConfig, ents: List[NCEntity]): List[NCEntity]
 

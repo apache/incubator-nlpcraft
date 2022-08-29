@@ -18,25 +18,31 @@
 package org.apache.nlpcraft
 
 /**
-  * 
+  * A descriptor of the intent callback returned by [[NCModelClient.debugAsk()]] method. This descriptor
+  * defines the callback for the intent that was detected as a winning intent but whose callback wasn't
+  * fired as per [[NCModelClient.debugAsk()]] method.
+  *
+  * Using this descriptor the user can execute callback itself, if necessary.
+  *
+  * @see [[NCModelClient.debugAsk()]]
   */
 trait NCFiredIntent:
-    type NCArguments = List[List[NCEntity]]
-
     /**
-      * 
-      * @return
+      * Gets ID of the matched intent.
       */
     def getIntentId: String
 
     /**
-      * 
-      * @return
+      * Gets the list of callback arguments as list of list of entities.
+      *
+      * @see [[getCallback]]
       */
-    def getCallbackArguments: NCArguments
+    def getCallbackArguments: List[List[NCEntity]]
 
     /**
-      * 
-      * @return
+      * Gets the callback function that takes list of list of entities and returns
+      * an instance of [[NCResult]] class.
+      *
+      * @see [[getCallbackArguments]]
       */
-    def getCallback: NCArguments => NCResult
+    def getCallback: List[List[NCEntity]] => NCResult

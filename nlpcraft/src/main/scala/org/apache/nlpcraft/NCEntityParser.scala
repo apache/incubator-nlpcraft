@@ -35,7 +35,7 @@ package org.apache.nlpcraft
   */
 trait NCEntityParser extends NCLifecycle:
     /**
-      * Converts, parses, given list of tokens into the list of entities.
+      * Parses and converts given list of tokens into the list of entities.
       *
       * @param req Input request descriptor.
       * @param cfg Configuration of the model this component is associated with.

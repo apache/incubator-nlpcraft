@@ -22,6 +22,10 @@ package org.apache.nlpcraft
   * See [[NCPipeline]] for documentation on the overall processing pipeline. Note that this is an
   * optional component.
   *
+  * This component can be used to perform any kind of last-stage validation before the list of
+  * entities is passed to intent matching. For example, this can be used for content-based access control, time-based
+  * control, location-based control, etc.
+  *
   * @see [[NCPipeline.getEntityValidators]]
   * @see [[NCEntity]]
   * @see [[NCToken]]
@@ -35,6 +39,7 @@ package org.apache.nlpcraft
   */
 trait NCEntityValidator extends NCLifecycle:
     /**
+      * Validates the final list of parsed and enriched entities.
       *
       * @param req Input request descriptor.
       * @param cfg Configuration of the model this component is associated with.
