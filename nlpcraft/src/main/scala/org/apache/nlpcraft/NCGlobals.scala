@@ -30,51 +30,56 @@ import scala.annotation.targetName
 def E[T](msg: String, cause: Throwable = null): T = throw new NCException(msg, cause)
 
 extension[T](opt: Option[T])
+    /**
+      * Provides equality check between two options' values. This check is `true` when both options
+      * are defined and have the same value.
+      *
+      * @param x Option to compare.
+      */
     @targetName("equalEqualEqualOpt")
     def === (x: Option[T]): Boolean = opt.isDefined && x.isDefined && opt.get == x.get
+
+    /**
+      * Provides equality check between the option and the value of the same type. This check is `true` when
+      * the option is defined and its value is equal to the given value.
+      *
+      * @param x Value to compare the option to
+      */
     @targetName("equalEqualEqual")
     def ===(x: T): Boolean = opt.isDefined && opt.get == x
 
 extension(v: Int)
-    def MS: Int = v
-    def SECS: Int = v * 1000
-    def MINS: Int = v * 1000 * 60
-    def HOURS: Int = v * 1000 * 60 * 60
-    def DAYS: Int = v * 1000 * 60 * 60 * 24
-    def FPS: Int = 1000 / v
-    def ms: Int = MS
-    def secs: Int = SECS
-    def mins: Int = MINS
-    def hours: Int = HOURS
-    def days: Int = DAYS
-    def fps: Int = 1000 / v
-    def TB: Int = v * 1024 * 1024 * 1024 * 1024
-    def GB: Int = v * 1024 * 1024 * 1024
-    def MB: Int = v * 1024 * 1024
-    def KB: Int = v * 1024
-    def tb: Int = TB
-    def gb: Int = GB
-    def mb: Int = MB
-    def kb: Int = KB
+    /** Converts milliseconds `int` value to seconds. */
+    def secs: Int = v * 1000
+    /** Converts milliseconds `int` value to minutes. */
+    def mins: Int = v * 1000 * 60
+    /** Converts milliseconds `int` value to hours. */
+    def hours: Int = v * 1000 * 60 * 60
+    /** Converts milliseconds `int` value to days. */
+    def days: Int = v * 1000 * 60 * 60 * 24
+    /** Converts bytes `int` value to terabytes. */
+    def tb: Int = v * 1024 * 1024 * 1024 * 1024
+    /** Converts bytes `int` value to gigabytes. */
+    def gb: Int = v * 1024 * 1024 * 1024
+    /** Converts bytes `int` value to megabytes. */
+    def mb: Int = v * 1024 * 1024
+    /** Converts bytes `int` value to kilobytes. */
+    def kb: Int = v * 1024
 
 extension(v: Long)
-    def TB: Long = v * 1024 * 1024 * 1024 * 1024
-    def GB: Long = v * 1024 * 1024 * 1024
-    def MB: Long = v * 1024 * 1024
-    def KB: Long = v * 1024
-    def tb: Long = TB
-    def gb: Long = GB
-    def mb: Long = MB
-    def kb: Long = KB
-    def MS: Long = v
-    def SECS: Long = v * 1000
-    def MINS: Long = v * 1000 * 60
-    def HOURS: Long = v * 1000 * 60 * 60
-    def DAYS: Long = v * 1000 * 60 * 60 * 24
-    def FPS: Long = 1000 / v
-    def ms: Long = MS
-    def secs: Long = SECS
-    def mins: Long = MINS
-    def hours: Long = HOURS
-    def days: Long = DAYS
-    def fps: Long = 1000 / v
+    /** Converts milliseconds `long` value to seconds. */
+    def secs: Long = v * 1000
+    /** Converts milliseconds `long` value to minutes. */
+    def mins: Long = v * 1000 * 60
+    /** Converts milliseconds `long` value to hours. */
+    def hours: Long = v * 1000 * 60 * 60
+    /** Converts milliseconds `long` value to days. */
+    def days: Long = v * 1000 * 60 * 60 * 24
+    /** Converts bytes `long` value to terabytes. */
+    def tb: Long = v * 1024 * 1024 * 1024 * 1024
+    /** Converts bytes `long` value to gigabytes. */
+    def gb: Long = v * 1024 * 1024 * 1024
+    /** Converts bytes `long` value to megabytes. */
+    def mb: Long = v * 1024 * 1024
+    /** Converts bytes `long` value to kilobytes. */
+    def kb: Long = v * 1024

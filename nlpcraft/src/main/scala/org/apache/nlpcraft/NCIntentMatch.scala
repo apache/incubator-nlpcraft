@@ -17,14 +17,15 @@
 
 package org.apache.nlpcraft
 
+import scala.annotation.StaticAnnotation
+
 /**
-  * 
+  * Descriptor of the matched intent.
   */
 trait NCIntentMatch:
     /**
       * Gets ID of the matched intent.
-      *
-      * @return ID of the matched intent. */
+      */
     def getIntentId: String
 
     /**
@@ -32,29 +33,31 @@ trait NCIntentMatch:
       * where a `null` sub-list defines an optional term. Order and index of sub-lists corresponds
       * to the order and index of terms in the matching intent. Number of sub-lists will always be the same
       * as the number of terms in the matched intent.
-      * <p>
-      * Consider using {@link NCIntentTerm} annotation instead for simpler access to the intent entities.
+      *
+      * Consider using [[NCIntentTerm]] annotation instead for simpler access to the intent entities.
       *
       * @return List of lists of entities representing matched intent.
-      * @see #getVariant()
-      * @see [[NCIntentTerm */
+      * @see [[getVariant()]]
+      * @see [[NCIntentTerm]]
+      */
     def getIntentEntities: List[List[NCEntity]]
 
     /**
-      * Gets entities for given term. This is a companion method for {@link # getIntentEntities ( )}.
-      * <p>
-      * Consider using {@link NCIntentTerm} annotation instead for simpler access to the intent entities.
+      * Gets entities for given term. This is a companion method for [[getIntentEntities()]] method.
       *
-      * @param idx Index of the term (starting from <code>0</code>).
+      * Consider using [[NCIntentTerm]] annotation instead for simpler access to the intent entities.
+      *
+      * @param idx Index of the term (starting from `0`).
       * @return List of entities, potentially `null`, for given term.
-      * @see [[NCIntentTerm
-      * @see #getTermEntities(String) */
+      * @see [[NCIntentTerm]]
+      * @see [[getTermEntities()]]
+      */
     def getTermEntities(idx: Int): List[NCEntity]
 
     /**
-      * Gets entities for given term. This is a companion method for {@link # getIntentEntities ( )}.
-      * <p>
-      * Consider using {@link NCIntentTerm} annotation instead for simpler access to the intent entities.
+      * Gets entities for given term. This is a companion method for [[getIntentEntities()]].
+      *
+      * Consider using [[NCIntentTerm]] annotation instead for simpler access to the intent entities.
       *
       * @param termId ID of the term for which to get entities.
       * @return List of entities, potentially `null`, for given term.

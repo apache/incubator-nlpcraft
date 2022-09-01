@@ -18,11 +18,12 @@
 package org.apache.nlpcraft
 
 /**
-  * A parsing variant is a list of entities defining one possible parsing of the ipnut query. Note that a given input
-  * query can have one or more possible different parsing variants. Depending on model configuration a user input
+  * A parsing variant is a list of entities defining one possible parsing of the input query. Note that a given input
+  * can have one or more possible different parsing variants. Depending on model configuration a user input
   * can produce hundreds or even thousands of parsing variants.
   *
-  * @see [[NCModel#onVariant(NCVariant) */
+  * @see [[NCModel.onVariant()]]
+  */
 trait NCVariant:
     /**
       * Gets the list of entities for this variant.
