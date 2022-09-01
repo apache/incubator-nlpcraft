@@ -29,9 +29,6 @@ import scala.annotation.targetName
   */
 def E[T](msg: String, cause: Throwable = null): T = throw new NCException(msg, cause)
 
-// Internal deep debug flag (more verbose tracing).
-final val DEEP_DEBUG = false
-
 extension[T](opt: Option[T])
     @targetName("equalEqualEqualOpt")
     def === (x: Option[T]): Boolean = opt.isDefined && x.isDefined && opt.get == x.get
