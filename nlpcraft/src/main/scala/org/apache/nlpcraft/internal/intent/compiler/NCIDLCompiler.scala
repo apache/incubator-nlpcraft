@@ -498,7 +498,7 @@ class NCIDLCompiler(cfg: NCModelConfig) extends LazyLogging with mutable.Cloneab
         intents.getOrElseUpdate(x, {
             val (fsm, parser) = antlr4Armature(x, origin, isMethodLevel)
 
-            // Parse the input IDL and walk built AST.
+            // Parse the input IDL and walk the built AST.
             (new ParseTreeWalker).walk(fsm, parser.idl())
 
             // Return the compiled intents.

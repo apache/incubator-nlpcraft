@@ -17,23 +17,10 @@
 
 package org.apache.nlpcraft.internal.antlr4
 
-import org.apache.nlpcraft.internal.*
-
-object NCCompilerUtils:
-    /**
-      *
-      * @param in
-      * @param charPos
-      * @return
-      */
-    def mkErrorHolder(in: String, charPos: Int): NCCompilerErrorHolder =
-        val in0 = in.strip()
-        if in0.isEmpty || charPos < 0 then NCCompilerErrorHolder("<empty>", "<empty>")
-        else
-            val charPos0 = charPos - (in.length - in.stripLeading().length)
-            val pos = Math.max(0, charPos0)
-            val dash = "-" * in0.length
-            val ptrStr = s"${dash.substring(0, pos)}^${dash.substring(pos + 1)}"
-            val origStr = s"${in0.substring(0, pos)}${in0.charAt(pos)}${in0.substring(pos + 1)}"
-
-            NCCompilerErrorHolder(ptrStr, origStr)
+/**
+  *
+  */
+case class NCCompilerErrorHolder(
+    ptrStr: String,
+    origStr: String
+)
