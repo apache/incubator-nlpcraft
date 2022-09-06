@@ -18,25 +18,23 @@
 package org.apache.nlpcraft.internal.impl
 
 import org.apache.nlpcraft.*
-import nlp.parsers.*
-import nlp.util.*
-import org.junit.jupiter.api.*
-import org.junit.jupiter.api.function.Executable
+import org.apache.nlpcraft.nlp.parsers.*
+import org.apache.nlpcraft.nlp.util.*
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.*
+
 
 import java.util
 import java.util.concurrent.*
-import scala.concurrent.CancellationException
-import scala.jdk.CollectionConverters.*
 
 /**
   *
   */
-class NCPipelineManagerSpec:
+class NCPipelineManagerSpec extends AnyFunSuite:
     /**
       *
       */
-    @Test
-    def test(): Unit =
+    test("test") {
         def test(txt: String, variantCnt: Int, elements: NCSemanticElement*): Unit =
             val pipeline = mkEnPipeline
 
@@ -53,4 +51,4 @@ class NCPipelineManagerSpec:
 
         test("t1 t2", 4, NCSemanticTestElement("t1", "t2"), NCSemanticTestElement("t2", "t1"))
         test("t1 t2", 2, NCSemanticTestElement("t1", "t2"), NCSemanticTestElement("t2"))
-
+    }

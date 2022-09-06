@@ -21,22 +21,20 @@ import org.apache.nlpcraft.*
 import annotations.*
 import nlp.parsers.*
 import nlp.util.*
+import org.scalatest.funsuite.AnyFunSuite
 
-import org.junit.jupiter.api.Test
 import java.util
 import scala.collection.mutable
-import scala.jdk.CollectionConverters.*
 import scala.util.Using
 
 /**
   * 
   */
-class NCModelClientSpec3:
-    @Test
-    def test(): Unit =
+class NCModelClientSpec3 extends AnyFunSuite:
+    test("test") {
         import NCSemanticTestElement as TE
 
-        val mdl: NCTestModelAdapter = new NCTestModelAdapter:
+        val mdl: NCTestModelAdapter = new NCTestModelAdapter :
             override val getPipeline: NCPipeline = mkEnPipeline(TE("e1"))
 
             @NCIntent("intent=i1 term(t1)={# == 'e1'}")
@@ -61,6 +59,6 @@ class NCModelClientSpec3:
             ask()
             execCallbackFail(cbData) // Cannot be called, because there are new requests  (Error is 'Callback is out of date.')
         }
-
+    }
 
 

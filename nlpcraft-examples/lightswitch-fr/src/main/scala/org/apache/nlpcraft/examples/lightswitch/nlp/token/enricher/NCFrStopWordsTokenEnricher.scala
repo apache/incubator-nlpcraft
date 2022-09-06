@@ -20,9 +20,6 @@ package org.apache.nlpcraft.examples.lightswitch.nlp.token.enricher
 import org.apache.lucene.analysis.fr.FrenchAnalyzer
 import org.apache.nlpcraft.*
 
-import java.util
-import scala.jdk.CollectionConverters.*
-
 /**
   *
   */

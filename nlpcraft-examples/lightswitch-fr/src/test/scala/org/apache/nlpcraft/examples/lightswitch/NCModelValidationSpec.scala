@@ -18,38 +18,39 @@
 package org.apache.nlpcraft.examples.lightswitch
 
 import org.apache.nlpcraft.*
-import org.junit.jupiter.api.*
+import org.scalatest.funsuite.AnyFunSuite
 
 import scala.util.Using
 
 /**
   * JUnit models validation.
   */
-class NCModelValidationSpec:
-    @Test
-    def test(): Unit = Using.resource(new NCModelClient(new LightSwitchFrModel)) { client =>
-        def check(txt: String): Unit = client.debugAsk(txt, "userId", true).getIntentId == "ls"
-        
-        check("Éteignez les lumières dans toute la maison.")
-        check("Éteignez toutes les lumières maintenant.")
-        check("Allumez l'éclairage dans le placard de la chambre des maîtres.")
-        check("Éteindre les lumières au 1er étage.")
-        check("Allumez les lumières.")
-        check("Allumes dans la cuisine.")
-        check("S'il vous plait, éteignez la lumière dans la chambre à l'étage.")
-        check("Allumez les lumières dans toute la maison.")
-        check("Éteignez les lumières dans la chambre d'hôtes.")
-        check("Pourriez-vous éteindre toutes les lumières s'il vous plait?")
-        check("Désactivez l'éclairage au 2ème étage.")
-        check("Éteignez les lumières dans la chambre au 1er étage.")
-        check("Lumières allumées à la cuisine du deuxième étage.")
-        check("S'il te plaît, pas de lumières!")
-        check("Coupez toutes les lumières maintenant!")
-        check("Éteindre les lumières dans le garage.")
-        check("Lumières éteintes dans la cuisine!")
-        check("Augmentez l'éclairage dans le garage et la chambre des maîtres.")
-        check("Baissez toute la lumière maintenant!")
-        check("Pas de lumières dans la chambre, s'il vous plait.")
-        check("Allumez le garage, s'il vous plait.")
-        check("Tuez l'illumination maintenant.")
+class NCModelValidationSpec extends AnyFunSuite:
+    test("test") {
+        Using.resource(new NCModelClient(new LightSwitchFrModel)) { client =>
+            def check(txt: String): Unit = client.debugAsk(txt, "userId", true).getIntentId == "ls"
+
+            check("Éteignez les lumières dans toute la maison.")
+            check("Éteignez toutes les lumières maintenant.")
+            check("Allumez l'éclairage dans le placard de la chambre des maîtres.")
+            check("Éteindre les lumières au 1er étage.")
+            check("Allumez les lumières.")
+            check("Allumes dans la cuisine.")
+            check("S'il vous plait, éteignez la lumière dans la chambre à l'étage.")
+            check("Allumez les lumières dans toute la maison.")
+            check("Éteignez les lumières dans la chambre d'hôtes.")
+            check("Pourriez-vous éteindre toutes les lumières s'il vous plait?")
+            check("Désactivez l'éclairage au 2ème étage.")
+            check("Éteignez les lumières dans la chambre au 1er étage.")
+            check("Lumières allumées à la cuisine du deuxième étage.")
+            check("S'il te plaît, pas de lumières!")
+            check("Coupez toutes les lumières maintenant!")
+            check("Éteindre les lumières dans le garage.")
+            check("Lumières éteintes dans la cuisine!")
+            check("Augmentez l'éclairage dans le garage et la chambre des maîtres.")
+            check("Baissez toute la lumière maintenant!")
+            check("Pas de lumières dans la chambre, s'il vous plait.")
+            check("Allumez le garage, s'il vous plait.")
+            check("Tuez l'illumination maintenant.")
+        }
     }

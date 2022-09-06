@@ -20,18 +20,16 @@ package org.apache.nlpcraft.nlp.parsers
 import org.apache.nlpcraft.*
 import nlp.parsers.*
 import nlp.util.*
-import org.junit.jupiter.api.*
+import org.scalatest.funsuite.AnyFunSuite
 
 import java.util
 import scala.collection.mutable
 import scala.concurrent.ExecutionContext
-import scala.jdk.CollectionConverters.*
-import scala.jdk.OptionConverters.RichOptional
 
 /**
   *
   */
-class NCSemanticEntityParserJsonSpec:
+class NCSemanticEntityParserJsonSpec extends AnyFunSuite:
     private val semParser = NCTestUtils.mkEnSemanticParser("models/alarm_model.json")
 
     /**
@@ -56,11 +54,11 @@ class NCSemanticEntityParserJsonSpec:
     /**
       * 
       */
-    @Test
-    def test(): Unit =
+    test("test") {
         check(
             "Ping me in 3 minutes tomorrow",
             "x:alarm",
             // File contains these data for element.
             elemData = Option(Map("testKey" -> "testValue"))
         )
+    }

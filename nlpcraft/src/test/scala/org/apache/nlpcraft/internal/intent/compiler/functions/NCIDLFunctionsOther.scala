@@ -18,7 +18,6 @@
 package org.apache.nlpcraft.internal.intent.compiler.functions
 
 import org.apache.nlpcraft.internal.intent.compiler.functions.NCIDLFunctions.*
-import org.junit.jupiter.api.Test
 
 import scala.language.implicitConversions
 import scala.sys.SystemProperties
@@ -27,8 +26,7 @@ import scala.sys.SystemProperties
   * Tests for 'other' functions.
   */
 class NCIDLFunctionsOther extends NCIDLFunctions:
-    @Test
-    def test1(): Unit =
+    test("test 1") {
         // If.
         test(
             TestDesc(truth = "if(true, 1, 0) == 1"),
@@ -37,14 +35,14 @@ class NCIDLFunctionsOther extends NCIDLFunctions:
             TestDesc(truth = "or_else('s', list(1, 2, 3)) == 's'"),
             TestDesc(truth = "or_else(meta_cfg('unknown_prop'), list(1, 2, 3)) == list(1, 2, 3)")
         )
-    
-    @Test
-    def test2(): Unit =
+    }
+
+    test("test 2") {
         val sys = new SystemProperties
 
         sys.put("k1", "v1")
 
-        try 
+        try
             val js = "{\"k1\": \"v1\"}"
 
             // JSON.
@@ -54,16 +52,16 @@ class NCIDLFunctionsOther extends NCIDLFunctions:
             )
         finally
             sys.remove("k1")
+    }
 
-    @Test
-    def test3(): Unit =
+    test("test 3") {
         test(
             "to_string(list(1, 2, 3)) == list('1', '2', '3')",
             "to_string(3.123) == '3.123'"
         )
+    }
 
-    @Test
-    def test4(): Unit =
+    test("test 4") {
         test(
             "true",
             "true == true",
@@ -72,3 +70,4 @@ class NCIDLFunctionsOther extends NCIDLFunctions:
             "true != false",
             "null == null"
         )
+    }

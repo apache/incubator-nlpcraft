@@ -22,15 +22,12 @@ import org.apache.nlpcraft.internal.ascii.NCAsciiTable
 import org.apache.nlpcraft.internal.util.NCResourceReader
 import org.apache.nlpcraft.nlp.enrichers.*
 import org.apache.nlpcraft.nlp.util.*
-import org.junit.jupiter.api.*
-
-import java.util
-import scala.jdk.CollectionConverters.*
+import org.scalatest.funsuite.AnyFunSuite
 
 /**
   *
   */
-class NCOpenNLPTokenParserSpec:
+class NCOpenNLPTokenParserSpec extends AnyFunSuite:
     private def isStopWord(t: NCToken): Boolean = t[Boolean]("stopword")
 
     private def test(txt: String, validate: Seq[NCToken] => _): Unit =
@@ -45,8 +42,7 @@ class NCOpenNLPTokenParserSpec:
         NCTestUtils.printTokens(toks)
         validate(toks)
 
-    @Test
-    def test(): Unit =
+    test("test") {
         test(
             "Test requests!",
             toks =>
@@ -96,3 +92,4 @@ class NCOpenNLPTokenParserSpec:
             "< < [ a ] > >",
             toks => require(!isStopWord(toks.find(_.getText == "a").get))
         )
+    }

@@ -19,12 +19,12 @@ package org.apache.nlpcraft.internal.intent.compiler
 
 import org.apache.nlpcraft.*
 import nlp.util.*
-import org.junit.jupiter.api.Test
+import org.scalatest.funsuite.AnyFunSuite
 
 /**
  * Tests for IDL compiler.
  */
-class NCIDLCompilerSpec:
+class NCIDLCompilerSpec extends AnyFunSuite:
     private final val MODEL_ID = "test.mdl.id"
 
     private final val compiler = new NCIDLCompiler(CFG)
@@ -37,7 +37,7 @@ class NCIDLCompilerSpec:
         try
             compiler.compile(idl,  MODEL_ID)
             assert(true)
-        catch case e: Exception => assert(assertion = false, e)
+        catch case e: Exception => assert(condition = false, e)
 
     /**
      *
@@ -52,9 +52,7 @@ class NCIDLCompilerSpec:
                 println(e.getMessage)
                 assert(true)
 
-    @Test
-    @throws[NCException]
-    def testInlineCompileOk(): Unit =
+    test("test inline compile ok") {
         checkCompileOk(
             """
               |import('org/apache/nlpcraft/internal/intent/compiler/test_ok.idl')
@@ -116,10 +114,9 @@ class NCIDLCompilerSpec:
               |     fragment(f21, {'a': true, 'b': ["s1", "s2"]})
               |""".stripMargin
         )
+    }
 
-    @Test
-    @throws[NCException]
-    def testInlineCompileFail(): Unit =
+    test("test inline compile fail") {
         checkCompileError(
             """
               |intent=i1
@@ -288,12 +285,13 @@ class NCIDLCompilerSpec:
               |     fragment(f1_, {'a': true, 'b': ["s1", "s2"]})
               |""".stripMargin
         )
+    }
 
-    @Test
-    def testImport(): Unit = require(compiler.compile("import('scan/idl.idl')", "test-origin").size == 1)
+    test("test import") {
+        require(compiler.compile("import('scan/idl.idl')", "test-origin").size == 1)
+    }
 
-    @Test
-    def testEmpty(): Unit =
+    test("test empty") {
         def test0(idl: String): Unit =
             try
                 compiler.compile(idl, "test-origin")
@@ -303,4 +301,5 @@ class NCIDLCompilerSpec:
 
         test0("")
         test0(" ")
+    }
 

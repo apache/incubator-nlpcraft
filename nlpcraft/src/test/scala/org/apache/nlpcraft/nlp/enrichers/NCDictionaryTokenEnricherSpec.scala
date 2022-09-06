@@ -22,18 +22,12 @@ import annotations.*
 import nlp.enrichers.*
 import nlp.util.*
 import internal.util.NCResourceReader
-import org.junit.jupiter.api.*
+import org.scalatest.funsuite.AnyFunSuite
 
-import scala.jdk.CollectionConverters.*
-
-/**
-  *
-  */
-class NCDictionaryTokenEnricherSpec:
+class NCDictionaryTokenEnricherSpec extends AnyFunSuite:
     private val dictEnricher = new NCEnDictionaryTokenEnricher()
 
-    @Test
-    def test(): Unit =
+    test("test") {
         val txt = "milk XYZ"
         val toks = EN_TOK_PARSER.tokenize(txt)
 
@@ -48,3 +42,4 @@ class NCDictionaryTokenEnricherSpec:
 
         require(toks.head[Boolean]("dict"))
         require(!toks.last[Boolean]("dict"))
+    }

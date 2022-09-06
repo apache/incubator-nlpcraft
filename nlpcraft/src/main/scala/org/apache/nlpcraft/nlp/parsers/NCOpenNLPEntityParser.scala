@@ -29,7 +29,6 @@ import java.util.Objects
 import scala.Option.*
 import scala.collection.mutable
 import scala.concurrent.ExecutionContext
-import scala.jdk.CollectionConverters.*
 import scala.language.postfixOps
 import scala.util.Using
 

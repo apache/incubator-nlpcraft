@@ -48,7 +48,7 @@
         </dependency>
 
         <!--
-         JUnit & ScalaTest dependencies.
+         ScalaTest dependencies.
          ===============================
         -->
         <dependency>
@@ -59,15 +59,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>${junit.ver}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.scalatest</groupId>
             <artifactId>scalatest_${scala.major.ver}</artifactId>
-            <version>${scalatest.ver}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

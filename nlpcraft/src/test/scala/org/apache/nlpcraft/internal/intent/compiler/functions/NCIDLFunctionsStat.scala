@@ -18,25 +18,13 @@
 package org.apache.nlpcraft.internal.intent.compiler.functions
 
 import org.apache.nlpcraft.internal.intent.compiler.functions.NCIDLFunctions.*
-import org.junit.jupiter.api.Test
-
 import scala.language.implicitConversions
 
 /**
   * Tests for 'stat' functions.
   */
 class NCIDLFunctionsStat extends NCIDLFunctions:
-    @Test
-    def testError(): Unit =
-        expectError(
-            "avg(list()) == 2",
-            "avg(list('A')) == 2",
-            "stdev(list()) == 2",
-            "stdev(list('A')) == 2"
-        )
-
-    @Test
-    def test(): Unit =
+    test("test") {
         test(
             "max(list(1, 2, 3)) == 3",
             "max(list(1.0, 2.0, 3.0)) == 3.0",
@@ -51,3 +39,13 @@ class NCIDLFunctionsStat extends NCIDLFunctions:
             "stdev(list(0.0, 0.0, 0.0)) == 0.0",
             "stdev(list(0, 0, 0)) == 0.0"
         )
+    }
+
+    test("test errors") {
+        expectError(
+            "avg(list()) == 2",
+            "avg(list('A')) == 2",
+            "stdev(list()) == 2",
+            "stdev(list('A')) == 2"
+        )
+    }    

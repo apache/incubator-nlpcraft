@@ -18,29 +18,30 @@
 package org.apache.nlpcraft.examples.lightswitch
 
 import org.apache.nlpcraft.*
-import org.junit.jupiter.api.*
+import org.scalatest.funsuite.AnyFunSuite
 
 import scala.util.Using
 
 /**
   * JUnit models validation.
   */
-class NCModelValidationSpec:
-    @Test
-    def test(): Unit = Using.resource(new NCModelClient(new LightSwitchRuModel)) { client =>
-        def check(txt: String): Unit = client.debugAsk(txt, "userId", true).getIntentId == "ls"
-        
-        check("Выключи свет по всем доме")
-        check("Выруби электричество!")
-        check("Включи свет в детской")
-        check("Включай повсюду освещение")
-        check("Включайте лампы в детской комнате")
-        check("Свет на кухне, пожалуйста, приглуши")
-        check("Нельзя ли повсюду выключить свет?")
-        check("Пожалуйста без света")
-        check("Отключи электричество в ванной")
-        check("Выключи, пожалуйста, тут всюду свет")
-        check("Выключай все!")
-        check("Свет пожалуйста везде включи")
-        check("Зажги лампу на кухне")
+class NCModelValidationSpec extends AnyFunSuite:
+    test("test") {
+        Using.resource(new NCModelClient(new LightSwitchRuModel)) { client =>
+            def check(txt: String): Unit = client.debugAsk(txt, "userId", true).getIntentId == "ls"
+
+            check("Выключи свет по всем доме")
+            check("Выруби электричество!")
+            check("Включи свет в детской")
+            check("Включай повсюду освещение")
+            check("Включайте лампы в детской комнате")
+            check("Свет на кухне, пожалуйста, приглуши")
+            check("Нельзя ли повсюду выключить свет?")
+            check("Пожалуйста без света")
+            check("Отключи электричество в ванной")
+            check("Выключи, пожалуйста, тут всюду свет")
+            check("Выключай все!")
+            check("Свет пожалуйста везде включи")
+            check("Зажги лампу на кухне")
+        }
     }

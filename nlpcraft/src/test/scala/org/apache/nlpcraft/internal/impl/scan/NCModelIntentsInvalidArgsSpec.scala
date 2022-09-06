@@ -22,15 +22,15 @@ import annotations.*
 import nlp.enrichers.*
 import nlp.util.*
 import internal.impl.{NCCallbackInput, NCModelScanner}
+import org.scalatest.funsuite.AnyFunSuite
 
-import org.junit.jupiter.api.Test
 import java.util
 
 /**
   * It tests invalid intents methods parameters types usage.
   * Note that for some kind of models (it depends on creation type) we can't check methods arguments during scan.
   */
-class NCModelIntentsInvalidArgsSpec:
+class NCModelIntentsInvalidArgsSpec extends AnyFunSuite:
     class DefinedClassModelValid extends NCTestModelAdapter:
         @NCIntent("intent=validList term(list)~{# == 'x'}[0,10]")
         def validList(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("list") list: List[NCEntity]): NCResult = processListEntity(list)
@@ -149,8 +149,7 @@ class NCModelIntentsInvalidArgsSpec:
                 println("Expected stack trace:")
                 e.printStackTrace(System.out)
 
-    @Test
-    def test(): Unit =
+    test("test") {
         testOk(CHECKED_MDL_VALID, "validList")
         testOk(CHECKED_MDL_VALID, "validOpt")
 
@@ -167,3 +166,4 @@ class NCModelIntentsInvalidArgsSpec:
         testOk(UNCHECKED_MDL, "validOpt")
         testRuntimeClassCast(UNCHECKED_MDL, "invalidList")
         testRuntimeClassCast(UNCHECKED_MDL, "invalidOpt")
+    }        

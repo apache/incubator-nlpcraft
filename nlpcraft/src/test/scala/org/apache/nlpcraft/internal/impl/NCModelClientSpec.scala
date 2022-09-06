@@ -21,15 +21,14 @@ import org.apache.nlpcraft.*
 import annotations.*
 import nlp.parsers.*
 import nlp.util.*
-import org.junit.jupiter.api.Test
+import org.scalatest.funsuite.AnyFunSuite
 
-import scala.jdk.CollectionConverters.*
 import scala.util.Using
 
 /**
   *
   */
-class NCModelClientSpec:
+class NCModelClientSpec extends AnyFunSuite:
     /**
       *
       * @param e
@@ -59,21 +58,21 @@ class NCModelClientSpec:
     /**
       *
       */
-    @Test
-    def test(): Unit =
+    test("test 1") {
         test0(
             new NCTestModelAdapter():
                 @NCIntent("intent=ls term(act)={# == 'ls:on'} term(loc)={# == 'ls:loc'}*")
                 def onMatch(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("act") act: NCEntity, @NCIntentTerm("loc") locs: List[NCEntity]): NCResult = TEST_RESULT
         )
+    }
+
     /**
       * 
       */
-    @Test
-    def test2(): Unit =
+    test("test 2") {
         test0(
             new NCTestModelAdapter():
                 @NCIntent("intent=ls term(act)={has(ent_groups, 'act')} term(loc)={# == 'ls:loc'}*")
                 def onMatch(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("act") act: NCEntity, @NCIntentTerm("loc") locs: List[NCEntity]): NCResult = TEST_RESULT
         )
-
+    }

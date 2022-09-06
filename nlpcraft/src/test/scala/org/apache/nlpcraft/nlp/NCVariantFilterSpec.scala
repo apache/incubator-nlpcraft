@@ -22,15 +22,14 @@ import annotations.*
 import nlp.util.*
 import nlp.parsers.*
 import internal.util.NCResourceReader
+import org.scalatest.funsuite.AnyFunSuite
 
-import org.junit.jupiter.api.Test
 import java.util
 import scala.util.Using
-
 /**
   *
   */
-class NCVariantFilterSpec:
+class NCVariantFilterSpec extends AnyFunSuite:
     private def test0(pipeline: NCPipeline, ok: Boolean): Unit =
         val mdl: NCModel = new NCModelAdapter(NCModelConfig("test.id", "Test model", "1.0"), pipeline):
             @NCIntent("intent=i term(any)={true}")
@@ -46,8 +45,7 @@ class NCVariantFilterSpec:
 
     private def mkPipeline(apply: NCPipelineBuilder => NCPipelineBuilder): NCPipeline = apply(mkBuilder()).build
 
-    @Test
-    def test(): Unit =
+    test("test") {
         test0(
             mkBuilder().build,
             true
@@ -57,3 +55,4 @@ class NCVariantFilterSpec:
             mkPipeline(_.withVariantFilter((_: NCRequest, _: NCModelConfig, _: List[NCVariant]) => List.empty)),
             false
         )
+    }

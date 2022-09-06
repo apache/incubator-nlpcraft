@@ -21,18 +21,15 @@ import org.apache.nlpcraft.*
 import annotations.*
 import nlp.parsers.*
 import nlp.util.*
-import org.junit.jupiter.api.*
+import org.scalatest.funsuite.AnyFunSuite
 
 import java.util
 import scala.collection.mutable
 import scala.concurrent.ExecutionContext
-import scala.jdk.CollectionConverters.*
-import scala.jdk.OptionConverters.RichOptional
-
 /**
   *
   */
-class NCSemanticEntityParserYamlSpec:
+class NCSemanticEntityParserYamlSpec extends AnyFunSuite:
     private val semParser: NCSemanticEntityParser = NCTestUtils.mkEnSemanticParser("models/lightswitch_model.yaml")
 
     /**
@@ -53,5 +50,6 @@ class NCSemanticEntityParserYamlSpec:
     /**
       * 
       */
-    @Test
-    def test(): Unit = check("Turn the lights off in the entire house.", "ls:off")
+    test("test") {
+        check("Turn the lights off in the entire house.", "ls:off")
+    }

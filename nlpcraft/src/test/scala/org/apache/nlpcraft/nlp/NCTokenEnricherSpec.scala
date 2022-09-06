@@ -22,14 +22,13 @@ import annotations.*
 import nlp.parsers.*
 import nlp.util.*
 import internal.util.NCResourceReader
+import org.scalatest.funsuite.AnyFunSuite
 
-import org.junit.jupiter.api.Test
 import scala.util.Using
-
 /**
   *
   */
-class NCTokenEnricherSpec:
+class NCTokenEnricherSpec extends AnyFunSuite:
     private def test0(pipeline: NCPipeline, ok: Boolean): Unit =
         val mdl: NCModel = new NCModelAdapter(NCModelConfig("test.id", "Test model", "1.0"), pipeline):
             @NCIntent("intent=i term(any)={meta_ent('nlp:token:k1') == 'v1'}")
@@ -45,8 +44,7 @@ class NCTokenEnricherSpec:
 
     private def mkPipeline(apply: NCPipelineBuilder => NCPipelineBuilder): NCPipeline = apply(mkBuilder()).build
 
-    @Test
-    def test(): Unit =
+    test("test") {
         test0(
             mkBuilder().build,
             false
@@ -58,3 +56,4 @@ class NCTokenEnricherSpec:
             )),
             true
         )
+    }

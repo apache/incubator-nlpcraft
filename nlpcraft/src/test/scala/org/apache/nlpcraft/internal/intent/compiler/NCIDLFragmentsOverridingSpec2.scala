@@ -22,11 +22,11 @@ import org.apache.nlpcraft.annotations.{NCIntent, NCIntentRef}
 import org.apache.nlpcraft.internal.impl.NCModelScanner
 import org.apache.nlpcraft.nlp.parsers.NCSemanticTestElement as TE
 import org.apache.nlpcraft.nlp.util.*
-import org.junit.jupiter.api.Test
+import org.scalatest.funsuite.AnyFunSuite
 
 import scala.util.Using
 
-class NCIDLFragmentsOverridingSpec2:
+class NCIDLFragmentsOverridingSpec2 extends AnyFunSuite:
     @NCIntent("import('org/apache/nlpcraft/internal/intent/compiler/impl_level2.idl')")
     class M extends NCTestModelAdapter:
         // Uses initial fragment version (with intent), defined in impl_level1.idl.
@@ -43,10 +43,10 @@ class NCIDLFragmentsOverridingSpec2:
 
         override val getPipeline: NCPipeline = mkEnPipeline(TE("x1"), TE("x2"), TE("x3"))
 
-    @Test
-    def test(): Unit =
+    test("test") {
         Using.resource(new NCModelClient(new M())) { client =>
             def test(ps: (String, Int)*): Unit = ps.foreach { case (txt, res) => require(client.ask(txt, "usr").getBody == res) }
 
             test("x1" -> 1, "x2" -> 2, "x3" -> 3)
         }
+    }

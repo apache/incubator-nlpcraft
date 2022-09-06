@@ -22,15 +22,13 @@ import annotations.*
 import nlp.parsers.*
 import nlp.util.*
 import internal.util.NCResourceReader
-import org.junit.jupiter.api.Test
+import org.scalatest.funsuite.AnyFunSuite
 
-import scala.jdk.CollectionConverters.*
 import scala.util.Using
-
 /**
   *
   */
-class NCEntityMapperSpec:
+class NCEntityMapperSpec extends AnyFunSuite:
     private case class Combiner(ids: String*) extends NCEntityMapper:
         override def map(req: NCRequest, cfg: NCModelConfig, es: List[NCEntity]): List[NCEntity] =
             val replaced = es.filter(p => ids.contains(p.getId))
@@ -69,7 +67,8 @@ class NCEntityMapperSpec:
         @NCIntent("intent=abcd term(abcd)={# == 'abcd'}")
         def onMatch(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("abcd") abcd: NCEntity): NCResult = TEST_RESULT
 
-    @Test
-    def test(): Unit = Using.resource(new NCModelClient(mdl)) { client =>
-        require(client.ask("a b c d", "userId").getIntentId.orNull == "abcd")
+    test("test") {
+        Using.resource(new NCModelClient(mdl)) { client =>
+            require(client.ask("a b c d", "userId").getIntentId.orNull == "abcd")
+        }
     }

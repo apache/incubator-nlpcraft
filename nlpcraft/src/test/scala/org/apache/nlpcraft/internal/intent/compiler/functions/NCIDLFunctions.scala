@@ -22,13 +22,11 @@ import internal.intent.*
 import internal.intent.compiler.*
 import internal.intent.compiler.functions.*
 import nlp.util.*
-import org.junit.jupiter.api.BeforeEach
+import org.scalatest.funsuite.AnyFunSuite
 
 import java.util
 import java.util.UUID
-import scala.jdk.CollectionConverters.*
 import scala.language.implicitConversions
-
 /**
   *
   */
@@ -163,7 +161,7 @@ import org.apache.nlpcraft.internal.intent.compiler.functions.NCIDLFunctions.*
 /**
   * Tests for IDL functions.
   */
-private[functions] trait NCIDLFunctions:
+private[functions] trait NCIDLFunctions extends AnyFunSuite:
     /**
       *
       * @param funcs

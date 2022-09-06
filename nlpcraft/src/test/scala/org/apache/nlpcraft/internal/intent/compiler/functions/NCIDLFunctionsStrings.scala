@@ -18,7 +18,6 @@
 package org.apache.nlpcraft.internal.intent.compiler.functions
 
 import org.apache.nlpcraft.internal.intent.compiler.functions.NCIDLFunctions.*
-import org.junit.jupiter.api.Test
 
 import scala.language.implicitConversions
 
@@ -26,8 +25,7 @@ import scala.language.implicitConversions
   * Tests for 'strings' functions.
   */
 class NCIDLFunctionsStrings extends NCIDLFunctions:
-    @Test
-    def test(): Unit =
+    test("test") {
         test(
             "trim(' a b  ') == 'a b'",
             "strip(' a b  ') == 'a b'",
@@ -80,9 +78,9 @@ class NCIDLFunctionsStrings extends NCIDLFunctions:
             "is_whitespace(' ') == true",
             "trim('   ') == ''"
         )
+    }
 
-    @Test
-    def testError(): Unit =
+    test("test errors") {
         expectError(
             "substr('abc', 10, 30) == 'bc'",
             "split('1 A') == true",
@@ -90,3 +88,4 @@ class NCIDLFunctionsStrings extends NCIDLFunctions:
             "to_double('1, 1') == true",
             "to_double('A') == true"
         )
+    }
