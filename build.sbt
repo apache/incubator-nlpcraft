@@ -36,7 +36,7 @@ val apacheOpennlpVer = "2.0.0"
 val junitVer = "5.9.0"
 
 // Stanford project libraries.
-val stanfordCoreNLPVer  = "4.5.0"
+val stanfordCoreNLPVer  = "4.5.1"
 
 // Examples libraries.
 val languagetoolVer = "5.8"
