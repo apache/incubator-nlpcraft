@@ -78,7 +78,7 @@ class NCModelClient(mdl: NCModel) extends LazyLogging, AutoCloseable:
       * @param typ
       * @return
       */
-    private def ask0(txt: String, data: Map[String, Any], usrId: String, typ: NCIntentSolveType): Either[NCResult, NCFiredIntent] =
+    private def ask0(txt: String, data: Map[String, Any], usrId: String, typ: NCIntentSolveType): Either[NCResult, NCMatchedCallback] =
         val plData = plMgr.prepare(txt, data, usrId)
 
         val userId = plData.request.getUserId
@@ -170,7 +170,7 @@ class NCModelClient(mdl: NCModel) extends LazyLogging, AutoCloseable:
       * @param saveHist
       * @return
       */
-    def debugAsk(txt: String, usrId: String, saveHist: Boolean, data: Map[String, AnyRef] = Map.empty): NCFiredIntent =
+    def debugAsk(txt: String, usrId: String, saveHist: Boolean, data: Map[String, AnyRef] = Map.empty): NCMatchedCallback =
         require(txt != null, "Input text cannot be null.")
         require(data != null, "Data cannot be null.")
         require(usrId != null, "User id cannot be null.")

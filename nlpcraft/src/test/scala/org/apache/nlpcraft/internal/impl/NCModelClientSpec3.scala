@@ -41,10 +41,10 @@ class NCModelClientSpec3 extends AnyFunSuite:
             def onMatch(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("t1") t1: NCEntity): NCResult = TEST_RESULT
 
         Using.resource(new NCModelClient(mdl)) { client =>
-            def ask(): NCFiredIntent = client.debugAsk("e1", "userId", true)
-            def execCallback(cb: NCFiredIntent): NCResult = cb.getCallback.apply(cb.getCallbackArguments)
-            def execCallbackOk(cb: NCFiredIntent): Unit = println(s"Result: ${execCallback(cb).getBody}")
-            def execCallbackFail(cb: NCFiredIntent): Unit =
+            def ask(): NCMatchedCallback = client.debugAsk("e1", "userId", true)
+            def execCallback(cb: NCMatchedCallback): NCResult = cb.getCallback.apply(cb.getCallbackArguments)
+            def execCallbackOk(cb: NCMatchedCallback): Unit = println(s"Result: ${execCallback(cb).getBody}")
+            def execCallbackFail(cb: NCMatchedCallback): Unit =
                 try execCallback(cb)
                 catch case e: NCException => println(s"Expected error: ${e.getMessage}")
 

@@ -20,13 +20,13 @@ package org.apache.nlpcraft
 /**
   * A descriptor of the intent callback returned by [[NCModelClient.debugAsk()]] method. This descriptor
   * defines the callback for the intent that was detected as a winning intent but whose callback wasn't
-  * fired as per [[NCModelClient.debugAsk()]] method.
+  * fired as per [[NCModelClient.debugAsk()]] method's semantic.
   *
   * Using this descriptor the user can execute callback itself, if necessary.
   *
   * @see [[NCModelClient.debugAsk()]]
   */
-trait NCFiredIntent:
+trait NCMatchedCallback:
     /**
       * Gets ID of the matched intent.
       */
