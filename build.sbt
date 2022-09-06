@@ -22,7 +22,7 @@ val scalaMajVer = "3"
 val scalaMinVer = "1.3"
 val log4jVer = "2.18.0"
 val scalaLoggingVer = "3.9.5"
-val orgAntlr4Ver = "4.10.1"
+val orgAntlr4Ver = "4.11.1"
 val jlineVer = "3.21.0"
 val commonsIoVer = "2.11.0"
 val commonsLang3Ver = "3.12.0"
@@ -36,7 +36,7 @@ val apacheOpennlpVer = "2.0.0"
 val junitVer = "5.9.0"
 
 // Stanford project libraries.
-val stanfordCoreNLPVer  = "4.5.0"
+val stanfordCoreNLPVer  = "4.5.1"
 
 // Examples libraries.
 val languagetoolVer = "5.8"
