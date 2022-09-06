@@ -16,7 +16,7 @@ SCALA3 API TO CONVERT NATURAL LANGUAGE INTO ACTION
 [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/apache/opennlp/master/LICENSE)
 [![Maven Central](https://img.shields.io/maven-central/v/org.apache.nlpcraft/nlpcraft)](https://search.maven.org/artifact/org.apache.nlpcraft/nlpcraft)
 
-Maven dependency:
+#### **Maven dependency:**
 <pre>
 &lt;dependency&gt;
   &lt;groupId&gt;org.apache.nlpcraft&lt;/groupId&gt;
@@ -25,7 +25,20 @@ Maven dependency:
 &lt;/dependency&gt;
 </pre>
 
-SBT dependency:
+#### **SBT dependency:**
 <pre>
 libraryDependencies += "org.apache.nlpcraft" % "nlpcraft" % "1.0.0"
 </pre>
+
+#### **Annotations:**
+Due to Scala 3 limitation on runtime retained annotations NLPCraft annotations are written in Java. Javadoc documentation
+cannot be readily integrated into standard Scaladoc tooling chain and therefore NLPCraft annotations are listed here 
+along with their source code for the purpose of documentation: 
+
+`org.apache.nlpcraft.annotations.`**NCIntent**
+
+`org.apache.nlpcraft.annotations.`**NCIntentRef**
+
+`org.apache.nlpcraft.annotations.`**NCIntentTerm**
+
+`org.apache.nlpcraft.annotations`.**NCIntentObject**
