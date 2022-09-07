@@ -21,16 +21,15 @@ import org.apache.nlpcraft.*
 import annotations.*
 import nlp.parsers.*
 import nlp.util.*
+import org.scalatest.funsuite.AnyFunSuite
 
-import org.junit.jupiter.api.*
-import java.util
 import scala.collection.mutable
 import scala.concurrent.ExecutionContext
 
 /**
   *
   */
-class NCSemanticEntityParserSpec:
+class NCSemanticEntityParserSpec extends AnyFunSuite:
     private val semParser: NCSemanticEntityParser =
         NCTestUtils.mkEnSemanticParser(
             List(
@@ -107,8 +106,7 @@ class NCSemanticEntityParserSpec:
     /**
       *
       */
-    @Test
-    def test(): Unit =
+    test("test") {
         check("t1", "t1")
         check("the t1", "t1")
         check("t2", "t2")
@@ -124,3 +122,4 @@ class NCSemanticEntityParserSpec:
         check("B", "t8")
 
         checkMultiple("t1 the x abc the x the abc", "t1", "t7", "t7")
+    }

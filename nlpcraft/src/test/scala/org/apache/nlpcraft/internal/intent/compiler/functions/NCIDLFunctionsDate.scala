@@ -20,7 +20,6 @@ package org.apache.nlpcraft.internal.intent.compiler.functions
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.intent.compiler.functions.NCIDLFunctions.*
 import org.apache.nlpcraft.internal.util.NCUtils
-import org.junit.jupiter.api.Test
 
 import java.time.*
 import java.time.temporal.IsoFields
@@ -31,8 +30,7 @@ import scala.language.implicitConversions
   * Tests for 'dates' functions.
   */
 class NCIDLFunctionsDate extends NCIDLFunctions:
-    @Test
-    def test(): Unit =
+    test("test") {
         def test0(): Unit =
             val d = LocalDate.now
             val t = LocalTime.now
@@ -56,3 +54,4 @@ class NCIDLFunctionsDate extends NCIDLFunctions:
         try test0()
         // Some field more than `second` can be changed. One more attempt.
         catch case _: AssertionError => test0()
+    }

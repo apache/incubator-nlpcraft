@@ -18,23 +18,26 @@
 package org.apache.nlpcraft.nlp.parsers
 
 import org.apache.nlpcraft.*
-import internal.util.*
-import nlp.parsers.*
-import nlp.util.*
+import org.apache.nlpcraft.internal.util.*
+import org.apache.nlpcraft.nlp.parsers.*
+import org.apache.nlpcraft.nlp.util.*
+import org.scalatest.funsuite.AnyFunSuite
 
-import org.junit.jupiter.api.*
+import java.io.File
 import java.util
 import scala.collection.mutable
 import scala.concurrent.ExecutionContext
 import scala.jdk.CollectionConverters.*
-import scala.jdk.OptionConverters.RichOptional
 
 /**
   *
   */
-class NCOpenNLPEntityParserSpec:
+class NCOpenNLPEntityParserSpec extends AnyFunSuite:
     private val parser =
         val list = new java.util.concurrent.CopyOnWriteArrayList[String]()
+
+        // Added to avoid errors on missed folder creation.
+        new File(s"${System.getProperty("user.home")}/.nlpcraft/extcfg/opennlp").mkdirs()
 
         NCUtils.execPar(
             Seq(
@@ -66,11 +69,11 @@ class NCOpenNLPEntityParserSpec:
     /**
       *
       */
-    @Test
-    def test(): Unit =
+    test("test") {
         check("today", "date")
         check("Moscow", "location")
         check("10 is 5 % from 200", "percentage")
         check("Tim Cook", "person")
         check("Microsoft", "organization")
         check("Current price is higher for 20 USA dollars", "money")
+    }

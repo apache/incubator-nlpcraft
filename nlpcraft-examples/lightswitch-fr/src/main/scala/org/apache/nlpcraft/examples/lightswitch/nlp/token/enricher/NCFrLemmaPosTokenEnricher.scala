@@ -20,7 +20,6 @@ package org.apache.nlpcraft.examples.lightswitch.nlp.token.enricher
 import org.apache.nlpcraft.*
 import org.languagetool.AnalyzedToken
 import org.languagetool.tagging.fr.FrenchTagger
-
 import scala.jdk.CollectionConverters.*
 
 /**

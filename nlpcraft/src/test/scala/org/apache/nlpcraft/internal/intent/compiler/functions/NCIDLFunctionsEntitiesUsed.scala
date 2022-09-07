@@ -19,14 +19,12 @@ package org.apache.nlpcraft.internal.intent.compiler.functions
 
 import org.apache.nlpcraft.internal.intent.compiler.functions.NCIDLFunctions.*
 import org.apache.nlpcraft.nlp.util.NCTestToken
-import org.junit.jupiter.api.Test
 
 /**
   * Tests for 'entities used' result.
   */
 class NCIDLFunctionsEntitiesUsed extends NCIDLFunctions:
-    @Test
-    def test(): Unit =
+    test("test") {
         val e1 = mkEntity(id = "a", tokens = NCTestToken())
         val e2 = mkEntity(id = "b", tokens = NCTestToken())
 
@@ -61,3 +59,4 @@ class NCIDLFunctionsEntitiesUsed extends NCIDLFunctions:
                 entitiesUsed = Option(3)
             )
         )
+    }

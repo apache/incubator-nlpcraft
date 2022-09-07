@@ -18,7 +18,6 @@
 package org.apache.nlpcraft.internal.intent.compiler.functions
 
 import org.apache.nlpcraft.*
-import org.junit.jupiter.api.Test
 
 import scala.language.implicitConversions
 
@@ -28,8 +27,7 @@ import scala.language.implicitConversions
 class NCIDLFunctionsCollections extends NCIDLFunctions:
     private final val js = "{\"k1\": \"v1\"}"
 
-    @Test
-    def test(): Unit =
+    test("test") {
         test(
             "list(1, 2, 3) == list(1, 2, 3)",
             "list(1.0, 2, 3) == list(1.0, 2, 3)",
@@ -77,4 +75,4 @@ class NCIDLFunctionsCollections extends NCIDLFunctions:
             "concat(list(), list()) == list()",
             "concat(list(1, 2), list(3.0)) == list(1, 2, 3.0)"
         )
-
+    }

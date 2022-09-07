@@ -22,15 +22,14 @@ import NCResultType.*
 import annotations.*
 import nlp.parsers.*
 import nlp.util.*
+import org.scalatest.funsuite.AnyFunSuite
 
-import org.junit.jupiter.api.*
-import scala.jdk.CollectionConverters.*
 import scala.util.Using
 
 /**
   *
   */
-class NCModelCallbacksSpec:
+class NCModelCallbacksSpec extends AnyFunSuite:
     enum State:
         case
             MatchFalse, VariantFalse,
@@ -51,8 +50,8 @@ class NCModelCallbacksSpec:
         new NCTestModelAdapter():
             @NCIntent("intent=x term(x)={# == 'x'}")
             def intent(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("x") x: NCEntity): NCResult =
-                if has(IntentError) then throw new RuntimeException("Error")
-                else if has(IntentReject) then throw new NCRejection("Rejection")
+                if has(IntentError) then throw new RuntimeException("Expected test error")
+                else if has(IntentReject) then throw new NCRejection("Expected test rejection")
                 else RESULT_INTENT
 
             override def onMatchedIntent(ctx: NCContext, im: NCIntentMatch): Boolean = getOrElse(MatchFalse, false, true)
@@ -119,27 +118,28 @@ class NCModelCallbacksSpec:
     /**
       *
       */
-    @Test
-    def test(): Unit = Using.resource(new NCModelClient(MDL)) { client =>
-        testOk(client, RESULT_INTENT)
-        testOk(client, RESULT_RESULT, ResultNotNull)
-        testOk(client, RESULT_CONTEXT, ContextNotNull)
+    test("test") {
+        Using.resource(new NCModelClient(MDL)) { client =>
+            testOk(client, RESULT_INTENT)
+            testOk(client, RESULT_RESULT, ResultNotNull)
+            testOk(client, RESULT_CONTEXT, ContextNotNull)
 
-        testFail(client, IntentReject)
-        testFail(client, IntentError)
-        testFail(client, VariantFalse)
+            testFail(client, IntentReject)
+            testFail(client, IntentError)
+            testFail(client, VariantFalse)
 
-        testOk(client, RESULT_REJECTION, IntentReject, RejectionNotNull)
-        testOk(client, RESULT_ERROR, IntentError, ErrorNotNull)
+            testOk(client, RESULT_REJECTION, IntentReject, RejectionNotNull)
+            testOk(client, RESULT_ERROR, IntentError, ErrorNotNull)
 
-        // To avoid endless loop.
-        val threadReset =
-            new Thread("reset-thread"):
-                override def run(): Unit =
-                    Thread.sleep(500)
-                    states.clear()
+            // To avoid endless loop.
+            val threadReset =
+                new Thread("reset-thread"):
+                    override def run(): Unit =
+                        Thread.sleep(500)
+                        states.clear()
 
-        threadReset.start()
+            threadReset.start()
 
-        testOk(client, RESULT_INTENT, MatchFalse)
+            testOk(client, RESULT_INTENT, MatchFalse)
+        }
     }

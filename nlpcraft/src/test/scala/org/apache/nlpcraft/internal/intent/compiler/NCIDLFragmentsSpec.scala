@@ -21,11 +21,11 @@ import org.apache.nlpcraft.*
 import org.apache.nlpcraft.annotations.NCIntent
 import org.apache.nlpcraft.internal.impl.NCModelScanner
 import org.apache.nlpcraft.nlp.util.*
-import org.junit.jupiter.api.Test
+import org.scalatest.funsuite.AnyFunSuite
 
 import scala.util.Using
 
-class NCIDLFragmentsSpec:
+class NCIDLFragmentsSpec extends AnyFunSuite:
     // Normal models.
 
     // Fragment. One annotations order.
@@ -83,8 +83,7 @@ class NCIDLFragmentsSpec:
                 require(false, s"Model shouldn't be scanned: ${mdl.getConfig.getId}")
             catch case e: NCException => println(s"Model '${mdl.getConfig.getId}' expected error: '${e.getMessage}'")
 
-    @Test
-    def test(): Unit =
+    test("test") {
         testOk(
             new M1(),
             new M2(),
@@ -97,3 +96,4 @@ class NCIDLFragmentsSpec:
             new E2(),
             new E3()
         )
+    }

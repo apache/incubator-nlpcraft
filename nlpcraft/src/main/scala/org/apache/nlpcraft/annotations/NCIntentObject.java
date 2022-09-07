@@ -25,9 +25,8 @@ import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * TODO:
- * Marker annotation. Applied to class member of main model.
- * These fields objects scanned the same way as main model.
+ * Marker annotation that can be applied to class member of main model.
+ * The fields objects annotated with this annotation are scanned the same way as main model.
  */
 @Documented
 @Retention(value=RUNTIME)

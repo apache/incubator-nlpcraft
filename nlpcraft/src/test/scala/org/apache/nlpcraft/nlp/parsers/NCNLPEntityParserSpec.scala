@@ -20,25 +20,18 @@ package org.apache.nlpcraft.nlp.parsers
 import org.apache.nlpcraft.*
 import nlp.parsers.*
 import nlp.util.*
+import org.scalatest.funsuite.AnyFunSuite
 
-import org.junit.jupiter.api.*
 import java.util
 import scala.collection.mutable
 import scala.concurrent.ExecutionContext
-import scala.jdk.CollectionConverters.*
-import scala.jdk.OptionConverters.RichOptional
-
 /**
   *
   */
-class NCNLPEntityParserSpec:
+class NCNLPEntityParserSpec extends AnyFunSuite:
     private val parser = new NCNLPEntityParser()
 
-    /**
-      *
-      */
-    @Test
-    def test(): Unit =
+    test("test") {
         val req = NCTestRequest("I had the lunch")
         val toks = EN_TOK_PARSER.tokenize(req.txt)
         val entities = parser.parse(req, CFG, toks)
@@ -50,3 +43,4 @@ class NCNLPEntityParserSpec:
             require(ent.getTokens.size == 1)
             require(ent.getTokens.head == toks(idx))
         }
+    }

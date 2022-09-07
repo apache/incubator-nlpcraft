@@ -21,15 +21,12 @@ import org.apache.nlpcraft.*
 import internal.util.NCResourceReader
 import nlp.util.*
 import nlp.enrichers.NCEnStopWordsTokenEnricher
-
-import org.junit.jupiter.api.*
-import java.util
-import scala.jdk.CollectionConverters.*
+import org.scalatest.funsuite.AnyFunSuite
 
 /**
   *
   */
-class NCStopWordsEnricherSpec:
+class NCStopWordsEnricherSpec extends AnyFunSuite:
     /**
       *
       * @param stopEnricher
@@ -50,8 +47,7 @@ class NCStopWordsEnricherSpec:
         NCTestUtils.printTokens(toks)
         toks.zip(boolVals).foreach { (tok, boolVal) => require(tok[Boolean]("stopword") == boolVal) }
 
-    @Test
-    def test(): Unit =
+    test("test") {
         test(
             EN_TOK_STOP_ENRICHER,
             "the test",
@@ -64,3 +60,4 @@ class NCStopWordsEnricherSpec:
             false,
             true
         )
+    }

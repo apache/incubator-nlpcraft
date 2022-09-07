@@ -20,15 +20,12 @@ package org.apache.nlpcraft.nlp.enrichers.impl
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.nlp.enrichers.NCEnStopWordsTokenEnricher
 import org.apache.nlpcraft.nlp.util.*
-import org.junit.jupiter.api.*
-
-import scala.jdk.CollectionConverters.*
-
+import org.scalatest.funsuite.AnyFunSuite
 
 /**
   *
   */
-class NCStopWordsImplSpec:
+class NCStopWordsImplSpec extends AnyFunSuite:
     case class W(text: String, stop: Boolean)
 
     /**
@@ -49,8 +46,7 @@ class NCStopWordsImplSpec:
 
         require(expectedSorted == resSorted, s"Expected=$expectedSorted, result=$resSorted")
 
-    @Test
-    def testPermute(): Unit =
+    test("test permute") {
         test0(
             Seq(W("A", false), W("B", true), W("C", true)),
             Seq("ABC", "AB", "AC", "BC", "A", "B", "C")
@@ -59,3 +55,4 @@ class NCStopWordsImplSpec:
             Seq(W("A", false), W("B", false), W("C", false)),
             Seq("ABC", "AB", "BC", "A", "B", "C")
         )
+    }

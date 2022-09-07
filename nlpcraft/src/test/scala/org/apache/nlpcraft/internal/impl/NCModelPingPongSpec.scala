@@ -18,19 +18,19 @@
 package org.apache.nlpcraft.internal.impl
 
 import org.apache.nlpcraft.*
-import annotations.*
-import nlp.parsers.*
-import nlp.util.*
-import NCResultType.*
-import org.junit.jupiter.api.*
+import org.apache.nlpcraft.NCResultType.*
+import org.apache.nlpcraft.annotations.*
+import org.apache.nlpcraft.nlp.parsers.*
+import org.apache.nlpcraft.nlp.util.*
+import org.scalatest.BeforeAndAfter
+import org.scalatest.funsuite.AnyFunSuite
 
-import scala.jdk.CollectionConverters.*
 import scala.util.Using
 
 /**
   *
   */
-class NCModelPingPongSpec:
+class NCModelPingPongSpec extends AnyFunSuite with BeforeAndAfter:
     private var client: NCModelClient = _
 
     def mkResult(resType: NCResultType, txt: String): NCResult =
@@ -71,11 +71,13 @@ class NCModelPingPongSpec:
         NCSemanticTestElement("other")
     ))
 
-    @BeforeEach
-    def setUp(): Unit = client = new NCModelClient(MDL)
+    before {
+        client = new NCModelClient(MDL)
+    }
 
-    @AfterEach
-    def tearDown(): Unit = client.close()
+    after {
+        client.close()
+    }
 
     private def ask(txt: String, typ: NCResultType): Unit =
         val res = client.ask(txt, "userId")
@@ -87,19 +89,15 @@ class NCModelPingPongSpec:
     private def askForReject(txt: String): Unit =
         try ask(txt, ASK_RESULT) catch case e: NCRejection => println(s"Expected reject on: $txt")
 
-    /**
-      *
-      */
-    @Test
-    def test(): Unit =
+    test("test 1") {
         askForDialog("command")
         askForResult("confirm")
+    }
 
     /**
       *
       */
-    @Test
-    def test2(): Unit =
+    test("test 2") {
         // 1. Nothing to confirm. No history.
         askForReject("confirm")
 
@@ -110,3 +108,4 @@ class NCModelPingPongSpec:
         // 3. Last question is `command`. Can be confirmed.
         askForDialog("command")
         askForResult("confirm")
+    }

@@ -28,7 +28,6 @@ import org.apache.nlpcraft.nlp.parsers.impl.NCSemanticSourceType.*
 
 import java.io.InputStream
 import java.util
-import scala.jdk.CollectionConverters.*
 
 /**
   *

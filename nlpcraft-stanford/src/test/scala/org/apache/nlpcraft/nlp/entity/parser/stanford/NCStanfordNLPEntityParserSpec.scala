@@ -19,15 +19,14 @@ package org.apache.nlpcraft.nlp.entity.parser.stanford
 
 import org.apache.nlpcraft.nlp.util.{CFG, *}
 import org.apache.nlpcraft.nlp.util.stanford.*
-import org.junit.jupiter.api.Test
+import org.scalatest.funsuite.AnyFunSuite
 /**
   *
   */
-class NCStanfordNLPEntityParserSpec:
+class NCStanfordNLPEntityParserSpec extends AnyFunSuite:
     private val parser = NCStanfordNLPEntityParser(STANFORD, Set("city", "date", "number", "email"))
 
-    @Test
-    def test(): Unit =
+    test("test") {
         val txt = "Los Angeles, 23 August, 23 and sergeykamov@apache.org, tomorrow"
 
         val toks = TOK_STANFORD_PARSER.tokenize(txt)
@@ -37,3 +36,4 @@ class NCStanfordNLPEntityParserSpec:
         NCTestUtils.printEntities(txt, res)
 
         require(res.size == 5)
+    }

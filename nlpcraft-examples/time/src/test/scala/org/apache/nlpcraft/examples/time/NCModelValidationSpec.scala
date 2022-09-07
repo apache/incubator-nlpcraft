@@ -18,22 +18,23 @@
 package org.apache.nlpcraft.examples.time
 
 import org.apache.nlpcraft.*
-import org.junit.jupiter.api.*
+import org.scalatest.funsuite.AnyFunSuite
 
 import scala.util.Using
 
 /**
   * JUnit model validation.
   */
-class NCModelValidationSpec:
-    @Test
-    def test(): Unit = Using.resource(new NCModelClient(new TimeModel())) { client =>
-        def check(txt: String, intentId: String): Unit = client.debugAsk(txt, "userId", true).getIntentId == intentId
+class NCModelValidationSpec extends AnyFunSuite:
+    test("test") {
+        Using.resource(new NCModelClient(new TimeModel())) { client =>
+            def check(txt: String, intentId: String): Unit = client.debugAsk(txt, "userId", true).getIntentId == intentId
 
-        check("What time is it now in New York City?", "intent2")
-        check("What's the current time in Moscow?", "intent2")
-        check("Show me time of the day in London.", "intent2")
-        check("Can you please give me the Tokyo's current date and time.", "intent2")
+            check("What time is it now in New York City?", "intent2")
+            check("What's the current time in Moscow?", "intent2")
+            check("Show me time of the day in London.", "intent2")
+            check("Can you please give me the Tokyo's current date and time.", "intent2")
 
-        check("What's the local time?", "intent1")
+            check("What's the local time?", "intent1")
+        }
     }

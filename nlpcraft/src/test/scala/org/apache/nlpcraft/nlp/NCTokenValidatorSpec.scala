@@ -21,14 +21,13 @@ import org.apache.nlpcraft.*
 import nlp.util.*
 import nlp.parsers.*
 import internal.util.NCResourceReader
+import org.scalatest.funsuite.AnyFunSuite
 
-import org.junit.jupiter.api.Test
 import scala.util.Using
-
 /**
   *
   */
-class NCTokenValidatorSpec:
+class NCTokenValidatorSpec extends AnyFunSuite:
     private def test0(pipeline: NCPipeline, ok: Boolean): Unit =
         val mdl: NCModel = new NCModelAdapter(NCModelConfig("test.id", "Test model", "1.0"), pipeline):
             override def onContext(ctx: NCContext): Option[NCResult] = Option(TEST_RESULT)
@@ -42,8 +41,7 @@ class NCTokenValidatorSpec:
             withEntityParser(new NCNLPEntityParser())
     private def mkPipeline(apply: NCPipelineBuilder => NCPipelineBuilder): NCPipeline = apply(mkBuilder()).build
 
-    @Test
-    def test(): Unit =
+    test("test") {
         test0(
             mkBuilder().build,
             true
@@ -58,3 +56,4 @@ class NCTokenValidatorSpec:
             mkPipeline(_.withTokenValidator((req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]) => throw new NCException("Checked Exception"))),
             false
         )
+    }

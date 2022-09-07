@@ -20,14 +20,12 @@ package org.apache.nlpcraft.nlp.enrichers
 import org.apache.nlpcraft.*
 import nlp.enrichers.NCEnBracketsTokenEnricher
 import nlp.util.*
-import org.junit.jupiter.api.*
-
-import scala.jdk.CollectionConverters.*
+import org.scalatest.funsuite.AnyFunSuite
 
 /**
   *
   */
-class NCBracketsTokenEnricherSpec:
+class NCBracketsTokenEnricherSpec extends AnyFunSuite:
     private val bracketsEnricher = new NCEnBracketsTokenEnricher()
 
     /**
@@ -43,8 +41,8 @@ class NCBracketsTokenEnricherSpec:
 
         toks.foreach (tok => require(!(tok[Boolean]("brackets") ^ brackets.contains(tok.getIndex))))
 
-    @Test
-    def test(): Unit =
+    test("test") {
         check("A [ B C ] D", Set(2, 3))
         check("A [ B { C } ] D", Set(2, 3, 4, 5))
         check("A [ B { C } ] [ [ D ] ] [ E ]", Set(2, 3, 4, 5, 8, 9, 10, 13))
+    }

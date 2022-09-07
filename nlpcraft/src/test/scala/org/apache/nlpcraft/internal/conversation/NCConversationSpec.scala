@@ -18,19 +18,17 @@
 package org.apache.nlpcraft.internal.conversation
 
 import org.apache.nlpcraft.*
-import annotations.*
-import nlp.util.*
-import nlp.parsers.*
+import org.apache.nlpcraft.annotations.*
+import org.apache.nlpcraft.nlp.parsers.*
+import org.apache.nlpcraft.nlp.util.*
+import org.scalatest.funsuite.AnyFunSuite
 
-import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.Test
-import scala.jdk.CollectionConverters.*
 import scala.util.Using
 
 /**
   *
   */
-class NCConversationSpec:
+class NCConversationSpec extends AnyFunSuite:
     private val usrId = "userId"
 
     import NCSemanticTestElement as TE
@@ -38,8 +36,7 @@ class NCConversationSpec:
     /**
       *
       */
-    @Test
-    def test(): Unit =
+    test("test") {
         val mdl: NCModel =
             new NCTestModelAdapter:
                 override val getPipeline: NCPipeline = mkEnPipeline(TE("e1"), TE("e2"))
@@ -74,9 +71,9 @@ class NCConversationSpec:
             // 'e1' received from conversation.
             execOk("e2")
         }
+    }
 
-    @Test
-    def testClearEmptyData(): Unit =
+    test("test clear empty data") {
         val mdl: NCModel =
             new NCTestModelAdapter:
                 override val getPipeline: NCPipeline = mkEnPipeline(TE("e1"))
@@ -95,3 +92,4 @@ class NCConversationSpec:
             client.clearStm("userId3", _ => true)
             client.clearStm("user4")
         }
+    }

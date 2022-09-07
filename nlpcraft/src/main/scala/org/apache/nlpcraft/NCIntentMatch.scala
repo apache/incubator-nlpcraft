@@ -34,43 +34,39 @@ trait NCIntentMatch:
       * to the order and index of terms in the matching intent. Number of sub-lists will always be the same
       * as the number of terms in the matched intent.
       *
-      * Consider using [[NCIntentTerm]] annotation instead for simpler access to the intent entities.
+      * Consider using `NCIntentTerm` annotation instead for simpler access to the intent entities.
       *
       * @return List of lists of entities representing matched intent.
       * @see [[getVariant()]]
-      * @see [[NCIntentTerm]]
       */
     def getIntentEntities: List[List[NCEntity]]
 
     /**
       * Gets entities for given term. This is a companion method for [[getIntentEntities()]] method.
       *
-      * Consider using [[NCIntentTerm]] annotation instead for simpler access to the intent entities.
+      * Consider using `NCIntentTerm` annotation instead for simpler access to the intent entities.
       *
       * @param idx Index of the term (starting from `0`).
       * @return List of entities, potentially `null`, for given term.
-      * @see [[NCIntentTerm]]
-      * @see [[getTermEntities()]]
       */
     def getTermEntities(idx: Int): List[NCEntity]
 
     /**
       * Gets entities for given term. This is a companion method for [[getIntentEntities()]].
       *
-      * Consider using [[NCIntentTerm]] annotation instead for simpler access to the intent entities.
+      * Consider using `NCIntentTerm` annotation instead for simpler access to the intent entities.
       *
       * @param termId ID of the term for which to get entities.
       * @return List of entities, potentially `null`, for given term.
-      * @see [[NCIntentTerm
-      * @see #getTermEntities(int) */
+      */
     def getTermEntities(termId: String): List[NCEntity]
 
     /**
       * Gets parsing variant that produced the matching for this intent. Returned variant is one of the
-      * variants provided by {@link NCContext# getVariants ( )} methods. Note that entities returned by this method are
-      * a superset of the entities returned by {@link # getIntentEntities ( )}  method, i.e. not all entities
+      * variants provided by [[NCContext.getVariants()]] methods. Note that entities returned by this method are
+      * a superset of the entities returned by [[getIntentEntities()]] method, i.e. not all entities
       * from this variant may have been used in matching of the winning intent.
       *
       * @return Parsing variant that produced the matching for this intent.
-      * @see #getIntentEntities() */
+      */
     def getVariant: NCVariant

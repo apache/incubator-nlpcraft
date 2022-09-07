@@ -18,16 +18,13 @@
 package org.apache.nlpcraft.internal.intent.compiler.functions
 
 import org.apache.nlpcraft.internal.intent.compiler.functions.NCIDLFunctions.*
-import org.junit.jupiter.api.Test
 
-import scala.language.implicitConversions
 
 /**
   * Tests for 'requests' functions.
   */
 class NCIDLFunctionsRequest extends NCIDLFunctions:
-    @Test
-    def test(): Unit =
+    test("test") {
         val reqSrvReqId = "id"
         val text = "some text"
         val reqTstamp: java.lang.Long = 123
@@ -48,3 +45,4 @@ class NCIDLFunctionsRequest extends NCIDLFunctions:
             mkTestDesc(s"req_tstamp == $reqTstamp"),
             mkTestDesc(s"user_id == '$userId'"),
         )
+    }

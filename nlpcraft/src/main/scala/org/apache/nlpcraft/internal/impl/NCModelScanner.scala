@@ -28,7 +28,6 @@ import org.apache.nlpcraft.internal.util.NCUtils
 import java.lang.annotation.Annotation
 import java.lang.reflect.*
 import scala.collection.mutable
-import scala.jdk.CollectionConverters.*
 import scala.util.Using
 
 /**
