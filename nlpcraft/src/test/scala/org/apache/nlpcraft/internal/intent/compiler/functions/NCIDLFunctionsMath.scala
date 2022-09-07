@@ -19,7 +19,6 @@
 package org.apache.nlpcraft.internal.intent.compiler.functions
 
 import org.apache.nlpcraft.internal.intent.compiler.functions.NCIDLFunctions.*
-import org.junit.jupiter.api.Test
 
 import scala.language.implicitConversions
 
@@ -27,19 +26,7 @@ import scala.language.implicitConversions
   * Tests for 'math' functions.
   */
 class NCIDLFunctionsMath extends NCIDLFunctions:
-    @Test
-    def testError(): Unit =
-        expectError(
-            // Invalid name.
-            "xxx(1, 1)",
-            "xxx()",
-            // Invalid arguments count.
-            "atan(1, 1) == 1",
-            "pi(1)"
-        )
-
-    @Test
-    def test(): Unit =
+    test("test") {
         test(
             "abs(2) == 2",
             "abs(-2.2) == 2.2",
@@ -93,3 +80,15 @@ class NCIDLFunctionsMath extends NCIDLFunctions:
             // Special case. acos(100) == Nan and Nan != Nan
             "acos(100) != acos(100)"
         )
+    }
+
+    test("test errors") {
+        expectError(
+            // Invalid name.
+            "xxx(1, 1)",
+            "xxx()",
+            // Invalid arguments count.
+            "atan(1, 1) == 1",
+            "pi(1)"
+        )
+    }    

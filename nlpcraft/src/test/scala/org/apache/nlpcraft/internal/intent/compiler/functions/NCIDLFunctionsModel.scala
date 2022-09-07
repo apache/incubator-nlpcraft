@@ -21,15 +21,13 @@ import org.apache.nlpcraft.*
 import nlp.util.*
 import internal.intent.compiler.functions.NCIDLFunctions.*
 
-import org.junit.jupiter.api.Test
 import scala.language.implicitConversions
 
 /**
   * Tests for 'requests' functions.
   */
 class NCIDLFunctionsModel extends NCIDLFunctions:
-    @Test
-    def test(): Unit =
+    test("test") {
         val idlCtx = mkIdlContext(cfg = CFG)
 
         require(idlCtx.mdlCfg.getOrigin.nonEmpty)
@@ -42,12 +40,12 @@ class NCIDLFunctionsModel extends NCIDLFunctions:
             mkTestDesc(s"mdl_ver == '${idlCtx.mdlCfg.getVersion}'"),
             mkTestDesc(s"mdl_origin == '${idlCtx.mdlCfg.getOrigin.orNull}'")
         )
+    }
 
-    @Test
-    def testEmptyOrigin(): Unit =
+    test("test empty origin") {
         val idlCtx = mkIdlContext(cfg = NCModelConfig("testId", "test", "1.0"))
 
         require(idlCtx.mdlCfg.getOrigin.isEmpty)
 
         test(TestDesc(truth = s"null == ${idlCtx.mdlCfg.getOrigin.orNull}", idlCtx = idlCtx))
-
+    }

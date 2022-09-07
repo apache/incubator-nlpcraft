@@ -21,7 +21,6 @@ import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.intent.NCIDLContext
 import org.apache.nlpcraft.internal.intent.compiler.functions.NCIDLFunctions.*
 import org.apache.nlpcraft.nlp.util.NCTestToken
-import org.junit.jupiter.api.Test
 
 import java.util
 import java.util.Optional
@@ -33,8 +32,10 @@ import scala.sys.SystemProperties
   * Tests for 'meta' functions.
   */
 class NCIDLFunctionsMeta extends NCIDLFunctions:
-    @Test
-    def testMetaSys(): Unit =
+    private def testValue(f: String, idlCtx: => NCIDLContext = mkIdlContext(), entity: Option[NCEntity] = None): Unit = test(TestDesc(truth = s"$f('k1') == 'v1'", entity = entity, idlCtx = idlCtx))
+    private def testNoValue(f: String, idlCtx: => NCIDLContext = mkIdlContext(), entity: Option[NCEntity] = None): Unit = test(TestDesc(truth = s"$f('k1') == null", entity = entity, idlCtx = idlCtx))
+
+    test("test sys meta") {
         val sys = new SystemProperties
 
         sys.put("k1", "v1")
@@ -43,45 +44,42 @@ class NCIDLFunctionsMeta extends NCIDLFunctions:
             testValue("meta_sys")
         finally
             sys.remove("k1")
+    }
 
-    @Test
-    def testMetaEntity(): Unit =
+    test("test entity meta") {
         testValue(
             "meta_ent",
             entity = Option(mkEntity(meta = Map("k1" -> "v1"), NCTestToken()))
         )
+    }
 
-    @Test
-    def testMetaRequest(): Unit =
+    test("test request meta") {
         testValue(
             "meta_req",
             mkIdlContext(reqData = Map("k1" -> "v1"))
         )
+    }
 
-    @Test
-    def testMetaConv(): Unit =
+    test("test conversation meta") {
         testValue(
             "meta_conv",
             mkIdlContext(convMeta = Map("k1" -> "v1"))
         )
+    }
 
-    @Test
-    def testMetaFrag(): Unit =
+    test("test fragment meta") {
         testValue(
             "meta_frag",
             mkIdlContext(fragMeta = Map("k1" -> "v1"))
         )
+    }
 
     // Simplified test.
-    @Test
-    def testMetaConfig(): Unit = testNoValue("meta_cfg", mkIdlContext())
+    test("test config meta") {
+        testNoValue("meta_cfg", mkIdlContext())
+    }
 
     // Simplified test.
-    @Test
-    def testMetaIntent(): Unit = testNoValue("meta_intent", mkIdlContext())
-
-    private def testValue(f: String, idlCtx: => NCIDLContext = mkIdlContext(), entity: Option[NCEntity] = None): Unit =
-        test(TestDesc(truth = s"$f('k1') == 'v1'", entity = entity, idlCtx = idlCtx))
-
-    private def testNoValue(f: String, idlCtx: => NCIDLContext = mkIdlContext(), entity: Option[NCEntity] = None): Unit =
-        test(TestDesc(truth = s"$f('k1') == null", entity = entity, idlCtx = idlCtx))
+    test("test intent meta") {
+        testNoValue("meta_intent", mkIdlContext())
+    }

@@ -21,19 +21,14 @@ import org.apache.nlpcraft.internal.util.NCResourceReader
 import org.apache.nlpcraft.nlp.enrichers.NCEnSwearWordsTokenEnricher
 import org.apache.nlpcraft.nlp.enrichers.*
 import org.apache.nlpcraft.nlp.util.*
-import org.junit.jupiter.api.*
-
-import scala.jdk.CollectionConverters.*
-
-
+import org.scalatest.funsuite.AnyFunSuite
 /**
   *
   */
-class NCSwearWordsTokenEnricherSpec:
+class NCSwearWordsTokenEnricherSpec extends AnyFunSuite:
     private val swEnricher = new NCEnSwearWordsTokenEnricher(NCResourceReader.getPath("badfilter/swear_words.txt"))
 
-    @Test
-    def test(): Unit =
+    test("test") {
         val toks = EN_TOK_PARSER.tokenize("english ass")
 
         require(toks.head.get[Boolean]("swear:en").isEmpty)
@@ -45,3 +40,4 @@ class NCSwearWordsTokenEnricherSpec:
 
         require(!toks.head[Boolean]("swear"))
         require(toks.last[Boolean]("swear"))
+    }        

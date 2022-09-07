@@ -21,7 +21,8 @@ import org.apache.nlpcraft.*
 import org.apache.nlpcraft.NCResultType.*
 import org.apache.nlpcraft.examples.pizzeria.PizzeriaModel.Result
 import org.apache.nlpcraft.examples.pizzeria.PizzeriaOrderState.*
-import org.junit.jupiter.api.*
+import org.scalatest.BeforeAndAfter
+import org.scalatest.funsuite.AnyFunSuite
 
 import scala.language.implicitConversions
 import scala.util.Using
@@ -55,7 +56,7 @@ import PizzeriaModelSpec.*
 /**
   *
   */
-class PizzeriaModelSpec:
+class PizzeriaModelSpec extends AnyFunSuite with BeforeAndAfter:
     private val mdl = new ModelTestWrapper()
     private val client = new NCModelClient(mdl)
     private val msgs = mutable.ArrayBuffer.empty[mutable.ArrayBuffer[String]]
@@ -63,7 +64,7 @@ class PizzeriaModelSpec:
 
     private var testNum: Int = 0
 
-    @AfterEach def tearDown(): Unit =
+    after {
         if client != null then client.close()
 
         for ((seq, num) <- msgs.zipWithIndex)
@@ -74,6 +75,7 @@ class PizzeriaModelSpec:
                 case None => // No-op.
 
         require(errs.isEmpty, s"There are ${errs.size} errors above.")
+    }
 
     private def dialog(exp: PizzeriaOrder, reqs: Request*): Unit =
         val testMsgs = mutable.ArrayBuffer.empty[String]
@@ -110,8 +112,7 @@ class PizzeriaModelSpec:
 
         testNum += 1
 
-    @Test
-    def test(): Unit =
+    test("test") {
         given Conversion[String, Request] with
             def apply(txt: String): Request = (txt, ASK_DIALOG)
 
@@ -208,3 +209,4 @@ class PizzeriaModelSpec:
             "yes",
             "yes" -> ASK_RESULT
         )
+    }

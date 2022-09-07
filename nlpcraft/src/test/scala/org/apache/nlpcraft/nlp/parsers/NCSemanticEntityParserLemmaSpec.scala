@@ -22,18 +22,15 @@ import annotations.*
 import nlp.parsers.*
 import internal.impl.*
 import nlp.util.*
-import org.junit.jupiter.api.*
+import org.scalatest.funsuite.AnyFunSuite
 
 import java.util
 import java.util.UUID
 import scala.collection.mutable
-import scala.jdk.CollectionConverters.*
-
 /**
   *
   */
-class NCSemanticEntityParserLemmaSpec:
-
+class NCSemanticEntityParserLemmaSpec extends AnyFunSuite:
     private val lemmaStemmer =
         new NCSemanticStemmer():
             override def stem(txt: String): String = if wrapped(txt) then unwrap(txt) else UUID.randomUUID().toString
@@ -92,8 +89,7 @@ class NCSemanticEntityParserLemmaSpec:
     /**
       *
       */
-    @Test
-    def test(): Unit =
+    test("test") {
         // Lemma.
         ask(
             "my test",
@@ -114,3 +110,4 @@ class NCSemanticEntityParserLemmaSpec:
             List(NCSemanticTestElement("X", synonyms = Set(deepWrap("my test"), wrap("my //[a-z]+//")))),
             List(List(Data("my test", "X")))
         )
+    }

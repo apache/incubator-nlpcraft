@@ -26,8 +26,6 @@ import org.apache.nlpcraft.nlp.parsers
 import org.apache.nlpcraft.nlp.parsers.{NCOpenNLPTokenParser, NCSemanticElement, NCSemanticEntityParser, NCSemanticStemmer}
 
 import java.util
-import scala.jdk.CollectionConverters.*
-import scala.jdk.OptionConverters.RichOptional
 import scala.util.Using
 
 /**

@@ -21,14 +21,14 @@ import org.apache.nlpcraft.*
 import annotations.*
 import nlp.util.*
 import internal.impl.NCModelScanner
+import org.scalatest.funsuite.AnyFunSuite
 
-import org.junit.jupiter.api.Test
 import java.util
 
 /**
   * It tests invalid intents definition.
   */
-class NCModelIntentsInvalidIntentsSpec:
+class NCModelIntentsInvalidIntentsSpec extends AnyFunSuite:
     private def testError(mdl: NCModel): Unit =
         try
             NCModelScanner.scan(mdl)
@@ -42,31 +42,30 @@ class NCModelIntentsInvalidIntentsSpec:
     /**
       * Two intents on one method.
       */
-    @Test
-    def testError1(): Unit =
+    test("test error 1") {
         testError(
             new NCTestModelAdapter():
                 @NCIntent("intent=validList1 term(list)~{# == 'x'}[0,10]")
                 @NCIntent("intent=validList2 term(list)~{# == 'x'}[0,10]")
                 def x(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("list") list: List[NCEntity]): NCResult = null
         )
+    }
 
     /**
       * Invalid reference.
       */
-    @Test
-    def testError2(): Unit =
+    test("test error 2") {
         testError(
             new NCTestModelAdapter():
                 @NCIntentRef("missed")
                 def x(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("list") list: List[NCEntity]): NCResult = null
         )
+    }
 
     /**
       * Duplicated intents definitions.
       */
-    @Test
-    def testError3(): Unit =
+    test("test error 3") {
         @NCIntent("intent=validList1 term(list)~{# == 'x'}[0,10]")
         @NCIntent("intent=validList1 term(list)~{# == 'x'}[0,11]")
         class X:
@@ -77,14 +76,15 @@ class NCModelIntentsInvalidIntentsSpec:
                 @NCIntentObject
                 val x = new X()
         )
+    }
 
     /**
       * Invalid argument type.
       */
-    @Test
-    def testError4(): Unit =
+    test("test error 4") {
         testError(
             new NCTestModelAdapter():
                 @NCIntent("intent=validList1 term(list)~{# == 'x'}[0,10]")
                 def x(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("list") e: NCEntity): NCResult = null
         )
+    }

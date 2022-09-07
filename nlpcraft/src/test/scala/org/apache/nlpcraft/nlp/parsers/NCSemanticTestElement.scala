@@ -21,7 +21,6 @@ import org.apache.nlpcraft.*
 import org.apache.nlpcraft.nlp.parsers.NCSemanticElement
 
 import java.util
-import scala.jdk.CollectionConverters.*
 
 /**
   *

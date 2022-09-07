@@ -17,14 +17,13 @@
 
 package org.apache.nlpcraft.internal.util
 
-import org.junit.jupiter.api.Test
+import org.scalatest.funsuite.AnyFunSuite
 
 /**
   *
   */
-class NCResourceSpec:
-    @Test
-    def test(): Unit =
+class NCResourceSpec extends AnyFunSuite:
+    test("test") {
         val path = "opennlp/en-token.bin"
 
         // Get and delete.
@@ -40,3 +39,4 @@ class NCResourceSpec:
         f = NCResourceReader.get(f.getAbsolutePath)
 
         require(f.exists())
+    }

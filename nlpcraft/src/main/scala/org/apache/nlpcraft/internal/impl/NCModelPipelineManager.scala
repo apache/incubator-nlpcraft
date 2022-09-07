@@ -26,13 +26,11 @@ import org.apache.nlpcraft.internal.impl.*
 import org.apache.nlpcraft.internal.intent.matcher.*
 import org.apache.nlpcraft.internal.util.*
 
-import java.util
+import java.util.UUID
 import java.util.concurrent.*
 import java.util.concurrent.atomic.*
 import java.util.function.Predicate
-import java.util.{Objects, UUID}
 import scala.concurrent.ExecutionContext
-import scala.jdk.CollectionConverters.*
 
 /**
   *
@@ -159,6 +157,7 @@ class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCPipeline) extends L
             map { case (_, ents) => if ents.sizeIs > 1 then ents.toSet else Set.empty }.filter(_.nonEmpty)
 
         var variants: List[NCVariant] =
+            import scala.jdk.CollectionConverters.*
             if overlapEnts.nonEmpty then
                 NCModelPipelineHelper.
                     findCombinations(overlapEnts.map(_.asJava).asJava, pool).asScala.

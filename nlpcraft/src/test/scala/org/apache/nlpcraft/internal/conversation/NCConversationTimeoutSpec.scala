@@ -21,16 +21,13 @@ import org.apache.nlpcraft.*
 import annotations.*
 import nlp.util.*
 import nlp.parsers.*
+import org.scalatest.funsuite.AnyFunSuite
 
-import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.Test
-import scala.jdk.CollectionConverters.*
 import scala.util.Using
-
 /**
   *
   */
-class NCConversationTimeoutSpec:
+class NCConversationTimeoutSpec extends AnyFunSuite:
     private val TIMEOUT = 200
     private val VALUE = "value"
     private val EMPTY = "empty"
@@ -38,8 +35,7 @@ class NCConversationTimeoutSpec:
     /**
       *
       */
-    @Test
-    def test(): Unit =
+    test("test") {
         import NCSemanticTestElement as TE
 
         val mdl: NCModel =
@@ -71,3 +67,4 @@ class NCConversationTimeoutSpec:
             check(false)
             check(true)
         }
+    }

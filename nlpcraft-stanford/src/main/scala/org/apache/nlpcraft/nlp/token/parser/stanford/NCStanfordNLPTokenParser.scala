@@ -24,9 +24,7 @@ import edu.stanford.nlp.util.*
 import org.apache.nlpcraft.*
 
 import java.io.StringReader
-import java.util.Objects
 import scala.collection.mutable
-import scala.jdk.CollectionConverters.*
 
 /**
   *
@@ -42,6 +40,8 @@ class NCStanfordNLPTokenParser(stanford: StanfordCoreNLP) extends NCTokenParser:
         stanford.annotate(doc)
         val ann = doc.annotation().get(classOf[SentencesAnnotation])
         if ann == null then E("Sentence annotation not found.")
+
+        import scala.jdk.CollectionConverters.*
 
         ann.asScala.flatMap(_.asInstanceOf[ArrayCoreMap].get(classOf[TokensAnnotation]).asScala).
             zipWithIndex.map { (t, idx) =>

@@ -20,7 +20,6 @@ package org.apache.nlpcraft.examples.lightswitch.nlp.token.parser
 import org.apache.nlpcraft.*
 import org.languagetool.tokenizers.WordTokenizer
 import org.languagetool.tokenizers.fr.FrenchWordTokenizer
-
 import scala.jdk.CollectionConverters.*
 
 /**

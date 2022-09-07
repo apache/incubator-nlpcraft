@@ -20,17 +20,13 @@ package org.apache.nlpcraft.nlp.token.parser.stanford
 import edu.stanford.nlp.pipeline.StanfordCoreNLP
 import org.apache.nlpcraft.nlp.util.*
 import org.apache.nlpcraft.nlp.util.stanford.*
-import org.junit.jupiter.api.*
-
-import java.util.Properties
-import scala.jdk.CollectionConverters.*
+import org.scalatest.funsuite.AnyFunSuite
 
 /**
   *
   */
-class NCStanfordNLPTokenParserSpec:
-    @Test
-    def test(): Unit =
+class NCStanfordNLPTokenParserSpec extends AnyFunSuite:
+    test("test") {
         val toks = TOK_STANFORD_PARSER.tokenize("I had a lunch with brand names 'AAA'")
 
         require(toks.sizeIs > 1)
@@ -39,3 +35,4 @@ class NCStanfordNLPTokenParserSpec:
         val words = toks.map(_.getText)
         require(toks.map(_["String"]("pos")).filter(_ != null).distinct.sizeIs > 1)
         require(toks.map(_[String]("lemma")).filter(_ != null).zip(words).exists {_ != _})
+    }

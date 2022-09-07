@@ -19,12 +19,12 @@ package org.apache.nlpcraft.internal.impl.scan
 
 import org.apache.nlpcraft.NCModel
 import org.apache.nlpcraft.internal.impl.*
-import org.junit.jupiter.api.Test
+import org.scalatest.funsuite.AnyFunSuite
 
 /**
   * It tests various ways created models scanning.
   */
-class NCModelIntentsSpec:
+class NCModelIntentsSpec extends AnyFunSuite:
     // Different ways preparing model instances.
     private val mdls = Seq(
         NCTestModelScala.mkModel,
@@ -32,6 +32,7 @@ class NCModelIntentsSpec:
         new NCTestModelScala.NCTestModelScalaClass
     )
 
-    @Test
-    def test(): Unit = for (mdl <- mdls) require(NCModelScanner.scan(mdl).nonEmpty)
+    test("test") {
+        for (mdl <- mdls) require(NCModelScanner.scan(mdl).nonEmpty)
+    }
 

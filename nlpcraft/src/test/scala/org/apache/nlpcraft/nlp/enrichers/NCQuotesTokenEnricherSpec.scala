@@ -22,15 +22,12 @@ import annotations.*
 import nlp.enrichers.*
 import nlp.util.*
 import internal.util.NCResourceReader
-
-import org.junit.jupiter.api.*
-
-import scala.jdk.CollectionConverters.*
+import org.scalatest.funsuite.AnyFunSuite
 
 /**
   *
   */
-class NCQuotesTokenEnricherSpec:
+class NCQuotesTokenEnricherSpec extends AnyFunSuite:
     private val quoteEnricher = new NCEnQuotesTokenEnricher
 
     /**
@@ -48,7 +45,7 @@ class NCQuotesTokenEnricherSpec:
         NCTestUtils.printTokens(toks)
         toks.foreach (tok => require(!(tok[Boolean]("quoted") ^ quotes.contains(tok.getIndex))))
 
-    @Test
-    def test(): Unit =
+    test("test") {
         check("It called ' test data '", Set(3, 4))
         check("It called ' test data ' , ' test data '", Set(3, 4, 8, 9))
+    }

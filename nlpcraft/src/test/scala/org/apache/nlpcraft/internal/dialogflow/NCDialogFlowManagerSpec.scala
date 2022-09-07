@@ -20,7 +20,8 @@ package org.apache.nlpcraft.internal.dialogflow
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.util.NCUtils
 import org.apache.nlpcraft.nlp.util.NCTestRequest
-import org.junit.jupiter.api.*
+import org.scalatest.BeforeAndAfter
+import org.scalatest.funsuite.AnyFunSuite
 
 import java.util
 import java.util.function.Predicate
@@ -28,7 +29,7 @@ import java.util.function.Predicate
 /**
   *
   */
-class NCDialogFlowManagerSpec:
+class NCDialogFlowManagerSpec extends AnyFunSuite with BeforeAndAfter:
     case class IntentMatchMock(intentId: String) extends NCIntentMatch:
         override val getIntentId: String = intentId
         override val getIntentEntities: List[List[NCEntity]] = null
@@ -71,14 +72,13 @@ class NCDialogFlowManagerSpec:
       */
     private def addMatchedIntent(id: String, ctx: NCContext): Unit = mgr.addMatchedIntent(IntentMatchMock(id), null, ctx)
 
+    after {
+        if mgr != null then mgr.close()
+    }
     /**
       *
       */
-    @AfterEach
-    def cleanUp(): Unit = if mgr != null then mgr.close()
-
-    @Test
-    def test(): Unit =
+    test("test") {
         mgr = NCDialogFlowManager(mkConfig())
 
         val now = NCUtils.now()
@@ -105,10 +105,11 @@ class NCDialogFlowManagerSpec:
         mgr.clear(usrId = "user2")
         mgr.clear(usrId = "user3")
         check("user1" -> 0, "user2" -> 0, "user3" -> 0, "user4" -> 0)
+    }
 
-    @Test
-    def testTimeout(): Unit =
+    test("test timeout") {
         val delay = 10
+
         val timeout = delay * 1000
 
         mgr = NCDialogFlowManager(mkConfig(timeout))
@@ -130,3 +131,4 @@ class NCDialogFlowManagerSpec:
 
         mgr.close()
         check("user1" -> 0, "user2" -> 0)
+    }

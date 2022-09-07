@@ -19,7 +19,6 @@ package org.apache.nlpcraft.internal.intent.compiler.functions
 
 import org.apache.nlpcraft.internal.intent.compiler.functions.NCIDLFunctions.*
 import org.apache.nlpcraft.nlp.util.NCTestToken
-import org.junit.jupiter.api.Test
 
 import java.lang.{Boolean as JBool, Integer as JInt}
 import scala.language.implicitConversions
@@ -28,8 +27,7 @@ import scala.language.implicitConversions
   * Tests for 'entities' functions.
   */
 class NCIDLFunctionsEntity extends NCIDLFunctions:
-    @Test
-    def testMain(): Unit =
+    test("test") {
         val t1 = NCTestToken(txt = "W1", idx = 0)
         val t2 = NCTestToken(txt = "w2", idx = 1)
 
@@ -70,9 +68,9 @@ class NCIDLFunctionsEntity extends NCIDLFunctions:
                 entity = mkEntity(id = "a", tokens = t1, t2)
             )
         )
+    }
 
-    @Test
-    def testTokenFirstLast(): Unit =
+    test("test tokens first and last") {
         val e1 = mkEntity(id = "a", tokens = NCTestToken(idx = 0))
         val e2 = mkEntity(id = "b", tokens = NCTestToken(idx = 1))
 
@@ -90,9 +88,9 @@ class NCIDLFunctionsEntity extends NCIDLFunctions:
                 idlCtx = ctx
             )
         )
+    }
 
-    @Test
-    def testBeforeAfter(): Unit =
+    test("test before and after") {
         val e1 = mkEntity(id = "1", tokens = NCTestToken(idx = 0))
         val e2 = mkEntity(id = "2", tokens = NCTestToken(idx = 1))
 
@@ -120,9 +118,9 @@ class NCIDLFunctionsEntity extends NCIDLFunctions:
                 idlCtx = ctx
             )
         )
+    }
 
-    @Test
-    def testBetween(): Unit =
+    test("test between") {
         val e1 = mkEntity(id = "1", groups = Set("grp1"), tokens = NCTestToken(idx = 0))
         val e2 = mkEntity(id = "2", groups = Set("grp2"), tokens = NCTestToken(idx = 1))
         val e3 = mkEntity(id = "3", groups = Set("grp3"), tokens = NCTestToken(idx = 2))
@@ -141,9 +139,9 @@ class NCIDLFunctionsEntity extends NCIDLFunctions:
                 idlCtx = ctx
             )
         )
-
-    @Test
-    def testForAll(): Unit =
+    }
+    
+    test("test all methods") {
         val e1 = mkEntity(id = "1", tokens = NCTestToken())
         val e2 = mkEntity(id = "2", groups = Set("g", "z", "w"), tokens = NCTestToken())
         val e3 = mkEntity(id = "2", tokens = NCTestToken())
@@ -165,3 +163,4 @@ class NCIDLFunctionsEntity extends NCIDLFunctions:
                 idlCtx = ctx
             )
         )
+    }

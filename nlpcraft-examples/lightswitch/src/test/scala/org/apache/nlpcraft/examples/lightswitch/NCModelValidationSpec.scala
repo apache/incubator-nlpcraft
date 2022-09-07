@@ -18,14 +18,14 @@
 package org.apache.nlpcraft.examples.lightswitch
 
 import org.apache.nlpcraft.*
-import org.junit.jupiter.api.*
+import org.scalatest.funsuite.AnyFunSuite
 
 import scala.util.Using
 
 /**
   * JUnit models validation.
   */
-class NCModelValidationSpec:
+class NCModelValidationSpec extends AnyFunSuite:
     private def test(mdl: NCModel): Unit = Using.resource(new NCModelClient(mdl)) { client =>
         def check(txt: String): Unit = client.debugAsk(txt, "userId", true).getIntentId == "ls"
         
@@ -53,5 +53,6 @@ class NCModelValidationSpec:
         check("Kill the illumination now!")
     }
 
-    @Test
-    def test(): Unit = test(new LightSwitchScalaModel())
+    test("test") {
+        test(new LightSwitchScalaModel())
+    }

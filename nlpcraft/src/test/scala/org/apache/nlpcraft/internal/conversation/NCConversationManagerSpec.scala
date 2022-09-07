@@ -18,15 +18,15 @@
 package org.apache.nlpcraft.internal.conversation
 
 import org.apache.nlpcraft.*
-import org.junit.jupiter.api.Test
 import org.apache.nlpcraft.nlp.util.*
+import org.scalatest.funsuite.AnyFunSuite
 
 import java.util.function.Predicate
 
 /**
   *
   */
-class NCConversationManagerSpec:
+class NCConversationManagerSpec extends AnyFunSuite:
     def mkConfig(timeout: Long = Long.MaxValue):NCModelConfig =
         NCModelConfig(
             "testId",
@@ -37,8 +37,7 @@ class NCConversationManagerSpec:
             NCModelConfig.DFLT_CONV_DEPTH
         )
 
-    @Test
-    def test(): Unit =
+    test("test") {
         val mgr = NCConversationManager(mkConfig())
         val t = NCTestToken()
         val reqId = "req1"
@@ -63,9 +62,9 @@ class NCConversationManagerSpec:
         conv.clear(_.getId == "e1")
         checkSize(1)
         require(conv.getEntities.head.getId == "e2")
+    }
 
-    @Test
-    def testTimeout(): Unit =
+    test("test timeout") {
         val timeout = 1000
 
         val mgr = NCConversationManager(mkConfig(timeout))
@@ -95,4 +94,4 @@ class NCConversationManagerSpec:
             checkSize(0)
         finally
             mgr.close()
-
+    }

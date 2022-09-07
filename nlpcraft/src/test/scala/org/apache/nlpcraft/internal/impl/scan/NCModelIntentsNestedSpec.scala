@@ -21,13 +21,13 @@ import org.apache.nlpcraft.*
 import annotations.*
 import nlp.util.*
 import internal.impl.NCModelScanner
+import org.scalatest.funsuite.AnyFunSuite
 
-import org.junit.jupiter.api.Test
 
 /**
   * It tests imports and nested objects usage.
   */
-class NCModelIntentsNestedSpec:
+class NCModelIntentsNestedSpec extends AnyFunSuite:
     private val MDL_VALID1: NCModel = new NCTestModelAdapter:
         @NCIntentObject
         val nested1: Object = new Object():
@@ -83,13 +83,12 @@ class NCModelIntentsNestedSpec:
             @NCIntentObject
             val nested2: Object = null
 
-    @Test
-    def test(): Unit =
+    test("test") {
         require(NCModelScanner.scan(MDL_VALID1).sizeIs == 4)
         require(NCModelScanner.scan(MDL_VALID2).sizeIs == 4)
+    }
 
-    @Test
-    def testNull(): Unit =
+    test("test null") {
         try
             NCModelScanner.scan(MDL_INVALID)
 
@@ -98,3 +97,4 @@ class NCModelIntentsNestedSpec:
             case e: NCException =>
                 println("Expected stack trace:")
                 e.printStackTrace(System.out)
+    }

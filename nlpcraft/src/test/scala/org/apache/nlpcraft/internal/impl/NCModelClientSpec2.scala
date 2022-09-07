@@ -21,19 +21,17 @@ import org.apache.nlpcraft.*
 import annotations.*
 import nlp.parsers.*
 import nlp.util.*
+import org.scalatest.funsuite.AnyFunSuite
 
-import org.junit.jupiter.api.Test
 import java.util
 import scala.collection.mutable
-import scala.jdk.CollectionConverters.*
 import scala.util.Using
 
 /**
   * 
   */
-class NCModelClientSpec2:
-    @Test
-    def test(): Unit =
+class NCModelClientSpec2 extends AnyFunSuite:
+    test("test") {
         val mdl = new NCTestModelAdapter:
             import NCSemanticTestElement as TE
             override val getPipeline =
@@ -94,6 +92,6 @@ class NCModelClientSpec2:
                 case e: NCRejection => println(s"Expected rejection: ${e.getMessage}")
                 case e: Throwable => throw e
         }
-
+    }
 
 
