@@ -37,6 +37,5 @@ trait NCSemanticStemmer:
     /**
       *
       * @param txt
-      * @return
       */
     def stem(txt: String): String

@@ -64,7 +64,6 @@ class NCDialogFlowManager(cfg: NCModelConfig) extends LazyLogging:
       * @param intentMatch
       * @param res
       * @param ctx
-      * @return
       */
     private def mkItem(intentMatch: NCIntentMatch, res: Option[NCResult], ctx: NCContext): NCDialogFlowItem =
         new NCDialogFlowItem:
@@ -74,7 +73,6 @@ class NCDialogFlowManager(cfg: NCModelConfig) extends LazyLogging:
 
     /**
       *
-      * @return
       */
     def start(): Unit =
         gc = NCUtils.mkThread("dialog-mgr-gc", cfg.getId) { t =>

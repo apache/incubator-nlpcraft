@@ -35,7 +35,6 @@ object NCTestUtils:
     /**
       *
       * @param m
-      * @return
       */
     private def mkProps(m: NCPropertyMap): String =
         m.keysSet.toSeq.sorted.map(p => s"$p=${m[Any](p)}").mkString("{", ", ", "}")
@@ -122,7 +121,6 @@ object NCTestUtils:
 
     /**
       *
-      * @return
       */
     private def mkSemanticStemmer: NCSemanticStemmer =
         new NCSemanticStemmer():
@@ -134,7 +132,6 @@ object NCTestUtils:
       *
       * @param elms
       * @param macros
-      * @return
       */
     def mkEnSemanticParser(elms: List[NCSemanticElement], macros: Map[String, String] = Map.empty): NCSemanticEntityParser =
         parsers.NCSemanticEntityParser(mkSemanticStemmer, EN_TOK_PARSER, macros, elms)
@@ -142,7 +139,6 @@ object NCTestUtils:
     /**
       *
       * @param elms
-      * @return
       */
     def mkEnSemanticParser(elms: NCSemanticElement*): NCSemanticEntityParser =
         parsers.NCSemanticEntityParser(mkSemanticStemmer, EN_TOK_PARSER, elms.toList)
@@ -150,7 +146,6 @@ object NCTestUtils:
     /**
       *
       * @param mdlSrc
-      * @return
       */
     def mkEnSemanticParser(mdlSrc: String): NCSemanticEntityParser =
         parsers.NCSemanticEntityParser(mkSemanticStemmer, EN_TOK_PARSER, mdlSrc)

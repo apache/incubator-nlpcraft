@@ -70,7 +70,6 @@ class NCConversationManager(cfg: NCModelConfig) extends LazyLogging:
 
     /**
       *
-      * @return
       */
     def start(): Unit =
         gc = NCUtils.mkThread("conv-mgr-gc", cfg.getId) { t =>

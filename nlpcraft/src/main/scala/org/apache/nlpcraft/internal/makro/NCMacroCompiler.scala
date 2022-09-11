@@ -61,7 +61,6 @@ object NCMacroCompiler extends LazyLogging:
           *
           * @param optS
           * @param s
-          * @return
           */
         private def concat(optS: String, s: String): String = if optS.isEmpty then s else s"$optS $s"
 
@@ -69,7 +68,6 @@ object NCMacroCompiler extends LazyLogging:
           *
           * @param errMsg
           * @param ctx
-          * @return
           */
         private def compilerError(errMsg: String)(implicit ctx: ParserRuleContext): NCException =
             val tok = ctx.stop
@@ -166,7 +164,6 @@ object NCMacroCompiler extends LazyLogging:
 
         /**
           *
-          * @return
           */
         def getExpandedMacro: Set[String] =
             require(expandedSyns != null)

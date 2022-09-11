@@ -3,7 +3,7 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliaNCException with
+ * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
  *      https://www.apache.org/licenses/LICENSE-2.0
@@ -93,7 +93,6 @@ class NCIDLCompiler(cfg: NCModelConfig) extends LazyLogging with mutable.Cloneab
 
         /**
           *
-          * @return
           */
         def getCompiledIntents: Set[NCIDLIntent] = intents.toSet
 
@@ -101,7 +100,6 @@ class NCIDLCompiler(cfg: NCModelConfig) extends LazyLogging with mutable.Cloneab
           *
           * @param json
           * @param ctx
-          * @return
           */
         private def json2Obj(json: String)(ctx: ParserRuleContext): Map[String, Object] =
             try NCUtils.jsonToScalaMap(json)
@@ -247,7 +245,6 @@ class NCIDLCompiler(cfg: NCModelConfig) extends LazyLogging with mutable.Cloneab
           * @param subj
           * @param check
           * @param ctx
-          * @return
           */
         private def exprToFunction(subj: String, check: Object => Boolean)(implicit ctx: PRC): NCIDLFunction =
             val code = mutable.Buffer.empty[SI]
@@ -360,7 +357,6 @@ class NCIDLCompiler(cfg: NCModelConfig) extends LazyLogging with mutable.Cloneab
       * @param idl
       * @param origin IDL origin.
       * @param mdlCfg
-      * @return
       */
     private def mkSyntaxError(
         msg: String,
@@ -380,7 +376,6 @@ class NCIDLCompiler(cfg: NCModelConfig) extends LazyLogging with mutable.Cloneab
       * @param idl
       * @param origin IDL origin.
       * @param mdlCfg
-      * @return
       */
     private def mkRuntimeError(
         msg: String,
@@ -401,7 +396,6 @@ class NCIDLCompiler(cfg: NCModelConfig) extends LazyLogging with mutable.Cloneab
       * @param idl
       * @param origin IDL origin.
       * @param mdlCfg
-      * @return
       */
     private def mkError(
         kind: String,
@@ -464,7 +458,6 @@ class NCIDLCompiler(cfg: NCModelConfig) extends LazyLogging with mutable.Cloneab
       * @param idl
       * @param origin
       * @param isMethodLevel
-      * @return
       */
     private def antlr4Armature(idl: String, origin: String, isMethodLevel: Boolean): (FiniteStateMachine, IDP) =
         val lexer = new NCIDLLexer(CharStreams.fromString(idl, origin))
@@ -486,7 +479,6 @@ class NCIDLCompiler(cfg: NCModelConfig) extends LazyLogging with mutable.Cloneab
       * @param idl Intent IDL to compile.
       * @param origin Optional source name.
       * @param isMethodLevel Flag.
-      * @return
       */
     @throws[NCException]
     def compile(idl: String, origin: String, isMethodLevel: Boolean = false): Set[NCIDLIntent] =

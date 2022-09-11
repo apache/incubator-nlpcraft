@@ -66,7 +66,6 @@ class NCModelCallbacksSpec extends AnyFunSuite:
     /**
       *
       * @param s
-      * @return
       */
     private def has(s: State): Boolean = states.synchronized { states.contains(s) }
 
@@ -76,14 +75,12 @@ class NCModelCallbacksSpec extends AnyFunSuite:
       * @param v
       * @param dtlt
       * @tparam T
-      * @return
       */
     private def getOrElse[T](s: State, v: T, dtlt: => T): T = if has(s) then v else dtlt
 
     /**
       *
       * @param states
-      * @return
       */
     private def set(states: State*) = this.states.synchronized {
         this.states.clear()

@@ -84,7 +84,6 @@ private[parsers] object NCSemanticSourceReader:
       *
       * @param is
       * @param typ
-      * @return
       */
     def read(is: InputStream, typ: NCSemanticSourceType): NCSemanticSourceData =
         val mapper =

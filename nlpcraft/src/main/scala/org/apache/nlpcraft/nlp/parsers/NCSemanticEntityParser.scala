@@ -41,7 +41,6 @@ object NCSemanticEntityParser:
       * @param parser
       * @param macros
       * @param elements
-      * @return
       */
     def apply(
         stemmer: NCSemanticStemmer,
@@ -61,7 +60,6 @@ object NCSemanticEntityParser:
       * @param stemmer
       * @param parser
       * @param elements
-      * @return
       */
     def apply(
         stemmer: NCSemanticStemmer,
@@ -79,7 +77,6 @@ object NCSemanticEntityParser:
       * @param stemmer
       * @param parser
       * @param mdlSrc
-      * @return
       */
     def apply(stemmer: NCSemanticStemmer, parser: NCTokenParser, mdlSrc: String): NCSemanticEntityParser =
         require(stemmer != null, "Stemmer cannot be null.")
@@ -97,7 +94,6 @@ object NCSemanticEntityParser:
     /**
       *
       * @param t
-      * @return
       */
     private def isStopWord(t: NCToken): Boolean = t.get[Boolean]("stopword").getOrElse(false)
 
@@ -165,7 +161,6 @@ object NCSemanticEntityParser:
       * @param data2
       * @param i
       * @param tmp
-      * @return
       */
     @tailrec private def combine(data1: Seq[String], data2: Seq[String], i: Int = 0, tmp: Set[List[String]] = Set(List.empty)): Set[List[String]] =
         require(data1.size == data2.size)

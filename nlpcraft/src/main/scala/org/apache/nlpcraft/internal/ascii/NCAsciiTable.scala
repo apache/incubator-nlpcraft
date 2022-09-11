@@ -270,7 +270,6 @@ class NCAsciiTable:
       *
       * @param maxWidth
       * @param lines
-      * @return
       */
     private def breakUpByNearestSpace(maxWidth: Int, lines: Seq[String]): Seq[String] =
         lines.flatMap(line => {
@@ -309,7 +308,6 @@ class NCAsciiTable:
       *
       * @param style
       * @param lines
-      * @return
       */
     private def mkStyledCell(style: String, lines: Any*): Cell =
         val st = Style(style)
@@ -439,7 +437,6 @@ class NCAsciiTable:
           *
           * @param crs
           * @param cor
-          * @return
           */
         def mkAsciiLine(crs: String, cor: String): String =
             s"${space(margin.left)}$crs${dash(cor, tableW)}$crs${space(margin.right)}\n"

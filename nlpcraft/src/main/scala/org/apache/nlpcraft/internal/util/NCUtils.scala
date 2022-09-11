@@ -58,7 +58,6 @@ object NCUtils extends LazyLogging:
       * Tests whether given system property of environment variable is set or not.
       *
       * @param s @param s Name of the system property or environment variable.
-      * @return
       */
     def isSysEnvSet(s: String): Boolean = sysProps.get(s).nonEmpty || sys.env.contains(s)
 
@@ -112,7 +111,6 @@ object NCUtils extends LazyLogging:
     /**
       *
       * @param json
-      * @return
       */
     def prettyJson(json: String): String =
         if json == null || json.isEmpty then ""
@@ -128,7 +126,6 @@ object NCUtils extends LazyLogging:
     /**
       *
       * @param json
-      * @return
       */
     def isValidJson(json: String): Boolean =
         scala.util.Try(GSON.getAdapter(classOf[JsonElement]).fromJson(json)).isSuccess
@@ -137,7 +134,6 @@ object NCUtils extends LazyLogging:
       *
       * @param json
       * @param field
-      * @return
       */
     @throws[Exception]
     def getJsonStringField(json: String, field: String): String =
@@ -147,7 +143,6 @@ object NCUtils extends LazyLogging:
       *
       * @param json
       * @param field
-      * @return
       */
     @throws[Exception]
     def getJsonIntField(json: String, field: String): Int =
@@ -157,7 +152,6 @@ object NCUtils extends LazyLogging:
       *
       * @param json
       * @tparam T
-      * @return
       */
     def jsonToObject[T](json: String, typ: java.lang.reflect.Type): T =
         GSON.fromJson(json, typ)
@@ -166,7 +160,6 @@ object NCUtils extends LazyLogging:
       *
       * @param json
       * @tparam T
-      * @return
       */
     def jsonToObject[T](json: String, cls: Class[T]): T =
         GSON.fromJson(json, cls)
@@ -175,7 +168,6 @@ object NCUtils extends LazyLogging:
       * Shortcut to convert given JSON to Scala map with default mapping.
       *
       * @param json JSON to convert.
-      * @return
       */
     @throws[Exception]
     def jsonToScalaMap(json: String): Map[String, Object] =
@@ -185,7 +177,6 @@ object NCUtils extends LazyLogging:
       * Shortcut to convert given JSON to Java map with default mapping.
       *
       * @param json JSON to convert.
-      * @return
       */
     def jsonToJavaMap(json: String): java.util.Map[String, Object] =
         try GSON.fromJson(json, classOf[java.util.HashMap[String, Object]])
@@ -195,7 +186,6 @@ object NCUtils extends LazyLogging:
       *
       * @param json
       * @param field
-      * @return
       */
     def getJsonBooleanField(json: String, field: String): Boolean =
         try GSON.getAdapter(classOf[JsonElement]).fromJson(json).getAsJsonObject.get(field).getAsBoolean
@@ -221,7 +211,6 @@ object NCUtils extends LazyLogging:
       * @param v
       * @param dflt
       * @tparam T
-      * @return
       */
     def notNull[T <: AnyRef](v: T, dflt: T): T = if v == null then dflt else v
 
@@ -229,7 +218,6 @@ object NCUtils extends LazyLogging:
       * Trims each sequence string and filters out empty ones.
       *
       * @param s String to process.
-      * @return
       */
     def trimFilter(s: Seq[String]): Seq[String] =
         s.map(_.strip).filter(_.nonEmpty)
@@ -239,7 +227,6 @@ object NCUtils extends LazyLogging:
       *
       * @param s String to split.
       * @param sep Separator (regex) to split by.
-      * @return
       */
     def splitTrimFilter(s: String, sep: String): Seq[String] =
         trimFilter(s.split(sep).toIndexedSeq)
@@ -248,7 +235,6 @@ object NCUtils extends LazyLogging:
       * Recursively removes quotes from given string.
       *
       * @param s
-      * @return
       */
     @tailrec
     def trimQuotes(s: String): String =
@@ -262,7 +248,6 @@ object NCUtils extends LazyLogging:
       * Recursively removes quotes and replaces escaped quotes from given string.
       *
       * @param s
-      * @return
       */
     @tailrec
     def trimEscapesQuotes(s: String): String =
@@ -281,7 +266,6 @@ object NCUtils extends LazyLogging:
       * Recursively removes quotes and replaces escaped quotes from given string.
       *
       * @param s
-      * @return
       */
     @tailrec
     def escapesQuotes(s: String): String =
@@ -299,7 +283,6 @@ object NCUtils extends LazyLogging:
       *
       * @param s
       * @param sep
-      * @return
       */
     def normalize(s: String, sep: String): String =
         splitTrimFilter(s, sep).mkString(sep)
@@ -367,7 +350,6 @@ object NCUtils extends LazyLogging:
       * @param prefix
       * @param mdlId
       * @param body
-      * @return
       */
     def mkThread(prefix: String, mdlId: String)(body: Thread => Unit): Thread = mkThread(s"$prefix-@$mdlId")(body)
 
@@ -381,7 +363,6 @@ object NCUtils extends LazyLogging:
     /**
       *
       * @param url URL to check.
-      * @return
       */
     def isUrl(url: String): Boolean =
         try
@@ -393,7 +374,6 @@ object NCUtils extends LazyLogging:
     /**
       *
       * @param path Local file path to check.
-      * @return
       */
     def isFile(path: String): Boolean =
         val f = new File(path)
@@ -402,7 +382,6 @@ object NCUtils extends LazyLogging:
     /**
       *
       * @param f
-      * @return
       */
     def isFile(f: File): Boolean = f.exists() && f.isFile
 
@@ -468,7 +447,6 @@ object NCUtils extends LazyLogging:
       *
       * @param seq Sequence to check for dups from.
       * @tparam T
-      * @return
       * @see #containsDups
       */
     def getDups[T](seq: Seq[T]): Set[T] = seq.diff(seq.distinct).toSet
@@ -532,14 +510,12 @@ object NCUtils extends LazyLogging:
     /**
       *
       * @param s
-      * @return
       */
     def decapitalize(s: String): String = s"${s.head.toLower}${s.tail}"
 
     /**
       *
       * @param s
-      * @return
       */
     def capitalize(s: String): String = s"${s.head.toUpper}${s.tail}"
 
@@ -738,7 +714,6 @@ object NCUtils extends LazyLogging:
     /**
       *
       * @param in
-      * @return
       */
     private def readLcTrimFilter(in: BufferedSource): List[String] =
         in.getLines().map(_.toLowerCase.strip).filter(s => s.nonEmpty && s.head!= '#').toList

@@ -51,6 +51,5 @@ object NCTestRequest:
     /**
       *
       * @param txt
-      * @return
       */
     def apply(txt: String): NCTestRequest = new NCTestRequest(txt)

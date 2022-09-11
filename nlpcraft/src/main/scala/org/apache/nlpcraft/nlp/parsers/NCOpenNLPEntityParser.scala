@@ -69,7 +69,6 @@ class NCOpenNLPEntityParser(srcs: List[String]) extends NCEntityParser with Lazy
       *
       * @param finder
       * @param words
-      * @return
       */
     private def find(finder: NameFinderME, words: Array[String]): Array[Holder] = finder.synchronized {
         try finder.find(words).map(p => Holder(p.getStart, p.getEnd - 1, p.getType, p.getProb))

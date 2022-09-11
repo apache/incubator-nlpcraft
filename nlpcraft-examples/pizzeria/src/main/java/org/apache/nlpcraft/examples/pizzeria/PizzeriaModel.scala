@@ -134,7 +134,6 @@ class PizzeriaModel extends NCModelAdapter(NCModelConfig("nlpcraft.pizzeria.ex",
     /**
       *
       * @param im
-      * @return
       */
     @NCIntent("intent=yes term(yes)={# == 'ord:yes'}")
     def onYes(using ctx: NCContext, im: NCIntentMatch): NCResult = doRequest(
@@ -148,7 +147,6 @@ class PizzeriaModel extends NCModelAdapter(NCModelConfig("nlpcraft.pizzeria.ex",
     /**
       *
       * @param im
-      * @return
       */
     @NCIntent("intent=no term(no)={# == 'ord:no'}")
     def onNo(using ctx: NCContext, im: NCIntentMatch): NCResult = doRequest(
@@ -160,7 +158,6 @@ class PizzeriaModel extends NCModelAdapter(NCModelConfig("nlpcraft.pizzeria.ex",
     /**
       *
       * @param im
-      * @return
       */
     @NCIntent("intent=stop term(stop)={# == 'ord:stop'}")
     // It doesn't depend on order validity and dialog state.
@@ -169,7 +166,6 @@ class PizzeriaModel extends NCModelAdapter(NCModelConfig("nlpcraft.pizzeria.ex",
     /**
       *
       * @param im
-      * @return
       */
     @NCIntent("intent=status term(status)={# == 'ord:status'}")
     def onStatus(using ctx: NCContext, im: NCIntentMatch): NCResult = doRequest(
@@ -181,7 +177,6 @@ class PizzeriaModel extends NCModelAdapter(NCModelConfig("nlpcraft.pizzeria.ex",
     /**
       *
       * @param im
-      * @return
       */
     @NCIntent("intent=finish term(finish)={# == 'ord:finish'}")
     def onFinish(using ctx: NCContext, im: NCIntentMatch): NCResult = doRequest(
@@ -193,7 +188,6 @@ class PizzeriaModel extends NCModelAdapter(NCModelConfig("nlpcraft.pizzeria.ex",
     /**
       *
       * @param im
-      * @return
       */
     @NCIntent("intent=menu term(menu)={# == 'ord:menu'}")
     // It doesn't depend and doesn't influence on order validity and dialog state.
@@ -204,7 +198,6 @@ class PizzeriaModel extends NCModelAdapter(NCModelConfig("nlpcraft.pizzeria.ex",
       * @param im
       * @param ps
       * @param ds
-      * @return
       */
     @NCIntent("intent=order term(ps)={# == 'ord:pizza'}* term(ds)={# == 'ord:drink'}*")
     def onOrder(using ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("ps") ps: List[NCEntity], @NCIntentTerm("ds") ds: List[NCEntity]): NCResult = doRequest(
@@ -219,7 +212,6 @@ class PizzeriaModel extends NCModelAdapter(NCModelConfig("nlpcraft.pizzeria.ex",
       *
       * @param im
       * @param size
-      * @return
       */
     @NCIntent("intent=orderSpecify term(size)={# == 'ord:pizza:size'}")
     def onOrderSpecify(using ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("size") size: NCEntity): NCResult = doRequest(

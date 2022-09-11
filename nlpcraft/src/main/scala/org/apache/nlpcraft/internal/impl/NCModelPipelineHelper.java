@@ -58,7 +58,6 @@ class NCModelPipelineHelper extends RecursiveTask<List<Long>> {
 
     /**
      *
-     * @return
      */
     private List<Long> computeLocal() {
         List<Long> res = new ArrayList<>();
@@ -88,7 +87,6 @@ class NCModelPipelineHelper extends RecursiveTask<List<Long>> {
 
     /**
      *
-     * @return
      */
     private List<Long> forkJoin() {
         long mid = lo + hi >>> 1L;
@@ -105,7 +103,6 @@ class NCModelPipelineHelper extends RecursiveTask<List<Long>> {
      *
      * @param l1
      * @param l2
-     * @return
      */
     private static List<Long> merge(List<Long> l1, List<Long> l2) {
         if (l1.isEmpty())
@@ -154,7 +151,6 @@ class NCModelPipelineHelper extends RecursiveTask<List<Long>> {
      *
      * @param bits
      * @param allBits
-     * @return
      */
     private static boolean excludes(long bits, List<Long> allBits) {
         for (Long allBit : allBits)
@@ -168,7 +164,6 @@ class NCModelPipelineHelper extends RecursiveTask<List<Long>> {
      *
      * @param bitSet1
      * @param bitSet2
-     * @return
      */
     private static boolean containsAllBits(long bitSet1, long bitSet2) {
         return (bitSet1 & bitSet2) == bitSet2;
@@ -179,7 +174,6 @@ class NCModelPipelineHelper extends RecursiveTask<List<Long>> {
      * @param words
      * @param dict
      * @param <T>
-     * @return
      */
     private static <T> long wordsToBits(Set<T> words, List<T> dict) {
         long bits = 0;
@@ -196,7 +190,6 @@ class NCModelPipelineHelper extends RecursiveTask<List<Long>> {
      * @param bits
      * @param dict
      * @param <T>
-     * @return
      */
     private static <T> List<T> bitsToWords(long bits, List<T> dict) {
         List<T> words = new ArrayList<>(Long.bitCount(bits));
@@ -210,7 +203,6 @@ class NCModelPipelineHelper extends RecursiveTask<List<Long>> {
 
     /**
      *
-     * @return
      */
     @Override
     protected List<Long> compute() {
@@ -222,7 +214,6 @@ class NCModelPipelineHelper extends RecursiveTask<List<Long>> {
      * @param words
      * @param pool
      * @param <T>
-     * @return
      */
     static <T> List<List<T>> findCombinations(List<Set<T>> words, ForkJoinPool pool) {
         assert words != null && !words.isEmpty();

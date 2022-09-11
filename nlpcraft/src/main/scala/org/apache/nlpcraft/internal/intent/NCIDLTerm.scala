@@ -47,7 +47,6 @@ case class NCIDLTerm(
     /**
       *
       * @param meta
-      * @return
       */
     def cloneWithFragMeta(meta: Map[String, Any]): NCIDLTerm =
         NCIDLTerm(

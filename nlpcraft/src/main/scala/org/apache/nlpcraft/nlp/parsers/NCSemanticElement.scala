@@ -36,30 +36,25 @@ package org.apache.nlpcraft.nlp.parsers
 trait NCSemanticElement:
     /**
       *
-      * @return
       */
     def getId: String
 
     /**
       *
-      * @return
       */
     def getGroups: Set[String] = Set(getId)
 
     /**
       *
-      * @return
       */
     def getValues: Map[String, Set[String]] = Map.empty
 
     /**
       *
-      * @return
       */
     def getSynonyms: Set[String] = Set.empty
 
     /**
       *
-      * @return
       */
     def getProperties: Map[String, AnyRef] = Map.empty

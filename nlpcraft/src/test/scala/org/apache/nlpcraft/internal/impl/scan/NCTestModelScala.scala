@@ -66,7 +66,6 @@ object NCTestModelScala:
 
     /**
       *
-      * @return
       */
     def mkModel: NCModel = new NCTestModelAdapter() :
         @NCIntent("intent=locInt term(single)~{# == 'id1'} term(list)~{# == 'id2'}[0,10] term(opt)~{# == 'id3'}?")

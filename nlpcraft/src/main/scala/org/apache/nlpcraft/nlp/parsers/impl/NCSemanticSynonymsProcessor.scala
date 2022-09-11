@@ -61,7 +61,6 @@ private[parsers] object NCSemanticSynonymsProcessor extends LazyLogging:
     /**
       *
       * @param iter
-      * @return
       */
     private def hasNullOrEmpty(iter: Iterable[String]): Boolean = iter.exists(p => p == null || p.strip.isEmpty)
 
@@ -143,7 +142,6 @@ private[parsers] object NCSemanticSynonymsProcessor extends LazyLogging:
       * @param macroParser
       * @param elemId
       * @param syns
-      * @return
       */
     private def convertSynonyms(
         stemmer: NCSemanticStemmer,
@@ -205,7 +203,6 @@ private[parsers] object NCSemanticSynonymsProcessor extends LazyLogging:
       * @param tokParser
       * @param macros
       * @param elements
-      * @return
       */
     def prepare(
         stemmer: NCSemanticStemmer,

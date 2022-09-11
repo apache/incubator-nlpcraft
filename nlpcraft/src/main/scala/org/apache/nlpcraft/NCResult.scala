@@ -26,7 +26,6 @@ object NCResult:
       * @param body
       * @param resultType
       * @param intentId
-      * @return
       */
     def apply(body: Any, resultType: NCResultType, intentId: String): NCResult =
         new NCResult():
@@ -38,7 +37,6 @@ object NCResult:
       * 
       * @param body
       * @param resultType
-      * @return
       */
     def apply(body: Any, resultType: NCResultType): NCResult =
         new NCResult():
@@ -49,7 +47,6 @@ object NCResult:
     /**
       * 
       * @param body
-      * @return
       */
     def apply(body: Any): NCResult =
         new NCResult() :

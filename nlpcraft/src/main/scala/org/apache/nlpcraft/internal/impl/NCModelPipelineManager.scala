@@ -77,14 +77,12 @@ class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCPipeline) extends L
       *
       * @param list
       * @tparam T
-      * @return
       */
     private def nvl[T](list: List[T]): Seq[T] = if list == null then List.empty else list
 
     /**
       *
       * @param m
-      * @return
       */
     private def mkProps(m: NCPropertyMap): String =
         if m.keysSet.isEmpty then ""
@@ -95,7 +93,6 @@ class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCPipeline) extends L
       * @param txt
       * @param data
       * @param usrId
-      * @return
       */
     def prepare(txt: String, data: Map[String, Any], usrId: String): NCPipelineData =
         require(txt != null && usrId != null)
@@ -103,7 +100,6 @@ class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCPipeline) extends L
         /**
           *
           * @param ents
-          * @return
           */
         def newVariant(ents: List[NCEntity]): NCVariant =
             new NCVariant:

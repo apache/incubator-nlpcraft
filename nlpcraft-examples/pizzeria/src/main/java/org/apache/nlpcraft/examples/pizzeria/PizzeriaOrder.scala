@@ -66,13 +66,11 @@ class PizzeriaOrder:
 
     /**
       *
-      * @return
       */
     def isEmpty: Boolean = pizzas.isEmpty && drinks.isEmpty
 
     /**
       *
-      * @return
       */
     def isValid: Boolean = !isEmpty && findPizzaWithoutSize.isEmpty
 
@@ -105,7 +103,6 @@ class PizzeriaOrder:
 
     /**
       *
-      * @return
       */
     def findPizzaWithoutSize: Option[Pizza] = pizzas.find(_.size.isEmpty)
 
@@ -121,7 +118,6 @@ class PizzeriaOrder:
             case None => false
     /**
       *
-      * @return
       */
     def getState: PizzeriaOrderState = state
 

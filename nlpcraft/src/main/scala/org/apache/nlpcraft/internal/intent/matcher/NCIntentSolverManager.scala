@@ -111,7 +111,6 @@ object NCIntentSolverManager:
           * Adds given weight to this weight.
           *
           * @param that Weight to add.
-          * @return
           */
         @targetName("plusEqual")
         def +=(that: Weight): Weight =
@@ -126,7 +125,6 @@ object NCIntentSolverManager:
           * Appends new weight.
           *
           * @param w New weight to append.
-          * @return
           */
         def append(w: Int): Weight =
             buf.append(w)
@@ -136,7 +134,6 @@ object NCIntentSolverManager:
           * Prepends new weight.
           *
           * @param w New weight to prepend.
-          * @return
           */
         def prepend(w: Int): Weight =
             buf.prepend(w)
@@ -156,14 +153,12 @@ object NCIntentSolverManager:
           *
           * @param i Index in collection.
           * @param c Collection.
-          * @return
           */
         private def norm(i: Int, c: mutable.ArrayBuffer[Int]): Int = if i < c.size then c(i) else 0
 
         /**
           *
           * @param that
-          * @return
           */
         override def compare(that: Weight): Int =
             def compareWeight(idx: Int): Option[Int] =
@@ -269,7 +264,6 @@ class NCIntentSolverManager(
       * @param mdl Model.
      * @param ctx Query context.
      * @param intents Intents to match for.
-     * @return
      */
     private def solveIntents(mdl: NCModel, ctx: NCContext, intents: Map[NCIDLIntent, NCCallbackInput => NCResult]): List[IntentSolverResult] =
         dialog.ack(ctx.getRequest.getUserId)
@@ -415,7 +409,6 @@ class NCIntentSolverManager(
      * @param intent
      * @param senEnts
      * @param convEnts
-     * @return
      */
     private def solveIntent(
         ctx: NCContext, intent: NCIDLIntent, senEnts: Seq[IntentEntity], convEnts: Seq[IntentEntity], varIdx: Int
@@ -555,7 +548,6 @@ class NCIntentSolverManager(
      * @param idlCtx
      * @param convEnts
      * @param senEnts
-     * @return
      */
     private def solveTerm(
         term: NCIDLTerm,
@@ -596,7 +588,6 @@ class NCIntentSolverManager(
      * @param idlCtx
      * @param senEnts
      * @param convEnts
-     * @return
      */
     private def solvePredicate(
         term: NCIDLTerm,
@@ -658,7 +649,6 @@ class NCIntentSolverManager(
       * @param ctx
       * @param typ
       * @param key
-      * @return
       */
     private def solveIteration(mdl: NCModel, ctx: NCContext, typ: NCIntentSolveType, key: UserModelKey): Option[IterationResult] =
         require(intents.nonEmpty)
@@ -763,7 +753,6 @@ class NCIntentSolverManager(
       * @param mdl
       * @param ctx
       * @param typ
-      * @return
       */
     def solve(mdl: NCModel, ctx: NCContext, typ: NCIntentSolveType): ResultData =
         import NCIntentSolveType.REGULAR

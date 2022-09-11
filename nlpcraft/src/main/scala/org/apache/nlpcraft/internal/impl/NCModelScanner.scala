@@ -86,14 +86,12 @@ object NCModelScanner extends LazyLogging:
     /**
       *
       * @param iter
-      * @return
       */
     private def col2Str(iter: Iterable[_]): String = iter.mkString("(", ",", ")")
 
     /**
       *
       * @param clazz
-      * @return
       */
     private def class2Str(clazz: Class[_]): String =
         val cls = clazz.getSimpleName.strip
@@ -103,7 +101,6 @@ object NCModelScanner extends LazyLogging:
     /**
       *
       * @param mtd
-      * @return
       */
     private def method2Str(mtd: Method): String =
         val cls = class2Str(mtd.getDeclaringClass)
@@ -114,7 +111,6 @@ object NCModelScanner extends LazyLogging:
     /**
       *
       * @param f
-      * @return
       */
     private def field2Str(f: Field): String =
         val cls = class2Str(f.getDeclaringClass)
@@ -127,7 +123,6 @@ object NCModelScanner extends LazyLogging:
       * @param mtd
       * @param prmClss
       * @param argsList
-      * @return
       */
     private def prepareParams(cfg: NCModelConfig, mtd: Method, prmClss: List[Class[_]], argsList: List[List[NCEntity]]): Seq[AnyRef] =
         prmClss.zip(argsList).zipWithIndex.map { case ((paramCls, argList), i) =>
@@ -164,7 +159,6 @@ object NCModelScanner extends LazyLogging:
       * @param mtd
       * @param obj
       * @param args
-      * @return
       */
     private def invoke(cfg: NCModelConfig, mtd: Method, obj: AnyRef, args: scala.Array[AnyRef]): NCResult =
         val methodObj = if Modifier.isStatic(mtd.getModifiers) then null else obj
@@ -195,7 +189,6 @@ object NCModelScanner extends LazyLogging:
       * @param cfg
       * @param field
       * @param obj
-      * @return
       */
     private def getFieldObject(cfg: NCModelConfig, field: Field, obj: AnyRef): AnyRef =
         lazy val fStr = field2Str(field)
@@ -339,7 +332,6 @@ object NCModelScanner extends LazyLogging:
       * @param method
       * @param obj
       * @param intent
-      * @return
       */
     private def prepareCallback(cfg: NCModelConfig, method: Method, obj: AnyRef, intent: NCIDLIntent): NCCallbackInput => NCResult =
         lazy val z = s"mdlId=${cfg.getId}, intentId=${intent.id}, type=${class2Str(method.getReturnType)}, callback=${method2Str(method)}"
@@ -406,7 +398,6 @@ object NCModelScanner extends LazyLogging:
 
     /**
       *
-      * @return
       */
     def scan(mdl: NCModel): Seq[NCModelIntent] =
         require(mdl != null)

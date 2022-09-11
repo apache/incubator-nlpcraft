@@ -24,7 +24,6 @@ object NCCompilerUtils:
       *
       * @param in
       * @param charPos
-      * @return
       */
     def mkErrorHolder(in: String, charPos: Int): NCCompilerErrorHolder =
         val in0 = in.strip()

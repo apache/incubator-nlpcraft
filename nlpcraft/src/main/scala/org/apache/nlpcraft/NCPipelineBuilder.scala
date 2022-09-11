@@ -209,7 +209,6 @@ class NCPipelineBuilder:
       *
       * @param lang
       * @param mdlSrc
-      * @return
       */
     def withSemantic(lang: String, mdlSrc: String): NCPipelineBuilder =
         require(lang != null, "Language cannot be null.")

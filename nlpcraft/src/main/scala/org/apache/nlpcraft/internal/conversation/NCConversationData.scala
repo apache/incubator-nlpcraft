@@ -197,7 +197,6 @@ case class NCConversationData(
 
     /**
       *
-      * @return
       */
     def getEntities: List[NCEntity] = stm.synchronized {
         val reqIds = ctx.map(_.getRequestId).distinct.zipWithIndex.toMap

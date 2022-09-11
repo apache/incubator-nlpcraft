@@ -41,7 +41,6 @@ object NCResourceReader extends LazyLogging:
     /**
       *
       * @param dir
-      * @return
       */
     private def mkDir(dir: String): File =
         val normDir = if dir != null then dir else DFLT_DIR
@@ -55,7 +54,6 @@ object NCResourceReader extends LazyLogging:
     /**
       *
       * @param url
-      * @return
       */
     private def readMd5(url: String): Map[Path, String] =
         try
@@ -86,7 +84,6 @@ object NCResourceReader extends LazyLogging:
       *
       * @param f
       * @param md5
-      * @return
       */
     private def getMd5(f: File, md5: Map[Path, String]): String =
         val path = Path.of(f.getAbsolutePath)
@@ -102,7 +99,6 @@ object NCResourceReader extends LazyLogging:
       *
       * @param f
       * @param md5
-      * @return
       */
     private def isValid(f: File, md5: Map[Path, String]): Boolean =
         val v1 = getMd5(f, md5)
@@ -125,7 +121,6 @@ object NCResourceReader extends LazyLogging:
       * @param path
       * @param outFile
       * @param md5
-      * @return
       */
     private def download(path: String, outFile: String, md5: Map[Path, String]): File =
         mkDir(new File(outFile).getParent)
@@ -144,7 +139,6 @@ object NCResourceReader extends LazyLogging:
     /**
       *
       * @param path
-      * @return
       */
     def get(path: String): File =
         val md5 = readMd5(MD5_FILE_URL)
@@ -186,6 +180,5 @@ object NCResourceReader extends LazyLogging:
     /**
       *
       * @param path
-      * @return
       */
     def getPath(path: String): String = get(path).getAbsolutePath

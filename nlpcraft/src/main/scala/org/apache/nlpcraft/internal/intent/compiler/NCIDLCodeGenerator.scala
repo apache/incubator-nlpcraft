@@ -47,7 +47,6 @@ trait NCIDLCodeGenerator:
       *
       * @param errMsg
       * @param ctx
-      * @return
       */
     def newSyntaxError(errMsg: String)(implicit ctx: PRC): NCException =
         val tok = ctx.start
@@ -58,7 +57,6 @@ trait NCIDLCodeGenerator:
       * @param errMsg
       * @param cause
       * @param ctx
-      * @return
       */
     def newRuntimeError(errMsg: String, cause: Exception = null)(implicit ctx: PRC): NCException =
         val tok = ctx.start
@@ -68,7 +66,6 @@ trait NCIDLCodeGenerator:
       * Check if given object is mathematically an integer number.
       *
       * @param v
-      * @return
       */
     def isInt(v: Object): Boolean =
         v.isInstanceOf[JLong] || v.isInstanceOf[JInt] || v.isInstanceOf[JByte] || v.isInstanceOf[JShort]
@@ -77,14 +74,12 @@ trait NCIDLCodeGenerator:
       * Check if given object is mathematically an real number.
       *
       * @param v
-      * @return
       */
     def isReal(v: Object): Boolean = v.isInstanceOf[JDouble] || v.isInstanceOf[JFloat]
 
     /**
       *
       * @param v
-      * @return
       */
     def asInt(v: Object): JLong = v match
         case l: JLong => l
@@ -96,7 +91,6 @@ trait NCIDLCodeGenerator:
     /**
       *
       * @param v
-      * @return
       */
     def asReal(v: Object): JDouble = v match
         case l: JLong => l.doubleValue()
@@ -110,7 +104,6 @@ trait NCIDLCodeGenerator:
     /**
       *
       * @param v
-      * @return
       */
     def box(v: Object): Object =
         if v == null then null
@@ -164,7 +157,6 @@ trait NCIDLCodeGenerator:
     /**
       *
       * @param stack
-      * @return
       */
     def pop1()(implicit stack: S, ctx: PRC): ST =
         require(stack.nonEmpty, ctx.getText)
@@ -173,7 +165,6 @@ trait NCIDLCodeGenerator:
     /**
       *
       * @param stack
-      * @return
       */
     def pop2()(implicit stack: S, ctx: PRC): (ST, ST) =
         require(stack.size >= 2, ctx.getText)
@@ -187,7 +178,6 @@ trait NCIDLCodeGenerator:
     /**
       *
       * @param stack
-      * @return
       */
     def pop3()(implicit stack: S, ctx: PRC): (ST, ST, ST) =
         require(stack.size >= 3, ctx.getText)
@@ -203,7 +193,6 @@ trait NCIDLCodeGenerator:
       *
       * @param x1
       * @param x2
-      * @return
       */
     def extract2(x1: ST, x2: ST): (Object, Object, Int) =
         val Z(v1, n1) = x1()
@@ -216,7 +205,6 @@ trait NCIDLCodeGenerator:
       * @param x1
       * @param x2
       * @param x3
-      * @return
       */
     def extract3(x1: ST, x2: ST, x3: ST): (Object, Object, Object, Int) =
         val Z(v1, n1) = x1()
@@ -337,7 +325,6 @@ trait NCIDLCodeGenerator:
       *
       * @param and
       * @param or
-      * @return
       */
     def parseAndOrExpr(and: TN, or: TN)(implicit ctx: PRC): SI = (_, stack: S, _) => {
         val (x1, x2) = pop2()(stack, ctx)
@@ -360,7 +347,6 @@ trait NCIDLCodeGenerator:
       *
       * @param eq
       * @param neq
-      * @return
       */
     def parseEqNeqExpr(eq: TN, neq: TN)(implicit ctx: PRC): SI = (_, stack: S, _) => {
         val (x1, x2) = pop2()(stack, ctx)
@@ -432,7 +418,6 @@ trait NCIDLCodeGenerator:
     /**
       * @param minus
       * @param not
-      * @return
       */
     def parseUnaryExpr(minus: TN, not: TN)(implicit ctx: PRC): SI = (_, stack: S, _) => {
         val x = pop1()(stack, ctx)
@@ -459,7 +444,6 @@ trait NCIDLCodeGenerator:
     /**
       *
       * @param txt
-      * @return
       */
     def parseAtom(txt: String)(implicit ctx: PRC): SI = {
         val atom =
@@ -484,7 +468,6 @@ trait NCIDLCodeGenerator:
       *
       * @param fun
       * @param ctx
-      * @return
       */
     def parseCallExpr(fun: String)(implicit ctx: PRC): SI = (ent: NCIDLEntity, stack: S, idlCtx) =>
         implicit val evidence: S = stack

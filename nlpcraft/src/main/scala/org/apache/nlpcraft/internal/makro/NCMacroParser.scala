@@ -83,14 +83,12 @@ class NCMacroParser:
       * Trims all duplicate spaces.
       *
       * @param s
-      * @return
       */
     private def trimDupSpaces(s: String) = NCUtils.splitTrimFilter(s, " ").mkString(" ")
 
     /**
       *
       * @param s
-      * @return
       */
     private def processEscapes(s: String): String =
         val len = s.length()

@@ -65,31 +65,26 @@ trait NCPipeline:
 
     /**
       *
-      * @return
       */
     def getTokenEnrichers: List[NCTokenEnricher] = List.empty
 
     /**
       *
-      * @return
       */
     def getEntityEnrichers: List[NCEntityEnricher] = List.empty
 
     /**
       *
-      * @return
       */
     def getTokenValidators: List[NCTokenValidator] = List.empty
 
     /**
       *
-      * @return
       */
     def getEntityValidators: List[NCEntityValidator] = List.empty
 
     /**
       *
-      * @return
       */
     def getVariantFilter: Option[NCVariantFilter] = None
 

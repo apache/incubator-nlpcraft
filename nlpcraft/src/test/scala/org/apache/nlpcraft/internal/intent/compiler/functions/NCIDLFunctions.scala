@@ -65,7 +65,6 @@ private[functions] object NCIDLFunctions:
         /**
           *
           * @param truth
-          * @return
           */
         def apply(truth: String): TestDesc =
             new TestDesc(truth = truth, idlCtx = mkIdlContext())
@@ -75,7 +74,6 @@ private[functions] object NCIDLFunctions:
           * @param truth
           * @param entity
           * @param idlCtx
-          * @return
           */
         def apply(truth: String, entity: NCEntity, idlCtx: NCIDLContext): TestDesc =
             new TestDesc(truth = truth, entity = Option(entity), idlCtx = idlCtx)
@@ -84,7 +82,6 @@ private[functions] object NCIDLFunctions:
           *
           * @param truth
           * @param entity
-          * @return
           */
         def apply(truth: String, entity: NCEntity): TestDesc =
             new TestDesc(truth = truth, entity = Option(entity), idlCtx = mkIdlContext(entities = Seq(entity)))
@@ -95,7 +92,6 @@ private[functions] object NCIDLFunctions:
     /**
       *
       * @param e
-      * @return
       */
     private def e2s(e: NCEntity): String = s"${e.getId} (${e.getTokens.map(_.getText).mkString(" ")})"
 
@@ -111,7 +107,6 @@ private[functions] object NCIDLFunctions:
       * @param intentMeta
       * @param convMeta
       * @param fragMeta
-      * @return
       */
     def mkIdlContext(
         entities: Seq[NCEntity] = Seq.empty,
@@ -142,7 +137,6 @@ private[functions] object NCIDLFunctions:
       * @param groups
       * @param meta
       * @param tokens
-      * @return
       */
     def mkEntity(
         id: String = UUID.randomUUID().toString,
