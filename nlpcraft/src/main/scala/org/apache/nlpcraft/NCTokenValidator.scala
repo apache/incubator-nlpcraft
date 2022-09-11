@@ -18,22 +18,29 @@
 package org.apache.nlpcraft
 
 /**
+  * A pipeline component that allows to validate a list of tokens produced by token parser before they get
+  * sent further down the pipeline. This is one of the user-defined
+  * components of the processing [[NCPipeline pipeline]]. See [[NCPipeline]] for documentation on the token
+  * parser place in the overall processing pipeline.
   *
-  * @see [[NCEntity
-  * @see [[NCToken
-  * @see [[NCTokenParser
-  * @see [[NCTokenEnricher
-  * @see [[NCTokenValidator
-  * @see [[NCEntityParser
-  * @see [[NCEntityEnricher
-  * @see [[NCEntityValidator
-  * @see [[NCEntityMapper */
+  * @see [[NCEntity]]
+  * @see [[NCToken]]
+  * @see [[NCTokenParser]]
+  * @see [[NCTokenEnricher]]
+  * @see [[NCTokenValidator]]
+  * @see [[NCEntityParser]]
+  * @see [[NCEntityEnricher]]
+  * @see [[NCEntityValidator]]
+  * @see [[NCEntityMapper]]
+  */
 trait NCTokenValidator extends NCLifecycle:
     /**
+      * Validates given list of tokens. If validation fails this method should throw an [[NCException]]. Note that
+      * token validator is called for an empty list of tokens as well.
       *
-      * @param req
-      * @param cfg
-      * @param toks
+      * @param req Input request,
+      * @param cfg Model configuration.
+      * @param toks List of tokens to validate. Can be empty but never `null`.
       */
     def validate(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): Unit
 

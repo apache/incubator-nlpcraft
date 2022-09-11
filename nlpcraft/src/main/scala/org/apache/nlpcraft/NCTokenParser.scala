@@ -18,24 +18,25 @@
 package org.apache.nlpcraft
 
 /**
-  * A tokenizer that splits a text into the list of {@link NCToken tokens}.
-  * <p>
-  * See {@link NCPipeline} for documentation on the token parser place
-  * in the overall processing pipeline.
+  * A tokenizer that splits given text into the list of [[NCToken]] objects. This is one of the user-defined
+  * components of the processing [[NCPipeline pipeline]]. See [[NCPipeline]] for documentation on the token
+  * parser place in the overall processing pipeline.
   *
-  * @see [[NCEntity
-  * @see [[NCToken
-  * @see [[NCTokenParser
-  * @see [[NCTokenEnricher
-  * @see [[NCTokenValidator
-  * @see [[NCEntityParser
-  * @see [[NCEntityEnricher
-  * @see [[NCEntityValidator
-  * @see [[NCEntityMapper */
+  * @see [[NCEntity]]
+  * @see [[NCToken]]
+  * @see [[NCTokenParser]]
+  * @see [[NCTokenEnricher]]
+  * @see [[NCTokenValidator]]
+  * @see [[NCEntityParser]]
+  * @see [[NCEntityEnricher]]
+  * @see [[NCEntityValidator]]
+  * @see [[NCEntityMapper]]
+  */
 trait NCTokenParser:
     /**
+      * Splits given text into list of [[NCToken]] objects.
       *
-      * @param text
-      * @return
+      * @param text Input text to split.
+      * @return List of split token. Can be empty but should never be `null`.
       */
     def tokenize(text: String): List[NCToken]

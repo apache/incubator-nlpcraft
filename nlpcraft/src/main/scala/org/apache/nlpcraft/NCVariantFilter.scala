@@ -18,14 +18,29 @@
 package org.apache.nlpcraft
 
 /**
+  * A pipeline component that allows to filter out unnecessary [[NCVariant parsing variants]]. Note that a given user
+  * input almost always has one or more possible different parsing variants. Furthermore, depending on the model
+  * configuration a user input can produce hundreds and even thousands of parsing variants. This is one of the user-defined
+  * components of the processing [[NCPipeline pipeline]]. See [[NCPipeline]] for documentation on the token
+  * parser place in the overall processing pipeline.
   *
+  * @see [[NCEntity]]
+  * @see [[NCToken]]
+  * @see [[NCTokenParser]]
+  * @see [[NCTokenEnricher]]
+  * @see [[NCTokenValidator]]
+  * @see [[NCEntityParser]]
+  * @see [[NCEntityEnricher]]
+  * @see [[NCEntityValidator]]
+  * @see [[NCEntityMapper]]
   */
 trait NCVariantFilter extends NCLifecycle:
     /**
+      * Filters out given parsing variants.
       *
-      * @param req
-      * @param cfg
-      * @param vars
-      * @return
+      * @param req Input request,
+      * @param cfg Model configuration.
+      * @param vars List of parsing variants to filter out.
+      * @return List of filtered out parsing variants. Can be empty but should never be `null`.
       */
     def filter(req: NCRequest, cfg: NCModelConfig, vars: List[NCVariant]): List[NCVariant]
