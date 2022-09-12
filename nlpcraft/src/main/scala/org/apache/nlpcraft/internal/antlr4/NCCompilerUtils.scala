@@ -30,9 +30,12 @@ object NCCompilerUtils:
         if in0.isEmpty || charPos < 0 then NCCompilerErrorHolder("<empty>", "<empty>")
         else
             val charPos0 = charPos - (in.length - in.stripLeading().length)
-            val pos = Math.max(0, charPos0)
-            val dash = "-" * in0.length
-            val ptrStr = s"${dash.substring(0, pos)}^${dash.substring(pos + 1)}"
-            val origStr = s"${in0.substring(0, pos)}${in0.charAt(pos)}${in0.substring(pos + 1)}"
+            val len = in0.length
+            val pos = Math.min(Math.max(0, charPos0), len)
 
-            NCCompilerErrorHolder(ptrStr, origStr)
+            if pos == len then
+                NCCompilerErrorHolder(s"${"-" * len}^", in0)
+            else
+                val dash = "-" * len
+                val ptrStr = s"${dash.substring(0, pos)}^${dash.substring(pos + 1)}"
+                NCCompilerErrorHolder(ptrStr, in0)

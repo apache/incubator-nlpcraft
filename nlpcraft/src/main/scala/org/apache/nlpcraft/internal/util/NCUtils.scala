@@ -280,25 +280,17 @@ object NCUtils extends LazyLogging:
             s
 
     /**
-      *
-      * @param s
-      * @param sep
-      */
-    def normalize(s: String, sep: String): String =
-        splitTrimFilter(s, sep).mkString(sep)
-
-    /**
       * Escapes given string for JSON according to RFC 4627 http://www.ietf.org/rfc/rfc4627.txt.
       *
       * @param s String to escape.
       * @return Escaped string.
       */
-    def escapeJson(s: String): String =
+    private def escapeJson(s: String): String = // TODO: remove?
         val len = s.length
         if len == 0 then
             ""
         else
-            val sb = new StringBuilder
+            val sb = new mutable.StringBuilder
             for (ch <- s.toCharArray)
                 ch match
                     case '\\' | '"' => sb += '\\' += ch
