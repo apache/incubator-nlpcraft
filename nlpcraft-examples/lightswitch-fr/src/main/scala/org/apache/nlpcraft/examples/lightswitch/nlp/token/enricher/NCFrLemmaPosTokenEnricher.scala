@@ -31,7 +31,7 @@ class NCFrLemmaPosTokenEnricher extends NCTokenEnricher:
     override def enrich(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): Unit =
         val tags = FrenchTagger.INSTANCE.tag(toks.map(_.getText).asJava).asScala
 
-        require(toks.size == tags.size)
+        require(toks.sizeIs == tags.size)
 
         toks.zip(tags).foreach { case (tok, tag) =>
             val readings = tag.getReadings.asScala
