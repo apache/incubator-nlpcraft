@@ -34,7 +34,8 @@ import java.util.{Objects, UUID}
 import scala.concurrent.ExecutionContext
 
 /**
-  * Client API to issue requests again given model.
+  * Client API to issue requests again given model. This the primary method of interacting with NLPCraft
+  * from the user perspective.
   *
   * @param mdl A data model to issue requests against.
   */
@@ -112,31 +113,37 @@ class NCModelClient(mdl: NCModel) extends LazyLogging, AutoCloseable:
         intentsMgr.solve(mdl, ctx, typ)
 
     /**
-      * Passing given input text to the model's pipeline.
+      * Passes given input text to the model's pipeline for processing.
+      *
+      * This method takes given text, passes it to the pipeline for parsing and enrichment,
+      * then tries to match it against declared intents. If the winning intent match is found,
+      * its callback is called and result is returned here.
       *
       * @param txt Text of the request.
       * @param usrId ID of the user to associate with this request.
       * @param data Optional data container that will be available to the intent matching IDL.
-      * @return Processing result. This method never returns `null`.
+      * @return Callback result from the winning intent match. This method never returns `null`.
       * @throws NCRejection An exception indicating a rejection of the user input. This exception is thrown
       *     automatically by the processing logic as well as can be thrown by the user from the intent callback.
-      * @throws NCException
+      * @throws NCException Thrown in case of any internal errors processing the user input.
       */
     def ask(txt: String, usrId: String, data: Map[String, AnyRef] = Map.empty): NCResult =
         ask0(txt, data, usrId, NCIntentSolveType.REGULAR).swap.toOption.get
 
     /**
+      * Removes all entities from the short-term-memory (STM) associated with given user ID.
       *
-      * @param usrId
+      * @param usrId User ID for which to clear STM.
       */
     def clearStm(usrId: String): Unit =
         require(usrId != null, "User id cannot be null.")
         convMgr.getConversation(usrId).clear(_ => true)
 
     /**
+      * Removes entities satisfying given filter from the short-term-memory (STM) associated with given user ID.
       *
-      * @param usrId
-      * @param filter
+      * @param usrId User ID for which to clear STM.
+      * @param filter Entity filter.
       */
     def clearStm(usrId: String, filter: NCEntity => Boolean): Unit =
         require(usrId != null, "User id cannot be null.")
@@ -144,24 +151,27 @@ class NCModelClient(mdl: NCModel) extends LazyLogging, AutoCloseable:
         convMgr.getConversation(usrId).clear(filter)
 
     /**
+      * Removes all previously matched intents from the memory associated with given user ID.
       *
-      * @param usrId
+      * @param usrId User ID for which to clear dialog history.
       */
     def clearDialog(usrId: String): Unit =
         require(usrId != null, "User id cannot be null.")
         dlgMgr.clear(usrId)
 
     /**
+      * Removes previously matched intents satisfying given filter from the memory associated with given user ID.
       *
-      * @param usrId
+      * @param usrId User ID for which to clear dialog history.
+      * @param filter Dialog flow item filter.
       */
     def clearDialog(usrId: String, filter: NCDialogFlowItem => Boolean): Unit =
-        require(usrId != null, "User id cannot be null.")
+        require(usrId != null, "User ID cannot be null.")
         require(usrId != null, "Filter cannot be null.")
         dlgMgr.clear(usrId, (i: NCDialogFlowItem) => filter(i))
 
     /**
-      *
+      * Closes this client releasing its associated resources.
       */
     override def close(): Unit =
         plMgr.close()
@@ -170,11 +180,21 @@ class NCModelClient(mdl: NCModel) extends LazyLogging, AutoCloseable:
         intentsMgr.close()
 
     /**
+      * Passes given input text to the model's pipeline for processing.
       *
-      * @param txt
-      * @param data
-      * @param usrId
-      * @param saveHist
+      * This method differs from [[NCModelClient.ask()]] method in a way that instead of calling a callback
+      * of the winning intent this method returns the descriptor of that callback without actually calling it.
+      * This method is well suited for testing the model's intent matching logic without automatically
+      * executing the actual intent's callbacks.
+      *
+      * @param txt Text of the request.
+      * @param usrId ID of the user to associate with this request.
+      * @param saveHist Whether or not to store matched intent in the dialog history.
+      * @param data Optional data container that will be available to the intent matching IDL.
+      * @return Processing result. This method never returns `null`.
+      * @throws NCRejection An exception indicating a rejection of the user input. This exception is thrown
+      *     automatically by the processing logic as well as can be thrown by the user from the intent callback.
+      * @throws NCException Thrown in case of any internal errors processing the user input.
       */
     def debugAsk(txt: String, usrId: String, saveHist: Boolean, data: Map[String, AnyRef] = Map.empty): NCMatchedCallback =
         import NCIntentSolveType.*
