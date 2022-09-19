@@ -18,10 +18,12 @@
 package org.apache.nlpcraft
 
 /**
-  * Exception to indicate that user input cannot be processed as is. This exception can be thrown from
-  * intent callbacks.
-  * <p>
+  * An exception to indicate a rejection of the user input. This exception is thrown automatically by the processing
+  * logic as well as can be thrown by the user from the intent callback.
+  *
   * This exception typically indicates that user has not provided enough information in the input string
-  * to have it processed automatically. In most cases this means that the user's input is either too short
-  * or too simple, too long or too complex, missing required context, or unrelated to requested data model. */
+  * to have it processed automatically, without additional curation or modification. In most cases this means that
+  * the user's input is either too short or too simple, too long or too complex, missing required context, or unrelated
+  * to the requested data model.
+  */
 class NCRejection(msg: String, cause: Throwable = null) extends RuntimeException(msg, cause)

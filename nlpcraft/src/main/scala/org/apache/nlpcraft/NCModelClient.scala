@@ -34,8 +34,9 @@ import java.util.{Objects, UUID}
 import scala.concurrent.ExecutionContext
 
 /**
+  * Client API to issue requests again given model.
   *
-  * @param mdl
+  * @param mdl A data model to issue requests against.
   */
 class NCModelClient(mdl: NCModel) extends LazyLogging, AutoCloseable:
     verify()
@@ -47,6 +48,7 @@ class NCModelClient(mdl: NCModel) extends LazyLogging, AutoCloseable:
     private val intentsMgr = NCIntentSolverManager(dlgMgr, convMgr, intents.map(p => p.intent -> p.function).toMap)
 
     init()
+
     /**
       *
       */
@@ -78,6 +80,10 @@ class NCModelClient(mdl: NCModel) extends LazyLogging, AutoCloseable:
       * @param typ
       */
     private def ask0(txt: String, data: Map[String, Any], usrId: String, typ: NCIntentSolveType): Either[NCResult, NCMatchedCallback] =
+        require(txt != null, "Input text cannot be null.")
+        require(data != null, "Data cannot be null.")
+        require(usrId != null, "User id cannot be null.")
+
         val plData = plMgr.prepare(txt, data, usrId)
 
         val userId = plData.request.getUserId
@@ -105,15 +111,18 @@ class NCModelClient(mdl: NCModel) extends LazyLogging, AutoCloseable:
 
         intentsMgr.solve(mdl, ctx, typ)
 
-     /*
-      * @param txt
-      * @param data
-      * @param usrId
+    /**
+      * Passing given input text to the model's pipeline.
+      *
+      * @param txt Text of the request.
+      * @param usrId ID of the user to associate with this request.
+      * @param data Optional data container that will be available to the intent matching IDL.
+      * @return Processing result. This method never returns `null`.
+      * @throws NCRejection An exception indicating a rejection of the user input. This exception is thrown
+      *     automatically by the processing logic as well as can be thrown by the user from the intent callback.
+      * @throws NCException
       */
     def ask(txt: String, usrId: String, data: Map[String, AnyRef] = Map.empty): NCResult =
-        require(txt != null, "Input text cannot be null.")
-        require(data != null, "Data cannot be null.")
-        require(usrId != null, "User id cannot be null.")
         ask0(txt, data, usrId, NCIntentSolveType.REGULAR).swap.toOption.get
 
     /**
@@ -168,8 +177,5 @@ class NCModelClient(mdl: NCModel) extends LazyLogging, AutoCloseable:
       * @param saveHist
       */
     def debugAsk(txt: String, usrId: String, saveHist: Boolean, data: Map[String, AnyRef] = Map.empty): NCMatchedCallback =
-        require(txt != null, "Input text cannot be null.")
-        require(data != null, "Data cannot be null.")
-        require(usrId != null, "User id cannot be null.")
         import NCIntentSolveType.*
         ask0(txt, data, usrId, if saveHist then SEARCH else SEARCH_NO_HISTORY).toOption.get

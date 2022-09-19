@@ -33,7 +33,7 @@ import org.apache.nlpcraft.nlp.parsers.{NCOpenNLPTokenParser, NCSemanticEntityPa
   * </ul>
   * You can easily modify intent callbacks to perform the actual light switching using
   * HomeKit or Arduino-based controllers.
-  * <p>
+  *
   * See 'README.md' file in the same folder for running and testing instructions.
   */
 class LightSwitchScalaModel extends NCModelAdapter(

@@ -18,9 +18,10 @@
 package org.apache.nlpcraft
 
 /**
+  * Convenient adapter for [[NCModel]] interface.
   *
-  * @param cfg
-  * @param pipeline
+  * @param cfg Model configuration.
+  * @param pipeline Model processing pipeline.
   */
 class NCModelAdapter(cfg: NCModelConfig, pipeline: NCPipeline) extends NCModel:
     override def getConfig: NCModelConfig = cfg

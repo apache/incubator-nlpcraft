@@ -19,7 +19,7 @@ package org.apache.nlpcraft
 
 /**
   * NLP processing pipeline for the input request. Pipeline is associated with the model.
-  * <p>
+  *
   * An NLP pipeline is a container for various processing components that take the input text at the beginning of the
   * pipeline and produce the list of {@link NCEntity entities} at the end of the pipeline.
   * Schematically the pipeline looks like this:
@@ -36,7 +36,7 @@ package org.apache.nlpcraft
   * :  List   :    | Validators |--+    | Enrichers |--+    | Parsers |--+
   * *=========*    +------------+       +-----------+       +---------+
   * </pre>
-  * <p>
+  *
   * Pipeline has the following components:
   * <ul>
   * <li>
