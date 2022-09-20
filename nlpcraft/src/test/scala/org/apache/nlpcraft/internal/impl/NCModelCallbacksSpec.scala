@@ -55,7 +55,6 @@ class NCModelCallbacksSpec extends AnyFunSuite:
                 else RESULT_INTENT
 
             override def onMatchedIntent(ctx: NCContext, im: NCIntentMatch): Boolean = getOrElse(MatchFalse, false, true)
-            override def onVariant(vrn: NCVariant): Boolean = getOrElse(VariantFalse, false, true)
             override def onContext(ctx: NCContext): Option[NCResult] = getOrElse(ContextNotNull, Some(RESULT_CONTEXT), None)
             override def onResult(ctx: NCContext, im: NCIntentMatch, res: NCResult): Option[NCResult] = getOrElse(ResultNotNull, Some(RESULT_RESULT), None)
             override def onRejection(ctx: NCContext, im: Option[NCIntentMatch], e: NCRejection): Option[NCResult] = getOrElse(RejectionNotNull, Some(RESULT_REJECTION), None)

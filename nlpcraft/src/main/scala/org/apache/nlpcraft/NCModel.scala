@@ -55,26 +55,7 @@ trait NCModel:
     def getPipeline: NCPipeline
 
     /**
-      * A callback to accept or reject a parsed variant. This callback is called before any other callbacks at the
-      * beginning of the processing pipeline, and it is called for each parsed variant.
-      *
-      * Note that a given input query can have one or more possible different parsing variants. Depending on model
-      * configuration an input query can produce hundreds or even thousands of parsing variants that can significantly
-      * slow down the overall processing. This method allows to filter out unnecessary parsing variants based on
-      * variety of user-defined factors like number of entities, presence of a particular entity in the variant, etc.
-      *
-      * By default, this method accepts all variants (returns `true`).
-      *
-      * NOTE: this the pipeline has its own mechanism to filter variants via [[NCPipeline.getVariantFilter]] method and
-      * class [[NCVariantFilter]].
-      *
-      * @param vrn A parsing variant to accept or reject.
-      * @return `True` to accept variant for further processing, `false` otherwise.
-      * @see [[NCVariantFilter]]
-      */
-    def onVariant(vrn: NCVariant) = true
-
-    /**
+      * TODO: drop link to onVariant
       * A callback that is called when a fully assembled query context is ready. This callback is called after
       * all {@link # onVariant ( NCVariant )} callbacks are called but before any {@link # onMatchedIntent ( NCIntentMatch )} are
       * called, i.e. right before the intent matching is performed. It's called always once per input query processing.

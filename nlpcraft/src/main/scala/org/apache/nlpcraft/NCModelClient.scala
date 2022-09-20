@@ -48,6 +48,8 @@ class NCModelClient(mdl: NCModel) extends LazyLogging, AutoCloseable:
     private val plMgr = NCModelPipelineManager(mdl.getConfig, mdl.getPipeline)
     private val intentsMgr = NCIntentSolverManager(dlgMgr, convMgr, intents.map(p => p.intent -> p.function).toMap)
 
+    private var closed = false
+
     init()
 
     /**
@@ -75,6 +77,11 @@ class NCModelClient(mdl: NCModel) extends LazyLogging, AutoCloseable:
 
     /**
       *
+      */
+    private def checkClosed(): Unit = if closed then throw new IllegalStateException("Client is already closed.")
+
+    /**
+      *
       * @param txt
       * @param data
       * @param usrId
@@ -84,6 +91,8 @@ class NCModelClient(mdl: NCModel) extends LazyLogging, AutoCloseable:
         require(txt != null, "Input text cannot be null.")
         require(data != null, "Data cannot be null.")
         require(usrId != null, "User id cannot be null.")
+
+        checkClosed()
 
         val plData = plMgr.prepare(txt, data, usrId)
 
@@ -137,6 +146,7 @@ class NCModelClient(mdl: NCModel) extends LazyLogging, AutoCloseable:
       */
     def clearStm(usrId: String): Unit =
         require(usrId != null, "User id cannot be null.")
+        checkClosed()
         convMgr.getConversation(usrId).clear(_ => true)
 
     /**
@@ -148,6 +158,7 @@ class NCModelClient(mdl: NCModel) extends LazyLogging, AutoCloseable:
     def clearStm(usrId: String, filter: NCEntity => Boolean): Unit =
         require(usrId != null, "User id cannot be null.")
         require(filter != null, "Filter cannot be null.")
+        checkClosed()
         convMgr.getConversation(usrId).clear(filter)
 
     /**
@@ -157,6 +168,7 @@ class NCModelClient(mdl: NCModel) extends LazyLogging, AutoCloseable:
       */
     def clearDialog(usrId: String): Unit =
         require(usrId != null, "User id cannot be null.")
+        checkClosed()
         dlgMgr.clear(usrId)
 
     /**
@@ -168,12 +180,15 @@ class NCModelClient(mdl: NCModel) extends LazyLogging, AutoCloseable:
     def clearDialog(usrId: String, filter: NCDialogFlowItem => Boolean): Unit =
         require(usrId != null, "User ID cannot be null.")
         require(usrId != null, "Filter cannot be null.")
+        checkClosed()
         dlgMgr.clear(usrId, (i: NCDialogFlowItem) => filter(i))
 
     /**
       * Closes this client releasing its associated resources.
       */
     override def close(): Unit =
+        checkClosed()
+        closed = true
         plMgr.close()
         dlgMgr.close()
         convMgr.close()

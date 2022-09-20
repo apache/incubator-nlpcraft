@@ -272,7 +272,7 @@ class NCIntentSolverManager(
 
         // Find all matches across all intents and sentence variants.
         for (
-            (vrn, vrnIdx) <- ctx.getVariants.zipWithIndex if mdl.onVariant(vrn);
+            (vrn, vrnIdx) <- ctx.getVariants.zipWithIndex;
             ents = vrn.getEntities;
             varEntsGroups = ents.filter(t => t.getGroups != null && t.getGroups.nonEmpty).map(_.getGroups);
             (intent, callback) <- intents
