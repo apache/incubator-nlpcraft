@@ -17,7 +17,7 @@
 
 package org.apache.nlpcraft.nlp.util
 
-import org.apache.nlpcraft.NCModelConfig
+import org.apache.nlpcraft.{NCEntityParser, NCModelConfig}
 import org.apache.nlpcraft.internal.util.NCResourceReader as R
 import org.apache.nlpcraft.nlp.enrichers.*
 import org.apache.nlpcraft.nlp.parsers.*
@@ -29,8 +29,12 @@ final val EN_TOK_PARSER = new NCOpenNLPTokenParser(R.getPath("opennlp/en-token.b
 final val EN_TOK_STOP_ENRICHER = new NCEnStopWordsTokenEnricher
 final val EN_TOK_LEMMA_POS_ENRICHER =
     new NCOpenNLPLemmaPosTokenEnricher(R.getPath("opennlp/en-pos-maxent.bin"), R.getPath("opennlp/en-lemmatizer.dict"))
-final def mkEnPipeline: NCTestPipeline = NCTestPipeline(EN_TOK_PARSER)
+final def mkEmptyEnPipeline: NCTestPipeline = NCTestPipeline(EN_TOK_PARSER)
+final def mkEnPipeline(ep: NCEntityParser): NCTestPipeline =
+    val pl = mkEmptyEnPipeline
+    pl.entParsers += ep
+    pl
 final def mkEnPipeline(es: NCSemanticTestElement*): NCTestPipeline =
-    val pl = mkEnPipeline
+    val pl = mkEmptyEnPipeline
     pl.entParsers += NCTestUtils.mkEnSemanticParser(es*)
     pl

@@ -23,10 +23,6 @@ import org.apache.nlpcraft.nlp.util.*
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.*
 
-
-import java.util
-import java.util.concurrent.*
-
 /**
   *
   */
@@ -36,11 +32,7 @@ class NCPipelineManagerSpec extends AnyFunSuite:
       */
     test("test") {
         def test(txt: String, variantCnt: Int, elements: NCSemanticElement*): Unit =
-            val pipeline = mkEnPipeline
-
-            pipeline.entParsers += NCTestUtils.mkEnSemanticParser(elements*)
-
-            val res = new NCModelPipelineManager(CFG, pipeline).prepare(txt, null, "userId")
+            val res = new NCModelPipelineManager(CFG, mkEnPipeline(NCTestUtils.mkEnSemanticParser(elements*))).prepare(txt, null, "userId")
 
             println(s"Variants count: ${res.variants.size}")
             for ((v, idx) <- res.variants.zipWithIndex)

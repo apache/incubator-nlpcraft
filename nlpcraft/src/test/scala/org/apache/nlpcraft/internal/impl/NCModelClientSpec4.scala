@@ -28,12 +28,8 @@ import org.scalatest.funsuite.AnyFunSuite
   */
 class NCModelClientSpec4 extends AnyFunSuite:
     test("test") {
-        val pl = mkEnPipeline
-
         //  For intents matching, we have to add at least one entity parser.
-        pl.entParsers += new NCNLPEntityParser
-
-        val mdl: NCModel = new NCModelAdapter(CFG, pl) :
+        val mdl: NCModelAdapter = new NCModelAdapter(CFG, mkEnPipeline(new NCNLPEntityParser)):
             @NCIntent("intent=i term(any)={true}")
             def onMatch(ctx: NCContext, im: NCIntentMatch): NCResult = TEST_RESULT
 
@@ -48,9 +44,8 @@ class NCModelClientSpec4 extends AnyFunSuite:
             () => client.clearDialog("userId", _ => true)
         )
 
-        for (call <- allCalls) call.apply()
-
-        client.close()
+        try for (call <- allCalls) call.apply()
+        finally client.close()
 
         for (call <- allCalls ++ Seq(() => client.close()))
             try

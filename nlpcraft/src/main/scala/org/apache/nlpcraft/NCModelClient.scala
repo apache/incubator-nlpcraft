@@ -65,8 +65,7 @@ class NCModelClient(mdl: NCModel) extends LazyLogging, AutoCloseable:
         require(cfg.getName != null, "Model name cannot be null.")
         require(cfg.getVersion != null, "Model version cannot be null.")
         require(pipeline.getTokenParser != null, "Token parser cannot be null.")
-        require(pipeline.getEntityParsers != null, "List of entity parsers in the pipeline cannot be null.")
-
+        require(pipeline.getEntityParsers != null && pipeline.getEntityParsers.nonEmpty, "List of entity parsers in the pipeline cannot be null or empty.")
     /**
       *
       */

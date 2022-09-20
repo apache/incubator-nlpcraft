@@ -31,21 +31,21 @@ class NCIDLFragmentsSpec extends AnyFunSuite:
     // Fragment. One annotations order.
     @NCIntent("fragment=f term(x)~{# == 'x1'}")
     @NCIntent("intent=i1 term~{# == 'x2'} fragment(f)")
-    class M1 extends NCModelAdapter(CFG, mkEnPipeline)
+    class M1 extends NCModelAdapter(CFG, mkEmptyEnPipeline)
 
     // Fragment. Another annotations order.
     @NCIntent("intent=i1 term~{# == 'x2'} fragment(f)")
     @NCIntent("fragment=f term(x)~{# == 'x1'}")
-    class M2 extends NCModelAdapter(CFG, mkEnPipeline)
+    class M2 extends NCModelAdapter(CFG, mkEmptyEnPipeline)
 
     // Fragment. Reference from method to class.
     @NCIntent("fragment=f term(x)~{# == 'x1'}")
-    class M3 extends NCModelAdapter(CFG, mkEnPipeline):
+    class M3 extends NCModelAdapter(CFG, mkEmptyEnPipeline):
         @NCIntent("intent=i1 term~{# == 'x2'} fragment(f)")
         private def m(ctx: NCContext, im: NCIntentMatch): NCResult = null
 
     // Fragment. Reference from method (inside).
-    class M4 extends NCModelAdapter(CFG, mkEnPipeline) :
+    class M4 extends NCModelAdapter(CFG, mkEmptyEnPipeline) :
         @NCIntent("fragment=f term(x)~{# == 'x1'} intent=i1 term~{# == 'x2'} fragment(f)")
         private def m(ctx: NCContext, im: NCIntentMatch): NCResult = null
 
@@ -53,10 +53,10 @@ class NCIDLFragmentsSpec extends AnyFunSuite:
 
     // Missed fragment definition.
     @NCIntent("intent=i2 term~{# == 'x2'} fragment(f)")
-    class E1 extends NCModelAdapter(CFG, mkEnPipeline)
+    class E1 extends NCModelAdapter(CFG, mkEmptyEnPipeline)
 
     // Attempt to reference on fragment defined in method.
-    class E2 extends NCModelAdapter(CFG, mkEnPipeline):
+    class E2 extends NCModelAdapter(CFG, mkEmptyEnPipeline):
         @NCIntent("fragment=f term(x)~{# == 'x1'} intent=i1 term~{# == 'x2'} fragment(f)")
         private def m1(ctx: NCContext, im: NCIntentMatch): NCResult = null
 
@@ -64,7 +64,7 @@ class NCIDLFragmentsSpec extends AnyFunSuite:
         private def m2(ctx: NCContext, im: NCIntentMatch): NCResult = null
 
     // Attempt to reference on fragment defined in method.
-    class E3 extends NCModelAdapter(CFG, mkEnPipeline):
+    class E3 extends NCModelAdapter(CFG, mkEmptyEnPipeline):
         @NCIntent("fragment=f term(x)~{# == 'x1'} intent=i1 term~{# == 'x2'} fragment(f)")
         private def m2(ctx: NCContext, im: NCIntentMatch): NCResult = null
 

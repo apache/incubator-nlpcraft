@@ -50,10 +50,8 @@ class NCEntityMapperSpec extends AnyFunSuite:
     private val mdl = new NCTestModelAdapter:
         override val getPipeline: NCPipeline =
             import NCSemanticTestElement as TE
-            val pl = mkEnPipeline
+            val pl = mkEnPipeline(TE("a"), TE("b"), TE("c"), TE("d"))
             val ms = pl.entMappers
-
-            pl.entParsers += NCTestUtils.mkEnSemanticParser(TE("a"), TE("b"), TE("c"), TE("d"))
 
             // Replaces [a, b] -> [ab]
             ms += Combiner("a", "b")
