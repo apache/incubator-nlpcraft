@@ -103,7 +103,7 @@ class NCDialogFlowManager(cfg: NCModelConfig) extends LazyLogging:
       * Adds matched (winning) intent to the dialog flow.
       *
       * @param intentMatch
-      * @param res Intent callback result. // TODO: Option if debugAsk.
+      * @param res Intent callback result. 
       * @param ctx Original query context.
       */
     def addMatchedIntent(intentMatch: NCIntentMatch, res: Option[NCResult], ctx: NCContext): Unit =
