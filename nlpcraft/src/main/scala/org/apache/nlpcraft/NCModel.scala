@@ -128,8 +128,7 @@ trait NCModel:
       *
       * Default implementation is a no-op returning `None`.
       *
-      * @param ctx Optional intent match context - the same instance that's passed to the matched intent callback
-      *         that produced this rejection. It is `None` if rejection was triggered outside the intent callback.
+      * @param ctx Intent match context - the same instance that's passed to the matched intent that produced this error.
       * @param im Optional intent match context - the same instance that's passed to the matched intent callback
       *         that produced this result. It is `None` if rejection was triggered outside the intent callback.
       * @param e Rejection exception.
@@ -138,7 +137,7 @@ trait NCModel:
       *         and existing query result or error processing, if any. If the method returns `None` - the default
       *         processing flow will continue.
       */
-    def onRejection(ctx: Option[NCContext], im: Option[NCIntentMatch], e: NCRejection): Option[NCResult] = None
+    def onRejection(ctx: NCContext, im: Option[NCIntentMatch], e: NCRejection): Option[NCResult] = None
 
     /**
       * A callback that is called when intent callback failed with unexpected exception. Note that this callback may
