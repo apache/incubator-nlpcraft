@@ -28,7 +28,8 @@ import scala.util.Using
 class NCModelValidationSpec extends AnyFunSuite:
     test("test") {
         Using.resource(new NCModelClient(new TimeModel())) { client =>
-            def check(txt: String, intentId: String): Unit = client.debugAsk(txt, "userId", true).getIntentId == intentId
+            def check(txt: String, intentId: String): Unit =
+                require(client.debugAsk(txt, "userId", true).getIntentId == intentId)
 
             check("What time is it now in New York City?", "intent2")
             check("What's the current time in Moscow?", "intent2")

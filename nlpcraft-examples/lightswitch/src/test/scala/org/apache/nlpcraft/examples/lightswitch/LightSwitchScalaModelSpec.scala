@@ -27,7 +27,8 @@ import scala.util.Using
   */
 class LightSwitchScalaModelSpec extends AnyFunSuite:
     private def test(mdl: NCModel): Unit = Using.resource(new NCModelClient(mdl)) { client =>
-        def check(txt: String): Unit = client.debugAsk(txt, "userId", true).getIntentId == "ls"
+        def check(txt: String): Unit =
+            require(client.debugAsk(txt, "userId", true).getIntentId == "ls")
         
         check("Turn the lights off in the entire house.")
         check("Turn off all lights now")

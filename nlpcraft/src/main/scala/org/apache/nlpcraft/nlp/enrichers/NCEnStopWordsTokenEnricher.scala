@@ -281,7 +281,7 @@ class NCEnStopWordsTokenEnricher(addStopsSet: Set[String] = Set.empty, exclStops
         exclStems = if exclStopsSet == null then Set.empty else exclStopsSet.map(stem)
 
         def check(name: String, set: Set[String]): Unit =
-            if set.exists(_.exists(_.isWhitespace)) then E(s"$name contain a string with whitespaces.")
+            if set.exists(_.exists(_.isWhitespace)) then throw E(s"$name contain a string with whitespaces.")
 
         check("Additional synonyms", addStems)
         check("Excluded synonyms", exclStems)

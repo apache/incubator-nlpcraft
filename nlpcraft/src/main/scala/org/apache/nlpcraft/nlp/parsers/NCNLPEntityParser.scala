@@ -26,7 +26,7 @@ import java.util.stream.Collectors
   *
   */
 object NCNLPEntityParser:
-    private def id = "nlp:token"
+    private val id: String = "nlp:token"
 
 import org.apache.nlpcraft.nlp.parsers.NCNLPEntityParser.*
 
