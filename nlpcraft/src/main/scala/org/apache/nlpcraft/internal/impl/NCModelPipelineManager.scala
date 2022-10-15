@@ -69,7 +69,7 @@ class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCPipeline) extends L
         NCUtils.execPar(allComps.map(p =>
             () => {
                 act(p)
-                logger.info(s"Component $actVerb: '${p.getClass.getName}'")
+                logger.info(s"${NCUtils.capitalize(actVerb)}: '${p.getClass.getName}'")
             }
         ))(ExecutionContext.Implicits.global)
 

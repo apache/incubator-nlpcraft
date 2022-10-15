@@ -25,7 +25,7 @@ import scala.util.Using
 /**
   * JUnit models validation.
   */
-class NCModelValidationSpec extends AnyFunSuite:
+class LightSwitchScalaModelSpec extends AnyFunSuite:
     private def test(mdl: NCModel): Unit = Using.resource(new NCModelClient(mdl)) { client =>
         def check(txt: String): Unit = client.debugAsk(txt, "userId", true).getIntentId == "ls"
         
