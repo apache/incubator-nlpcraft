@@ -28,7 +28,8 @@ import scala.util.Using
 class NCModelValidationSpec extends AnyFunSuite:
     test("test") {
         Using.resource(new NCModelClient(new LightSwitchFrModel)) { client =>
-            def check(txt: String): Unit = client.debugAsk(txt, "userId", true).getIntentId == "ls"
+            def check(txt: String): Unit =
+                require(client.debugAsk(txt, "userId", true).getIntentId == "ls")
 
             check("Éteignez les lumières dans toute la maison.")
             check("Éteignez toutes les lumières maintenant.")

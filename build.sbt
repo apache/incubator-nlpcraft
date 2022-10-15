@@ -71,8 +71,7 @@ lazy val libs = Seq(
     "org.apache.opennlp" % "opennlp-tools" % apacheOpennlpVer,
     "org.apache.logging.log4j" % "log4j-slf4j-impl" % log4jVer,
     "org.apache.logging.log4j" % "log4j-api" % log4jVer,
-    "org.jline" % "jline-terminal" % jlineVer,
-    "org.junit.jupiter" % "junit-jupiter-engine" % junitVer % Test
+    "org.jline" % "jline-terminal" % jlineVer
 )
 
 val commonScalaDoc = Seq(
