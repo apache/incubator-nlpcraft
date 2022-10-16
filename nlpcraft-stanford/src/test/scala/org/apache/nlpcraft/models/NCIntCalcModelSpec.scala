@@ -35,6 +35,13 @@ object NCIntCalcModelSpec:
 
         private var mem: Option[Int] = None
 
+        private def nne(e: NCEntity): Int = java.lang.Double.parseDouble(e[String]("stanford:number:nne")).intValue
+        private def mkProps(k: String, v: String): Properties =
+            val props = new Properties(); props.setProperty(k, v); props
+        private def calc(x: Int, op: String, y: Int): NCResult =
+            mem = Some(OPS.getOrElse(op, throw new IllegalStateException()).apply(x, y))
+            NCResult(mem.get)
+
         override val getPipeline: NCPipeline =
             val stanford = new StanfordCoreNLP(mkProps("annotators", "tokenize, ssplit, pos, lemma, ner"))
 
@@ -43,14 +50,6 @@ object NCIntCalcModelSpec:
                 withEntityParser(new NCNLPEntityParser(t => OPS.contains(t.getText))). // For operations.
                 withEntityParser(new NCStanfordNLPEntityParser(stanford, Set("number"))). // For numerics.
                 build
-
-        private def nne(e: NCEntity): Int = java.lang.Double.parseDouble(e[String]("stanford:number:nne")).intValue
-        private def mkProps(k: String, v: String): Properties =
-            val p = new Properties(); p.setProperty(k, v); p
-
-        private def calc(x: Int, op: String, y: Int): NCResult =
-            mem = Some(OPS.getOrElse(op, throw new IllegalStateException()).apply(x, y))
-            NCResult(mem.get)
 
         @NCIntent(
             "intent=calc options={ 'ordered': true }" +
