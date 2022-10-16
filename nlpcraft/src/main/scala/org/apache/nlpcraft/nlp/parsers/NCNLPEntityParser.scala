@@ -33,9 +33,9 @@ import org.apache.nlpcraft.nlp.parsers.NCNLPEntityParser.*
 /**
   *
   */
-class NCNLPEntityParser extends NCEntityParser:
+class NCNLPEntityParser(predicate: NCToken => Boolean = _ => true) extends NCEntityParser:
     override def parse(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): List[NCEntity] =
-        toks.map(t =>
+        toks.filter(predicate).map(t =>
             new NCPropertyMapAdapter with NCEntity:
                 put(s"$id:text", t.getText)
                 put(s"$id:index", t.getIndex)

@@ -31,38 +31,29 @@ import scala.util.Using
 
 object NCIntCalcModelSpec:
     val MDL: NCModel = new NCTestModelAdapter:
+        private val OPS: Map[String, (Int, Int) => Int] = Map("+" -> (_ + _), "-" -> (_ - _), "*" -> (_ * _), "/" -> (_ / _))
+
         private var mem: Option[Int] = None
 
         override val getPipeline: NCPipeline =
-            val stanford =
-                val props = new Properties()
-                props.setProperty("annotators", "tokenize, ssplit, pos, lemma, ner")
-                new StanfordCoreNLP(props)
+            val stanford = new StanfordCoreNLP(mkProps("annotators", "tokenize, ssplit, pos, lemma, ner"))
 
             new NCPipelineBuilder().
                 withTokenParser(new NCStanfordNLPTokenParser(stanford)).
-                // For operations.
-                withEntityParser(new NCNLPEntityParser).
-                // For numerics.
-                withEntityParser(new NCStanfordNLPEntityParser(stanford, Set("number"))).
+                withEntityParser(new NCNLPEntityParser(t => OPS.contains(t.getText))). // For operations.
+                withEntityParser(new NCStanfordNLPEntityParser(stanford, Set("number"))). // For numerics.
                 build
 
         private def nne(e: NCEntity): Int = java.lang.Double.parseDouble(e[String]("stanford:number:nne")).intValue
+        private def mkProps(k: String, v: String): Properties =
+            val p = new Properties(); p.setProperty(k, v); p
 
         private def calc(x: Int, op: String, y: Int): NCResult =
-            mem =
-                Some(op match
-                    case "+" => x + y
-                    case "-" => x - y
-                    case "*" => x * y
-                    case "/" => x / y
-                    case _ => throw new IllegalStateException()
-                )
-
+            mem = Some(OPS.getOrElse(op, throw new IllegalStateException()).apply(x, y))
             NCResult(mem.get)
 
         @NCIntent(
-            "intent=calc options={ 'ordered': false }" +
+            "intent=calc options={ 'ordered': true }" +
             "  term(x)={# == 'stanford:number'} " +
             "  term(op)={# == 'nlp:token' && has(list('+', '-', '*', '/'), meta_ent('nlp:token:text')) == true} " +
             "  term(y)={# == 'stanford:number'}"
@@ -76,7 +67,7 @@ object NCIntCalcModelSpec:
         ): NCResult = calc(nne(x), op.mkText, nne(y))
 
         @NCIntent(
-            "intent=calcMem options={ 'ordered': false }" +
+            "intent=calcMem options={ 'ordered': true }" +
             "  term(op)={# == 'nlp:token' && has(list('+', '-', '*', '/'), meta_ent('nlp:token:text')) == true} " +
             "  term(y)={# == 'stanford:number'}"
         )
@@ -85,16 +76,12 @@ object NCIntCalcModelSpec:
             im: NCIntentMatch,
             @NCIntentTerm("op") op: NCEntity,
             @NCIntentTerm("y") y: NCEntity
-        ): NCResult =
-            mem match
-                case Some(x) => calc(x, op.mkText, nne(y))
-                case None => throw new NCRejection("Memory is empty.")
+        ): NCResult = calc(mem.getOrElse(throw new NCRejection("Memory is empty.")), op.mkText, nne(y))
 
 class NCIntCalcModelSpec extends AnyFunSuite:
     test("test") {
         Using.resource(new NCModelClient(NCIntCalcModelSpec.MDL)) { client =>
-            def check(txt: String, v: Int): Unit =
-                require(v == client.ask(txt, "userId").getBody)
+            def check(txt: String, v: Int): Unit = require(v == client.ask(txt, "userId").getBody)
 
             check("2 + 2", 4)
             check("3 * 4", 12)
@@ -103,4 +90,3 @@ class NCIntCalcModelSpec extends AnyFunSuite:
             check("7 + 2", 9)
         }
     }
-
