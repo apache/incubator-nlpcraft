@@ -71,7 +71,8 @@ lazy val libs = Seq(
     "org.apache.opennlp" % "opennlp-tools" % apacheOpennlpVer,
     "org.apache.logging.log4j" % "log4j-slf4j-impl" % log4jVer,
     "org.apache.logging.log4j" % "log4j-api" % log4jVer,
-    "org.jline" % "jline-terminal" % jlineVer
+    "org.jline" % "jline-terminal" % jlineVer,
+    "org.scalatest" %% "scalatest" % "3.2.14" % "test"
 )
 
 val commonScalaDoc = Seq(
@@ -169,4 +170,30 @@ lazy val lightSwitchFrExample = (project in file("nlpcraft-examples/lightswitch-
         libraryDependencies += "org.apache.lucene" % "lucene-analyzers-common" % luceneAnalyzersCommonVer,
         libraryDependencies += "org.languagetool" % "languagetool-core" % languagetoolVer,
         libraryDependencies += "org.languagetool" % "language-fr" % languagetoolVer
+    )
+
+lazy val pizzeriaExample = (project in file("nlpcraft-examples/pizzeria"))
+    .dependsOn(nlpcraft, nlpcraftStanford)
+    .settings(
+        name := "NLPCraft Pizzeria Example",
+        version := nlpcraftVer,
+
+        // Scaladoc config.
+        Compile / doc / scalacOptions ++= commonScalaDoc,
+
+        // Dependencies.
+        libraryDependencies ++= libs
+    )
+
+lazy val calculatorExample = (project in file("nlpcraft-examples/calculator"))
+    .dependsOn(nlpcraft, nlpcraftStanford)
+    .settings(
+        name := "NLPCraft Calculator Example",
+        version := nlpcraftVer,
+
+        // Scaladoc config.
+        Compile / doc / scalacOptions ++= commonScalaDoc,
+
+        // Dependencies.
+        libraryDependencies ++= libs
     )
