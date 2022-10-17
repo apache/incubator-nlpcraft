@@ -25,7 +25,7 @@ import scala.util.Using
 /**
   * JUnit models validation.
   */
-class NCModelValidationSpec extends AnyFunSuite:
+class LightSwitchRuModelSpec extends AnyFunSuite:
     test("test") {
         Using.resource(new NCModelClient(new LightSwitchRuModel)) { client =>
             def check(txt: String): Unit = 

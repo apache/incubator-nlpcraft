@@ -25,7 +25,7 @@ import scala.util.Using
 /**
   * JUnit model validation.
   */
-class NCModelValidationSpec extends AnyFunSuite:
+class TimeModelSpec extends AnyFunSuite:
     test("test") {
         Using.resource(new NCModelClient(new TimeModel())) { client =>
             def check(txt: String, intentId: String): Unit =

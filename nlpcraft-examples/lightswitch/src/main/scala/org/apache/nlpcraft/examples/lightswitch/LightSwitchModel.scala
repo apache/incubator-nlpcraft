@@ -36,7 +36,7 @@ import org.apache.nlpcraft.nlp.parsers.{NCOpenNLPTokenParser, NCSemanticEntityPa
   *
   * See 'README.md' file in the same folder for running and testing instructions.
   */
-class LightSwitchScalaModel extends NCModelAdapter(
+class LightSwitchModel extends NCModelAdapter(
     NCModelConfig("nlpcraft.lightswitch.java.ex", "LightSwitch Example Model", "1.0"),
     new NCPipelineBuilder().withSemantic("en", "lightswitch_model.yaml").build
 ):

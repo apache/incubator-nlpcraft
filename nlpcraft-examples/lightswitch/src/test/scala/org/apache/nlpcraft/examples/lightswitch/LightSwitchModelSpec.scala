@@ -25,7 +25,7 @@ import scala.util.Using
 /**
   * JUnit models validation.
   */
-class LightSwitchScalaModelSpec extends AnyFunSuite:
+class LightSwitchModelSpec extends AnyFunSuite:
     private def test(mdl: NCModel): Unit = Using.resource(new NCModelClient(mdl)) { client =>
         def check(txt: String): Unit =
             require(client.debugAsk(txt, "userId", true).getIntentId == "ls")
@@ -55,5 +55,5 @@ class LightSwitchScalaModelSpec extends AnyFunSuite:
     }
 
     test("test") {
-        test(new LightSwitchScalaModel())
+        test(new LightSwitchModel())
     }
