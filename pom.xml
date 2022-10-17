@@ -108,7 +108,7 @@
         <jackson.yaml.ver>2.13.4</jackson.yaml.ver>
         <apache.opennlp.ver>2.0.0</apache.opennlp.ver>
         <gson.ver>2.9.1</gson.ver>
-        <scalatest.ver>3.2.13</scalatest.ver>
+        <scalatest.ver>3.2.14</scalatest.ver>
 
         <!-- Force specific encoding on text resources. -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
