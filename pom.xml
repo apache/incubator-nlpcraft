@@ -385,6 +385,7 @@
                 <module>nlpcraft-examples/lightswitch-ru</module>
                 <module>nlpcraft-examples/lightswitch-fr</module>
                 <module>nlpcraft-examples/pizzeria</module>
+                <module>nlpcraft-examples/calculator</module>
             </modules>
         </profile>
     </profiles>

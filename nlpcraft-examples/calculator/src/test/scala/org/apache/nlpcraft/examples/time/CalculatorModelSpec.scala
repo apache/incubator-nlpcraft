@@ -25,17 +25,15 @@ import scala.util.Using
 /**
   * Model validation.
   */
-class TimeModelSpec extends AnyFunSuite:
+class CalculatorModelSpec extends AnyFunSuite:
     test("test") {
-        Using.resource(new NCModelClient(new TimeModel())) { client =>
-            def check(txt: String, intentId: String): Unit =
-                require(client.debugAsk(txt, "userId", true).getIntentId == intentId)
+        Using.resource(new NCModelClient(new CalculatorModel())) { client =>
+            def check(txt: String, v: Int): Unit = require(v == client.ask(txt, "userId").getBody)
 
-            check("What time is it now in New York City?", "intent2")
-            check("What's the current time in Moscow?", "intent2")
-            check("Show me time of the day in London.", "intent2")
-            check("Can you please give me the Tokyo's current date and time.", "intent2")
-
-            check("What's the local time?", "intent1")
+            check("2 + 2", 4)
+            check("3 * 4", 12)
+            check("/ two", 6)
+            check("+ twenty two", 28)
+            check("7 + 2", 9)
         }
     }
