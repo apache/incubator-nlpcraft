@@ -29,7 +29,6 @@ import java.util.Properties
  */
 object CalculatorModel:
     private val OPS: Map[String, (Int, Int) => Int] = Map("+" -> (_ + _), "-" -> (_ - _), "*" -> (_ * _), "/" -> (_ / _))
-
     private val PIPELINE: NCPipeline =
         val props = new Properties()
         props.setProperty("annotators", "tokenize, ssplit, pos, lemma, ner")
@@ -58,9 +57,9 @@ class CalculatorModel extends NCModelAdapter(NCModelConfig("nlpcraft.calculator.
 
     @NCIntent(
         "intent=calc options={ 'ordered': true }" +
-        "  term(x)={# == 'stanford:number'} " +
-        "  term(op)={# == 'nlp:token' && has(list('+', '-', '*', '/'), meta_ent('nlp:token:text')) == true} " +
-        "  term(y)={# == 'stanford:number'}"
+        "   term(x)={# == 'stanford:number'}" +
+        "   term(op)={has(list('+', '-', '*', '/'), meta_ent('nlp:token:text')) == true}" +
+        "   term(y)={# == 'stanford:number'}"
     )
     def onMatch(
         ctx: NCContext,
@@ -72,8 +71,8 @@ class CalculatorModel extends NCModelAdapter(NCModelConfig("nlpcraft.calculator.
 
     @NCIntent(
         "intent=calcMem options={ 'ordered': true }" +
-        "  term(op)={# == 'nlp:token' && has(list('+', '-', '*', '/'), meta_ent('nlp:token:text')) == true} " +
-        "  term(y)={# == 'stanford:number'}"
+        "   term(op)={has(list('+', '-', '*', '/'), meta_ent('nlp:token:text')) == true}" +
+        "   term(y)={# == 'stanford:number'}"
     )
     def onMatchMem(
         ctx: NCContext,
