@@ -54,7 +54,7 @@ object NCIntCalcModelSpec:
         @NCIntent(
             "intent=calc options={ 'ordered': true }" +
             "  term(x)={# == 'stanford:number'} " +
-            "  term(op)={# == 'nlp:token' && has(list('+', '-', '*', '/'), meta_ent('nlp:token:text')) == true} " +
+            "  term(op)={has(list('+', '-', '*', '/'), meta_ent('nlp:token:text')) == true} " +
             "  term(y)={# == 'stanford:number'}"
         )
         def onMatch(
@@ -67,7 +67,7 @@ object NCIntCalcModelSpec:
 
         @NCIntent(
             "intent=calcMem options={ 'ordered': true }" +
-            "  term(op)={# == 'nlp:token' && has(list('+', '-', '*', '/'), meta_ent('nlp:token:text')) == true} " +
+            "  term(op)={has(list('+', '-', '*', '/'), meta_ent('nlp:token:text')) == true} " +
             "  term(y)={# == 'stanford:number'}"
         )
         def onMatchMem(
