@@ -878,7 +878,7 @@ trait NCIDLCodeGenerator:
         try
             fun match
                 // Metadata access.
-                case "meta_ent" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(ent.impl.get[Object](toStr(v)).orNull), 0) })
+                case "meta_ent" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(ent.impl.get[Object](toStr(v)).orNull), 1) })
                 case "meta_cfg" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(idlCtx.mdlCfg.get[Object](toStr(v)).orNull), 0) })
                 case "meta_req" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(idlCtx.req.getRequestData.get(toStr(v)).orNull.asInstanceOf[Object]), 0) })
                 case "meta_intent" => z[ST](arg1, { x => val Z(v, _) = x(); Z(box(idlCtx.intentMeta.get(toStr(v)).orNull), 0) })
