@@ -23,10 +23,7 @@ import org.apache.nlpcraft.annotations.*
 import org.apache.nlpcraft.examples.lightswitch.nlp.entity.parser.NCFrSemanticEntityParser
 import org.apache.nlpcraft.examples.lightswitch.nlp.token.enricher.*
 import org.apache.nlpcraft.examples.lightswitch.nlp.token.parser.NCFrTokenParser
-import org.apache.nlpcraft.nlp.parsers.NCOpenNLPTokenParser
 import scala.jdk.CollectionConverters.*
-
-import java.util
 
 /**
   * This example provides very simple implementation for NLI-powered light switch.
