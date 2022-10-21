@@ -23,6 +23,7 @@ import org.apache.nlpcraft.nlp.entity.parser.stanford.*
 import org.apache.nlpcraft.nlp.parsers.*
 import org.apache.nlpcraft.nlp.token.parser.stanford.NCStanfordNLPTokenParser
 import java.util.Properties
+import scala.annotation.*
 
 /**
  *
@@ -55,15 +56,21 @@ class CalculatorModel extends NCModelAdapter(NCModelConfig("nlpcraft.calculator.
         mem = Some(OPS.getOrElse(op, throw new IllegalStateException()).apply(x, y))
         NCResult(mem.get)
 
+    /*
+     * We use '@unused' marker annotation on the intent callbacks since these
+     * callback are called by the system through reflection only and thus trigger
+     * IDEA warning about being unused in the code.
+     */
+
     @NCIntent(
         "intent=calc options={ 'ordered': true }" +
         "   term(x)={# == 'stanford:number'}" +
         "   term(op)={has(list('+', '-', '*', '/'), meta_ent('nlp:token:text')) == true}" +
         "   term(y)={# == 'stanford:number'}"
     )
-    def onMatch(
-        ctx: NCContext,
-        im: NCIntentMatch,
+    @unused def onMatch(
+        @unused ctx: NCContext,
+        @unused im: NCIntentMatch,
         @NCIntentTerm("x") x: NCEntity,
         @NCIntentTerm("op") op: NCEntity,
         @NCIntentTerm("y") y: NCEntity
@@ -74,9 +81,9 @@ class CalculatorModel extends NCModelAdapter(NCModelConfig("nlpcraft.calculator.
         "   term(op)={has(list('+', '-', '*', '/'), meta_ent('nlp:token:text')) == true}" +
         "   term(y)={# == 'stanford:number'}"
     )
-    def onMatchMem(
-        ctx: NCContext,
-        im: NCIntentMatch,
+    @unused def onMatchMem(
+        @unused ctx: NCContext,
+        @unused im: NCIntentMatch,
         @NCIntentTerm("op") op: NCEntity,
         @NCIntentTerm("y") y: NCEntity
     ): NCResult = calc(mem.getOrElse(throw new NCRejection("Memory is empty.")), op.mkText, nne(y))
