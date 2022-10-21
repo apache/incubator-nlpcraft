@@ -20,11 +20,10 @@ package org.apache.nlpcraft.examples.lightswitch
 import com.google.gson.Gson
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.annotations.*
+
 import org.apache.nlpcraft.examples.lightswitch.nlp.entity.parser.NCRuSemanticEntityParser
 import org.apache.nlpcraft.examples.lightswitch.nlp.token.enricher.*
 import org.apache.nlpcraft.examples.lightswitch.nlp.token.parser.NCRuTokenParser
-import org.apache.nlpcraft.nlp.enrichers.NCEnStopWordsTokenEnricher
-import org.apache.nlpcraft.nlp.parsers.*
 
 import scala.jdk.CollectionConverters.*
 
