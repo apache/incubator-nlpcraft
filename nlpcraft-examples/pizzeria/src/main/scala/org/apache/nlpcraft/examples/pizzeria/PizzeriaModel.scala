@@ -221,4 +221,4 @@ class PizzeriaModel extends NCModelAdapter(NCModelConfig("nlpcraft.pizzeria.ex",
 
     override def onRejection(using ctx: NCContext, im: Option[NCIntentMatch], e: NCRejection): Option[NCResult] =
         if im.isEmpty || getCurrentOrder().isEmpty then throw e
-        Option(doShowMenuResult())
+        doShowMenuResult().?

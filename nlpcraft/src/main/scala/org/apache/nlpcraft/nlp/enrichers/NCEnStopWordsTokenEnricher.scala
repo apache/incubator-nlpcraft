@@ -123,9 +123,9 @@ object NCEnStopWordsTokenEnricher:
         def permutations(toks: Seq[NCToken]): Seq[Seq[NCToken]] =
             def multiple(seq: Seq[Seq[Option[NCToken]]], t: NCToken): Seq[Seq[Option[NCToken]]] =
                 if seq.isEmpty then
-                    if isStopWord(t) then IndexedSeq(IndexedSeq(Option(t)), IndexedSeq(None)) else IndexedSeq(IndexedSeq(Option(t)))
+                    if isStopWord(t) then IndexedSeq(IndexedSeq(t.?), IndexedSeq(None)) else IndexedSeq(IndexedSeq(t.?))
                 else
-                    (for (subSeq <- seq) yield subSeq :+ Option(t)) ++ (if isStopWord(t) then for (subSeq <- seq) yield subSeq :+ None else Seq.empty)
+                    (for (subSeq <- seq) yield subSeq :+ t.?) ++ (if isStopWord(t) then for (subSeq <- seq) yield subSeq :+ None else Seq.empty)
 
             var res: Seq[Seq[Option[NCToken]]] = Seq.empty
             for (t <- toks) res = multiple(res, t)
@@ -262,7 +262,7 @@ class NCEnStopWordsTokenEnricher(addStopsSet: Set[String] = Set.empty, exclStops
         def matches(toks: Seq[NCToken]): Boolean =
             val posOpt = toks.size match
                 case 0 => throw new AssertionError(s"Unexpected empty tokens.")
-                case 1 => Option(getPos(toks.head))
+                case 1 => getPos(toks.head).?
                 case _ => None
 
             // Hash access.

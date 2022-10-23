@@ -113,9 +113,9 @@ class NCSemanticEntityParserSpec extends AnyFunSuite:
         check("the t2", "t2")
         check("t3 t3", "t3")
         check("t3 the t3", "t3") // With stopword inside.
-        check("value4", "t4", value = Option("value4"))
-        check("value the 5", "t5", value = Option("value5")) // With stopword inside.
-        check("t6", "t6", elemData = Option(Map("testKey" -> "testValue")))
+        check("value4", "t4", value = "value4".?)
+        check("value the 5", "t5", value = "value5".?) // With stopword inside.
+        check("t6", "t6", elemData = Map("testKey" -> "testValue").?)
         check("the x abc x abe", "t7") // `x abc` should be matched, `x abe` shouldn't.
         check("A B", "t8")
         check("A", "t8")

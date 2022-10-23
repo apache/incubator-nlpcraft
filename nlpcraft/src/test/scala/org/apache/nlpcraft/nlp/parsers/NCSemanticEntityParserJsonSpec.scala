@@ -59,6 +59,6 @@ class NCSemanticEntityParserJsonSpec extends AnyFunSuite:
             "Ping me in 3 minutes tomorrow",
             "x:alarm",
             // File contains these data for element.
-            elemData = Option(Map("testKey" -> "testValue"))
+            elemData = Map("testKey" -> "testValue").?
         )
     }

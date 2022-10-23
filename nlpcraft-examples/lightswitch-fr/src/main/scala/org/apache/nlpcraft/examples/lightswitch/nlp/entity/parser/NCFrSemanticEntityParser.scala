@@ -19,6 +19,7 @@ package org.apache.nlpcraft.examples.lightswitch.nlp.entity.parser
 
 import opennlp.tools.stemmer.snowball.SnowballStemmer
 import org.apache.nlpcraft.examples.lightswitch.nlp.token.parser.NCFrTokenParser
+import org.apache.nlpcraft.*
 import org.apache.nlpcraft.nlp.parsers.*
 
 /**
@@ -31,5 +32,5 @@ class NCFrSemanticEntityParser(src: String) extends NCSemanticEntityParser(
         override def stem(txt: String): String = stemmer.synchronized { stemmer.stem(txt.toLowerCase).toString }
     ,
     new NCFrTokenParser(),
-    mdlSrcOpt = Option(src)
+    mdlSrcOpt = src.?
 )

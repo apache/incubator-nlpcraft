@@ -19,6 +19,7 @@ package org.apache.nlpcraft.internal.intent.compiler.functions
 
 import org.apache.nlpcraft.internal.intent.compiler.functions.NCIDLFunctions.*
 import org.apache.nlpcraft.nlp.util.NCTestToken
+import org.apache.nlpcraft.*
 
 /**
   * Tests for 'entities used' result.
@@ -32,31 +33,31 @@ class NCIDLFunctionsEntitiesUsed extends NCIDLFunctions:
             TestDesc(
                 truth = "1 == 1",
                 idlCtx = mkIdlContext(),
-                entitiesUsed = Option(0)
+                entitiesUsed = 0.?
             ),
             TestDesc(
                 truth = "# == 'a'",
-                entity = Option(e1),
+                entity = e1.?,
                 idlCtx = mkIdlContext(Seq(e1)),
-                entitiesUsed = Option(1)
+                entitiesUsed = 1.?
             ),
             TestDesc(
                 truth = "# == 'a' && # == 'a'",
-                entity = Option(e1),
+                entity = e1.?,
                 idlCtx = mkIdlContext(Seq(e1)),
                 entitiesUsed = Option(2)
             ),
             TestDesc(
                 truth = "ent_text == '*' || # == 'a'",
-                entity = Option(e1),
+                entity = e1.?,
                 idlCtx = mkIdlContext(Seq(e1, e2)),
-                entitiesUsed = Option(2)
+                entitiesUsed = 2.?
             ),
             TestDesc(
                 truth = "# == 'a' && # == 'a' && ent_text != '*'",
-                entity = Option(e1),
+                entity = e1.?,
                 idlCtx = mkIdlContext(Seq(e1)),
-                entitiesUsed = Option(3)
+                entitiesUsed = 3.?
             )
         )
     }

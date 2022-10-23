@@ -52,7 +52,7 @@ class NCModelPingPongSpec extends AnyFunSuite with BeforeAndAfter:
                     ctx.
                         getConversation.
                         getDialogFlow.lastOption.
-                        flatMap(p => Option(p.getIntentMatch.getIntentId)).orNull
+                        flatMap(p => p.getIntentMatch.getIntentId.?).orNull
 
                 if lastIntentId != "command" then
                     throw new NCRejection("Nothing to confirm.")
