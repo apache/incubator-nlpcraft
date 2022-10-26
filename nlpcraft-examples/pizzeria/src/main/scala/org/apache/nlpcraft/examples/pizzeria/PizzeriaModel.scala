@@ -69,7 +69,7 @@ object PizzeriaModel extends LazyLogging:
 
         res
 
-    private def askIsReady(): Result = mkDialog(s"Is order ready?") -> DIALOG_IS_READY
+    private def askIsReady(): Result = mkDialog("Is order ready?") -> DIALOG_IS_READY
 
     private def askSpecify(o: Order): Result =
         require(!o.isValid)
@@ -79,9 +79,9 @@ object PizzeriaModel extends LazyLogging:
                 mkDialog(s"Choose size (large, medium or small) for: '${p.name}'") -> DIALOG_SPECIFY
             case None =>
                 require(o.isEmpty)
-                mkDialog(s"Please order something. Ask `menu` to look what you can order.") -> DIALOG_SPECIFY
+                mkDialog("Please order something. Ask `menu` to look what you can order.") -> DIALOG_SPECIFY
 
-    private def askShouldStop(): Result = mkDialog(s"Should current order be canceled?") -> DIALOG_SHOULD_CANCEL
+    private def askShouldStop(): Result = mkDialog("Should current order be canceled?") -> DIALOG_SHOULD_CANCEL
 
     private def doShowMenuResult(): NCResult =
         mkResult(
@@ -106,8 +106,8 @@ object PizzeriaModel extends LazyLogging:
 
     private def doStop(o: Order)(using ctx: NCContext, im: NCIntentMatch): Result =
         doResultWithClear(
-            if !o.isEmpty then s"Everything cancelled. Ask `menu` to look what you can order."
-            else s"Nothing to cancel. Ask `menu` to look what you can order."
+            if !o.isEmpty then "Everything cancelled. Ask `menu` to look what you can order."
+            else "Nothing to cancel. Ask `menu` to look what you can order."
         )
 
     private def doContinue(): Result = mkResult("OK, please continue.") -> DIALOG_EMPTY
