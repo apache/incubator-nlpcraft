@@ -47,13 +47,13 @@
         <dependency>
             <groupId>org.languagetool</groupId>
             <artifactId>language-ru</artifactId>
-            <version>5.8</version>
+            <version>5.9</version>
         </dependency>
 
         <dependency>
             <groupId>org.languagetool</groupId>
             <artifactId>languagetool-core</artifactId>
-            <version>5.8</version>
+            <version>5.9</version>
         </dependency>
 
         <!-- Test dependencies. -->
