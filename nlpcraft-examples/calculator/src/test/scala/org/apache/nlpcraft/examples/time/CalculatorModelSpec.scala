@@ -15,22 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.examples.lightswitch.nlp.entity.parser
+package org.apache.nlpcraft.examples.time
 
-import opennlp.tools.stemmer.snowball.SnowballStemmer
-import org.apache.nlpcraft.examples.lightswitch.nlp.token.parser.NCFrTokenParser
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.nlp.parsers.*
+import org.scalatest.funsuite.AnyFunSuite
+
+import scala.util.Using
 
 /**
-  *
-  * @param src
+  * Model validation.
   */
-class NCFrSemanticEntityParser(src: String) extends NCSemanticEntityParser(
-    new NCSemanticStemmer:
-        private val stemmer = new SnowballStemmer(SnowballStemmer.ALGORITHM.FRENCH)
-        override def stem(txt: String): String = stemmer.synchronized { stemmer.stem(txt.toLowerCase).toString }
-    ,
-    new NCFrTokenParser(),
-    mdlSrcOpt = src.?
-)
+class CalculatorModelSpec extends AnyFunSuite:
+    test("test") {
+        Using.resource(new NCModelClient(new CalculatorModel())) { client =>
+            def check(txt: String, v: Int): Unit = require(v == client.ask(txt, "userId").getBody)
+
+            check("2 + 2", 4)
+            check("3 * 4", 12)
+            check("/ two", 6)
+            check("+ twenty two", 28)
+            check("7 + 2", 9)
+        }
+    }

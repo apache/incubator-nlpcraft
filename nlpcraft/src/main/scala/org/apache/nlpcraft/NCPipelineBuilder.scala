@@ -146,7 +146,7 @@ class NCPipelineBuilder:
       * @return */
     def withTokenParser(tokParser: NCTokenParser): NCPipelineBuilder =
         require(tokParser != null, "Token parser cannot be null.")
-        this.tokParser = Option(tokParser)
+        this.tokParser = tokParser.?
         this
 
     /**
@@ -170,7 +170,7 @@ class NCPipelineBuilder:
     /**
       * */
     private def setEnComponents(): Unit =
-        tokParser = Option(mkEnOpenNLPTokenParser)
+        tokParser = mkEnOpenNLPTokenParser.?
         tokEnrichers += new NCOpenNLPLemmaPosTokenEnricher(NCResourceReader.getPath("opennlp/en-pos-maxent.bin"), NCResourceReader.getPath("opennlp/en-lemmatizer.dict"))
         tokEnrichers += new NCEnStopWordsTokenEnricher
         tokEnrichers += new NCEnSwearWordsTokenEnricher(NCResourceReader.getPath("badfilter/swear_words.txt"))

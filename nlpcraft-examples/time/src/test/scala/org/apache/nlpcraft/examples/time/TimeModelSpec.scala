@@ -23,7 +23,7 @@ import org.scalatest.funsuite.AnyFunSuite
 import scala.util.Using
 
 /**
-  * JUnit model validation.
+  * Model validation.
   */
 class TimeModelSpec extends AnyFunSuite:
     test("test") {

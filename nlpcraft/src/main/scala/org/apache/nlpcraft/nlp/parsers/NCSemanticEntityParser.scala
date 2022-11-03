@@ -83,7 +83,7 @@ object NCSemanticEntityParser:
         require(parser != null, "Parser cannot be null.")
         require(mdlSrc != null, "Model source cannot be null.")
 
-        new NCSemanticEntityParser(stemmer, parser, mdlSrcOpt = Option(mdlSrc))
+        new NCSemanticEntityParser(stemmer, parser, mdlSrcOpt = mdlSrc.?)
 
     /**
       * @param baseTokens Tokens.

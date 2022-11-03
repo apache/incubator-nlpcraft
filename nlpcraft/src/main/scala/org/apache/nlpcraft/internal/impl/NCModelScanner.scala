@@ -146,7 +146,7 @@ object NCModelScanner extends LazyLogging:
             else if paramCls == CLS_SCALA_OPT then
                 entsCnt match
                     case 0 => None
-                    case 1 => Option(argList.head)
+                    case 1 => argList.head.?
                     case _ => E(s"Too many entities ($entsCnt) for 'scala.Option[_]' $IT annotated argument [$z]")
             else
                 // All allowed arguments types already checked.

@@ -550,7 +550,7 @@ class NCAsciiTable:
       *
       * @param header
       */
-    def print(header: String): Unit = println(mkLogString(Option(header)))
+    def print(header: String): Unit = println(mkLogString(header.?))
 
     /**
       * Renders this table to log as trace.

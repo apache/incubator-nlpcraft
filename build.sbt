@@ -20,7 +20,7 @@ val nlpcraftVer = "1.0.0"
 // Common libraries.
 val scalaMajVer = "3"
 val scalaMinVer = "1.3"
-val log4jVer = "2.18.0"
+val log4jVer = "2.19.0"
 val scalaLoggingVer = "3.9.5"
 val orgAntlr4Ver = "4.11.1"
 val jlineVer = "3.21.0"
@@ -28,7 +28,7 @@ val commonsIoVer = "2.11.0"
 val commonsLang3Ver = "3.12.0"
 val commonsCodecVer = "1.15"
 val commonsCollectionsVer = "4.4"
-val gsonVer = "2.9.1"
+val gsonVer = "2.10"
 val jacksonVer = "2.13.4"
 val apacheOpennlpVer = "2.0.0"
 
@@ -39,7 +39,7 @@ val junitVer = "5.9.0"
 val stanfordCoreNLPVer  = "4.5.1"
 
 // Examples libraries.
-val languagetoolVer = "5.8"
+val languagetoolVer = "5.9"
 val luceneAnalyzersCommonVer = "8.11.2"
 
 ThisBuild / scalaVersion := s"$scalaMajVer.$scalaMinVer"
@@ -71,7 +71,8 @@ lazy val libs = Seq(
     "org.apache.opennlp" % "opennlp-tools" % apacheOpennlpVer,
     "org.apache.logging.log4j" % "log4j-slf4j-impl" % log4jVer,
     "org.apache.logging.log4j" % "log4j-api" % log4jVer,
-    "org.jline" % "jline-terminal" % jlineVer
+    "org.jline" % "jline-terminal" % jlineVer,
+    "org.scalatest" %% "scalatest" % "3.2.14" % "test"
 )
 
 val commonScalaDoc = Seq(
@@ -169,4 +170,30 @@ lazy val lightSwitchFrExample = (project in file("nlpcraft-examples/lightswitch-
         libraryDependencies += "org.apache.lucene" % "lucene-analyzers-common" % luceneAnalyzersCommonVer,
         libraryDependencies += "org.languagetool" % "languagetool-core" % languagetoolVer,
         libraryDependencies += "org.languagetool" % "language-fr" % languagetoolVer
+    )
+
+lazy val pizzeriaExample = (project in file("nlpcraft-examples/pizzeria"))
+    .dependsOn(nlpcraft, nlpcraftStanford)
+    .settings(
+        name := "NLPCraft Pizzeria Example",
+        version := nlpcraftVer,
+
+        // Scaladoc config.
+        Compile / doc / scalacOptions ++= commonScalaDoc,
+
+        // Dependencies.
+        libraryDependencies ++= libs
+    )
+
+lazy val calculatorExample = (project in file("nlpcraft-examples/calculator"))
+    .dependsOn(nlpcraft, nlpcraftStanford)
+    .settings(
+        name := "NLPCraft Calculator Example",
+        version := nlpcraftVer,
+
+        // Scaladoc config.
+        Compile / doc / scalacOptions ++= commonScalaDoc,
+
+        // Dependencies.
+        libraryDependencies ++= libs
     )
