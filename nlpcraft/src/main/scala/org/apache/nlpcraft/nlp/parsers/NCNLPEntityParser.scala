@@ -40,6 +40,7 @@ class NCNLPEntityParser(predicate: NCToken => Boolean = _ => true) extends NCEnt
                 put(s"$id:text", t.getText)
                 put(s"$id:index", t.getIndex)
                 put(s"$id:startCharIndex", t.getStartCharIndex)
+                put(s"$id:endCharIndex", t.getEndCharIndex)
 
                 t.keysSet.foreach(key => put(s"$id:$key", t(key)))
 

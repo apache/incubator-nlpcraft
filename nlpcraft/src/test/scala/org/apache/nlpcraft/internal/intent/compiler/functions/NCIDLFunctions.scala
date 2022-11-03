@@ -76,7 +76,7 @@ private[functions] object NCIDLFunctions:
           * @param idlCtx
           */
         def apply(truth: String, entity: NCEntity, idlCtx: NCIDLContext): TestDesc =
-            new TestDesc(truth = truth, entity = Option(entity), idlCtx = idlCtx)
+            new TestDesc(truth = truth, entity = entity.?, idlCtx = idlCtx)
 
         /**
           *
@@ -84,7 +84,7 @@ private[functions] object NCIDLFunctions:
           * @param entity
           */
         def apply(truth: String, entity: NCEntity): TestDesc =
-            new TestDesc(truth = truth, entity = Option(entity), idlCtx = mkIdlContext(entities = Seq(entity)))
+            new TestDesc(truth = truth, entity = entity.?, idlCtx = mkIdlContext(entities = Seq(entity)))
 
     given Conversion[String, TestDesc] with
         def apply(truth: String): TestDesc = TestDesc(truth)

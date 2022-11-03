@@ -48,6 +48,9 @@ extension[T](opt: Option[T])
     @targetName("equalEqualEqual")
     def ===(x: T): Boolean = opt.isDefined && opt.get == x
 
+extension[T](v: T)
+    def `?`: Option[T] = Option(v)
+
 extension(v: Int)
     /** Converts milliseconds `int` value to seconds. */
     def secs: Int = v * 1000

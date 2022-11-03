@@ -23,7 +23,7 @@ import org.scalatest.funsuite.AnyFunSuite
 import scala.util.Using
 
 /**
-  * JUnit models validation.
+  * Model validation.
   */
 class LightSwitchModelSpec extends AnyFunSuite:
     test("test") {

@@ -133,7 +133,7 @@ private[parsers] object NCSemanticSynonymsProcessor extends LazyLogging:
             if vals != null then
                 if hasNullOrEmpty(vals.keySet) then E(s"Some values names are null or empty [element=$elemId]")
                 for ((name, syns) <- vals)
-                    checkSynonyms(syns, elemId, Option(name))
+                    checkSynonyms(syns, elemId, name.?)
 
     /**
       *
@@ -192,8 +192,8 @@ private[parsers] object NCSemanticSynonymsProcessor extends LazyLogging:
                             if regex.used then None
                             else
                                 regex.used = true
-                                Option(regex.mkChunk())
-                        case None => Option(NCSemanticSynonymChunk(TEXT, tok.getText, stemmer.stem(tok.getText.toLowerCase)))
+                                regex.mkChunk().?
+                        case None => NCSemanticSynonymChunk(TEXT, tok.getText, stemmer.stem(tok.getText.toLowerCase)).?
                 ).toList
             }).toList.filter(_.nonEmpty)
 

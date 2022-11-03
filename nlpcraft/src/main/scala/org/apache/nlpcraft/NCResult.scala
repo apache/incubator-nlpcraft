@@ -31,7 +31,7 @@ object NCResult:
         new NCResult():
             def getBody: Any = body
             def getType: NCResultType = resultType
-            def getIntentId: Option[String] = Option(intentId)
+            def getIntentId: Option[String] = intentId.?
 
     /**
       * 
