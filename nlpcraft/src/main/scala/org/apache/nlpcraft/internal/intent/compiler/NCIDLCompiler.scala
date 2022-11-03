@@ -226,7 +226,7 @@ class NCIDLCompiler(cfg: NCModelConfig) extends LazyLogging with mutable.Cloneab
             // Add term.
             terms += NCIDLTerm(
                 ctx.getText,
-                Option(termId),
+                termId.?,
                 vars.toMap,
                 pred,
                 min,

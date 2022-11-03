@@ -378,7 +378,7 @@ class NCIntentSolverManager(
 
             tbl.info(
                 logger,
-                Option(s"Found ${matches.size} matching ${if matches.size > 1 then "intents"else "intent"} (sorted best to worst):")
+                s"Found ${matches.size} matching ${if matches.size > 1 then "intents"else "intent"} (sorted best to worst):".?
             )
         else
             logger.info(s"No matching intent found:")
@@ -402,7 +402,7 @@ class NCIntentSolverManager(
         tbl += (s"${"Intent Match Weight"}", mw1.toString, mw2.toString)
         tbl += (s"${"Variant Weight"}", v1.toString, v2.toString)
 
-        tbl.warn(logger, Option("Two matching intents have the same weight for their matches (variants weight will be used further):"))
+        tbl.warn(logger, "Two matching intents have the same weight for their matches (variants weight will be used further):".?)
 
     /**
      *
@@ -510,7 +510,7 @@ class NCIntentSolverManager(
 
                     intentW.prepend(nonFreeWordNum)
 
-                    Option(IntentMatchHolder(entityGroups = intentGrps.toList, weight = intentW, intent = intent))
+                    IntentMatchHolder(entityGroups = intentGrps.toList, weight = intentW, intent = intent).?
         else
             None
 
@@ -539,7 +539,7 @@ class NCIntentSolverManager(
             s"Term Match Weight", s"${"<"}${w.head}, ${w(1)}, ${w(2)}, ${w(3)}, ${w(4)}, ${w(5)}${">"}"
         )
 
-        tbl.debug(logger, Option("Term match found:"))
+        tbl.debug(logger, "Term match found:".?)
 
     /**
      * Solves term.
@@ -624,7 +624,7 @@ class NCIntentSolverManager(
             require(term.min == 0)
             require(usedEnts.isEmpty)
 
-            Option(PredicateMatch(List.empty, new Weight(0, 0, 0)))
+            PredicateMatch(List.empty, new Weight(0, 0, 0)).?
         // We've found some matches (and min > 0).
         else
             // Number of entities from the current sentence.
@@ -641,7 +641,7 @@ class NCIntentSolverManager(
             // Mark found entities as used.
             for (e <- usedEnts) e.used = true
 
-            Option(PredicateMatch(usedEnts.toList, new Weight(senTokNum, convDepthsSum, usesSum)))
+            PredicateMatch(usedEnts.toList, new Weight(senTokNum, convDepthsSum, usesSum)).?
 
     /**
       *
@@ -665,7 +665,7 @@ class NCIntentSolverManager(
             private var data: Option[IterationResult] = _
 
             def hasNext: Boolean = data == null
-            def finish(data: IterationResult): Unit = Loop.data = Option(data)
+            def finish(data: IterationResult): Unit = Loop.data = data.?
             def finish(): Unit = Loop.data = None
             def result(): Option[IterationResult] =
                 if data == null then throw new NCRejection("No matching intent found - all intents were skipped.")
@@ -729,7 +729,7 @@ class NCIntentSolverManager(
                     typ match
                         case REGULAR =>
                             val cbRes = executeCallback(NCCallbackInput(ctx, im))
-                            saveHistory(Option(cbRes), im)
+                            saveHistory(cbRes.?, im)
                             Loop.finish(IterationResult(Left(cbRes), im))
                         case SEARCH =>
                             saveHistory(None, im)

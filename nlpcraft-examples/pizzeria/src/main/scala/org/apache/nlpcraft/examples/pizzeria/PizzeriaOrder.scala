@@ -18,6 +18,7 @@
 package org.apache.nlpcraft.examples.pizzeria
 
 import scala.collection.mutable
+import org.apache.nlpcraft.*
 
 /**
   * Order states.
@@ -113,7 +114,7 @@ class PizzeriaOrder:
     def fixPizzaWithoutSize(size: String): Boolean =
         findPizzaWithoutSize match
             case Some(p) =>
-                p.size = Option(size)
+                p.size = size.?
                 true
             case None => false
     /**

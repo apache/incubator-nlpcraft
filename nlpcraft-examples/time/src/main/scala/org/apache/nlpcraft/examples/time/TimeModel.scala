@@ -91,8 +91,7 @@ class TimeModel extends NCModelAdapter(
 
         val (city, data) = citiesData.find(_._1.name.equalsIgnoreCase(cityName)).getOrElse(throw new NCRejection(String.format("No timezone mapping for %s.", cityName)))
 
-        mkResult(city.name, city.country, data.timezone, data.latitude, data.longitude);
-
+        mkResult(city.name, city.country, data.timezone, data.latitude, data.longitude)
 
     /**
       * Callback on local time intent match.

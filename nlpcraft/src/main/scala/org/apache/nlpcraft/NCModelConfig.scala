@@ -38,15 +38,15 @@ object NCModelConfig:
             override val getId: String = id
             override val getName: String = name
             override val getVersion: String = ver
-            override val getDescription: Option[String] = Option(desc)
-            override val getOrigin: Option[String] = Option(orig)
+            override val getDescription: Option[String] = desc.?
+            override val getOrigin: Option[String] = orig.?
 
     def apply(id: String, name: String, ver: String, desc: String, orig: String, convTimeout: Long, convDepth: Int): NCModelConfig = new NCModelConfig() :
         override val getId: String = id
         override val getName: String = name
         override val getVersion: String = ver
-        override val getDescription: Option[String] = Option(desc)
-        override val getOrigin: Option[String] = Option(orig)
+        override val getDescription: Option[String] = desc.?
+        override val getOrigin: Option[String] = orig.?
         override val getConversationTimeout: Long = convTimeout
         override val getConversationDepth: Int = convDepth
 

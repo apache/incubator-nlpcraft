@@ -126,7 +126,7 @@ class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCPipeline) extends L
                 t.getEndCharIndex,
                 mkProps(t)
             )
-        tbl.info(logger, Option(s"Tokens for: ${req.getText}"))
+        tbl.info(logger, s"Tokens for: ${req.getText}".?)
 
         // NOTE: we run validators regardless of whether token list is empty.
         for (v <- tokVals) v.validate(req, cfg, toks)
@@ -180,7 +180,7 @@ class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCPipeline) extends L
                     toks.map(p => s"${p.getStartCharIndex}-${p.getEndCharIndex}").mkString("|"),
                     mkProps(e)
                 )
-            tbl.info(logger, Option(s"Variant: ${i + 1} (${vrns.size})"))
+            tbl.info(logger, s"Variant: ${i + 1} (${vrns.size})".?)
 
         NCPipelineData(req, vrns, toks)
 

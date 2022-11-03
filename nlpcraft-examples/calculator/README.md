@@ -15,7 +15,7 @@
  limitations under the License.
 -->
 
-<img alt="" src="https://nlpcraft.apache.org/images/nlpcraft_logo_black.gif" height="80px">
+<img src="https://nlpcraft.apache.org/images/nlpcraft_logo_black.gif" height="80px">
 <br>
 
 [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/apache/opennlp/master/LICENSE)
@@ -23,10 +23,12 @@
 [![Documentation Status](https://img.shields.io/:docs-latest-green.svg)](https://nlpcraft.apache.org/docs.html)
 [![Gitter](https://badges.gitter.im/apache-nlpcraft/community.svg)](https://gitter.im/apache-nlpcraft/community)
 
-### Pizzeria Example
-TODO:
-### Documentation
-TODO:
+### Calculator Example
+This example data model represents simple calculator. It supports '+', '-', '*' and '/' operations for two integer arguments.
+Note that first argument can be omitted and last operation result is used instead of it. 
+
+### Documentation  
+See [Getting Started](https://nlpcraft.apache.org/getting-started.html) guide for more instructions on how to run these examples.
 
 For any questions, feedback or suggestions:
 
