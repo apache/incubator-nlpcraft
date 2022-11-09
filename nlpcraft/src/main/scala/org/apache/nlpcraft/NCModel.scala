@@ -39,20 +39,20 @@ package org.apache.nlpcraft
   * @see [[NCModelConfig]]
   * @see [[NCPipeline]]
   */
-trait NCModel:
+trait NCModel(cfg: NCModelConfig, pipeline: NCPipeline):
     /**
       * Gets model configuration.
       *
       * @return Model configuration.
       */
-    def getConfig: NCModelConfig
+    def getConfig: NCModelConfig = cfg
 
     /**
       * Gets model NLP processing pipeline.
       *
       * @return NLP processing pipeline.
       */
-    def getPipeline: NCPipeline
+    def getPipeline: NCPipeline = pipeline
 
     /**
       * A callback that is called when a fully assembled query context is ready. This is the first of the callbacks

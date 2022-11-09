@@ -49,7 +49,7 @@ import CalculatorModel.*
 /**
  * 
  */
-class CalculatorModel extends NCModelAdapter(NCModelConfig("nlpcraft.calculator.ex", "Calculator Example Model", "1.0"), PIPELINE) :
+class CalculatorModel extends NCModel(NCModelConfig("nlpcraft.calculator.ex", "Calculator Example Model", "1.0"), PIPELINE) :
     private var mem: Option[Int] = None
 
     private def calc(x: Int, op: String, y: Int): NCResult =

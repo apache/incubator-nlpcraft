@@ -19,7 +19,6 @@ package org.apache.nlpcraft
 
 import java.time.Duration
 
-
 /**
   *
   */
@@ -28,34 +27,35 @@ object NCModelConfig:
     val DFLT_CONV_DEPTH = 3
 
     def apply(id: String, name: String, ver: String): NCModelConfig =
-        new NCModelConfig ():
+        new NCPropertyMapAdapter with NCModelConfig:
             override val getId: String = id
             override val getName: String = name
             override val getVersion: String = ver
 
     def apply(id: String, name: String, ver: String, desc: String, orig: String): NCModelConfig =
-        new NCModelConfig() :
+        new NCPropertyMapAdapter with NCModelConfig:
             override val getId: String = id
             override val getName: String = name
             override val getVersion: String = ver
             override val getDescription: Option[String] = desc.?
             override val getOrigin: Option[String] = orig.?
 
-    def apply(id: String, name: String, ver: String, desc: String, orig: String, convTimeout: Long, convDepth: Int): NCModelConfig = new NCModelConfig() :
-        override val getId: String = id
-        override val getName: String = name
-        override val getVersion: String = ver
-        override val getDescription: Option[String] = desc.?
-        override val getOrigin: Option[String] = orig.?
-        override val getConversationTimeout: Long = convTimeout
-        override val getConversationDepth: Int = convDepth
+    def apply(id: String, name: String, ver: String, desc: String, orig: String, convTimeout: Long, convDepth: Int): NCModelConfig =
+        new NCPropertyMapAdapter with NCModelConfig:
+            override val getId: String = id
+            override val getName: String = name
+            override val getVersion: String = ver
+            override val getDescription: Option[String] = desc.?
+            override val getOrigin: Option[String] = orig.?
+            override val getConversationTimeout: Long = convTimeout
+            override val getConversationDepth: Int = convDepth
 
 import org.apache.nlpcraft.NCModelConfig.*
 
 /**
   *
   */
-trait NCModelConfig extends NCPropertyMapAdapter:
+trait NCModelConfig extends NCPropertyMap:
     def getId: String
     def getName: String
     def getVersion: String

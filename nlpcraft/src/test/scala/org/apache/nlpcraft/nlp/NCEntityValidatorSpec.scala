@@ -30,7 +30,7 @@ import scala.util.Using
   */
 class NCEntityValidatorSpec extends AnyFunSuite:
     private def test0(pipeline: NCPipeline, ok: Boolean): Unit =
-        val mdl: NCModel = new NCModelAdapter(NCModelConfig("test.id", "Test model", "1.0"), pipeline):
+        val mdl: NCModel = new NCModel(NCModelConfig("test.id", "Test model", "1.0"), pipeline):
             override def onContext(ctx: NCContext): Option[NCResult] = TEST_RESULT.?
 
         NCTestUtils.askSomething(mdl, ok)

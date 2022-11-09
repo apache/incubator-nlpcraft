@@ -29,7 +29,7 @@ import org.scalatest.funsuite.AnyFunSuite
 class NCModelClientSpec4 extends AnyFunSuite:
     test("test") {
         //  For intents matching, we have to add at least one entity parser.
-        val mdl: NCModelAdapter = new NCModelAdapter(CFG, mkEnPipeline(new NCNLPEntityParser)):
+        val mdl: NCModel = new NCModel(CFG, mkEnPipeline(new NCNLPEntityParser)):
             @NCIntent("intent=i term(any)={true}")
             def onMatch(ctx: NCContext, im: NCIntentMatch): NCResult = TEST_RESULT
 

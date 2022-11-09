@@ -20,11 +20,12 @@ package org.apache.nlpcraft.nlp.util
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.nlp.util.*
 
+object NCTestModelAdapter:
+    private val TEST_PIPELINE: NCTestPipeline = mkEmptyEnPipeline
+
+import NCTestModelAdapter.*
 /**
   *
   */
-abstract class NCTestModelAdapter extends NCModel:
-    val pipeline: NCTestPipeline = mkEmptyEnPipeline
-
-    override val getConfig: NCModelConfig = CFG
-    override val getPipeline: NCPipeline = pipeline
+abstract class NCTestModelAdapter extends NCModel(CFG, TEST_PIPELINE):
+    val pipeline: NCTestPipeline = TEST_PIPELINE
