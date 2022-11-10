@@ -26,42 +26,34 @@ import org.scalatest.funsuite.AnyFunSuite
 import scala.util.Using
 
 /**
-  *
-  */
-class NCEntityParserSpec extends AnyFunSuite:
-    private val quoteEntityParser = new NCEntityParser:
+ *
+ */
+object NCEntityParserSpec:
+    private val parser = new NCEntityParser :
         override def parse(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): List[NCEntity] =
-            if
-                req.getText.length > 2 &&
-                req.getText.head == '\'' &&
-                req.getText.last == '\'' &&
-                !req.getText.drop(1).reverse.drop(1).exists(_ == '\'')
-            then
-                val e: NCEntity = new NCPropertyMapAdapter with NCEntity :
+            val txt = req.getText
+            if txt.length > 2 && txt.startsWith("'") && txt.endsWith("'") && !txt.drop(1).reverse.drop(1).contains("'") then
+                val ent: NCEntity = new NCPropertyMapAdapter with NCEntity :
                     override def getTokens: List[NCToken] = toks
                     override def getRequestId: String = req.getRequestId
                     override def getId: String = "quoted"
-                List(e)
+                List(ent)
             else
                 List.empty
 
-    private val mdl: NCModel =
-        new NCModel(
-            NCModelConfig("test.id", "Test model", "1.0"),
-            new NCPipelineBuilder().
-                withTokenParser(EN_TOK_PARSER).
-                withEntityParser(quoteEntityParser).
-                build
-        ):
-            @NCIntent("intent=i term(any)={# == 'quoted'}")
-            def onMatch(ctx: NCContext, im: NCIntentMatch): NCResult = NCResult(ctx.getTokens.map(_.getText).mkString)
+    private val mdl =
+        new NCModel(CFG, new NCPipelineBuilder().withTokenParser(EN_TOK_PARSER).withEntityParser(parser).build):
+            @NCIntent("intent=quoted term(any)={# == 'quoted'}")
+            def onMatch(ctx: NCContext, im: NCIntentMatch): NCResult = TEST_RESULT
 
+/**
+  *
+  */
+class NCEntityParserSpec extends AnyFunSuite:
     test("test") {
-        Using.resource(new NCModelClient(mdl)) { client =>
-            val req = "'some quoted text'"
-            val res = client.ask(req, "usrId")
+        Using.resource(new NCModelClient(NCEntityParserSpec.mdl)) { client =>
+            val intentId = client.ask( "'some quoted text'", "usrId").getIntentId.get
 
-            require(res.getIntentId.get == "i", s"Unexpected intent:  ${res.getIntentId.get}")
-            require(res.getBody == req.replaceAll(" ", ""), s"Unexpected body:  ${res.getBody}")
+            require(intentId == "quoted", s"Unexpected intent:  $intentId")
         }
     }
