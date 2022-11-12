@@ -31,34 +31,35 @@ import scala.util.Using
   * 
   */
 class NCModelClientSpec3 extends AnyFunSuite:
-    test("test") {
-        import NCSemanticTestElement as TE
-
-        val mdl: NCTestModelAdapter = new NCTestModelAdapter :
-            override val getPipeline: NCPipeline = mkEnPipeline(TE("e1"))
-
-            @NCIntent("intent=i1 term(t1)={# == 'e1'}")
-            def onMatch(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("t1") t1: NCEntity): NCResult = TEST_RESULT
-
-        Using.resource(new NCModelClient(mdl)) { client =>
-            def ask(): NCMatchedCallback = client.debugAsk("e1", "userId", true)
-            def execCallback(cb: NCMatchedCallback): NCResult = cb.getCallback.apply(cb.getCallbackArguments)
-            def execCallbackOk(cb: NCMatchedCallback): Unit = println(s"Result: ${execCallback(cb).getBody}")
-            def execCallbackFail(cb: NCMatchedCallback): Unit =
-                try execCallback(cb)
-                catch case e: NCException => println(s"Expected error: ${e.getMessage}")
-
-            var cbData = ask()
-            execCallbackOk(cbData)
-            execCallbackFail(cbData) // It cannot be called again (Error is 'Callback was already called.')
-
-            cbData = ask()
-            execCallbackOk(cbData)
-
-            cbData = ask()
-            ask()
-            execCallbackFail(cbData) // Cannot be called, because there are new requests  (Error is 'Callback is out of date.')
-        }
-    }
+    {}  // TODO:
+//    test("test") {
+//        import NCSemanticTestElement as TE
+//
+//        val mdl: NCTestModelAdapter = new NCTestModelAdapter :
+//            override val getPipeline: NCPipeline = mkEnPipeline(TE("e1"))
+//
+//            @NCIntent("intent=i1 term(t1)={# == 'e1'}")
+//            def onMatch(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("t1") t1: NCEntity): NCResult = TEST_RESULT
+//
+//        Using.resource(new NCModelClient(mdl)) { client =>
+//            def ask(): NCMatchedCallback = client.debugAsk("e1", "userId", true)
+//            def execCallback(cb: NCMatchedCallback): NCResult = cb.getCallback.apply(cb.getCallbackArguments)
+//            def execCallbackOk(cb: NCMatchedCallback): Unit = println(s"Result: ${execCallback(cb).getBody}")
+//            def execCallbackFail(cb: NCMatchedCallback): Unit =
+//                try execCallback(cb)
+//                catch case e: NCException => println(s"Expected error: ${e.getMessage}")
+//
+//            var cbData = ask()
+//            execCallbackOk(cbData)
+//            execCallbackFail(cbData) // It cannot be called again (Error is 'Callback was already called.')
+//
+//            cbData = ask()
+//            execCallbackOk(cbData)
+//
+//            cbData = ask()
+//            ask()
+//            execCallbackFail(cbData) // Cannot be called, because there are new requests  (Error is 'Callback is out of date.')
+//        }
+//    }
 
 

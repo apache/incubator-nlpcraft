@@ -86,7 +86,7 @@ class NCModelClient(mdl: NCModel) extends LazyLogging, AutoCloseable:
       * @param usrId
       * @param typ
       */
-    private def ask0(txt: String, data: Map[String, Any], usrId: String, typ: NCIntentSolveType): Either[NCResult, NCMatchedCallback] =
+    private def ask0(txt: String, data: Map[String, Any], usrId: String, typ: NCIntentSolveType): Either[NCResult, NCMatchedCallback2[Any]] =
         require(txt != null, "Input text cannot be null.")
         require(data != null, "Data cannot be null.")
         require(usrId != null, "User id cannot be null.")
@@ -194,22 +194,22 @@ class NCModelClient(mdl: NCModel) extends LazyLogging, AutoCloseable:
         intentsMgr.close()
 
     /**
-      * Passes given input text to the model's pipeline for processing.
-      *
-      * This method differs from [[NCModelClient.ask()]] method in a way that instead of calling a callback
-      * of the winning intent this method returns the descriptor of that callback without actually calling it.
-      * This method is well suited for testing the model's intent matching logic without automatically
-      * executing the actual intent's callbacks.
-      *
-      * @param txt Text of the request.
-      * @param usrId ID of the user to associate with this request.
-      * @param saveHist Whether or not to store matched intent in the dialog history.
-      * @param data Optional data container that will be available to the intent matching IDL.
-      * @return Processing result. This method never returns `null`.
-      * @throws NCRejection An exception indicating a rejection of the user input. This exception is thrown
-      *     automatically by the processing logic as well as can be thrown by the user from the intent callback.
-      * @throws NCException Thrown in case of any internal errors processing the user input.
-      */
-    def debugAsk(txt: String, usrId: String, saveHist: Boolean, data: Map[String, AnyRef] = Map.empty): NCMatchedCallback =
+     * Passes given input text to the model's pipeline for processing.
+     *
+     * This method differs from [[NCModelClient.ask()]] method in a way that instead of calling a callback
+     * of the winning intent this method returns the descriptor of that callback without actually calling it.
+     * This method is well suited for testing the model's intent matching logic without automatically
+     * executing the actual intent's callbacks.
+     *
+     * @param txt      Text of the request.
+     * @param usrId    ID of the user to associate with this request.
+     * @param saveHist Whether or not to store matched intent in the dialog history.
+     * @param data     Optional data container that will be available to the intent matching IDL.
+     * @return Processing result. This method never returns `null`.
+     * @throws NCRejection An exception indicating a rejection of the user input. This exception is thrown
+     *                     automatically by the processing logic as well as can be thrown by the user from the intent callback.
+     * @throws NCException Thrown in case of any internal errors processing the user input.
+     */
+    def debugAsk[T](txt: String, usrId: String, saveHist: Boolean, data: Map[String, AnyRef] = Map.empty): NCMatchedCallback2[T] =
         import NCIntentSolveType.*
-        ask0(txt, data, usrId, if saveHist then SEARCH else SEARCH_NO_HISTORY).toOption.get
+        ask0(txt, data, usrId, if saveHist then SEARCH else SEARCH_NO_HISTORY).toOption.get.asInstanceOf[NCMatchedCallback2[T]]

@@ -155,3 +155,5 @@ trait NCModel(cfg: NCModelConfig, pipeline: NCPipeline):
       *         default processing flow will continue.
       */
     def onError(ctx: NCContext, e: Throwable): Option[NCResult] = None
+
+    def getIntents: List[NCIntent2[_]] = null // TODO: drop definition.

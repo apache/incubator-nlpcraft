@@ -29,49 +29,50 @@ import scala.util.Using
   *
   */
 class NCModelClientSpec extends AnyFunSuite:
-    /**
-      *
-      * @param e
-      */
-    private def s(e: NCEntity): String =
-        s"Entity [id=${e.getId}, text=${e.mkText}, properties={${e.keysSet.map(k => s"$k=${e(k)}")}}]"
-
-    /**
-      *
-      * @param mdl
-      */
-    private def test0(mdl: NCTestModelAdapter): Unit =
-        mdl.pipeline.entParsers += NCTestUtils.mkEnSemanticParser("models/lightswitch_model.yaml")
-
-        Using.resource(new NCModelClient(mdl)) { client =>
-            val res = client.ask("Lights on at second floor kitchen", "userId")
-
-            println(s"Intent: ${res.getIntentId}")
-            println(s"Body: ${res.getBody}")
-
-            val winner = client.debugAsk("Lights on at second floor kitchen", "userId", true)
-            println(s"Winner intent: ${winner.getIntentId}")
-            println("Entities: \n" + winner.getCallbackArguments.map(p => p.map(s).mkString(", ")).mkString("\n"))
-        }
-
-    /**
-      *
-      */
-    test("test 1") {
-        test0(
-            new NCTestModelAdapter():
-                @NCIntent("intent=ls term(act)={# == 'ls:on'} term(loc)={# == 'ls:loc'}*")
-                def onMatch(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("act") act: NCEntity, @NCIntentTerm("loc") locs: List[NCEntity]): NCResult = TEST_RESULT
-        )
-    }
-
-    /**
-      * 
-      */
-    test("test 2") {
-        test0(
-            new NCTestModelAdapter():
-                @NCIntent("intent=ls term(act)={has(ent_groups, 'act')} term(loc)={# == 'ls:loc'}*")
-                def onMatch(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("act") act: NCEntity, @NCIntentTerm("loc") locs: List[NCEntity]): NCResult = TEST_RESULT
-        )
-    }
+    {}  // TODO:
+//    /**
+//      *
+//      * @param e
+//      */
+//    private def s(e: NCEntity): String =
+//        s"Entity [id=${e.getId}, text=${e.mkText}, properties={${e.keysSet.map(k => s"$k=${e(k)}")}}]"
+//
+//    /**
+//      *
+//      * @param mdl
+//      */
+//    private def test0(mdl: NCTestModelAdapter): Unit =
+//        mdl.pipeline.entParsers += NCTestUtils.mkEnSemanticParser("models/lightswitch_model.yaml")
+//
+//        Using.resource(new NCModelClient(mdl)) { client =>
+//            val res = client.ask("Lights on at second floor kitchen", "userId")
+//
+//            println(s"Intent: ${res.getIntentId}")
+//            println(s"Body: ${res.getBody}")
+//
+//            val winner = client.debugAsk("Lights on at second floor kitchen", "userId", true)
+//            println(s"Winner intent: ${winner.getIntentId}")
+//            println("Entities: \n" + winner.getCallbackArguments.map(p => p.map(s).mkString(", ")).mkString("\n"))
+//        }
+//
+//    /**
+//      *
+//      */
+//    test("test 1") {
+//        test0(
+//            new NCTestModelAdapter():
+//                @NCIntent("intent=ls term(act)={# == 'ls:on'} term(loc)={# == 'ls:loc'}*")
+//                def onMatch(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("act") act: NCEntity, @NCIntentTerm("loc") locs: List[NCEntity]): NCResult = TEST_RESULT
+//        )
+//    }
+//
+//    /**
+//      *
+//      */
+//    test("test 2") {
+//        test0(
+//            new NCTestModelAdapter():
+//                @NCIntent("intent=ls term(act)={has(ent_groups, 'act')} term(loc)={# == 'ls:loc'}*")
+//                def onMatch(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("act") act: NCEntity, @NCIntentTerm("loc") locs: List[NCEntity]): NCResult = TEST_RESULT
+//        )
+//    }
