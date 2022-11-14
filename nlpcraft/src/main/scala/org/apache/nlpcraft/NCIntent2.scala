@@ -19,11 +19,10 @@ package org.apache.nlpcraft
 
 import org.apache.nlpcraft.*
 
-trait NCIntent2[T] {
+trait NCIntent2[T](id: String):
     // Gets callback argument if matched.
     def tryMatch(mi: NCMatchInput): Option[T]
 
     def mkResult(mi: NCMatchInput, arg: T): NCResult
 
-    def getId: String
-}
+    def getId: String = id
