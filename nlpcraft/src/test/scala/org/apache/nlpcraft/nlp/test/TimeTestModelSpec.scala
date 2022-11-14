@@ -47,7 +47,7 @@ class TimeTestModelSpec extends AnyFunSuite:
 
                 System.out.println(s"Argument: ${intent.getIntentArgument}")
 
-                val res = intent.getIntent.mkResult(intent.getContext, intent.getIntentArgument)
+                val res = intent.getIntent.mkResult(intent.getInput, intent.getIntentArgument)
 
                 System.out.println(s"Body: ${res.getBody}")
 

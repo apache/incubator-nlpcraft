@@ -17,11 +17,20 @@
 
 package org.apache.nlpcraft
 
-/**
-  *
-  * @see [[NCModelClient.debugAsk()]]
-  */
-trait NCMatchedCallback2[T]:
-    def getIntent: NCIntent2[T]
-    def getInput: NCMatchInput
-    def getIntentArgument: T
+import org.apache.nlpcraft.*
+
+trait NCMatchInput {
+    // Context data.
+    def getModelConfig: NCModelConfig
+    def getRequest: NCRequest
+    def getTokens: List[NCToken]
+    def getConversation: NCConversation
+
+    // Variant, passed one by one from sorted list.
+    def getVariant4Match: NCVariant
+
+    // Helper methods.
+    def getAllEntities: List[NCEntity] = getVariant4Match.getEntities ++ getConversation.getStm
+    def hasDialogIdsBefore(idsRegex: String): Boolean = true // TBI
+
+}

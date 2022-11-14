@@ -762,13 +762,20 @@ class NCIntentSolverManager(
         )
             val i: NCIntent2[_] = intent
 
-            i.tryMatch(ctx, v) match
+            val input = new NCMatchInput:
+                override def getModelConfig: NCModelConfig = ctx.getModelConfig
+                override def getRequest: NCRequest = ctx.getRequest
+                override def getTokens: List[NCToken] = ctx.getTokens
+                override def getConversation: NCConversation = ctx.getConversation
+                override def getVariant4Match: NCVariant = v
+
+            i.tryMatch(input) match
                 case Some(data) =>
                     typ match
-                        case REGULAR => return Left(i.mkResult(ctx, data))
+                        case REGULAR => return Left(i.mkResult(input, data))
                         case _ =>  return Right(new NCMatchedCallback2[Any]():
                             override def getIntent: NCIntent2[Any] = i.asInstanceOf[NCIntent2[Any]]
-                            override def getContext: NCContext = ctx
+                            override def getInput: NCMatchInput = input
                             override def getIntentArgument: Any = data.asInstanceOf[Any]
                         )
 

@@ -21,7 +21,9 @@ import org.apache.nlpcraft.*
 
 trait NCIntent2[T] {
     // Gets callback argument if matched.
-    def tryMatch(ctx: NCContext, variant: NCVariant): Option[T]
+    def tryMatch(mi: NCMatchInput): Option[T]
 
-    def mkResult(ctx: NCContext, arg: T): NCResult
+    def mkResult(mi: NCMatchInput, arg: T): NCResult
+
+    def getId: String
 }
