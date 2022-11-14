@@ -34,3 +34,21 @@ class TimeTestModel extends NCModel(
                 Option.when(cities.length == 1 && times.length == 1 && varEnts.forall(p => p.getId == "opennlp:location" || p.getId == "x:time"))(CityTimeData(cities.head.mkText))
             override def mkResult(mi: NCMatchInput, data: CityTimeData): NCResult = NCResult(s"Asked for ${data.city}") // TBI.
     )
+
+
+object NCAlternative:
+    // Event shorter. but we can't support debugAsk here.
+    trait NCIntentOneMethod(val id: String):
+        def execute(mi: NCMatchInput): Option[NCResult]
+
+    class NCIntentOneMethodImpl extends NCIntentOneMethod("id1"):
+        override def execute(mi: NCMatchInput): Option[NCResult] =
+            val varEnts = mi.getVariant4Match.getEntities
+            val allEnts = mi.getAllEntities
+
+            val cities = varEnts.filter(_.getId == "opennlp:location")
+            val times = allEnts.filter(_.getId == "x:time")
+
+            Option.when(cities.length == 1 && times.length == 1 && varEnts.forall(p => p.getId == "opennlp:location" || p.getId == "x:time"))(cities.head.mkText) match
+                case Some(city) => Option(NCResult(s"Asked for $city"))
+                case None => None
