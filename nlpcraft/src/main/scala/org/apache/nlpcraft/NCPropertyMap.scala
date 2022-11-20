@@ -20,27 +20,26 @@ package org.apache.nlpcraft
 /**
   * Map-like container that provides support for mutable runtime-only properties or metadata.
   *
-  * @see [[NCPropertyMapAdapter
-  * @see [[NCToken
-  * @see [[NCEntity */
+  * @see [[NCPropertyMapAdapter]]
+  * @see [[NCToken]]
+  * @see [[NCEntity]]
+  * @see [[NCModelConfig]]
+  */
 trait NCPropertyMap:
     /**
       * Returns the value to which the specified key is mapped, or `null` if this map contains no mapping for the key.
       *
       * @param key The key whose associated value is to be returned.
-      * @param <T> Type of the returned value.
-      * @return The value to which the specified key is mapped, or `null` if this map contains no mapping for the key. */
+      * @return The value to which the specified key is mapped, or `null` if this map contains no mapping for the key.
+      */
     def apply[T](key: String): T
 
     /**
-      * Returns the value to which the specified key is mapped as an optional. This method is equivalent to:
-      * <pre class="brush: java">
-      * return Optional.ofNullable((T)map.get(key));
-      * </pre>
+      * Returns the value to which the specified key is mapped.
       *
       * @param key The key whose associated value is to be returned.
-      * @param <T> Type of the returned value.
-      * @return The value to which the specified key is mapped as an optional. */
+      * @return The value to which the specified key is mapped as an optional.
+      */
     def get[T](key: String): Option[T]
 
     /**
@@ -49,8 +48,8 @@ trait NCPropertyMap:
       *
       * @param key Key with which the specified value is to be associated.
       * @param obj Value to be associated with the specified key.
-      * @param <T> Type of the value.
-      * @return The previous value associated with key, or `null` if there was no mapping for key. */
+      * @return The previous value associated with key, or `null` if there was no mapping for key.
+      */
     def put[T](key: String, obj: Any): T
 
     /**
@@ -59,22 +58,23 @@ trait NCPropertyMap:
       *
       * @param key Key with which the specified value is to be associate
       * @param obj Value to be associated with the specified key
-      * @param <T> Type of the value.
-      * @return The previous value associated with the specified key, or `null` if there was no mapping for the key. */
+      * @return The previous value associated with the specified key, or `null` if there was no mapping for the key.
+      */
     def putIfAbsent[T](key: String, obj: T): T
 
     /**
       * Returns `true` if this map contains a mapping for the specified key.
       *
-      * @return `true` if this map contains a mapping for the specified key. */
+      * @return `true` if this map contains a mapping for the specified key.
+      */
     def contains(key: String): Boolean
 
     /**
       * Removes the mapping for a key from this map if it is present.
       *
       * @param key Key whose mapping is to be removed from the map.
-      * @param <T> Type of the value.
-      * @return The previous value associated with key, or `null` if there was no mapping for key. */
+      * @return The previous value associated with key, or `null` if there was no mapping for key.
+      */
     def remove[T](key: String): T
 
     /**
@@ -82,15 +82,18 @@ trait NCPropertyMap:
       *
       * @param key Key with which the specified value is associated value.
       * @param obj Value expected to be associated with the specified key.
-      * @return `true` if the value was removed */
+      * @return `true` if the value was removed.
+      */
     def remove(key: String, obj: Any): Boolean
 
     /**
       * Returns a set view of the keys contained in this map.
       *
-      * @return A set view of the keys contained in this map */
+      * @return A set view of the keys contained in this map.
+      */
     def keysSet: Set[String]
 
     /**
-      * Removes all of the mappings from this map. The map will be empty after this call returns. */
+      * Removes all of the mappings from this map. The map will be empty after this call returns.
+      */
     def clear(): Unit
