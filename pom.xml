@@ -108,7 +108,7 @@
         <scala3.ref.ver>1.1.4</scala3.ref.ver>
         <jackson.ver>2.13.4</jackson.ver>
         <jackson.yaml.ver>2.13.4</jackson.yaml.ver>
-        <apache.opennlp.ver>2.0.0</apache.opennlp.ver>
+        <apache.opennlp.ver>2.1.0</apache.opennlp.ver>
         <gson.ver>2.10</gson.ver>
         <scalatest.ver>3.2.14</scalatest.ver>
 
