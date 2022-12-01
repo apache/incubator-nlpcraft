@@ -20,47 +20,35 @@ package org.apache.nlpcraft
 /**
   * NLP processing pipeline for the input request. Pipeline is associated with the model.
   *
-  * An NLP pipeline is a container for various processing components that take the input text at the beginning of the
-  * pipeline and produce the list of {@link NCEntity entities} at the end of the pipeline.
+  * An NLP pipeline is a container for the sequence of processing components that take the input text at the beginning
+  * of the pipeline and produce the list of [[NCVariant variants]] at the end of the pipeline.
   * Schematically the pipeline looks like this:
   * <pre>
-  * +----------+        +-----------+
-  * *=========*    +---------+    +---+-------+  |    +---+-------+   |
-  * :  Text   : -> |  Token  | -> | Token     |  | -> | Token      |  | ----.
-  * :  Input  :    |  Parser |    | Enrichers |--+    | Validators |--+      \
-  * *=========*    +---------+    +-----------+       +------------+          \
-  * }
-  * +-----------+        +----------+        +--------+    /
-  * *=========*    +---+--------+  |    +---+-------+  |    +---+-----+  |   /
-  * :  Entity : <- | Entity     |  | <- | Entity    |  | <- | Entity  |  | <-
-  * :  List   :    | Validators |--+    | Enrichers |--+    | Parsers |--+
-  * *=========*    +------------+       +-----------+       +---------+
+  *                                      +----------+        +-----------+         +--------+
+  *   *=========*     +---------+    +---+-------+  |    +---+-------+   |     +---+-----+  |
+  *   :  Text   : ->  |  Token  | -> | Token     |  | -> | Token      |  | ->  | Entity  |  | ----.
+  *   :  Input  :     |  Parser |    | Enrichers |--+    | Validators |--+     | Parsers |--+      \
+  *   *=========*     +---------+    +-----------+       +------------+        +---------+          \
+  *                                                                                                  }
+  *                       +--------+        +--------+        +-----------+        +----------+     /
+  * *============*    +---+-----+  |    +---+-----+  |    +---+--------+  |    +---+-------+  |    /
+  * :  Variants  : <- | Variant |  | <- | Entity  |  | <- | Entity     |  | <- | Entity    |  | <-'
+  * :  List      :    | Filters |--+    | Mappers |--+    | Validators |--+    | Enrichers |--+
+  * *============*    +----- ---+       +----- ---+       +------------+       +-----------+
   * </pre>
   *
   * Pipeline has the following components:
-  * <ul>
-  * <li>
-  * {@link NCTokenParser} is responsible for taking the input text and tokenize it into a list of
-  * {@link NCToken
-  * }. This process is called tokenization, i.e. the process of demarcating and
-  * classifying sections of a string of input characters. There's only one token parser for the pipeline.
-  * </li>
-  * <li>
-  * After the initial list of token is
-  * </li>
-  * </ul>
   *
   */
 trait NCPipeline:
     /**
-      *
-      * @return */
+      * Get the token parser. One token parser is required for the pipeline.
+      */
     def getTokenParser: NCTokenParser
 
     /**
       * Gets the list of entity parser. At least one entity parser is required.
-      *
-      * @return */
+      */
     def getEntityParsers: List[NCEntityParser]
 
     /**
@@ -86,11 +74,9 @@ trait NCPipeline:
     /**
       *
       */
-    def getVariantFilter: Option[NCVariantFilter] = None
+    def getVariantFilters: List[NCVariantFilter] = List.empty
 
     /**
-      * Gets optional list of entity mappers.
-      *
-      * @return Optional list of entity mappers. Can be empty but never `null`.
+      * Gets optional list of entity mappers. Can return an empty list but never `null`.
       */
     def getEntityMappers: List[NCEntityMapper] = List.empty

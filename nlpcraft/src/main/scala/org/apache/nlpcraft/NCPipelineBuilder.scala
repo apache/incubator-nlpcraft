@@ -34,7 +34,7 @@ class NCPipelineBuilder:
     private val tokVals: Buf[NCTokenValidator] = Buf.empty
     private val entVals: Buf[NCEntityValidator] = Buf.empty
     private val entMappers: Buf[NCEntityMapper] = Buf.empty
-    private var varFilter: Option[NCVariantFilter] = None
+    private var varFilters: Buf[NCVariantFilter] = Buf.empty
 
     /**
       *
@@ -134,10 +134,10 @@ class NCPipelineBuilder:
         this
 
     /**
-      * @param varFilter
+      * @param varFilters
       * @return This instance for call chaining. */
-    def withVariantFilter(varFilter: NCVariantFilter): NCPipelineBuilder =
-        this.varFilter = Some(varFilter)
+    def withVariantFilters(varFilters: List[NCVariantFilter]): NCPipelineBuilder =
+        this.varFilters ++= varFilters
         this
 
     /**
@@ -152,7 +152,8 @@ class NCPipelineBuilder:
     /**
       *
       * @param entMappers
-      * @return This instance for call chaining. */
+      * @return This instance for call chaining.
+      */
     def withEntityMappers(entMappers: List[NCEntityMapper]): NCPipelineBuilder =
         require(entMappers != null, "List of entity mappers cannot be null.")
         entMappers.foreach((p: NCEntityMapper) => require(p != null, "Entity mapper cannot be null."))
@@ -234,5 +235,5 @@ class NCPipelineBuilder:
             override def getEntityParsers: List[NCEntityParser] = entParsers.toList
             override def getTokenValidators: List[NCTokenValidator] = tokVals.toList
             override def getEntityValidators: List[NCEntityValidator] = entVals.toList
-            override def getVariantFilter: Option[NCVariantFilter] = varFilter
+            override def getVariantFilters: List[NCVariantFilter] = varFilters.toList
             override def getEntityMappers: List[NCEntityMapper] = entMappers.toList

@@ -52,7 +52,7 @@ class NCVariantFilterSpec extends AnyFunSuite:
         )
 
         test0(
-            mkPipeline(_.withVariantFilter((_: NCRequest, _: NCModelConfig, _: List[NCVariant]) => List.empty)),
+            mkPipeline(_.withVariantFilters(List((_: NCRequest, _: NCModelConfig, _: List[NCVariant]) => List.empty))),
             false
         )
     }

@@ -31,6 +31,8 @@ import java.util.concurrent.*
 import java.util.concurrent.atomic.*
 import java.util.function.Predicate
 import scala.concurrent.ExecutionContext
+import scala.jdk.CollectionConverters.*
+
 
 /**
   *
@@ -54,10 +56,10 @@ class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCPipeline) extends L
     private val tokVals = nvl(pipeline.getTokenValidators)
     private val entVals = nvl(pipeline.getEntityValidators)
     private val entMappers = nvl(pipeline.getEntityMappers)
-    private val varFilterOpt = pipeline.getVariantFilter
+    private val varFilters = nvl(pipeline.getVariantFilters)
 
     private val allComps: Seq[NCLifecycle] =
-        tokEnrichers ++ entEnrichers ++ entParsers ++ tokVals ++ entVals ++ entMappers ++ varFilterOpt.toSeq
+        tokEnrichers ++ entEnrichers ++ entParsers ++ tokVals ++ entVals ++ entMappers ++ varFilters
 
     /**
       * Processes pipeline components.
@@ -153,7 +155,6 @@ class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCPipeline) extends L
             map { case (_, ents) => if ents.sizeIs > 1 then ents.toSet else Set.empty }.filter(_.nonEmpty)
 
         var variants: List[NCVariant] =
-            import scala.jdk.CollectionConverters.*
             if overlapEnts.nonEmpty then
                 NCModelPipelineHelper.
                     findCombinations(overlapEnts.map(_.asJava).asJava, pool).asScala.
@@ -164,15 +165,15 @@ class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCPipeline) extends L
             else
                 List(newVariant(entities))
 
-        if varFilterOpt.isDefined then variants = varFilterOpt.get.filter(req, cfg, variants)
+        variants = varFilters.foldRight(variants)((filter, vars) => filter.filter(req, cfg, vars))
 
         // Skips empty variants.
         val vrns = variants.filter(_.getEntities.nonEmpty)
 
-        for ((v, i) <- vrns.zipWithIndex)
+        for (v, i) <- vrns.zipWithIndex do
             val tbl = NCAsciiTable("EntityId", "Tokens", "Tokens Position", "Properties")
 
-            for (e <- v.getEntities)
+            for e <- v.getEntities do
                 val toks = e.getTokens
                 tbl += (
                     e.getId,
@@ -185,6 +186,7 @@ class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCPipeline) extends L
         NCPipelineData(req, vrns, toks)
 
     def start(): Unit = processComponents(_.onStart(cfg), "started")
+
     /**
       *
       */

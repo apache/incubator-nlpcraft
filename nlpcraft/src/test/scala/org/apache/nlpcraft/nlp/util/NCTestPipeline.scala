@@ -36,7 +36,7 @@ case class NCTestPipeline(tokParser: NCTokenParser) extends NCPropertyMapAdapter
     val tokVals: Buf[NCTokenValidator] = Buf.empty
     val entVals: Buf[NCEntityValidator] = Buf.empty
     val entMappers: Buf[NCEntityMapper] = Buf.empty
-    var varFilter: Option[NCVariantFilter] = None
+    var varFilters: Buf[NCVariantFilter] = Buf.empty
 
     override def getTokenParser: NCTokenParser = tokParser
     override def getTokenEnrichers: List[NCTokenEnricher] = tokEnrichers.toList
@@ -45,4 +45,4 @@ case class NCTestPipeline(tokParser: NCTokenParser) extends NCPropertyMapAdapter
     override def getTokenValidators: List[NCTokenValidator] = tokVals.toList
     override def getEntityValidators: List[NCEntityValidator] = entVals.toList
     override def getEntityMappers: List[NCEntityMapper] = entMappers.toList
-    override def getVariantFilter: Option[NCVariantFilter] = varFilter
+    override def getVariantFilters: List[NCVariantFilter] = varFilters.toList
