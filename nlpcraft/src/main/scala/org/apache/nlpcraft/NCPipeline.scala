@@ -37,8 +37,20 @@ package org.apache.nlpcraft
   * *============*    +----- ---+       +----- ---+       +------------+       +-----------+
   * </pre>
   *
-  * Pipeline has the following components:
+  * The result variants are then passed further to the intent matching. Note that only one token parser
+  * and at least one entity parser is required for the minimal pipeline.
   *
+  * @see [[NCToken]]
+  * @see [[NCEntity]]
+  * @see [[NCVariant]]
+  * @see [[NCTokenParser]]
+  * @see [[NCTokenEnricher]]
+  * @see [[NCTokenValidator]]
+  * @see [[NCEntityEnricher]]
+  * @see [[NCEntityMapper]]
+  * @see [[NCEntityValidator]]
+  * @see [[NCVariantFilter]]
+  * @see [[NCEntityValidator]]
   */
 trait NCPipeline:
     /**
@@ -52,27 +64,27 @@ trait NCPipeline:
     def getEntityParsers: List[NCEntityParser]
 
     /**
-      *
+      * Gets optional list of token enrichers. Can return an empty list but never `null`.
       */
     def getTokenEnrichers: List[NCTokenEnricher] = List.empty
 
     /**
-      *
+      * Gets optional list of entity enrichers. Can return an empty list but never `null`.
       */
     def getEntityEnrichers: List[NCEntityEnricher] = List.empty
 
     /**
-      *
+      * Gets optional list of token validators. Can return an empty list but never `null`.
       */
     def getTokenValidators: List[NCTokenValidator] = List.empty
 
     /**
-      *
+      * Gets optional list of entity validators. Can return an empty list but never `null`.
       */
     def getEntityValidators: List[NCEntityValidator] = List.empty
 
     /**
-      *
+      * Gets optional list of variant filters. Can return an empty list but never `null`.
       */
     def getVariantFilters: List[NCVariantFilter] = List.empty
 
