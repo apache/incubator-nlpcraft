@@ -177,7 +177,7 @@ import org.apache.nlpcraft.nlp.parsers.NCSemanticEntityParser.*
   * @param parser
   * @param macros
   * @param elements
-  * @param mdlSrcOpt
+  * @param mdlSrcOpt Optional classpath resource, file path or URL for YAML or JSON semantic model definition file.
   */
 class NCSemanticEntityParser(
     stemmer: NCSemanticStemmer,
@@ -199,6 +199,7 @@ class NCSemanticEntityParser(
     private var elemsMap: Map[String, NCSemanticElement] = _
 
     init()
+
     /**
       *
       */

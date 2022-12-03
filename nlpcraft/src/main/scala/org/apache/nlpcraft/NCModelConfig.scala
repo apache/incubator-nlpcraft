@@ -81,6 +81,8 @@ import org.apache.nlpcraft.NCModelConfig.*
 
 /**
   * Model configuration container.
+  *
+  * @see [[NCModel.getConfig]]
   */
 trait NCModelConfig extends NCPropertyMap:
     /**

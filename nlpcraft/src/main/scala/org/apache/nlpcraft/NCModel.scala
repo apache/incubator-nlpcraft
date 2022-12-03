@@ -32,10 +32,8 @@ package org.apache.nlpcraft
   * some aspects of your data models - your entire model and all of its components are part of your project's
   * source code.
   *
-  * Note that in most cases, one would use a convenient [[NCModelAdapter]] adapter to implement this interface.
   *
   * @see [[NCModelClient]]
-  * @see [[NCModelAdapter]]
   * @see [[NCModelConfig]]
   * @see [[NCPipeline]]
   */
