@@ -268,7 +268,7 @@ class NCPipelineBuilder:
                 this.entParsers += NCSemanticEntityParser(mkEnStemmer, mkEnOpenNLPTokenParser, mdlSrc)
             case _ => require(false, s"Unsupported language: $lang")
         this
-    
+
     /**
       * Builds new [[NCPipeline]] instance with previously provided components.
       */
