@@ -24,7 +24,7 @@ class NCIDLIntentOptions:
     /** Whether to ignore unused free words for intent match. */
     var ignoreUnusedFreeWords: Boolean = true
     /** Whether to ignore unused entities for intent match. */
-    var ignoreUnusedEntities: Boolean = true
+    var ignoreUnusedEntities: Boolean = false
     /** Whether or not to allow intent to match if all matching entities came from STM only. */
     var allowStmEntityOnly: Boolean = false
     /** Whether or not the order of term is important for intent match. */
