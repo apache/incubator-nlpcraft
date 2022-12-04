@@ -18,14 +18,15 @@
 package org.apache.nlpcraft
 
 /**
-  *
+  * Convenient factory for creating [[NCResult]] instances.
   */
 object NCResult:
     /**
-      * 
-      * @param body
-      * @param resultType
-      * @param intentId
+      * Creates new result instance with given parameters.
+      *
+      * @param body Result body.
+      * @param resultType Result type.
+      * @param intentId Intent ID that produced the result.
       */
     def apply(body: Any, resultType: NCResultType, intentId: String): NCResult =
         new NCResult():
@@ -34,9 +35,10 @@ object NCResult:
             def getIntentId: Option[String] = intentId.?
 
     /**
-      * 
-      * @param body
-      * @param resultType
+      * Creates new result instance with given parameters. Note that intent ID will be set to `None`.
+      *
+      * @param body Result body.
+      * @param resultType Result type.
       */
     def apply(body: Any, resultType: NCResultType): NCResult =
         new NCResult():
@@ -45,8 +47,10 @@ object NCResult:
             def getIntentId: Option[String] = None
 
     /**
-      * 
-      * @param body
+      * Creates new result instance with given parameters. Note that intent ID will be set to `None` and
+      * result type will be set to [[NCResultType.ASK_RESULT]].
+      *
+      * @param body Result body.
       */
     def apply(body: Any): NCResult =
         new NCResult() :
@@ -55,9 +59,20 @@ object NCResult:
             def getIntentId: Option[String] = None
 
 /**
-  * 
+  * Intent callback result.
   */
 trait NCResult:
+    /**
+      * Body of the result.
+      */
     def getBody: Any
+
+    /**
+      * Type of the result.
+      */
     def getType: NCResultType
+
+    /**
+      * Optional ID of the intent, if any, that produced that result.
+      */
     def getIntentId: Option[String]

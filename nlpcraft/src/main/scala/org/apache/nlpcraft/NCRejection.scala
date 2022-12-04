@@ -18,8 +18,8 @@
 package org.apache.nlpcraft
 
 /**
-  * An exception to indicate a rejection of the user input. This exception is thrown automatically by the processing
-  * logic as well as can be thrown by the user from the intent callback.
+  * An exception to indicate a rejection of the user input. This exception is either thrown automatically by the
+  * processing logic or can be thrown by the user from the intent callback.
   *
   * This exception typically indicates that user has not provided enough information in the input string
   * to have it processed automatically, without additional curation or modification. In most cases this means that

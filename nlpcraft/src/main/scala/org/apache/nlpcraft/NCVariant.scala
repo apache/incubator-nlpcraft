@@ -19,7 +19,7 @@ package org.apache.nlpcraft
 
 /**
   * A parsing variant is a list of entities defining one possible parsing of the input query. Note that a given user
-  * input almost always has one or more possible different parsing variants. Furthermore, depending on the model
+  * input almost always has one or more possible parsing variants. Furthermore, depending on the model
   * configuration a user input can produce hundreds and even thousands of parsing variants.
   *
   * Pipeline provides user-defined variant filter component [[NCVariantFilter]] to allow a programmatic filtration of

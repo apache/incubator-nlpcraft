@@ -18,21 +18,25 @@
 package org.apache.nlpcraft
 
 /**
+  * Optional pipeline component that can enrich previously parsed [[NCToken tokens]].
+  * See [[NCPipeline]] for documentation on the token enricher place in the overall processing pipeline.
   *
-  * @see [[NCEntity
-  * @see [[NCToken
-  * @see [[NCTokenParser
-  * @see [[NCTokenEnricher
-  * @see [[NCTokenValidator
-  * @see [[NCEntityParser
-  * @see [[NCEntityEnricher
-  * @see [[NCEntityValidator
-  * @see [[NCEntityMapper */
+  * @see [[NCPipeline.getTokenEnrichers]]
+  * @see [[NCEntity]]
+  * @see [[NCToken]]
+  * @see [[NCTokenParser]]
+  * @see [[NCTokenValidator]]
+  * @see [[NCEntityParser]]
+  * @see [[NCEntityEnricher]]
+  * @see [[NCEntityValidator]]
+  * @see [[NCEntityMapper]]
+  */
 trait NCTokenEnricher extends NCLifecycle:
     /**
+      * Enriches, or otherwise modifies, previously parsed [[NCToken tokens]].
       *
-      * @param req
-      * @param cfg
-      * @param toks
+      * @param req Original request.
+      * @param cfg Model configuration.
+      * @param toks Previously parsed tokens to enrich.
       */
     def enrich(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): Unit

@@ -21,27 +21,21 @@ import scala.jdk.CollectionConverters.*
 import java.util.concurrent.ConcurrentHashMap
 
 /**
-  * Convenient adapter for {@link NCPropertyMap} interface. */
+  * Convenient adapter for [[NCPropertyMap]] interface. Note that this class uses
+  * [[ConcurrentHashMap]] for its implementation making its access thread-safe.
+  */
 class NCPropertyMapAdapter extends NCPropertyMap:
     private val map = new ConcurrentHashMap[String, Any]
 
     override def apply[T](key: String): T = get(key).getOrElse(throw new NoSuchElementException(s"Key not found: $key"))
-
     override def get[T](key: String): Option[T] =
         map.get(key) match
             case null => None
             case x => Some(x.asInstanceOf[T])
-
     override def put[T](key: String, obj: Any): T = map.put(key, obj).asInstanceOf[T]
-
     override def putIfAbsent[T](key: String, obj: T): T = map.putIfAbsent(key, obj).asInstanceOf[T]
-
     override def contains(key: String): Boolean = map.containsKey(key)
-
     override def remove[T](key: String): T = map.remove(key).asInstanceOf[T]
-
     override def remove(key: String, obj: Any): Boolean = map.remove(key, obj)
-
     override def keysSet: Set[String] = map.keys().asScala.toSet
-
     override def clear(): Unit = map.clear()

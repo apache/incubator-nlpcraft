@@ -22,6 +22,7 @@ package org.apache.nlpcraft
   * components of the processing [[NCPipeline pipeline]]. See [[NCPipeline]] for documentation on the token
   * parser place in the overall processing pipeline.
   *
+  * @see [[NCPipeline.getTokenParser]]
   * @see [[NCEntity]]
   * @see [[NCToken]]
   * @see [[NCTokenParser]]
@@ -34,7 +35,7 @@ package org.apache.nlpcraft
   */
 trait NCTokenParser:
     /**
-      * Splits given text into list of [[NCToken]] objects.
+      * Splits given text into list of [[NCToken tokens]].
       *
       * @param text Input text to split.
       * @return List of split token. Can be empty but should never be `null`.

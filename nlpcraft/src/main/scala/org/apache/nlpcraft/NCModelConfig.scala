@@ -23,7 +23,14 @@ import java.time.Duration
   * Model configuration factory.
   */
 object NCModelConfig:
+    /**
+      * Default conversation timeout is 60 mins.
+      */
     val DFLT_CONV_TIMEOUT: Long = Duration.ofMinutes(60).toMillis
+
+    /**
+      * Default conversation depth is 3.
+      */
     val DFLT_CONV_DEPTH = 3
 
     /**

@@ -23,11 +23,11 @@ package org.apache.nlpcraft
   * components of the processing [[NCPipeline pipeline]]. See [[NCPipeline]] for documentation on the token
   * parser place in the overall processing pipeline.
   *
+  * @see [[NCPipeline.getTokenValidators]]
   * @see [[NCEntity]]
   * @see [[NCToken]]
   * @see [[NCTokenParser]]
   * @see [[NCTokenEnricher]]
-  * @see [[NCTokenValidator]]
   * @see [[NCEntityParser]]
   * @see [[NCEntityEnricher]]
   * @see [[NCEntityValidator]]
