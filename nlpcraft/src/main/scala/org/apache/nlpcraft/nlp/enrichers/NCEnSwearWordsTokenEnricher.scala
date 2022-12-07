@@ -26,9 +26,13 @@ import java.io.*
 import java.util.Objects
 
 /**
-  * TODO: enriches with <code>swear</code> property.
+  * [[NCTokenEnricher]] built-in English language implementation.
   *
-  * @param res
+  * It adds <code>swear</code> boolean property to [[NCToken]] instance if word which it represents is swear word.
+  *
+  * @param res Path to swear words list text resource.
+  * Note that [[NCPipelineBuilder.withSemantic()]] methods use
+  * [[https://raw.githubusercontent.com/apache/incubator-nlpcraft/external_config/external/badfilter/swear_words.txt NlpCraft Swearword Dictionary]]
   */
 class NCEnSwearWordsTokenEnricher(res: String) extends NCTokenEnricher with LazyLogging:
     require(res != null, "Swear words model file cannot be null.")

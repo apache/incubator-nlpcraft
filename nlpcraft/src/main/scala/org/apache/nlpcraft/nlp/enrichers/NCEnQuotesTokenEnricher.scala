@@ -21,7 +21,12 @@ import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.*
 
 /**
-  * TODO: enriches with <code>quoted</code> property.
+  * [[NCTokenEnricher]] built-in English language implementation.
+  *
+  * It adds <code>quoted</code> boolean property to [[NCToken]] instance if word which it represents is in quotes.
+  *
+  * Note that this implementation requires <code>pos</code> string property in [[NCToken]] instance.
+  * You can configure [[NCOpenNLPLemmaPosTokenEnricher]] before [[NCEnQuotesTokenEnricher]] in your [[NCPipeline]].
   */
 class NCEnQuotesTokenEnricher extends NCTokenEnricher with LazyLogging:
     private final val Q_POS: Set[String] = Set("``", "''")

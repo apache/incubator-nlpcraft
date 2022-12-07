@@ -33,16 +33,29 @@ import scala.language.postfixOps
 import scala.util.Using
 
 /**
-  *
+  * [[NCOpenNLPEntityParser]] helper.
   */
 object NCOpenNLPEntityParser:
+    /**
+      * Creates [[NCOpenNLPEntityParser]] instance.
+      *
+      * @param src Path to [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/namefind/TokenNameFinderModel.html model]].
+      * @return [[NCOpenNLPEntityParser]] instance.
+      */
     def apply(src: String): NCOpenNLPEntityParser =
         require(src != null, "Model source cannot be null.")
         new NCOpenNLPEntityParser(List(src))
 
 /**
+  * [[NCEntityParser]] built-in implementation based on [[https://opennlp.apache.org/ OpenNLP]] <code>name finders</code> models.
   *
-  * @param srcs
+  * It prepares [[NCEntity]] instances which are found by configured [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/namefind/TokenNameFinderModel.html models]]
+  * with entity ID <code>opennlp:modelId</code>, where <code>modelId</code> is ID of configured models.
+  *
+  * Note that each [[NCToken]] can be included into several [[NCEntity]] instances.
+  *
+  * @param srcs Paths to [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/namefind/TokenNameFinderModel.html models]].
+  * Some of OpenNLP prepared models can be found [[https://opennlp.sourceforge.net/models-1.5/ here]].
   */
 class NCOpenNLPEntityParser(srcs: List[String]) extends NCEntityParser with LazyLogging:
     require(srcs != null, "Models source cannot be null.")

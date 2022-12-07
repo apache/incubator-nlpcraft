@@ -23,7 +23,7 @@ import java.util
 import java.util.stream.Collectors
 
 /**
-  *
+  * [[NCNLPEntityParser]] helper.
   */
 object NCNLPEntityParser:
     private val id: String = "nlp:token"
@@ -31,7 +31,19 @@ object NCNLPEntityParser:
 import org.apache.nlpcraft.nlp.parsers.NCNLPEntityParser.*
 
 /**
+  * [[NCEntityParser]] built-in NLP implementation.
   *
+  * It converts list of [[NCToken]] instances to list of [[NCEntity]] instances with ID <code>nlp:token</code>.
+  * Each [[NCEntity]] instance contains following mandatory properties:
+  *  - nlp:token:text
+  *  - nlp:token:index
+  *  - nlp:token:startCharIndex
+  *  - nlp:token:endCharIndex
+  *
+  *  and all another properties which were already added by [[NCPipeline]] into processed [[NCToken]].
+  *
+  *  @param predicate Predicate which allow to restrict list of converted [[NCToken]] instances.
+  *  By default all [[NCToken]] instances converted to [[NCEntity]] instances.
   */
 class NCNLPEntityParser(predicate: NCToken => Boolean = _ => true) extends NCEntityParser:
     override def parse(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): List[NCEntity] =

@@ -21,6 +21,7 @@ import org.apache.nlpcraft.*
 import org.languagetool.AnalyzedToken
 import org.languagetool.tagging.ru.RussianTagger
 import scala.jdk.CollectionConverters.*
+
 /**
   *
   */

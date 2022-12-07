@@ -29,7 +29,7 @@ import scala.collection.*
 import scala.concurrent.ExecutionContext
 
 /**
-  * TODO: enriches with <code>stopword</code> property.
+  * [[NCEnStopWordsTokenEnricher]] helper.
   */
 object NCEnStopWordsTokenEnricher:
     // Condition types.
@@ -164,9 +164,16 @@ object NCEnStopWordsTokenEnricher:
 import org.apache.nlpcraft.nlp.enrichers.NCEnStopWordsTokenEnricher.*
 
 /**
+  * [[NCTokenEnricher]] built-in English language implementation.
   *
-  * @param addStopsSet
-  * @param exclStopsSet
+  * It adds <code>stopword</code> string property to [[NCToken]] instance if word which it represents is stop-word.
+  * Look more about stop-words [[https://en.wikipedia.org/wiki/Stop_word here]].
+  *
+  * Note that this implementation requires <code>pos</code> and <code>lemma</code> string properties in [[NCToken]] instance.
+  * You can configure [[NCOpenNLPLemmaPosTokenEnricher]] before [[NCEnQuotesTokenEnricher]] in your [[NCPipeline]].
+  *
+  * @param addStopsSet User defined additional stop-words collection.
+  * @param exclStopsSet Collection of words which should not be marked as stop-words during component processing.
   */
 class NCEnStopWordsTokenEnricher(addStopsSet: Set[String] = Set.empty, exclStopsSet: Set[String] = Set.empty) extends NCTokenEnricher with LazyLogging:
     private final val stemmer = new PorterStemmer

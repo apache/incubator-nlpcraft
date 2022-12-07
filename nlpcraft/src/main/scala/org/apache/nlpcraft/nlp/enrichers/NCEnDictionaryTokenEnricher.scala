@@ -21,7 +21,14 @@ import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.util.NCUtils
 
 /**
-  * TODO: enriches with <code>dict</code> property.
+  * [[NCTokenEnricher]] built-in English language implementation.
+  *
+  * It adds <code>dict</code> boolean property to [[NCToken]] instance if word which it represents is
+  * valid English word. That means that English dictionary contains this word initial form.
+  * Look more about [[https://en.wikipedia.org/wiki/Moby_Project Moby Project]] EN dictonary used here.
+  *
+  * Note that this implementation requires <code>lemma</code> string property in [[NCToken]] instance.
+  * You can configure [[NCOpenNLPLemmaPosTokenEnricher]] before [[NCEnDictionaryTokenEnricher]] in your [[NCPipeline]].
   */
 class NCEnDictionaryTokenEnricher extends NCTokenEnricher:
     private var dict: Set[String] = _

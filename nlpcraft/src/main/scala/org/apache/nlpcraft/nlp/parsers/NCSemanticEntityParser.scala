@@ -32,15 +32,16 @@ import scala.annotation.tailrec
 import scala.collection.mutable
 
 /**
-  *
+  * [[NCSemanticEntityParser]] helper.
   */
 object NCSemanticEntityParser:
     /**
+      * Creates [[NCSemanticEntityParser]] instance.
       *
-      * @param stemmer
-      * @param parser
-      * @param macros
-      * @param elements
+      * @param stemmer   [[NCSemanticStemmer]] implementation.
+      * @param parser    [[NCTokenParser]] implementation.
+      * @param macros    Macros map. Empty by default.
+      * @param elements  [[NCSemanticElement]] list.
       */
     def apply(
         stemmer: NCSemanticStemmer,
@@ -57,9 +58,11 @@ object NCSemanticEntityParser:
 
     /**
       *
-      * @param stemmer
-      * @param parser
-      * @param elements
+      * Creates [[NCSemanticEntityParser]] instance.
+      *
+      * @param stemmer  [[NCSemanticStemmer]] implementation.
+      * @param parser   [[NCTokenParser]] implementation.
+      * @param elements [[NCSemanticElement]] list.
       */
     def apply(
         stemmer: NCSemanticStemmer,
@@ -74,9 +77,11 @@ object NCSemanticEntityParser:
 
     /**
       *
-      * @param stemmer
-      * @param parser
-      * @param mdlSrc
+      * Creates [[NCSemanticEntityParser]] instance.
+      *
+      * @param stemmer  [[NCSemanticStemmer]] implementation.
+      * @param parser   [[NCTokenParser]] implementation.
+      * @param mdlSrc Classpath resource, file path or URL for YAML or JSON semantic model definition file.
       */
     def apply(stemmer: NCSemanticStemmer, parser: NCTokenParser, mdlSrc: String): NCSemanticEntityParser =
         require(stemmer != null, "Stemmer cannot be null.")
@@ -172,11 +177,17 @@ object NCSemanticEntityParser:
 import org.apache.nlpcraft.nlp.parsers.NCSemanticEntityParser.*
 
 /**
+  * [[NCEntityParser]] built-in <code>semantic</code>implementation.
   *
-  * @param stemmer
-  * @param parser
-  * @param macros
-  * @param elements
+  * See detailed description [[https://nlpcraft.apache.org/built-in-entity-parser.html#parser-semantic Semantic Parser]].
+  *
+  * @see [[NCSemanticElement]]
+  * @see [[NCSemanticStemmer]]
+  *
+  * @param stemmer [[NCSemanticStemmer]] implementation.
+  * @param parser [[NCTokenParser]] implementation.
+  * @param macros Macros map. Empty by default.
+  * @param elements  [[NCSemanticElement]] list.
   * @param mdlSrcOpt Optional classpath resource, file path or URL for YAML or JSON semantic model definition file.
   */
 class NCSemanticEntityParser(

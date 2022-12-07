@@ -30,12 +30,20 @@ package org.apache.nlpcraft.nlp.parsers
                ALl rights reserved.
 */
 
+// TODO: link on site?
 /**
   *
+  * Stemmer trait. Read more about stemming [[https://en.wikipedia.org/wiki/Stemming here]].
+  *
+  *  See detailed description [[https://nlpcraft.apache.org/built-in-entity-parser.html#parser-semantic Semantic Parser]].
+  *
+  * @see [[NCSemanticEntityParser]]
+  * @see [[NCSemanticElement]]
   */
 trait NCSemanticStemmer:
     /**
+      * Gets text's stem.
       *
-      * @param txt
+      * @param txt Stem.
       */
     def stem(txt: String): String
