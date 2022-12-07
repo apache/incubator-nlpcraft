@@ -33,6 +33,7 @@ class NCEnQuotesTokenEnricher extends NCTokenEnricher with LazyLogging:
     private def getPos(t: NCToken): String = t.get("pos").getOrElse(throw new NCException("POS not found in token."))
     private def isQuote(t: NCToken): Boolean = Q_POS.contains(getPos(t))
 
+    //noinspection DuplicatedCode
     override def enrich(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): Unit =
         val quotes = toks.filter(isQuote)
 

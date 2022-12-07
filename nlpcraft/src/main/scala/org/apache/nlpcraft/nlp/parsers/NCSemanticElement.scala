@@ -30,7 +30,6 @@ package org.apache.nlpcraft.nlp.parsers
                ALl rights reserved.
 */
 
-// TODO: link on site?
 /**
   *
   * Configuration which helps to detect [[org.apache.nlpcraft.NCEntity NCEntity]] for

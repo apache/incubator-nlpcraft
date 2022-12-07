@@ -30,7 +30,6 @@ package org.apache.nlpcraft.nlp.parsers
                ALl rights reserved.
 */
 
-// TODO: link on site?
 /**
   *
   * Stemmer trait. Read more about stemming [[https://en.wikipedia.org/wiki/Stemming here]].

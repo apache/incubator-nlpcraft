@@ -74,7 +74,7 @@ class NCOpenNLPLemmaPosTokenEnricher(posMdlSrc: String = null, lemmaDicSrc: Stri
             val poses = if tagger != null then tagger.tag(txts) else txts.map(_ => "")
             var lemmas = if lemmatizer != null then lemmatizer.lemmatize(txts, poses) else txts
 
-            require(toks.length == poses.length && toks.length == lemmas.length)
+            require(toks.sizeIs == poses.length && toks.sizeIs == lemmas.length)
 
             // For some reasons lemmatizer (en-lemmatizer.dict) marks some words with non-existent POS 'NNN'
             // Valid POS list: https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html

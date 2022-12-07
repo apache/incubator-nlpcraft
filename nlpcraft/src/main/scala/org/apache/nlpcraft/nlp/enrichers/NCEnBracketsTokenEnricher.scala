@@ -32,6 +32,7 @@ import scala.collection.mutable
   *
   * Note that invalid enclosed brackets are ignored.
   */
+//noinspection DuplicatedCode
 class NCEnBracketsTokenEnricher extends NCTokenEnricher with LazyLogging:
     override def enrich(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): Unit =
         val stack = new java.util.Stack[String]()

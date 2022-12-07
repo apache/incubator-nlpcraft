@@ -38,10 +38,10 @@ object NCSemanticEntityParser:
     /**
       * Creates [[NCSemanticEntityParser]] instance.
       *
-      * @param stemmer   [[NCSemanticStemmer]] implementation.
-      * @param parser    [[NCTokenParser]] implementation.
-      * @param macros    Macros map. Empty by default.
-      * @param elements  [[NCSemanticElement]] list.
+      * @param stemmer [[NCSemanticStemmer]] implementation.
+      * @param parser [[NCTokenParser]] implementation.
+      * @param macros Macros map. Empty by default.
+      * @param elements [[NCSemanticElement]] list.
       */
     def apply(
         stemmer: NCSemanticStemmer,
@@ -168,7 +168,7 @@ object NCSemanticEntityParser:
       * @param tmp
       */
     @tailrec private def combine(data1: Seq[String], data2: Seq[String], i: Int = 0, tmp: Set[List[String]] = Set(List.empty)): Set[List[String]] =
-        require(data1.size == data2.size)
+        require(data1.sizeIs == data2.size)
 
         if data1.isEmpty then Set.empty
         else if i >= data1.size then tmp
