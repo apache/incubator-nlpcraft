@@ -32,7 +32,7 @@ import java.util.Objects
   * Some of OpenNLP prepared models can be found [[https://opennlp.sourceforge.net/models-1.5/ here]].
   *
   * @param tokMdl Path to [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/tokenize/TokenizerModel.html model]].
-  * Note that [[NCPipelineBuilder.withSemantic()]] methods use [[http://opennlp.sourceforge.net/models-1.5/en-token.bin models-1.5/en-token.bin]].
+  * Note that [[NCPipelineBuilder.withSemantic()]] methods use for English language [[http://opennlp.sourceforge.net/models-1.5/en-token.bin en-token.bin]].
   */
 class NCOpenNLPTokenParser(tokMdl: String) extends NCTokenParser with LazyLogging:
     require(tokMdl != null, "Tokenizer model path cannot be null.")

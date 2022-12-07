@@ -37,6 +37,7 @@ package org.apache.nlpcraft.nlp.parsers
   * <code>Semantic</code> implementation of [[org.apache.nlpcraft.NCEntityParser NCEntityParser]].
   *
   * See detailed description [[https://nlpcraft.apache.org/built-in-entity-parser.html#parser-semantic Semantic Parser]].
+  *
   * @see [[NCSemanticEntityParser]]
   * @see [[NCSemanticStemmer]]
   */
