@@ -33,8 +33,8 @@ import scala.concurrent.ExecutionContext
   */
 object NCEnStopWordsTokenEnricher:
     // Condition types.
-    type Wildcard = (String, String)
-    type Word = String
+    private type Wildcard = (String, String)
+    private type Word = String
 
     /** All POSes set. http://www.clips.ua.ac.be/pages/mbsp-tags */
     private val POSES = Set(
