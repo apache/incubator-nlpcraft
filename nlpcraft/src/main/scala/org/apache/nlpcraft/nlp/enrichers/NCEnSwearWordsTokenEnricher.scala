@@ -26,13 +26,16 @@ import java.io.*
 import java.util.Objects
 
 /**
-  * [[NCTokenEnricher]] built-in English language implementation.
+  * "Swear-word" [[NCTokenEnricher enricher]] for English language.
   *
-  * It adds <code>swear</code> boolean property to [[NCToken]] instance if word which it represents is swear word.
+  * This enricher adds `swear` boolean [[NCPropertyMap metadata]] property to the [[NCToken token]]
+  * instance if word it represents is a swear word dictionary, i.e. the swear dictionary contains this word's
+  * stem. The value `true` of the metadata property indicates that this word's stem is found in the dictionary,
+  * `false` value indicates otherwise.
   *
-  * @param res Path to swear words list text resource.
-  * Note that [[NCPipelineBuilder.withSemantic()]] methods use for English language
-  * [[https://raw.githubusercontent.com/apache/incubator-nlpcraft/external_config/external/badfilter/swear_words.txt NlpCraft Swearword Dictionary]]
+  * Read more about stemming [[https://en.wikipedia.org/wiki/Stemming here]].
+  *
+  * @param res Path to English swear dictionary. English swear dictionary has simple plain text format with one word on one line.
   */
 //noinspection ScalaWeakerAccess
 class NCEnSwearWordsTokenEnricher(res: String) extends NCTokenEnricher with LazyLogging:

@@ -227,6 +227,23 @@ class NCPipelineBuilder:
     /**
       * Shortcut to configure pipeline with [[NCSemanticEntityParser]].
       *
+      * For English language it initializes also following components:
+      *   - [[https://opennlp.apache.org/ OpenNLP]] based [[NCOpenNLPTokenParser token parser]]
+      *     initialized by [[http://opennlp.sourceforge.net/models-1.5/en-token.bin en-token.bin]] model.
+      *   - [[https://opennlp.apache.org/ OpenNLP]] based [[NCOpenNLPTokenEnricher token enricher]]
+      *     initialized by
+      *     [[http://opennlp.sourceforge.net/models-1.5/en-pos-maxent.bin en-pos-maxent.bin]] model for
+      *     [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/postag/POSTaggerME.html POSTaggerME]]
+      *     and
+      *     [[https://raw.githubusercontent.com/richardwilly98/elasticsearch-opennlp-auto-tagging/master/src/main/resources/models/en-lemmatizer.dict en-lemmatizer.dict]] model for
+      *     [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/lemmatizer/DictionaryLemmatizer.html DictionaryLemmatizer]].
+      *  - [[NCEnStopWordsTokenEnricher `Stop-word`]] token enricher.
+      *  - [[NCEnSwearWordsTokenEnricher `Swear-word`]] token enricher initialized by
+      *    [[https://raw.githubusercontent.com/apache/incubator-nlpcraft/external_config/external/badfilter/swear_words.txt swear_words.txt]] dictionary.
+      *  - [[NCEnQuotesTokenEnricher `Quotes`]] token enricher.
+      *  - [[NCEnDictionaryTokenEnricher `Known-word`]] token enricher.
+      *  - [[NCEnBracketsTokenEnricher Brackets]] token enricher.
+      *
       * @param lang ISO 639-1 language code. Currently, only "en" (English) is supported.
       * @param macros Macros to use with [[NCSemanticEntityParser]].
       * @param elms Semantic elements to use with [[NCSemanticEntityParser]].
@@ -248,6 +265,23 @@ class NCPipelineBuilder:
     /**
       * Shortcut to configure pipeline with [[NCSemanticEntityParser]].
       *
+      * For English language it initializes also following components:
+      *   - [[https://opennlp.apache.org/ OpenNLP]] based [[NCOpenNLPTokenParser token parser]]
+      *     initialized by [[http://opennlp.sourceforge.net/models-1.5/en-token.bin en-token.bin]] model.
+      *   - [[https://opennlp.apache.org/ OpenNLP]] based [[NCOpenNLPTokenEnricher token enricher]]
+      *     initialized by
+      *     [[http://opennlp.sourceforge.net/models-1.5/en-pos-maxent.bin en-pos-maxent.bin]] model for
+      *     [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/postag/POSTaggerME.html POSTaggerME]]
+      *     and
+      *     [[https://raw.githubusercontent.com/richardwilly98/elasticsearch-opennlp-auto-tagging/master/src/main/resources/models/en-lemmatizer.dict en-lemmatizer.dict]] model for
+      *     [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/lemmatizer/DictionaryLemmatizer.html DictionaryLemmatizer]].
+      *  - [[NCEnStopWordsTokenEnricher `Stop-word`]] token enricher.
+      *  - [[NCEnSwearWordsTokenEnricher `Swear-word`]] token enricher initialized by
+      *    [[https://raw.githubusercontent.com/apache/incubator-nlpcraft/external_config/external/badfilter/swear_words.txt swear_words.txt]] dictionary.
+      *  - [[NCEnQuotesTokenEnricher `Quotes`]] token enricher.
+      *  - [[NCEnDictionaryTokenEnricher `Known-word`]] token enricher.
+      *  - [[NCEnBracketsTokenEnricher Brackets]] token enricher.
+      *
       * @param lang ISO 639-1 language code. Currently, only "en" (English) is supported.
       * @param elms Semantic elements to use with [[NCSemanticEntityParser]].
       */
@@ -255,6 +289,23 @@ class NCPipelineBuilder:
 
     /**
       * Shortcut to configure pipeline with [[NCSemanticEntityParser]].
+      *
+      * For English language it initializes also following components:
+      *   - [[https://opennlp.apache.org/ OpenNLP]] based [[NCOpenNLPTokenParser token parser]]
+      *     initialized by [[http://opennlp.sourceforge.net/models-1.5/en-token.bin en-token.bin]] model.
+      *   - [[https://opennlp.apache.org/ OpenNLP]] based [[NCOpenNLPTokenEnricher token enricher]]
+      *     initialized by
+      *     [[http://opennlp.sourceforge.net/models-1.5/en-pos-maxent.bin en-pos-maxent.bin]] model for
+      *     [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/postag/POSTaggerME.html POSTaggerME]]
+      *     and
+      *     [[https://raw.githubusercontent.com/richardwilly98/elasticsearch-opennlp-auto-tagging/master/src/main/resources/models/en-lemmatizer.dict en-lemmatizer.dict]] model for
+      *     [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/lemmatizer/DictionaryLemmatizer.html DictionaryLemmatizer]].
+      *  - [[NCEnStopWordsTokenEnricher `Stop-word`]] token enricher.
+      *  - [[NCEnSwearWordsTokenEnricher `Swear-word`]] token enricher initialized by
+      *    [[https://raw.githubusercontent.com/apache/incubator-nlpcraft/external_config/external/badfilter/swear_words.txt swear_words.txt]] dictionary.
+      *  - [[NCEnQuotesTokenEnricher `Quotes`]] token enricher.
+      *  - [[NCEnDictionaryTokenEnricher `Known-word`]] token enricher.
+      *  - [[NCEnBracketsTokenEnricher Brackets]] token enricher.
       *
       * @param lang ISO 639-1 language code. Currently, only "en" (English) is supported.
       * @param mdlSrc Classpath resource, file path or URL for YAML or JSON semantic model definition file.

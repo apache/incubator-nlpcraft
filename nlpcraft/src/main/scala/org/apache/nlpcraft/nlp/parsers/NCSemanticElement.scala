@@ -19,24 +19,24 @@ package org.apache.nlpcraft.nlp.parsers
 
 /**
   *
-  * Configuration which helps to detect [[org.apache.nlpcraft.NCEntity NCEntity]] for
-  * <code>Semantic</code> implementation of [[org.apache.nlpcraft.NCEntityParser NCEntityParser]].
+  * Configuration element which helps to detect [[org.apache.nlpcraft.NCEntity NCEntity]] for
+  * `Semantic` implementation of [[org.apache.nlpcraft.NCEntityParser NCEntityParser]].
   *
-  * See detailed description [[https://nlpcraft.apache.org/built-in-entity-parser.html#parser-semantic Semantic Parser]].
+  * See detailed description on the website [[https://nlpcraft.apache.org/built-in-entity-parser.html#parser-semantic Semantic Parser]].
   *
   * @see [[NCSemanticEntityParser]]
   * @see [[NCSemanticStemmer]]
   */
 trait NCSemanticElement:
     /**
-      * Gets <code>id</code> for created [[org.apache.nlpcraft.NCEntity NCEntity]] instance.
+      * Gets `id` for created [[org.apache.nlpcraft.NCEntity NCEntity]] instance.
       * Representation of [[org.apache.nlpcraft.NCEntity.getId NCEntity.getId()]] method.
       * @return Element ID.
       */
     def getId: String
 
     /**
-      * Gets <code>groups</code> for created [[org.apache.nlpcraft.NCEntity NCEntity]] instance.
+      * Gets `groups` for created [[org.apache.nlpcraft.NCEntity NCEntity]] instance.
       * Representation of [[org.apache.nlpcraft.NCEntity.getGroups NCEntity.getGroups()]] method.
       * @return Groups.
       */
@@ -57,8 +57,7 @@ trait NCSemanticElement:
     def getSynonyms: Set[String] = Set.empty
 
     /**
-      * Gets optional <code>properties</code> map for created [[org.apache.nlpcraft.NCEntity NCEntity]] instance.
-      * Representation of [[org.apache.nlpcraft.NCEntity NCEntity]] content.
+      * Gets [[org.apache.nlpcraft.NCPropertyMap metadata]] property for created [[org.apache.nlpcraft.NCEntity NCEntity]] instance.
       * @return Groups.
       */
     def getProperties: Map[String, AnyRef] = Map.empty

@@ -31,19 +31,20 @@ object NCNLPEntityParser:
 import org.apache.nlpcraft.nlp.parsers.NCNLPEntityParser.*
 
 /**
-  * [[NCEntityParser]] built-in NLP implementation.
+  *  NLP data [[NCEntityParser parser]].
   *
-  * It converts list of [[NCToken]] instances to list of [[NCEntity]] instances with ID <code>nlp:token</code>.
-  * Each [[NCEntity]] instance contains following mandatory properties:
+  * This parser converts list of input [[NCToken]] instances to list of [[NCEntity]] instances with ID `nlp:token`.
+  * All [[NCEntity]] instances contain following mandatory [[NCPropertyMap metadata]] properties:
   *  - nlp:token:text
   *  - nlp:token:index
   *  - nlp:token:startCharIndex
   *  - nlp:token:endCharIndex
   *
-  *  and all another properties which were already added by [[NCPipeline]] into processed [[NCToken]].
+  *  Also created [[NCEntity]] instances receive all another [[NCPropertyMap metadata]] properties
+  *  which were added by configured in [[NCPipeline pipeline]] token [[org.apache.nlpcraft.NCTokenEnricher enrichers]].
   *
-  *  @param predicate Predicate which allow to restrict list of converted [[NCToken]] instances.
-  *  By default all [[NCToken]] instances converted to [[NCEntity]] instances.
+  *  @param predicate Predicate which allows to filter list of converted [[NCToken]] instances.
+  *  By default all [[NCToken]] instances converted.
   */
 class NCNLPEntityParser(predicate: NCToken => Boolean = _ => true) extends NCEntityParser:
     override def parse(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): List[NCEntity] =

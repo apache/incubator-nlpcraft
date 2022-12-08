@@ -28,20 +28,19 @@ import java.io.*
 import scala.concurrent.ExecutionContext
 
 /**
-  * [[NCTokenEnricher]] built-in language independent implementation based on
-  * [[https://opennlp.apache.org/ OpenNLP]] <code>lemma</code> and <code>POS tagger</code> models.
+  * [[https://opennlp.apache.org/ OpenNLP]] based language independent [[NCTokenEnricher enricher]].
   *
-  * It adds <code>lemma</code> and <code>pos</code> (part-of-speech) string properties to [[NCToken]] instance.
+  * This enricher adds `lemma` and `pos` (part-of-speech) string [[NCPropertyMap metadata]] property to the [[NCToken token]]
+  * instance.
+
   * Lemma is the canonical form of word, look [[https://en.wikipedia.org/wiki/Lemma_(morphology) here]] for more details.
+  *
   * Part-of-speech tags are described [[https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html here]].
   *
   * Some of OpenNLP prepared models can be found [[https://opennlp.sourceforge.net/models-1.5/ here]].
   *
   * @param posMdlSrc Path to [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/postag/POSTaggerME.html POSTaggerME]] model.
-  * Note that [[NCPipelineBuilder.withSemantic()]] methods use for English language [[http://opennlp.sourceforge.net/models-1.5/en-pos-maxent.bin en-pos-maxent.bin]].
-  *
   * @param lemmaDicSrc Path to [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/lemmatizer/DictionaryLemmatizer.html DictionaryLemmatizer]] model.
-  * Note that [[NCPipelineBuilder.withSemantic()]] methods use for English language [[https://raw.githubusercontent.com/richardwilly98/elasticsearch-opennlp-auto-tagging/master/src/main/resources/models/en-lemmatizer.dict en-lemmatizer.dict]].
   */
 class NCOpenNLPTokenEnricher(posMdlSrc: String = null, lemmaDicSrc: String = null) extends NCTokenEnricher with LazyLogging:
     private var tagger: POSTaggerME = _

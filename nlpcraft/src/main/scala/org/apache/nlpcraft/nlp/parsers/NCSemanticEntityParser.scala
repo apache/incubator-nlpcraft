@@ -177,16 +177,10 @@ object NCSemanticEntityParser:
 import org.apache.nlpcraft.nlp.parsers.NCSemanticEntityParser.*
 
 /**
-  * [[NCEntityParser]] built-in <code>semantic</code>implementation.
+  * `Semantic` [[NCEntityParser parser]] implementation.
   *
-  * See detailed description [[https://nlpcraft.apache.org/built-in-entity-parser.html#parser-semantic Semantic Parser]].
+  * See detailed description on the website [[https://nlpcraft.apache.org/built-in-entity-parser.html#parser-semantic Semantic Parser]].
   *
-  * Note that [[org.apache.nlpcraft.NCPipelineBuilder.withSemantic() NCPipelineBuilder.withSemantic()]]
-  * methods use for English language
-  * [[org.apache.nlpcraft.nlp.parsers.NCOpenNLPTokenParser NCOpenNLPTokenParser]] implementation of
-  * [[NCTokenParser]] with model
-  *  [[http://opennlp.sourceforge.net/models-1.5/en-token.bin en-token.bin]].
-
   *
   * @see [[NCSemanticElement]]
   * @see [[NCSemanticStemmer]]

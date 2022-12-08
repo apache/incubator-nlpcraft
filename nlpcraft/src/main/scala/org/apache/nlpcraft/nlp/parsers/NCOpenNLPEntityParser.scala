@@ -47,15 +47,19 @@ object NCOpenNLPEntityParser:
         new NCOpenNLPEntityParser(List(src))
 
 /**
-  * [[NCEntityParser]] built-in implementation based on [[https://opennlp.apache.org/ OpenNLP]] <code>name finders</code> models.
+  *  [[https://opennlp.apache.org/ OpenNLP]] based language independent [[NCEntityParser parser]] configured by
+  * paths to [[https://opennlp.apache.org/ OpenNLP]] `name finders` models.
   *
-  * It prepares [[NCEntity]] instances which are found by configured [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/namefind/TokenNameFinderModel.html models]]
-  * with entity ID <code>opennlp:modelId</code>, where <code>modelId</code> is ID of configured models.
+  * This parser prepares [[NCEntity]] instances which are detected by given models.
+  * These entities are created with ID `opennlp:modelId`, where `modelId` is [[https://opennlp.apache.org/ OpenNLP]] model ID.
+  * Also this parser adds `opennlp:modelId:probability` double [[NCPropertyMap metadata]] property to the
+  * created entities extracted from related [[https://opennlp.apache.org/ OpenNLP]] model.
   *
-  * Note that each [[NCToken]] can be included into several [[NCEntity]] instances.
+  * Some of OpenNLP prepared models can be found [[https://opennlp.sourceforge.net/models-1.5/ here]].
+  *
+  * **NOTE:** that each input [[NCToken]] can be included into several output [[NCEntity]] instances.
   *
   * @param srcs Paths to [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/namefind/TokenNameFinderModel.html models]].
-  * Some of OpenNLP prepared models can be found [[https://opennlp.sourceforge.net/models-1.5/ here]].
   */
 class NCOpenNLPEntityParser(srcs: List[String]) extends NCEntityParser with LazyLogging:
     require(srcs != null, "Models source cannot be null.")

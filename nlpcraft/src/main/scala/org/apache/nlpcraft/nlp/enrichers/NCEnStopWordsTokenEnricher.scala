@@ -163,16 +163,20 @@ object NCEnStopWordsTokenEnricher:
 import org.apache.nlpcraft.nlp.enrichers.NCEnStopWordsTokenEnricher.*
 
 /**
-  * [[NCTokenEnricher]] built-in English language implementation.
+  * "Stop-word" [[NCTokenEnricher enricher]] for English language.
   *
-  * It adds <code>stopword</code> string property to [[NCToken]] instance if word which it represents is stop-word.
+  * This enricher adds `stopword` boolean [[NCPropertyMap metadata]] property to the [[NCToken token]]
+  * instance if word it represents is an English stop-word. The value `true` of the metadata property indicates that this word is detected as stop-word,
+  * `false` value indicates otherwise.
+  *
   * Look more about stop-words [[https://en.wikipedia.org/wiki/Stop_word here]].
   *
-  * Note that this implementation requires <code>pos</code> and <code>lemma</code> string properties in [[NCToken]] instance.
-  * You can configure [[NCOpenNLPTokenEnricher]] before [[NCEnQuotesTokenEnricher]] in your [[NCPipeline]].
+  * **NOTE:** this implementation requires `lemma` and `pos` string [[NCPropertyMap metadata]] properties that contains
+  * token's lemma and part of speech. You can configure [[NCOpenNLPTokenEnricher]] that provides this metadata property before
+  * this enricher in your [[NCPipeline pipeline]].
   *
-  * @param addStopsSet User defined additional stop-words collection.
-  * @param exclStopsSet Collection of words which should not be marked as stop-words during component processing.
+  * @param addStopsSet User defined collection of additional stop-words.
+  * @param exclStopsSet User defined collection of exceptions, that is words which should not be marked as stop-words during processing.
   */
 class NCEnStopWordsTokenEnricher(addStopsSet: Set[String] = Set.empty, exclStopsSet: Set[String] = Set.empty) extends NCTokenEnricher with LazyLogging:
     private final val stemmer = new PorterStemmer
