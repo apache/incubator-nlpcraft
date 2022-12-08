@@ -33,6 +33,7 @@ package org.apache.nlpcraft
   * @see [[NCEntityValidator]]
   * @see [[NCEntityMapper]]
   */
+//noinspection DuplicatedCode
 trait NCEntityEnricher extends NCLifecycle:
     /**
       * Enriches given list of entities by settings their properties.

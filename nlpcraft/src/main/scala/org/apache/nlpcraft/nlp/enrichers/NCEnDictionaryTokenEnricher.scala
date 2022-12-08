@@ -21,15 +21,20 @@ import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.util.NCUtils
 
 /**
-  * [[NCTokenEnricher]] built-in English language implementation.
+  * "Known-word" [[NCTokenEnricher enricher]] for English language.
   *
-  * It adds <code>dict</code> boolean property to [[NCToken]] instance if word which it represents is
-  * valid English word. That means that English dictionary contains this word initial form.
-  * Look more about [[https://en.wikipedia.org/wiki/Moby_Project Moby Project]] EN dictonary used here.
+  * This enricher adds `dict` boolean [[NCPropertyMap metadata]] property to the [[NCToken token]]
+  * instance if word it represents is a known English word, i.e. the English dictionary contains this word's
+  * lemma. The value `true` of the metadata property indicates that this word's lemma is found in the dictionary,
+  * `false` value indicates otherwise.
   *
-  * Note that this implementation requires <code>lemma</code> string property in [[NCToken]] instance.
-  * You can configure [[NCOpenNLPLemmaPosTokenEnricher]] before [[NCEnDictionaryTokenEnricher]] in your [[NCPipeline]].
+  * Implementation uses the [[https://en.wikipedia.org/wiki/Moby_Project Moby Project]] English dictionary.
+  *
+  * **NOTE:** this implementation requires `lemma` string [[NCPropertyMap metadata]] property that contains
+  * token's lemma. You can configure [[NCOpenNLPTokenEnricher]] that provides this metadata property before
+  * this enricher in your [[NCPipeline pipeline]].
   */
+//noinspection DuplicatedCode,ScalaWeakerAccess
 class NCEnDictionaryTokenEnricher extends NCTokenEnricher:
     private var dict: Set[String] = _
 

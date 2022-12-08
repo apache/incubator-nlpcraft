@@ -26,8 +26,9 @@ import org.apache.nlpcraft.*
   * It adds <code>quoted</code> boolean property to [[NCToken]] instance if word which it represents is in quotes.
   *
   * Note that this implementation requires <code>pos</code> string property in [[NCToken]] instance.
-  * You can configure [[NCOpenNLPLemmaPosTokenEnricher]] before [[NCEnQuotesTokenEnricher]] in your [[NCPipeline]].
+  * You can configure [[NCOpenNLPTokenEnricher]] before [[NCEnQuotesTokenEnricher]] in your [[NCPipeline]].
   */
+//noinspection ScalaWeakerAccess
 class NCEnQuotesTokenEnricher extends NCTokenEnricher with LazyLogging:
     private final val Q_POS: Set[String] = Set("``", "''")
     private def getPos(t: NCToken): String = t.get("pos").getOrElse(throw new NCException("POS not found in token."))

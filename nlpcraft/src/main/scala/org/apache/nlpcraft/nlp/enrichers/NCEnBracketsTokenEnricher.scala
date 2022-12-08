@@ -24,15 +24,15 @@ import java.io.*
 import scala.collection.mutable
 
 /**
-  * [[NCTokenEnricher]] built-in English language implementation.
+  * Brackets [[NCTokenEnricher enricher]] for English language.
   *
-  * It adds <code>brackets</code> boolean property to [[NCToken]] instance if word which it represents is in brackets.
+  * This enricher adds `brackets` boolean [[NCPropertyMap metadata]] property to the [[NCToken token]]
+  * instance if the word it represents is enclosed in brackets. Supported brackets are: `()`, `{}`,
+  * `[]` and `<>`.
   *
-  * Supported brackets are: <code>()</code>, <code>{}</code>, <code>[]</code> and <code><></code>.
-  *
-  * Note that invalid enclosed brackets are ignored.
+  * **NOTE:** invalid enclosed brackets are ignored.
   */
-//noinspection DuplicatedCode
+//noinspection DuplicatedCode,ScalaWeakerAccess
 class NCEnBracketsTokenEnricher extends NCTokenEnricher with LazyLogging:
     override def enrich(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): Unit =
         val stack = new java.util.Stack[String]()

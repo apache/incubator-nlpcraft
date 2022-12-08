@@ -169,7 +169,7 @@ import org.apache.nlpcraft.nlp.enrichers.NCEnStopWordsTokenEnricher.*
   * Look more about stop-words [[https://en.wikipedia.org/wiki/Stop_word here]].
   *
   * Note that this implementation requires <code>pos</code> and <code>lemma</code> string properties in [[NCToken]] instance.
-  * You can configure [[NCOpenNLPLemmaPosTokenEnricher]] before [[NCEnQuotesTokenEnricher]] in your [[NCPipeline]].
+  * You can configure [[NCOpenNLPTokenEnricher]] before [[NCEnQuotesTokenEnricher]] in your [[NCPipeline]].
   *
   * @param addStopsSet User defined additional stop-words collection.
   * @param exclStopsSet Collection of words which should not be marked as stop-words during component processing.

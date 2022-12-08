@@ -33,6 +33,7 @@ package org.apache.nlpcraft
   * @see [[NCEntityValidator]]
   * @see [[NCEntityMapper]]
   */
+//noinspection DuplicatedCode
 trait NCTokenValidator extends NCLifecycle:
     /**
       * Validates given list of tokens. If validation fails this method should throw an [[NCException]]. Note that

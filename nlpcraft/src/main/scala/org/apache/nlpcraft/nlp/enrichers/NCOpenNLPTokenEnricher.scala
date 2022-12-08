@@ -43,7 +43,7 @@ import scala.concurrent.ExecutionContext
   * @param lemmaDicSrc Path to [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/lemmatizer/DictionaryLemmatizer.html DictionaryLemmatizer]] model.
   * Note that [[NCPipelineBuilder.withSemantic()]] methods use for English language [[https://raw.githubusercontent.com/richardwilly98/elasticsearch-opennlp-auto-tagging/master/src/main/resources/models/en-lemmatizer.dict en-lemmatizer.dict]].
   */
-class NCOpenNLPLemmaPosTokenEnricher(posMdlSrc: String = null, lemmaDicSrc: String = null) extends NCTokenEnricher with LazyLogging:
+class NCOpenNLPTokenEnricher(posMdlSrc: String = null, lemmaDicSrc: String = null) extends NCTokenEnricher with LazyLogging:
     private var tagger: POSTaggerME = _
     private var lemmatizer: DictionaryLemmatizer = _
 

@@ -31,6 +31,7 @@ package org.apache.nlpcraft
   * @see [[NCEntityValidator]]
   * @see [[NCEntityMapper]]
   */
+//noinspection DuplicatedCode
 trait NCTokenEnricher extends NCLifecycle:
     /**
       * Enriches, or otherwise modifies, previously parsed [[NCToken tokens]].

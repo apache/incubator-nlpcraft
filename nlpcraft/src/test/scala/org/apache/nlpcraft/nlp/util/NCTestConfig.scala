@@ -28,7 +28,7 @@ final val CFG = NCModelConfig("testId", "test", "1.0", desc = "Test description"
 final val EN_TOK_PARSER = new NCOpenNLPTokenParser(R.getPath("opennlp/en-token.bin"))
 final val EN_TOK_STOP_ENRICHER = new NCEnStopWordsTokenEnricher
 final val EN_TOK_LEMMA_POS_ENRICHER =
-    new NCOpenNLPLemmaPosTokenEnricher(R.getPath("opennlp/en-pos-maxent.bin"), R.getPath("opennlp/en-lemmatizer.dict"))
+    new NCOpenNLPTokenEnricher(R.getPath("opennlp/en-pos-maxent.bin"), R.getPath("opennlp/en-lemmatizer.dict"))
 final def mkEmptyEnPipeline: NCTestPipeline = NCTestPipeline(EN_TOK_PARSER)
 final def mkEnPipeline(ep: NCEntityParser): NCTestPipeline =
     val pl = mkEmptyEnPipeline

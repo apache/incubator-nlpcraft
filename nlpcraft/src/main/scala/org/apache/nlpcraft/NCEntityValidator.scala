@@ -37,6 +37,7 @@ package org.apache.nlpcraft
   * @see [[NCEntityValidator]]
   * @see [[NCEntityMapper]]
   */
+//noinspection DuplicatedCode
 trait NCEntityValidator extends NCLifecycle:
     /**
       * Validates the final list of parsed and enriched entities.

@@ -217,7 +217,7 @@ class NCPipelineBuilder:
       */
     private def setEnComponents(): Unit =
         tokParser = mkEnOpenNLPTokenParser.?
-        tokEnrichers += new NCOpenNLPLemmaPosTokenEnricher(NCResourceReader.getPath("opennlp/en-pos-maxent.bin"), NCResourceReader.getPath("opennlp/en-lemmatizer.dict"))
+        tokEnrichers += new NCOpenNLPTokenEnricher(NCResourceReader.getPath("opennlp/en-pos-maxent.bin"), NCResourceReader.getPath("opennlp/en-lemmatizer.dict"))
         tokEnrichers += new NCEnStopWordsTokenEnricher
         tokEnrichers += new NCEnSwearWordsTokenEnricher(NCResourceReader.getPath("badfilter/swear_words.txt"))
         tokEnrichers += new NCEnQuotesTokenEnricher

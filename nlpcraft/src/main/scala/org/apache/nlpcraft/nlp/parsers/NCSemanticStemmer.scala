@@ -21,7 +21,7 @@ package org.apache.nlpcraft.nlp.parsers
   *
   * Stemmer trait. Read more about stemming [[https://en.wikipedia.org/wiki/Stemming here]].
   *
-  *  See detailed description [[https://nlpcraft.apache.org/built-in-entity-parser.html#parser-semantic Semantic Parser]].
+  * See detailed description [[https://nlpcraft.apache.org/built-in-entity-parser.html#parser-semantic Semantic Parser]].
   *
   * @see [[NCSemanticEntityParser]]
   * @see [[NCSemanticElement]]

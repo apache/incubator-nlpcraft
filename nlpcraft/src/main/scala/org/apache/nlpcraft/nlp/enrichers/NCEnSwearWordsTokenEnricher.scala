@@ -34,6 +34,7 @@ import java.util.Objects
   * Note that [[NCPipelineBuilder.withSemantic()]] methods use for English language
   * [[https://raw.githubusercontent.com/apache/incubator-nlpcraft/external_config/external/badfilter/swear_words.txt NlpCraft Swearword Dictionary]]
   */
+//noinspection ScalaWeakerAccess
 class NCEnSwearWordsTokenEnricher(res: String) extends NCTokenEnricher with LazyLogging:
     require(res != null, "Swear words model file cannot be null.")
 
