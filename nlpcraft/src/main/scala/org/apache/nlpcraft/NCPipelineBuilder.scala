@@ -237,11 +237,11 @@ class NCPipelineBuilder:
       *     and
       *     [[https://raw.githubusercontent.com/richardwilly98/elasticsearch-opennlp-auto-tagging/master/src/main/resources/models/en-lemmatizer.dict en-lemmatizer.dict]] model for
       *     [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/lemmatizer/DictionaryLemmatizer.html DictionaryLemmatizer]].
-      *  - [[NCEnStopWordsTokenEnricher `Stop-word`]] token enricher.
-      *  - [[NCEnSwearWordsTokenEnricher `Swear-word`]] token enricher initialized by
+      *  - [[NCEnStopWordsTokenEnricher Stop-word]] token enricher.
+      *  - [[NCEnSwearWordsTokenEnricher Swear-word]] token enricher initialized by
       *    [[https://raw.githubusercontent.com/apache/incubator-nlpcraft/external_config/external/badfilter/swear_words.txt swear_words.txt]] dictionary.
-      *  - [[NCEnQuotesTokenEnricher `Quotes`]] token enricher.
-      *  - [[NCEnDictionaryTokenEnricher `Known-word`]] token enricher.
+      *  - [[NCEnQuotesTokenEnricher Quotes]] token enricher.
+      *  - [[NCEnDictionaryTokenEnricher Known-word]] token enricher.
       *  - [[NCEnBracketsTokenEnricher Brackets]] token enricher.
       *
       * @param lang ISO 639-1 language code. Currently, only "en" (English) is supported.
@@ -275,11 +275,11 @@ class NCPipelineBuilder:
       *     and
       *     [[https://raw.githubusercontent.com/richardwilly98/elasticsearch-opennlp-auto-tagging/master/src/main/resources/models/en-lemmatizer.dict en-lemmatizer.dict]] model for
       *     [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/lemmatizer/DictionaryLemmatizer.html DictionaryLemmatizer]].
-      *  - [[NCEnStopWordsTokenEnricher `Stop-word`]] token enricher.
-      *  - [[NCEnSwearWordsTokenEnricher `Swear-word`]] token enricher initialized by
+      *  - [[NCEnStopWordsTokenEnricher Stop-word]] token enricher.
+      *  - [[NCEnSwearWordsTokenEnricher Swear-word]] token enricher initialized by
       *    [[https://raw.githubusercontent.com/apache/incubator-nlpcraft/external_config/external/badfilter/swear_words.txt swear_words.txt]] dictionary.
-      *  - [[NCEnQuotesTokenEnricher `Quotes`]] token enricher.
-      *  - [[NCEnDictionaryTokenEnricher `Known-word`]] token enricher.
+      *  - [[NCEnQuotesTokenEnricher Quotes]] token enricher.
+      *  - [[NCEnDictionaryTokenEnricher Known-word]] token enricher.
       *  - [[NCEnBracketsTokenEnricher Brackets]] token enricher.
       *
       * @param lang ISO 639-1 language code. Currently, only "en" (English) is supported.
@@ -300,11 +300,11 @@ class NCPipelineBuilder:
       *     and
       *     [[https://raw.githubusercontent.com/richardwilly98/elasticsearch-opennlp-auto-tagging/master/src/main/resources/models/en-lemmatizer.dict en-lemmatizer.dict]] model for
       *     [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/lemmatizer/DictionaryLemmatizer.html DictionaryLemmatizer]].
-      *  - [[NCEnStopWordsTokenEnricher `Stop-word`]] token enricher.
-      *  - [[NCEnSwearWordsTokenEnricher `Swear-word`]] token enricher initialized by
+      *  - [[NCEnStopWordsTokenEnricher Stop-word]] token enricher.
+      *  - [[NCEnSwearWordsTokenEnricher Swear-word]] token enricher initialized by
       *    [[https://raw.githubusercontent.com/apache/incubator-nlpcraft/external_config/external/badfilter/swear_words.txt swear_words.txt]] dictionary.
-      *  - [[NCEnQuotesTokenEnricher `Quotes`]] token enricher.
-      *  - [[NCEnDictionaryTokenEnricher `Known-word`]] token enricher.
+      *  - [[NCEnQuotesTokenEnricher Quotes]] token enricher.
+      *  - [[NCEnDictionaryTokenEnricher Known-word]] token enricher.
       *  - [[NCEnBracketsTokenEnricher Brackets]] token enricher.
       *
       * @param lang ISO 639-1 language code. Currently, only "en" (English) is supported.
