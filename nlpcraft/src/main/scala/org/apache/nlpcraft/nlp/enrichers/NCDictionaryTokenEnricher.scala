@@ -21,7 +21,7 @@ import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.util.NCUtils
 
 /**
-  * "Known-word" [[NCTokenEnricher enricher]].
+  * "Known-word" [[NCTokenEnricher token enricher]].
   *
   * This enricher adds `dict` boolean [[NCPropertyMap metadata]] property to the [[NCToken token]]
   * instance if word it represents is a known dictionary word, i.e. the configured dictionary contains this word's
@@ -29,10 +29,11 @@ import org.apache.nlpcraft.internal.util.NCUtils
   * `false` value indicates otherwise.
   *
   * **NOTE:** this implementation requires `lemma` string [[NCPropertyMap metadata]] property that contains
-  * token's lemma. You can configure [[NCOpenNLPTokenEnricher]] for required language that provides this metadata property before
-  * this enricher in your [[NCPipeline pipeline]].
+  * token's lemma. You can configure [[NCOpenNLPTokenEnricher]] for required language that provides this
+  * metadata property before this enricher in your [[NCPipeline pipeline]].
   *
-  * @param dictRes Path to the dictionary. This dictionary should has a simple plain text format with one dictionary word on one line.
+  * @param dictRes Relative path, absolute path or URL to the dictionary file. The dictionary should have a simple
+  *         plain text format with *one lemma per line* with no empty line, header or comments allowed.
   */
 //noinspection DuplicatedCode,ScalaWeakerAccess
 class NCDictionaryTokenEnricher(dictRes: String) extends NCTokenEnricher:
@@ -40,8 +41,9 @@ class NCDictionaryTokenEnricher(dictRes: String) extends NCTokenEnricher:
 
     init()
 
-    private def init(): Unit = dict = NCUtils.readResource(dictRes, "UTF-8").toSet
-    private def getLemma(t: NCToken): String = t.get("lemma").getOrElse(throw new NCException("Lemma not found in token."))
+    private def init(): Unit = dict = NCUtils.readResource(dictRes).toSet
+    private def getLemma(t: NCToken): String = t.get("lemma").getOrElse(throw new NCException("'lemma'' property not found in token."))
 
+    /** @inheritdoc */
     override def enrich(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): Unit =
         toks.foreach(t => t.put("dict", dict.contains(getLemma(t))))

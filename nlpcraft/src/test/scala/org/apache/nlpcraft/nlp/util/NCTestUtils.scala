@@ -126,7 +126,7 @@ object NCTestUtils:
     private def mkSemanticStemmer: NCStemmer =
         new NCStemmer():
             private val ps = new PorterStemmer
-            override def stem(txt: String): String = ps.synchronized { ps.stem(txt) }
+            override def stem(word: String): String = ps.synchronized { ps.stem(word) }
 
 
     /**

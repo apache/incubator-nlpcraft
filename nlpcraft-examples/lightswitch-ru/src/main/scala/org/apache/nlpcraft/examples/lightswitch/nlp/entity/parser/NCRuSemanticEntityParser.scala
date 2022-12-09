@@ -30,7 +30,7 @@ import org.apache.nlpcraft.nlp.common.NCStemmer
 class NCRuSemanticEntityParser(src: String) extends NCSemanticEntityParser(
     new NCStemmer:
         private val stemmer = new SnowballStemmer(SnowballStemmer.ALGORITHM.RUSSIAN)
-        override def stem(txt: String): String = stemmer.synchronized { stemmer.stem(txt.toLowerCase).toString }
+        override def stem(word: String): String = stemmer.synchronized { stemmer.stem(word.toLowerCase).toString }
     ,
     new NCRuTokenParser(),
     mdlSrcOpt = src.?

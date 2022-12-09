@@ -32,7 +32,7 @@ class NCSwearWordsTokenEnricherSpec extends AnyFunSuite:
         NCResourceReader.getPath("badfilter/swear_words.txt"),
         new NCStemmer:
             final private val ps: PorterStemmer = new PorterStemmer
-            override def stem(txt: String): String = ps.stem(txt)
+            override def stem(word: String): String = ps.stem(word)
     )
 
     test("test") {

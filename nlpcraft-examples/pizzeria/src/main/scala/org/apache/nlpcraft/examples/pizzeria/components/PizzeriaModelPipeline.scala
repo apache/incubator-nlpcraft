@@ -23,7 +23,7 @@ object PizzeriaModelPipeline:
         val tokParser = new NCStanfordNLPTokenParser(stanford)
         val stemmer = new NCStemmer():
             private val ps = new PorterStemmer
-            override def stem(txt: String): String = ps.synchronized { ps.stem(txt) }
+            override def stem(word: String): String = ps.synchronized { ps.stem(word) }
 
         import PizzeriaOrderMapperDesc as D
 

@@ -34,7 +34,7 @@ import scala.collection.mutable
 class NCSemanticEntityParserLemmaSpec extends AnyFunSuite:
     private val lemmaStemmer =
         new NCStemmer():
-            override def stem(txt: String): String = if wrapped(txt) then unwrap(txt) else UUID.randomUUID().toString
+            override def stem(word: String): String = if wrapped(word) then unwrap(word) else UUID.randomUUID().toString
 
     case class Data(text: String, elemId: String)
 

@@ -163,17 +163,19 @@ object NCEnStopWordsTokenEnricher:
 import org.apache.nlpcraft.nlp.enrichers.NCEnStopWordsTokenEnricher.*
 
 /**
-  * "Stop-word" [[NCTokenEnricher enricher]] for English language.
+  * "Stop-word" [[NCTokenEnricher token enricher]] for English (EN) language. Stop words are the words
+  * which are filtered out (i.e. stopped) before processing of natural language text because they are
+  * insignificant.
   *
   * This enricher adds `stopword` boolean [[NCPropertyMap metadata]] property to the [[NCToken token]]
-  * instance if word it represents is an English stop-word. The value `true` of the metadata property indicates that this word is detected as stop-word,
-  * `false` value indicates otherwise.
+  * instance if word it represents is an English stop-word. The value `true` of the metadata property indicates that
+  * this word is detected as a stop-word, `false` value indicates otherwise.
   *
-  * Look more about stop-words [[https://en.wikipedia.org/wiki/Stop_word here]].
+  * More information about stop-words can be found at [[https://en.wikipedia.org/wiki/Stop_word]].
   *
-  * **NOTE:** this implementation requires `lemma` and `pos` string [[NCPropertyMap metadata]] properties that contains
-  * token's lemma and part of speech. You can configure [[NCOpenNLPTokenEnricher]] for English language that provides this metadata property before
-  * this enricher in your [[NCPipeline pipeline]].
+  * **NOTE:** this implementation requires `lemma` and `pos` string [[NCPropertyMap metadata]] properties that
+  * contain token's lemma and part of speech. You can configure [[NCOpenNLPTokenEnricher]] for English language
+  * that provides this metadata properties before this enricher in your [[NCPipeline pipeline]].
   *
   * @param addStopsSet User defined collection of additional stop-words.
   * @param exclStopsSet User defined collection of exceptions, that is words which should not be marked as stop-words during processing.
