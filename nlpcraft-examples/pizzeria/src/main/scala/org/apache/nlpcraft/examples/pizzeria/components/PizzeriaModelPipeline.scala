@@ -6,8 +6,9 @@ import org.apache.nlpcraft.nlp.parsers.*
 import org.apache.nlpcraft.nlp.entity.parser.stanford.NCStanfordNLPEntityParser
 import org.apache.nlpcraft.nlp.token.parser.stanford.NCStanfordNLPTokenParser
 import org.apache.nlpcraft.*
+import org.apache.nlpcraft.nlp.common.NCStemmer
 import org.apache.nlpcraft.nlp.enrichers.NCEnStopWordsTokenEnricher
-import org.apache.nlpcraft.nlp.parsers.{NCSemanticEntityParser, NCSemanticStemmer}
+import org.apache.nlpcraft.nlp.parsers.NCSemanticEntityParser
 
 import java.util.Properties
 
@@ -20,7 +21,7 @@ object PizzeriaModelPipeline:
             props.setProperty("annotators", "tokenize, ssplit, pos, lemma, ner")
             new StanfordCoreNLP(props)
         val tokParser = new NCStanfordNLPTokenParser(stanford)
-        val stemmer = new NCSemanticStemmer():
+        val stemmer = new NCStemmer():
             private val ps = new PorterStemmer
             override def stem(txt: String): String = ps.synchronized { ps.stem(txt) }
 

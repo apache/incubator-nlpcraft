@@ -39,10 +39,10 @@ import scala.concurrent.ExecutionContext
   *
   * Some of OpenNLP prepared models can be found [[https://opennlp.sourceforge.net/models-1.5/ here]].
   *
-  * @param posMdlSrc Path to [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/postag/POSTaggerME.html POSTaggerME]] model.
-  * @param lemmaDicSrc Path to [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/lemmatizer/DictionaryLemmatizer.html DictionaryLemmatizer]] model.
+  * @param posMdlRes Path to [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/postag/POSTaggerME.html POSTaggerME]] model.
+  * @param lemmaDicRes Path to [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/lemmatizer/DictionaryLemmatizer.html DictionaryLemmatizer]] model.
   */
-class NCOpenNLPTokenEnricher(posMdlSrc: String = null, lemmaDicSrc: String = null) extends NCTokenEnricher with LazyLogging:
+class NCOpenNLPTokenEnricher(posMdlRes: String = null, lemmaDicRes: String = null) extends NCTokenEnricher with LazyLogging:
     private var tagger: POSTaggerME = _
     private var lemmatizer: DictionaryLemmatizer = _
 
@@ -52,15 +52,15 @@ class NCOpenNLPTokenEnricher(posMdlSrc: String = null, lemmaDicSrc: String = nul
         NCUtils.execPar(
             Seq(
                 () => {
-                    if posMdlSrc != null then
-                        tagger = new POSTaggerME(new POSModel(NCUtils.getStream(posMdlSrc)))
-                        logger.trace(s"Loaded resource: $posMdlSrc")
+                    if posMdlRes != null then
+                        tagger = new POSTaggerME(new POSModel(NCUtils.getStream(posMdlRes)))
+                        logger.trace(s"Loaded resource: $posMdlRes")
                     else logger.warn("POS tagger is not configured.")
                 },
                 () => {
-                    if lemmaDicSrc != null then
-                        lemmatizer = new DictionaryLemmatizer(NCUtils.getStream(lemmaDicSrc))
-                        logger.trace(s"Loaded resource: $lemmaDicSrc")
+                    if lemmaDicRes != null then
+                        lemmatizer = new DictionaryLemmatizer(NCUtils.getStream(lemmaDicRes))
+                        logger.trace(s"Loaded resource: $lemmaDicRes")
                     else logger.warn("Lemmatizer is not configured.")
                 }
             )

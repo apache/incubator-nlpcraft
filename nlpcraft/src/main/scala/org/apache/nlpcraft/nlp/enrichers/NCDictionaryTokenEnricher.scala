@@ -21,26 +21,26 @@ import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.util.NCUtils
 
 /**
-  * "Known-word" [[NCTokenEnricher enricher]] for English language.
+  * "Known-word" [[NCTokenEnricher enricher]].
   *
   * This enricher adds `dict` boolean [[NCPropertyMap metadata]] property to the [[NCToken token]]
-  * instance if word it represents is a known English word, i.e. the English dictionary contains this word's
+  * instance if word it represents is a known dictionary word, i.e. the configured dictionary contains this word's
   * lemma. The value `true` of the metadata property indicates that this word's lemma is found in the dictionary,
   * `false` value indicates otherwise.
   *
-  * Implementation uses the [[https://en.wikipedia.org/wiki/Moby_Project Moby Project]] English dictionary.
-  *
   * **NOTE:** this implementation requires `lemma` string [[NCPropertyMap metadata]] property that contains
-  * token's lemma. You can configure [[NCOpenNLPTokenEnricher]] that provides this metadata property before
+  * token's lemma. You can configure [[NCOpenNLPTokenEnricher]] for required language that provides this metadata property before
   * this enricher in your [[NCPipeline pipeline]].
+  *
+  * @param dictRes Path to the dictionary. This dictionary should has a simple plain text format with one dictionary word on one line.
   */
 //noinspection DuplicatedCode,ScalaWeakerAccess
-class NCEnDictionaryTokenEnricher extends NCTokenEnricher:
+class NCDictionaryTokenEnricher(dictRes: String) extends NCTokenEnricher:
     private var dict: Set[String] = _
 
     init()
 
-    private def init(): Unit = dict = NCUtils.readResource("moby/354984si.ngl", "iso-8859-1").toSet
+    private def init(): Unit = dict = NCUtils.readResource(dictRes, "UTF-8").toSet
     private def getLemma(t: NCToken): String = t.get("lemma").getOrElse(throw new NCException("Lemma not found in token."))
 
     override def enrich(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): Unit =

@@ -21,9 +21,10 @@ import opennlp.tools.stemmer.PorterStemmer
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.ascii.NCAsciiTable
 import org.apache.nlpcraft.internal.util.NCResourceReader
+import org.apache.nlpcraft.nlp.common.NCStemmer
 import org.apache.nlpcraft.nlp.parsers.*
 import org.apache.nlpcraft.nlp.parsers
-import org.apache.nlpcraft.nlp.parsers.{NCOpenNLPTokenParser, NCSemanticElement, NCSemanticEntityParser, NCSemanticStemmer}
+import org.apache.nlpcraft.nlp.parsers.{NCOpenNLPTokenParser, NCSemanticElement, NCSemanticEntityParser}
 
 import java.util
 import scala.util.Using
@@ -122,8 +123,8 @@ object NCTestUtils:
     /**
       *
       */
-    private def mkSemanticStemmer: NCSemanticStemmer =
-        new NCSemanticStemmer():
+    private def mkSemanticStemmer: NCStemmer =
+        new NCStemmer():
             private val ps = new PorterStemmer
             override def stem(txt: String): String = ps.synchronized { ps.stem(txt) }
 

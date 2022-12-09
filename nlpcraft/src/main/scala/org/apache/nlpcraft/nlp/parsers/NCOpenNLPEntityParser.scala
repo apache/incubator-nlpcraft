@@ -39,12 +39,12 @@ object NCOpenNLPEntityParser:
     /**
       * Creates [[NCOpenNLPEntityParser]] instance.
       *
-      * @param src Path to [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/namefind/TokenNameFinderModel.html model]].
+      * @param mdl Path to [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/namefind/TokenNameFinderModel.html model]].
       * @return [[NCOpenNLPEntityParser]] instance.
       */
-    def apply(src: String): NCOpenNLPEntityParser =
-        require(src != null, "Model source cannot be null.")
-        new NCOpenNLPEntityParser(List(src))
+    def apply(mdl: String): NCOpenNLPEntityParser =
+        require(mdl != null, "Model source cannot be null.")
+        new NCOpenNLPEntityParser(List(mdl))
 
 /**
   *  [[https://opennlp.apache.org/ OpenNLP]] based language independent [[NCEntityParser parser]] configured by
@@ -59,10 +59,10 @@ object NCOpenNLPEntityParser:
   *
   * **NOTE:** that each input [[NCToken]] can be included into several output [[NCEntity]] instances.
   *
-  * @param srcs Paths to [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/namefind/TokenNameFinderModel.html models]].
+  * @param findersMdlsRes Paths to [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/namefind/TokenNameFinderModel.html models]].
   */
-class NCOpenNLPEntityParser(srcs: List[String]) extends NCEntityParser with LazyLogging:
-    require(srcs != null, "Models source cannot be null.")
+class NCOpenNLPEntityParser(findersMdlsRes: List[String]) extends NCEntityParser with LazyLogging:
+    require(findersMdlsRes != null, "Models sources cannot be null.")
 
     private var finders: Seq[NameFinderME] = _
     private case class Holder(start: Int, end: Int, name: String, probability: Double)
@@ -74,7 +74,7 @@ class NCOpenNLPEntityParser(srcs: List[String]) extends NCEntityParser with Lazy
     private def init(): Unit =
         val finders = mutable.ArrayBuffer.empty[NameFinderME]
         NCUtils.execPar(
-            srcs.map(res => () => {
+            findersMdlsRes.map(res => () => {
                 val f = new NameFinderME(new TokenNameFinderModel(NCUtils.getStream(res)))
                 logger.trace(s"Loaded resource: $res")
                 finders.synchronized { finders += f }

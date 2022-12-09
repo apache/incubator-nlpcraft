@@ -172,7 +172,7 @@ import org.apache.nlpcraft.nlp.enrichers.NCEnStopWordsTokenEnricher.*
   * Look more about stop-words [[https://en.wikipedia.org/wiki/Stop_word here]].
   *
   * **NOTE:** this implementation requires `lemma` and `pos` string [[NCPropertyMap metadata]] properties that contains
-  * token's lemma and part of speech. You can configure [[NCOpenNLPTokenEnricher]] that provides this metadata property before
+  * token's lemma and part of speech. You can configure [[NCOpenNLPTokenEnricher]] for English language that provides this metadata property before
   * this enricher in your [[NCPipeline pipeline]].
   *
   * @param addStopsSet User defined collection of additional stop-words.

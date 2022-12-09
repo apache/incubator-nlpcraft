@@ -28,7 +28,7 @@ import org.scalatest.funsuite.AnyFunSuite
   *
   */
 class NCQuotesTokenEnricherSpec extends AnyFunSuite:
-    private val quoteEnricher = new NCEnQuotesTokenEnricher
+    private val quoteEnricher = new NCQuotesTokenEnricher
 
     /**
       *

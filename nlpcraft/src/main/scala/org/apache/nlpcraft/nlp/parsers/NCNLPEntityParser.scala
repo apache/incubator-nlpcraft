@@ -26,22 +26,23 @@ import java.util.stream.Collectors
   * [[NCNLPEntityParser]] helper.
   */
 object NCNLPEntityParser:
-    private val id: String = "nlp:token"
+    private val id: String = "nlp:entity"
 
 import org.apache.nlpcraft.nlp.parsers.NCNLPEntityParser.*
 
 /**
   *  NLP data [[NCEntityParser parser]].
   *
-  * This parser converts list of input [[NCToken]] instances to list of [[NCEntity]] instances with ID `nlp:token`.
+  * This parser converts list of input [[NCToken]] instances to list of [[NCEntity]] instances with ID `nlp:entity`.
   * All [[NCEntity]] instances contain following mandatory [[NCPropertyMap metadata]] properties:
-  *  - nlp:token:text
-  *  - nlp:token:index
-  *  - nlp:token:startCharIndex
-  *  - nlp:token:endCharIndex
+  *  - nlp:entity:text
+  *  - nlp:entity:index
+  *  - nlp:entity:startCharIndex
+  *  - nlp:entity:endCharIndex
   *
   *  Also created [[NCEntity]] instances receive all another [[NCPropertyMap metadata]] properties
   *  which were added by configured in [[NCPipeline pipeline]] token [[org.apache.nlpcraft.NCTokenEnricher enrichers]].
+  *  These properties identifiers will be prefixed by `nlp:entity:`.
   *
   *  @param predicate Predicate which allows to filter list of converted [[NCToken]] instances.
   *  By default all [[NCToken]] instances converted.

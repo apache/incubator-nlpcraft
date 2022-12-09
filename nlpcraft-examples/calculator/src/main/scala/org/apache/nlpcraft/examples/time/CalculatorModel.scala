@@ -65,7 +65,7 @@ class CalculatorModel extends NCModel(NCModelConfig("nlpcraft.calculator.ex", "C
     @NCIntent(
         "intent=calc options={ 'ordered': true }" +
         "   term(x)={# == 'stanford:number'}" +
-        "   term(op)={has(list('+', '-', '*', '/'), meta_ent('nlp:token:text')) == true}" +
+        "   term(op)={has(list('+', '-', '*', '/'), meta_ent('nlp:entity:text')) == true}" +
         "   term(y)={# == 'stanford:number'}"
     )
     @unused def onMatch(
@@ -78,7 +78,7 @@ class CalculatorModel extends NCModel(NCModelConfig("nlpcraft.calculator.ex", "C
 
     @NCIntent(
         "intent=calcMem options={ 'ordered': true }" +
-        "   term(op)={has(list('+', '-', '*', '/'), meta_ent('nlp:token:text')) == true}" +
+        "   term(op)={has(list('+', '-', '*', '/'), meta_ent('nlp:entity:text')) == true}" +
         "   term(y)={# == 'stanford:number'}"
     )
     @unused def onMatchMem(

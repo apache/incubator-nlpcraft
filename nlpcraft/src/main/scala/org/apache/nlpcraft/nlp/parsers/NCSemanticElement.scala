@@ -17,6 +17,8 @@
 
 package org.apache.nlpcraft.nlp.parsers
 
+import org.apache.nlpcraft.nlp.common.NCStemmer
+
 /**
   *
   * Configuration element which helps to detect [[org.apache.nlpcraft.NCEntity NCEntity]] for
@@ -25,7 +27,6 @@ package org.apache.nlpcraft.nlp.parsers
   * See detailed description on the website [[https://nlpcraft.apache.org/built-in-entity-parser.html#parser-semantic Semantic Parser]].
   *
   * @see [[NCSemanticEntityParser]]
-  * @see [[NCSemanticStemmer]]
   */
 trait NCSemanticElement:
     /**

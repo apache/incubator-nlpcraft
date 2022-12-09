@@ -21,18 +21,18 @@ import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.*
 
 /**
-  * Quotes [[NCTokenEnricher enricher]] for English language.
+  * Quotes [[NCTokenEnricher enricher]].
   *
   * This enricher adds `quoted` boolean [[NCPropertyMap metadata]] property to the [[NCToken token]]
   * instance if word it represents is in quotes. The value `true` of the metadata property indicates that this word is in quotes,
   * `false` value indicates otherwise.
   *
   * **NOTE:** this implementation requires `lemma` string [[NCPropertyMap metadata]] property that contains
-  * token's lemma. You can configure [[NCOpenNLPTokenEnricher]] that provides this metadata property before
+  * token's lemma. You can configure [[NCOpenNLPTokenEnricher]] for required language that provides this metadata property before
   * this enricher in your [[NCPipeline pipeline]].
   */
 //noinspection ScalaWeakerAccess
-class NCEnQuotesTokenEnricher extends NCTokenEnricher with LazyLogging:
+class NCQuotesTokenEnricher extends NCTokenEnricher with LazyLogging:
     private final val Q_POS: Set[String] = Set("``", "''")
     private def getPos(t: NCToken): String = t.get("pos").getOrElse(throw new NCException("POS not found in token."))
     private def isQuote(t: NCToken): Boolean = Q_POS.contains(getPos(t))

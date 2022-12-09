@@ -15,19 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.nlp.parsers
+package org.apache.nlpcraft.nlp.common
+
+import org.apache.nlpcraft.nlp.parsers.*
 
 /**
   *
   * `Stemmer` trait. Stems are used for finding words by their reduced form.
+  * `Stemmer` trait implementation depends on language.
   * Read more about stemming [[https://en.wikipedia.org/wiki/Stemming here]].
   *
-  * See detailed description on the website [[https://nlpcraft.apache.org/built-in-entity-parser.html#parser-semantic Semantic Parser]].
-  *
-  * @see [[NCSemanticEntityParser]]
-  * @see [[NCSemanticElement]]
   */
-trait NCSemanticStemmer:
+trait NCStemmer:
     /**
       * Gets text's stem.
       *

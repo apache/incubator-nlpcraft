@@ -24,6 +24,7 @@ import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.makro.NCMacroParser
 import org.apache.nlpcraft.internal.util.NCUtils
+import org.apache.nlpcraft.nlp.common.NCStemmer
 import org.apache.nlpcraft.nlp.parsers.*
 import org.apache.nlpcraft.nlp.parsers.impl.NCSemanticChunkKind.*
 
@@ -144,7 +145,7 @@ private[parsers] object NCSemanticSynonymsProcessor extends LazyLogging:
       * @param syns
       */
     private def convertSynonyms(
-        stemmer: NCSemanticStemmer,
+        stemmer: NCStemmer,
         tokParser: NCTokenParser,
         macroParser: NCMacroParser,
         elemId: String,
@@ -205,7 +206,7 @@ private[parsers] object NCSemanticSynonymsProcessor extends LazyLogging:
       * @param elements
       */
     def prepare(
-        stemmer: NCSemanticStemmer,
+        stemmer: NCStemmer,
         tokParser: NCTokenParser,
         macros: Map[String, String],
         elements: Seq[NCSemanticElement]

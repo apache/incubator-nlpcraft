@@ -17,8 +17,10 @@
 
 package org.apache.nlpcraft.nlp.enrichers
 
+import opennlp.tools.stemmer.PorterStemmer
 import org.apache.nlpcraft.internal.util.NCResourceReader
-import org.apache.nlpcraft.nlp.enrichers.NCEnSwearWordsTokenEnricher
+import org.apache.nlpcraft.nlp.common.NCStemmer
+import org.apache.nlpcraft.nlp.enrichers.NCSwearWordsTokenEnricher
 import org.apache.nlpcraft.nlp.enrichers.*
 import org.apache.nlpcraft.nlp.util.*
 import org.scalatest.funsuite.AnyFunSuite
@@ -26,13 +28,18 @@ import org.scalatest.funsuite.AnyFunSuite
   *
   */
 class NCSwearWordsTokenEnricherSpec extends AnyFunSuite:
-    private val swEnricher = new NCEnSwearWordsTokenEnricher(NCResourceReader.getPath("badfilter/swear_words.txt"))
+    private val swEnricher = new NCSwearWordsTokenEnricher(
+        NCResourceReader.getPath("badfilter/swear_words.txt"),
+        new NCStemmer:
+            final private val ps: PorterStemmer = new PorterStemmer
+            override def stem(txt: String): String = ps.stem(txt)
+    )
 
     test("test") {
         val toks = EN_TOK_PARSER.tokenize("english ass")
 
-        require(toks.head.get[Boolean]("swear:en").isEmpty)
-        require(toks.last.get[Boolean]("swear:en").isEmpty)
+        require(toks.head.get[Boolean]("swear").isEmpty)
+        require(toks.last.get[Boolean]("swear").isEmpty)
 
         swEnricher.enrich(null, null, toks)
 

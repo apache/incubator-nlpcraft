@@ -21,6 +21,7 @@ import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.makro.NCMacroParser
 import org.apache.nlpcraft.internal.util.NCUtils
+import org.apache.nlpcraft.nlp.common.NCStemmer
 import org.apache.nlpcraft.nlp.parsers.*
 import org.apache.nlpcraft.nlp.parsers.impl.*
 
@@ -38,13 +39,13 @@ object NCSemanticEntityParser:
     /**
       * Creates [[NCSemanticEntityParser]] instance.
       *
-      * @param stemmer [[NCSemanticStemmer]] implementation.
-      * @param parser [[NCTokenParser]] implementation.
-      * @param macros Macros map. Empty by default.
+      * @param stemmer  [[NCStemmer]] implementation for synonyms language.
+      * @param parser   [[NCTokenParser]] implementation.
+      * @param macros   Macros map. Empty by default.
       * @param elements [[NCSemanticElement]] list.
       */
     def apply(
-        stemmer: NCSemanticStemmer,
+        stemmer: NCStemmer,
         parser: NCTokenParser,
         macros: Map[String, String],
         elements: List[NCSemanticElement]
@@ -60,12 +61,12 @@ object NCSemanticEntityParser:
       *
       * Creates [[NCSemanticEntityParser]] instance.
       *
-      * @param stemmer  [[NCSemanticStemmer]] implementation.
+      * @param stemmer  [[NCStemmer]] implementation for synonyms language.
       * @param parser   [[NCTokenParser]] implementation.
       * @param elements [[NCSemanticElement]] list.
       */
     def apply(
-        stemmer: NCSemanticStemmer,
+        stemmer: NCStemmer,
         parser: NCTokenParser,
         elements: List[NCSemanticElement]
     ): NCSemanticEntityParser =
@@ -79,11 +80,11 @@ object NCSemanticEntityParser:
       *
       * Creates [[NCSemanticEntityParser]] instance.
       *
-      * @param stemmer  [[NCSemanticStemmer]] implementation.
-      * @param parser   [[NCTokenParser]] implementation.
-      * @param mdlSrc Classpath resource, file path or URL for YAML or JSON semantic model definition file.
+      * @param stemmer [[NCStemmer]] implementation for synonyms language.
+      * @param parser  [[NCTokenParser]] implementation.
+      * @param mdlSrc  Classpath resource, file path or URL for YAML or JSON semantic model definition file.
       */
-    def apply(stemmer: NCSemanticStemmer, parser: NCTokenParser, mdlSrc: String): NCSemanticEntityParser =
+    def apply(stemmer: NCStemmer, parser: NCTokenParser, mdlSrc: String): NCSemanticEntityParser =
         require(stemmer != null, "Stemmer cannot be null.")
         require(parser != null, "Parser cannot be null.")
         require(mdlSrc != null, "Model source cannot be null.")
@@ -181,18 +182,15 @@ import org.apache.nlpcraft.nlp.parsers.NCSemanticEntityParser.*
   *
   * See detailed description on the website [[https://nlpcraft.apache.org/built-in-entity-parser.html#parser-semantic Semantic Parser]].
   *
-  *
   * @see [[NCSemanticElement]]
-  * @see [[NCSemanticStemmer]]
-  *
-  * @param stemmer [[NCSemanticStemmer]] implementation.
-  * @param parser [[NCTokenParser]] implementation.
-  * @param macros Macros map. Empty by default.
+  * @param stemmer   [[NCStemmer]] implementation for synonyms language.
+  * @param parser    [[NCTokenParser]] implementation.
+  * @param macros    Macros map. Empty by default.
   * @param elements  [[NCSemanticElement]] list.
   * @param mdlSrcOpt Optional classpath resource, file path or URL for YAML or JSON semantic model definition file.
   */
 class NCSemanticEntityParser(
-    stemmer: NCSemanticStemmer,
+    stemmer: NCStemmer,
     parser: NCTokenParser,
     macros: Map[String, String] = Map.empty,
     elements: List[NCSemanticElement] = List.empty,

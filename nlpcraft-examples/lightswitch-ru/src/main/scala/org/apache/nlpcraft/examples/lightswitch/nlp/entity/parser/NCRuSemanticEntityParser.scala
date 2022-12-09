@@ -21,13 +21,14 @@ import opennlp.tools.stemmer.snowball.SnowballStemmer
 import org.apache.nlpcraft.examples.lightswitch.nlp.token.parser.NCRuTokenParser
 import org.apache.nlpcraft.nlp.parsers.*
 import org.apache.nlpcraft.*
+import org.apache.nlpcraft.nlp.common.NCStemmer
 
 /**
   *
   * @param src
   */
 class NCRuSemanticEntityParser(src: String) extends NCSemanticEntityParser(
-    new NCSemanticStemmer:
+    new NCStemmer:
         private val stemmer = new SnowballStemmer(SnowballStemmer.ALGORITHM.RUSSIAN)
         override def stem(txt: String): String = stemmer.synchronized { stemmer.stem(txt.toLowerCase).toString }
     ,

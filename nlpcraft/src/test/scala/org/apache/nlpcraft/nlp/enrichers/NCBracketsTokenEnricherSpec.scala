@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.nlp.enrichers
 
 import org.apache.nlpcraft.*
-import nlp.enrichers.NCEnBracketsTokenEnricher
+import nlp.enrichers.NCBracketsTokenEnricher
 import nlp.util.*
 import org.scalatest.funsuite.AnyFunSuite
 
@@ -26,7 +26,7 @@ import org.scalatest.funsuite.AnyFunSuite
   *
   */
 class NCBracketsTokenEnricherSpec extends AnyFunSuite:
-    private val bracketsEnricher = new NCEnBracketsTokenEnricher()
+    private val bracketsEnricher = new NCBracketsTokenEnricher()
 
     /**
       *

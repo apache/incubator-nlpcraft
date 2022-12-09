@@ -22,6 +22,7 @@ import annotations.*
 import nlp.parsers.*
 import internal.impl.*
 import nlp.util.*
+import org.apache.nlpcraft.nlp.common.NCStemmer
 import org.scalatest.funsuite.AnyFunSuite
 
 import java.util
@@ -32,7 +33,7 @@ import scala.collection.mutable
   */
 class NCSemanticEntityParserLemmaSpec extends AnyFunSuite:
     private val lemmaStemmer =
-        new NCSemanticStemmer():
+        new NCStemmer():
             override def stem(txt: String): String = if wrapped(txt) then unwrap(txt) else UUID.randomUUID().toString
 
     case class Data(text: String, elemId: String)
