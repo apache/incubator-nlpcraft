@@ -17,11 +17,10 @@
 
 package org.apache.nlpcraft.nlp.util
 
-import opennlp.tools.stemmer.PorterStemmer
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.ascii.NCAsciiTable
 import org.apache.nlpcraft.internal.util.NCResourceReader
-import org.apache.nlpcraft.nlp.common.NCStemmer
+import org.apache.nlpcraft.nlp.common.{NCEnStemmer, NCStemmer}
 import org.apache.nlpcraft.nlp.parsers.*
 import org.apache.nlpcraft.nlp.parsers
 import org.apache.nlpcraft.nlp.parsers.{NCOpenNLPTokenParser, NCSemanticElement, NCSemanticEntityParser}
@@ -122,31 +121,22 @@ object NCTestUtils:
 
     /**
       *
-      */
-    private def mkSemanticStemmer: NCStemmer =
-        new NCStemmer():
-            private val ps = new PorterStemmer
-            override def stem(word: String): String = ps.synchronized { ps.stem(word) }
-
-
-    /**
-      *
       * @param elms
       * @param macros
       */
     def mkEnSemanticParser(elms: List[NCSemanticElement], macros: Map[String, String] = Map.empty): NCSemanticEntityParser =
-        parsers.NCSemanticEntityParser(mkSemanticStemmer, EN_TOK_PARSER, macros, elms)
+        parsers.NCSemanticEntityParser(new NCEnStemmer, EN_TOK_PARSER, macros, elms)
 
     /**
       *
       * @param elms
       */
     def mkEnSemanticParser(elms: NCSemanticElement*): NCSemanticEntityParser =
-        parsers.NCSemanticEntityParser(mkSemanticStemmer, EN_TOK_PARSER, elms.toList)
+        parsers.NCSemanticEntityParser(new NCEnStemmer, EN_TOK_PARSER, elms.toList)
 
     /**
       *
       * @param mdlSrc
       */
     def mkEnSemanticParser(mdlSrc: String): NCSemanticEntityParser =
-        parsers.NCSemanticEntityParser(mkSemanticStemmer, EN_TOK_PARSER, mdlSrc)
+        parsers.NCSemanticEntityParser(new NCEnStemmer, EN_TOK_PARSER, mdlSrc)

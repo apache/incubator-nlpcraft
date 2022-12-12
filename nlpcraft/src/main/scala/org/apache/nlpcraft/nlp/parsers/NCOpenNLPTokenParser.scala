@@ -27,8 +27,8 @@ import java.util
 import java.util.Objects
 
 /**
-  *  [[https://opennlp.apache.org/ OpenNLP]] based language independent [[NCTokenParser parser]] configured
-  *  by path to [[https://opennlp.apache.org/ OpenNLP]] `tokenizers` model.
+  *  [[https://opennlp.apache.org/ OpenNLP]] based language independent [[NCTokenParser entity parser]] configured
+  *  by path to [[https://opennlp.apache.org/ OpenNLP]] **tokenizers** model.
   *
   * Some of OpenNLP prepared models can be found [[https://opennlp.sourceforge.net/models-1.5/ here]].
   *
@@ -46,6 +46,7 @@ class NCOpenNLPTokenParser(tokMdlRes: String) extends NCTokenParser with LazyLog
 
         logger.trace(s"Loaded resource: $tokMdlRes")
 
+    /** @inheritdoc */
     override def tokenize(text: String): List[NCToken] =
         this.synchronized {
             tokenizer.tokenizePos(text).zipWithIndex.map { (p, idx) =>

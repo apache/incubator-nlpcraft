@@ -17,9 +17,8 @@
 
 package org.apache.nlpcraft
 
-import opennlp.tools.stemmer.PorterStemmer
 import org.apache.nlpcraft.internal.util.NCResourceReader
-import org.apache.nlpcraft.nlp.common.NCStemmer
+import org.apache.nlpcraft.nlp.common.{NCEnStemmer, NCStemmer}
 import org.apache.nlpcraft.nlp.parsers.*
 import org.apache.nlpcraft.nlp.enrichers.*
 
@@ -39,11 +38,6 @@ class NCPipelineBuilder:
     private val entVals: Buf[NCEntityValidator] = Buf.empty
     private val entMappers: Buf[NCEntityMapper] = Buf.empty
     private val varFilters: Buf[NCVariantFilter] = Buf.empty
-
-    private def mkEnStemmer: NCStemmer =
-        new NCStemmer:
-            final private val ps: PorterStemmer = new PorterStemmer
-            override def stem(word: String): String = ps.stem(word)
 
     private def mkEnOpenNLPTokenParser: NCOpenNLPTokenParser =
         new NCOpenNLPTokenParser(NCResourceReader.getPath("opennlp/en-token.bin"))
@@ -222,7 +216,7 @@ class NCPipelineBuilder:
         tokEnrichers += new NCEnStopWordsTokenEnricher
         tokEnrichers += new NCSwearWordsTokenEnricher(
             NCResourceReader.getPath("badfilter/swear_words.txt"),
-            mkEnStemmer
+            new NCEnStemmer
         )
         tokEnrichers += new NCQuotesTokenEnricher
         tokEnrichers += new NCDictionaryTokenEnricher("moby/354984si.ngl")
@@ -266,7 +260,7 @@ class NCPipelineBuilder:
         lang.toUpperCase match
             case "EN" =>
                 setEnComponents()
-                entParsers += NCSemanticEntityParser(mkEnStemmer, mkEnOpenNLPTokenParser, macros, elms)
+                entParsers += NCSemanticEntityParser(new NCEnStemmer, mkEnOpenNLPTokenParser, macros, elms)
             case _ => require(false, s"Unsupported language: $lang")
         this
 
@@ -332,7 +326,7 @@ class NCPipelineBuilder:
         lang.toUpperCase match
             case "EN" =>
                 setEnComponents()
-                this.entParsers += NCSemanticEntityParser(mkEnStemmer, mkEnOpenNLPTokenParser, mdlSrc)
+                this.entParsers += NCSemanticEntityParser(new NCEnStemmer, mkEnOpenNLPTokenParser, mdlSrc)
             case _ => require(false, s"Unsupported language: $lang")
         this
 

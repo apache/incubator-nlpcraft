@@ -20,7 +20,6 @@ package org.apache.nlpcraft.nlp.enrichers
 import com.typesafe.scalalogging.LazyLogging
 import opennlp.tools.lemmatizer.DictionaryLemmatizer
 import opennlp.tools.postag.*
-import opennlp.tools.stemmer.PorterStemmer
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.util.*
 
@@ -28,7 +27,7 @@ import java.io.*
 import scala.concurrent.ExecutionContext
 
 /**
-  * [[https://opennlp.apache.org/ OpenNLP]] based language independent [[NCTokenEnricher enricher]].
+  * [[https://opennlp.apache.org/ OpenNLP]] based language independent [[NCTokenEnricher token enricher]].
   *
   * This enricher adds `lemma` and `pos` (part-of-speech) string [[NCPropertyMap metadata]] property to the [[NCToken token]]
   * instance.
@@ -66,6 +65,7 @@ class NCOpenNLPTokenEnricher(posMdlRes: String = null, lemmaDicRes: String = nul
             )
         )(ExecutionContext.Implicits.global)
 
+    /** @inheritdoc */
     override def enrich(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): Unit =
         val txts = toks.map(_.getText).toArray
 

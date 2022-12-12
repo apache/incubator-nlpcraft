@@ -26,7 +26,7 @@ import java.io.*
 import java.util.Objects
 
 /**
-  * "Swear-word" [[NCTokenEnricher enricher]].
+  * "Swear-word" [[NCTokenEnricher token enricher]].
   *
   * This enricher adds `swear` boolean [[NCPropertyMap metadata]] property to the [[NCToken token]]
   * instance if word it represents is a swear word dictionary, i.e. the swear dictionary contains this word's
@@ -52,6 +52,7 @@ class NCSwearWordsTokenEnricher(dictRes: String, stemmer: NCStemmer) extends NCT
             map(p => stemmer.stem(p.toLowerCase)).toSet
         logger.trace(s"Loaded resource: $dictRes")
 
+    /** @inheritdoc */
     override def enrich(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): Unit =
         toks.foreach(t => t.put("swear", swearWords.contains(stemmer.stem(t.getText.toLowerCase))))
 

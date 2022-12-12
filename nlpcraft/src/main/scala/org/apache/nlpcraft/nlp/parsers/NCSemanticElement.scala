@@ -22,7 +22,7 @@ import org.apache.nlpcraft.nlp.common.NCStemmer
 /**
   *
   * Configuration element which helps to detect [[org.apache.nlpcraft.NCEntity NCEntity]] for
-  * `Semantic` implementation of [[org.apache.nlpcraft.NCEntityParser NCEntityParser]].
+  * **Semantic** implementation of [[org.apache.nlpcraft.NCEntityParser NCEntityParser]].
   *
   * See detailed description on the website [[https://nlpcraft.apache.org/built-in-entity-parser.html#parser-semantic Semantic Parser]].
   *
@@ -30,14 +30,14 @@ import org.apache.nlpcraft.nlp.common.NCStemmer
   */
 trait NCSemanticElement:
     /**
-      * Gets `id` for created [[org.apache.nlpcraft.NCEntity NCEntity]] instance.
+      * Gets **id** for created [[org.apache.nlpcraft.NCEntity NCEntity]] instance.
       * Representation of [[org.apache.nlpcraft.NCEntity.getId NCEntity.getId()]] method.
       * @return Element ID.
       */
     def getId: String
 
     /**
-      * Gets `groups` for created [[org.apache.nlpcraft.NCEntity NCEntity]] instance.
+      * Gets **groups** for created [[org.apache.nlpcraft.NCEntity NCEntity]] instance.
       * Representation of [[org.apache.nlpcraft.NCEntity.getGroups NCEntity.getGroups()]] method.
       * @return Groups.
       */

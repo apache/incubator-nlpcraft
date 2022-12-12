@@ -18,9 +18,9 @@
 package org.apache.nlpcraft.nlp.enrichers
 
 import com.typesafe.scalalogging.LazyLogging
-import opennlp.tools.stemmer.PorterStemmer
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.util.NCUtils
+import org.apache.nlpcraft.nlp.common.{NCEnStemmer, NCStemmer}
 
 import java.io.*
 import java.util
@@ -177,12 +177,19 @@ import org.apache.nlpcraft.nlp.enrichers.NCEnStopWordsTokenEnricher.*
   * contain token's lemma and part of speech. You can configure [[NCOpenNLPTokenEnricher]] for English language
   * that provides this metadata properties before this enricher in your [[NCPipeline pipeline]].
   *
+  * @see [[NCEnStemmer]]
+  *
   * @param addStopsSet User defined collection of additional stop-words.
+  *  These word will be tried to match based on `stemmer` implementation.
   * @param exclStopsSet User defined collection of exceptions, that is words which should not be marked as stop-words during processing.
+  *  These word will be tried to match based on `stemmer` implementation.
+  * @param stemmer English stemmer implementation.
   */
-class NCEnStopWordsTokenEnricher(addStopsSet: Set[String] = Set.empty, exclStopsSet: Set[String] = Set.empty) extends NCTokenEnricher with LazyLogging:
-    private final val stemmer = new PorterStemmer
-
+class NCEnStopWordsTokenEnricher(
+    addStopsSet: Set[String] = Set.empty,
+    exclStopsSet: Set[String] = Set.empty,
+    stemmer: NCStemmer = new NCEnStemmer
+) extends NCTokenEnricher with LazyLogging:
     private var addStems: Set[String] = _
     private var exclStems: Set[String] = _
     private var percents: Set[String] = _
@@ -324,7 +331,7 @@ class NCEnStopWordsTokenEnricher(addStopsSet: Set[String] = Set.empty, exclStops
       * Parses configuration template.
       *
       * @param lines Configuration file content.
-      * @return Holder and `is-exception` flag.
+      * @return Holder and is-exception flag.
       */
     private def readStopWords(lines: Seq[String]): Map[Boolean, StopWordHolder] =
         // 1. Prepares accumulation data structure.
@@ -461,7 +468,7 @@ class NCEnStopWordsTokenEnricher(addStopsSet: Set[String] = Set.empty, exclStops
       * @param ns Sentence.
       * @param stopPoses Stop POSes.
       * @param lastIdx Last index.
-      * @param isException Function which return `stop word exception` flag.
+      * @param isException Function which return stop word exception flag.
       * @param stops Stopwords tokens.
       */
     @tailrec
@@ -517,6 +524,7 @@ class NCEnStopWordsTokenEnricher(addStopsSet: Set[String] = Set.empty, exclStops
 
         processCommonStops0(ns)
 
+    /** @inheritdoc */
     override def enrich(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): Unit =
         // Stop words and exceptions caches for this sentence.
         val cacheSw = mutable.HashMap.empty[Seq[NCToken], Boolean]

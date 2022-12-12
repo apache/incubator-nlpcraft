@@ -21,7 +21,7 @@ import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.*
 
 /**
-  * Quotes [[NCTokenEnricher enricher]].
+  * Quotes [[NCTokenEnricher token enricher]].
   *
   * This enricher adds `quoted` boolean [[NCPropertyMap metadata]] property to the [[NCToken token]]
   * instance if word it represents is in quotes. The value `true` of the metadata property indicates that this word is in quotes,
@@ -38,6 +38,7 @@ class NCQuotesTokenEnricher extends NCTokenEnricher with LazyLogging:
     private def isQuote(t: NCToken): Boolean = Q_POS.contains(getPos(t))
 
     //noinspection DuplicatedCode
+    /** @inheritdoc */
     override def enrich(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): Unit =
         val quotes = toks.filter(isQuote)
 

@@ -178,7 +178,7 @@ object NCSemanticEntityParser:
 import org.apache.nlpcraft.nlp.parsers.NCSemanticEntityParser.*
 
 /**
-  * `Semantic` [[NCEntityParser parser]] implementation.
+  * **Semantic** [[NCEntityParser entity parser]] implementation.
   *
   * See detailed description on the website [[https://nlpcraft.apache.org/built-in-entity-parser.html#parser-semantic Semantic Parser]].
   *
@@ -233,6 +233,7 @@ class NCSemanticEntityParser(
       */
     private def warnMissedProperty(name: String): Unit = logger.warn(s"'$name' property not found. Is proper token enricher configured?")
 
+    /** @inheritdoc */
     override def parse(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): List[NCEntity] =
         if toks.exists(_.get[String]("stopword").isEmpty) then warnMissedProperty("stopword")
 

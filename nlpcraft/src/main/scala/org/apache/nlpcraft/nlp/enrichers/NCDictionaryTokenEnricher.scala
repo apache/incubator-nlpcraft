@@ -42,7 +42,7 @@ class NCDictionaryTokenEnricher(dictRes: String) extends NCTokenEnricher:
     init()
 
     private def init(): Unit = dict = NCUtils.readResource(dictRes).toSet
-    private def getLemma(t: NCToken): String = t.get("lemma").getOrElse(throw new NCException("'lemma'' property not found in token."))
+    private def getLemma(t: NCToken): String = t.get("lemma").getOrElse(throw new NCException("Lemma not found in token."))
 
     /** @inheritdoc */
     override def enrich(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): Unit =
