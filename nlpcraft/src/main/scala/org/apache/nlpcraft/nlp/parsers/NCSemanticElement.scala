@@ -17,7 +17,7 @@
 
 package org.apache.nlpcraft.nlp.parsers
 
-import org.apache.nlpcraft.nlp.common.NCStemmer
+import org.apache.nlpcraft.nlp.stemmer.NCStemmer
 
 /**
   *

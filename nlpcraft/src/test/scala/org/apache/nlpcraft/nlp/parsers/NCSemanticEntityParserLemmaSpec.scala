@@ -22,7 +22,7 @@ import annotations.*
 import nlp.parsers.*
 import internal.impl.*
 import nlp.util.*
-import org.apache.nlpcraft.nlp.common.NCStemmer
+import org.apache.nlpcraft.nlp.stemmer.NCStemmer
 import org.scalatest.funsuite.AnyFunSuite
 
 import java.util

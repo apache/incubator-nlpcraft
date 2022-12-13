@@ -20,7 +20,7 @@ package org.apache.nlpcraft.nlp.enrichers
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.util.NCUtils
-import org.apache.nlpcraft.nlp.common.NCStemmer
+import org.apache.nlpcraft.nlp.stemmer.NCStemmer
 
 import java.io.*
 import java.util.Objects

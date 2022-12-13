@@ -21,7 +21,7 @@ import opennlp.tools.stemmer.snowball.SnowballStemmer
 import org.apache.nlpcraft.examples.lightswitch.nlp.token.parser.NCRuTokenParser
 import org.apache.nlpcraft.nlp.parsers.*
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.nlp.common.NCStemmer
+import org.apache.nlpcraft.nlp.stemmer.NCStemmer
 
 /**
   *

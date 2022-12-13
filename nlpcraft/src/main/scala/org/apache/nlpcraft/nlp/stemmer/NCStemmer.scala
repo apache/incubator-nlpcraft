@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.nlp.common
+package org.apache.nlpcraft.nlp.stemmer
 
 import org.apache.nlpcraft.nlp.parsers.*
 

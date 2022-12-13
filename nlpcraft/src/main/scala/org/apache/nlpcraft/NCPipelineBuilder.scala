@@ -18,7 +18,7 @@
 package org.apache.nlpcraft
 
 import org.apache.nlpcraft.internal.util.NCResourceReader
-import org.apache.nlpcraft.nlp.common.{NCEnStemmer, NCStemmer}
+import org.apache.nlpcraft.nlp.stemmer.{NCEnStemmer, NCStemmer}
 import org.apache.nlpcraft.nlp.parsers.*
 import org.apache.nlpcraft.nlp.enrichers.*
 

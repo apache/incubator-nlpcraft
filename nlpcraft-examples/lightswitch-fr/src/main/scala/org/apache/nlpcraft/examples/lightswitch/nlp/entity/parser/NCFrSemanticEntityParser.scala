@@ -20,7 +20,7 @@ package org.apache.nlpcraft.examples.lightswitch.nlp.entity.parser
 import opennlp.tools.stemmer.snowball.SnowballStemmer
 import org.apache.nlpcraft.examples.lightswitch.nlp.token.parser.NCFrTokenParser
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.nlp.common.NCStemmer
+import org.apache.nlpcraft.nlp.stemmer.NCStemmer
 import org.apache.nlpcraft.nlp.parsers.*
 
 /**
