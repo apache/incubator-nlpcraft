@@ -22,14 +22,17 @@ import org.apache.nlpcraft.nlp.parsers.*
 /**
   * Trait defining a general stemmer. Stemming is the process of reducing inflected (or sometimes derived)
   * words to their word stem, base or root form—generally a written word form. Stemmer is used by some of the
-  * built-in pipeline components.
+  * built-in pipeline components. Stemmer is used by several built-in pipeline components.
   *
   * Read more about stemming at [[https://en.wikipedia.org/wiki/Stemming]].
+  *
+  * @see [[org.apache.nlpcraft.nlp.enrichers.NCEnStopWordsTokenEnricher]]
+  * @see [[NCSemanticEntityParser]]
   */
 trait NCStemmer:
     /**
       * Gets a stem for a given text. Note that unlike lemma the stemmatization process does not
-      * require a context for the given word.
+      * require a context for the given word, i.e. the stemmatization can be performed on individual word.
       *
       * @param word Text to stemmatize.
       */
