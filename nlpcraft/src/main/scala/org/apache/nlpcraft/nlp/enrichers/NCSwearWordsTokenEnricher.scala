@@ -42,6 +42,7 @@ import java.util.Objects
 //noinspection ScalaWeakerAccess
 class NCSwearWordsTokenEnricher(dictRes: String, stemmer: NCStemmer) extends NCTokenEnricher with LazyLogging:
     require(dictRes != null, "Swear words model file cannot be null.")
+    require(stemmer != null, "Stemmer cannot be null.")
 
     private var swearWords: Set[String] = _
 

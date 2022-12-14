@@ -68,6 +68,7 @@ class NCOpenNLPEntityParser(findersMdlsRes: List[String]) extends NCEntityParser
     private case class Holder(start: Int, end: Int, name: String, probability: Double)
 
     init()
+
     /**
       *
       */
