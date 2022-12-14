@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-# Basic predefined stop-words.
+# Basic predefined stopwords.
 #
 # Configuration contains:
 # - Words (processed as stem)
