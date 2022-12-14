@@ -201,8 +201,8 @@ class NCEnStopWordsTokenEnricher(
     private var stopWords: StopWordHolder = _
     private var exceptions: StopWordHolder = _
 
-    private case class TokenExtra(lemma: String, stem: String):
-        val lemmaStem: String = getStem(lemma)
+    private case class TokenExtra(lemma: String, stemTxt: String):
+        val stemLemma: String = getStem(lemma)
 
     init()
 
@@ -521,8 +521,8 @@ class NCEnStopWordsTokenEnricher(
                 extra = extraToks(tok)
                 if
                     idx != max && !isStopWord(tok) &&
-                    !exclStems.contains(extra.stem) &&
-                    !exclStems.contains(extra.lemmaStem) &&
+                    !exclStems.contains(extra.stemTxt) &&
+                    !exclStems.contains(extra.stemLemma) &&
                     POSES.contains(getPos(tok)) && isStopWord(ns(idx + 1)))
                 stops += tok
                 stop = false
@@ -550,7 +550,7 @@ class NCEnStopWordsTokenEnricher(
             val idx = tok.getIndex
             val pos = getPos(tok)
             val lemma = extra.lemma
-            val st = extra.stem
+            val st = extra.stemTxt
 
             def isFirst: Boolean = idx == 0
             def isLast: Boolean = idx == toks.length - 1
@@ -618,32 +618,30 @@ class NCEnStopWordsTokenEnricher(
 
         // +-------------------------------------------------+
         // | Pass #5.                                        |
-        // | Mark words with POSes before stopwords.        |
+        // | Mark words with POSes before stopwords.         |
         // +-------------------------------------------------+
         markBefore(toks, STOP_BEFORE_STOP, toks.size - 1, isException, stops)
 
         // +-------------------------------------------------+
         // | Pass #6.                                        |
-        // | Processing additional and excluded stopword.  |
+        // | Processing additional and excluded stopword.    |
         // +-------------------------------------------------+
-        for ((t, extra) <- extraToks if addStems.contains(extra.stem) || addStems.contains(extra.lemmaStem)) stops += t
+        def has(set: Set[String], extra: TokenExtra) = set.contains(extra.stemTxt) || set.contains(extra.stemLemma)
 
-        for (t <- stops.filter( t =>
-            val extra = extraToks(t)
-            exclStems.contains(extra.stem) || exclStems.contains(extra.lemmaStem))
-        ) stops -= t
+        for ((t, extra) <- extraToks if has(addStems, extra)) stops += t
+        for ((t, _) <- stops.map(t => t -> extraToks(t)).filter { (_, extra) => has(exclSet, extra)}) stops -= t
 
         // +-------------------------------------------------+
         // | Pass #7.                                        |
         // | Marks as stopwords, words with POS from         |
         // | configured list, which also placed before       |
-        // | another stopword.                             |
+        // | another stopword.                               |
         // +-------------------------------------------------+
         processCommonStops(toks, extraToks, stops)
 
         // +-------------------------------------------------+
         // | Pass #8.                                        |
-        // | Deletes stopword if they are marked as quoted.|
+        // | Deletes stopword if they are marked as quoted.  |
         // +-------------------------------------------------+
         var quotes = toks.filter(isQuote)
 
@@ -663,7 +661,7 @@ class NCEnStopWordsTokenEnricher(
 
         // +-------------------------------------------------+
         // | Pass #9.                                        |
-        // | Deletes stopword if they are brackets.        |
+        // | Deletes stopword if they are brackets.          |
         // +-------------------------------------------------+
         val stack = new java.util.Stack[String]()
         val set = mutable.HashSet.empty[NCToken]
