@@ -517,13 +517,15 @@ class NCEnStopWordsTokenEnricher(
             var stop = true
 
             for (
-                (tok, idx) <- ns.zipWithIndex;
-                extra = extraToks(tok)
+                (tok, idx) <- ns.zipWithIndex; extra = extraToks(tok)
                 if
-                    idx != max && !isStopWord(tok) &&
+                    idx != max &&
+                    !isStopWord(tok) &&
                     !exclStems.contains(extra.stemTxt) &&
                     !exclStems.contains(extra.stemLemma) &&
-                    POSES.contains(getPos(tok)) && isStopWord(ns(idx + 1)))
+                    POSES.contains(getPos(tok)) &&
+                    isStopWord(ns(idx + 1))
+            )
                 stops += tok
                 stop = false
 
