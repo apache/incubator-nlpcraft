@@ -198,11 +198,14 @@ class NCEnStopWordsTokenEnricher(
     private var stopWords: StopWordHolder = _
     private var exceptions: StopWordHolder = _
 
+    private case class TokenExtra(lemma: String, stem: String):
+        val lemmaStem: String = getStem(lemma)
+
     init()
 
     private def read(path: String): Set[String] = NCUtils.readTextGzipResource(path, "UTF-8", logger).toSet
-    private def stem(s: String): String = stemmer.stem(s.toLowerCase)
-    private def toStemKey(toks: Seq[NCToken]): String = toks.map(_.getText).map(stem).mkString(" ")
+    private def getStem(s: String): String = stemmer.stem(s.toLowerCase)
+    private def toStemKey(toks: Seq[NCToken]): String = toks.map(_.getText).map(getStem).mkString(" ")
 
     /**
       * Stop words holder, used for hash search.
@@ -293,11 +296,11 @@ class NCEnStopWordsTokenEnricher(
                 wildcardsOrigins.matches(toOriginalKey(toks), posOpt)
 
     /**
-      * 
+      *
       */
     private def init(): Unit =
-        addStems = if addStopsSet == null then Set.empty else addStopsSet.map(stem)
-        exclStems = if exclStopsSet == null then Set.empty else exclStopsSet.map(stem)
+        addStems = if addStopsSet == null then Set.empty else addStopsSet.map(getStem)
+        exclStems = if exclStopsSet == null then Set.empty else exclStopsSet.map(getStem)
 
         def check(name: String, set: Set[String]): Unit =
             if set.exists(_.exists(_.isWhitespace)) then throw E(s"$name contain a string with whitespaces.")
@@ -308,7 +311,7 @@ class NCEnStopWordsTokenEnricher(
         val dups = addStems.intersect(exclStems)
         if dups.nonEmpty then E(s"Duplicate stems detected between additional and excluded stopwords [dups=${dups.mkString(",")}]")
 
-        percents = PERCENTS.map(stem)
+        percents = PERCENTS.map(getStem)
 
         // Stemmatization is done already by generator.
         NCUtils.execPar(
@@ -429,7 +432,7 @@ class NCEnStopWordsTokenEnricher(
                 val (word, form) =
                     if isCase then (s, ORIG)
                     else
-                        if !hasPoses then (stem(s), STEM) else (stem(s), LEM)
+                        if !hasPoses then (getStem(s), STEM) else (getStem(s), LEM)
                 mHash((isExc, form)).addCondition(word, poses)
             else
                 val b = s.take(idxWild)
@@ -506,23 +509,29 @@ class NCEnStopWordsTokenEnricher(
     /**
       * Marks as stopwords, words with POS from configured list, which also placed before another stop words.
       */
-    private def processCommonStops(ns: Seq[NCToken], stops: mutable.HashSet[NCToken]): Unit =
+    private def processCommonStops(ns: Seq[NCToken], extraToks: Map[NCToken, TokenExtra], stops: mutable.HashSet[NCToken]): Unit =
         /**
           * Marks as stopwords, words with POS from configured list, which also placed before another stop words.
           */
         @tailrec
-        def processCommonStops0(ns: Seq[NCToken]): Unit =
+        def processCommonStops0(ns: Seq[NCToken], extraToks: Map[NCToken, TokenExtra]): Unit =
             val max = ns.size - 1
             var stop = true
 
-            for ((tok, idx) <- ns.zipWithIndex if idx != max && !isStopWord(tok) && !exclStems.contains(stem(tok.getText)) &&
-                POSES.contains(getPos(tok)) && isStopWord(ns(idx + 1)))
+            for (
+                (tok, idx) <- ns.zipWithIndex;
+                extra = extraToks(tok)
+                if
+                    idx != max && !isStopWord(tok) &&
+                    !exclStems.contains(extra.stem) &&
+                    !exclStems.contains(extra.lemmaStem) &&
+                    POSES.contains(getPos(tok)) && isStopWord(ns(idx + 1)))
                 stops += tok
                 stop = false
 
-            if !stop then processCommonStops0(ns)
+            if !stop then processCommonStops0(ns, extraToks)
 
-        processCommonStops0(ns)
+        processCommonStops0(ns, extraToks)
 
     /** @inheritdoc */
     override def enrich(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): Unit =
@@ -535,11 +544,15 @@ class NCEnStopWordsTokenEnricher(
 
         val stops = mutable.HashSet.empty[NCToken]
 
-        for (tok <- toks)
+        val extraToks =
+            scala.collection.mutable.LinkedHashMap.empty[NCToken, TokenExtra] ++=
+            toks.map(t => t -> TokenExtra(getLemma(t), getStem(t.getText)))
+
+        for ((tok, extra) <- extraToks)
             val idx = tok.getIndex
             val pos = getPos(tok)
-            val lemma = getLemma(tok)
-            val st = stem(tok.getText)
+            val lemma = extra.lemma
+            val st = extra.stem
 
             def isFirst: Boolean = idx == 0
             def isLast: Boolean = idx == toks.length - 1
@@ -615,10 +628,13 @@ class NCEnStopWordsTokenEnricher(
         // | Pass #6.                                        |
         // | Processing additional and excluded stop words.  |
         // +-------------------------------------------------+
-        for (t <- toks if addStems.contains(stem(t.getText)))
+        for ((t, extra) <- extraToks if addStems.contains(extra.stem) || addStems.contains(extra.lemmaStem))
             stops += t
 
-        for (t <- stops.filter(t => exclStems.contains(stem(t.getText))))
+        for (t <- stops.filter( t =>
+            val extra = extraToks(t)
+            exclStems.contains(extra.stem) || exclStems.contains(extra.lemmaStem))
+        )
             stops -= t
 
         // +-------------------------------------------------+
@@ -627,7 +643,7 @@ class NCEnStopWordsTokenEnricher(
         // | configured list, which also placed before       |
         // | another stop words.                             |
         // +-------------------------------------------------+
-        processCommonStops(toks, stops)
+        processCommonStops(toks, extraToks, stops)
 
         // +-------------------------------------------------+
         // | Pass #8.                                        |

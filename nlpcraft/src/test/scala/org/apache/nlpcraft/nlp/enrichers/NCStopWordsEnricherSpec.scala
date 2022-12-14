@@ -21,6 +21,7 @@ import org.apache.nlpcraft.*
 import internal.util.NCResourceReader
 import nlp.util.*
 import nlp.enrichers.NCEnStopWordsTokenEnricher
+import org.apache.nlpcraft.nlp.stemmer.NCStemmer
 import org.scalatest.funsuite.AnyFunSuite
 
 /**
@@ -58,6 +59,41 @@ class NCStopWordsEnricherSpec extends AnyFunSuite:
             new NCEnStopWordsTokenEnricher(Set("test"), Set("the")),
             "the test",
             false,
+            true
+        )
+        // The synonym is defined as lemma => all kind of input words should be found.
+        test(
+            new NCEnStopWordsTokenEnricher(Set("woman")),
+            "woman women",
+            true,
+            true
+        )
+        // The synonym is defined in some form => only in the same form input words should be found.
+        test(
+            new NCEnStopWordsTokenEnricher(Set("women")),
+            "woman women",
+            false,
+            true
+        )
+        // The synonym is defined in some form, but stemmer is very rough =>  all kind of input words should be found.
+        test(
+            new NCEnStopWordsTokenEnricher(addStopsSet = Set("women"), stemmer = _.take(3)),
+            "woman women",
+            true,
+            true
+        )
+        // The synonym is defined as lemma => all kind of input words should be found, but excluded set is defined.
+        test(
+            new NCEnStopWordsTokenEnricher(Set("woman"), Set("women")),
+            "woman women",
+            true,
+            false
+        )
+        // Very rough stemmer defined.
+        test(
+            new NCEnStopWordsTokenEnricher(addStopsSet = Set("women"), stemmer = _.head.toString),
+            "weather windows",
+            true,
             true
         )
     }
