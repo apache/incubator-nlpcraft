@@ -31,7 +31,7 @@ import scala.concurrent.ExecutionContext
 /**
   * Companion helper.
   */
-private object NCEnStopWordsTokenEnricher:
+private object NCEnStopWordsTokenEnricher extends LazyLogging:
     // Condition types.
     private type Wildcard = (String, String)
     private type Word = String
@@ -82,6 +82,11 @@ private object NCEnStopWordsTokenEnricher:
         "--" // Synthetic POS.
     )
 
+    // Stemmatization is done already by generator.
+    // It is initialized in the companion for test performance reasons.
+    private val FIRST_WORDS: Set[String] = read("stopwords/first_words.txt.gz")
+    private val NOUN_WORDS: Set[String] = read("stopwords/noun_words.txt.gz")
+
     private val STOP_BEFORE_STOP: Seq[Word] = Seq("DT", "PRP", "PRP$", "WDT", "WP", "WP$", "WRB")
     private val Q_POS = Set("``", "''")
     private val PERCENTS = Set(
@@ -95,6 +100,7 @@ private object NCEnStopWordsTokenEnricher:
         "percent"
     )
 
+    private def read(path: String): Set[String] = NCUtils.readTextGzipResource(path, "UTF-8", logger).toSet
     private def getPos(t: NCToken): String = t.get("pos").getOrElse(throw new NCException(s"POS not found in token: ${t.keysSet}"))
     private def getLemma(t: NCToken): String = t.get("lemma").getOrElse(throw new NCException(s"Lemma not found in token: ${t.keysSet}"))
     private def isQuote(t: NCToken): Boolean = Q_POS.contains(getPos(t))
@@ -193,11 +199,11 @@ class NCEnStopWordsTokenEnricher(
     exclSet: Set[String] = Set.empty,
     stemmer: NCStemmer = new NCEnStemmer
 ) extends NCTokenEnricher with LazyLogging:
+    require(stemmer != null, "Stemmer cannot be null.")
+
     private var addStems: Set[String] = _
     private var exclStems: Set[String] = _
     private var percents: Set[String] = _
-    private var firstWords: Set[String] = _
-    private var nounWords: Set[String] = _
     private var stopWords: StopWordHolder = _
     private var exceptions: StopWordHolder = _
 
@@ -206,7 +212,6 @@ class NCEnStopWordsTokenEnricher(
 
     init()
 
-    private def read(path: String): Set[String] = NCUtils.readTextGzipResource(path, "UTF-8", logger).toSet
     private def getStem(s: String): String = stemmer.stem(s.toLowerCase)
     private def toStemKey(toks: Seq[NCToken]): String = toks.map(_.getText).map(getStem).mkString(" ")
 
@@ -315,14 +320,6 @@ class NCEnStopWordsTokenEnricher(
         if dups.nonEmpty then E(s"Duplicate stems detected between additional and excluded stopwords [dups=${dups.mkString(",")}]")
 
         percents = PERCENTS.map(getStem)
-
-        // Stemmatization is done already by generator.
-        NCUtils.execPar(
-            Seq(
-                () => firstWords = read("stopwords/first_words.txt.gz"),
-                () => nounWords = read("stopwords/noun_words.txt.gz")
-            )
-        )(ExecutionContext.Implicits.global)
 
         // Case sensitive.
         val m = readStopWords(
@@ -605,7 +602,7 @@ class NCEnStopWordsTokenEnricher(
 
         // All sentence first stopword + first non stop word.
         val startToks = toks.takeWhile(isStopWord) ++ toks.find(p => !isStopWord(p)).map(p => p)
-        for (startTok <- startToks; tup <- origToks.filter(_._1.head == startTok); key = tup._2 if firstWords.contains(key) && !isException(tup._1))
+        for (startTok <- startToks; tup <- origToks.filter(_._1.head == startTok); key = tup._2 if FIRST_WORDS.contains(key) && !isException(tup._1))
             tup._1.foreach(tok => stops += tok)
             foundKeys += key
 
@@ -615,7 +612,7 @@ class NCEnStopWordsTokenEnricher(
         // +-------------------------------------------------+
         for (tup <- origToks; key = tup._2 if !foundKeys.contains(key) && !isException(tup._1))
             foundKeys.find(key.startsWith) match
-                case Some(s) => if nounWords.contains(key.substring(s.length).strip) then tup._1.foreach(tok => stops += tok)
+                case Some(s) => if NOUN_WORDS.contains(key.substring(s.length).strip) then tup._1.foreach(tok => stops += tok)
                 case None => ()
 
         // +-------------------------------------------------+
