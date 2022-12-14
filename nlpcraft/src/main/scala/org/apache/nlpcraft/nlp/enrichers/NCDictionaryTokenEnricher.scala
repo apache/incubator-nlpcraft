@@ -33,7 +33,7 @@ import org.apache.nlpcraft.internal.util.NCUtils
   * metadata property before this enricher in your [[NCPipeline pipeline]].
   *
   * @param dictRes Relative path, absolute path or URL to the dictionary file. The dictionary should have a simple
-  *         plain text format with *one lemma per line* with no empty line, header or comments allowed.
+  *         plain text format with *one lemma per line* with no empty lines, header or other comments allowed.
   */
 //noinspection DuplicatedCode,ScalaWeakerAccess
 class NCDictionaryTokenEnricher(dictRes: String) extends NCTokenEnricher:

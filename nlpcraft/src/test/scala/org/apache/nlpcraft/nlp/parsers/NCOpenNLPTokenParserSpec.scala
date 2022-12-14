@@ -59,7 +59,7 @@ class NCOpenNLPTokenParserSpec extends AnyFunSuite:
             }
         )
         test(
-            // First and last are stop words,
+            // First and last are stopword,
             // Third and fourth are not because quoted.
             // Note that "a ` a a` a" parsed as 5 tokens ("a", "`", ""a, "a`", "a") because OpenNLP tokenizer logic,
             // So we use spaces around quotes to simplify test.
@@ -72,7 +72,7 @@ class NCOpenNLPTokenParserSpec extends AnyFunSuite:
             }
         )
         test(
-            // First and last are stop words,
+            // First and last are stopword,
             // Third and fourth are not because brackets.
             "a ( a a ) a",
             toks => {

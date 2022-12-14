@@ -27,19 +27,18 @@ import java.io.*
 import scala.concurrent.ExecutionContext
 
 /**
-  * [[https://opennlp.apache.org/ OpenNLP]] based language independent [[NCTokenEnricher token enricher]].
+  * [[https://opennlp.apache.org/ OpenNLP]] based language independent [[NCTokenEnricher token enricher]]. This
+  * enricher adds `lemma` and `pos` (part-of-speech) string [[NCPropertyMap metadata]] property to the [[NCToken token]]
+  * instance. Learn more about lemmas [[https://en.wikipedia.org/wiki/Lemma_(morphology) here]] and about part-of-speech
+  * [[https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html here]].
   *
-  * This enricher adds `lemma` and `pos` (part-of-speech) string [[NCPropertyMap metadata]] property to the [[NCToken token]]
-  * instance.
-
-  * Lemma is the canonical form of word, look [[https://en.wikipedia.org/wiki/Lemma_(morphology) here]] for more details.
+  * This OpenNLP enricher requires PoS and lemma models. Some of OpenNLP community models can be found
+  * [[https://opennlp.sourceforge.net/models-1.5/ here]].
   *
-  * Part-of-speech tags are described [[https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html here]].
-  *
-  * Some of OpenNLP prepared models can be found [[https://opennlp.sourceforge.net/models-1.5/ here]].
-  *
-  * @param posMdlRes Path to [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/postag/POSTaggerME.html POSTaggerME]] model.
-  * @param lemmaDicRes Path to [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/lemmatizer/DictionaryLemmatizer.html DictionaryLemmatizer]] model.
+  * @param posMdlRes Relative path, absolute path or URL to
+  *         [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/postag/POSTaggerME.html POSTaggerME]] model.
+  * @param lemmaDicRes Relative path, absolute path or URL to
+  *         [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/lemmatizer/DictionaryLemmatizer.html DictionaryLemmatizer]] model.
   */
 class NCOpenNLPTokenEnricher(posMdlRes: String = null, lemmaDicRes: String = null) extends NCTokenEnricher with LazyLogging:
     private var tagger: POSTaggerME = _

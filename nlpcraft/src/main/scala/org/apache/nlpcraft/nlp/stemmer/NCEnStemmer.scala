@@ -21,9 +21,10 @@ import opennlp.tools.stemmer.PorterStemmer
 import org.apache.nlpcraft.nlp.parsers.*
 
 /**
-  * English language [[NCStemmer]] implementation, based on
+  * Stemmer implementation for the English language that delegates to
   * [[https://opennlp.apache.org/ OpenNLP]] Porter Stemmer.
-  * Look more [[https://tartarus.org/martin/PorterStemmer here]].
+  *
+  * @see More information about this stemmer algorithm can be found at [[https://tartarus.org/martin/PorterStemmer]].
   */
 class NCEnStemmer extends NCStemmer:
     private val stemmer = new PorterStemmer
