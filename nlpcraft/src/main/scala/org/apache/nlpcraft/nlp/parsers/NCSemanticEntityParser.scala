@@ -82,14 +82,14 @@ object NCSemanticEntityParser:
       *
       * @param stemmer [[NCStemmer]] implementation for synonyms language.
       * @param parser  [[NCTokenParser]] implementation.
-      * @param mdlSrc  Classpath resource, file path or URL for YAML or JSON semantic model definition file.
+      * @param mdlRes  Classpath resource, file path or URL for YAML or JSON semantic model definition file.
       */
-    def apply(stemmer: NCStemmer, parser: NCTokenParser, mdlSrc: String): NCSemanticEntityParser =
+    def apply(stemmer: NCStemmer, parser: NCTokenParser, mdlRes: String): NCSemanticEntityParser =
         require(stemmer != null, "Stemmer cannot be null.")
         require(parser != null, "Parser cannot be null.")
-        require(mdlSrc != null, "Model source cannot be null.")
+        require(mdlRes != null, "Model path cannot be null.")
 
-        new NCSemanticEntityParser(stemmer, parser, mdlSrcOpt = mdlSrc.?)
+        new NCSemanticEntityParser(stemmer, parser, mdlResOpt = mdlRes.?)
 
     /**
       * @param baseTokens Tokens.
@@ -182,28 +182,30 @@ import org.apache.nlpcraft.nlp.parsers.NCSemanticEntityParser.*
   *
   * See detailed description on the website [[https://nlpcraft.apache.org/built-in-entity-parser.html#parser-semantic Semantic Parser]].
   *
+  * **NOTE:** [[NCSemanticElement]] synonyms, **stemmer** and **parser** parameters must be configured for the same language.
+  *
   * @see [[NCSemanticElement]]
   * @param stemmer   [[NCStemmer]] implementation for synonyms language.
   * @param parser    [[NCTokenParser]] implementation.
   * @param macros    Macros map. Empty by default.
   * @param elements  [[NCSemanticElement]] list.
-  * @param mdlSrcOpt Optional classpath resource, file path or URL for YAML or JSON semantic model definition file.
+  * @param mdlResOpt Optional classpath resource, file path or URL for YAML or JSON semantic model definition file.
   */
 class NCSemanticEntityParser(
     stemmer: NCStemmer,
     parser: NCTokenParser,
     macros: Map[String, String] = Map.empty,
     elements: List[NCSemanticElement] = List.empty,
-    mdlSrcOpt: Option[String] = None
+    mdlResOpt: Option[String] = None
 ) extends NCEntityParser with LazyLogging:
     require(stemmer != null)
     require(parser != null)
     require(macros != null)
-    require(elements != null && elements.nonEmpty || mdlSrcOpt.isDefined)
+    require(elements != null && elements.nonEmpty || mdlResOpt.isDefined)
 
     private lazy val scrType =
-        require(mdlSrcOpt.isDefined)
-        NCSemanticSourceType.detect(mdlSrcOpt.get)
+        require(mdlResOpt.isDefined)
+        NCSemanticSourceType.detect(mdlResOpt.get)
 
     private var synsHolder: NCSemanticSynonymsHolder = _
     private var elemsMap: Map[String, NCSemanticElement] = _
@@ -217,10 +219,10 @@ class NCSemanticEntityParser(
         val (macros, elements, elemsMap) =
             def toMap(elems: Seq[NCSemanticElement]): Map[String, NCSemanticElement] = elems.map(p => p.getId -> p).toMap
 
-            mdlSrcOpt match
+            mdlResOpt match
                 case Some(mdlSrc) =>
                     val src = NCSemanticSourceReader.read(new BufferedInputStream(NCUtils.getStream(mdlSrc)), scrType)
-                    logger.trace(s"Loaded resource: $mdlSrcOpt")
+                    logger.trace(s"Loaded resource: $mdlResOpt")
                     (src.macros, src.elements, toMap(src.elements))
                 case None => (this.macros, this.elements, toMap(this.elements))
 

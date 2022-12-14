@@ -62,7 +62,7 @@ object NCOpenNLPEntityParser:
   * @param findersMdlsRes Paths to [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/namefind/TokenNameFinderModel.html models]].
   */
 class NCOpenNLPEntityParser(findersMdlsRes: List[String]) extends NCEntityParser with LazyLogging:
-    require(findersMdlsRes != null, "Models sources cannot be null.")
+    require(findersMdlsRes != null && findersMdlsRes.nonEmpty, "Models paths cannot be null or empty.")
 
     private var finders: Seq[NameFinderME] = _
     private case class Holder(start: Int, end: Int, name: String, probability: Double)

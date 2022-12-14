@@ -33,5 +33,5 @@ class NCRuSemanticEntityParser(src: String) extends NCSemanticEntityParser(
         override def stem(word: String): String = stemmer.synchronized { stemmer.stem(word.toLowerCase).toString }
     ,
     new NCRuTokenParser(),
-    mdlSrcOpt = src.?
+    mdlResOpt = src.?
 )
