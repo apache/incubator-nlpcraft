@@ -101,8 +101,8 @@ private object NCEnStopWordsTokenEnricher extends LazyLogging:
     )
 
     private def read(path: String): Set[String] = NCUtils.readTextGzipResource(path, "UTF-8", logger).toSet
-    private def getPos(t: NCToken): String = t.get("pos").getOrElse(throw new NCException(s"POS not found in token: ${t.keysSet}"))
-    private def getLemma(t: NCToken): String = t.get("lemma").getOrElse(throw new NCException(s"Lemma not found in token: ${t.keysSet}"))
+    private def getPos(t: NCToken): String = t.get("pos").getOrElse(throw new NCException(s"'pos' property not found in token: ${t.keysSet}"))
+    private def getLemma(t: NCToken): String = t.get("lemma").getOrElse(throw new NCException(s"'lemma' property not found in token: ${t.keysSet}"))
     private def isQuote(t: NCToken): Boolean = Q_POS.contains(getPos(t))
     private def toLemmaKey(toks: Seq[NCToken]): String = toks.map(getLemma).mkString(" ")
     private def toOriginalKey(toks: Seq[NCToken]): String = toks.map(_.getText).mkString(" ")
