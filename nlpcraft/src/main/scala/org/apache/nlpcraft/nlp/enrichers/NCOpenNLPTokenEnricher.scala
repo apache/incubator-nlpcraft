@@ -39,10 +39,12 @@ import scala.concurrent.ExecutionContext
   *
   * @param posMdlRes Relative path, absolute path or URL to
   *         [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/postag/POSTaggerME.html POSTaggerME]] model.
-  *         Can be `null` if **part-of-speech** model is not configured, so `pos` property will not be passed.
+  *         Can be `null` if **part-of-speech** model is not configured, so `pos` property will not be set.
+  *         Note that at least one of the model must be provided.
   * @param lemmaDicRes Relative path, absolute path or URL to
   *         [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/lemmatizer/DictionaryLemmatizer.html DictionaryLemmatizer]] model.
-  *         Can be `null` if **lemmatizer** model is not configured, so `lemma` property will not be passed.
+  *         Can be `null` if **lemmatizer** model is not configured, so `lemma` property will not be set.
+  *         Note that at least one of the model must be provided.
   */
 class NCOpenNLPTokenEnricher(posMdlRes: String = null, lemmaDicRes: String = null) extends NCTokenEnricher with LazyLogging:
     require(posMdlRes != null || lemmaDicRes != null, "At least one model must be defined")
