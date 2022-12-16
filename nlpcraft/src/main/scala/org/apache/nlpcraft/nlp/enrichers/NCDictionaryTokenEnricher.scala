@@ -17,8 +17,9 @@
 
 package org.apache.nlpcraft.nlp.enrichers
 
+import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.internal.util.NCUtils
+import org.apache.nlpcraft.internal.util.NCUtils as U
 
 /**
   * "Known-word" [[NCTokenEnricher token enricher]].
@@ -36,13 +37,13 @@ import org.apache.nlpcraft.internal.util.NCUtils
   *         plain text format with *one lemma per line* with no empty lines, header or other comments allowed.
   */
 //noinspection DuplicatedCode,ScalaWeakerAccess
-class NCDictionaryTokenEnricher(dictRes: String) extends NCTokenEnricher:
+class NCDictionaryTokenEnricher(dictRes: String) extends NCTokenEnricher with LazyLogging:
     private var dict: Set[String] = _
 
     init()
 
-    private def init(): Unit = dict = NCUtils.readResource(dictRes).toSet
+    private def init(): Unit = dict = U.readLines(res = dictRes, strip = true, filterText = true, log = logger).toSet
 
     /** @inheritdoc */
     override def enrich(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): Unit =
-        toks.foreach(t => t.put("dict", dict.contains(NCUtils.getProperty(t, "lemma"))))
+        toks.foreach(t => t.put("dict", dict.contains(U.getProperty(t, "lemma"))))

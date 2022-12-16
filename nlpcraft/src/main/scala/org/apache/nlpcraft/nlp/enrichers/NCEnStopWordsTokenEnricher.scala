@@ -19,8 +19,8 @@ package org.apache.nlpcraft.nlp.enrichers
 
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.internal.util.NCUtils
-import org.apache.nlpcraft.nlp.stemmer.{NCEnStemmer, NCStemmer}
+import org.apache.nlpcraft.internal.util.NCUtils as U
+import org.apache.nlpcraft.nlp.stemmer.*
 
 import java.io.*
 import java.util
@@ -100,9 +100,9 @@ private object NCEnStopWordsTokenEnricher extends LazyLogging:
         "percent"
     )
 
-    private def read(path: String): Set[String] = NCUtils.readTextGzipResource(path, "UTF-8", logger).toSet
-    private def getPos(t: NCToken): String = NCUtils.getProperty(t, "pos")
-    private def getLemma(t: NCToken): String = NCUtils.getProperty(t, "lemma")
+    private def read(path: String): Set[String] = U.readGzipLines(path, strip = true, convert = _.toLowerCase, filterText = true, log = logger).toSet
+    private def getPos(t: NCToken): String = U.getProperty(t, "pos")
+    private def getLemma(t: NCToken): String = U.getProperty(t, "lemma")
     private def isQuote(t: NCToken): Boolean = Q_POS.contains(getPos(t))
     private def toLemmaKey(toks: Seq[NCToken]): String = toks.map(getLemma).mkString(" ")
     private def toOriginalKey(toks: Seq[NCToken]): String = toks.map(_.getText).mkString(" ")
@@ -322,10 +322,7 @@ class NCEnStopWordsTokenEnricher(
         percents = PERCENTS.map(getStem)
 
         // Case sensitive.
-        val m = readStopWords(
-            NCUtils.readResource("stopwords/stop_words.txt", "UTF-8", logger)
-            .map(_.strip).filter(s => s.nonEmpty && !s.startsWith("#"))
-        )
+        val m = readStopWords(U.readLines(res = "stopwords/stop_words.txt", strip = true, filterText = true, log = logger))
 
         stopWords = m(false)
         exceptions = m(true)
@@ -336,7 +333,7 @@ class NCEnStopWordsTokenEnricher(
       * @param lines Configuration file content.
       * @return Holder and is-exception flag.
       */
-    private def readStopWords(lines: Seq[String]): Map[Boolean, StopWordHolder] =
+    private def readStopWords(lines: Iterator[String]): Map[Boolean, StopWordHolder] =
         // 1. Prepares accumulation data structure.
         enum WordForm:
             case STEM, LEM, ORIG

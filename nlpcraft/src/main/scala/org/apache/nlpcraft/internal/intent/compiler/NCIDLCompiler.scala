@@ -322,20 +322,20 @@ class NCIDLCompiler(cfg: NCModelConfig) extends LazyLogging with mutable.Cloneab
 
                     // First, try absolute path.
                     if file.exists() then
-                        val idl = NCUtils.readFile(file).mkString("\n")
+                        val idl = NCUtils.readLines(file).mkString("\n")
                         imports = compile(idl, x)
 
                     // Second, try as a classloader resource.
                     if imports == null then
                         val in = cfg.getClass.getClassLoader.getResourceAsStream(x)
                         if in != null then
-                            val idl = NCUtils.readStream(in).mkString("\n")
+                            val idl = NCUtils.readLines(in).mkString("\n")
                             imports = compile(idl, x)
 
                     // Finally, try as URL resource.
                     if imports == null then
                         try
-                            val idl = NCUtils.readStream(new URL(x).openStream()).mkString("\n")
+                            val idl = NCUtils.readLines(new URL(x).openStream()).mkString("\n")
                             imports = compile(idl,  x)
                         catch case _: Exception => throw newRuntimeError(s"Invalid or unknown import location: $x")(ctx.qstring())
 

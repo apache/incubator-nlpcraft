@@ -571,31 +571,6 @@ object NCUtils extends LazyLogging:
         println(s"File generated: $path")
 
     /**
-      * Reads lines from given file.
-      *
-      * @param path Zipped file path to read from.
-      * @param enc Encoding.
-      * @param log Logger to use.
-      */
-    def readGzipPath(path: String, enc: String = "UTF-8", log: Logger = logger): List[String] =
-        readGzipFile(new File(path), enc, log)
-
-    /**
-      * Reads lines from given file.
-      *
-      * @param f Zipped file to read from.
-      * @param enc Encoding.
-      * @param log Logger to use.
-      */
-    def readGzipFile(f: File, enc: String, log: Logger = logger): List[String] =
-        try
-            Using.resource(Source.fromInputStream(new GZIPInputStream(new FileInputStream(f)), enc)) { src =>
-                getAndLog(src.getLines().map(p => p).toList, f, log)
-            }
-        catch
-            case e: IOException => E(s"Failed to read GZIP file: ${f.getAbsolutePath}", e)
-
-    /**
       * Reads bytes from given file.
       *
       * @param f File.
@@ -652,96 +627,65 @@ object NCUtils extends LazyLogging:
         data
 
     /**
-      * Reads lines from given file.
+      *  Reads lines from given resource.
       *
-      * @param f File to read from.
-      * @param enc Encoding.
-      * @param log Logger to use.
+      * @param res
+      * @param enc
+      * @param strip
+      * @param convert
+      * @param filterText
+      * @param log
+      * @return
       */
-    def readFile(f: File, enc: String = "UTF-8", log: Logger = logger): List[String] =
-        try
-            Using.resource(Source.fromFile(f, enc)) { src =>
-                getAndLog(src.getLines().map(p => p).toList, f, log)
-            }
-        catch case e: IOException => E(s"Failed to read file: ${f.getAbsolutePath}", e)
-
-    /**
-      * Maps lines from the given stream to an object.
-      *
-      * @param in Stream to read from.
-      * @param enc Encoding.
-      * @param log Logger to use.
-      * @param mapper Function to read lines.
-      */
-    def mapStream[T](in: InputStream, enc: String, log: Logger = logger, mapper: Iterator[String] => T): T =
-        try Using.resource(Source.fromInputStream(in, enc)) { src => mapper(src.getLines()) }
-        catch case e: IOException => E(s"Failed to read stream.", e)
-
-    /**
-      * Reads lines from given stream.
-      *
-      * @param in Stream to read from.
-      * @param enc Encoding.
-      * @param log Logger to use.
-      */
-    def readStream(in: InputStream, enc: String = "UTF-8", log: Logger = logger): List[String] =
-        mapStream(in, enc, log, _.map(p => p).toList)
-
-    /**
-      * Reads lines from given resource.
-      *
-      * @param res Resource path to read from.
-      * @param enc Encoding.
-      * @param log Logger to use.
-      */
-    def readResource(res: String, enc: String = "UTF-8", log: Logger = logger): List[String] =
-        val list =
-            try Using.resource(Source.fromInputStream(getStream(res), enc))(_.getLines().toSeq).toList
-            catch case e: IOException => E(s"Failed to read stream: $res", e)
-    
-        log.trace(s"Loaded resource: $res")
-
-        list
-
-    /**
-      *
-      * @param in
-      */
-    private def readLcTrimFilter(in: BufferedSource): List[String] =
-        in.getLines().map(_.toLowerCase.strip).filter(s => s.nonEmpty && s.head!= '#').toList
-
-    /**
-      * Reads lines from given stream converting to lower case, trimming, and filtering
-      * out empty lines and comments (starting with '#').
-      *
-      * @param res Zipped resource to read from.
-      * @param enc Encoding.
-      * @param log Logger to use.
-      */
-    def readTextGzipResource(res: String, enc: String, log: Logger = logger): List[String] =
-        val list =
-            try Using.resource(Source.fromInputStream(new GZIPInputStream(getStream(res)), enc))(readLcTrimFilter)
+    def readLines(
+        res: String | File | InputStream,
+        enc: String = "UTF-8",
+        strip: Boolean = false,
+        convert: String => String = s => s,
+        filterText: Boolean = false,
+        log: Logger = logger
+    ): Iterator[String] =
+        def process(is: InputStream, name: String) =
+            try
+                val out = Source.fromInputStream(is, enc).getLines().flatMap(p =>
+                    var x = if strip then p.strip else p
+                    x = convert(p)
+                    Option.when(!filterText || x.nonEmpty && x.head != '#')(x)
+                )
+                log.info(s"Loaded resource: $name")
+                out
             catch case e: IOException => E(s"Failed to read stream: $res", e)
 
-        log.trace(s"Loaded resource: $res")
-
-        list
+        res match
+            case is: InputStream => process(is, is.getClass.getName)
+            case s: String => process(new BufferedInputStream(getStream(s)), s)
+            case f: File => process(new BufferedInputStream(new FileInputStream(f)), f.getAbsolutePath)
 
     /**
-      * Reads lines from given stream converting to lower case, trimming, and filtering
-      * out empty lines and comments (starting with '#').
       *
-      * @param in Stream to read from.
-      * @param enc Encoding.
+      * @param res
+      * @param enc
+      * @param strip
+      * @param convert
+      * @param filterText
+      * @param log
+      * @return
       */
-    def readTextStream(in: InputStream, enc: String): List[String] =
-        try
-            Using.resource(Source.fromInputStream(in, enc)) { src =>
-                readLcTrimFilter(src)
-            }
-        catch
-            case e: IOException => E(s"Failed to read stream.", e)
+    def readGzipLines(
+        res: String,
+        enc: String = "UTF-8",
+        strip: Boolean = false,
+        convert: String => String = s => s,
+        filterText: Boolean = false,
+        log: Logger = logger
+    ): Iterator[String] = readLines(new GZIPInputStream(getStream(res)), enc, strip, convert, filterText, log)
 
+    /**
+      *
+      * @param s
+      * @return
+      */
+    def hasMeaning(s: String): Boolean = s.nonEmpty && s.head != '#'
 
     /**
       *
