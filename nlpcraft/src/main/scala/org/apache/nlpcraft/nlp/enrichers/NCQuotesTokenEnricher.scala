@@ -25,8 +25,6 @@ import scala.collection.*
   * Companion helper.
   */
 object NCQuotesTokenEnricher:
-    private val PROP = "quoted"
-
     private case class Range(from: Int, to: Int):
         def in(idx: Int): Boolean = idx >= from && idx <= to
 
@@ -55,32 +53,33 @@ class NCQuotesTokenEnricher extends NCTokenEnricher with LazyLogging:
     //noinspection DuplicatedCode
     /** @inheritdoc */
     override def enrich(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): Unit =
-        def markAllNot(invalidState: Boolean): Unit =
-            if invalidState then logger.warn(s"Detected invalid quotes in: ${req.getText}")
-            toks.foreach(_.put(PROP, false))
+        def mark(get: NCToken => Boolean): Unit = for (t <- toks) t.put("quoted", get(t))
+        def markFalse(invalid: Boolean): Unit =
+            if invalid then logger.warn(s"Detected invalid quotes in: ${req.getText}")
+            mark(_ => false)
 
         val quotes = toks.filter(isQuote)
 
         if quotes.isEmpty then
-            markAllNot(false)
+            markFalse(false)
         else if quotes.length % 2 != 0 then
-            markAllNot(true)
+            markFalse(true)
         else
-            val quotedRanges = mutable.HashSet.empty[Range]
+            val ranges = mutable.HashSet.empty[Range]
             val stack = mutable.Stack.empty[NCToken]
 
-            for (quote <- quotes)
+            for (q <- quotes)
                 if stack.nonEmpty then
                     val top = stack.top
-                    if top.getText == QUOTES_REVERSED.getOrElse(quote.getText, null) then
-                        quotedRanges += Range(top.getIndex + 1, quote.getIndex - 1)
+                    if top.getText == QUOTES_REVERSED.getOrElse(q.getText, null) then
+                        ranges += Range(top.getIndex + 1, q.getIndex - 1)
                         stack.pop()
                     else
-                        stack.push(quote)
+                        stack.push(q)
                 else
-                    stack.push(quote)
+                    stack.push(q)
 
             if stack.isEmpty then
-                toks.foreach(t => t.put(PROP, quotedRanges.exists(_.in(t.getIndex))))
+                mark(t => ranges.exists(_.in(t.getIndex)))
             else
-                markAllNot(true)
+                markFalse(true)
