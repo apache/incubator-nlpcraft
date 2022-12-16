@@ -471,21 +471,20 @@ object NCUtils extends LazyLogging:
         filterText: Boolean = false,
         log: Logger = logger
     ): Iterator[String] =
-        def process(is: InputStream, name: String) =
-            try
-                val out = Source.fromInputStream(is, enc).getLines().flatMap(p =>
-                    var x = if strip then p.strip else p
-                    x = convert(p)
-                    Option.when(!filterText || x.nonEmpty && x.head != '#')(x)
-                )
-                log.info(s"Loaded resource: $name")
-                out
-            catch case e: IOException => E(s"Failed to read stream: $res", e)
+        try
+            val (stream, name) =
+                res match
+                    case is: InputStream => (is, is.getClass.getName)
+                    case s: String => (new BufferedInputStream(getStream(s)), s)
+                    case f: File => (new BufferedInputStream(new FileInputStream(f)), f.getAbsolutePath)
 
-        res match
-            case is: InputStream => process(is, is.getClass.getName)
-            case s: String => process(new BufferedInputStream(getStream(s)), s)
-            case f: File => process(new BufferedInputStream(new FileInputStream(f)), f.getAbsolutePath)
+            val out = Source.fromInputStream(stream, enc).getLines().flatMap(line =>
+                val s = convert(if strip then line.strip else line)
+                Option.when(!filterText || s.nonEmpty && s.head != '#')(s)
+            )
+            log.info(s"Loaded resource: $name")
+            out
+        catch case e: IOException => E(s"Failed to read stream: $res", e)
 
     /**
       *
