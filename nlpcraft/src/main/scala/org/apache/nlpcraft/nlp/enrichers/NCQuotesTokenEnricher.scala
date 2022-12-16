@@ -19,6 +19,25 @@ package org.apache.nlpcraft.nlp.enrichers
 
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.*
+import scala.collection.*
+
+/**
+  * Companion helper.
+  */
+object NCQuotesTokenEnricher:
+    private val PROP = "quoted"
+
+    private case class Range(from: Int, to: Int):
+        def in(idx: Int): Boolean = idx >= from && idx <= to
+
+    private val QUOTES = Map("«" -> "»", "\"" -> "\"", "`" -> "`", "'" -> "'")
+
+    private val QUOTES_REVERSED = QUOTES.map { case (key, value) => value -> key }
+    private val QUOTES_SYMBOLS = QUOTES.flatMap { case (key, value) => Set(key, value) }.toSet
+
+    private def isQuote(t: NCToken): Boolean = QUOTES_SYMBOLS.contains(t.getText)
+
+import NCQuotesTokenEnricher.*
 
 /**
   * Quotes [[NCTokenEnricher token enricher]].
@@ -27,30 +46,41 @@ import org.apache.nlpcraft.*
   * instance if word it represents is in quotes. The value `true` of the metadata property indicates that this word is in quotes,
   * `false` value indicates otherwise.
   *
-  * **NOTE:** this implementation requires `lemma` string [[NCPropertyMap metadata]] property that contains
-  * token's lemma. You can configure [[NCOpenNLPTokenEnricher]] for required language that provides this metadata property before
-  * this enricher in your [[NCPipeline pipeline]].
+  * Supported quotes are: **«**, **»**, **"**, **'**, **&#96;**.
+  * For any invalid situations, like unexpected quotes count or their invalid order detection, for all tokens
+  * property `quoted` value assigned as `false`.
   */
 //noinspection ScalaWeakerAccess
 class NCQuotesTokenEnricher extends NCTokenEnricher with LazyLogging:
-    private final val Q_POS: Set[String] = Set("``", "''")
-    private def getPos(t: NCToken): String = t.get("pos").getOrElse(throw new NCException("POS not found in token."))
-    private def isQuote(t: NCToken): Boolean = Q_POS.contains(getPos(t))
-
     //noinspection DuplicatedCode
     /** @inheritdoc */
     override def enrich(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): Unit =
+        def markAllNot(invalidState: Boolean): Unit =
+            if invalidState then logger.warn(s"Detected invalid quotes in: ${req.getText}")
+            toks.foreach(_.put(PROP, false))
+
         val quotes = toks.filter(isQuote)
 
-        // Start and end quote can be different ("a` processed as valid)
-        if quotes.nonEmpty then
-            if quotes.size % 2 == 0 then
-                val m = toks.zipWithIndex.toMap
-                val pairs = quotes.zipWithIndex.drop(1).flatMap { (t, idx) =>
-                    Option.when(idx % 2 != 0)(m(t) -> m(quotes(idx - 1)))
-                }
-                toks.zipWithIndex.foreach { (tok, idx) =>
-                    tok.put("quoted", pairs.exists { (from, to) => from > idx && to < idx })
-                }
+        if quotes.isEmpty then
+            markAllNot(false)
+        else if quotes.length % 2 != 0 then
+            markAllNot(true)
+        else
+            val quotedRanges = mutable.HashSet.empty[Range]
+            val stack = mutable.Stack.empty[NCToken]
+
+            for (quote <- quotes)
+                if stack.nonEmpty then
+                    val top = stack.top
+                    if top.getText == QUOTES_REVERSED.getOrElse(quote.getText, null) then
+                        quotedRanges += Range(top.getIndex + 1, quote.getIndex - 1)
+                        stack.pop()
+                    else
+                        stack.push(quote)
+                else
+                    stack.push(quote)
+
+            if stack.isEmpty then
+                toks.foreach(t => t.put(PROP, quotedRanges.exists(_.in(t.getIndex))))
             else
-                logger.warn(s"Detected invalid quotes in: ${req.getText}")
+                markAllNot(true)
