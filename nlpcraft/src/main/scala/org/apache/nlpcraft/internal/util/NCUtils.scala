@@ -776,3 +776,15 @@ object NCUtils extends LazyLogging:
                 es.awaitTermination(Long.MaxValue, TimeUnit.MILLISECONDS)
             catch
                 case _: InterruptedException => () // Safely ignore.
+
+    /**
+      *
+      * @param tok
+      * @param name
+      * @tparam T
+      * @return
+      */
+    def getProperty[T](tok: NCToken, name: String): T =
+        tok.get(name).getOrElse(throw new NCException(
+            s"'$name' property not found in token [index=${tok.getIndex}, text=${tok.getText}, properties=${tok.keysSet}]")
+        )
