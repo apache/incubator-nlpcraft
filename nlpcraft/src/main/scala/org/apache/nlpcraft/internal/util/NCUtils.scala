@@ -455,18 +455,17 @@ object NCUtils extends LazyLogging:
     /**
       *  Reads lines from given resource.
       *
-      * @param res
-      * @param enc
-      * @param strip
-      * @param convert
-      * @param filterText
-      * @param log
-      * @return
+      * @param res Resource, file absolute or relative path or input stream.
+      * @param enc Encoding. Default value is "UTF-8".
+      * @param strip Strip flag. If `true` it strips all read lines. Default value is `true`.
+      * @param convert Line conversion method. Applied after `strip`. By default it passes lines as is.
+      * @param filterText. Filtering text flag. If `true` it skips empty lines and lines with headers (# symbol). Default value is `false`.
+      * @param log Logger.
       */
     def readLines(
         res: String | File | InputStream,
         enc: String = "UTF-8",
-        strip: Boolean = false,
+        strip: Boolean = true,
         convert: String => String = s => s,
         filterText: Boolean = false,
         log: Logger = logger
@@ -487,19 +486,18 @@ object NCUtils extends LazyLogging:
         catch case e: IOException => E(s"Failed to read stream: $res", e)
 
     /**
-      *
+      * @param res Gzip resource, file absolute or relative path.
       * @param res
-      * @param enc
-      * @param strip
-      * @param convert
-      * @param filterText
-      * @param log
-      * @return
+      * @param enc        Encoding. Default value is "UTF-8".
+      * @param strip      Strip flag. If `true` it strips all read lines. Default value is `true`.
+      * @param convert    Line conversion method. Applied after `strip`. By default it passes lines as is.
+      * @param filterText . Filtering text flag. If `true` it skips empty lines and lines with headers (# symbol). Default value is `false`.
+      * @param log Logger.
       */
     def readGzipLines(
         res: String,
         enc: String = "UTF-8",
-        strip: Boolean = false,
+        strip: Boolean = true,
         convert: String => String = s => s,
         filterText: Boolean = false,
         log: Logger = logger

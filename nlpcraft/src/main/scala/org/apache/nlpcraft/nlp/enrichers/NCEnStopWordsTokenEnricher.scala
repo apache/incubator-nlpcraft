@@ -100,7 +100,7 @@ private object NCEnStopWordsTokenEnricher extends LazyLogging:
         "percent"
     )
 
-    private def read(path: String): Set[String] = U.readGzipLines(path, strip = true, convert = _.toLowerCase, filterText = true, log = logger).toSet
+    private def read(path: String): Set[String] = U.readGzipLines(path, convert = _.toLowerCase, filterText = true, log = logger).toSet
     private def getPos(t: NCToken): String = U.getProperty(t, "pos")
     private def getLemma(t: NCToken): String = U.getProperty(t, "lemma")
     private def isQuote(t: NCToken): Boolean = Q_POS.contains(getPos(t))
@@ -322,7 +322,7 @@ class NCEnStopWordsTokenEnricher(
         percents = PERCENTS.map(getStem)
 
         // Case sensitive.
-        val m = readStopWords(U.readLines(res = "stopwords/stop_words.txt", strip = true, filterText = true, log = logger))
+        val m = readStopWords(U.readLines(res = "stopwords/stop_words.txt", filterText = true, log = logger))
 
         stopWords = m(false)
         exceptions = m(true)

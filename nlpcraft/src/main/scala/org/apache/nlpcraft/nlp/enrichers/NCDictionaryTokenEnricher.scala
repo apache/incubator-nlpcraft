@@ -42,7 +42,7 @@ class NCDictionaryTokenEnricher(dictRes: String) extends NCTokenEnricher with La
 
     init()
 
-    private def init(): Unit = dict = U.readLines(res = dictRes, strip = true, filterText = true, log = logger).toSet
+    private def init(): Unit = dict = U.readLines(res = dictRes, filterText = true, log = logger).toSet
 
     /** @inheritdoc */
     override def enrich(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): Unit =

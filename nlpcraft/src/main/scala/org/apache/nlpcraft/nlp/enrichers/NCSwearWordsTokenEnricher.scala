@@ -49,7 +49,7 @@ class NCSwearWordsTokenEnricher(dictRes: String, stemmer: NCStemmer) extends NCT
     init()
 
     private def init(): Unit =
-        swearWords = NCUtils.readLines(res = dictRes, strip = true, convert = s => stemmer.stem(s.toLowerCase), filterText = true, log = logger).toSet
+        swearWords = NCUtils.readLines(res = dictRes, convert = s => stemmer.stem(s.toLowerCase), filterText = true, log = logger).toSet
 
     /** @inheritdoc */
     override def enrich(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): Unit =
