@@ -18,19 +18,42 @@
 package org.apache.nlpcraft.internal.util
 
 import org.scalatest.funsuite.AnyFunSuite
+import org.apache.nlpcraft.internal.util.NCUtils as U
 
-import java.io.FileInputStream
+import java.io.*
 
 /**
   *
   */
 class NCUtilsSpec extends AnyFunSuite:
-    test("test") {
+    test("test sources") {
         val res = "moby/354984si.ngl"
         val file = NCResourceReader.get("badfilter/swear_words.txt")
         val is = new FileInputStream(file)
 
-        require(NCUtils.readLines(res).toList.nonEmpty)
-        require(NCUtils.readLines(file).toList.nonEmpty)
-        require(NCUtils.readLines(is).toList.nonEmpty)
+        require(U.readLines(res).toList.nonEmpty)
+        require(U.readLines(file).toList.nonEmpty)
+        require(U.readLines(is).toList.nonEmpty)
+    }
+
+    test("test parameters") {
+        val data = Seq(
+            "#",
+            "",
+            " AA",
+            "a"
+        )
+
+        val arr = data.mkString("\n").getBytes
+
+        var lines = U.readLines(new ByteArrayInputStream(arr), strip = false).toList
+
+        require(lines.length == 4)
+        require(lines.exists(_.contains(" AA")))
+
+        lines = U.readLines(new ByteArrayInputStream(arr), convert = _.toLowerCase, filterText = true).toList
+
+        require(lines.length == 2)
+        require(!lines.exists(_.contains(" AA")))
+        require(lines.exists(_.contains("aa")))
     }

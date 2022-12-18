@@ -224,19 +224,6 @@ object NCUtils extends LazyLogging:
         else E(s"Source not found or unsupported: $src")
 
     /**
-      * Sleeps number of milliseconds properly handling exceptions.
-      *
-      * @param delay Number of milliseconds to sleep.
-      */
-    def sleep(delay: Long): Unit =
-        try
-            Thread.sleep(delay)
-        catch
-            case _: InterruptedException => Thread.currentThread().interrupt()
-            case e: Throwable => logger.warn("Unhandled exception caught during sleep:", e)
-
-
-    /**
       * Interrupts thread and waits for its finish.
       *
       * @param t Thread.
@@ -276,54 +263,6 @@ object NCUtils extends LazyLogging:
       * @param seq Sequence with potential dups.
       */
     def distinct[T](seq: List[T]): List[T] = if containsDups(seq) then seq.distinct else seq
-
-    /**
-      * Safely and silently closes the client socket.
-      *
-      * @param sock Client socket to close.
-      */
-    def close(sock: Socket): Unit =
-        if sock != null then
-            try sock.close()
-            catch case _: Exception => ()
-
-    /**
-      * Safely and silently closes the server socket.
-      *
-      * @param sock Server socket to close.
-      */
-    def close(sock: ServerSocket): Unit =
-        if sock != null then
-            try sock.close()
-            catch case _: Exception => ()
-
-    /**
-      *
-      * @param in Stream.
-      */
-    def close(in: InputStream): Unit =
-        if in != null then
-            try in.close()
-            catch case _: Exception => ()
-
-    /**
-      *
-      * @param out Stream.
-      */
-    def close(out: OutputStream): Unit =
-        if out != null then
-            try out.close()
-            catch case _: Exception => ()
-
-    /**
-      * Closes auto-closeable ignoring any exceptions.
-      *
-      * @param a Resource to close.
-      */
-    def close(a: AutoCloseable): Unit =
-        if a != null then
-            try a.close()
-            catch case _: Exception => ()
 
     /**
       *
