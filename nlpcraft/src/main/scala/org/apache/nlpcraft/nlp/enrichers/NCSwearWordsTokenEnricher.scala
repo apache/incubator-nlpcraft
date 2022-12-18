@@ -36,7 +36,9 @@ import java.util.Objects
   * Read more about stemming [[https://en.wikipedia.org/wiki/Stemming here]].
   * Stemming is used here because it is too difficult to be based on more accurate `lemma` approach for swear words.
   *
-  * @param dictRes Path to the swear dictionary. This swear dictionary should has a simple plain text format with one dictionary word on one line.
+  * @param dictRes Path to the swear dictionary. The dictionary should have a simple
+  *         plain text format with *one word per line*, empty lines are skipped, duplicates ignored, header or other comments allowed.
+  *         Headers are lines started by **#** symbol. Search in the dictionary is implemented by input words **stems**, case is ignored.
   * @param stemmer Stemmer implementation for the dictionary language.
   */
 //noinspection ScalaWeakerAccess

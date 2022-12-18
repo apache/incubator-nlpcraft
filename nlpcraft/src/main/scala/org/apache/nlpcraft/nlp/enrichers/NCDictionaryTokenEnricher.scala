@@ -34,7 +34,8 @@ import org.apache.nlpcraft.internal.util.NCUtils as U
   * metadata property before this enricher in your [[NCPipeline pipeline]].
   *
   * @param dictRes Relative path, absolute path or URL to the dictionary file. The dictionary should have a simple
-  *         plain text format with *one lemma per line* with no empty lines, header or other comments allowed.
+  *         plain text format with *one lemma per line*, empty lines are skipped, duplicates ignored, header or other comments allowed.
+  *         Headers are lines started by **#** symbol. Search in the dictionary is implemented by input words **lemms**, case is ignored.
   */
 //noinspection DuplicatedCode,ScalaWeakerAccess
 class NCDictionaryTokenEnricher(dictRes: String) extends NCTokenEnricher with LazyLogging:
@@ -42,7 +43,7 @@ class NCDictionaryTokenEnricher(dictRes: String) extends NCTokenEnricher with La
 
     init()
 
-    private def init(): Unit = dict = U.readLines(res = dictRes, filterText = true, log = logger).toSet
+    private def init(): Unit = dict = U.readLines(res = dictRes, filterText = true, convert = _.toLowerCase, log = logger).toSet
 
     /** @inheritdoc */
     override def enrich(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): Unit =
