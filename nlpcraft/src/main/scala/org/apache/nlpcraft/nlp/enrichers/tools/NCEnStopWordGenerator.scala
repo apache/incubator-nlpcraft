@@ -17,8 +17,8 @@
 
 package org.apache.nlpcraft.nlp.enrichers.tools
 
-import opennlp.tools.stemmer.PorterStemmer
 import org.apache.nlpcraft.internal.util.NCUtils
+import org.apache.nlpcraft.nlp.stemmer.NCEnStemmer
 
 import scala.collection.mutable
 
@@ -26,7 +26,7 @@ import scala.collection.mutable
   * Generates first word sequences.
   */
 object NCEnStopWordGenerator:
-    private final lazy val stemmer = new PorterStemmer
+    private final lazy val stemmer = new NCEnStemmer
 
     // Output files.
     private val FIRST_WORDS_FILE = "first_words.txt"

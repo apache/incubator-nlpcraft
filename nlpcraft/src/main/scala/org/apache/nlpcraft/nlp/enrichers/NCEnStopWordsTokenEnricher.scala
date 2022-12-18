@@ -207,9 +207,11 @@ class NCEnStopWordsTokenEnricher(
     private var stopWords: StopWordHolder = _
     private var exceptions: StopWordHolder = _
 
-    private case class TokenExtra(lemma: String, stemTxt: String):
-        val stemLemma: String = getStem(lemma)
-
+    private case class TokenExtra(lemma: String, stemTxt: String, stemLemma: String)
+    private object TokenExtra:
+        def apply(t: NCToken): TokenExtra =
+            val lemma = getLemma(t)
+            new TokenExtra(lemma, getStem(t.getText), getStem(lemma))
     init()
 
     private def getStem(s: String): String = stemmer.stem(s.toLowerCase)
@@ -540,7 +542,7 @@ class NCEnStopWordsTokenEnricher(
 
         val extraToks =
             scala.collection.mutable.LinkedHashMap.empty[NCToken, TokenExtra] ++=
-            toks.map(t => t -> TokenExtra(getLemma(t), getStem(t.getText)))
+                toks.map(t => t -> TokenExtra(t))
 
         for ((tok, extra) <- extraToks)
             val idx = tok.getIndex
