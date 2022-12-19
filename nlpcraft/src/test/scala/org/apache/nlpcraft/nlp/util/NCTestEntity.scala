@@ -21,6 +21,13 @@ import org.apache.nlpcraft.*
 import org.apache.nlpcraft.nlp.util.NCTestPipeline.*
 
 /**
+  *
+  */
+object NCTestEntity:
+    def apply(id: String, token: NCTestToken) = new NCTestEntity(id, tokens = Seq(token))
+    def apply(id: String, reqId: String, token: NCTestToken) = new NCTestEntity(id, reqId, tokens = Seq(token))
+
+/**
   * Entity test implementation.
   *
   * @param id
@@ -34,7 +41,7 @@ case class NCTestEntity(
     reqId: String = null,
     groups: Set[String] = null,
     meta: Map[String, AnyRef] = null,
-    tokens: NCTestToken*
+    tokens: Seq[NCTestToken]
 ) extends NCPropertyMapAdapter with NCEntity:
     if meta != null then meta.foreach { (k, v) => put(k, v) }
 

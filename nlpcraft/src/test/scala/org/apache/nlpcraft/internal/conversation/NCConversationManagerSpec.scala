@@ -51,7 +51,7 @@ class NCConversationManagerSpec extends AnyFunSuite:
         checkSize(0)
 
         // Added. Still empty.
-        conv.addEntities(reqId, List(NCTestEntity("e1", reqId, tokens = t), NCTestEntity("e2", reqId, tokens = t)))
+        conv.addEntities(reqId, List(NCTestEntity("e1", reqId, t), NCTestEntity("e2", reqId, t)))
         checkSize(0)
 
         // Updated. Not empty.
@@ -80,7 +80,7 @@ class NCConversationManagerSpec extends AnyFunSuite:
         checkSize(0)
 
         // Added. Still empty.
-        conv.addEntities(reqId, List(NCTestEntity("e1", reqId, tokens = t), NCTestEntity("e2", reqId, tokens = t)))
+        conv.addEntities(reqId, List(NCTestEntity("e1", reqId, t), NCTestEntity("e2", reqId, t)))
         checkSize(0)
 
         // Updated. Not empty.

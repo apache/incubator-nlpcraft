@@ -81,7 +81,7 @@ class NCModelIntentsInvalidArgsSpec extends AnyFunSuite:
             def invalidOpt(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("opt") opt: Option[Int]): NCResult = processOptInt(opt)
 
     private val INPUT =
-        val e = NCTestEntity("id", "reqId", tokens = NCTestToken())
+        val e = NCTestEntity("id", "reqId", NCTestToken())
 
         def col[T](t: T): List[T] = List(t)
 

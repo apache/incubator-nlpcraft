@@ -326,7 +326,7 @@ class NCEnStopWordsTokenEnricher(
         percents = PERCENTS.map(getStem)
 
         // Case sensitive.
-        val m = readStopWords(U.readLines(res = "stopwords/stop_words.txt", filterText = true, log = logger))
+        val m = readStopWords(U.readLines(res = "stopwords/en_stop_words.txt", filterText = true, log = logger))
 
         stopWords = m(false)
         exceptions = m(true)

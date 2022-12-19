@@ -144,11 +144,11 @@ private[functions] object NCIDLFunctions:
         value: String = null, 
         groups: Set[String] = null,
         meta: Map[String, AnyRef] = Map.empty[String, AnyRef],
-        tokens: NCTestToken*
+        tokens: Seq[NCTestToken]
     ): NCEntity =
         require(tokens.nonEmpty)
 
-        NCTestEntity(id, reqId, groups, meta, tokens*)
+        NCTestEntity(id, reqId, groups, meta, tokens)
 
 import org.apache.nlpcraft.internal.intent.compiler.functions.NCIDLFunctions.*
 
