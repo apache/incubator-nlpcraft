@@ -20,6 +20,7 @@ package org.apache.nlpcraft.nlp.enrichers
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.util.NCUtils as U
+import org.apache.nlpcraft.nlp.enrichers.impl.NCEnStopWordGenerator
 import org.apache.nlpcraft.nlp.stemmer.*
 
 import java.io.*
@@ -82,11 +83,6 @@ private object NCEnStopWordsTokenEnricher extends LazyLogging:
         "--" // Synthetic POS.
     )
 
-    // Stemmatization is done already by generator.
-    // It is initialized in the companion for test performance reasons.
-    private val FIRST_WORDS: Set[String] = read("stopwords/first_words.txt.gz")
-    private val NOUN_WORDS: Set[String] = read("stopwords/noun_words.txt.gz")
-
     private val STOP_BEFORE_STOP: Seq[Word] = Seq("DT", "PRP", "PRP$", "WDT", "WP", "WP$", "WRB")
     private val Q_POS = Set("``", "''")
     private val PERCENTS = Set(
@@ -100,7 +96,6 @@ private object NCEnStopWordsTokenEnricher extends LazyLogging:
         "percent"
     )
 
-    private def read(path: String): Set[String] = U.readGzipLines(path, convert = _.toLowerCase, filterText = true, log = logger).toSet
     private def getPos(t: NCToken): String = U.getProperty(t, "pos")
     private def getLemma(t: NCToken): String = U.getProperty(t, "lemma")
     private def isQuote(t: NCToken): Boolean = Q_POS.contains(getPos(t))
@@ -199,6 +194,8 @@ class NCEnStopWordsTokenEnricher(
     exclSet: Set[String] = Set.empty,
     stemmer: NCStemmer = new NCEnStemmer
 ) extends NCTokenEnricher with LazyLogging:
+    require(addSet != null, "Additional stopwords cannot be null.")
+    require(exclSet != null, "Exceptions stopwords cannot be null.")
     require(stemmer != null, "Stemmer cannot be null.")
 
     private var addStems: Set[String] = _
@@ -206,6 +203,8 @@ class NCEnStopWordsTokenEnricher(
     private var percents: Set[String] = _
     private var stopWords: StopWordHolder = _
     private var exceptions: StopWordHolder = _
+    private var firstWords: Set[String] = _
+    private var nounWords: Set[String] = _
 
     private case class TokenExtra(lemma: String, stemTxt: String, stemLemma: String)
     private object TokenExtra:
@@ -309,8 +308,8 @@ class NCEnStopWordsTokenEnricher(
       *
       */
     private def init(): Unit =
-        addStems = if addSet == null then Set.empty else addSet.map(getStem)
-        exclStems = if exclSet == null then Set.empty else exclSet.map(getStem)
+        addStems = addSet.map(getStem)
+        exclStems = exclSet.map(getStem)
 
         def check(name: String, set: Set[String]): Unit =
             if set.exists(_.exists(_.isWhitespace)) then throw E(s"$name contain a string with whitespaces.")
@@ -328,6 +327,11 @@ class NCEnStopWordsTokenEnricher(
 
         stopWords = m(false)
         exceptions = m(true)
+
+        val gen = new NCEnStopWordGenerator(stemmer)
+
+        firstWords = gen.mkFirstWords()
+        nounWords = gen.mkNounWords()
 
     /**
       * Parses configuration template.
@@ -601,7 +605,7 @@ class NCEnStopWordsTokenEnricher(
 
         // All sentence first stopword + first non stop word.
         val startToks = toks.takeWhile(isStopWord) ++ toks.find(p => !isStopWord(p)).map(p => p)
-        for (startTok <- startToks; tup <- origToks.filter(_._1.head == startTok); key = tup._2 if FIRST_WORDS.contains(key) && !isException(tup._1))
+        for (startTok <- startToks; tup <- origToks.filter(_._1.head == startTok); key = tup._2 if firstWords.contains(key) && !isException(tup._1))
             tup._1.foreach(tok => stops += tok)
             foundKeys += key
 
@@ -611,7 +615,7 @@ class NCEnStopWordsTokenEnricher(
         // +-------------------------------------------------+
         for (tup <- origToks; key = tup._2 if !foundKeys.contains(key) && !isException(tup._1))
             foundKeys.find(key.startsWith) match
-                case Some(s) => if NOUN_WORDS.contains(key.substring(s.length).strip) then tup._1.foreach(tok => stops += tok)
+                case Some(s) => if nounWords.contains(key.substring(s.length).strip) then tup._1.foreach(tok => stops += tok)
                 case None => ()
 
         // +-------------------------------------------------+
