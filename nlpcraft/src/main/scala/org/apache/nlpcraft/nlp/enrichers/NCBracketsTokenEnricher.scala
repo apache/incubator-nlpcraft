@@ -21,16 +21,26 @@ import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.*
 
 import java.io.*
-import scala.collection.mutable
+import scala.collection.{Map, mutable}
+
+/**
+  * Companion helper.
+  */
+object NCBracketsTokenEnricher:
+    private val BRACKETS = Map("(" -> ")", "{" -> "}", "[" -> "]", "<" -> ">")
+    private val BRACKETS_REVERSED = BRACKETS.map { case (key, value) => value -> key }
+
+import NCBracketsTokenEnricher.*
 
 /**
   * Brackets [[NCTokenEnricher token enricher]].
   *
   * This enricher adds `brackets` boolean [[NCPropertyMap metadata]] property to the [[NCToken token]]
-  * instance if the word it represents is enclosed in brackets. Supported brackets are: `()`, `{}`,
-  * `[]` and `<>`.
+  * instance if the word it represents is enclosed in brackets.
   *
-  * **NOTE:** invalid enclosed brackets are ignored.
+  * Supported brackets are: `()`, `{}`, `[]` and `<>`.
+  *
+  * **NOTE:** invalid enclosed brackets are ignored and for all input tokens property `brackets` assigned as `false`.
   */
 //noinspection DuplicatedCode,ScalaWeakerAccess
 class NCBracketsTokenEnricher extends NCTokenEnricher with LazyLogging:
@@ -41,26 +51,20 @@ class NCBracketsTokenEnricher extends NCTokenEnricher with LazyLogging:
         var ok = true
 
         def check(expected: String): Unit = if stack.empty() || stack.pop() != expected then ok = false
-        def mark(t: NCToken): Unit = map += t -> !stack.isEmpty
+        def add(t: NCToken): Unit = map += t -> !stack.isEmpty
 
-        for (t <- toks if ok)
-            t.getText match
-                case "(" | "{" | "[" | "<" =>
-                    mark(t)
-                    stack.push(t.getText)
-                case ")" =>
-                    check("(")
-                    mark(t)
-                case "}" =>
-                    check("{")
-                    mark(t)
-                case "]" =>
-                    check("[")
-                    mark(t)
-                case ">" =>
-                    check("<")
-                    mark(t)
-                case _ => mark(t)
+        for (t <- toks if ok; txt = t.getText)
+            if BRACKETS.contains(txt) then
+                add(t)
+                stack.push(txt)
+            else if BRACKETS_REVERSED.contains(txt) then
+                check(BRACKETS_REVERSED(txt))
+                add(t)
+            else
+                add(t)
 
-        if ok && stack.isEmpty then map.foreach { (tok, b) => tok.put("brackets", b) }
-        else logger.warn(s"Detected invalid brackets in: ${req.getText}")
+        if ok && stack.isEmpty then
+            map.foreach { (tok, b) => tok.put("brackets", b) }
+        else
+            toks.foreach(_.put("brackets",false))
+            logger.warn(s"Detected invalid brackets in: ${req.getText}")

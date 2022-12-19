@@ -45,8 +45,8 @@ import NCQuotesTokenEnricher.*
   * `false` value indicates otherwise.
   *
   * Supported quotes are: **«**, **»**, **"**, **'**, **&#96;**.
-  * For any invalid cases, like invalid quotes order otr count,
-  * property `quoted` assigned as `false` for all input tokens.
+  *
+  * **NOTE:** invalid enclosed quotes are ignored and for all input tokens property `quoted` assigned as `false`.
   */
 //noinspection ScalaWeakerAccess
 class NCQuotesTokenEnricher extends NCTokenEnricher with LazyLogging:
