@@ -42,7 +42,7 @@ import org.apache.nlpcraft.nlp.parsers.NCNLPEntityParser.*
   *
   *  Also created [[NCEntity]] instances receive all another [[NCPropertyMap metadata]] properties
   *  which were added by configured in [[NCPipeline pipeline]] token [[org.apache.nlpcraft.NCTokenEnricher enrichers]].
-  *  These properties identifiers will be prefixed by **nlp:entity:**.
+  *  These properties identifiers will be prefixed by **nlp:entity:**, for example **nlp:entity:prop**.
   *
   *  @param predicate Predicate which allows to filter list of converted [[NCToken]] instances.
   *  By default all [[NCToken]] instances converted.

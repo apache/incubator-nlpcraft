@@ -178,7 +178,7 @@ import org.apache.nlpcraft.nlp.enrichers.NCEnStopWordsTokenEnricher.*
   *
   * More information about stopwords can be found at [[https://en.wikipedia.org/wiki/Stop_word]].
   *
-  * * `stemmer` implementation language should be corresponded to other components of [[NCPipeline]], but
+  * `stemmer` implementation language should be corresponded to other components of [[NCPipeline]], but
   * required `stemmer` implementation is independent from other components' stemmers.
   *
   * **NOTE:** this implementation requires `lemma` and `pos` string [[NCPropertyMap metadata]] properties that
@@ -190,7 +190,7 @@ import org.apache.nlpcraft.nlp.enrichers.NCEnStopWordsTokenEnricher.*
   * @param exclSet User defined collection of exceptions, i.e. the words which should not be marked as stopwords during
   *         processing. These words will be stemmatized by the given `stemmer` before attempting to find a match.
   *         Default value is an empty set.
-  * @param stemmer English stemmer implementation. Default value is the instance of [[org.apache.nlpcraft.nlp.stemmer.NCEnStemmer]].
+  * @param stemmer English stemmer implementation. Default value is the instance of [[org.apache.nlpcraft.nlp.stemmer.NCEnStemmer NCEnStemmer]].
   */
 class NCEnStopWordsTokenEnricher(
     addSet: Set[String] = Set.empty,

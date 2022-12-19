@@ -48,7 +48,7 @@ object NCOpenNLPEntityParser:
 
 /**
   *  [[https://opennlp.apache.org/ OpenNLP]] based language independent [[NCEntityParser entity parser]] configured by
-  * paths to [[https://opennlp.apache.org/ OpenNLP]] **name finders** models.
+  *  [[https://opennlp.apache.org/ OpenNLP]] **name finders** models.
   *
   * This parser prepares [[NCEntity]] instances which are detected by given models.
   * These entities are created with ID `opennlp:modelId`, where `modelId` is [[https://opennlp.apache.org/ OpenNLP]] model ID.
