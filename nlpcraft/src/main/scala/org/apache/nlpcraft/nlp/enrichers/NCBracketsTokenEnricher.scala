@@ -47,24 +47,22 @@ class NCBracketsTokenEnricher extends NCTokenEnricher with LazyLogging:
     /** @inheritdoc */
     override def enrich(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): Unit =
         val stack = new java.util.Stack[String]()
-        val map = mutable.HashMap.empty[NCToken, Boolean]
+        val toksVals = mutable.HashMap.empty[NCToken, Boolean]
         var ok = true
 
         def check(expected: String): Unit = if stack.empty() || stack.pop() != expected then ok = false
-        def add(t: NCToken): Unit = map += t -> !stack.isEmpty
+        def add(t: NCToken): Unit = toksVals += t -> !stack.isEmpty
 
         for (t <- toks if ok; txt = t.getText)
             if BRACKETS.contains(txt) then
                 add(t)
                 stack.push(txt)
-            else if BRACKETS_REVERSED.contains(txt) then
-                check(BRACKETS_REVERSED(txt))
-                add(t)
             else
+                BRACKETS_REVERSED.get(txt).foreach(check)
                 add(t)
 
         if ok && stack.isEmpty then
-            map.foreach { (tok, b) => tok.put("brackets", b) }
+            toksVals.foreach { (tok, b) => tok.put("brackets", b) }
         else
             toks.foreach(_.put("brackets",false))
             logger.warn(s"Detected invalid brackets in: ${req.getText}")
