@@ -178,6 +178,9 @@ import org.apache.nlpcraft.nlp.enrichers.NCEnStopWordsTokenEnricher.*
   *
   * More information about stopwords can be found at [[https://en.wikipedia.org/wiki/Stop_word]].
   *
+  * * `stemmer` implementation language should be corresponded to other components of [[NCPipeline]], but
+  * required `stemmer` implementation is independent from other components' stemmers.
+  *
   * **NOTE:** this implementation requires `lemma` and `pos` string [[NCPropertyMap metadata]] properties that
   * contain token's lemma and part of speech accordingly. You can configure [[NCOpenNLPTokenEnricher]] with the model
   * for English language that would provide these metadata properties before this enricher in your [[NCPipeline pipeline]].

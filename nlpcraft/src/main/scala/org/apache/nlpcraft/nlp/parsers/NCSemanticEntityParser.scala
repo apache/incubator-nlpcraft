@@ -51,9 +51,9 @@ object NCSemanticEntityParser:
         elements: List[NCSemanticElement]
     ): NCSemanticEntityParser =
         require(stemmer != null, "Stemmer cannot be null.")
-        require(parser != null, "Parser cannot be null.")
+        require(parser != null, "Token parser cannot be null.")
         require(macros != null, "Macros cannot be null.")
-        require(elements != null, "Elements cannot be null.")
+        require(elements != null && elements.nonEmpty, "Elements cannot be null or empty.")
 
         new NCSemanticEntityParser(stemmer, parser, macros = macros, elements = elements)
 
@@ -71,8 +71,8 @@ object NCSemanticEntityParser:
         elements: List[NCSemanticElement]
     ): NCSemanticEntityParser =
         require(stemmer != null, "Stemmer cannot be null.")
-        require(parser != null, "Parser cannot be null.")
-        require(elements != null, "Elements cannot be null.")
+        require(parser != null, "Token parser cannot be null.")
+        require(elements != null && elements.nonEmpty, "Elements cannot be null or empty.")
 
         new NCSemanticEntityParser(stemmer, parser, macros = Map.empty, elements = elements)
 
@@ -82,12 +82,12 @@ object NCSemanticEntityParser:
       *
       * @param stemmer [[NCStemmer]] implementation for synonyms language.
       * @param parser  [[NCTokenParser]] implementation.
-      * @param mdlRes  Classpath resource, file path or URL for YAML or JSON semantic model definition file.
+      * @param mdlRes Relative path, absolute path, classpath resource or URL to YAML or JSON semantic model definition.
       */
     def apply(stemmer: NCStemmer, parser: NCTokenParser, mdlRes: String): NCSemanticEntityParser =
         require(stemmer != null, "Stemmer cannot be null.")
-        require(parser != null, "Parser cannot be null.")
-        require(mdlRes != null, "Model path cannot be null.")
+        require(parser != null, "Token parser cannot be null.")
+        require(mdlRes != null, "Model resource cannot be null.")
 
         new NCSemanticEntityParser(stemmer, parser, mdlResOpt = mdlRes.?)
 
@@ -183,13 +183,15 @@ import org.apache.nlpcraft.nlp.parsers.NCSemanticEntityParser.*
   * See detailed description on the website [[https://nlpcraft.apache.org/built-in-entity-parser.html#parser-semantic Semantic Parser]].
   *
   * **NOTE:** [[NCSemanticElement]] synonyms, **stemmer** and **parser** parameters must be configured for the same language.
+  * `stemmer` implementation language should be corresponded to other components of [[NCPipeline]], but
+  * required `stemmer` implementation is independent from other components' stemmers.
   *
   * @see [[NCSemanticElement]]
   * @param stemmer   [[NCStemmer]] implementation for synonyms language.
   * @param parser    [[NCTokenParser]] implementation.
   * @param macros    Macros map. Empty by default.
   * @param elements  [[NCSemanticElement]] list.
-  * @param mdlResOpt Optional classpath resource, file path or URL for YAML or JSON semantic model definition file.
+  * @param mdlResOpt Optional relative path, absolute path, classpath resource or URL to YAML or JSON semantic model definition.
   */
 class NCSemanticEntityParser(
     stemmer: NCStemmer,
@@ -198,10 +200,10 @@ class NCSemanticEntityParser(
     elements: List[NCSemanticElement] = List.empty,
     mdlResOpt: Option[String] = None
 ) extends NCEntityParser with LazyLogging:
-    require(stemmer != null)
-    require(parser != null)
-    require(macros != null)
-    require(elements != null && elements.nonEmpty || mdlResOpt.isDefined)
+    require(stemmer != null, "Stemmer cannot be null.")
+    require(parser != null, "Token parser cannot be null.")
+    require(macros != null, "Macroses cannot be null.")
+    require(elements != null && elements.nonEmpty || mdlResOpt.isDefined, "Elements cannot be null or empty or model resource cannot be empty.")
 
     private lazy val scrType =
         require(mdlResOpt.isDefined)

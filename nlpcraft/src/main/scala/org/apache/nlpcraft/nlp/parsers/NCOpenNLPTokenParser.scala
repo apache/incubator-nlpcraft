@@ -32,10 +32,10 @@ import java.util.Objects
   *
   * Some of OpenNLP prepared models can be found [[https://opennlp.sourceforge.net/models-1.5/ here]].
   *
-  * @param tokMdlRes Path to [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/tokenize/TokenizerModel.html model]].
+  * @param tokMdlRes Relative path, absolute path, classpath resource or URL to [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/tokenize/TokenizerModel.html model]].
   */
 class NCOpenNLPTokenParser(tokMdlRes: String) extends NCTokenParser with LazyLogging:
-    require(tokMdlRes != null, "Tokenizer model path cannot be null.")
+    require(tokMdlRes != null, "Tokenizer model resource cannot be null.")
 
     @volatile private var tokenizer: TokenizerME = _
 

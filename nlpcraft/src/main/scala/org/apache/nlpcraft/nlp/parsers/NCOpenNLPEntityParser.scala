@@ -39,7 +39,7 @@ object NCOpenNLPEntityParser:
     /**
       * Creates [[NCOpenNLPEntityParser]] instance.
       *
-      * @param mdl Path to [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/namefind/TokenNameFinderModel.html model]].
+      * @param mdl Relative path, absolute path, classpath resource or URL to [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/namefind/TokenNameFinderModel.html model]].
       * @return [[NCOpenNLPEntityParser]] instance.
       */
     def apply(mdl: String): NCOpenNLPEntityParser =
@@ -59,10 +59,10 @@ object NCOpenNLPEntityParser:
   *
   * **NOTE:** that each input [[NCToken]] can be included into several output [[NCEntity]] instances.
   *
-  * @param findersMdlsRes Paths to [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/namefind/TokenNameFinderModel.html models]].
+  * @param findersMdlsRes Relative paths, absolute paths, resources or URLs to [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/namefind/TokenNameFinderModel.html models]].
   */
 class NCOpenNLPEntityParser(findersMdlsRes: List[String]) extends NCEntityParser with LazyLogging:
-    require(findersMdlsRes != null && findersMdlsRes.nonEmpty, "Models paths cannot be null or empty.")
+    require(findersMdlsRes != null && findersMdlsRes.nonEmpty, "Models resources cannot be null or empty.")
 
     private var finders: Seq[NameFinderME] = _
     private case class Holder(start: Int, end: Int, name: String, probability: Double)

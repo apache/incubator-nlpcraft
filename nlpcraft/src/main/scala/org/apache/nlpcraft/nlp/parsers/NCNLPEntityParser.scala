@@ -48,7 +48,7 @@ import org.apache.nlpcraft.nlp.parsers.NCNLPEntityParser.*
   *  By default all [[NCToken]] instances converted.
   */
 class NCNLPEntityParser(predicate: NCToken => Boolean = _ => true) extends NCEntityParser:
-    require(predicate != null)
+    require(predicate != null, "Predicate cannot be null.")
 
     /** @inheritdoc */
     override def parse(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): List[NCEntity] =

@@ -34,16 +34,19 @@ import java.util.Objects
   * `false` value indicates otherwise.
   *
   * Read more about stemming [[https://en.wikipedia.org/wiki/Stemming here]].
+  * Dictionary language and `stemmer` implementation language should be corresponded to other components of [[NCPipeline]], but
+  * required `stemmer` implementation is independent from other components' stemmers.
+  *
   * Stemming is used here because it is too difficult to be based on more accurate `lemma` approach for swear words.
   *
-  * @param dictRes Path to the swear dictionary. The dictionary should have a simple
+  * @param dictRes Relative path, absolute path, classpath resource or URL to the swear dictionary. The dictionary should have a simple
   *         plain text format with *one word per line*, empty lines are skipped, duplicates ignored, header or other comments allowed.
-  *         Headers are lines started by **#** symbol. Search in the dictionary is implemented by input words **stems**, case is ignored.
+  *         Headers are lines started with **#** symbol. Search in the dictionary is implemented by input words **stems**, case is ignored.
   * @param stemmer Stemmer implementation for the dictionary language.
   */
 //noinspection ScalaWeakerAccess
 class NCSwearWordsTokenEnricher(dictRes: String, stemmer: NCStemmer) extends NCTokenEnricher with LazyLogging:
-    require(dictRes != null, "Swear words model file cannot be null.")
+    require(dictRes != null, "Swear words dictonary resource cannot be null.")
     require(stemmer != null, "Stemmer cannot be null.")
 
     private var swearWords: Set[String] = _

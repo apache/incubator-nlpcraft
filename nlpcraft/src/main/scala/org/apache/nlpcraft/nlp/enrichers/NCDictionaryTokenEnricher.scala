@@ -33,12 +33,14 @@ import org.apache.nlpcraft.internal.util.NCUtils as U
   * token's lemma. You can configure [[NCOpenNLPTokenEnricher]] for required language that provides this
   * metadata property before this enricher in your [[NCPipeline pipeline]].
   *
-  * @param dictRes Relative path, absolute path or URL to the dictionary file. The dictionary should have a simple
-  *         plain text format with *one lemma per line*, empty lines are skipped, duplicates ignored, header or other comments allowed.
-  *         Headers are lines started by **#** symbol. Search in the dictionary is implemented by input words **lemms**, case is ignored.
+  * @param dictRes Relative path, absolute path, classpath resource or URL to the dictionary.
+  *         The dictionary should have a simple plain text format with *one lemma per line*, empty lines are skipped, duplicates ignored, header or other comments allowed.
+  *         Headers are lines started with **#** symbol. Search in the dictionary is implemented by input words **lemms**, case is ignored.
   */
 //noinspection DuplicatedCode,ScalaWeakerAccess
 class NCDictionaryTokenEnricher(dictRes: String) extends NCTokenEnricher with LazyLogging:
+    require(dictRes != null, "Dictonary resource cannot be null.")
+
     private var dict: Set[String] = _
 
     init()
