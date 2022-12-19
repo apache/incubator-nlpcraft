@@ -20,6 +20,7 @@ package org.apache.nlpcraft.internal.intent.compiler.functions
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.intent.NCIDLContext
 import org.apache.nlpcraft.internal.intent.compiler.functions.NCIDLFunctions.*
+import org.apache.nlpcraft.internal.intent.compiler.functions.NCIDLFunctions.given
 import org.apache.nlpcraft.nlp.util.NCTestToken
 
 import java.util

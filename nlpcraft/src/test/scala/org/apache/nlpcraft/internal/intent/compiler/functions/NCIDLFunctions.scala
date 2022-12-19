@@ -33,6 +33,12 @@ import scala.language.implicitConversions
 private[functions] object NCIDLFunctions:
     private final val MODEL_ID = "test.mdl.id"
 
+    given Conversion[NCTestToken, Seq[NCTestToken]] with
+        def apply(t: NCTestToken): Seq[NCTestToken] = Seq(t)
+
+    given Conversion[String, TestDesc] with
+        def apply(truth: String): TestDesc = TestDesc(truth)
+
     /**
       *
       * @param truth
@@ -86,8 +92,7 @@ private[functions] object NCIDLFunctions:
         def apply(truth: String, entity: NCEntity): TestDesc =
             new TestDesc(truth = truth, entity = entity.?, idlCtx = mkIdlContext(entities = Seq(entity)))
 
-    given Conversion[String, TestDesc] with
-        def apply(truth: String): TestDesc = TestDesc(truth)
+
 
     /**
       *

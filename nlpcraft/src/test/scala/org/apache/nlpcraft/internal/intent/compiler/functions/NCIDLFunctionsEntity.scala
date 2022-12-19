@@ -18,6 +18,7 @@
 package org.apache.nlpcraft.internal.intent.compiler.functions
 
 import org.apache.nlpcraft.internal.intent.compiler.functions.NCIDLFunctions.*
+import org.apache.nlpcraft.internal.intent.compiler.functions.NCIDLFunctions.given
 import org.apache.nlpcraft.nlp.util.NCTestToken
 
 import java.lang.{Boolean as JBool, Integer as JInt}
@@ -30,17 +31,18 @@ class NCIDLFunctionsEntity extends NCIDLFunctions:
     test("test") {
         val t1 = NCTestToken(txt = "W1", idx = 0)
         val t2 = NCTestToken(txt = "w2", idx = 1)
+        val t1t2 = Seq(t1, t2)
 
-        def mkMeta(truth: String): TestDesc = TestDesc(truth = truth, entity = mkEntity(tokens = t1, t2))
+        def mkMeta(truth: String): TestDesc = TestDesc(truth = truth, entity = mkEntity(tokens = t1t2))
 
         test(
             TestDesc(
                 truth = "# == 'a'",
-                entity = mkEntity(id = "a", tokens = t1, t2)
+                entity = mkEntity(id = "a", tokens = t1t2)
             ),
             TestDesc(
                 truth = "ent_id == 'a'",
-                entity = mkEntity(id = "a", tokens = t1, t2)
+                entity = mkEntity(id = "a", tokens = t1t2)
             ),
             TestDesc(
                 truth = "ent_index == 100",
@@ -48,12 +50,12 @@ class NCIDLFunctionsEntity extends NCIDLFunctions:
             ),
             TestDesc(
                 truth = "ent_text == 'W1 w2'",
-                entity = mkEntity(id = "a", tokens = t1, t2)
+                entity = mkEntity(id = "a", tokens = t1t2)
             ),
 
             TestDesc(
                 truth = "ent_count == 1",
-                entity = mkEntity(id = "a", tokens = t1, t2)
+                entity = mkEntity(id = "a", tokens = t1t2)
             ),
             TestDesc(
                 truth = "ent_this() == ent_this()",
@@ -61,11 +63,11 @@ class NCIDLFunctionsEntity extends NCIDLFunctions:
             ),
             TestDesc(
                 truth = "ent_groups() == list('g1', 'g2')",
-                entity = mkEntity(id = "a", groups = Set("g1", "g2"), tokens = t1, t2)
+                entity = mkEntity(id = "a", groups = Set("g1", "g2"), tokens = t1t2)
             ),
             TestDesc(
                 truth = "ent_groups() == list('a')",
-                entity = mkEntity(id = "a", tokens = t1, t2)
+                entity = mkEntity(id = "a", tokens = t1t2)
             )
         )
     }

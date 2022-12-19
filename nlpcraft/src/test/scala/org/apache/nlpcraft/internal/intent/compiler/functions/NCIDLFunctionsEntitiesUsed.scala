@@ -18,6 +18,8 @@
 package org.apache.nlpcraft.internal.intent.compiler.functions
 
 import org.apache.nlpcraft.internal.intent.compiler.functions.NCIDLFunctions.*
+import scala.language.implicitConversions
+import org.apache.nlpcraft.internal.intent.compiler.functions.NCIDLFunctions.given
 import org.apache.nlpcraft.nlp.util.NCTestToken
 import org.apache.nlpcraft.*
 
