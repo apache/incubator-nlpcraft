@@ -56,43 +56,50 @@ class NCStopWordsEnricherSpec extends AnyFunSuite:
             false
         )
         test(
-            new NCEnStopWordsTokenEnricher(Set("test"), Set("the")),
+            new NCEnStopWordsTokenEnricher(addSet = Set("test"), exclSet = Set("the")),
             "the test",
             false,
             true
         )
         // The synonym is defined as lemma => all kind of input words should be found.
         test(
-            new NCEnStopWordsTokenEnricher(Set("woman")),
+            new NCEnStopWordsTokenEnricher(addSet = Set("woman")),
             "woman women",
             true,
             true
         )
         // The synonym is defined in some form => only in the same form input words should be found.
         test(
-            new NCEnStopWordsTokenEnricher(Set("women")),
+            new NCEnStopWordsTokenEnricher(addSet = Set("women")),
             "woman women",
             false,
             true
         )
         // The synonym is defined in some form, but stemmer is very rough =>  all kind of input words should be found.
         test(
-            new NCEnStopWordsTokenEnricher(addStopsSet = Set("women"), stemmer = _.take(3)),
+            new NCEnStopWordsTokenEnricher(addSet = Set("women"), stemmer = _.take(3)),
             "woman women",
             true,
             true
         )
         // The synonym is defined as lemma => all kind of input words should be found, but excluded set is defined.
         test(
-            new NCEnStopWordsTokenEnricher(Set("woman"), Set("women")),
+            new NCEnStopWordsTokenEnricher(addSet = Set("woman"), exclSet = Set("women")),
             "woman women",
             true,
             false
         )
-        // Very rough stemmer defined.
+        // Very rough stemmers defined.
         test(
-            new NCEnStopWordsTokenEnricher(addStopsSet = Set("women"), stemmer = _.head.toString),
-            "weather windows",
+            new NCEnStopWordsTokenEnricher(addSet = Set("women"), stemmer = _.head.toString),
+            "weather windows noun",
+            true,
+            true,
+            false
+        )
+        test(
+            new NCEnStopWordsTokenEnricher(stemmer = _ => ""),
+            "weather noun",
             true,
             true
         )
