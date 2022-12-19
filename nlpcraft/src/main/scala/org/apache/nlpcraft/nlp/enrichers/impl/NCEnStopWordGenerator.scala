@@ -156,7 +156,7 @@ import org.apache.nlpcraft.nlp.enrichers.impl.NCEnStopWordGenerator.*
   */
 private[enrichers] class NCEnStopWordGenerator(stemmer: NCStemmer):
     def mkNounWords(): Set[String] =
-        val buf = new mutable.HashSet[String]()
+        val buf = new mutable.ArrayBuffer[String]()
 
         for (w1 <- NOUN_WORDS)
             buf += s"$w1"
@@ -167,7 +167,7 @@ private[enrichers] class NCEnStopWordGenerator(stemmer: NCStemmer):
         buf.map(stem).toSet
 
     def mkFirstWords(): Set[String] =
-        val buf = new mutable.HashSet[String]()
+        val buf = new mutable.ArrayBuffer[String]()
 
         // is there
         for (w1 <- QWORDS2)
