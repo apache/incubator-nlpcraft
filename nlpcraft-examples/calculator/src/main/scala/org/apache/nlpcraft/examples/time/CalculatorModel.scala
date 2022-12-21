@@ -53,7 +53,7 @@ class CalculatorModel extends NCModel(NCModelConfig("nlpcraft.calculator.ex", "C
     private var mem: Option[Int] = None
 
     private def calc(x: Int, op: String, y: Int): NCResult =
-        mem = Some(OPS.getOrElse(op, throw new IllegalStateException()).apply(x, y))
+        mem = Option(OPS.getOrElse(op, throw new IllegalStateException()).apply(x, y))
         NCResult(mem.get)
 
     /*

@@ -45,10 +45,10 @@ object PizzeriaModelSpec:
         private val o = new PizzeriaOrder
         o.setState(DIALOG_EMPTY)
         def withPizza(name: String, size: String, qty: Int): Builder =
-            o.add(Seq(Pizza(name, Some(size), Some(qty))), Seq.empty)
+            o.add(Seq(Pizza(name, Option(size), Option(qty))), Seq.empty)
             this
         def withDrink(name: String, qty: Int): Builder =
-            o.add(Seq.empty, Seq(Drink(name, Some(qty))))
+            o.add(Seq.empty, Seq(Drink(name, Option(qty))))
             this
         def build: PizzeriaOrder = o
 

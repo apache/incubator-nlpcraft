@@ -76,7 +76,7 @@ object GeoManager:
 
                                 cache.put(ip, resp.data.geo)
 
-                                Some(resp.data.geo)
+                                Option(resp.data.geo)
                             }
                 case None =>
                     System.err.println("External IP cannot be detected for localhost.")

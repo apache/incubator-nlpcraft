@@ -31,7 +31,7 @@ class NCPropertyMapAdapter extends NCPropertyMap:
     override def get[T](key: String): Option[T] =
         map.get(key) match
             case null => None
-            case x => Some(x.asInstanceOf[T])
+            case x => x.asInstanceOf[T].`?`
     override def put[T](key: String, obj: Any): T = map.put(key, obj).asInstanceOf[T]
     override def putIfAbsent[T](key: String, obj: T): T = map.putIfAbsent(key, obj).asInstanceOf[T]
     override def contains(key: String): Boolean = map.containsKey(key)
