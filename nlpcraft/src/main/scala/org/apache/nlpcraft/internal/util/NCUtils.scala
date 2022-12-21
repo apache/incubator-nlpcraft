@@ -392,7 +392,7 @@ object NCUtils extends LazyLogging:
         data
 
     /**
-      *  Reads lines from given resource.
+      * Reads lines from given resource.
       *
       * @param res Resource, file absolute or relative path or input stream.
       * @param enc Encoding. Default value is "UTF-8".

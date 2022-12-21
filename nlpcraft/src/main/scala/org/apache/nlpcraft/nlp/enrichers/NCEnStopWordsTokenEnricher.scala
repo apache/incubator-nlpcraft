@@ -172,14 +172,11 @@ import org.apache.nlpcraft.nlp.enrichers.NCEnStopWordsTokenEnricher.*
   * instance if the word it represents is an English stopword. The value `true` of this metadata property indicates that
   * this word is detected as a stopword, `false` value indicates otherwise. This implementation works off the
   * algorithm that uses an internal list of English stopwords as well as a procedural logic to determine the stopword
-  * status of the token. This algorithm should work fine for most of the general uses cases. User, however, can add
+  * status of the token. This algorithm should work fine for most of the general uses cases. User can also add
   * additional stopwords or exceptions for the existing ones using corresponding parameters in [[NCEnStopWordsTokenEnricher]]
   * constructor.
   *
   * More information about stopwords can be found at [[https://en.wikipedia.org/wiki/Stop_word]].
-  *
-  * `stemmer` implementation language should be corresponded to other components of [[NCPipeline]], but
-  * required `stemmer` implementation is independent from other components' stemmers.
   *
   * **NOTE:** this implementation requires `lemma` and `pos` string [[NCPropertyMap metadata]] properties that
   * contain token's lemma and part of speech accordingly. You can configure [[NCOpenNLPTokenEnricher]] with the model

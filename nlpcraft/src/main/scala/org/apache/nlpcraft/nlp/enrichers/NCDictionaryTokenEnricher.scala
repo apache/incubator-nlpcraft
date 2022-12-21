@@ -22,7 +22,7 @@ import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.util.NCUtils as U
 
 /**
-  * "Known-word" [[NCTokenEnricher token enricher]].
+  * Dictionary-based "known-word" [[NCTokenEnricher token enricher]].
   *
   * This enricher adds `dict` boolean [[NCPropertyMap metadata]] property to the [[NCToken token]]
   * instance if word it represents is a known dictionary word, i.e. the configured dictionary contains this word's
@@ -34,12 +34,13 @@ import org.apache.nlpcraft.internal.util.NCUtils as U
   * metadata property before this enricher in your [[NCPipeline pipeline]].
   *
   * @param dictRes Relative path, absolute path, classpath resource or URL to the dictionary.
-  *         The dictionary should have a simple plain text format with *one lemma per line*, empty lines are skipped, duplicates ignored, header or other comments allowed.
-  *         Headers are lines started with **#** symbol. Search in the dictionary is implemented by input words **lemms**, case is ignored.
+  *         The dictionary should have a simple plain text format with *one lemma per line*, empty lines are skipped,
+  *         duplicates ignored, lines starting with **#** symbol will be treated as comments and ignored.
+  *         Note that the search in the dictionary is implemented using words' **lemma** and case is ignored.
   */
 //noinspection DuplicatedCode,ScalaWeakerAccess
 class NCDictionaryTokenEnricher(dictRes: String) extends NCTokenEnricher with LazyLogging:
-    require(dictRes != null, "Dictonary resource cannot be null.")
+    require(dictRes != null, "Dictionary resource cannot be null.")
 
     private var dict: Set[String] = _
 

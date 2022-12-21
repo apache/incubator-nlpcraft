@@ -24,12 +24,11 @@ import scala.collection.*
 /**
   * Companion helper.
   */
-object NCQuotesTokenEnricher:
+private object NCQuotesTokenEnricher:
     private case class Range(from: Int, to: Int):
         def in(idx: Int): Boolean = idx >= from && idx <= to
 
     private val QUOTES = Map("«" -> "»", "\"" -> "\"", "`" -> "`", "'" -> "'")
-
     private val QUOTES_REVERSED = QUOTES.map { case (key, value) => value -> key }
     private val QUOTES_SYMBOLS = QUOTES.flatMap { case (key, value) => Set(key, value) }.toSet
 
@@ -46,7 +45,7 @@ import NCQuotesTokenEnricher.*
   *
   * Supported quotes are: **«**, **»**, **"**, **'**, **&#96;**.
   *
-  * **NOTE:** invalid enclosed quotes are ignored and for all input tokens property `quoted` assigned as `false`.
+  * **NOTE:** invalid enclosed quotes are ignored.
   */
 //noinspection ScalaWeakerAccess
 class NCQuotesTokenEnricher extends NCTokenEnricher with LazyLogging:

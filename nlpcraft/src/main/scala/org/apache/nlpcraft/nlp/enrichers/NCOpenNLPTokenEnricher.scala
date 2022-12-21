@@ -27,15 +27,13 @@ import java.io.*
 import scala.concurrent.ExecutionContext
 
 /**
-  * [[https://opennlp.apache.org/ OpenNLP]] based language independent [[NCTokenEnricher token enricher]]. This
+  * [[https://opennlp.apache.org/ OpenNLP]]-based language independent [[NCTokenEnricher token enricher]]. This
   * enricher adds `lemma` and `pos` (part-of-speech) string [[NCPropertyMap metadata]] property to the [[NCToken token]]
   * instance. Learn more about lemmas [[https://en.wikipedia.org/wiki/Lemma_(morphology) here]] and about part-of-speech
   * [[https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html here]].
   *
-  * At least one of model must be defined.
-  *
-  * This OpenNLP enricher requires PoS and lemma models. Some of OpenNLP community models can be found
-  * [[https://opennlp.sourceforge.net/models-1.5/ here]].
+  * This OpenNLP enricher requires PoS and lemma models. Some of free OpenNLP community maintained models can be found
+  * [[https://opennlp.sourceforge.net/models-1.5/ here]]. Note that at least one of model must be defined.
   *
   * @param posMdlRes Relative path, absolute path, classpath resource or URL to
   *         [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/postag/POSTaggerME.html POSTaggerME]] model.

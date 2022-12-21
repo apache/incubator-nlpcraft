@@ -26,23 +26,18 @@ import java.io.*
 import java.util.Objects
 
 /**
-  * "Swear-word" [[NCTokenEnricher token enricher]].
+  * Swear-word [[NCTokenEnricher token enricher]].
   *
   * This enricher adds `swear` boolean [[NCPropertyMap metadata]] property to the [[NCToken token]]
-  * instance if word it represents is a swear word dictionary, i.e. the swear dictionary contains this word's
+  * instance if word it represents is in a swear word dictionary, i.e. the swear dictionary contains this word's
   * stem. The value `true` of the metadata property indicates that this word's stem is found in the dictionary,
   * `false` value indicates otherwise.
   *
-  * Read more about stemming [[https://en.wikipedia.org/wiki/Stemming here]].
-  * Dictionary language and `stemmer` implementation language should be corresponded to other components of [[NCPipeline]], but
-  * required `stemmer` implementation is independent from other components' stemmers.
-  *
-  * Stemming is used here because it is too difficult to be based on more accurate `lemma` approach for swear words.
-  *
-  * @param dictRes Relative path, absolute path, classpath resource or URL to the swear dictionary. The dictionary should have a simple
-  *         plain text format with *one word per line*, empty lines are skipped, duplicates ignored, header or other comments allowed.
-  *         Headers are lines started with **#** symbol. Search in the dictionary is implemented by input words **stems**, case is ignored.
-  * @param stemmer Stemmer implementation for the dictionary language.
+  * @param dictRes Relative path, absolute path, classpath resource or URL to the dictionary.
+  *         The dictionary should have a simple plain text format with *one lemma per line*, empty lines are skipped,
+  *         duplicates ignored, lines starting with **#** symbol will be treated as comments and ignored.
+  *         Note that the search in the dictionary is implemented using words' **stem** and case is ignored.
+  * @param stemmer Stemmer implementation for the language used in the supplied swear-word dictionary.
   */
 //noinspection ScalaWeakerAccess
 class NCSwearWordsTokenEnricher(dictRes: String, stemmer: NCStemmer) extends NCTokenEnricher with LazyLogging:

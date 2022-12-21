@@ -26,7 +26,7 @@ import scala.collection.{Map, mutable}
 /**
   * Companion helper.
   */
-object NCBracketsTokenEnricher:
+private object NCBracketsTokenEnricher:
     private val BRACKETS = Map("(" -> ")", "{" -> "}", "[" -> "]", "<" -> ">")
     private val BRACKETS_REVERSED = BRACKETS.map { case (key, value) => value -> key }
 
@@ -36,9 +36,7 @@ import NCBracketsTokenEnricher.*
   * Brackets [[NCTokenEnricher token enricher]].
   *
   * This enricher adds `brackets` boolean [[NCPropertyMap metadata]] property to the [[NCToken token]]
-  * instance if the word it represents is enclosed in brackets.
-  *
-  * Supported brackets are: `()`, `{}`, `[]` and `<>`.
+  * instance if the word it represents is enclosed in brackets. Supported brackets are: `()`, `{}`, `[]` and `<>`.
   *
   * **NOTE:** invalid enclosed brackets are ignored and for all input tokens property `brackets` assigned as `false`.
   */
