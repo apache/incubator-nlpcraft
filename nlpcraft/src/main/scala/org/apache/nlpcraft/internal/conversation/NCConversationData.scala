@@ -189,7 +189,7 @@ case class NCConversationData(
         else
             val tbl = NCAsciiTable("Entity ID", "Groups", "Request ID")
             ctx.foreach(ent => tbl += (
-                ent.getId,
+                ent.getType,
                 ent.getGroups.mkString(", "),
                 ent.getRequestId
             ))

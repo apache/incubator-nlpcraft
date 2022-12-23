@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.nlp.parsers
 
 import org.apache.nlpcraft.nlp.stemmer.NCStemmer
-
+import org.apache.nlpcraft.*
 /**
   *
   * Configuration element which helps to detect [[org.apache.nlpcraft.NCEntity NCEntity]] for
@@ -30,18 +30,18 @@ import org.apache.nlpcraft.nlp.stemmer.NCStemmer
   */
 trait NCSemanticElement:
     /**
-      * Gets **id** for created [[org.apache.nlpcraft.NCEntity NCEntity]] instance.
-      * Representation of [[org.apache.nlpcraft.NCEntity.getId NCEntity.getId()]] method.
-      * @return Element ID.
+      * Gets **type** for created [[NCEntity]] instance.
+      * Representation of [[NCEntity.getType]] method.
+      * @return Element type.
       */
-    def getId: String
+    def getType: String
 
     /**
-      * Gets **groups** for created [[org.apache.nlpcraft.NCEntity NCEntity]] instance.
-      * Representation of [[org.apache.nlpcraft.NCEntity.getGroups NCEntity.getGroups()]] method.
+      * Gets **groups** for created [[NCEntity]] instance.
+      * Representation of [[NCEntity.getGroups]] method.
       * @return Groups.
       */
-    def getGroups: Set[String] = Set(getId)
+    def getGroups: Set[String] = Set(getType)
 
     /**
       * Gets values map. Each element can contain multiple value,
@@ -58,7 +58,7 @@ trait NCSemanticElement:
     def getSynonyms: Set[String] = Set.empty
 
     /**
-      * Gets [[org.apache.nlpcraft.NCPropertyMap metadata]] property for created [[org.apache.nlpcraft.NCEntity NCEntity]] instance.
+      * Gets [[NCPropertyMap metadata]] property for created [[NCEntity]] instance.
       * @return Groups.
       */
     def getProperties: Map[String, AnyRef] = Map.empty

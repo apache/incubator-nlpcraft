@@ -143,7 +143,7 @@ FUN_NAME
     | 'meta_frag'
     | 'json'
     | 'if'
-    | 'ent_id'
+    | 'ent_type'
     | 'ent_index'
     | 'ent_text'
     | 'ent_groups'

@@ -21,7 +21,7 @@
 
 // Re-usable predicate #1.
 fragment=p1
-    term={ent_id == 2}
+    term={ent_type == 2}
     term={meta_frag('a') && has_any(get(meta_frag('b'), 'Москва'), list(1, 2))}
     term(alias)={mdl_id == "test.mdl.id"}
 

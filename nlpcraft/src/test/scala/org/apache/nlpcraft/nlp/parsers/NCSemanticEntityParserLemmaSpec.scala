@@ -80,7 +80,7 @@ class NCSemanticEntityParserLemmaSpec extends AnyFunSuite:
 
             for (expData <- expVrnts)
                 val idx = vrnts.zipWithIndex.
-                    find { case (v, _) => expData == v.getEntities.map(e => Data(e.mkText, e.getId)) }.
+                    find { case (v, _) => expData == v.getEntities.map(e => Data(e.mkText, e.getType)) }.
                     getOrElse(throw new AssertionError(s"Cannot find variant: $expData"))._2
                 vrnts.remove(idx)
 

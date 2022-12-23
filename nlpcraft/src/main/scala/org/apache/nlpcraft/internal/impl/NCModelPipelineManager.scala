@@ -176,7 +176,7 @@ class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCPipeline) extends L
             for e <- v.getEntities do
                 val toks = e.getTokens
                 tbl += (
-                    e.getId,
+                    e.getType,
                     toks.map(_.getText).mkString("|"),
                     toks.map(p => s"${p.getStartCharIndex}-${p.getEndCharIndex}").mkString("|"),
                     mkProps(e)

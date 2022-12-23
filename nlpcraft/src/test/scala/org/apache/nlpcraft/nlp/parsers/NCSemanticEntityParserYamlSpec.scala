@@ -45,7 +45,7 @@ class NCSemanticEntityParserYamlSpec extends AnyFunSuite:
 
         val tok = ents.head
         
-        require(tok.getId == id)
+        require(tok.getType == id)
 
     /**
       * 

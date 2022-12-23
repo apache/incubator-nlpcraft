@@ -63,5 +63,5 @@ class NCNLPEntityParser(predicate: NCToken => Boolean = _ => true) extends NCEnt
 
                 override val getTokens: List[NCToken] = List(t)
                 override val getRequestId: String = req.getRequestId
-                override val getId: String = id
+                override val getType: String = id
         )

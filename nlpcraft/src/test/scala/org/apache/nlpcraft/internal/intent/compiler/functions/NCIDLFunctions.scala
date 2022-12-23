@@ -98,7 +98,7 @@ private[functions] object NCIDLFunctions:
       *
       * @param e
       */
-    private def e2s(e: NCEntity): String = s"${e.getId} (${e.getTokens.map(_.getText).mkString(" ")})"
+    private def e2s(e: NCEntity): String = s"${e.getType} (${e.getTokens.map(_.getText).mkString(" ")})"
 
     /**
       *
@@ -136,7 +136,7 @@ private[functions] object NCIDLFunctions:
 
     /**
       *
-      * @param id
+      * @param typ
       * @param reqId
       * @param value
       * @param groups
@@ -144,16 +144,16 @@ private[functions] object NCIDLFunctions:
       * @param tokens
       */
     def mkEntity(
-        id: String = UUID.randomUUID().toString,
+        typ: String = UUID.randomUUID().toString,
         reqId: String = UUID.randomUUID().toString,
-        value: String = null, 
+        value: String = null,
         groups: Set[String] = null,
         meta: Map[String, AnyRef] = Map.empty[String, AnyRef],
         tokens: Seq[NCTestToken]
     ): NCEntity =
         require(tokens.nonEmpty)
 
-        NCTestEntity(id, reqId, groups, meta, tokens)
+        NCTestEntity(typ, reqId, groups, meta, tokens)
 
 import org.apache.nlpcraft.internal.intent.compiler.functions.NCIDLFunctions.*
 

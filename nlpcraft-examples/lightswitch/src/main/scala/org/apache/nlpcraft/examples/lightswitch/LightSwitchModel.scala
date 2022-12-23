@@ -54,7 +54,7 @@ class LightSwitchModel extends NCModel(
         @NCIntentTerm("act") actEnt: NCEntity,
         @NCIntentTerm("loc") locEnts: List[NCEntity]
     ): NCResult =
-        val status = if actEnt.getId == "ls:on" then "on" else "off"
+        val status = if actEnt.getType == "ls:on" then "on" else "off"
         val locations = if locEnts.isEmpty then "entire house" else locEnts.map(_.mkText).mkString(", ")
 
         // Add HomeKit, Arduino or other integration here.=

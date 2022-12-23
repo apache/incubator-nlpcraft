@@ -46,7 +46,7 @@ class NCSemanticEntityParserJsonSpec extends AnyFunSuite:
 
         val tok = ents.head
         
-        require(tok.getId == id)
+        require(tok.getType == id)
         elemData match
             case Some(m) => m.foreach { (k, v) => require(tok[Any](s"$id:$k") == v) }
             case None => // No-op.

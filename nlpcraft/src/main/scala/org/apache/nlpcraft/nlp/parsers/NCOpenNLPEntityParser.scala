@@ -105,6 +105,6 @@ class NCOpenNLPEntityParser(findersMdlsRes: List[String]) extends NCEntityParser
 
                     override val getTokens: List[NCToken] = toks.flatMap(t => Option.when(t.getIndex >= i1 && t.getIndex <= i2)(t))
                     override val getRequestId: String = req.getRequestId
-                    override val getId: String = s"opennlp:${h.name}"
+                    override val getType: String = s"opennlp:${h.name}"
             )
         }).toList

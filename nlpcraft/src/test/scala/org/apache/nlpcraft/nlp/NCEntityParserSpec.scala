@@ -36,7 +36,7 @@ object NCEntityParserSpec:
                 val ent: NCEntity = new NCPropertyMapAdapter with NCEntity :
                     override def getTokens: List[NCToken] = toks
                     override def getRequestId: String = req.getRequestId
-                    override def getId: String = "quoted"
+                    override def getType: String = "quoted"
                 List(ent)
             else
                 List.empty

@@ -117,12 +117,12 @@ private[parsers] object NCSemanticSynonymsProcessor extends LazyLogging:
         // Duplicates.
         val ids = mutable.HashSet.empty[String]
 
-        for (id <- elems.map(_.getId))
+        for (id <- elems.map(_.getType))
             if ids.contains(id) then E(s"Duplicate element ID [element=$id]")
             else ids += id
 
         for (e <- elems)
-            val elemId = e.getId
+            val elemId = e.getType
 
             if elemId == null || elemId.isEmpty then E(s"Some element IDs are not provided or empty.")
             else if !elemId.matches(ID_REGEX) then E(s"Element ID does not match regex [element=$elemId, regex=$ID_REGEX]")
@@ -227,7 +227,7 @@ private[parsers] object NCSemanticSynonymsProcessor extends LazyLogging:
         val buf = mutable.ArrayBuffer.empty[Holder]
 
         for (e <- elements)
-            val elemId = e.getId
+            val elemId = e.getType
 
             def add(syns: Seq[NCSemanticSynonym]): Unit = buf ++= syns.map(Holder(_, elemId))
             def addSpec(txt: String, value: String = null): Unit =

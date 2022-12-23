@@ -38,24 +38,24 @@ class NCIDLFunctionsEntity extends NCIDLFunctions:
         test(
             TestDesc(
                 truth = "# == 'a'",
-                entity = mkEntity(id = "a", tokens = t1t2)
+                entity = mkEntity(typ = "a", tokens = t1t2)
             ),
             TestDesc(
-                truth = "ent_id == 'a'",
-                entity = mkEntity(id = "a", tokens = t1t2)
+                truth = "ent_type == 'a'",
+                entity = mkEntity(typ = "a", tokens = t1t2)
             ),
             TestDesc(
                 truth = "ent_index == 100",
-                entity = mkEntity(id = "a", tokens = NCTestToken(txt = "w2", idx = 100))
+                entity = mkEntity(typ = "a", tokens = NCTestToken(txt = "w2", idx = 100))
             ),
             TestDesc(
                 truth = "ent_text == 'W1 w2'",
-                entity = mkEntity(id = "a", tokens = t1t2)
+                entity = mkEntity(typ = "a", tokens = t1t2)
             ),
 
             TestDesc(
                 truth = "ent_count == 1",
-                entity = mkEntity(id = "a", tokens = t1t2)
+                entity = mkEntity(typ = "a", tokens = t1t2)
             ),
             TestDesc(
                 truth = "ent_this() == ent_this()",
@@ -63,18 +63,18 @@ class NCIDLFunctionsEntity extends NCIDLFunctions:
             ),
             TestDesc(
                 truth = "ent_groups() == list('g1', 'g2')",
-                entity = mkEntity(id = "a", groups = Set("g1", "g2"), tokens = t1t2)
+                entity = mkEntity(typ = "a", groups = Set("g1", "g2"), tokens = t1t2)
             ),
             TestDesc(
                 truth = "ent_groups() == list('a')",
-                entity = mkEntity(id = "a", tokens = t1t2)
+                entity = mkEntity(typ = "a", tokens = t1t2)
             )
         )
     }
 
     test("test tokens first and last") {
-        val e1 = mkEntity(id = "a", tokens = NCTestToken(idx = 0))
-        val e2 = mkEntity(id = "b", tokens = NCTestToken(idx = 1))
+        val e1 = mkEntity(typ = "a", tokens = NCTestToken(idx = 0))
+        val e2 = mkEntity(typ = "b", tokens = NCTestToken(idx = 1))
 
         val ctx = mkIdlContext(entities = Seq(e1, e2))
 
@@ -93,8 +93,8 @@ class NCIDLFunctionsEntity extends NCIDLFunctions:
     }
 
     test("test before and after") {
-        val e1 = mkEntity(id = "1", tokens = NCTestToken(idx = 0))
-        val e2 = mkEntity(id = "2", tokens = NCTestToken(idx = 1))
+        val e1 = mkEntity(typ = "1", tokens = NCTestToken(idx = 0))
+        val e2 = mkEntity(typ = "2", tokens = NCTestToken(idx = 1))
 
         val ctx = mkIdlContext(Seq(e1, e2))
 
@@ -123,9 +123,9 @@ class NCIDLFunctionsEntity extends NCIDLFunctions:
     }
 
     test("test between") {
-        val e1 = mkEntity(id = "1", groups = Set("grp1"), tokens = NCTestToken(idx = 0))
-        val e2 = mkEntity(id = "2", groups = Set("grp2"), tokens = NCTestToken(idx = 1))
-        val e3 = mkEntity(id = "3", groups = Set("grp3"), tokens = NCTestToken(idx = 2))
+        val e1 = mkEntity(typ = "1", groups = Set("grp1"), tokens = NCTestToken(idx = 0))
+        val e2 = mkEntity(typ = "2", groups = Set("grp2"), tokens = NCTestToken(idx = 1))
+        val e3 = mkEntity(typ = "3", groups = Set("grp3"), tokens = NCTestToken(idx = 2))
 
         val ctx = mkIdlContext(Seq(e1, e2, e3))
 
@@ -144,9 +144,9 @@ class NCIDLFunctionsEntity extends NCIDLFunctions:
     }
     
     test("test all methods") {
-        val e1 = mkEntity(id = "1", tokens = NCTestToken())
-        val e2 = mkEntity(id = "2", groups = Set("g", "z", "w"), tokens = NCTestToken())
-        val e3 = mkEntity(id = "2", tokens = NCTestToken())
+        val e1 = mkEntity(typ = "1", tokens = NCTestToken())
+        val e2 = mkEntity(typ = "2", groups = Set("g", "z", "w"), tokens = NCTestToken())
+        val e3 = mkEntity(typ = "2", tokens = NCTestToken())
 
         val ctx = mkIdlContext(Seq(e1, e2, e3))
 

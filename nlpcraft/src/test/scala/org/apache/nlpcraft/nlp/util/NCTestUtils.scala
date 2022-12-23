@@ -71,7 +71,7 @@ object NCTestUtils:
         for (e <- ents)
             val toks = e.getTokens
             tbl += (
-                e.getId,
+                e.getType,
                 toks.map(_.getText).mkString("|"),
                 toks.map(p => s"${p.getStartCharIndex}-${p.getEndCharIndex}").mkString("|"),
                 mkProps(e)
@@ -93,7 +93,7 @@ object NCTestUtils:
             for (e <- v.getEntities)
                 val toks = e.getTokens
                 tbl += (
-                    e.getId,
+                    e.getType,
                     toks.map(_.getText).mkString("|"),
                     toks.map(p => s"${p.getStartCharIndex}-${p.getEndCharIndex}").mkString("|"),
                     mkProps(e)
