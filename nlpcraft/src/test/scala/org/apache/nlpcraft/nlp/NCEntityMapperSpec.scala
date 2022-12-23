@@ -37,7 +37,7 @@ class NCEntityMapperSpec extends AnyFunSuite:
                 es
             else
                 val newEntity: NCEntity = new NCPropertyMapAdapter with NCEntity:
-                    override val getTokens: List[NCToken] = replaced.flatMap(_.getTokens).sortBy(_.getIndex).toList
+                    override val getTokens: List[NCToken] = replaced.flatMap(_.getTokens).sortBy(_.getIndex)
                     override val getRequestId: String = req.getRequestId
                     override val getType: String = types.mkString
 
@@ -47,9 +47,9 @@ class NCEntityMapperSpec extends AnyFunSuite:
                 buf --= replaced
                 (buf :+ newEntity).sortBy(_.getTokens.head.getIndex).toList
 
-    private val mdl = new NCTestModelAdapter:
+    private val mdl: NCTestModelAdapter = new NCTestModelAdapter:
         override val getPipeline: NCPipeline =
-            import NCSemanticTestElement as TE
+            import org.apache.nlpcraft.nlp.parsers.NCSemanticTestElement as TE
             val pl = mkEnPipeline(TE("a"), TE("b"), TE("c"), TE("d"))
             val ms = pl.entMappers
 
