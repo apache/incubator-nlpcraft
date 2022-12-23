@@ -35,62 +35,7 @@ import scala.collection.mutable
 /**
   * [[NCSemanticEntityParser]] helper.
   */
-object NCSemanticEntityParser:
-    /**
-      * Creates [[NCSemanticEntityParser]] instance.
-      *
-      * @param stemmer  [[NCStemmer]] implementation for synonyms language.
-      * @param parser   [[NCTokenParser]] implementation.
-      * @param macros   Macros map. Empty by default.
-      * @param elements [[NCSemanticElement]] list.
-      */
-    def apply(
-        stemmer: NCStemmer,
-        parser: NCTokenParser,
-        macros: Map[String, String],
-        elements: List[NCSemanticElement]
-    ): NCSemanticEntityParser =
-        require(stemmer != null, "Stemmer cannot be null.")
-        require(parser != null, "Token parser cannot be null.")
-        require(macros != null, "Macros cannot be null.")
-        require(elements != null && elements.nonEmpty, "Elements cannot be null or empty.")
-
-        new NCSemanticEntityParser(stemmer, parser, macros = macros, elements = elements)
-
-    /**
-      *
-      * Creates [[NCSemanticEntityParser]] instance.
-      *
-      * @param stemmer  [[NCStemmer]] implementation for synonyms language.
-      * @param parser   [[NCTokenParser]] implementation.
-      * @param elements [[NCSemanticElement]] list.
-      */
-    def apply(
-        stemmer: NCStemmer,
-        parser: NCTokenParser,
-        elements: List[NCSemanticElement]
-    ): NCSemanticEntityParser =
-        require(stemmer != null, "Stemmer cannot be null.")
-        require(parser != null, "Token parser cannot be null.")
-        require(elements != null && elements.nonEmpty, "Elements cannot be null or empty.")
-
-        new NCSemanticEntityParser(stemmer, parser, macros = Map.empty, elements = elements)
-
-    /**
-      *
-      * Creates [[NCSemanticEntityParser]] instance.
-      *
-      * @param stemmer [[NCStemmer]] implementation for synonyms language.
-      * @param parser  [[NCTokenParser]] implementation.
-      * @param mdlRes Relative path, absolute path, classpath resource or URL to YAML or JSON semantic model definition.
-      */
-    def apply(stemmer: NCStemmer, parser: NCTokenParser, mdlRes: String): NCSemanticEntityParser =
-        require(stemmer != null, "Stemmer cannot be null.")
-        require(parser != null, "Token parser cannot be null.")
-        require(mdlRes != null, "Model resource cannot be null.")
-
-        new NCSemanticEntityParser(stemmer, parser, mdlResOpt = mdlRes.?)
-
+private object NCSemanticEntityParser:
     /**
       * @param baseTokens Tokens.
       * @param variants Variants without stopwords.
@@ -175,7 +120,7 @@ object NCSemanticEntityParser:
         else if i >= data1.size then tmp
         else combine(data1, data2, i + 1, tmp.map(_ :+ data1(i)) ++ tmp.map(_ :+ data2(i)))
 
-import org.apache.nlpcraft.nlp.parsers.NCSemanticEntityParser.*
+import NCSemanticEntityParser.*
 
 /**
   * **Semantic** [[NCEntityParser entity parser]] implementation.
@@ -186,24 +131,59 @@ import org.apache.nlpcraft.nlp.parsers.NCSemanticEntityParser.*
   * `stemmer` implementation language should be corresponded to other components of [[NCPipeline]], but
   * required `stemmer` implementation is independent from other components' stemmers.
   *
+  * There are several constructors with different set of parameters.
+  * - **stemmer** [[NCStemmer]] implementation which used for matching tokens and given [[NCSemanticElement]] synonyms.
+  * - **parser** [[NCTokenParser]] implementation which used for given [[NCSemanticElement]] synonyms tokenization. It should be same implementation as used in [[NCPipeline.getTokenParser]].
+  * - **macros** Macros map which are used for extracting [[NCSemanticElement]] synonyms defined via **macros**. Empty by default. Look more at the website [[https://nlpcraft.apache.org/built-in-entity-parser.html#parser-semantic Macros]].
+  * - **elements** Programmatically prepared [[NCSemanticElement]] instances.
+  * - **mdlRes** Relative path, absolute path, classpath resource or URL to YAML or JSON semantic model which contains [[NCSemanticElement]] definitions.
+  *
   * @see [[NCSemanticElement]]
-  * @param stemmer   [[NCStemmer]] implementation for synonyms language.
-  * @param parser    [[NCTokenParser]] implementation.
-  * @param macros    Macros map. Empty by default.
-  * @param elements  [[NCSemanticElement]] list.
-  * @param mdlResOpt Optional relative path, absolute path, classpath resource or URL to YAML or JSON semantic model definition.
   */
-class NCSemanticEntityParser(
+class NCSemanticEntityParser private (
     stemmer: NCStemmer,
     parser: NCTokenParser,
-    macros: Map[String, String] = Map.empty,
-    elements: List[NCSemanticElement] = List.empty,
-    mdlResOpt: Option[String] = None
+    macros: Map[String, String],
+    elements: List[NCSemanticElement],
+    mdlResOpt: Option[String]
 ) extends NCEntityParser with LazyLogging:
     require(stemmer != null, "Stemmer cannot be null.")
     require(parser != null, "Token parser cannot be null.")
     require(macros != null, "Macroses cannot be null.")
     require(elements != null && elements.nonEmpty || mdlResOpt.isDefined, "Elements cannot be null or empty or model resource cannot be empty.")
+
+    /**
+      * Creates [[NCSemanticEntityParser]] instance.
+      *
+      * @param stemmer  [[NCStemmer]] implementation for synonyms language.
+      * @param parser   [[NCTokenParser]] implementation.
+      * @param macros   Macros map. Empty by default.
+      * @param elements [[NCSemanticElement]] list.
+      */
+    def this(stemmer: NCStemmer, parser: NCTokenParser, macros: Map[String, String], elements: List[NCSemanticElement]) =
+        this(stemmer, parser, macros, elements, None)
+
+    /**
+      *
+      * Creates [[NCSemanticEntityParser]] instance.
+      *
+      * @param stemmer  [[NCStemmer]] implementation for synonyms language.
+      * @param parser   [[NCTokenParser]] implementation.
+      * @param elements [[NCSemanticElement]] list.
+      */
+    def this(stemmer: NCStemmer, parser: NCTokenParser, elements: List[NCSemanticElement]) =
+        this(stemmer, parser, Map.empty, elements, None)
+
+    /**
+      *
+      * Creates [[NCSemanticEntityParser]] instance.
+      *
+      * @param stemmer [[NCStemmer]] implementation for synonyms language.
+      * @param parser  [[NCTokenParser]] implementation.
+      * @param mdlRes  Relative path, absolute path, classpath resource or URL to YAML or JSON semantic model definition.
+      */
+    def this(stemmer: NCStemmer, parser: NCTokenParser, mdlRes: String) =
+        this(stemmer, parser, Map.empty, List.empty, mdlRes.?)
 
     private lazy val scrType =
         require(mdlResOpt.isDefined)

@@ -161,7 +161,7 @@ private object NCEnStopWordsTokenEnricher extends LazyLogging:
     private def tokenMix(toks: Seq[NCToken], maxLen: Int = Integer.MAX_VALUE): Seq[Seq[NCToken]] =
         (for (n <- toks.length until 0 by -1 if n <= maxLen) yield toks.sliding(n)).flatten
 
-import org.apache.nlpcraft.nlp.enrichers.NCEnStopWordsTokenEnricher.*
+import NCEnStopWordsTokenEnricher.*
 
 /**
   * Stopword [[NCTokenEnricher token enricher]] for English (EN) language. Stopwords are the words
