@@ -125,18 +125,18 @@ object NCTestUtils:
       * @param macros
       */
     def mkEnSemanticParser(elms: List[NCSemanticElement], macros: Map[String, String] = Map.empty): NCSemanticEntityParser =
-        parsers.NCSemanticEntityParser(new NCEnStemmer, EN_TOK_PARSER, macros, elms)
+        new NCSemanticEntityParser(new NCEnStemmer, EN_TOK_PARSER, macros, elms)
 
     /**
       *
       * @param elms
       */
     def mkEnSemanticParser(elms: NCSemanticElement*): NCSemanticEntityParser =
-        parsers.NCSemanticEntityParser(new NCEnStemmer, EN_TOK_PARSER, elms.toList)
+        new NCSemanticEntityParser(new NCEnStemmer, EN_TOK_PARSER, elms.toList)
 
     /**
       *
       * @param mdlSrc
       */
     def mkEnSemanticParser(mdlSrc: String): NCSemanticEntityParser =
-        parsers.NCSemanticEntityParser(new NCEnStemmer, EN_TOK_PARSER, mdlSrc)
+        new NCSemanticEntityParser(new NCEnStemmer, EN_TOK_PARSER, mdlSrc)

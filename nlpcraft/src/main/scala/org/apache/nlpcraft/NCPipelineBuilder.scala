@@ -260,7 +260,7 @@ class NCPipelineBuilder:
         lang.toUpperCase match
             case "EN" =>
                 setEnComponents()
-                entParsers += NCSemanticEntityParser(new NCEnStemmer, mkEnOpenNLPTokenParser, macros, elms)
+                entParsers += new NCSemanticEntityParser(new NCEnStemmer, mkEnOpenNLPTokenParser, macros, elms)
             case _ => require(false, s"Unsupported language: $lang")
         this
 
@@ -326,7 +326,7 @@ class NCPipelineBuilder:
         lang.toUpperCase match
             case "EN" =>
                 setEnComponents()
-                this.entParsers += NCSemanticEntityParser(new NCEnStemmer, mkEnOpenNLPTokenParser, mdlSrc)
+                this.entParsers += new NCSemanticEntityParser(new NCEnStemmer, mkEnOpenNLPTokenParser, mdlSrc)
             case _ => require(false, s"Unsupported language: $lang")
         this
 

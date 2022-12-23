@@ -21,13 +21,13 @@ object PizzeriaModelPipeline:
             new StanfordCoreNLP(props)
         val tokParser = new NCStanfordNLPTokenParser(stanford)
 
-        import PizzeriaOrderMapperDesc as D
+        import org.apache.nlpcraft.examples.pizzeria.components.PizzeriaOrderMapperDesc as D
 
         new NCPipelineBuilder().
             withTokenParser(tokParser).
             withTokenEnricher(new NCEnStopWordsTokenEnricher()).
             withEntityParser(new NCStanfordNLPEntityParser(stanford, Set("number"))).
-            withEntityParser(NCSemanticEntityParser(new NCEnStemmer, tokParser, "pizzeria_model.yaml")).
+            withEntityParser(new NCSemanticEntityParser(new NCEnStemmer, tokParser, "pizzeria_model.yaml")).
             withEntityMapper(PizzeriaOrderMapper(extra = D("ord:pizza:size", "ord:pizza:size:value"), dests = D("ord:pizza", "ord:pizza:size"))).
             withEntityMapper(PizzeriaOrderMapper(extra = D("stanford:number", "stanford:number:nne"), dests = D("ord:pizza", "ord:pizza:qty"), D("ord:drink", "ord:drink:qty"))).
             withEntityValidator(new PizzeriaOrderValidator()).
