@@ -23,8 +23,6 @@ import org.apache.nlpcraft.nlp.parsers.*
 /**
   * Stemmer implementation for the English language that delegates to
   * [[https://opennlp.apache.org/ OpenNLP]] Porter Stemmer.
-  *
-  * @see More information about this stemmer algorithm can be found at [[https://tartarus.org/martin/PorterStemmer]].
   */
 class NCEnStemmer extends NCStemmer:
     private val stemmer = new PorterStemmer

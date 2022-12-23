@@ -21,13 +21,10 @@ import org.apache.nlpcraft.nlp.parsers.*
 
 /**
   * Trait defining a general stemmer. Stemming is the process of reducing inflected (or sometimes derived)
-  * words to their word stem, base or root form—generally a written word form. Stemmer is used by some of the
-  * built-in pipeline components. Stemmer is used by several built-in pipeline components.
+  * words to their word stem, base or root form—generally a written word form. Note that stemmer is used by
+  * several built-in pipeline components.
   *
   * Read more about stemming at [[https://en.wikipedia.org/wiki/Stemming]].
-  *
-  * @see [[org.apache.nlpcraft.nlp.enrichers.NCEnStopWordsTokenEnricher]]
-  * @see [[NCSemanticEntityParser]]
   */
 trait NCStemmer:
     /**

@@ -25,13 +25,13 @@ import java.util.stream.Collectors
 /**
   * [[NCNLPEntityParser]] helper.
   */
-object NCNLPEntityParser:
+private object NCNLPEntityParser:
     private val id: String = "nlp:entity"
 
 import org.apache.nlpcraft.nlp.parsers.NCNLPEntityParser.*
 
 /**
-  *  NLP data [[NCEntityParser entity parser]].
+  * NLP data [[NCEntityParser entity parser]].
   *
   * This parser converts list of input [[NCToken]] instances to list of [[NCEntity]] instances with ID **nlp:entity**.
   * All [[NCEntity]] instances contain following mandatory [[NCPropertyMap metadata]] properties:
