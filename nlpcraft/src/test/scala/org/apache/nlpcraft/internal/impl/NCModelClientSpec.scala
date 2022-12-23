@@ -34,7 +34,7 @@ class NCModelClientSpec extends AnyFunSuite:
       * @param e
       */
     private def s(e: NCEntity): String =
-        s"Entity [id=${e.getType}, text=${e.mkText}, properties={${e.keysSet.map(k => s"$k=${e(k)}")}}]"
+        s"Entity [type=${e.getType}, text=${e.mkText}, properties={${e.keysSet.map(k => s"$k=${e(k)}")}}]"
 
     /**
       *

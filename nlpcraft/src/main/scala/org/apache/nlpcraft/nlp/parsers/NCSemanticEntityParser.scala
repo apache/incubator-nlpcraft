@@ -248,13 +248,13 @@ class NCSemanticEntityParser private (
 
         for (piece <- getPieces(toks) if !hs.exists(_.isSuperSet(piece.baseTokens));
             variant <- Seq(piece.baseTokens) ++ piece.variants)
-            def add(elemId: String, value: Option[String]): Unit = hs += Holder(elemId, variant, value)
+            def add(elemType: String, value: Option[String]): Unit = hs += Holder(elemType, variant, value)
 
             val idxs = variant.map(_.getIndex)
             if cache.add(idxs) then
                 // Tries to search by stems.
                 synsHolder.textSynonyms.get(variant.map(stems).mkString(" ")) match
-                    case Some(elems) => elems.foreach(elem => add(elem.elementId, elem.value))
+                    case Some(elems) => elems.foreach(elem => add(elem.elementType, elem.value))
                     case None =>
                         // Combines stems(origin) and stems(lemma)
                         var found = false
@@ -263,10 +263,10 @@ class NCSemanticEntityParser private (
                                 synsHolder.textSynonyms.get(comb.mkString(" ")) match
                                     case Some(elems) =>
                                         found = true
-                                        elems.foreach(elem => add(elem.elementId, elem.value))
+                                        elems.foreach(elem => add(elem.elementType, elem.value))
                                     case None => // No-op.
                         // With regex.
-                        for ((elemId, syns) <- synsHolder.mixedSynonyms.getOrElse(variant.size, List.empty))
+                        for ((elemType, syns) <- synsHolder.mixedSynonyms.getOrElse(variant.size, List.empty))
                             found = false
 
                             for (s <- syns if !found)
@@ -280,7 +280,7 @@ class NCSemanticEntityParser private (
                                             match0(tok.getText) || match0(tok.getText.toLowerCase)
                                     }
 
-                                if found then add(elemId, Option.when(s.value != null)(s.value))
+                                if found then add(elemType, Option.when(s.value != null)(s.value))
 
         // Deletes redundant.
         hs = hs.distinct

@@ -100,7 +100,7 @@ class NCIDLFunctionsEntity extends NCIDLFunctions:
 
         test(
             TestDesc(
-                truth = "ent_is_before_id('2')",
+                truth = "ent_is_before_type('2')",
                 entity = e1,
                 idlCtx = ctx
             ),
@@ -110,7 +110,7 @@ class NCIDLFunctionsEntity extends NCIDLFunctions:
                 idlCtx = ctx
             ),
             TestDesc(
-                truth = "ent_is_after_id('1')",
+                truth = "ent_is_after_type('1')",
                 entity = e2,
                 idlCtx = ctx
             ),
@@ -131,7 +131,7 @@ class NCIDLFunctionsEntity extends NCIDLFunctions:
 
         test(
             TestDesc(
-                truth = "ent_is_between_ids('1', '3')",
+                truth = "ent_is_between_types('1', '3')",
                 entity = e2,
                 idlCtx = ctx
             ),
@@ -156,7 +156,7 @@ class NCIDLFunctionsEntity extends NCIDLFunctions:
                 idlCtx = ctx
             ),
             TestDesc(
-                truth = "size(ent_all_for_id('2')) == 2",
+                truth = "size(ent_all_for_type('2')) == 2",
                 idlCtx = ctx
             ),
             TestDesc(

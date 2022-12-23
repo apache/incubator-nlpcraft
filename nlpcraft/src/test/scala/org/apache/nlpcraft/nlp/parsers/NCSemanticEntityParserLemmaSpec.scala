@@ -36,7 +36,7 @@ class NCSemanticEntityParserLemmaSpec extends AnyFunSuite:
         new NCStemmer():
             override def stem(word: String): String = if wrapped(word) then unwrap(word) else UUID.randomUUID().toString
 
-    case class Data(text: String, elemId: String)
+    case class Data(text: String, elemType: String)
 
     private def wrap(s: String): String =
         require(s != null)

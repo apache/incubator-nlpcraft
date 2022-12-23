@@ -29,9 +29,9 @@ import scala.util.Using
   *
   */
 class NCEntityMapperSpec extends AnyFunSuite:
-    private case class Combiner(ids: String*) extends NCEntityMapper:
+    private case class Combiner(types: String*) extends NCEntityMapper:
         override def map(req: NCRequest, cfg: NCModelConfig, es: List[NCEntity]): List[NCEntity] =
-            val replaced = es.filter(p => ids.contains(p.getType))
+            val replaced = es.filter(p => types.contains(p.getType))
 
             if replaced.isEmpty then
                 es
@@ -39,7 +39,7 @@ class NCEntityMapperSpec extends AnyFunSuite:
                 val newEntity: NCEntity = new NCPropertyMapAdapter with NCEntity:
                     override val getTokens: List[NCToken] = replaced.flatMap(_.getTokens).sortBy(_.getIndex).toList
                     override val getRequestId: String = req.getRequestId
-                    override val getType: String = ids.mkString
+                    override val getType: String = types.mkString
 
                 val buf = collection.mutable.ArrayBuffer.empty[NCEntity]
                 buf ++= es

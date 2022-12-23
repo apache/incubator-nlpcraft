@@ -906,16 +906,16 @@ trait NCIDLCodeGenerator:
                 case "ent_count" => checkAvail(); z0(() => Z(idlCtx.entities.size, 0))
                 case "ent_groups" => arg1Tok() match { case x => stack.push(() => Z(JList.copyOf(toEntity(x().value).impl.getGroups.asJava), 1)) }
                 case "ent_all" => checkAvail(); z0(() => Z(idlCtx.entities.asJava, 0))
-                case "ent_all_for_id" => checkAvail(); doForAll((e, id) => e.impl.getType == id)
+                case "ent_all_for_type" => checkAvail(); doForAll((e, typ) => e.impl.getType == typ)
                 case "ent_all_for_group" => checkAvail(); doForAll((e, grp) => e.impl.getGroups.contains(grp))
                 case "ent_this" => z0(() => Z(ent, 1))
                 case "ent_is_last" => checkAvail(); arg1Tok() match { case x => stack.push(() => { Z(toEntity(x().value).index == idlCtx.entities.size - 1, 1) }) }
                 case "ent_is_first" => checkAvail(); arg1Tok() match { case x => stack.push(() => { Z(toEntity(x().value).index == 0, 1) }) }
-                case "ent_is_before_id" => checkAvail(); doIsBefore((e, id) => e.impl.getType == id)
+                case "ent_is_before_type" => checkAvail(); doIsBefore((e, typ) => e.impl.getType == typ)
                 case "ent_is_before_group" => checkAvail(); doIsBefore((e, grpId) => e.impl.getGroups.contains(grpId))
-                case "ent_is_after_id" => checkAvail(); doIsAfter((e, id) => e.impl.getType == id)
+                case "ent_is_after_type" => checkAvail(); doIsAfter((e, typ) => e.impl.getType == typ)
                 case "ent_is_after_group" => checkAvail(); doIsAfter((e, grpId) => e.impl.getGroups.contains(grpId))
-                case "ent_is_between_ids" => checkAvail(); doIsBetween((e, id) => e.impl.getType == id)
+                case "ent_is_between_types" => checkAvail(); doIsBetween((e, typ) => e.impl.getType == typ)
                 case "ent_is_between_groups" => checkAvail(); doIsBetween((e, grpId) => e.impl.getGroups.contains(grpId))
 
                 // Request data.
