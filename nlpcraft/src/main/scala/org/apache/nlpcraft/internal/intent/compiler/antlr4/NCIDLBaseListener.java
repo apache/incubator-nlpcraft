@@ -1,4 +1,4 @@
-// Generated from /Users/nivanov/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/internal/intent/compiler/antlr4/NCIDL.g4 by ANTLR 4.10.1
+// Generated from java-escape by ANTLR 4.11.1
 package org.apache.nlpcraft.internal.intent.compiler.antlr4;
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -10,6 +10,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
  * which can be extended to create a listener which only needs to handle a subset
  * of the available methods.
  */
+@SuppressWarnings("CheckReturnValue")
 public class NCIDLBaseListener implements NCIDLListener {
 	/**
 	 * {@inheritDoc}
