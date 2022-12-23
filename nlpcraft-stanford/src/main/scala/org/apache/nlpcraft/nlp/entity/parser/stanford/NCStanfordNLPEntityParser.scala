@@ -25,9 +25,18 @@ import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
 
 /**
+  *  [[https://nlp.stanford.edu/ Stanford NLP]] based language independent [[NCEntityParser entity parser]] configured by
+  *  given [[StanfordCoreNLP]] pipeline instance.
   *
-  * @param stanford
-  * @param supported
+  * This parser prepares [[NCEntity]] instances which are detected by prepared [[StanfordCoreNLP]] pipeline.
+  * These entities are created with ID `stanford:modelName`, where `modelName` is model configured in [[StanfordCoreNLP pipeline]].
+  * Also this parser copies optional `nne` string and `confidence` double [[NCPropertyMap metadata]] properties to the
+  * created entities extracted from [[StanfordCoreNLP]] annotations.
+
+  * **NOTE:** that parser can produce different types of [[NCEntity]] instances and each input [[NCToken]] can be included into several output [[NCEntity]] instances.
+  *
+  * @param stanford Configured [[StanfordCoreNLP]] pipeline instance.
+  * @param supported Supported [[StanfordCoreNLP]] model names. Only supported models will be used for [[NCEntity]] instances generation.
   */
 class NCStanfordNLPEntityParser(stanford: StanfordCoreNLP, supported: Set[String]) extends NCEntityParser:
     require(stanford != null, "Stanford instance cannot be null.")
@@ -35,6 +44,7 @@ class NCStanfordNLPEntityParser(stanford: StanfordCoreNLP, supported: Set[String
 
     private val supportedLc = supported.map(_.toLowerCase)
 
+    /** @inheritdoc */
     override def parse(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): List[NCEntity] =
         val doc = new CoreDocument(req.getText)
         stanford.annotate(doc)

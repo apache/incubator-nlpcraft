@@ -27,14 +27,17 @@ import java.io.StringReader
 import scala.collection.mutable
 
 /**
+  *  [[https://nlp.stanford.edu/ Stanford NLP]] based language independent [[NCTokenParser entity parser]] configured
+  *  by given [[StanfordCoreNLP]] pipeline instance.
   *
-  * @param stanford
+  * @param stanford Configured [[StanfordCoreNLP]] pipeline instance.
   */
 class NCStanfordNLPTokenParser(stanford: StanfordCoreNLP) extends NCTokenParser:
     require(stanford != null, "Stanford instance cannot be null.")
 
     private def nvl(v: String, dflt : => String): String = if v != null then v else dflt
 
+    /** @inheritdoc */
     override def tokenize(text: String): List[NCToken] =
         val doc = new CoreDocument(text)
         stanford.annotate(doc)

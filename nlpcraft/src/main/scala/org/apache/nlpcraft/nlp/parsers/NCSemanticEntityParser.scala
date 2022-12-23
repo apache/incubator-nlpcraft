@@ -131,6 +131,8 @@ import NCSemanticEntityParser.*
   * `stemmer` implementation language should be corresponded to other components of [[NCPipeline]], but
   * required `stemmer` implementation is independent from other components' stemmers.
   *
+  * **NOTE:** that parser can produce different types of [[NCEntity]] instances and each input [[NCToken]] can be included into several output [[NCEntity]] instances.
+  *
   * There are several constructors with different set of parameters.
   * - **stemmer** [[NCStemmer]] implementation which used for matching tokens and given [[NCSemanticElement]] synonyms.
   * - **parser** [[NCTokenParser]] implementation which used for given [[NCSemanticElement]] synonyms tokenization. It should be same implementation as used in [[NCPipeline.getTokenParser]].

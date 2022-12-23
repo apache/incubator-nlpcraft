@@ -43,7 +43,7 @@ import scala.util.Using
   *
   * Some of OpenNLP prepared models can be found [[https://opennlp.sourceforge.net/models-1.5/ here]].
   *
-  * **NOTE:** that each input [[NCToken]] can be included into several output [[NCEntity]] instances.
+  * **NOTE:** that parser can produce different types of [[NCEntity]] instances and each input [[NCToken]] can be included into several output [[NCEntity]] instances.
   *
   * @param findersMdlsRes Relative paths, absolute paths, resources or URLs to [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/namefind/TokenNameFinderModel.html models]].
   */
