@@ -71,7 +71,7 @@ private[parsers] object NCSemanticSourceReader:
         if e == null then null
         else
             new NCPropertyMapAdapter with NCSemanticElement:
-                override val getId: String = e.id
+                override val getType: String = e.id
                 override val getGroups: Set[String] =
                     val gs = e.groups
 

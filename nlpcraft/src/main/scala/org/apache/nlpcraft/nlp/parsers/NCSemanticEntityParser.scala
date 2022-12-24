@@ -201,7 +201,7 @@ class NCSemanticEntityParser private (
       */
     private def init(): Unit =
         val (macros, elements, elemsMap) =
-            def toMap(elems: Seq[NCSemanticElement]): Map[String, NCSemanticElement] = elems.map(p => p.getId -> p).toMap
+            def toMap(elems: Seq[NCSemanticElement]): Map[String, NCSemanticElement] = elems.map(p => p.getType -> p).toMap
 
             mdlResOpt match
                 case Some(mdlSrc) =>
@@ -240,7 +240,7 @@ class NCSemanticEntityParser private (
 
         val cache = mutable.HashSet.empty[Seq[Int]] // Variants (tokens without stopwords) can be repeated.
 
-        case class Holder(elemId: String, tokens: List[NCToken], value: Option[String]):
+        case class Holder(elemType: String, tokens: List[NCToken], value: Option[String]):
             val tokensSet: Set[NCToken] = tokens.toSet
             val idxs: Set[Int] = tokensSet.map(_.getIndex)
 
@@ -250,13 +250,13 @@ class NCSemanticEntityParser private (
 
         for (piece <- getPieces(toks) if !hs.exists(_.isSuperSet(piece.baseTokens));
             variant <- Seq(piece.baseTokens) ++ piece.variants)
-            def add(elemId: String, value: Option[String]): Unit = hs += Holder(elemId, variant, value)
+            def add(elemType: String, value: Option[String]): Unit = hs += Holder(elemType, variant, value)
 
             val idxs = variant.map(_.getIndex)
             if cache.add(idxs) then
                 // Tries to search by stems.
                 synsHolder.textSynonyms.get(variant.map(stems).mkString(" ")) match
-                    case Some(elems) => elems.foreach(elem => add(elem.elementId, elem.value))
+                    case Some(elems) => elems.foreach(elem => add(elem.elementType, elem.value))
                     case None =>
                         // Combines stems(origin) and stems(lemma)
                         var found = false
@@ -265,10 +265,10 @@ class NCSemanticEntityParser private (
                                 synsHolder.textSynonyms.get(comb.mkString(" ")) match
                                     case Some(elems) =>
                                         found = true
-                                        elems.foreach(elem => add(elem.elementId, elem.value))
+                                        elems.foreach(elem => add(elem.elementType, elem.value))
                                     case None => // No-op.
                         // With regex.
-                        for ((elemId, syns) <- synsHolder.mixedSynonyms.getOrElse(variant.size, List.empty))
+                        for ((elemType, syns) <- synsHolder.mixedSynonyms.getOrElse(variant.size, List.empty))
                             found = false
 
                             for (s <- syns if !found)
@@ -282,14 +282,14 @@ class NCSemanticEntityParser private (
                                             match0(tok.getText) || match0(tok.getText.toLowerCase)
                                     }
 
-                                if found then add(elemId, Option.when(s.value != null)(s.value))
+                                if found then add(elemType, Option.when(s.value != null)(s.value))
 
         // Deletes redundant.
         hs = hs.distinct
-        
+
         val del = mutable.ArrayBuffer.empty[Holder]
         // 1. Look at each element with its value.
-        for (((_, _), seq) <- hs.groupBy(h => (h.elemId, h.value)) if seq.size > 1)
+        for (((_, _), seq) <- hs.groupBy(h => (h.elemType, h.value)) if seq.size > 1)
             // 2. If some variants are duplicated - keep only one, with most tokens counts.
             val seqIdxs = seq.zipWithIndex
 
@@ -299,15 +299,15 @@ class NCSemanticEntityParser private (
         hs --= del
 
         hs.toSeq.map(h => {
-            val e = elemsMap(h.elemId)
+            val e = elemsMap(h.elemType)
             new NCPropertyMapAdapter with NCEntity:
-                if e.getProperties != null then e.getProperties.foreach { (k, v) => put(s"${h.elemId}:$k", v) }
+                if e.getProperties != null then e.getProperties.foreach { (k, v) => put(s"${h.elemType}:$k", v) }
                 h.value match
-                    case Some(value) => put(s"${h.elemId}:value", value)
+                    case Some(value) => put(s"${h.elemType}:value", value)
                     case None => // No-op.
 
                 override val getTokens: List[NCToken] = h.tokens
                 override val getRequestId: String = req.getRequestId
-                override val getId: String = h.elemId
+                override val getType: String = h.elemType
                 override val getGroups: Set[String] = e.getGroups
         }).toList

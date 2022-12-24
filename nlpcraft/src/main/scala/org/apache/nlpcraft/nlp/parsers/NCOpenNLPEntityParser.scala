@@ -37,8 +37,8 @@ import scala.util.Using
   *  [[https://opennlp.apache.org/ OpenNLP]] **name finders** models.
   *
   * This parser prepares [[NCEntity]] instances which are detected by given models.
-  * These entities are created with ID `opennlp:modelId`, where `modelId` is [[https://opennlp.apache.org/ OpenNLP]] model ID.
-  * Also this parser adds `opennlp:modelId:probability` double [[NCPropertyMap metadata]] property to the
+  * These entities are created with type `opennlp:modelName`, where `modelName` is [[https://opennlp.apache.org/ OpenNLP]] model name.
+  * Also this parser adds `opennlp:modelName:probability` double [[NCPropertyMap metadata]] property to the
   * created entities extracted from related [[https://opennlp.apache.org/ OpenNLP]] model.
   *
   * Some of OpenNLP prepared models can be found [[https://opennlp.sourceforge.net/models-1.5/ here]].
@@ -105,6 +105,6 @@ class NCOpenNLPEntityParser(findersMdlsRes: List[String]) extends NCEntityParser
 
                     override val getTokens: List[NCToken] = toks.flatMap(t => Option.when(t.getIndex >= i1 && t.getIndex <= i2)(t))
                     override val getRequestId: String = req.getRequestId
-                    override val getId: String = s"opennlp:${h.name}"
+                    override val getType: String = s"opennlp:${h.name}"
             )
         }).toList

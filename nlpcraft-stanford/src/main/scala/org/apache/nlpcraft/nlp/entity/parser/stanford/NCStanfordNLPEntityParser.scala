@@ -80,6 +80,6 @@ class NCStanfordNLPEntityParser(stanford: StanfordCoreNLP, supported: Set[String
 
                                 override val getTokens: List[NCToken] = entToks
                                 override val getRequestId: String = req.getRequestId
-                                override val getId: String = s"stanford:$typ"
+                                override val getType: String = s"stanford:$typ"
 
         res.toList

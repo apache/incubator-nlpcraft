@@ -55,11 +55,11 @@ class NCSemanticEntityParserSpec extends AnyFunSuite:
     /**
       *
       * @param txt
-      * @param id
+      * @param typ
       * @param value
       * @param elemData
       */
-    private def check(txt: String, id: String, value: Option[String] = None, elemData: Option[Map[String, Any]] = None): Unit =
+    private def check(txt: String, typ: String, value: Option[String] = None, elemData: Option[Map[String, Any]] = None): Unit =
         val req = NCTestRequest(txt)
         val toks = EN_TOK_PARSER.tokenize(txt)
 
@@ -74,21 +74,21 @@ class NCSemanticEntityParserSpec extends AnyFunSuite:
         require(ents.sizeIs == 1)
 
         val e = ents.head
-        require(e.getId == id)
+        require(e.getType == typ)
 
         value match
-            case Some(v) => require(e[Any](s"$id:value") == v)
+            case Some(v) => require(e[Any](s"$typ:value") == v)
             case None => // No-op.
         elemData match
-            case Some(m) => m.foreach { (k, v) => require(e[Any](s"$id:$k") == v) }
+            case Some(m) => m.foreach { (k, v) => require(e[Any](s"$typ:$k") == v) }
             case None => // No-op.
 
     /**
       *
       * @param txt
-      * @param ids
+      * @param types
       */
-    private def checkMultiple(txt: String, ids: String*): Unit =
+    private def checkMultiple(txt: String, types: String*): Unit =
         val req = NCTestRequest(txt)
         val toks = EN_TOK_PARSER.tokenize(txt)
 
@@ -100,8 +100,8 @@ class NCSemanticEntityParserSpec extends AnyFunSuite:
         val ents = semParser.parse(req, CFG, toks)
 
         NCTestUtils.printEntities(txt, ents)
-        require(ents.sizeIs == ids.size)
-        ents.map(_.getId).sorted.zip(ids.sorted).foreach { case (eId, id) => require(eId == id) }
+        require(ents.sizeIs == types.size)
+        ents.map(_.getType).sorted.zip(types.sorted).foreach { case (eTyp, typ) => require(eTyp == typ) }
 
     /**
       *

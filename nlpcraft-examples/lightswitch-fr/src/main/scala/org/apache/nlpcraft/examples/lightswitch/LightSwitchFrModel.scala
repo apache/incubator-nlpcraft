@@ -60,7 +60,7 @@ class LightSwitchFrModel extends NCModel(
         @NCIntentTerm("act") actEnt: NCEntity,
         @NCIntentTerm("loc") locEnts: List[NCEntity]
     ): NCResult =
-        val action = if actEnt.getId == "ls:on" then "allumer" else "éteindre"
+        val action = if actEnt.getType == "ls:on" then "allumer" else "éteindre"
         val locations = if locEnts.isEmpty then "toute la maison" else locEnts.map(_.mkText).mkString(", ")
 
         // Add HomeKit, Arduino or other integration here.

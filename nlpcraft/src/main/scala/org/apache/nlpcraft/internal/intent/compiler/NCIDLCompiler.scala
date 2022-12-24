@@ -121,7 +121,7 @@ class NCIDLCompiler(cfg: NCModelConfig) extends LazyLogging with mutable.Cloneab
         override def exitCallExpr(ctx: IDP.CallExprContext): Unit =
             val fun =
                 if ctx.FUN_NAME() != null then ctx.FUN_NAME().getText
-                else "ent_id"
+                else "ent_type"
 
             expr += parseCallExpr(fun)(ctx)
 

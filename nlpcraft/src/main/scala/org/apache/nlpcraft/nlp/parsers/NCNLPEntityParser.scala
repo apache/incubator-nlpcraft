@@ -26,14 +26,14 @@ import java.util.stream.Collectors
   * [[NCNLPEntityParser]] helper.
   */
 private object NCNLPEntityParser:
-    private val id: String = "nlp:entity"
+    private val entityType: String = "nlp:entity"
 
 import NCNLPEntityParser.*
 
 /**
   * NLP data [[NCEntityParser entity parser]].
   *
-  * This parser converts list of input [[NCToken]] instances one-to-one to list of [[NCEntity]] instances with ID **nlp:entity**.
+  * This parser converts list of input [[NCToken]] instances one-to-one to list of [[NCEntity]] instances with type **nlp:entity**.
   * All [[NCEntity]] instances contain following mandatory [[NCPropertyMap metadata]] properties:
   *  - nlp:entity:text
   *  - nlp:entity:index
@@ -54,14 +54,14 @@ class NCNLPEntityParser(predicate: NCToken => Boolean = _ => true) extends NCEnt
     override def parse(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): List[NCEntity] =
         toks.filter(predicate).map(t =>
             new NCPropertyMapAdapter with NCEntity:
-                put(s"$id:text", t.getText)
-                put(s"$id:index", t.getIndex)
-                put(s"$id:startCharIndex", t.getStartCharIndex)
-                put(s"$id:endCharIndex", t.getEndCharIndex)
+                put(s"$entityType:text", t.getText)
+                put(s"$entityType:index", t.getIndex)
+                put(s"$entityType:startCharIndex", t.getStartCharIndex)
+                put(s"$entityType:endCharIndex", t.getEndCharIndex)
 
-                t.keysSet.foreach(key => put(s"$id:$key", t(key)))
+                t.keysSet.foreach(key => put(s"$entityType:$key", t(key)))
 
                 override val getTokens: List[NCToken] = List(t)
                 override val getRequestId: String = req.getRequestId
-                override val getId: String = id
+                override val getType: String = entityType
         )

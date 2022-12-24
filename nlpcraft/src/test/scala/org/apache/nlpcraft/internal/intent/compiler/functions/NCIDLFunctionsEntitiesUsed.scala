@@ -28,8 +28,8 @@ import org.apache.nlpcraft.*
   */
 class NCIDLFunctionsEntitiesUsed extends NCIDLFunctions:
     test("test") {
-        val e1 = mkEntity(id = "a", tokens = NCTestToken())
-        val e2 = mkEntity(id = "b", tokens = NCTestToken())
+        val e1 = mkEntity(typ = "a", tokens = NCTestToken())
+        val e2 = mkEntity(typ = "b", tokens = NCTestToken())
 
         test(
             TestDesc(

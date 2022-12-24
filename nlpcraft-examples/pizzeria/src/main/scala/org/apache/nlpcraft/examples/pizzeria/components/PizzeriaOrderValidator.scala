@@ -24,7 +24,7 @@ import org.apache.nlpcraft.*
   */
 class PizzeriaOrderValidator extends NCEntityValidator:
     override def validate(req: NCRequest, cfg: NCModelConfig, ents: List[NCEntity]): Unit =
-        def count(id: String): Int = ents.count(_.getId == id)
+        def count(typ: String): Int = ents.count(_.getType == typ)
 
         val cntPizza = count("ord:pizza")
         val cntDrink = count("ord:drink")

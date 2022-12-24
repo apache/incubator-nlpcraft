@@ -25,16 +25,16 @@ import scala.collection.*
 
 /**
   *
-  * @param elementId Element.
+  * @param elementType Element type.
   * @param propertyName Element's property name.
   */
-case class PizzeriaOrderMapperDesc(elementId: String, propertyName: String)
+case class PizzeriaOrderMapperDesc(elementType: String, propertyName: String)
 
 /**
   * Element extender.
   * For each 'main' dest element it tries to find related extra element and convert this pair to new complex element.
   * New element:
-  * 1. Gets same ID as main element, also all main element properties copied into this new one.
+  * 1. Gets same type as main element, also all main element properties copied into this new one.
   * 2. Gets tokens from both elements.
   * 3. Configured extra element property copied into new element's properties.
   *
@@ -49,7 +49,7 @@ object PizzeriaOrderMapper:
         def tokens: List[NCToken] = entity.getTokens
 
     private def str(es: Iterable[NCEntity]): String =
-        es.map(e => s"id=${e.getId}(${e.tokens.map(_.getIndex).mkString("[", ",", "]")})").mkString("{", ", ", "}")
+        es.map(e => s"type=${e.getType}(${e.tokens.map(_.getIndex).mkString("[", ",", "]")})").mkString("{", ", ", "}")
 
     def apply(extra: PizzeriaOrderMapperDesc, dests: PizzeriaOrderMapperDesc*): PizzeriaOrderMapper = new PizzeriaOrderMapper(extra, dests)
 
@@ -63,11 +63,11 @@ case class PizzeriaOrderMapper(extra: PizzeriaOrderMapperDesc, dests: Seq[Pizzer
                 put[String](destProp, extraEnt[String](extra.propertyName).toLowerCase)
                 override val getTokens: List[NCToken] = (destEnt.tokens ++ extraEnt.tokens).sortBy(_.getIndex)
                 override val getRequestId: String = req.getRequestId
-                override val getId: String = destEnt.getId
+                override val getType: String = destEnt.getType
 
-        val destsMap = dests.map(p => p.elementId -> p).toMap
-        val destEnts = mutable.HashSet.empty ++ ents.filter(e => destsMap.contains(e.getId))
-        val extraEnts = ents.filter(_.getId == extra.elementId)
+        val destsMap = dests.map(p => p.elementType -> p).toMap
+        val destEnts = mutable.HashSet.empty ++ ents.filter(e => destsMap.contains(e.getType))
+        val extraEnts = ents.filter(_.getType == extra.elementType)
 
         if destEnts.nonEmpty && extraEnts.nonEmpty && destEnts.size >= extraEnts.size then
             val used = (destEnts ++ extraEnts).toSet
@@ -79,7 +79,7 @@ case class PizzeriaOrderMapper(extra: PizzeriaOrderMapperDesc, dests: Seq[Pizzer
                 dest2Extra += destEnt -> extraEnt
 
             val unrelated = ents.filter(e => !used.contains(e))
-            val artificial = for ((m, e) <- dest2Extra) yield map(m, destsMap(m.getId).propertyName, e)
+            val artificial = for ((m, e) <- dest2Extra) yield map(m, destsMap(m.getType).propertyName, e)
             val unused = destEnts
 
             val res = (unrelated ++ artificial ++ unused).sortBy(_.tokens.head.getIndex)

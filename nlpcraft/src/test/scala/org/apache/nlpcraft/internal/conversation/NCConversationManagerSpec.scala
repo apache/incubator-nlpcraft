@@ -59,9 +59,9 @@ class NCConversationManagerSpec extends AnyFunSuite:
         checkSize(2)
 
         // Partially cleared.
-        conv.clear(_.getId == "e1")
+        conv.clear(_.getType == "e1")
         checkSize(1)
-        require(conv.getEntities.head.getId == "e2")
+        require(conv.getEntities.head.getType == "e2")
     }
 
     test("test timeout") {

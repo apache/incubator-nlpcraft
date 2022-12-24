@@ -66,12 +66,12 @@ object NCTestUtils:
       * @param ents
       */
     def printEntities(req: String, ents: Seq[NCEntity]): Unit =
-        val tbl = NCAsciiTable("EntityId", "Tokens", "Tokens Position", "Properties")
+        val tbl = NCAsciiTable("EntityType", "Tokens", "Tokens Position", "Properties")
 
         for (e <- ents)
             val toks = e.getTokens
             tbl += (
-                e.getId,
+                e.getType,
                 toks.map(_.getText).mkString("|"),
                 toks.map(p => s"${p.getStartCharIndex}-${p.getEndCharIndex}").mkString("|"),
                 mkProps(e)
@@ -88,12 +88,12 @@ object NCTestUtils:
         println(s"Request $req variants:")
 
         for ((v, idx) <- vs.zipWithIndex)
-            val tbl = NCAsciiTable("EntityId", "Tokens", "Tokens Position", "Properties")
+            val tbl = NCAsciiTable("EntityType", "Tokens", "Tokens Position", "Properties")
 
             for (e <- v.getEntities)
                 val toks = e.getTokens
                 tbl += (
-                    e.getId,
+                    e.getType,
                     toks.map(_.getText).mkString("|"),
                     toks.map(p => s"${p.getStartCharIndex}-${p.getEndCharIndex}").mkString("|"),
                     mkProps(e)

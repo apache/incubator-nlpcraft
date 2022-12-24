@@ -67,13 +67,14 @@ trait NCEntity extends NCPropertyMap:
     /**
       * Gets optional set of groups this entity belongs to.
       *
-      * @return Optional set of groups this entity belongs to. Returned set can be empty but never `null`.
+      * @return Optional set of groups this entity belongs to. Returned set can be empty but never `null`. By
+      *     default the entity belongs to a group of its own [[getType type]].
       */
-    def getGroups: Set[String] = Set(getId)
+    def getGroups: Set[String] = Set(getType)
 
     /**
-      * Gets globally unique ID of this entity.
+      * Gets entity type.
       *
-      * @return Globally unique ID of this entity.
+      * @return Entity type.
       */
-    def getId: String
+    def getType: String
