@@ -31,21 +31,23 @@ private object NCNLPEntityParser:
 import NCNLPEntityParser.*
 
 /**
-  * NLP data [[NCEntityParser entity parser]].
+  * Common NLP data [[NCEntityParser entity parser]].
   *
-  * This parser converts list of input [[NCToken]] instances one-to-one to list of [[NCEntity]] instances with type **nlp:entity**.
-  * All [[NCEntity]] instances contain following mandatory [[NCPropertyMap metadata]] properties:
-  *  - nlp:entity:text
-  *  - nlp:entity:index
-  *  - nlp:entity:startCharIndex
-  *  - nlp:entity:endCharIndex
+  * This parser converts list of input [[NCToken]] instances **one-to-one** to the list of [[NCEntity]] instances with
+  * type **nlp:entity**. All [[NCEntity]] instances in the result list will contain the following
+  * [[NCPropertyMap metadata]] properties:
+  *  - `nlp:entity:text` - token's text.
+  *  - `nlp:entity:index` - token's index in the input sentence.
+  *  - `nlp:entity:startCharIndex` - token text's first character index in the input sentence.
+  *  - `nlp:entity:endCharIndex` - token text 's last character index in the input sentence.
   *
-  *  Created [[NCEntity]] instances inherit all [[NCToken]] [[NCPropertyMap metadata]] properties,
-  *  with new names prefixed by **nlp:entity:**.
-  *  For example for property **prop** new name will be **nlp:entity:prop**.
+  *  Note that [[NCEntity]] instances inherit all [[NCToken]] [[NCPropertyMap metadata]] properties from its
+  *  corresponding token with new name that is prefixed with **'nlp:entity:'**. For example, for token property **prop**
+  *  the corresponding inherited entity property name will be **nlp:entity:prop**.
   *
-  *  @param predicate Predicate which allows to filter list of converted [[NCToken]] instances.
-  *  By default all [[NCToken]] instances converted.
+  *  @param predicate Predicate which allows to filter list of converted [[NCToken]] instances. Only tokens that
+  *     satisfy given predicate will convert to entity by this parser. By default all [[NCToken]] instances are
+  *     converted.
   */
 class NCNLPEntityParser(predicate: NCToken => Boolean = _ => true) extends NCEntityParser:
     require(predicate != null, "Predicate cannot be null.")

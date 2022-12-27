@@ -32,7 +32,7 @@ import scala.concurrent.ExecutionContext
   * instance. Learn more about lemmas [[https://en.wikipedia.org/wiki/Lemma_(morphology) here]] and about part-of-speech
   * [[https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html here]].
   *
-  * This OpenNLP enricher requires PoS and lemma models. Some of free OpenNLP community maintained models can be found
+  * This OpenNLP enricher requires PoS and lemma models. Some of free OpenNLP community-maintained models can be found
   * [[https://opennlp.sourceforge.net/models-1.5/ here]]. Note that at least one of model must be defined.
   *
   * @param posMdlRes Relative path, absolute path, classpath resource or URL to
@@ -58,14 +58,16 @@ class NCOpenNLPTokenEnricher(posMdlRes: String = null, lemmaDicRes: String = nul
                 () => {
                     if posMdlRes != null then
                         tagger = new POSTaggerME(new POSModel(NCUtils.getStream(posMdlRes)))
-                        logger.trace(s"Loaded resource: $posMdlRes")
-                    else logger.warn("POS tagger is not configured.")
+                        logger.trace(s"Loaded OpenNLP POS tagging model: $posMdlRes")
+                    else
+                        logger.warn("OpenNLP POS tagger is not configured.")
                 },
                 () => {
                     if lemmaDicRes != null then
                         lemmatizer = new DictionaryLemmatizer(NCUtils.getStream(lemmaDicRes))
-                        logger.trace(s"Loaded resource: $lemmaDicRes")
-                    else logger.warn("Lemmatizer is not configured.")
+                        logger.trace(s"Loaded OpenNLP lemmatization model: $lemmaDicRes")
+                    else
+                        logger.warn("OpenNLP lemmatizer is not configured.")
                 }
             )
         )(ExecutionContext.Implicits.global)

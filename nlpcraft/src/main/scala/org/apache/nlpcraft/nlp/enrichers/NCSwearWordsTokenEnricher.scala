@@ -38,10 +38,11 @@ import java.util.Objects
   *         duplicates ignored, lines starting with **#** symbol will be treated as comments and ignored.
   *         Note that the search in the dictionary is implemented using words' **stem** and case is ignored.
   * @param stemmer Stemmer implementation for the language used in the supplied swear-word dictionary.
+  * @see [[org.apache.nlpcraft.nlp.stemmer.NCEnStemmer]]
   */
 //noinspection ScalaWeakerAccess
 class NCSwearWordsTokenEnricher(dictRes: String, stemmer: NCStemmer) extends NCTokenEnricher with LazyLogging:
-    require(dictRes != null, "Swear words dictonary resource cannot be null.")
+    require(dictRes != null, "Swear words dictionary resource cannot be null.")
     require(stemmer != null, "Stemmer cannot be null.")
 
     private var swearWords: Set[String] = _
