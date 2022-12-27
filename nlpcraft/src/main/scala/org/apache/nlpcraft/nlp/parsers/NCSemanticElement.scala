@@ -22,7 +22,7 @@ import org.apache.nlpcraft.*
 /**
   *
   * Configuration element which helps to detect [[org.apache.nlpcraft.NCEntity NCEntity]] for
-  * **Semantic** implementation of [[org.apache.nlpcraft.NCEntityParser NCEntityParser]].
+  * **Semantic** entity parser [[NCSemanticEntityParser]].
   *
   * See detailed description on the website [[https://nlpcraft.apache.org/built-in-entity-parser.html#parser-semantic Semantic Parser]].
   *
@@ -32,6 +32,7 @@ trait NCSemanticElement:
     /**
       * Gets **type** for created [[NCEntity]] instance.
       * Representation of [[NCEntity.getType]] method.
+      *
       * @return Element type.
       */
     def getType: String
@@ -39,6 +40,7 @@ trait NCSemanticElement:
     /**
       * Gets **groups** for created [[NCEntity]] instance.
       * Representation of [[NCEntity.getGroups]] method.
+      *
       * @return Groups.
       */
     def getGroups: Set[String] = Set(getType)
@@ -47,18 +49,21 @@ trait NCSemanticElement:
       * Gets values map. Each element can contain multiple value,
       * each value is described as name and list of its synonyms.
       * They allows to find element's value in text.
+      *
       * @return Values.
       */
     def getValues: Map[String, Set[String]] = Map.empty
 
     /**
       * Gets elements synonyms list. They allows to find element in text.
+      *
       * @return Synonyms.
       */
     def getSynonyms: Set[String] = Set.empty
 
     /**
       * Gets [[NCPropertyMap metadata]] property for created [[NCEntity]] instance.
+      * 
       * @return Groups.
       */
     def getProperties: Map[String, AnyRef] = Map.empty
