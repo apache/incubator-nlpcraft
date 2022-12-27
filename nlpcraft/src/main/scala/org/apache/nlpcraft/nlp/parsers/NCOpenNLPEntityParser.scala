@@ -33,27 +33,31 @@ import scala.language.postfixOps
 import scala.util.Using
 
 /**
-  *  [[https://opennlp.apache.org/ OpenNLP]] based language independent [[NCEntityParser entity parser]] configured by
+  *  [[https://opennlp.apache.org/ OpenNLP]] based language independent [[NCEntityParser entity parser]] configured using
   *  [[https://opennlp.apache.org/ OpenNLP]] **name finders** models.
   *
-  * This parser prepares [[NCEntity]] instances which are detected by given models.
-  * These entities are created with type `opennlp:modelName`, where `modelName` is [[https://opennlp.apache.org/ OpenNLP]] model name.
-  * Also this parser adds `opennlp:modelName:probability` double [[NCPropertyMap metadata]] property to the
-  * created entities extracted from related [[https://opennlp.apache.org/ OpenNLP]] model.
+  * This parser prepares [[NCEntity]] instances which are detected by the provided models.
+  * These entities are created with type `opennlp:modelName`, where `modelName` is the model name.
+  * This parser also adds `opennlp:modelName:probability` double [[NCPropertyMap metadata]] property to the
+  * entities extracted from the corresponding model.
   *
-  * Some of OpenNLP prepared models can be found [[https://opennlp.sourceforge.net/models-1.5/ here]].
+  * Some of free OpenNLP community-maintained models can be found [[https://opennlp.sourceforge.net/models-1.5/ here]].
   *
-  * **NOTE:** that parser can produce different types of [[NCEntity]] instances and each input [[NCToken]] can be included into several output [[NCEntity]] instances.
+  * **NOTE:** that parser can be configured with multiple models and therefore may produce different types of
+  * [[NCEntity]] instances with each input [[NCToken]] being "mapped" into zero, one or more different entities.
+  * As a result, each input token may be included into more than one output [[NCEntity]] instances (or none at all).
   *
-  * @param findersMdlsRes Relative paths, absolute paths, resources or URLs to [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/namefind/TokenNameFinderModel.html models]].
+  * @param findersMdlsRes Relative paths, absolute paths, resources or URLs to OpenNLP name finders
+  *     [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/namefind/TokenNameFinderModel.html models]].
   */
 class NCOpenNLPEntityParser(findersMdlsRes: List[String]) extends NCEntityParser with LazyLogging:
     require(findersMdlsRes != null && findersMdlsRes.nonEmpty, "Models resources cannot be null or empty.")
 
     /**
-      * Creates [[NCOpenNLPEntityParser]] instance.
+      * Creates new parser with just one model.
       *
-      * @param mdl Relative path, absolute path, classpath resource or URL to [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/namefind/TokenNameFinderModel.html model]].
+      * @param mdl Relative path, absolute path, classpath resource or URL to OpenNLP name finders
+      *     [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/namefind/TokenNameFinderModel.html model]].
       */
     def this(mdl: String) = this(List[String](Objects.requireNonNull(mdl)))
 
