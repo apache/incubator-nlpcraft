@@ -47,13 +47,13 @@
         <dependency>
             <groupId>org.languagetool</groupId>
             <artifactId>language-fr</artifactId>
-            <version>5.9</version>
+            <version>6.0</version>
         </dependency>
 
         <dependency>
             <groupId>org.languagetool</groupId>
             <artifactId>languagetool-core</artifactId>
-            <version>5.9</version>
+            <version>6.0</version>
         </dependency>
 
         <!-- Test dependencies. -->
