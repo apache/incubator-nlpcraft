@@ -20,9 +20,15 @@ package org.apache.nlpcraft.nlp.parsers
 import org.apache.nlpcraft.nlp.stemmer.NCStemmer
 import org.apache.nlpcraft.*
 /**
-  *
-  * Configuration element which helps to detect [[org.apache.nlpcraft.NCEntity NCEntity]] for
+  * This trait defines configuration which helps to detect [[NCEntity]] of
   * **Semantic** entity parser [[NCSemanticEntityParser]].
+  * It denotes a **named entity** [[NCEntity]] which is created by [[NCSemanticEntityParser]].
+  *
+  * Each trait contains a set of synonyms to match on named entity.
+  * A synonym can have one or more individual words.
+  * Note that element's type is its implicit synonym so that even if no additional synonyms are defined at least one synonym always exists.
+  * Note also that synonym matching is performed on normalized and stemmatized forms of both a synonym and user input on first phase and if first attempt is not successful, it tries to match stemmatized forms of synonyms with stemmatized forms of user input which were lemmatized preliminarily.
+  * This approach allows to provide more accurate matching and doesn't force users to prepare synonyms in initial words form.
   *
   * See detailed description on the website [[https://nlpcraft.apache.org/built-in-entity-parser.html#parser-semantic Semantic Parser]].
   *

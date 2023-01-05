@@ -123,7 +123,14 @@ private object NCSemanticEntityParser:
 import NCSemanticEntityParser.*
 
 /**
-  * **Semantic** [[NCEntityParser entity parser]] implementation.
+  * **Semantic** [[NCEntityParser entity parser]] synonyms based implementation.
+  *
+  * This parser provides simple but very powerful way to find domain specific data in the input text.
+  * It configured by list of [[NCSemanticElement]] which are represent [[NCEntity name entities]] and
+  * can be produced by this parser.
+  *
+  * [[NCSemanticElement]] elements can be configured via YAML or JSON files in special format or created and passed
+  * programmatically.
   *
   * See detailed description on the website [[https://nlpcraft.apache.org/built-in-entity-parser.html#parser-semantic Semantic Parser]].
   *
