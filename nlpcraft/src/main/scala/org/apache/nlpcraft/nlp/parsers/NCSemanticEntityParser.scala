@@ -129,12 +129,12 @@ import NCSemanticEntityParser.*
   * It is configured via [[NCSemanticElement]] list which are represent [[NCEntity name entities]] that
   * can be produced by this parser.
   *
-  * [[NCSemanticElement]] elements can be configured via YAML or JSON files in special format or
+  * [[NCSemanticElement Semantic elements]]  can be configured via YAML or JSON files in special format or
   * passed in this parser as programmatically prepared list.
   *
-  * [[NCSemanticElement]] elements contain set of synonyms which can use special
+  * [[NCSemanticElement Semantic elements]] contain set of synonyms which can use special
   * [[https://nlpcraft.apache.org/built-in-entity-parser.html#macros macros]].
-  * These macros also can be provided in YAML and JSON files or passed directly in case of programmatically prepared\
+  * These macros also can be provided via YAML and JSON files or passed directly in case of programmatically prepared
   * [[NCSemanticElement]] list.
   *
   * See detailed description on the website [[https://nlpcraft.apache.org/built-in-entity-parser.html#parser-semantic Semantic Parser]].

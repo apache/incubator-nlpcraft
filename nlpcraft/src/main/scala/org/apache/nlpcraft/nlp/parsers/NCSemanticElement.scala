@@ -20,9 +20,10 @@ package org.apache.nlpcraft.nlp.parsers
 import org.apache.nlpcraft.nlp.stemmer.NCStemmer
 import org.apache.nlpcraft.*
 /**
-  * This trait defines configuration which helps to detect [[NCEntity]] of
-  * [[NCSemanticEntityParser]].
-  * It denotes a **named entity** [[NCEntity]] which can be created by [[NCSemanticEntityParser]].
+  * This trait is used in [[NCSemanticEntityParser]] and defines configuration
+  * which contains synonyms for [[NCEntity]] detection and properties which are used for new [[NCEntity]] instances creation.
+  *
+  * In other words it denotes a [[NCEntity named entity]] which can be created by [[NCSemanticEntityParser]].
   *
   * The trait contains a set of synonyms to match on named entity.
   * A synonym can have one or more individual words.
