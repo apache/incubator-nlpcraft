@@ -26,9 +26,16 @@ import org.apache.nlpcraft.*
   *
   * Each trait contains a set of synonyms to match on named entity.
   * A synonym can have one or more individual words.
-  * Note that element's type is its implicit synonym so that even if no additional synonyms are defined at least one synonym always exists.
-  * Note also that synonym matching is performed on normalized and stemmatized forms of both a synonym and user input on first phase and if first attempt is not successful, it tries to match stemmatized forms of synonyms with stemmatized forms of user input which were lemmatized preliminarily.
+  * Note that element's type is its implicit synonym so that even if no additional synonyms are defined at least one synonym
+  * always exists.
+  * Note also that synonym matching is performed on normalized and stemmatized forms of both a synonym and user input on
+  * first phase and if first attempt is not successful, it tries to match stemmatized forms of synonyms
+  * with stemmatized forms of user input which were lemmatized preliminarily.
   * This approach allows to provide more accurate matching and doesn't force users to prepare synonyms in initial words form.
+  *
+  * Also **Semantic** element can have an optional set of special synonyms called values or "proper nouns" for this element.
+  * Unlike basic synonyms, each value is a pair of a name and a set of standard synonyms by which that value,
+  * and ultimately its element, can be recognized in the user input.
   *
   * See detailed description on the website [[https://nlpcraft.apache.org/built-in-entity-parser.html#parser-semantic Semantic Parser]].
   *
@@ -55,13 +62,14 @@ trait NCSemanticElement:
       * Gets values map. Each element can contain multiple value,
       * each value is described as name and list of its synonyms.
       * They allows to find element's value in text.
+      * Note that macros can be used for synonyms definition.
       *
       * @return Values.
       */
     def getValues: Map[String, Set[String]] = Map.empty
 
     /**
-      * Gets elements synonyms list. They allows to find element in text.
+      * Gets elements synonyms list. They allows to find element in text. Note that macros can be used for synonyms definition.
       *
       * @return Synonyms.
       */

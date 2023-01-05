@@ -123,14 +123,18 @@ private object NCSemanticEntityParser:
 import NCSemanticEntityParser.*
 
 /**
-  * **Semantic** [[NCEntityParser entity parser]] synonyms based implementation.
+  * **Semantic** [[NCEntityParser entity parser]] implementation.
   *
-  * This parser provides simple but very powerful way to find domain specific data in the input text.
-  * It configured by list of [[NCSemanticElement]] which are represent [[NCEntity name entities]] and
+  * This synonyms based parser provides simple but very powerful way to find domain specific data in the input text.
+  * It is configured via [[NCSemanticElement]] list which are represent [[NCEntity name entities]] and
   * can be produced by this parser.
   *
-  * [[NCSemanticElement]] elements can be configured via YAML or JSON files in special format or created and passed
-  * programmatically.
+  * [[NCSemanticElement]] elements list can be configured via YAML or JSON files in special format or
+  * programmatically prepared list of [[NCSemanticElement]] can be passed in this parser directly.
+  *
+  * [[NCSemanticElement]] elements synonyms can be based on special
+  * [[https://nlpcraft.apache.org/built-in-entity-parser.html#macros macros]] definitions which can be provided
+  * in YAML and JSON files or passed directly in case when programmatically prepared list of [[NCSemanticElement]] passed in this parser.
   *
   * See detailed description on the website [[https://nlpcraft.apache.org/built-in-entity-parser.html#parser-semantic Semantic Parser]].
   *
@@ -143,7 +147,7 @@ import NCSemanticEntityParser.*
   * There are several constructors with different set of parameters.
   * - **stemmer** [[NCStemmer]] implementation which used for matching tokens and given [[NCSemanticElement]] synonyms.
   * - **parser** [[NCTokenParser]] implementation which used for given [[NCSemanticElement]] synonyms tokenization. It should be same implementation as used in [[NCPipeline.getTokenParser]].
-  * - **macros** Macros map which are used for extracting [[NCSemanticElement]] synonyms defined via **macros**. Empty by default. Look more at the website [[https://nlpcraft.apache.org/built-in-entity-parser.html#parser-semantic Macros]].
+  * - **macros** Macros map which are used for extracting [[NCSemanticElement]] synonyms defined via **macros**. Empty by default. Look more at the website [[https://nlpcraft.apache.org/built-in-entity-parser.html#macros Macros]].
   * - **elements** Programmatically prepared [[NCSemanticElement]] instances.
   * - **mdlRes** Relative path, absolute path, classpath resource or URL to YAML or JSON semantic model which contains [[NCSemanticElement]] definitions.
   *
