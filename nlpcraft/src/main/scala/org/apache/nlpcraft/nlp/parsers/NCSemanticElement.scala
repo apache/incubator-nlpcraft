@@ -63,7 +63,7 @@ trait NCSemanticElement:
 
     /**
       * Gets [[NCPropertyMap metadata]] property for created [[NCEntity]] instance.
-      * 
+      *
       * @return Groups.
       */
     def getProperties: Map[String, AnyRef] = Map.empty
