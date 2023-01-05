@@ -126,15 +126,16 @@ import NCSemanticEntityParser.*
   * **Semantic** [[NCEntityParser entity parser]] implementation.
   *
   * This synonyms based parser provides simple but very powerful way to find domain specific data in the input text.
-  * It is configured via [[NCSemanticElement]] list which are represent [[NCEntity name entities]] and
+  * It is configured via [[NCSemanticElement]] list which are represent [[NCEntity name entities]] that
   * can be produced by this parser.
   *
-  * [[NCSemanticElement]] elements list can be configured via YAML or JSON files in special format or
-  * programmatically prepared list of [[NCSemanticElement]] can be passed in this parser directly.
+  * [[NCSemanticElement]] elements can be configured via YAML or JSON files in special format or
+  * passed in this parser as programmatically prepared list.
   *
-  * [[NCSemanticElement]] elements synonyms can be based on special
-  * [[https://nlpcraft.apache.org/built-in-entity-parser.html#macros macros]] definitions which can be provided
-  * in YAML and JSON files or passed directly in case when programmatically prepared list of [[NCSemanticElement]] passed in this parser.
+  * [[NCSemanticElement]] elements contain set of synonyms which can use special
+  * [[https://nlpcraft.apache.org/built-in-entity-parser.html#macros macros]].
+  * These macros also can be provided in YAML and JSON files or passed directly in case of programmatically prepared\
+  * [[NCSemanticElement]] list.
   *
   * See detailed description on the website [[https://nlpcraft.apache.org/built-in-entity-parser.html#parser-semantic Semantic Parser]].
   *
