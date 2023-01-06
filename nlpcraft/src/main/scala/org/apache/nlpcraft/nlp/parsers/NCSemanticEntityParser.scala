@@ -150,7 +150,9 @@ import NCSemanticEntityParser.*
   *       - "{&lt;CUR&gt;|_} &lt;TIME>"
   *       - "what &lt;TIME&gt; {is it now|now|is it|_}"
   * </pre>
+  *
   * See detailed description on the website [[https://nlpcraft.apache.org/built-in-entity-parser.html#parser-semantic Semantic Parser]].
+  * Also look at the [[https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft-examples examples section]].
   *
   * **NOTE:** [[NCSemanticElement]] synonyms, **stemmer** and **parser** parameters must be configured for the same language.
   * `stemmer` implementation language should be corresponded to other components of [[NCPipeline]], but

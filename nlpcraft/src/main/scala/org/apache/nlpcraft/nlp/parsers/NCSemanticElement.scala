@@ -44,6 +44,7 @@ import org.apache.nlpcraft.*
   *
   * See detailed description on the website [[https://nlpcraft.apache.org/built-in-entity-parser.html#parser-semantic Semantic Parser]].
   *
+  *
   * @see [[NCSemanticEntityParser]]
   */
 trait NCSemanticElement:
