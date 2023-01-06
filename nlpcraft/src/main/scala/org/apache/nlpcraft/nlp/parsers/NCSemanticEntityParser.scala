@@ -137,6 +137,19 @@ import NCSemanticEntityParser.*
   * These macros also can be provided via YAML and JSON files or passed directly in case of programmatically prepared
   * [[NCSemanticElement]] list.
   *
+  * Example of YAML elements definition.
+  * <pre>
+  * macros:
+  *   "&lt;OF&gt;": "{of|for|per}"
+  *   "&lt;CUR&gt;": "{current|present|now|local}"
+  *   "&lt;TIME&gt;": "{time &lt;OF&gt; day|day time|date|time|moment|datetime|hour|o'clock|clock|date time|date and time|time and date}"
+  * elements:
+  *   - id: "x:time"
+  *     description: "Date and/or time token indicator."
+  *     synonyms:
+  *       - "{&lt;CUR&gt;|_} &lt;TIME>"
+  *       - "what &lt;TIME&gt; {is it now|now|is it|_}"
+  * </pre>
   * See detailed description on the website [[https://nlpcraft.apache.org/built-in-entity-parser.html#parser-semantic Semantic Parser]].
   *
   * **NOTE:** [[NCSemanticElement]] synonyms, **stemmer** and **parser** parameters must be configured for the same language.

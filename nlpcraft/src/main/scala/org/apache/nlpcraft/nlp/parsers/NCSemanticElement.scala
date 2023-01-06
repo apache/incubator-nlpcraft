@@ -34,9 +34,13 @@ import org.apache.nlpcraft.*
   * with stemmatized forms of user input which were lemmatized preliminarily.
   * This approach allows to provide more accurate matching and doesn't force users to prepare synonyms in initial words form.
   *
-  * Also **semantic** element can have an optional set of special synonyms called values or "proper nouns" for this element.
+  * Also semantic element can have an optional set of special synonyms called values or "proper nouns" for this element.
   * Unlike basic synonyms, each value is a pair of a name and a set of standard synonyms by which that value,
   * and ultimately its element, can be recognized in the user input.
+  *
+  * So [[NCEntity named entity]] can be found via [[NCSemanticElement.getSynonyms element synonyms]] or
+  * [[NCSemanticElement.getValues element values]].
+  * Other [[NCSemanticElement]] properties are passed into created corresponded  [[NCEntity]] instance.
   *
   * See detailed description on the website [[https://nlpcraft.apache.org/built-in-entity-parser.html#parser-semantic Semantic Parser]].
   *
