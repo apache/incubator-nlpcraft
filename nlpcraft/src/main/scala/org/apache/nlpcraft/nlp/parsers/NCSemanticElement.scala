@@ -63,8 +63,8 @@ import org.apache.nlpcraft.*
   *     "large": [ "{big|biggest|large|max|maximum|huge|enormous} {size|piece|_}" ]
   * </pre>
   * Described above element **ord&#58;pizza&#58;size** can be detected via values synonyms: *small*, *medium size*, *big piece* etc.
-  * Note that **value** (small, medium or large in this example) is passed in created [[NCEntity]] as property with key
-  * **elemType&#58;value** (ord&#58;pizza&#58;size&#58;value in this example).
+  * Note that **value** (*small*, *medium* or *large* in this example) is passed in created [[NCEntity]] as property with key
+  * **element-type&#58;value** (*ord&#58;pizza&#58;size&#58;value* in this example).
   *
   * **NOTE** that given examples show how semantic elements synonyms and values are represented via YAML format
   * when these elements passed in [[NCSemanticEntityParser]] via semantic model resource definition,

@@ -142,7 +142,7 @@ import NCSemanticEntityParser.*
   * macros:
   *   "&lt;OF&gt;": "{of|for|per}"
   *   "&lt;CUR&gt;": "{current|present|now|local}"
-  *   "&lt;TIME&gt;": "{time &lt;OF&gt; day|day time|date|time|moment|datetime|hour|o'clock|clock|date time|date and time|time and date}"
+  *   "&lt;TIME&gt;": "{time &lt;OF&gt; day|day time|date|time|moment|datetime|hour|o'clock|clock|date time}"
   * elements:
   *   - id: "x:time"
   *     description: "Date and/or time token indicator."
