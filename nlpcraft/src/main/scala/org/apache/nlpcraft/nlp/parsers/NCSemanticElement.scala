@@ -37,13 +37,40 @@ import org.apache.nlpcraft.*
   * Also semantic element can have an optional set of special synonyms called values or "proper nouns" for this element.
   * Unlike basic synonyms, each value is a pair of a name and a set of standard synonyms by which that value,
   * and ultimately its element, can be recognized in the user input.
+  * Note that the value name itself acts as an implicit synonym even when no additional synonyms added for that value.
   *
   * So [[NCEntity named entity]] can be found via [[NCSemanticElement.getSynonyms element synonyms]] or
   * [[NCSemanticElement.getValues element values]].
   * Other [[NCSemanticElement]] properties are passed into created corresponded  [[NCEntity]] instance.
   *
-  * See detailed description on the website [[https://nlpcraft.apache.org/built-in-entity-parser.html#parser-semantic Semantic Parser]].
+  * Example 1.
+  * <pre>
+  * - id: "ord:menu"
+  *   description: "Order menu."
+  *   synonyms:
+  *     - "{menu|carte|card}"
+  *     - "{products|goods|food|item|_} list"
+  * </pre>
+  * Described above element **ord&#58;menu** can be detected via synonyms: *menu*, *products*, *products list* etc.
   *
+  * Example 2.
+  * <pre>
+  * - id: "ord:pizza:size"
+  *   description: "Size of pizza."
+  *   values:
+  *     "small": [ "{small|smallest|min|minimal|tiny} {size|piece|_}" ]
+  *     "medium": [ "{medium|intermediate|normal|regular} {size|piece|_}" ]
+  *     "large": [ "{big|biggest|large|max|maximum|huge|enormous} {size|piece|_}" ]
+  * </pre>
+  * Described above element **ord&#58;pizza&#58;size** can be detected via values synonyms: *small*, *medium size*, *big piece* etc.
+  * Note that **value** (small, medium or large in this example) is passed in created [[NCEntity]] as property with key
+  * **elemType&#58;value** (ord&#58;pizza&#58;size&#58;value in this example).
+  *
+  * **NOTE** that given examples show how semantic elements synonyms and values are represented via YAML format
+  * when these elements passed in [[NCSemanticEntityParser]] via semantic model resource definition,
+  * but there aren't differences when semantic elements are defined via JSON files or prepared programmatically.
+  *
+  * See detailed description on the website [[https://nlpcraft.apache.org/built-in-entity-parser.html#parser-semantic Semantic Parser]].
   *
   * @see [[NCSemanticEntityParser]]
   */
@@ -75,7 +102,8 @@ trait NCSemanticElement:
     def getValues: Map[String, Set[String]] = Map.empty
 
     /**
-      * Gets elements synonyms list. They allows to find element in text. Note that macros can be used for synonyms definition.
+      * Gets elements synonyms list. They allows to find element in text.
+      * Note that macros can be used for synonyms definition, so returned synonyms can contain references to macroses.
       *
       * @return Synonyms.
       */

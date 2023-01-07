@@ -65,6 +65,8 @@ trait NCEntity extends NCPropertyMap:
 
     /**
       * Gets optional set of groups this entity belongs to.
+      * Groups can be used in [[https://nlpcraft.apache.org/intent-matching.html#idl NLPCraft IDL]].
+      * They are designed for convenient search any entity which belongs to the same group.
       *
       * @return Optional set of groups this entity belongs to. Returned set can be empty but never `null`. By
       *     default the entity belongs to a group of its own [[getType type]].
