@@ -34,7 +34,18 @@ import org.apache.nlpcraft.*
   * with stemmatized forms of user input which were lemmatized preliminarily.
   * This approach allows to provide more accurate matching and doesn't force users to prepare synonyms in initial words form.
   *
-  * Also semantic element can have an optional set of special synonyms called values or "proper nouns" for this element.
+  * Stemmetization.
+  * Via one synonyms **argue** all following words *argued*, *argues* and *arguing* are matched
+  * by the same stem **argu**.
+  * Note that you can control stemmatization aggression level by choosing preferable algorithm,
+  * look at the following article [[https://www.baeldung.com/cs/porter-vs-lancaster-stemming-algorithms Differences Between Porter and Lancaster Stemming Algorithms]].
+  * Also note please that stemmatization approach can be less or more usefull for different languages.
+  *
+  * Lemmetization.
+  * If an element defined via synonym **go**, all following user input texts are matched:
+  * *go*, *gone*, *goes*, *went*. So, it is enough to define just synonym initial word's forms.
+  *
+  * Beside described above synonyms, semantic element can also have an optional set of special synonyms called values or "proper nouns" for this element.
   * Unlike basic synonyms, each value is a pair of a name and a set of standard synonyms by which that value,
   * and ultimately its element, can be recognized in the user input.
   * Note that the value name itself acts as an implicit synonym even when no additional synonyms added for that value.

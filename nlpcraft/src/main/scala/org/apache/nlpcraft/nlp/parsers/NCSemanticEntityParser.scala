@@ -126,7 +126,7 @@ import NCSemanticEntityParser.*
   * **Semantic** [[NCEntityParser entity parser]] implementation.
   *
   * This synonyms based parser provides simple but very powerful way to find domain specific data in the input text.
-  * It is configured via [[NCSemanticElement]] list which are represent [[NCEntity name entities]] that
+  * It is configured via [[NCSemanticElement]] list which represents [[NCEntity name entities]] that
   * can be produced by this parser.
   *
   * [[NCSemanticElement Semantic elements]]  can be configured via YAML or JSON files in special format or
@@ -150,12 +150,15 @@ import NCSemanticEntityParser.*
   *       - "{&lt;CUR&gt;|_} &lt;TIME>"
   *       - "what &lt;TIME&gt; {is it now|now|is it|_}"
   * </pre>
+  * So **x:time** element can be detected by huge bunch of synonyms like *day time*,
+  * *local day time*, *time of day*, *local time of day*, *what hour is it* etc.
+  * Note that these synonyms are configured in easy to extend and support way, very compactly.
   *
   * See detailed description on the website [[https://nlpcraft.apache.org/built-in-entity-parser.html#parser-semantic Semantic Parser]].
   * Also look at the [[https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft-examples examples section]].
   *
   * **NOTE:** [[NCSemanticElement]] synonyms, **stemmer** and **parser** parameters must be configured for the same language.
-  * `stemmer` implementation language should be corresponded to other components of [[NCPipeline]], but
+  * `stemmer` implementation language should be corresponded with other components of [[NCPipeline]], but
   * required `stemmer` implementation is independent from other components' stemmers.
   *
   * **NOTE:** that parser can produce different types of [[NCEntity]] instances and each input [[NCToken]] can be included into several output [[NCEntity]] instances.
