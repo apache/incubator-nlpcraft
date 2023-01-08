@@ -21,7 +21,6 @@ import org.apache.nlpcraft.*
 import annotations.*
 import nlp.parsers.*
 import nlp.util.*
-import org.apache.nlpcraft.nlp.stemmer.NCEnStemmer
 import org.scalatest.funsuite.AnyFunSuite
 
 import scala.collection.mutable
@@ -49,9 +48,7 @@ class NCSemanticEntityParserSpec extends AnyFunSuite:
                 // Regex.
                 NCSemanticTestElement("t7", synonyms = Set("x //[a-d]+//")),
                 // Empty synonyms.
-                NCSemanticTestElement("t8", synonyms = Set("{A|_} {B|_}")),
-
-                NCSemanticTestElement("t9", synonyms = Set("go"))
+                NCSemanticTestElement("t8", synonyms = Set("{A|_} {B|_}"))
             )
         )
 
@@ -110,25 +107,19 @@ class NCSemanticEntityParserSpec extends AnyFunSuite:
       *
       */
     test("test") {
-//        check("t1", "t1")
-//        check("the t1", "t1")
-//        check("t2", "t2")
-//        check("the t2", "t2")
-//        check("t3 t3", "t3")
-//        check("t3 the t3", "t3") // With stopword inside.
-//        check("value4", "t4", value = "value4".?)
-//        check("value the 5", "t5", value = "value5".?) // With stopword inside.
-//        check("t6", "t6", elemData = Map("testKey" -> "testValue").?)
-//        check("the x abc x abe", "t7") // `x abc` should be matched, `x abe` shouldn't.
-//        check("A B", "t8")
-//        check("A", "t8")
-//        check("B", "t8")
-//
-//        checkMultiple("t1 the x abc the x the abc", "t1", "t7", "t7")
-        val s = new NCEnStemmer
+        check("t1", "t1")
+        check("the t1", "t1")
+        check("t2", "t2")
+        check("the t2", "t2")
+        check("t3 t3", "t3")
+        check("t3 the t3", "t3") // With stopword inside.
+        check("value4", "t4", value = "value4".?)
+        check("value the 5", "t5", value = "value5".?) // With stopword inside.
+        check("t6", "t6", elemData = Map("testKey" -> "testValue").?)
+        check("the x abc x abe", "t7") // `x abc` should be matched, `x abe` shouldn't.
+        check("A B", "t8")
+        check("A", "t8")
+        check("B", "t8")
 
-        println(s.stem("argue"))
-        println(s.stem("argued"))
-        println(s.stem("argues"))
-        println(s.stem("arguing"))
+        checkMultiple("t1 the x abc the x the abc", "t1", "t7", "t7")
     }
