@@ -181,15 +181,15 @@ class NCSemanticEntityParser private (
 ) extends NCEntityParser with LazyLogging:
     require(stemmer != null, "Stemmer cannot be null.")
     require(parser != null, "Token parser cannot be null.")
-    require(macros != null, "Macroses cannot be null.")
+    require(macros != null, "Macros cannot be null.")
     require(elements != null && elements.nonEmpty || mdlResOpt.isDefined, "Elements cannot be null or empty or model resource cannot be empty.")
 
     /**
       * Creates [[NCSemanticEntityParser]] instance.
       *
-      * @param stemmer  [[NCStemmer]] implementation for synonyms language.
-      * @param parser   [[NCTokenParser]] implementation.
-      * @param macros   Macros map. Empty by default.
+      * @param stemmer [[NCStemmer]] implementation for synonyms language.
+      * @param parser [[NCTokenParser]] implementation.
+      * @param macros Macros map. Empty by default.
       * @param elements [[NCSemanticElement]] list.
       */
     def this(stemmer: NCStemmer, parser: NCTokenParser, macros: Map[String, String], elements: List[NCSemanticElement]) =
@@ -199,8 +199,8 @@ class NCSemanticEntityParser private (
       *
       * Creates [[NCSemanticEntityParser]] instance.
       *
-      * @param stemmer  [[NCStemmer]] implementation for synonyms language.
-      * @param parser   [[NCTokenParser]] implementation.
+      * @param stemmer [[NCStemmer]] implementation for synonyms language.
+      * @param parser [[NCTokenParser]] implementation.
       * @param elements [[NCSemanticElement]] list.
       */
     def this(stemmer: NCStemmer, parser: NCTokenParser, elements: List[NCSemanticElement]) =
@@ -211,8 +211,8 @@ class NCSemanticEntityParser private (
       * Creates [[NCSemanticEntityParser]] instance.
       *
       * @param stemmer [[NCStemmer]] implementation for synonyms language.
-      * @param parser  [[NCTokenParser]] implementation.
-      * @param mdlRes  Relative path, absolute path, classpath resource or URL to YAML or JSON semantic model definition.
+      * @param parser [[NCTokenParser]] implementation.
+      * @param mdlRes Relative path, absolute path, classpath resource or URL to YAML or JSON semantic model definition.
       */
     def this(stemmer: NCStemmer, parser: NCTokenParser, mdlRes: String) =
         this(stemmer, parser, Map.empty, List.empty, mdlRes.?)
