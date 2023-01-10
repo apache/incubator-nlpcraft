@@ -28,7 +28,7 @@ val commonsIoVer = "2.11.0"
 val commonsLang3Ver = "3.12.0"
 val commonsCodecVer = "1.15"
 val commonsCollectionsVer = "4.4"
-val gsonVer = "2.10"
+val gsonVer = "2.10.1"
 val jacksonVer = "2.13.4"
 val apacheOpennlpVer = "2.1.0"
 
@@ -39,7 +39,7 @@ val junitVer = "5.9.0"
 val stanfordCoreNLPVer  = "4.5.1"
 
 // Examples libraries.
-val languagetoolVer = "5.9"
+val languagetoolVer = "6.0"
 val luceneAnalyzersCommonVer = "8.11.2"
 
 ThisBuild / scalaVersion := s"$scalaMajVer.$scalaMinVer"
@@ -72,7 +72,7 @@ lazy val libs = Seq(
     "org.apache.logging.log4j" % "log4j-slf4j-impl" % log4jVer,
     "org.apache.logging.log4j" % "log4j-api" % log4jVer,
     "org.jline" % "jline-terminal" % jlineVer,
-    "org.scalatest" %% "scalatest" % "3.2.14" % "test"
+    "org.scalatest" %% "scalatest" % "3.2.15" % "test"
 )
 
 val commonScalaDoc = Seq(
