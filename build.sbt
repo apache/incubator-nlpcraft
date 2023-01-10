@@ -39,7 +39,7 @@ val junitVer = "5.9.0"
 val stanfordCoreNLPVer  = "4.5.1"
 
 // Examples libraries.
-val languagetoolVer = "5.9"
+val languagetoolVer = "6.0"
 val luceneAnalyzersCommonVer = "8.11.2"
 
 ThisBuild / scalaVersion := s"$scalaMajVer.$scalaMinVer"
