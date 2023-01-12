@@ -33,8 +33,8 @@ import scala.language.postfixOps
 import scala.util.Using
 
 /**
-  *  [[https://opennlp.apache.org/ OpenNLP]] based language independent [[NCEntityParser entity parser]] configured using
-  *  [[https://opennlp.apache.org/ OpenNLP]] **name finders** models.
+  * [[https://opennlp.apache.org/ OpenNLP]] based language independent [[NCEntityParser entity parser]] configured using
+  * [[https://opennlp.apache.org/ OpenNLP]] **name finders** models.
   *
   * This parser prepares [[NCEntity]] instances which are detected by the provided models.
   * These entities are created with type `opennlp:modelName`, where `modelName` is the model name.

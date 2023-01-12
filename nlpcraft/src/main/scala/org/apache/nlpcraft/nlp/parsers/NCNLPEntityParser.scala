@@ -41,11 +41,11 @@ import NCNLPEntityParser.*
   *  - `nlp:entity:startCharIndex` - token text's first character index in the input sentence.
   *  - `nlp:entity:endCharIndex` - token text 's last character index in the input sentence.
   *
-  *  Note that [[NCEntity]] instances inherit all [[NCToken]] [[NCPropertyMap metadata]] properties from its
-  *  corresponding token with new name that is prefixed with **'nlp:entity:'**. For example, for token property **prop**
-  *  the corresponding inherited entity property name will be **nlp:entity:prop**.
+  * Note that [[NCEntity]] instances inherit all [[NCToken]] [[NCPropertyMap metadata]] properties from its
+  * corresponding token with new name that is prefixed with **'nlp:entity:'**. For example, for token property **prop**
+  * the corresponding inherited entity property name will be **nlp:entity:prop**.
   *
-  *  @param predicate Predicate which allows to filter list of converted [[NCToken]] instances. Only tokens that
+  * @param predicate Predicate which allows to filter list of converted [[NCToken]] instances. Only tokens that
   *     satisfy given predicate will convert to entity by this parser. By default all [[NCToken]] instances are
   *     converted.
   */
