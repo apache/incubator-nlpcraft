@@ -22,12 +22,12 @@ macros:
   "<LIGHT_OPT>" : "{это|лампа|бра|люстра|светильник|лампочка|лампа|освещение|свет|электричество|электрика|_}"
 
 elements:
-  - id: "ls:loc"
+  - type: "ls:loc"
     description: "Location of lights."
     synonyms:
       - "<ENTIRE_OPT> {здание|помещение|дом|кухня|детская|кабинет|гостиная|спальня|ванная|туалет|{большая|обеденная|ванная|детская|туалетная} комната}"
 
-  - id: "ls:on"
+  - type: "ls:on"
     groups:
       - "act"
     description: "Light switch ON action."
@@ -35,7 +35,7 @@ elements:
       - "<LIGHT_OPT> <ENTIRE_OPT> <TURN_ON>"
       - "<TURN_ON> <ENTIRE_OPT> <LIGHT_OPT>"
 
-  - id: "ls:off"
+  - type: "ls:off"
     groups:
       - "act"
     description: "Light switch OFF action."

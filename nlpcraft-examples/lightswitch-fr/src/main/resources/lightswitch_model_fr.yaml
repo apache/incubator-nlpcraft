@@ -24,14 +24,14 @@ macros:
   "<LIGHT>" : "{tout|_} {cela|lumière|éclairage|illumination|lampe}"
 
 elements:
-  - id: "ls:loc"
+  - type: "ls:loc"
     description: "Location of lights."
     synonyms:
       - "<ENTIRE_OPT> <FLOOR_OPT> {cuisine|bibliothèque|placard|garage|bureau|salle de jeux|{salle à manger|buanderie|jeu} <TYPE>}"
       - "<ENTIRE_OPT> <FLOOR_OPT> {maître|gamin|bébé|enfant|hôte|client|_} {coucher|bains|toilette|rangement} {<TYPE>|_}"
       - "<ENTIRE_OPT> {maison|foyer|bâtiment|{1er|premier} étage|chaussée|{2ème|deuxième} étage}"
 
-  - id: "ls:on"
+  - type: "ls:on"
     groups:
       - "act"
     description: "Light switch ON action."
@@ -39,7 +39,7 @@ elements:
       - "{<ACTION>|_} <LIGHT>"
       - "{<LIGHT>|_} <ACTION>"
 
-  - id: "ls:off"
+  - type: "ls:off"
     groups:
       - "act"
     description: "Light switch OFF action."

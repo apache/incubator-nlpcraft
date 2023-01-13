@@ -56,7 +56,7 @@ private[parsers] case class NCSemanticSourceData(macros: Map[String, String], el
   */
 private[parsers] object NCSemanticSourceReader:
     case class Element  (
-        id: String,
+        `type`: String,
         description: String,
         groups: Seq[String],
         synonyms: Set[String],
@@ -71,7 +71,7 @@ private[parsers] object NCSemanticSourceReader:
         if e == null then null
         else
             new NCPropertyMapAdapter with NCSemanticElement:
-                override val getType: String = e.id
+                override val getType: String = e.`type`
                 override val getGroups: Set[String] =
                     val gs = e.groups
 

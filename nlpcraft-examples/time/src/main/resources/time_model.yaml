@@ -20,7 +20,7 @@ macros:
   "<CUR>": "{current|present|now|local}"
   "<TIME>": "{time <OF> day|day time|date|time|moment|datetime|hour|o'clock|clock|date time|date and time|time and date}"
 elements:
-  - id: "x:time"
+  - type: "x:time"
     description: "Date and/or time token indicator."
     synonyms:
       - "{<CUR>|_} <TIME>"
