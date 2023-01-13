@@ -21,7 +21,6 @@
 [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/apache/opennlp/master/LICENSE)
 [![Build](https://github.com/apache/incubator-nlpcraft/workflows/build/badge.svg)](https://github.com/apache/incubator-nlpcraft/actions)
 [![Documentation Status](https://img.shields.io/:docs-latest-green.svg)](https://nlpcraft.apache.org/docs.html)
-[![Gitter](https://badges.gitter.im/apache-nlpcraft/community.svg)](https://gitter.im/apache-nlpcraft/community)
 
 ## What is Apache NLPCraft?
 [Apache NLPCraft](https://nlpcraft.apache.org/) is an open source library for adding a natural language interface 
@@ -36,7 +35,7 @@ or text. Make sure to use stable branch **master-0.9.1**:
  * Join project developers on [dev@nlpcraft.apache.org](mailto:dev-subscribe@nlpcraft.apache.org)
  
 ## Copyright
-Copyright (C) 2021 Apache Software Foundation
+Copyright (C) 2023 Apache Software Foundation
 
 <img src="https://www.apache.org/img/ASF20thAnniversary.jpg" height="64px" alt="ASF Logo">
 
