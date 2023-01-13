@@ -50,16 +50,16 @@ object GeoManager:
             externalIp match
                 case Some(_) => // No-op.
                 case None =>
-                    try externalIp = Some(getExternalIp)
+                    try externalIp = Option(getExternalIp)
                     catch
                         case _: IOException => // No-op.
 
             externalIp match
                 case Some(ip) =>
                     cache.get(ip) match
-                        case Some(geo) => Some(geo)
+                        case Some(geo) => Option(geo)
                         case None =>
-                            val conn = new URL(URL + ip).openConnection.asInstanceOf[HttpURLConnection]
+                            val conn = new URL(s"$URL$ip").openConnection.asInstanceOf[HttpURLConnection]
 
                             // This service requires "User-Agent" property with its own format.
                             conn.setRequestProperty("User-Agent", "keycdn-tools:https://nlpcraft.apache.org")

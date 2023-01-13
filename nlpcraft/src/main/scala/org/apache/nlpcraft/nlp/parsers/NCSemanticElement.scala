@@ -20,7 +20,7 @@ package org.apache.nlpcraft.nlp.parsers
 import org.apache.nlpcraft.nlp.stemmer.NCStemmer
 import org.apache.nlpcraft.*
 /**
-  * This trait defines a named [[NCEntity entity]] that is used by  [[NCSemanticEntityParser]].
+  * This trait defines a named [[NCEntity entity]] that is used by [[NCSemanticEntityParser]].
   *
   * THe main purpose of this trait is to provide a set of synonyms by which this named entity can be matched
   * in the input text. Each synonym consists of one or more individual words. Synonym matching is performed on the

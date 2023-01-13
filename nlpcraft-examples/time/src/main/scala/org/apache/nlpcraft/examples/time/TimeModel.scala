@@ -30,6 +30,9 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle.MEDIUM
 import java.time.*
 
+/**
+  * Time answering model.
+  */
 @NCIntent("fragment=city term(city)~{# == 'opennlp:location'}")
 @NCIntent("intent=intent2 term~{# == 'x:time'} fragment(city)")
 @NCIntent("intent=intent1 term={# == 'x:time'}")
@@ -89,7 +92,7 @@ class TimeModel extends NCModel(
         // We don't have timezone mapping for parsed GEO location.
         // Instead of defaulting to a local time - we reject with a specific error message for cleaner UX.
 
-        val (city, data) = citiesData.find(_._1.name.equalsIgnoreCase(cityName)).getOrElse(throw new NCRejection(String.format("No timezone mapping for %s.", cityName)))
+        val (city, data) = citiesData.find(_._1.name.equalsIgnoreCase(cityName)).getOrElse(throw new NCRejection(s"No timezone mapping for $cityName."))
 
         mkResult(city.name, city.country, data.timezone, data.latitude, data.longitude)
 

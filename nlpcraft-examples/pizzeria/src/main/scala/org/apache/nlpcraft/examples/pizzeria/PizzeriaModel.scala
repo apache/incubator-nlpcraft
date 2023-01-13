@@ -85,8 +85,7 @@ object PizzeriaModel extends LazyLogging:
 
     private def doShowMenuResult(): NCResult =
         mkResult(
-            "There are accessible for order: margherita, carbonara and marinara. Sizes: large, medium or small. " +
-            "Also there are tea, coffee and cola."
+            "There are accessible for order: margherita, carbonara and marinara. Sizes: large, medium or small. Also there are tea, coffee and cola."
         )
 
     private def doShowMenu(state: State): Result = doShowMenuResult() -> state
