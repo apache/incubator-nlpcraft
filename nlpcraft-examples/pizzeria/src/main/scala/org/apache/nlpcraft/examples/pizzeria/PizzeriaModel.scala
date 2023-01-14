@@ -26,7 +26,11 @@ import org.apache.nlpcraft.examples.pizzeria.PizzeriaOrderState.*
 import org.apache.nlpcraft.examples.pizzeria.components.PizzeriaModelPipeline
 import org.apache.nlpcraft.nlp.*
 
-object PizzeriaExtractors:
+
+/**
+  * Extractors.
+  */
+private object PizzeriaExtractors:
     def extractPizzaSize(e: NCEntity): String = e[String]("ord:pizza:size:value")
     def extractQty(e: NCEntity, qty: String): Option[Int] = Option.when(e.contains(qty))(e[String](qty).toDouble.toInt)
     def extractPizza(e: NCEntity): Pizza =
@@ -37,9 +41,9 @@ object PizzeriaExtractors:
 import PizzeriaExtractors.*
 
 /**
-  * * Pizza model helper.
+  * Companion helper.
   */
-object PizzeriaModel extends LazyLogging:
+private object PizzeriaModel extends LazyLogging:
     type Result = (NCResult, State)
     private val UNEXPECTED_REQUEST = new NCRejection("Unexpected request for current dialog context.")
 
@@ -117,10 +121,23 @@ object PizzeriaModel extends LazyLogging:
 import org.apache.nlpcraft.examples.pizzeria.PizzeriaModel.*
 
 /**
-  * Pizza model.
-  * It keep order state for each user.
-  * Each order can in one of 5 state (org.apache.nlpcraft.examples.pizzeria.OrderState)
-  * Note that there is used custom states logic instead of STM, because complex states flow.
+  * This example provides simple implementation for NLI-powered pizzeria order bot.
+  * This is single user implementation with user order state support.
+  * Bot can send dialog answers, ask to specify order or confirm order execution.
+  *
+  * Dialog example:
+  *  - User: *I want to order carbonara, marinara and tea*
+  *  - Bot:  *Choose size (large, medium or small) for: 'carbonara'*
+  *  - User: *large size please*
+  *  - Bot:  *Choose size (large, medium or small) for: 'marinara'*
+  *  - User: *smallest*
+  *  - Bot:  *Is order ready?*
+  *  - User: *yes*
+  *  - Bot:  *Let's specify your order: pizza: carbonara 'large' 1 pcs, marinara 'small' 1 pcs, drinks: tea 1 pcs. Is it correct?*
+  *  - User: *correct*
+  *  - Bot:  *Executed: pizza: carbonara 'large' 1 pcs, marinara 'small' 1 pcs, drinks: tea 1 pcs.*
+  *
+  * See 'README.md' file in the same folder for running and testing instructions.
   */
 class PizzeriaModel extends NCModel(NCModelConfig("nlpcraft.pizzeria.ex", "Pizzeria Example Model", "1.0"), PizzeriaModelPipeline.PIPELINE) with LazyLogging:
     // This method is defined in class scope and has package access level for tests reasons.

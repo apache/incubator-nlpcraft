@@ -26,11 +26,11 @@ import org.apache.nlpcraft.nlp.parsers.{NCOpenNLPTokenParser, NCSemanticEntityPa
 
 /**
   * This example provides very simple implementation for NLI-powered light switch.
+  *
   * You can say something like this:
-  * <ul>
-  *     <li>"Turn the lights off in the entire house."</li>
-  *     <li>"Switch on the illumination in the master bedroom closet."</li>
-  * </ul>
+  * - Turn the lights off in the entire house.
+  * - Switch on the illumination in the master bedroom closet.
+  *
   * You can easily modify intent callbacks to perform the actual light switching using
   * HomeKit or Arduino-based controllers.
   *

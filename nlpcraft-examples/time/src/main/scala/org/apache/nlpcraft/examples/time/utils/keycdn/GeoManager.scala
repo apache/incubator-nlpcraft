@@ -28,11 +28,11 @@ import scala.io.Source
 import scala.util.Using
 
 // Such field names required by 'keycdn.com' service response.
-case class ResponseGeoData(country_name: String, city: String, latitude: Double, longitude: Double, timezone: String)
-case class ResponseData(geo: ResponseGeoData)
-case class Response(status: String, description: String, data: ResponseData)
+private[time] case class ResponseGeoData(country_name: String, city: String, latitude: Double, longitude: Double, timezone: String)
+private[time] case class ResponseData(geo: ResponseGeoData)
+private[time] case class Response(status: String, description: String, data: ResponseData)
 
-object GeoManager:
+private[time] object GeoManager:
     private val URL: String = "https://tools.keycdn.com/geo.json?host="
     private val GSON: Gson = new Gson
 

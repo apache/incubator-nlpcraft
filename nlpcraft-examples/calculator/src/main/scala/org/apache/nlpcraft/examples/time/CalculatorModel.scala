@@ -26,9 +26,9 @@ import java.util.Properties
 import scala.annotation.*
 
 /**
- *
+ * Companion helper.
  */
-object CalculatorModel:
+private object CalculatorModel:
     private val OPS: Map[String, (Int, Int) => Int] = Map("+" -> (_ + _), "-" -> (_ - _), "*" -> (_ * _), "/" -> (_ / _))
     private val PIPELINE: NCPipeline =
         val props = new Properties()
@@ -47,8 +47,19 @@ object CalculatorModel:
 import CalculatorModel.*
 
 /**
- * 
- */
+  * This example provides very simple implementation for NLI-powered calculator with memory of last operation result function.
+  *
+  * Supported operations are: `+`, `-`, `*` and `/`.
+  * Operands values can be given as digits or in text.
+  * When first operand is omitted than last operation result is used instead of first.
+  *
+  * You can ask something like this:
+  * - User input: *2 + 2*. Expected result is **4**.
+  * - User input: *twenty two - two*. Expected result is **20**.
+  * - User input: *\/ two*. Expected result is **10**.
+  *
+  * See 'README.md' file in the same folder for running and testing instructions.
+  */
 class CalculatorModel extends NCModel(NCModelConfig("nlpcraft.calculator.ex", "Calculator Example Model", "1.0"), PIPELINE):
     private var mem: Option[Int] = None
 

@@ -28,6 +28,14 @@ import org.apache.nlpcraft.examples.lightswitch.nlp.token.parser.NCRuTokenParser
 import scala.jdk.CollectionConverters.*
 
 /**
+  * This example provides very simple implementation for NLI-powered light switch.
+  *
+  * You can say something like this:
+  * - Выключи свет по всем домe.
+  * - Отключи электричество в ванной.
+  *
+  * You can easily modify intent callbacks to perform the actual light switching using
+  * HomeKit or Arduino-based controllers.
   *
   * See 'README.md' file in the same folder for running and testing instructions.
   */

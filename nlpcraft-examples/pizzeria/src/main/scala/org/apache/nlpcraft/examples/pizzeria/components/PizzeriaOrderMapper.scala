@@ -24,6 +24,7 @@ import org.apache.nlpcraft.NCResultType.ASK_DIALOG
 import scala.collection.*
 
 /**
+  * Element description holder.
   *
   * @param elementType Element type.
   * @param propertyName Element's property name.
@@ -41,7 +42,7 @@ case class PizzeriaOrderMapperDesc(elementType: String, propertyName: String)
   * Note that it is simple example implementation.
   * It just tries to unite nearest neighbours and doesn't check intermediate words, order correctness etc.
   */
-object PizzeriaOrderMapper:
+private object PizzeriaOrderMapper:
     extension(entity: NCEntity)
         def position: Double =
             val toks = entity.getTokens
@@ -55,7 +56,18 @@ object PizzeriaOrderMapper:
 
 import PizzeriaOrderMapper.*
 
+/**
+  * Custom [[NCEntityMapper]] implementation. It creates new [[NCEntity]] instances
+  * based on `dests` elements extending them by `extra` element property.
+  * If `dests` elements or `extra` element are not found or
+  * `dests` and `extra` elements aren't located side by side in user input
+  * then initial input [[NCEntity]] instances are passed as is.
+  *
+  * @param extra Extra data element description.
+  * @param dests Base elements descriptions.
+  */
 case class PizzeriaOrderMapper(extra: PizzeriaOrderMapperDesc, dests: Seq[PizzeriaOrderMapperDesc]) extends NCEntityMapper with LazyLogging:
+    /** @inheritdoc */
     override def map(req: NCRequest, cfg: NCModelConfig, ents: List[NCEntity]): List[NCEntity] =
         def map(destEnt: NCEntity, destProp: String, extraEnt: NCEntity): NCEntity =
             new NCPropertyMapAdapter with NCEntity:

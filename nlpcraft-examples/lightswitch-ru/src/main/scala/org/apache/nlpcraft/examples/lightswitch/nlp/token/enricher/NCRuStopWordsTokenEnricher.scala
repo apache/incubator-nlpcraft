@@ -21,7 +21,9 @@ import org.apache.lucene.analysis.ru.RussianAnalyzer
 import org.apache.nlpcraft.*
 
 /**
+  * RU language stop words [[NCTokenEnricher]] implementation based on [[https://lucene.apache.org/ Apache Lucene Library]].
   *
+  * More information about stopwords can be found at [[https://en.wikipedia.org/wiki/Stop_word]]
   */
 class NCRuStopWordsTokenEnricher extends NCTokenEnricher:
     private final val stops = RussianAnalyzer.getDefaultStopSet
@@ -29,6 +31,7 @@ class NCRuStopWordsTokenEnricher extends NCTokenEnricher:
     private def getPos(t: NCToken): String = t.get("pos").getOrElse(throw new NCException("POS not found in token."))
     private def getLemma(t: NCToken): String = t.get("lemma").getOrElse(throw new NCException("Lemma not found in token."))
 
+    /** @inheritdoc */
     override def enrich(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): Unit =
         for (t <- toks)
             val lemma = getLemma(t)

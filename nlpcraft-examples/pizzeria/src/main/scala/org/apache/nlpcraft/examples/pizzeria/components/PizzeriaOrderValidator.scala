@@ -20,9 +20,11 @@ package org.apache.nlpcraft.examples.pizzeria.components
 import org.apache.nlpcraft.*
 
 /**
-  * Rejects some invalid variant with more detailed information instead of standard rejections.
+  * Custom [[NCEntityValidator]] implementation.
+  * It throws [[NCRejection]] exception on invalid user request which simplifies main model logic.
   */
 class PizzeriaOrderValidator extends NCEntityValidator:
+    /** @inheritdoc */
     override def validate(req: NCRequest, cfg: NCModelConfig, ents: List[NCEntity]): Unit =
         def count(typ: String): Int = ents.count(_.getType == typ)
 

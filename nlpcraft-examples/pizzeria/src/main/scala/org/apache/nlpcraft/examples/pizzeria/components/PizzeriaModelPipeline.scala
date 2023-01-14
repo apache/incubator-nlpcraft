@@ -12,8 +12,10 @@ import org.apache.nlpcraft.nlp.parsers.NCSemanticEntityParser
 import java.util.Properties
 
 /**
-  * PizzeriaModel pipeline, based on Stanford NLP engine, including model custom components. */
-object PizzeriaModelPipeline:
+  * PizzeriaModel pipeline, based on Stanford NLP engine, including model custom components.
+  */
+private [pizzeria] object PizzeriaModelPipeline:
+    /** Prepared pipeline instance.*/
     val PIPELINE: NCPipeline =
         val stanford =
             val props = new Properties()

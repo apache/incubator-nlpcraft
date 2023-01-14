@@ -22,11 +22,12 @@ import org.languagetool.tokenizers.fr.FrenchWordTokenizer
 import scala.jdk.CollectionConverters.*
 
 /**
-  *
+  * [[https://languagetool.org/ Language Tool]] based FR language [[NCTokenParser entity parser]].
   */
 class NCFrTokenParser extends NCTokenParser:
     private val tokenizer = new FrenchWordTokenizer
 
+    /** @inheritdoc */
     override def tokenize(text: String): List[NCToken] =
         val toks = collection.mutable.ArrayBuffer.empty[NCToken]
         var sumLen = 0

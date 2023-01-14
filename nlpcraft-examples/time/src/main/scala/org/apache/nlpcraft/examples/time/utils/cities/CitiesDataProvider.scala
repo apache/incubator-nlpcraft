@@ -22,10 +22,10 @@ import java.io.*
 import java.util.Objects
 import scala.util.Using
 
-case class City(name: String, country: String)
-case class CityData(timezone: String, latitude: Double, longitude: Double)
+private[time] case class City(name: String, country: String)
+private[time] case class CityData(timezone: String, latitude: Double, longitude: Double)
 
-object CitiesDataProvider:
+private[time] object CitiesDataProvider:
     def get: Map[City, CityData] =
         def convert(arr: Array[String]): (City, CityData) =
             City(arr(0), arr(1)) -> CityData(arr(2), arr(3).toDouble, arr(4).toDouble)

@@ -31,7 +31,16 @@ import java.time.format.FormatStyle.MEDIUM
 import java.time.*
 
 /**
-  * Time answering model.
+  * This example provides very simple implementation for NLI-powered time answering bot.
+  *
+  * It reports about current time value in asked GEO location or in your local area.
+  *
+  * You can ask something like this:
+  * - What time is it now in New York City?
+  * - Can you please give me the Tokyo's current date and time.
+  * - What's the local time?
+  *
+  * See 'README.md' file in the same folder for running and testing instructions.
   */
 @NCIntent("fragment=city term(city)~{# == 'opennlp:location'}")
 @NCIntent("intent=intent2 term~{# == 'x:time'} fragment(city)")

@@ -28,7 +28,7 @@ import scala.language.implicitConversions
 import scala.util.Using
 import scala.collection.mutable
 
-object PizzeriaModelSpec:
+private object PizzeriaModelSpec:
     type Request = (String, NCResultType)
     private class ModelTestWrapper extends PizzeriaModel:
         private var o: PizzeriaOrder = _
@@ -53,6 +53,7 @@ object PizzeriaModelSpec:
         def build: PizzeriaOrder = o
 
 import PizzeriaModelSpec.*
+
 /**
   *
   */
