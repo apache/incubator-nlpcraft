@@ -6,7 +6,7 @@ import org.apache.nlpcraft.*
 import org.apache.nlpcraft.nlp.stemmer.{NCEnStemmer, NCStemmer}
 import org.apache.nlpcraft.nlp.enrichers.NCEnStopWordsTokenEnricher
 import org.apache.nlpcraft.nlp.parsers.NCSemanticEntityParser
-import org.apache.nlpcraft.stanford.{NCStanfordNLPEntityParser, NCStanfordNLPTokenParser}
+import org.apache.nlpcraft.nlp.stanford.{NCStanfordNLPEntityParser, NCStanfordNLPTokenParser}
 
 import java.util.Properties
 

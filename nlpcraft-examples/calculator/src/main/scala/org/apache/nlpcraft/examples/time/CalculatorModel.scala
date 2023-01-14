@@ -20,7 +20,8 @@ import edu.stanford.nlp.pipeline.StanfordCoreNLP
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.annotations.*
 import org.apache.nlpcraft.nlp.parsers.*
-import org.apache.nlpcraft.stanford.*
+import org.apache.nlpcraft.nlp.stanford.{NCStanfordNLPEntityParser, NCStanfordNLPTokenParser}
+import org.apache.nlpcraft.nlp.stanford.*
 
 import java.util.Properties
 import scala.annotation.*

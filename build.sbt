@@ -115,7 +115,7 @@ lazy val nlpcraftWithStanford = (project in file("."))
     .enablePlugins(ScalaUnidocPlugin)
     .aggregate(nlpcraft, nlpcraftStanford)
     .settings(
-        name := "NLPCraft with Stanford Module",
+        name := "NLPCraft",
         version := nlpcraftVer,
         ScalaUnidoc / unidoc / unidocProjectFilter := inAnyProject -- inProjects(timeExample, lightSwitchExample, lightSwitchRuExample, lightSwitchFrExample, pizzeriaExample, calculatorExample),
 

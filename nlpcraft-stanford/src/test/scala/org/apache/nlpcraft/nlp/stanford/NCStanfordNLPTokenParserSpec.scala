@@ -15,23 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.nlp.stanford.util
+package org.apache.nlpcraft.nlp.stanford
 
 import edu.stanford.nlp.pipeline.StanfordCoreNLP
-import org.apache.nlpcraft.NCModelConfig
-import org.apache.nlpcraft.nlp.util.NCTestPipeline
-import org.apache.nlpcraft.stanford.NCStanfordNLPTokenParser
-
-import java.util.Properties
-
-final val CFG = NCModelConfig("testId", "test", "1.0")
+import org.apache.nlpcraft.nlp.util.*
+import org.apache.nlpcraft.nlp.stanford.util.*
+import org.scalatest.funsuite.AnyFunSuite
 
 /**
   *
   */
-final val STANFORD =
-    val props = new Properties()
-    props.setProperty("annotators", "tokenize, ssplit, pos, lemma, ner")
-    new StanfordCoreNLP(props)
+class NCStanfordNLPTokenParserSpec extends AnyFunSuite:
+    test("test") {
+        val toks = TOK_STANFORD_PARSER.tokenize("I had a lunch with brand names 'AAA'")
 
-final val TOK_STANFORD_PARSER = new NCStanfordNLPTokenParser(STANFORD)
+        require(toks.sizeIs > 1)
+        NCTestUtils.printTokens(toks)
+
+        val words = toks.map(_.getText)
+        require(toks.map(_["String"]("pos")).filter(_ != null).distinct.sizeIs > 1)
+        require(toks.map(_[String]("lemma")).filter(_ != null).zip(words).exists {_ != _})
+    }
