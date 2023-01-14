@@ -120,6 +120,7 @@ lazy val nlpcraftWithStandord = (project in file("."))
     .settings(
         name := "NLPCraft with Stanford Module",
         version := nlpcraftVer,
+        ScalaUnidoc / unidoc / unidocProjectFilter := inAnyProject -- inProjects(timeExample, lightSwitchExample, lightSwitchRuExample, lightSwitchFrExample, pizzeriaExample, calculatorExample),
 
         // Scaladoc config.
         Compile / doc / scalacOptions ++= commonScalaDoc,
