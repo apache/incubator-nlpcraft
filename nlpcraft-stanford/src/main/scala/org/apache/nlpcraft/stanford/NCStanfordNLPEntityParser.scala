@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.nlp.entity.parser.stanford
+package org.apache.nlpcraft.stanford
 
 import edu.stanford.nlp.ling.CoreAnnotations.NormalizedNamedEntityTagAnnotation
 import edu.stanford.nlp.pipeline.*

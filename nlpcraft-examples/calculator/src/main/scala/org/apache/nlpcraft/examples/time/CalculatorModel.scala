@@ -19,9 +19,9 @@ package org.apache.nlpcraft.examples.time
 import edu.stanford.nlp.pipeline.StanfordCoreNLP
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.annotations.*
-import org.apache.nlpcraft.nlp.entity.parser.stanford.*
 import org.apache.nlpcraft.nlp.parsers.*
-import org.apache.nlpcraft.nlp.token.parser.stanford.NCStanfordNLPTokenParser
+import org.apache.nlpcraft.stanford.*
+
 import java.util.Properties
 import scala.annotation.*
 

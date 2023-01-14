@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.nlp.token.parser.stanford
+package org.apache.nlpcraft.stanford
 
 import edu.stanford.nlp.pipeline.StanfordCoreNLP
 import org.apache.nlpcraft.nlp.util.*
-import org.apache.nlpcraft.nlp.util.stanford.*
+import org.apache.nlpcraft.nlp.stanford.util.*
 import org.scalatest.funsuite.AnyFunSuite
 
 /**

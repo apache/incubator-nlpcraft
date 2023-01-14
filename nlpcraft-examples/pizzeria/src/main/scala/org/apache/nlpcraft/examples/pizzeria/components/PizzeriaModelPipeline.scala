@@ -2,12 +2,11 @@ package org.apache.nlpcraft.examples.pizzeria.components
 
 import edu.stanford.nlp.pipeline.StanfordCoreNLP
 import org.apache.nlpcraft.nlp.parsers.*
-import org.apache.nlpcraft.nlp.entity.parser.stanford.NCStanfordNLPEntityParser
-import org.apache.nlpcraft.nlp.token.parser.stanford.NCStanfordNLPTokenParser
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.nlp.stemmer.{NCEnStemmer, NCStemmer}
 import org.apache.nlpcraft.nlp.enrichers.NCEnStopWordsTokenEnricher
 import org.apache.nlpcraft.nlp.parsers.NCSemanticEntityParser
+import org.apache.nlpcraft.stanford.{NCStanfordNLPEntityParser, NCStanfordNLPTokenParser}
 
 import java.util.Properties
 

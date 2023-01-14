@@ -32,9 +32,6 @@ val gsonVer = "2.10.1"
 val jacksonVer = "2.13.4"
 val apacheOpennlpVer = "2.1.0"
 
-// Test libraries.
-val junitVer = "5.9.0"
-
 // Stanford project libraries.
 val stanfordCoreNLPVer  = "4.5.1"
 
@@ -114,7 +111,7 @@ lazy val nlpcraftStanford = (project in file("nlpcraft-stanford"))
         libraryDependencies += "edu.stanford.nlp" % "stanford-corenlp" % stanfordCoreNLPVer classifier "models"
     )
 
-lazy val nlpcraftWithStandord = (project in file("."))
+lazy val nlpcraftWithStanford = (project in file("."))
     .enablePlugins(ScalaUnidocPlugin)
     .aggregate(nlpcraft, nlpcraftStanford)
     .settings(

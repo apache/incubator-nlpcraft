@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.nlp.token.parser.stanford
+package org.apache.nlpcraft.stanford
 
 import edu.stanford.nlp.ling.*
 import edu.stanford.nlp.ling.CoreAnnotations.*
