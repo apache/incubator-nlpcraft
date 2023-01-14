@@ -50,7 +50,7 @@ ThisBuild / description := "An open source API to convert natural language into 
 ThisBuild / licenses := List("Apache-2.0" -> url("https://github.com/sbt/sbt/blob/develop/LICENSE"))
 ThisBuild / homepage := Some(url("https://nlpcraft.apache.org/"))
 ThisBuild / scmInfo := Some(ScmInfo(url("https://github.com/apache/incubator-nlpcraft"), "scm:git@github.com/apache/incubator-nlpcraft.git"))
-
+ThisBuild / autoAPIMappings := true
 ThisBuild / developers ++= List(
     "aradzinski" -> "Aaron Radzinski ",
     "skhdl" -> "Sergey Kamov"
@@ -109,6 +109,21 @@ lazy val nlpcraftStanford = (project in file("nlpcraft-stanford"))
         Compile / doc / scalacOptions ++= commonScalaDoc,
 
         // Dependencies.
+        libraryDependencies ++= libs,
+        libraryDependencies += "edu.stanford.nlp" % "stanford-corenlp" % stanfordCoreNLPVer,
+        libraryDependencies += "edu.stanford.nlp" % "stanford-corenlp" % stanfordCoreNLPVer classifier "models"
+    )
+
+lazy val nlpcraftWithStandord = (project in file("."))
+    .enablePlugins(ScalaUnidocPlugin)
+    .aggregate(nlpcraft, nlpcraftStanford)
+    .settings(
+        name := "NLPCraft with Stanford Module",
+        version := nlpcraftVer,
+
+        // Scaladoc config.
+        Compile / doc / scalacOptions ++= commonScalaDoc,
+
         libraryDependencies ++= libs,
         libraryDependencies += "edu.stanford.nlp" % "stanford-corenlp" % stanfordCoreNLPVer,
         libraryDependencies += "edu.stanford.nlp" % "stanford-corenlp" % stanfordCoreNLPVer classifier "models"
