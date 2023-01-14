@@ -26,18 +26,14 @@ import scala.jdk.CollectionConverters.*
 
 /**
   * [[https://nlp.stanford.edu/ Stanford NLP]] based language independent [[NCEntityParser entity parser]] configured by
-  * given [[StanfordCoreNLP]] pipeline instance.
+  * given Stanford NLP pipeline instance.
   *
-  * This parser prepares [[NCEntity]] instances which are detected by prepared [[StanfordCoreNLP]] pipeline.
-  * These entities are created with ID `stanford:modelName`, where `modelName` is model configured in [[StanfordCoreNLP pipeline]].
+  * This parser creates entities with ID `stanford:modelName`, where `modelName` is model configured in Stanford NLP pipeline.
   * Also this parser copies optional `nne` string and `confidence` double [[NCPropertyMap metadata]] properties to the
-  * created entities extracted from [[StanfordCoreNLP]] annotations.
+  * created entities extracted from Stanford NLP annotations.
 
-  * **NOTE:** this parser can produce different types of [[NCEntity]] instances and each input [[NCToken]] can be included
-  * into several output [[NCEntity]] instances.
-  *
-  * @param stanford Configured [[StanfordCoreNLP]] pipeline instance.
-  * @param supported Supported [[StanfordCoreNLP]] model names. Only supported models will be used for [[NCEntity]] instances generation.
+  * @param stanford Stanford NLP pipeline instance.
+  * @param supported Supported Stanford NLP model names. Only supported models will be used for [[NCEntity]] instances generation.
   */
 class NCStanfordNLPEntityParser(stanford: StanfordCoreNLP, supported: Set[String]) extends NCEntityParser:
     require(stanford != null, "Stanford instance cannot be null.")

@@ -25,7 +25,7 @@ import org.apache.nlpcraft.nlp.enrichers.NCEnStopWordsTokenEnricher
 import org.apache.nlpcraft.nlp.parsers.{NCOpenNLPTokenParser, NCSemanticEntityParser}
 
 /**
-  * This example provides very simple implementation for NLI-powered light switch.
+  * This example provides a simple implementation for NLI-powered light switch.
   *
   * You can say something like this:
   * - Turn the lights off in the entire house.

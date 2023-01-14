@@ -3,10 +3,10 @@ package org.apache.nlpcraft.examples.pizzeria.components
 import edu.stanford.nlp.pipeline.StanfordCoreNLP
 import org.apache.nlpcraft.nlp.parsers.*
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.nlp.stemmer.{NCEnStemmer, NCStemmer}
+import org.apache.nlpcraft.nlp.stemmer.*
 import org.apache.nlpcraft.nlp.enrichers.NCEnStopWordsTokenEnricher
 import org.apache.nlpcraft.nlp.parsers.NCSemanticEntityParser
-import org.apache.nlpcraft.nlp.stanford.{NCStanfordNLPEntityParser, NCStanfordNLPTokenParser}
+import org.apache.nlpcraft.nlp.stanford.*
 
 import java.util.Properties
 
@@ -29,7 +29,13 @@ private [pizzeria] object PizzeriaModelPipeline:
             withTokenEnricher(new NCEnStopWordsTokenEnricher()).
             withEntityParser(new NCStanfordNLPEntityParser(stanford, Set("number"))).
             withEntityParser(new NCSemanticEntityParser(new NCEnStemmer, tokParser, "pizzeria_model.yaml")).
-            withEntityMapper(PizzeriaOrderMapper(extra = D("ord:pizza:size", "ord:pizza:size:value"), dests = D("ord:pizza", "ord:pizza:size"))).
-            withEntityMapper(PizzeriaOrderMapper(extra = D("stanford:number", "stanford:number:nne"), dests = D("ord:pizza", "ord:pizza:qty"), D("ord:drink", "ord:drink:qty"))).
+            withEntityMapper(PizzeriaOrderMapper(
+                extra = D("ord:pizza:size", "ord:pizza:size:value"),
+                descr = D("ord:pizza", "ord:pizza:size"))
+            ).
+            withEntityMapper(PizzeriaOrderMapper(
+                extra = D("stanford:number", "stanford:number:nne"),
+                descr = D("ord:pizza", "ord:pizza:qty"), D("ord:drink", "ord:drink:qty"))
+            ).
             withEntityValidator(new PizzeriaOrderValidator()).
             build

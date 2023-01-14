@@ -26,7 +26,7 @@ import org.apache.nlpcraft.examples.lightswitch.nlp.token.parser.NCFrTokenParser
 import scala.jdk.CollectionConverters.*
 
 /**
-  * This example provides very simple implementation for NLI-powered light switch.
+  * This example provides a simple implementation for NLI-powered light switch for French language.
   *
   * You can say something like this:
   * - Éteignez les lumières dans toute la maison.

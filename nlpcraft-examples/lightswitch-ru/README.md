@@ -23,8 +23,8 @@
 [![Documentation Status](https://img.shields.io/:docs-latest-green.svg)](https://nlpcraft.apache.org/docs.html)
 
 ### Light Switch Example
-This example provides very simple implementation for NLI-powered light switch. You can say something like `turn the lights off in
-the entire house` or `switch on the illumination in the master bedroom closet`. 
+This example provides a simple implementation for NLI-powered light switch for Russian language. You can say something like 
+`Выключи свет по всем доме` or `Свет на кухне, пожалуйста, приглуши`. 
 You can easily modify intent callbacks to perform the actual light switching using HomeKit or Arduino-based
 controllers.
 

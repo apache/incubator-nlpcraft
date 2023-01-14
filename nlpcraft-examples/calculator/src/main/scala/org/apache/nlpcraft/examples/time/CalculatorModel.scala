@@ -48,11 +48,11 @@ private object CalculatorModel:
 import CalculatorModel.*
 
 /**
-  * This example provides very simple implementation for NLI-powered calculator with memory of last operation result function.
+  * This example provides a simple implementation for NLI-powered calculator that remembers the last operation result.
   *
   * Supported operations are: `+`, `-`, `*` and `/`.
   * Operands values can be given as digits or in text.
-  * When first operand is omitted than last operation result is used instead of first.
+  * When first operand is omitted than last operation result is used instead.
   *
   * You can ask something like this:
   * - User input: *2 + 2*. Expected result is **4**.

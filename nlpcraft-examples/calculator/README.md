@@ -24,7 +24,7 @@
 
 ### Calculator Example
 This example data model represents simple calculator. It supports '+', '-', '*' and '/' operations for two integer arguments.
-Note that first argument can be omitted and last operation result is used instead of it. 
+Note that first argument can be omitted and last operation result will be used instead. 
 
 ### Documentation  
 See [Getting Started](https://nlpcraft.apache.org/getting-started.html) guide for more instructions on how to run these examples.

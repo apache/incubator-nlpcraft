@@ -23,9 +23,10 @@
 [![Documentation Status](https://img.shields.io/:docs-latest-green.svg)](https://nlpcraft.apache.org/docs.html)
 
 ### Pizzeria Example
-TODO:
+This example provides a simple implementation for NLI-powered pizzeria order bot.
+
 ### Documentation
-TODO:
+See [Getting Started](https://nlpcraft.apache.org/getting-started.html) guide for more instructions on how to run these examples.
 
 For any questions, feedback or suggestions:
 

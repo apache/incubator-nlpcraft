@@ -55,7 +55,7 @@ private object PizzeriaModelSpec:
 import PizzeriaModelSpec.*
 
 /**
-  *
+  * Pizza ordering spec.
   */
 class PizzeriaModelSpec extends AnyFunSuite with BeforeAndAfter:
     private val mdl = new ModelTestWrapper()
@@ -67,14 +67,12 @@ class PizzeriaModelSpec extends AnyFunSuite with BeforeAndAfter:
 
     after {
         if client != null then client.close()
-
         for ((seq, num) <- msgs.zipWithIndex)
             println("#" * 150)
             for (line <- seq) println(line)
             errs.get(num) match
                 case Some(err) => err.printStackTrace()
                 case None => // No-op.
-
         require(errs.isEmpty, s"There are ${errs.size} errors above.")
     }
 

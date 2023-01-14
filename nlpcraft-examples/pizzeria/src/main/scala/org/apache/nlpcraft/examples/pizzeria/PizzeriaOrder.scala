@@ -28,9 +28,7 @@ private [pizzeria] enum PizzeriaOrderState:
 
 private object OrderPosition:
     val DFLT_QTY = 1
-/**
-  *
-  */
+
 private trait OrderPosition:
     val name: String
     var qty: Option[Int]
@@ -65,21 +63,8 @@ private [pizzeria] class PizzeriaOrder:
     private val pizzas = mutable.ArrayBuffer.empty[Pizza]
     private val drinks = mutable.ArrayBuffer.empty[Drink]
 
-    /**
-      *
-      */
     def isEmpty: Boolean = pizzas.isEmpty && drinks.isEmpty
-
-    /**
-      *
-      */
     def isValid: Boolean = !isEmpty && findPizzaWithoutSize.isEmpty
-
-    /**
-      *
-      * @param ps
-      * @param ds
-      */
     def add(ps: Seq[Pizza], ds: Seq[Drink]): Unit =
         def setByName[T <: OrderPosition](buf: mutable.ArrayBuffer[T], t: T): Unit =
             buf.find(_.name == t.name) match
@@ -102,32 +87,15 @@ private [pizzeria] class PizzeriaOrder:
 
         for (d <- ds) setByName(drinks, d)
 
-    /**
-      *
-      */
     def findPizzaWithoutSize: Option[Pizza] = pizzas.find(_.size.isEmpty)
-
-    /**
-      *
-       * @param size
-      */
     def fixPizzaWithoutSize(size: String): Boolean =
         findPizzaWithoutSize match
             case Some(p) =>
                 p.size = size.?
                 true
             case None => false
-    /**
-      *
-      */
     def getState: PizzeriaOrderState = state
-
-    /**
-      *
-      * @param state
-      */
     def setState(state: PizzeriaOrderState): Unit = this.state = state
-
     override def toString: String =
         if !isEmpty then
             val ps = if pizzas.nonEmpty then s"pizza: ${pizzas.mkString(", ")}" else ""

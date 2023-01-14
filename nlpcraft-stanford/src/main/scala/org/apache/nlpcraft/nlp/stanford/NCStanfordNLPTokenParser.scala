@@ -28,9 +28,9 @@ import scala.collection.mutable
 
 /**
   *  [[https://nlp.stanford.edu/ Stanford NLP]] based language independent [[NCTokenParser entity parser]] configured
-  *  by given [[StanfordCoreNLP]] pipeline instance.
+  *  by given Stanford NLP pipeline instance.
   *
-  * @param stanford Configured [[StanfordCoreNLP]] pipeline instance.
+  * @param stanford Stanford NLP pipeline instance.
   */
 class NCStanfordNLPTokenParser(stanford: StanfordCoreNLP) extends NCTokenParser:
     require(stanford != null, "Stanford instance cannot be null.")

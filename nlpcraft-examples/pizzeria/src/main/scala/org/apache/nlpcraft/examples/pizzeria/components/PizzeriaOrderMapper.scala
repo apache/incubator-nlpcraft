@@ -33,7 +33,8 @@ case class PizzeriaOrderMapperDesc(elementType: String, propertyName: String)
 
 /**
   * Element extender.
-  * For each 'main' dest element it tries to find related extra element and convert this pair to new complex element.
+  *
+  * For each 'main' element it tries to find related extra element and convert this pair to new complex element.
   * New element:
   * 1. Gets same type as main element, also all main element properties copied into this new one.
   * 2. Gets tokens from both elements.
@@ -44,29 +45,29 @@ case class PizzeriaOrderMapperDesc(elementType: String, propertyName: String)
   */
 private object PizzeriaOrderMapper:
     extension(entity: NCEntity)
-        def position: Double =
+        private def position: Double =
             val toks = entity.getTokens
             (toks.head.getIndex + toks.last.getIndex) / 2.0
-        def tokens: List[NCToken] = entity.getTokens
+        private def tokens: List[NCToken] = entity.getTokens
 
     private def str(es: Iterable[NCEntity]): String =
         es.map(e => s"type=${e.getType}(${e.tokens.map(_.getIndex).mkString("[", ",", "]")})").mkString("{", ", ", "}")
 
-    def apply(extra: PizzeriaOrderMapperDesc, dests: PizzeriaOrderMapperDesc*): PizzeriaOrderMapper = new PizzeriaOrderMapper(extra, dests)
+    def apply(extra: PizzeriaOrderMapperDesc, descr: PizzeriaOrderMapperDesc*): PizzeriaOrderMapper = new PizzeriaOrderMapper(extra, descr)
 
 import PizzeriaOrderMapper.*
 
 /**
   * Custom [[NCEntityMapper]] implementation. It creates new [[NCEntity]] instances
-  * based on `dests` elements extending them by `extra` element property.
-  * If `dests` elements or `extra` element are not found or
+  * based on `descr` elements extending them by `extra` element property.
+  * If `descr` elements or `extra` element are not found or
   * `dests` and `extra` elements aren't located side by side in user input
   * then initial input [[NCEntity]] instances are passed as is.
   *
   * @param extra Extra data element description.
-  * @param dests Base elements descriptions.
+  * @param descr Base elements descriptions.
   */
-case class PizzeriaOrderMapper(extra: PizzeriaOrderMapperDesc, dests: Seq[PizzeriaOrderMapperDesc]) extends NCEntityMapper with LazyLogging:
+case class PizzeriaOrderMapper(extra: PizzeriaOrderMapperDesc, descr: Seq[PizzeriaOrderMapperDesc]) extends NCEntityMapper with LazyLogging:
     /** @inheritdoc */
     override def map(req: NCRequest, cfg: NCModelConfig, ents: List[NCEntity]): List[NCEntity] =
         def map(destEnt: NCEntity, destProp: String, extraEnt: NCEntity): NCEntity =
@@ -77,8 +78,8 @@ case class PizzeriaOrderMapper(extra: PizzeriaOrderMapperDesc, dests: Seq[Pizzer
                 override val getRequestId: String = req.getRequestId
                 override val getType: String = destEnt.getType
 
-        val destsMap = dests.map(p => p.elementType -> p).toMap
-        val destEnts = mutable.HashSet.empty ++ ents.filter(e => destsMap.contains(e.getType))
+        val descrMap = descr.map(p => p.elementType -> p).toMap
+        val destEnts = mutable.HashSet.empty ++ ents.filter(e => descrMap.contains(e.getType))
         val extraEnts = ents.filter(_.getType == extra.elementType)
 
         if destEnts.nonEmpty && extraEnts.nonEmpty && destEnts.size >= extraEnts.size then
@@ -91,7 +92,7 @@ case class PizzeriaOrderMapper(extra: PizzeriaOrderMapperDesc, dests: Seq[Pizzer
                 dest2Extra += destEnt -> extraEnt
 
             val unrelated = ents.filter(e => !used.contains(e))
-            val artificial = for ((m, e) <- dest2Extra) yield map(m, destsMap(m.getType).propertyName, e)
+            val artificial = for ((m, e) <- dest2Extra) yield map(m, descrMap(m.getType).propertyName, e)
             val unused = destEnts
 
             val res = (unrelated ++ artificial ++ unused).sortBy(_.tokens.head.getIndex)
