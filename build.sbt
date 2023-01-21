@@ -111,22 +111,6 @@ lazy val nlpcraftStanford = (project in file("nlpcraft-stanford"))
         libraryDependencies += "edu.stanford.nlp" % "stanford-corenlp" % stanfordCoreNLPVer classifier "models"
     )
 
-lazy val nlpcraftWithStanford = (project in file("."))
-    .enablePlugins(ScalaUnidocPlugin)
-    .aggregate(nlpcraft, nlpcraftStanford)
-    .settings(
-        name := "NLPCraft",
-        version := nlpcraftVer,
-        ScalaUnidoc / unidoc / unidocProjectFilter := inAnyProject -- inProjects(timeExample, lightSwitchExample, lightSwitchRuExample, lightSwitchFrExample, pizzeriaExample, calculatorExample),
-
-        // Scaladoc config.
-        Compile / doc / scalacOptions ++= commonScalaDoc,
-
-        libraryDependencies ++= libs,
-        libraryDependencies += "edu.stanford.nlp" % "stanford-corenlp" % stanfordCoreNLPVer,
-        libraryDependencies += "edu.stanford.nlp" % "stanford-corenlp" % stanfordCoreNLPVer classifier "models"
-    )
-
 lazy val timeExample = (project in file("nlpcraft-examples/time"))
     .dependsOn(nlpcraft)
     .settings(
@@ -209,4 +193,20 @@ lazy val calculatorExample = (project in file("nlpcraft-examples/calculator"))
 
         // Dependencies.
         libraryDependencies ++= libs
+    )
+
+lazy val nlpcraftWithStanford = (project in file("."))
+    .enablePlugins(ScalaUnidocPlugin)
+    .aggregate(nlpcraft, nlpcraftStanford)
+    .settings(
+        name := "NLPCraft",
+        version := nlpcraftVer,
+        ScalaUnidoc / unidoc / unidocProjectFilter := inAnyProject -- inProjects(timeExample, lightSwitchExample, lightSwitchRuExample, lightSwitchFrExample, pizzeriaExample, calculatorExample),
+
+        // Scaladoc config.
+        Compile / doc / scalacOptions ++= commonScalaDoc,
+
+        libraryDependencies ++= libs,
+        libraryDependencies += "edu.stanford.nlp" % "stanford-corenlp" % stanfordCoreNLPVer,
+        libraryDependencies += "edu.stanford.nlp" % "stanford-corenlp" % stanfordCoreNLPVer classifier "models"
     )
