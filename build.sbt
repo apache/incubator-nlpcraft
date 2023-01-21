@@ -19,7 +19,7 @@ val nlpcraftVer = "1.0.0"
 
 // Common libraries.
 val scalaMajVer = "3"
-val scalaMinVer = "1.3"
+val scalaMinVer = "2.2"
 val log4jVer = "2.19.0"
 val scalaLoggingVer = "3.9.5"
 val orgAntlr4Ver = "4.11.1"
