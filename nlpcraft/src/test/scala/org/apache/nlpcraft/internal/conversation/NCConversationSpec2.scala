@@ -67,7 +67,19 @@ class NCConversationSpec2 extends AnyFunSuite:
                 "Who was the best?" -> Holder("bestBuyerIntent", "best_employee", "buy")
             )
 
+            // Checks via requests.
             for ((qry, h) <- questions)
                 require(h == cli.ask(qry, "usrId").getBody)
+
+            // Checks via dry run.
+            for ((qry, h) <- questions)
+                val cb = cli.debugAsk(qry, "usrId", saveHist = true)
+
+                require(h.intentId == cb.getIntentId)
+                require(h.elements.size == cb.getCallbackArguments.size)
+                require(cb.getCallbackArguments.forall(_.size == 1))
+
+                for ((elem, cbArg) <- h.elements.toSeq.sorted.zip(cb.getCallbackArguments.map(_.head).sortBy(_.getType)))
+                    require(elem ==  cbArg.getType)
         }
     }
