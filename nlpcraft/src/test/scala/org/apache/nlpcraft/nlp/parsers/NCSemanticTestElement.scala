@@ -33,11 +33,11 @@ case class NCSemanticTestElement(
     typ: String,
     synonyms: Set[String] = Set.empty,
     values: Map[String, Set[String]] = Map.empty,
-    groups: Seq[String] = Seq.empty,
+    groups: Set[String] = Set.empty,
     props: Map[String, AnyRef] = Map.empty
 ) extends NCSemanticElement:
     override val getType: String = typ
-    override val getGroups: Set[String] = groups.toSet
+    override val getGroups: Set[String] = groups ++ Set(typ)
     override val getValues: Map[String, Set[String]] = values
     override val getSynonyms: Set[String] = synonyms
     override val getProperties: Map[String, Object] = props
