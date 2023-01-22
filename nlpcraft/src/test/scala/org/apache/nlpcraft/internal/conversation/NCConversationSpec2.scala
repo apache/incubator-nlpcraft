@@ -42,32 +42,32 @@ class NCConversationSpec2 extends AnyFunSuite:
         val mdl: NCModel =
             new NCTestModelAdapter:
                 override val getPipeline: NCPipeline = mkEnPipeline(
-                    TE("sale"),
-                    TE("best", groups = Set("sale", "buy")),
-                    TE("buy")
+                    TE("sell", synonyms = "sales"),
+                    TE("best_employee", synonyms = Set("best", "best employee", "best colleague"), groups = Set("sell", "buy")),
+                    TE("buy", synonyms = "purchase")
                 )
 
-                @NCIntent("intent=salesInfoIntent term~{# == 'sale'}")
-                def saleInfo(using ctx: NCContext, im: NCIntentMatch) = mkResult("sale")
+                @NCIntent("intent=sellIntent term~{# == 'sell'}")
+                def sell(using ctx: NCContext, im: NCIntentMatch) = mkResult("sell")
 
-                @NCIntent("intent=bestSellerIntent term~{# == 'sale'} term~{# == 'best'}")
-                def bestSeller(using ctx: NCContext, im: NCIntentMatch) = mkResult("best", "sale")
+                @NCIntent("intent=bestSellerIntent term~{# == 'sell'} term~{# == 'best_employee'}")
+                def bestSeller(using ctx: NCContext, im: NCIntentMatch) = mkResult("best_employee", "sell")
 
-                @NCIntent("intent=buysInfoIntent term~{# == 'buy'}")
-                def buyInfo(using ctx: NCContext, im: NCIntentMatch) = mkResult("buy")
+                @NCIntent("intent=buyIntent term~{# == 'buy'}")
+                def buy(using ctx: NCContext, im: NCIntentMatch) = mkResult("buy")
 
-                @NCIntent("intent=bestBuyerIntent term~{# == 'buy'} term~{# == 'best'}")
-                def bestBuyer(using ctx: NCContext, im: NCIntentMatch) = mkResult("best", "buy")
+                @NCIntent("intent=bestBuyerIntent term~{# == 'buy'} term~{# == 'best_employee'}")
+                def bestBuyer(using ctx: NCContext, im: NCIntentMatch) = mkResult("best_employee", "buy")
 
         Using.resource(new NCModelClient(mdl)) { cli =>
-            val dialog = Seq(
-                "Give me the sales data" -> Holder("salesInfoIntent", "sale"),
-                "Who was the best?" -> Holder("bestSellerIntent", "best", "sale"),
-                "OK, give me the buy report now." -> Holder("buysInfoIntent","buy"),
-                "Who was the best?" -> Holder("bestBuyerIntent", "best", "buy")
+            val questions = Seq(
+                "Give me the sales data" -> Holder("sellIntent", "sell"),
+                "Who was the best?" -> Holder("bestSellerIntent", "best_employee", "sell"),
+                "OK, give me the purchasing report now." -> Holder("buyIntent", "buy"),
+                "Who was the best?" -> Holder("bestBuyerIntent", "best_employee", "buy")
             )
 
-            for ((qry, h) <- dialog)
+            for ((qry, h) <- questions)
                 require(h == cli.ask(qry, "usrId").getBody)
         }
     }
