@@ -99,6 +99,8 @@
         <maven.source.plugin.ver>3.0.1</maven.source.plugin.ver>
         <maven.clean.plugin.ver>3.1.0</maven.clean.plugin.ver>
         <maven.javadoc.plugin.ver>3.2.0</maven.javadoc.plugin.ver>
+        <apache.rat.plugin.ver>0.15</apache.rat.plugin.ver>
+        <maven.gpg.plugin.ver>1.6</maven.gpg.plugin.ver>
         <org.antlr4.ver>4.11.1</org.antlr4.ver>
         <jline.ver>3.21.0</jline.ver>
         <commons.io.ver>2.11.0</commons.io.ver>
@@ -389,6 +391,69 @@
                 <module>nlpcraft-examples/pizzeria</module>
                 <module>nlpcraft-examples/calculator</module>
             </modules>
+        </profile>
+
+        <profile>
+            <id>release</id>
+            <activation>
+                <property>
+                    <name>performRelease</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.rat</groupId>
+                        <artifactId>apache-rat-plugin</artifactId>
+                        <version>${apache.rat.plugin.ver}</version>
+                        <configuration>
+                            <excludes>
+                                <exclude>.gitignore</exclude>
+                                <exclude>build</exclude>
+                                <exclude>.idea/**/*</exclude>
+                                <exclude>scaladoc/**/*</exclude>
+                                <exclude>.git/**/*</exclude>
+                                <exclude>venv</exclude>
+                                <exclude>*.iml</exclude>
+                                <exclude>**/*.txt</exclude>
+                                <exclude>idea/**/*</exclude>
+                                <exclude>zips/**/*</exclude>
+                                <exclude>src/main/resources/moby/*</exclude>
+                                <exclude>src/main/scala/org/apache/nlpcraft/internal/makro/antlr4/*</exclude>
+                                <exclude>DISCLAIMER-WIP</exclude>
+                            </excludes>
+                            <numUnapprovedLicenses>0</numUnapprovedLicenses>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>${maven.gpg.plugin.ver}</version>
+                        <configuration>
+                            <keyname>${gpg.keyname}</keyname>
+                            <passphrase>${gpg.passphrase}</passphrase>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 </project>
