@@ -52,7 +52,7 @@ object NCEntityParserSpec:
 class NCEntityParserSpec extends AnyFunSuite:
     test("test") {
         Using.resource(new NCModelClient(NCEntityParserSpec.mdl)) { client =>
-            val intentId = client.ask( "'some quoted text'", "usrId").getIntentId.get
+            val intentId = client.ask( "'some quoted text'", "usrId").get.getIntentId.get
 
             require(intentId == "quoted", s"Unexpected intent:  $intentId")
         }

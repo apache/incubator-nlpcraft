@@ -28,8 +28,10 @@ import scala.util.Using
 class LightSwitchRuModelSpec extends AnyFunSuite:
     test("test") {
         Using.resource(new NCModelClient(new LightSwitchRuModel)) { client =>
-            def check(txt: String): Unit = 
-                require(client.debugAsk(txt, "userId", true).getIntentId == "ls")
+            def check(txt: String): Unit =
+                val res = client.debugAsk(txt, "userId", true)
+                require(res.isSuccess)
+                require(res.get.getIntentId == "ls")
 
             check("Выключи свет по всем доме")
             check("Выруби электричество!")

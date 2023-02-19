@@ -32,6 +32,7 @@ import java.util.concurrent.*
 import java.util.concurrent.atomic.*
 import java.util.{Objects, UUID}
 import scala.concurrent.ExecutionContext
+import scala.util.Try
 
 /**
   * Client API to issue requests again given model. This the primary method of interacting with NLPCraft
@@ -135,8 +136,8 @@ class NCModelClient(mdl: NCModel) extends LazyLogging, AutoCloseable:
       *     automatically by the processing logic as well as can be thrown by the user from the intent callback.
       * @throws NCException Thrown in case of any internal errors processing the user input.
       */
-    def ask(txt: String, usrId: String, data: Map[String, AnyRef] = Map.empty): NCResult =
-        ask0(txt, data, usrId, NCIntentSolveType.REGULAR).swap.toOption.get
+    def ask(txt: String, usrId: String, data: Map[String, AnyRef] = Map.empty): Try[NCResult] =
+        Try(ask0(txt, data, usrId, NCIntentSolveType.REGULAR).swap.toOption.get)
 
     /**
       * Removes all entities from the short-term-memory (STM) associated with given user ID.
@@ -210,6 +211,6 @@ class NCModelClient(mdl: NCModel) extends LazyLogging, AutoCloseable:
       *     automatically by the processing logic as well as can be thrown by the user from the intent callback.
       * @throws NCException Thrown in case of any internal errors processing the user input.
       */
-    def debugAsk(txt: String, usrId: String, saveHist: Boolean, data: Map[String, AnyRef] = Map.empty): NCMatchedCallback =
+    def debugAsk(txt: String, usrId: String, saveHist: Boolean, data: Map[String, AnyRef] = Map.empty): Try[NCMatchedCallback] =
         import NCIntentSolveType.*
-        ask0(txt, data, usrId, if saveHist then SEARCH else SEARCH_NO_HISTORY).toOption.get
+        Try(ask0(txt, data, usrId, if saveHist then SEARCH else SEARCH_NO_HISTORY).toOption.get)

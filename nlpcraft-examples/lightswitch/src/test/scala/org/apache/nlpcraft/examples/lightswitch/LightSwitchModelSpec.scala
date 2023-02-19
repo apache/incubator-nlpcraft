@@ -29,7 +29,9 @@ class LightSwitchModelSpec extends AnyFunSuite:
     test("test") {
         Using.resource(new NCModelClient(new LightSwitchModel())) { client =>
             def check(txt: String): Unit =
-                require(client.debugAsk(txt, "userId", true).getIntentId == "ls")
+                val res = client.debugAsk(txt, "userId", true)
+                require(res.isSuccess)
+                require(res.get.getIntentId == "ls")
 
             check("Turn the lights off in the entire house.")
             check("Turn off all lights now")

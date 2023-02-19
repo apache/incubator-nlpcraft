@@ -80,7 +80,6 @@ object PizzeriaModelClientCli extends LazyLogging :
                     if in.nonEmpty then println(ask(in))
                 println
             catch
-                case e: NCRejection => println(s"Request rejected: ${e.getMessage}")
                 case e: IOException => if applStarted then println(s"IO error: ${e.getMessage}")
                 case e: Throwable =>
                     if applStarted then

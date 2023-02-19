@@ -45,7 +45,7 @@ class NCIDLFragmentsOverridingSpec2 extends AnyFunSuite:
 
     test("test") {
         Using.resource(new NCModelClient(new M())) { client =>
-            def test(ps: (String, Int)*): Unit = ps.foreach { case (txt, res) => require(client.ask(txt, "usr").getBody == res) }
+            def test(ps: (String, Int)*): Unit = ps.foreach { case (txt, res) => require(client.ask(txt, "usr").get.getBody == res) }
 
             test("x1" -> 1, "x2" -> 2, "x3" -> 3)
         }

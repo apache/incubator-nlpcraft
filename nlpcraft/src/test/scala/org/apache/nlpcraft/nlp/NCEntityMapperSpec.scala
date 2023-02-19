@@ -67,6 +67,6 @@ class NCEntityMapperSpec extends AnyFunSuite:
 
     test("test") {
         Using.resource(new NCModelClient(mdl)) { client =>
-            require(client.ask("a b c d", "userId").getIntentId.orNull == "abcd")
+            require(client.ask("a b c d", "userId").get.getIntentId.orNull == "abcd")
         }
     }

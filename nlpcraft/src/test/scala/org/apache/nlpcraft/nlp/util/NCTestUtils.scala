@@ -108,7 +108,7 @@ object NCTestUtils:
       */
     def askSomething(mdl: NCModel, expectedOk: Boolean): Unit =
         Using.resource(new NCModelClient(mdl)) { client =>
-            def ask(): NCResult = client.ask("test", "userId")
+            def ask(): NCResult = client.ask("test", "userId").get
 
             if expectedOk then
                 println(ask().getBody)

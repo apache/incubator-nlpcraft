@@ -65,11 +65,8 @@ class NCModelPingPongSpec extends AnyFunSuite with BeforeAndAfter:
             def onOther(ctx: NCContext, im: NCIntentMatch, @NCIntentTerm("other") other: NCEntity): NCResult =
                 mkResult(ASK_RESULT, s"Some request by: ${other.mkText}")
 
-    MDL.pipeline.entParsers += NCTestUtils.mkEnSemanticParser(List(
-        NCSemanticTestElement("command"),
-        NCSemanticTestElement("confirm"),
-        NCSemanticTestElement("other")
-    ))
+    import org.apache.nlpcraft.nlp.parsers.NCSemanticTestElement as TE
+    MDL.pipeline.entParsers += NCTestUtils.mkEnSemanticParser(List(TE("command"), TE("confirm"), TE("other")))
 
     before {
         client = new NCModelClient(MDL)
@@ -80,14 +77,18 @@ class NCModelPingPongSpec extends AnyFunSuite with BeforeAndAfter:
     }
 
     private def ask(txt: String, typ: NCResultType): Unit =
-        val res = client.ask(txt, "userId")
+        val res = client.ask(txt, "userId").get
         println(s"Request [text=$txt, result=$res]")
         require(res.getType == typ)
 
     private def askForDialog(txt: String): Unit = ask(txt, ASK_DIALOG)
     private def askForResult(txt: String): Unit = ask(txt, ASK_RESULT)
     private def askForReject(txt: String): Unit =
-        try ask(txt, ASK_RESULT) catch case e: NCRejection => println(s"Expected reject on: $txt")
+        val res = client.ask(txt, "userId")
+        require(res.isFailure)
+        res.failed.get match
+            case e: NCRejection => println(s"Expected reject on: $txt")
+            case e: Throwable => throw e
 
     test("test 1") {
         askForDialog("command")

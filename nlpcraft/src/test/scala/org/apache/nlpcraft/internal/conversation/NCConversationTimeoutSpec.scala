@@ -57,7 +57,7 @@ class NCConversationTimeoutSpec extends AnyFunSuite:
 
         Using.resource(new NCModelClient(mdl)) { cli =>
             def check(hasValue: Boolean): Unit =
-                require(cli.ask("test", "userId").getBody.toString == (if hasValue then VALUE else EMPTY))
+                require(cli.ask("test", "userId").get.getBody.toString == (if hasValue then VALUE else EMPTY))
 
             check(false)
             check(true)

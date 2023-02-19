@@ -45,10 +45,9 @@ class NCConversationSpec extends AnyFunSuite:
         Using.resource(new NCModelClient(mdl)) { cli =>
             def execOk(txt: String): Unit = cli.ask(txt, usrId)
             def execReject(txt: String): Unit =
-                try
-                    cli.ask(txt, usrId)
-                    require(false)
-                catch
+                val res = cli.ask(txt, usrId)
+                assert(res.isFailure)
+                res.failed.get match
                     case e: NCRejection => // OK.
                     case e: Throwable => throw e
 

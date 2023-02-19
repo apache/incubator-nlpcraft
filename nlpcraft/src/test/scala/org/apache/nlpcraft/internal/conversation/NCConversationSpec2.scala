@@ -69,11 +69,11 @@ class NCConversationSpec2 extends AnyFunSuite:
 
             // Checks via requests.
             for ((qry, h) <- questions)
-                require(h == cli.ask(qry, "usrId").getBody)
+                require(h == cli.ask(qry, "usrId").get.getBody)
 
             // Checks via dry run.
             for ((qry, h) <- questions)
-                val cb = cli.debugAsk(qry, "usrId", saveHist = true)
+                val cb = cli.debugAsk(qry, "usrId", saveHist = true).get
 
                 require(h.intentId == cb.getIntentId)
                 require(h.elements.size == cb.getCallbackArguments.size)

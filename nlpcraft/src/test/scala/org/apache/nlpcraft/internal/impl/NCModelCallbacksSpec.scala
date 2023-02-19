@@ -94,7 +94,7 @@ class NCModelCallbacksSpec extends AnyFunSuite:
       */
     private def testOk(client: NCModelClient, exp: NCResult, states: State*): Unit =
         set(states*)
-        require(client.ask("x", "userId").getBody == exp.getBody)
+        require(client.ask("x", "userId").get.getBody == exp.getBody)
 
     /**
       *

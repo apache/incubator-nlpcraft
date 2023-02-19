@@ -36,8 +36,8 @@ class NCModelClientSpec4 extends AnyFunSuite:
         val client = new NCModelClient(mdl)
 
         val allCalls = Seq(
-            () => client.ask("test", "userId"),
-            () => client.debugAsk("test", "userId", false),
+            () => client.ask("test", "userId").get,
+            () => client.debugAsk("test", "userId", false).get,
             () => client.clearStm("userId", _ => true),
             () => client.clearStm("userId"),
             () => client.clearDialog("userId"),

@@ -28,7 +28,10 @@ import scala.util.Using
 class CalculatorModelSpec extends AnyFunSuite:
     test("test") {
         Using.resource(new NCModelClient(new CalculatorModel())) { client =>
-            def check(txt: String, v: Int): Unit = require(v == client.ask(txt, "userId").getBody)
+            def check(txt: String, v: Int): Unit =
+                val res = client.ask(txt, "userId")
+                require(res.isSuccess)
+                require(v == res.get.getBody)
 
             check("2 + 2", 4)
             check("3 * 4", 12)

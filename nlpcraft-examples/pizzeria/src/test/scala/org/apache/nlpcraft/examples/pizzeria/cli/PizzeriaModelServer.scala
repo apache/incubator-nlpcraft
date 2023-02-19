@@ -54,24 +54,38 @@ object PizzeriaModelServer:
                         out.write(arr, 0, arr.length)
                     }
 
-                try
-                    val req =
-                        e.getRequestMethod match
-                            case "GET" => e.getRequestURI.toString.split("\\?").last
-                            case "POST" => Using.resource(new BufferedReader(new InputStreamReader(e.getRequestBody))) { _.readLine }
-                            case _ => throw new Exception(s"Unsupported request method: ${e.getRequestMethod}")
+                val req =
+                    try
+                        val req =
+                            e.getRequestMethod match
+                                case "GET" => e.getRequestURI.toString.split("\\?").last
+                                case "POST" => Using.resource(new BufferedReader(new InputStreamReader(e.getRequestBody))) { _.readLine }
+                                case _ => throw new Exception(s"Unsupported request method: ${e.getRequestMethod}")
 
-                    if req == null || req.isEmpty then Exception(s"Empty request.")
+                        if req == null || req.isEmpty then Exception(s"Empty request.")
 
-                    val resp = nlpClient.ask(req, "userId")
-                    val prompt = if resp.getType == ASK_DIALOG then "(Your should answer on the model's question below)\n" else ""
-                    doResponse(s"$prompt${resp.getBody}")
-                catch
-                    case e: NCRejection => doResponse(s"Request rejected: ${e.getMessage}")
-                    case e: Throwable =>
-                        System.err.println("Unexpected error.")
-                        e.printStackTrace()
-                        doResponse(s"Unexpected error: ${e.getMessage}")
+                        Some(req)
+                    catch
+                        case e: Throwable =>
+                            System.err.println("Unexpected error.")
+                            e.printStackTrace()
+
+                            None
+
+                if req.isDefined then
+                    val res = nlpClient.ask(req.get, "userId")
+
+                    if res.isSuccess then
+                        val resp = res.get
+                        val prompt = if resp.getType == ASK_DIALOG then "(Your should answer on the model's question below)\n" else ""
+                        doResponse(s"$prompt${resp.getBody}")
+                    else
+                        res.failed.get match
+                            case e: NCRejection => doResponse(s"Request rejected: ${e.getMessage}")
+                            case e: Throwable =>
+                                System.err.println("Unexpected error.")
+                                e.printStackTrace()
+                                doResponse(s"Unexpected error: ${e.getMessage}")
             })
 
         srv.start()

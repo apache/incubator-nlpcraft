@@ -29,7 +29,9 @@ class TimeModelSpec extends AnyFunSuite:
     test("test") {
         Using.resource(new NCModelClient(new TimeModel())) { client =>
             def check(txt: String, intentId: String): Unit =
-                require(client.debugAsk(txt, "userId", true).getIntentId == intentId)
+                val res = client.debugAsk(txt, "userId", true)
+                require(res.isSuccess)
+                require(res.get.getIntentId == intentId)
 
             check("What time is it now in New York City?", "intent2")
             check("What's the current time in Moscow?", "intent2")

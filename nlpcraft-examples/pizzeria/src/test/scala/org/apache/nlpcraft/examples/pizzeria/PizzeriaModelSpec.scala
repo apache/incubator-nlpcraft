@@ -85,7 +85,9 @@ class PizzeriaModelSpec extends AnyFunSuite with BeforeAndAfter:
         for (((txt, expType), idx) <- reqs.zipWithIndex)
             try
                 mdl.clearLastExecutedOrder()
-                val resp = client.ask(txt, "userId")
+                val res = client.ask(txt, "userId")
+                require(res.isSuccess)
+                val resp = res.get
 
                 testMsgs += s">> Request: $txt"
                 testMsgs += s">> Response: '${resp.getType}': ${resp.getBody}"

@@ -45,7 +45,7 @@ class NCModelClientSpec2 extends AnyFunSuite:
 
         Using.resource(new NCModelClient(mdl)) { client =>
             case class Result(txt: String):
-                private val wi = client.debugAsk(txt, "userId", true)
+                private val wi = client.debugAsk(txt, "userId", true).get
                 private val allArgs: List[List[NCEntity]] = wi.getCallbackArguments
 
                 val intentId: String = wi.getIntentId
@@ -84,11 +84,9 @@ class NCModelClientSpec2 extends AnyFunSuite:
             check(res.second.last, "e2")
 
             // 3. No winners.
-            try
-                client.debugAsk("x", "userId", false)
-
-                require(false)
-            catch
+            val resErr = client.debugAsk("x", "userId", false)
+            assert(resErr.isFailure)
+            resErr.failed.get match
                 case e: NCRejection => println(s"Expected rejection: ${e.getMessage}")
                 case e: Throwable => throw e
         }
