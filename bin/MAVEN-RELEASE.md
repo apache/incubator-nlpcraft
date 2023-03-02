@@ -61,7 +61,8 @@ As result, you should have the following files in the folder `{USER_HOME}/.m2`:
         </profile>
     </profiles>
     ```
-    **Note:** encrypted passwords must be in curly brackets.      
+    **Note:** encrypted passwords must be in curly brackets. 
+
 ## 2. Make Apache Release 
 Note that `pom.xml` scm tag should contain actual tag name.
 For example, if version is `0.5.0` and tag name is `v0.5.0` following pom `scm` section should be:
@@ -92,3 +93,18 @@ The following `pom.xml` files should be updates:
   - Login into https://repository.apache.org
   - Look at staging repositories https://repository.apache.org/#stagingRepositories
   - Find and close `nlpcraft` release, then check its state.   
+
+## 4. Release Website
+- Prepare release branch, for example 'master'.
+- Build project by starting `bundle  exec Jekyll serve`.
+- Copy content of created '_site' folder into some temporary folder.
+- Switch project to the 'web-site' branch.
+- Copy content of temporary folder from previous step into 'web-site' branch root folder.
+  Be sure that this folder contains
+    - .gitignore and
+    - .asf.yaml files.
+
+  These files can be deleted if you preeliminately delete whole content of 'web-site' root folder before copying files.
+  Because these files are not appear in '_site' folder on build phase,
+  you can manually copy them from root of your initial release branch.
+- Commit and push 'web-site' branch.
