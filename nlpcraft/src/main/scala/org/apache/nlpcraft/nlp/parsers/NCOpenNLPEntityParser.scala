@@ -33,48 +33,46 @@ import scala.language.postfixOps
 import scala.util.Using
 
 /**
-  * [[NCOpenNLPEntityParser]] helper.
+  * [[https://opennlp.apache.org/ OpenNLP]] based language independent [[NCEntityParser entity parser]] configured using
+  * [[https://opennlp.apache.org/ OpenNLP]] **name finders** models.
+  *
+  * This parser prepares [[NCEntity]] instances which are detected by the provided models.
+  * These entities are created with type `opennlp:modelName`, where `modelName` is the model name.
+  * This parser also adds `opennlp:modelName:probability` double [[NCPropertyMap metadata]] property to the
+  * entities extracted from the corresponding model.
+  *
+  * Some of free OpenNLP community-maintained models can be found [[https://opennlp.sourceforge.net/models-1.5/ here]].
+  *
+  * **NOTE:** that parser can be configured with multiple models and therefore may produce different types of
+  * [[NCEntity]] instances with each input [[NCToken]] being "mapped" into zero, one or more different entities.
+  * As a result, each input token may be included into more than one output [[NCEntity]] instances (or none at all).
+  *
+  * @param findersMdlsRes Relative paths, absolute paths, resources or URLs to OpenNLP name finders
+  *     [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/namefind/TokenNameFinderModel.html models]].
   */
-object NCOpenNLPEntityParser:
-    /**
-      * Creates [[NCOpenNLPEntityParser]] instance.
-      *
-      * @param src Path to [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/namefind/TokenNameFinderModel.html model]].
-      * @return [[NCOpenNLPEntityParser]] instance.
-      */
-    def apply(src: String): NCOpenNLPEntityParser =
-        require(src != null, "Model source cannot be null.")
-        new NCOpenNLPEntityParser(List(src))
+class NCOpenNLPEntityParser(findersMdlsRes: List[String]) extends NCEntityParser with LazyLogging:
+    require(findersMdlsRes != null && findersMdlsRes.nonEmpty, "Models resources cannot be null or empty.")
 
-/**
-  *  [[https://opennlp.apache.org/ OpenNLP]] based language independent [[NCEntityParser parser]] configured by
-  * paths to [[https://opennlp.apache.org/ OpenNLP]] `name finders` models.
-  *
-  * This parser prepares [[NCEntity]] instances which are detected by given models.
-  * These entities are created with ID `opennlp:modelId`, where `modelId` is [[https://opennlp.apache.org/ OpenNLP]] model ID.
-  * Also this parser adds `opennlp:modelId:probability` double [[NCPropertyMap metadata]] property to the
-  * created entities extracted from related [[https://opennlp.apache.org/ OpenNLP]] model.
-  *
-  * Some of OpenNLP prepared models can be found [[https://opennlp.sourceforge.net/models-1.5/ here]].
-  *
-  * **NOTE:** that each input [[NCToken]] can be included into several output [[NCEntity]] instances.
-  *
-  * @param srcs Paths to [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/namefind/TokenNameFinderModel.html models]].
-  */
-class NCOpenNLPEntityParser(srcs: List[String]) extends NCEntityParser with LazyLogging:
-    require(srcs != null, "Models source cannot be null.")
+    /**
+      * Creates new parser with just one model.
+      *
+      * @param mdl Relative path, absolute path, classpath resource or URL to OpenNLP name finders
+      *     [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/namefind/TokenNameFinderModel.html model]].
+      */
+    def this(mdl: String) = this(List[String](Objects.requireNonNull(mdl)))
 
     private var finders: Seq[NameFinderME] = _
     private case class Holder(start: Int, end: Int, name: String, probability: Double)
 
     init()
+
     /**
       *
       */
     private def init(): Unit =
         val finders = mutable.ArrayBuffer.empty[NameFinderME]
         NCUtils.execPar(
-            srcs.map(res => () => {
+            findersMdlsRes.map(res => () => {
                 val f = new NameFinderME(new TokenNameFinderModel(NCUtils.getStream(res)))
                 logger.trace(s"Loaded resource: $res")
                 finders.synchronized { finders += f }
@@ -92,6 +90,7 @@ class NCOpenNLPEntityParser(srcs: List[String]) extends NCEntityParser with Lazy
         finally finder.clearAdaptiveData()
     }
 
+    /** @inheritdoc */
     override def parse(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): List[NCEntity] =
         val txtArr = toks.map(_.getText).toArray
 
@@ -110,6 +109,6 @@ class NCOpenNLPEntityParser(srcs: List[String]) extends NCEntityParser with Lazy
 
                     override val getTokens: List[NCToken] = toks.flatMap(t => Option.when(t.getIndex >= i1 && t.getIndex <= i2)(t))
                     override val getRequestId: String = req.getRequestId
-                    override val getId: String = s"opennlp:${h.name}"
+                    override val getType: String = s"opennlp:${h.name}"
             )
         }).toList

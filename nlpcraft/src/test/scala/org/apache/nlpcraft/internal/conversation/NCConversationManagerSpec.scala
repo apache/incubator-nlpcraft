@@ -51,7 +51,7 @@ class NCConversationManagerSpec extends AnyFunSuite:
         checkSize(0)
 
         // Added. Still empty.
-        conv.addEntities(reqId, List(NCTestEntity("e1", reqId, tokens = t), NCTestEntity("e2", reqId, tokens = t)))
+        conv.addEntities(reqId, List(NCTestEntity("e1", reqId, t), NCTestEntity("e2", reqId, t)))
         checkSize(0)
 
         // Updated. Not empty.
@@ -59,9 +59,9 @@ class NCConversationManagerSpec extends AnyFunSuite:
         checkSize(2)
 
         // Partially cleared.
-        conv.clear(_.getId == "e1")
+        conv.clear(_.getType == "e1")
         checkSize(1)
-        require(conv.getEntities.head.getId == "e2")
+        require(conv.getEntities.head.getType == "e2")
     }
 
     test("test timeout") {
@@ -80,7 +80,7 @@ class NCConversationManagerSpec extends AnyFunSuite:
         checkSize(0)
 
         // Added. Still empty.
-        conv.addEntities(reqId, List(NCTestEntity("e1", reqId, tokens = t), NCTestEntity("e2", reqId, tokens = t)))
+        conv.addEntities(reqId, List(NCTestEntity("e1", reqId, t), NCTestEntity("e2", reqId, t)))
         checkSize(0)
 
         // Updated. Not empty.

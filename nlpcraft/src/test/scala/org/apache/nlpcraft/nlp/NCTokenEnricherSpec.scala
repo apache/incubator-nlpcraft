@@ -31,7 +31,7 @@ import scala.util.Using
 class NCTokenEnricherSpec extends AnyFunSuite:
     private def test0(pipeline: NCPipeline, ok: Boolean): Unit =
         val mdl: NCModel = new NCModel(NCModelConfig("test.id", "Test model", "1.0"), pipeline):
-            @NCIntent("intent=i term(any)={meta_ent('nlp:token:k1') == 'v1'}")
+            @NCIntent("intent=i term(any)={meta_ent('nlp:entity:k1') == 'v1'}")
             def onMatch(ctx: NCContext, im: NCIntentMatch): NCResult = TEST_RESULT
 
         NCTestUtils.askSomething(mdl, ok)

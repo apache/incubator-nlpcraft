@@ -15,22 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.nlp.parsers
+package org.apache.nlpcraft.nlp.stemmer
+
+import opennlp.tools.stemmer.PorterStemmer
+import org.apache.nlpcraft.nlp.parsers.*
 
 /**
-  *
-  * `Stemmer` trait. Stems are used for finding words by their reduced form.
-  * Read more about stemming [[https://en.wikipedia.org/wiki/Stemming here]].
-  *
-  * See detailed description on the website [[https://nlpcraft.apache.org/built-in-entity-parser.html#parser-semantic Semantic Parser]].
-  *
-  * @see [[NCSemanticEntityParser]]
-  * @see [[NCSemanticElement]]
+  * Stemmer implementation for the English language that delegates to
+  * [[https://opennlp.apache.org/ OpenNLP]] Porter Stemmer.
   */
-trait NCSemanticStemmer:
-    /**
-      * Gets text's stem.
-      *
-      * @param txt Stem.
-      */
-    def stem(txt: String): String
+class NCEnStemmer extends NCStemmer:
+    private val stemmer = new PorterStemmer
+
+    /** @inheritdoc */
+    def stem(word: String): String = stemmer.stem(word)

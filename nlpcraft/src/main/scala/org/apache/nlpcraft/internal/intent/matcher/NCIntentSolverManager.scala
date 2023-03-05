@@ -313,7 +313,7 @@ class NCIntentSolverManager(
                                 val variantPart =
                                     m.variant.
                                         entities.
-                                        map(t => s"${t.getId}${t.getGroups}${t.mkText}").
+                                        map(t => s"${t.getType}${t.getGroups}${t.mkText}").
                                         mkString("")
 
                                 val intentPart = m.intentMatch.intent.toString
@@ -362,7 +362,7 @@ class NCIntentSolverManager(
                         var entIdx = 0
                         for (e <- grp.usedEntities)
                             val conv = if e.conv then "(conv) " else ""
-                            ents += s"    #$entIdx: $conv${e.entity.getId}(${e.entity.mkText})"
+                            ents += s"    #$entIdx: $conv${e.entity.getType}(${e.entity.mkText})"
                             entIdx += 1
                     else
                         ents += "    <empty>"

@@ -19,24 +19,21 @@ val nlpcraftVer = "1.0.0"
 
 // Common libraries.
 val scalaMajVer = "3"
-val scalaMinVer = "1.3"
+val scalaMinVer = "2.2"
 val log4jVer = "2.19.0"
 val scalaLoggingVer = "3.9.5"
 val orgAntlr4Ver = "4.11.1"
-val jlineVer = "3.21.0"
+val jlineVer = "3.22.0"
 val commonsIoVer = "2.11.0"
 val commonsLang3Ver = "3.12.0"
 val commonsCodecVer = "1.15"
 val commonsCollectionsVer = "4.4"
 val gsonVer = "2.10.1"
-val jacksonVer = "2.13.4"
+val jacksonVer = "2.14.2"
 val apacheOpennlpVer = "2.1.0"
 
-// Test libraries.
-val junitVer = "5.9.0"
-
 // Stanford project libraries.
-val stanfordCoreNLPVer  = "4.5.1"
+val stanfordCoreNLPVer  = "4.5.2"
 
 // Examples libraries.
 val languagetoolVer = "6.0"
@@ -50,7 +47,7 @@ ThisBuild / description := "An open source API to convert natural language into 
 ThisBuild / licenses := List("Apache-2.0" -> url("https://github.com/sbt/sbt/blob/develop/LICENSE"))
 ThisBuild / homepage := Some(url("https://nlpcraft.apache.org/"))
 ThisBuild / scmInfo := Some(ScmInfo(url("https://github.com/apache/incubator-nlpcraft"), "scm:git@github.com/apache/incubator-nlpcraft.git"))
-
+ThisBuild / autoAPIMappings := true
 ThisBuild / developers ++= List(
     "aradzinski" -> "Aaron Radzinski ",
     "skhdl" -> "Sergey Kamov"
@@ -78,7 +75,7 @@ lazy val libs = Seq(
 val commonScalaDoc = Seq(
     "-skip-by-regex:org.apache.nlpcraft.internal",
     "-skip-by-regex:org.apache.nlpcraft.nlp.enrichers.tools",
-    "-project-footer", "Apache, NLPCraft",
+    "-project-footer", "Apache NLPCraft",
     "-project-version", nlpcraftVer,
     "-siteroot", ".",
     "-doc-root-content", "scaladoc/docroot.md",
@@ -196,4 +193,20 @@ lazy val calculatorExample = (project in file("nlpcraft-examples/calculator"))
 
         // Dependencies.
         libraryDependencies ++= libs
+    )
+
+lazy val nlpcraftWithStanford = (project in file("."))
+    .enablePlugins(ScalaUnidocPlugin)
+    .aggregate(nlpcraft, nlpcraftStanford)
+    .settings(
+        name := "NLPCraft",
+        version := nlpcraftVer,
+        ScalaUnidoc / unidoc / unidocProjectFilter := inAnyProject -- inProjects(timeExample, lightSwitchExample, lightSwitchRuExample, lightSwitchFrExample, pizzeriaExample, calculatorExample),
+
+        // Scaladoc config.
+        Compile / doc / scalacOptions ++= commonScalaDoc,
+
+        libraryDependencies ++= libs,
+        libraryDependencies += "edu.stanford.nlp" % "stanford-corenlp" % stanfordCoreNLPVer,
+        libraryDependencies += "edu.stanford.nlp" % "stanford-corenlp" % stanfordCoreNLPVer classifier "models"
     )

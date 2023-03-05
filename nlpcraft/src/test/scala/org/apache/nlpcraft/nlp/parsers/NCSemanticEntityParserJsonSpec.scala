@@ -35,20 +35,20 @@ class NCSemanticEntityParserJsonSpec extends AnyFunSuite:
     /**
       * 
       * @param txt
-      * @param id
+      * @param typ
       * @param elemData
       */
-    private def check(txt: String, id: String, elemData: Option[Map[String, Any]] = None): Unit =
+    private def check(txt: String, typ: String, elemData: Option[Map[String, Any]] = None): Unit =
         val req = NCTestRequest(txt)
         val ents = semParser.parse(req, CFG, EN_TOK_PARSER.tokenize(req.txt))
 
         NCTestUtils.printEntities(txt, ents)
 
         val tok = ents.head
-        
-        require(tok.getId == id)
+
+        require(tok.getType == typ)
         elemData match
-            case Some(m) => m.foreach { (k, v) => require(tok[Any](s"$id:$k") == v) }
+            case Some(m) => m.foreach { (k, v) => require(tok[Any](s"$typ:$k") == v) }
             case None => // No-op.
 
     /**

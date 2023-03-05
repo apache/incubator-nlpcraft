@@ -32,7 +32,6 @@ package org.apache.nlpcraft
   * some aspects of your data models - your entire model and all of its components are part of your project's
   * source code.
   *
-  *
   * @see [[NCModelClient]]
   * @see [[NCModelConfig]]
   * @see [[NCPipeline]]

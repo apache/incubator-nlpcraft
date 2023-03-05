@@ -23,14 +23,12 @@ import org.apache.nlpcraft.*
 /**
   * Order states.
   */
-enum PizzeriaOrderState:
+private [pizzeria] enum PizzeriaOrderState:
     case DIALOG_EMPTY, DIALOG_IS_READY, DIALOG_SHOULD_CANCEL, DIALOG_SPECIFY, DIALOG_CONFIRM
 
 private object OrderPosition:
     val DFLT_QTY = 1
-/**
-  *
-  */
+
 private trait OrderPosition:
     val name: String
     var qty: Option[Int]
@@ -43,7 +41,7 @@ private trait OrderPosition:
   * @param size Optional size.
   * @param qty Optional quantity.
   */
-case class Pizza(name: String, var size: Option[String], var qty: Option[Int]) extends OrderPosition:
+private [pizzeria] case class Pizza(name: String, var size: Option[String], var qty: Option[Int]) extends OrderPosition:
     override def toString = s"$name '${size.getOrElse("undefined size")}' ${qty.getOrElse(OrderPosition.DFLT_QTY)} pcs"
 
 /**
@@ -52,7 +50,7 @@ case class Pizza(name: String, var size: Option[String], var qty: Option[Int]) e
   * @param name Name.
   * @param qty Optional quantity.
   */
-case class Drink(name: String, var qty: Option[Int]) extends OrderPosition:
+private [pizzeria] case class Drink(name: String, var qty: Option[Int]) extends OrderPosition:
     override def toString = s"$name ${qty.getOrElse(OrderPosition.DFLT_QTY)} pcs"
 
 import org.apache.nlpcraft.examples.pizzeria.PizzeriaOrderState.*
@@ -60,26 +58,13 @@ import org.apache.nlpcraft.examples.pizzeria.PizzeriaOrderState.*
 /**
   * Order.
   */
-class PizzeriaOrder:
+private [pizzeria] class PizzeriaOrder:
     private var state = DIALOG_EMPTY
     private val pizzas = mutable.ArrayBuffer.empty[Pizza]
     private val drinks = mutable.ArrayBuffer.empty[Drink]
 
-    /**
-      *
-      */
     def isEmpty: Boolean = pizzas.isEmpty && drinks.isEmpty
-
-    /**
-      *
-      */
     def isValid: Boolean = !isEmpty && findPizzaWithoutSize.isEmpty
-
-    /**
-      *
-      * @param ps
-      * @param ds
-      */
     def add(ps: Seq[Pizza], ds: Seq[Drink]): Unit =
         def setByName[T <: OrderPosition](buf: mutable.ArrayBuffer[T], t: T): Unit =
             buf.find(_.name == t.name) match
@@ -102,32 +87,15 @@ class PizzeriaOrder:
 
         for (d <- ds) setByName(drinks, d)
 
-    /**
-      *
-      */
     def findPizzaWithoutSize: Option[Pizza] = pizzas.find(_.size.isEmpty)
-
-    /**
-      *
-       * @param size
-      */
     def fixPizzaWithoutSize(size: String): Boolean =
         findPizzaWithoutSize match
             case Some(p) =>
                 p.size = size.?
                 true
             case None => false
-    /**
-      *
-      */
     def getState: PizzeriaOrderState = state
-
-    /**
-      *
-      * @param state
-      */
     def setState(state: PizzeriaOrderState): Unit = this.state = state
-
     override def toString: String =
         if !isEmpty then
             val ps = if pizzas.nonEmpty then s"pizza: ${pizzas.mkString(", ")}" else ""

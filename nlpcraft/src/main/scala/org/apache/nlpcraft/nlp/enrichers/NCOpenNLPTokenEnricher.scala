@@ -20,7 +20,6 @@ package org.apache.nlpcraft.nlp.enrichers
 import com.typesafe.scalalogging.LazyLogging
 import opennlp.tools.lemmatizer.DictionaryLemmatizer
 import opennlp.tools.postag.*
-import opennlp.tools.stemmer.PorterStemmer
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.util.*
 
@@ -28,21 +27,26 @@ import java.io.*
 import scala.concurrent.ExecutionContext
 
 /**
-  * [[https://opennlp.apache.org/ OpenNLP]] based language independent [[NCTokenEnricher enricher]].
+  * [[https://opennlp.apache.org/ OpenNLP]]-based language independent [[NCTokenEnricher token enricher]]. This
+  * enricher adds `lemma` and `pos` (part-of-speech) string [[NCPropertyMap metadata]] property to the [[NCToken token]]
+  * instance. Learn more about lemmas [[https://en.wikipedia.org/wiki/Lemma_(morphology) here]] and about part-of-speech
+  * [[https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html here]].
   *
-  * This enricher adds `lemma` and `pos` (part-of-speech) string [[NCPropertyMap metadata]] property to the [[NCToken token]]
-  * instance.
-
-  * Lemma is the canonical form of word, look [[https://en.wikipedia.org/wiki/Lemma_(morphology) here]] for more details.
+  * This OpenNLP enricher requires PoS and lemma models. Some of free OpenNLP community-maintained models can be found
+  * [[https://opennlp.sourceforge.net/models-1.5/ here]]. Note that at least one of model must be defined.
   *
-  * Part-of-speech tags are described [[https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html here]].
-  *
-  * Some of OpenNLP prepared models can be found [[https://opennlp.sourceforge.net/models-1.5/ here]].
-  *
-  * @param posMdlSrc Path to [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/postag/POSTaggerME.html POSTaggerME]] model.
-  * @param lemmaDicSrc Path to [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/lemmatizer/DictionaryLemmatizer.html DictionaryLemmatizer]] model.
+  * @param posMdlRes Relative path, absolute path, classpath resource or URL to
+  *         [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/postag/POSTaggerME.html POSTaggerME]] model.
+  *         Can be `null` if **part-of-speech** model is not configured, so `pos` property will not be set.
+  *         Note that at least one of the model must be provided.
+  * @param lemmaDicRes Relative path, absolute path, classpath resource or URL to
+  *         [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/lemmatizer/DictionaryLemmatizer.html DictionaryLemmatizer]] model.
+  *         Can be `null` if **lemmatizer** model is not configured, so `lemma` property will not be set.
+  *         Note that at least one of the model must be provided.
   */
-class NCOpenNLPTokenEnricher(posMdlSrc: String = null, lemmaDicSrc: String = null) extends NCTokenEnricher with LazyLogging:
+class NCOpenNLPTokenEnricher(posMdlRes: String = null, lemmaDicRes: String = null) extends NCTokenEnricher with LazyLogging:
+    require(posMdlRes != null || lemmaDicRes != null, "At least one model must be defined.")
+
     private var tagger: POSTaggerME = _
     private var lemmatizer: DictionaryLemmatizer = _
 
@@ -52,20 +56,23 @@ class NCOpenNLPTokenEnricher(posMdlSrc: String = null, lemmaDicSrc: String = nul
         NCUtils.execPar(
             Seq(
                 () => {
-                    if posMdlSrc != null then
-                        tagger = new POSTaggerME(new POSModel(NCUtils.getStream(posMdlSrc)))
-                        logger.trace(s"Loaded resource: $posMdlSrc")
-                    else logger.warn("POS tagger is not configured.")
+                    if posMdlRes != null then
+                        tagger = new POSTaggerME(new POSModel(NCUtils.getStream(posMdlRes)))
+                        logger.trace(s"Loaded OpenNLP POS tagging model: $posMdlRes")
+                    else
+                        logger.warn("OpenNLP POS tagger is not configured.")
                 },
                 () => {
-                    if lemmaDicSrc != null then
-                        lemmatizer = new DictionaryLemmatizer(NCUtils.getStream(lemmaDicSrc))
-                        logger.trace(s"Loaded resource: $lemmaDicSrc")
-                    else logger.warn("Lemmatizer is not configured.")
+                    if lemmaDicRes != null then
+                        lemmatizer = new DictionaryLemmatizer(NCUtils.getStream(lemmaDicRes))
+                        logger.trace(s"Loaded OpenNLP lemmatization model: $lemmaDicRes")
+                    else
+                        logger.warn("OpenNLP lemmatizer is not configured.")
                 }
             )
         )(ExecutionContext.Implicits.global)
 
+    /** @inheritdoc */
     override def enrich(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): Unit =
         val txts = toks.map(_.getText).toArray
 

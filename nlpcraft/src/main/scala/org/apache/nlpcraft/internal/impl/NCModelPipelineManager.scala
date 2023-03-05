@@ -171,12 +171,12 @@ class NCModelPipelineManager(cfg: NCModelConfig, pipeline: NCPipeline) extends L
         val vrns = variants.filter(_.getEntities.nonEmpty)
 
         for (v, i) <- vrns.zipWithIndex do
-            val tbl = NCAsciiTable("EntityId", "Tokens", "Tokens Position", "Properties")
+            val tbl = NCAsciiTable("EntityType", "Tokens", "Tokens Position", "Properties")
 
             for e <- v.getEntities do
                 val toks = e.getTokens
                 tbl += (
-                    e.getId,
+                    e.getType,
                     toks.map(_.getText).mkString("|"),
                     toks.map(p => s"${p.getStartCharIndex}-${p.getEndCharIndex}").mkString("|"),
                     mkProps(e)

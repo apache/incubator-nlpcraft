@@ -22,6 +22,7 @@ import annotations.*
 import nlp.parsers.*
 import internal.impl.*
 import nlp.util.*
+import org.apache.nlpcraft.nlp.stemmer.NCStemmer
 import org.scalatest.funsuite.AnyFunSuite
 
 import java.util
@@ -32,10 +33,10 @@ import scala.collection.mutable
   */
 class NCSemanticEntityParserLemmaSpec extends AnyFunSuite:
     private val lemmaStemmer =
-        new NCSemanticStemmer():
-            override def stem(txt: String): String = if wrapped(txt) then unwrap(txt) else UUID.randomUUID().toString
+        new NCStemmer():
+            override def stem(word: String): String = if wrapped(word) then unwrap(word) else UUID.randomUUID().toString
 
-    case class Data(text: String, elemId: String)
+    case class Data(text: String, elemType: String)
 
     private def wrap(s: String): String =
         require(s != null)
@@ -79,7 +80,7 @@ class NCSemanticEntityParserLemmaSpec extends AnyFunSuite:
 
             for (expData <- expVrnts)
                 val idx = vrnts.zipWithIndex.
-                    find { case (v, _) => expData == v.getEntities.map(e => Data(e.mkText, e.getId)) }.
+                    find { case (v, _) => expData == v.getEntities.map(e => Data(e.mkText, e.getType)) }.
                     getOrElse(throw new AssertionError(s"Cannot find variant: $expData"))._2
                 vrnts.remove(idx)
 

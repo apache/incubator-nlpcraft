@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.nlp.token.parser.stanford
+package org.apache.nlpcraft.nlp.stanford
 
 import edu.stanford.nlp.ling.*
 import edu.stanford.nlp.ling.CoreAnnotations.*
@@ -27,14 +27,17 @@ import java.io.StringReader
 import scala.collection.mutable
 
 /**
+  *  [[https://nlp.stanford.edu/ Stanford NLP]] based language independent [[NCTokenParser entity parser]] configured
+  *  by given Stanford NLP pipeline instance.
   *
-  * @param stanford
+  * @param stanford Stanford NLP pipeline instance.
   */
 class NCStanfordNLPTokenParser(stanford: StanfordCoreNLP) extends NCTokenParser:
     require(stanford != null, "Stanford instance cannot be null.")
 
     private def nvl(v: String, dflt : => String): String = if v != null then v else dflt
 
+    /** @inheritdoc */
     override def tokenize(text: String): List[NCToken] =
         val doc = new CoreDocument(text)
         stanford.annotate(doc)

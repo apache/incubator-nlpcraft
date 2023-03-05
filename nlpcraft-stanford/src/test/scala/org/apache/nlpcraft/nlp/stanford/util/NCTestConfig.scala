@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.nlp.util.stanford
+package org.apache.nlpcraft.nlp.stanford.util
 
 import edu.stanford.nlp.pipeline.StanfordCoreNLP
 import org.apache.nlpcraft.NCModelConfig
-import org.apache.nlpcraft.nlp.token.parser.stanford.NCStanfordNLPTokenParser
 import org.apache.nlpcraft.nlp.util.NCTestPipeline
+import org.apache.nlpcraft.nlp.stanford.NCStanfordNLPTokenParser
 
 import java.util.Properties
 

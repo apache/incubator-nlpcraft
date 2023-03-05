@@ -15,24 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.nlp.token.parser.stanford
+package org.apache.nlpcraft.nlp.stanford
 
-import edu.stanford.nlp.pipeline.StanfordCoreNLP
-import org.apache.nlpcraft.nlp.util.*
-import org.apache.nlpcraft.nlp.util.stanford.*
+import org.apache.nlpcraft.nlp.stanford.util.*
+import org.apache.nlpcraft.nlp.util.{CFG, *}
 import org.scalatest.funsuite.AnyFunSuite
 
 /**
   *
   */
-class NCStanfordNLPTokenParserSpec extends AnyFunSuite:
-    test("test") {
-        val toks = TOK_STANFORD_PARSER.tokenize("I had a lunch with brand names 'AAA'")
+class NCStanfordNLPEntityParserSpec extends AnyFunSuite:
+    private val parser = NCStanfordNLPEntityParser(STANFORD, Set("city", "date", "number", "email"))
 
-        require(toks.sizeIs > 1)
+    test("test") {
+        val txt = "Los Angeles, 23 August, 23 and sergeykamov@apache.org, tomorrow"
+
+        val toks = TOK_STANFORD_PARSER.tokenize(txt)
         NCTestUtils.printTokens(toks)
 
-        val words = toks.map(_.getText)
-        require(toks.map(_["String"]("pos")).filter(_ != null).distinct.sizeIs > 1)
-        require(toks.map(_[String]("lemma")).filter(_ != null).zip(words).exists {_ != _})
+        val res = parser.parse(NCTestRequest(txt), CFG, toks)
+        NCTestUtils.printEntities(txt, res)
+
+        require(res.size == 5)
     }

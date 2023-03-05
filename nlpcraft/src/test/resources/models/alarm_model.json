@@ -18,7 +18,7 @@
 {
     "elements": [
         {
-            "id": "x:alarm",
+            "type": "x:alarm",
             "description": "Alarm token indicator.",
             "synonyms": [
                 "{ping|buzz|wake|call|hit} {me|up|me up|_}",

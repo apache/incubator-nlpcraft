@@ -28,7 +28,7 @@ import scala.language.implicitConversions
 import scala.util.Using
 import scala.collection.mutable
 
-object PizzeriaModelSpec:
+private object PizzeriaModelSpec:
     type Request = (String, NCResultType)
     private class ModelTestWrapper extends PizzeriaModel:
         private var o: PizzeriaOrder = _
@@ -45,16 +45,17 @@ object PizzeriaModelSpec:
         private val o = new PizzeriaOrder
         o.setState(DIALOG_EMPTY)
         def withPizza(name: String, size: String, qty: Int): Builder =
-            o.add(Seq(Pizza(name, Some(size), Some(qty))), Seq.empty)
+            o.add(Seq(Pizza(name, Option(size), Option(qty))), Seq.empty)
             this
         def withDrink(name: String, qty: Int): Builder =
-            o.add(Seq.empty, Seq(Drink(name, Some(qty))))
+            o.add(Seq.empty, Seq(Drink(name, Option(qty))))
             this
         def build: PizzeriaOrder = o
 
 import PizzeriaModelSpec.*
+
 /**
-  *
+  * Pizza ordering spec.
   */
 class PizzeriaModelSpec extends AnyFunSuite with BeforeAndAfter:
     private val mdl = new ModelTestWrapper()
@@ -66,14 +67,12 @@ class PizzeriaModelSpec extends AnyFunSuite with BeforeAndAfter:
 
     after {
         if client != null then client.close()
-
         for ((seq, num) <- msgs.zipWithIndex)
             println("#" * 150)
             for (line <- seq) println(line)
             errs.get(num) match
                 case Some(err) => err.printStackTrace()
                 case None => // No-op.
-
         require(errs.isEmpty, s"There are ${errs.size} errors above.")
     }
 

@@ -18,9 +18,10 @@
 package org.apache.nlpcraft.nlp.enrichers
 
 import com.typesafe.scalalogging.LazyLogging
-import opennlp.tools.stemmer.PorterStemmer
 import org.apache.nlpcraft.*
-import org.apache.nlpcraft.internal.util.NCUtils
+import org.apache.nlpcraft.internal.util.NCUtils as U
+import org.apache.nlpcraft.nlp.enrichers.impl.NCEnStopWordGenerator
+import org.apache.nlpcraft.nlp.stemmer.*
 
 import java.io.*
 import java.util
@@ -29,9 +30,9 @@ import scala.collection.*
 import scala.concurrent.ExecutionContext
 
 /**
-  * [[NCEnStopWordsTokenEnricher]] helper.
+  * Companion helper.
   */
-object NCEnStopWordsTokenEnricher:
+private object NCEnStopWordsTokenEnricher extends LazyLogging:
     // Condition types.
     private type Wildcard = (String, String)
     private type Word = String
@@ -95,8 +96,8 @@ object NCEnStopWordsTokenEnricher:
         "percent"
     )
 
-    private def getPos(t: NCToken): String = t.get("pos").getOrElse(throw new NCException(s"POS not found in token: ${t.keysSet}"))
-    private def getLemma(t: NCToken): String = t.get("lemma").getOrElse(throw new NCException(s"Lemma not found in token: ${t.keysSet}"))
+    private def getPos(t: NCToken): String = U.getProperty(t, "pos")
+    private def getLemma(t: NCToken): String = U.getProperty(t, "lemma")
     private def isQuote(t: NCToken): Boolean = Q_POS.contains(getPos(t))
     private def toLemmaKey(toks: Seq[NCToken]): String = toks.map(getLemma).mkString(" ")
     private def toOriginalKey(toks: Seq[NCToken]): String = toks.map(_.getText).mkString(" ")
@@ -104,14 +105,14 @@ object NCEnStopWordsTokenEnricher:
 
     /**
       * Gets all sequential permutations of tokens in this NLP sentence.
-      * This method is like a 'tokenMix', but with all combinations of stop-words (with and without)
+      * This method is like a 'tokenMix', but with all combinations of stopwords (with and without)
       *
       * @param tokens Tokens.
       * @param maxLen Maximum number of tokens in the sequence.
       */
     private[enrichers] def tokenMixWithStopWords(tokens: Seq[NCToken], maxLen: Int = Integer.MAX_VALUE): Seq[Seq[NCToken]] =
         /**
-          * Gets all combinations for sequence of mandatory tokens with stop-words and without.
+          * Gets all combinations for sequence of mandatory tokens with stopwords and without.
           *
           * Example:
           * 'A (stop), B, C(stop) -> [A, B, C]; [A, B]; [B, C], [B]
@@ -160,43 +161,63 @@ object NCEnStopWordsTokenEnricher:
     private def tokenMix(toks: Seq[NCToken], maxLen: Int = Integer.MAX_VALUE): Seq[Seq[NCToken]] =
         (for (n <- toks.length until 0 by -1 if n <= maxLen) yield toks.sliding(n)).flatten
 
-import org.apache.nlpcraft.nlp.enrichers.NCEnStopWordsTokenEnricher.*
+import NCEnStopWordsTokenEnricher.*
 
 /**
-  * "Stop-word" [[NCTokenEnricher enricher]] for English language.
+  * Stopword [[NCTokenEnricher token enricher]] for English (EN) language. Stopwords are the words
+  * which are filtered out (i.e. stopped) before processing of natural language text because they are
+  * insignificant.
   *
   * This enricher adds `stopword` boolean [[NCPropertyMap metadata]] property to the [[NCToken token]]
-  * instance if word it represents is an English stop-word. The value `true` of the metadata property indicates that this word is detected as stop-word,
-  * `false` value indicates otherwise.
+  * instance if the word it represents is an English stopword. The value `true` of this metadata property indicates that
+  * this word is detected as a stopword, `false` value indicates otherwise. This implementation works off the
+  * algorithm that uses an internal list of English stopwords as well as a procedural logic to determine the stopword
+  * status of the token. This algorithm should work fine for most of the general uses cases. User can also add
+  * additional stopwords or exceptions for the existing ones using corresponding parameters in [[NCEnStopWordsTokenEnricher]]
+  * constructor.
   *
-  * Look more about stop-words [[https://en.wikipedia.org/wiki/Stop_word here]].
+  * More information about stopwords can be found at [[https://en.wikipedia.org/wiki/Stop_word]].
   *
-  * **NOTE:** this implementation requires `lemma` and `pos` string [[NCPropertyMap metadata]] properties that contains
-  * token's lemma and part of speech. You can configure [[NCOpenNLPTokenEnricher]] that provides this metadata property before
-  * this enricher in your [[NCPipeline pipeline]].
+  * **NOTE:** this implementation requires `lemma` and `pos` string [[NCPropertyMap metadata]] properties that
+  * contain token's lemma and part of speech accordingly. You can configure [[NCOpenNLPTokenEnricher]] with the model
+  * for English language that would provide these metadata properties before this enricher in your [[NCPipeline pipeline]].
   *
-  * @param addStopsSet User defined collection of additional stop-words.
-  * @param exclStopsSet User defined collection of exceptions, that is words which should not be marked as stop-words during processing.
+  * @param addSet User defined collection of additional stopwords. These words will be stemmatized by the given `stemmer`
+  *         before attempting to find a match. Default value is an empty set.
+  * @param exclSet User defined collection of exceptions, i.e. the words which should not be marked as stopwords during
+  *         processing. These words will be stemmatized by the given `stemmer` before attempting to find a match.
+  *         Default value is an empty set.
+  * @param stemmer English stemmer implementation. Default value is the instance of [[org.apache.nlpcraft.nlp.stemmer.NCEnStemmer NCEnStemmer]].
   */
-class NCEnStopWordsTokenEnricher(addStopsSet: Set[String] = Set.empty, exclStopsSet: Set[String] = Set.empty) extends NCTokenEnricher with LazyLogging:
-    private final val stemmer = new PorterStemmer
+class NCEnStopWordsTokenEnricher(
+    addSet: Set[String] = Set.empty,
+    exclSet: Set[String] = Set.empty,
+    stemmer: NCStemmer = new NCEnStemmer
+) extends NCTokenEnricher with LazyLogging:
+    require(addSet != null, "Additional stopwords cannot be null.")
+    require(exclSet != null, "Exceptions stopwords cannot be null.")
+    require(stemmer != null, "Stemmer cannot be null.")
 
     private var addStems: Set[String] = _
     private var exclStems: Set[String] = _
     private var percents: Set[String] = _
-    private var firstWords: Set[String] = _
-    private var nounWords: Set[String] = _
     private var stopWords: StopWordHolder = _
     private var exceptions: StopWordHolder = _
+    private var firstWords: Set[String] = _
+    private var nounWords: Set[String] = _
 
+    private case class TokenExtra(lemma: String, stemTxt: String, stemLemma: String)
+    private object TokenExtra:
+        def apply(t: NCToken): TokenExtra =
+            val lemma = getLemma(t)
+            new TokenExtra(lemma, getStem(t.getText), getStem(lemma))
     init()
 
-    private def read(path: String): Set[String] = NCUtils.readTextGzipResource(path, "UTF-8", logger).toSet
-    private def stem(s: String): String = stemmer.stem(s.toLowerCase)
-    private def toStemKey(toks: Seq[NCToken]): String = toks.map(_.getText).map(stem).mkString(" ")
+    private def getStem(s: String): String = stemmer.stem(s.toLowerCase)
+    private def toStemKey(toks: Seq[NCToken]): String = toks.map(_.getText).map(getStem).mkString(" ")
 
     /**
-      * Stop words holder, used for hash search.
+      * stopword holder, used for hash search.
       *
       * @param any Any POSes container.
       * @param includes Included by POS container.
@@ -215,7 +236,7 @@ class NCEnStopWordsTokenEnricher(addStopsSet: Set[String] = Set.empty, exclStops
                 case _ => any.contains(s)
 
     /**
-      * Stop words holder, used for scanning.
+      * stopword holder, used for scanning.
       *
       * @param any Any POSes container.
       * @param includes Included by POS container.
@@ -254,7 +275,7 @@ class NCEnStopWordsTokenEnricher(addStopsSet: Set[String] = Set.empty, exclStops
                     case _ => throw new AssertionError("Unexpected POS.")
 
     /**
-      * Stop words data holder.
+      * stopword data holder.
       *
       * @param stems Stems data holder.
       * @param lemmas Lemmas data holder.
@@ -277,18 +298,18 @@ class NCEnStopWordsTokenEnricher(addStopsSet: Set[String] = Set.empty, exclStops
 
             // Hash access.
             stems.matches(toStemKey(toks), posOpt) ||
-                lemmas.matches(toLemmaKey(toks), posOpt) ||
-                origins.matches(toOriginalKey(toks), posOpt) ||
-                // Scan access.
-                wildcardsLemmas.matches(toLemmaKey(toks), posOpt) ||
-                wildcardsOrigins.matches(toOriginalKey(toks), posOpt)
+            lemmas.matches(toLemmaKey(toks), posOpt) ||
+            origins.matches(toOriginalKey(toks), posOpt) ||
+            // Scan access.
+            wildcardsLemmas.matches(toLemmaKey(toks), posOpt) ||
+            wildcardsOrigins.matches(toOriginalKey(toks), posOpt)
 
     /**
-      * 
+      *
       */
     private def init(): Unit =
-        addStems = if addStopsSet == null then Set.empty else addStopsSet.map(stem)
-        exclStems = if exclStopsSet == null then Set.empty else exclStopsSet.map(stem)
+        addStems = addSet.map(getStem)
+        exclStems = exclSet.map(getStem)
 
         def check(name: String, set: Set[String]): Unit =
             if set.exists(_.exists(_.isWhitespace)) then throw E(s"$name contain a string with whitespaces.")
@@ -299,32 +320,26 @@ class NCEnStopWordsTokenEnricher(addStopsSet: Set[String] = Set.empty, exclStops
         val dups = addStems.intersect(exclStems)
         if dups.nonEmpty then E(s"Duplicate stems detected between additional and excluded stopwords [dups=${dups.mkString(",")}]")
 
-        percents = PERCENTS.map(stem)
-
-        // Stemmatization is done already by generator.
-        NCUtils.execPar(
-            Seq(
-                () => firstWords = read("stopwords/first_words.txt.gz"),
-                () => nounWords = read("stopwords/noun_words.txt.gz")
-            )
-        )(ExecutionContext.Implicits.global)
+        percents = PERCENTS.map(getStem)
 
         // Case sensitive.
-        val m = readStopWords(
-            NCUtils.readResource("stopwords/stop_words.txt", "UTF-8", logger)
-            .map(_.strip).filter(s => s.nonEmpty && !s.startsWith("#"))
-        )
+        val m = readStopWords(U.readLines(res = "stopwords/en_stop_words.txt", filterText = true, log = logger))
 
         stopWords = m(false)
         exceptions = m(true)
+
+        val gen = new NCEnStopWordGenerator(stemmer)
+
+        firstWords = gen.mkFirstWords()
+        nounWords = gen.mkNounWords()
 
     /**
       * Parses configuration template.
       *
       * @param lines Configuration file content.
-      * @return Holder and `is-exception` flag.
+      * @return Holder and is-exception flag.
       */
-    private def readStopWords(lines: Seq[String]): Map[Boolean, StopWordHolder] =
+    private def readStopWords(lines: Iterator[String]): Map[Boolean, StopWordHolder] =
         // 1. Prepares accumulation data structure.
         enum WordForm:
             case STEM, LEM, ORIG
@@ -346,8 +361,8 @@ class NCEnStopWordsTokenEnricher(addStopsSet: Set[String] = Set.empty, exclStops
                                 case Some(set) => set.add(cond)
                                 case _ =>
                                     val set = mutable.HashSet.empty[T]
-                                        set += cond
-                                        m += pos -> set
+                                    set += cond
+                                    m += pos -> set
                         )
 
                     add(incls, incl = true)
@@ -361,7 +376,7 @@ class NCEnStopWordsTokenEnricher(addStopsSet: Set[String] = Set.empty, exclStops
                 m += tuple._1 -> tuple._2
             WordForm.values.foreach(f =>
                 add(f, mkT, isExc = true)
-                    add(f, mkT, isExc = false)
+                add(f, mkT, isExc = false)
             )
             m.toMap
 
@@ -407,7 +422,7 @@ class NCEnStopWordsTokenEnricher(addStopsSet: Set[String] = Set.empty, exclStops
             val isMultiWord = s.contains(' ')
 
             // Confusing POSes.
-            if poses.nonEmpty && isMultiWord then throwError("POSes cannot be defined for multiple stop words.")
+            if poses.nonEmpty && isMultiWord then throwError("POSes cannot be defined for multiple stopword.")
             var isCase = false
             if s.head == '@' then
                 s = s.drop(1)
@@ -415,12 +430,11 @@ class NCEnStopWordsTokenEnricher(addStopsSet: Set[String] = Set.empty, exclStops
                 if s.isEmpty then throwError("Empty word.")
                 isCase = true
             val idxWild = s.indexOf("*")
-            if idxWild >= 0 && isMultiWord then throwError("Wildcard cannot be defined for multiple stop words.")
+            if idxWild >= 0 && isMultiWord then throwError("Wildcard cannot be defined for multiple stopword.")
             if idxWild < 0 then
                 val (word, form) =
                     if isCase then (s, ORIG)
-                    else
-                        if !hasPoses then (stem(s), STEM) else (stem(s), LEM)
+                    else if !hasPoses then (getStem(s), STEM) else (getStem(s), LEM)
                 mHash((isExc, form)).addCondition(word, poses)
             else
                 val b = s.take(idxWild)
@@ -441,25 +455,23 @@ class NCEnStopWordsTokenEnricher(addStopsSet: Set[String] = Set.empty, exclStops
                 val any = m((isExc, form)).any.toSet
                 val incl = toImmutable(m((isExc, form)).incls)
                 val excl = toImmutable(m((isExc, form)).excls)
+                mkInstance(any ++ excl.values.flatten, incl, excl)
 
-                    mkInstance(any ++ excl.values.flatten, incl, excl)
-            end mkHolder
             def mkHash(form: WordForm): HashHolder = mkHolder(mHash, form, HashHolder.apply)
-            def mkScan(form: WordForm):
-            ScanHolder = mkHolder(mScan, form, ScanHolder.apply)
+            def mkScan(form: WordForm): ScanHolder = mkHolder(mScan, form, ScanHolder.apply)
 
-                isExc -> StopWordHolder(mkHash(STEM), mkHash(LEM), mkHash(ORIG), mkScan(LEM), mkScan(ORIG))
+            isExc -> StopWordHolder(mkHash(STEM), mkHash(LEM), mkHash(ORIG), mkScan(LEM), mkScan(ORIG))
         ).toMap
 
     private def isVerb(pos: String): Boolean = pos.head == 'V'
 
     /**
-      * Marks words before stop words.
+      * Marks words before stopword.
       *
       * @param ns Sentence.
       * @param stopPoses Stop POSes.
       * @param lastIdx Last index.
-      * @param isException Function which return `stop word exception` flag.
+      * @param isException Function which return stop word exception flag.
       * @param stops Stopwords tokens.
       */
     @tailrec
@@ -471,12 +483,10 @@ class NCEnStopWordsTokenEnricher(addStopsSet: Set[String] = Set.empty, exclStops
         stops: mutable.HashSet[NCToken]
     ): Boolean =
         var stop = true
-
         for ((tok, idx) <- ns.zipWithIndex if idx != lastIdx && !isStopWord(tok) && !isException(Seq(tok)) &&
             stopPoses.contains(getPos(tok)) && isStopWord(ns(idx + 1)))
             stops += tok
             stop = false
-
         if stop then true else markBefore(ns, stopPoses, lastIdx, isException, stops)
 
     /**
@@ -495,28 +505,37 @@ class NCEnStopWordsTokenEnricher(addStopsSet: Set[String] = Set.empty, exclStops
                 b
 
     /**
-      * Marks as stopwords, words with POS from configured list, which also placed before another stop words.
+      * Marks as stopwords, words with POS from configured list, which also placed before another stopword.
       */
-    private def processCommonStops(ns: Seq[NCToken], stops: mutable.HashSet[NCToken]): Unit =
+    private def processCommonStops(ns: Seq[NCToken], extraToks: Map[NCToken, TokenExtra], stops: mutable.HashSet[NCToken]): Unit =
         /**
-          * Marks as stopwords, words with POS from configured list, which also placed before another stop words.
+          * Marks as stopwords, words with POS from configured list, which also placed before another stopword.
           */
         @tailrec
-        def processCommonStops0(ns: Seq[NCToken]): Unit =
+        def processCommonStops0(ns: Seq[NCToken], extraToks: Map[NCToken, TokenExtra]): Unit =
             val max = ns.size - 1
             var stop = true
 
-            for ((tok, idx) <- ns.zipWithIndex if idx != max && !isStopWord(tok) && !exclStems.contains(stem(tok.getText)) &&
-                POSES.contains(getPos(tok)) && isStopWord(ns(idx + 1)))
+            for (
+                (tok, idx) <- ns.zipWithIndex; extra = extraToks(tok)
+                if
+                    idx != max &&
+                    !isStopWord(tok) &&
+                    !exclStems.contains(extra.stemTxt) &&
+                    !exclStems.contains(extra.stemLemma) &&
+                    POSES.contains(getPos(tok)) &&
+                    isStopWord(ns(idx + 1))
+            )
                 stops += tok
                 stop = false
 
-            if !stop then processCommonStops0(ns)
+            if !stop then processCommonStops0(ns, extraToks)
 
-        processCommonStops0(ns)
+        processCommonStops0(ns, extraToks)
 
+    /** @inheritdoc */
     override def enrich(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): Unit =
-        // Stop words and exceptions caches for this sentence.
+        // stopword and exceptions caches for this sentence.
         val cacheSw = mutable.HashMap.empty[Seq[NCToken], Boolean]
         val cacheEx = mutable.HashMap.empty[Seq[NCToken], Boolean]
 
@@ -525,11 +544,15 @@ class NCEnStopWordsTokenEnricher(addStopsSet: Set[String] = Set.empty, exclStops
 
         val stops = mutable.HashSet.empty[NCToken]
 
-        for (tok <- toks)
+        val extraToks =
+            scala.collection.mutable.LinkedHashMap.empty[NCToken, TokenExtra] ++=
+                toks.map(t => t -> TokenExtra(t))
+
+        for ((tok, extra) <- extraToks)
             val idx = tok.getIndex
             val pos = getPos(tok)
-            val lemma = getLemma(tok)
-            val st = stem(tok.getText)
+            val lemma = extra.lemma
+            val st = extra.stemTxt
 
             def isFirst: Boolean = idx == 0
             def isLast: Boolean = idx == toks.length - 1
@@ -537,7 +560,7 @@ class NCEnStopWordsTokenEnricher(addStopsSet: Set[String] = Set.empty, exclStops
             def prev(): NCToken = toks(idx - 1)
             def isCommonVerbs(firstVerb: String, secondVerb: String): Boolean =
                 isVerb(pos) && lemma == secondVerb ||
-                    (isVerb(pos) && lemma == firstVerb && !isLast && isVerb(getPos(next())) && getLemma(next()) == secondVerb)
+                (isVerb(pos) && lemma == firstVerb && !isLast && isVerb(getPos(next())) && getLemma(next()) == secondVerb)
 
             // +---------------------------------+
             // | Pass #1.                        |
@@ -569,7 +592,7 @@ class NCEnStopWordsTokenEnricher(addStopsSet: Set[String] = Set.empty, exclStops
             toks.foreach(tok => stops += tok)
             buf += toks
 
-        // Capture the token mix at this point minus the initial stop words found up to this point.
+        // Capture the token mix at this point minus the initial stopword found up to this point.
         val origToks: Seq[(Seq[NCToken], String)] =
             (for (toks <- mix) yield toks.toSeq).map(s => s -> toStemKey(s)).toSeq
 
@@ -580,7 +603,7 @@ class NCEnStopWordsTokenEnricher(addStopsSet: Set[String] = Set.empty, exclStops
 
         val foundKeys = new mutable.HashSet[String]()
 
-        // All sentence first stop words + first non stop word.
+        // All sentence first stopword + first non stop word.
         val startToks = toks.takeWhile(isStopWord) ++ toks.find(p => !isStopWord(p)).map(p => p)
         for (startTok <- startToks; tup <- origToks.filter(_._1.head == startTok); key = tup._2 if firstWords.contains(key) && !isException(tup._1))
             tup._1.foreach(tok => stops += tok)
@@ -597,31 +620,30 @@ class NCEnStopWordsTokenEnricher(addStopsSet: Set[String] = Set.empty, exclStops
 
         // +-------------------------------------------------+
         // | Pass #5.                                        |
-        // | Mark words with POSes before stop-words.        |
+        // | Mark words with POSes before stopwords.         |
         // +-------------------------------------------------+
         markBefore(toks, STOP_BEFORE_STOP, toks.size - 1, isException, stops)
 
         // +-------------------------------------------------+
         // | Pass #6.                                        |
-        // | Processing additional and excluded stop words.  |
+        // | Processing additional and excluded stopword.    |
         // +-------------------------------------------------+
-        for (t <- toks if addStems.contains(stem(t.getText)))
-            stops += t
+        def has(set: Set[String], extra: TokenExtra) = set.contains(extra.stemTxt) || set.contains(extra.stemLemma)
 
-        for (t <- stops.filter(t => exclStems.contains(stem(t.getText))))
-            stops -= t
+        for ((t, extra) <- extraToks if has(addStems, extra)) stops += t
+        for ((t, _) <- stops.map(t => t -> extraToks(t)).filter { (_, extra) => has(exclSet, extra)}) stops -= t
 
         // +-------------------------------------------------+
         // | Pass #7.                                        |
         // | Marks as stopwords, words with POS from         |
         // | configured list, which also placed before       |
-        // | another stop words.                             |
+        // | another stopword.                               |
         // +-------------------------------------------------+
-        processCommonStops(toks, stops)
+        processCommonStops(toks, extraToks, stops)
 
         // +-------------------------------------------------+
         // | Pass #8.                                        |
-        // | Deletes stop words if they are marked as quoted.|
+        // | Deletes stopword if they are marked as quoted.  |
         // +-------------------------------------------------+
         var quotes = toks.filter(isQuote)
 
@@ -641,7 +663,7 @@ class NCEnStopWordsTokenEnricher(addStopsSet: Set[String] = Set.empty, exclStops
 
         // +-------------------------------------------------+
         // | Pass #9.                                        |
-        // | Deletes stop words if they are brackets.        |
+        // | Deletes stopword if they are brackets.          |
         // +-------------------------------------------------+
         val stack = new java.util.Stack[String]()
         val set = mutable.HashSet.empty[NCToken]

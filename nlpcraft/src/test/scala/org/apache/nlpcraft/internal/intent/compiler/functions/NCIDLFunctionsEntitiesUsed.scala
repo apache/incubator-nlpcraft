@@ -18,6 +18,8 @@
 package org.apache.nlpcraft.internal.intent.compiler.functions
 
 import org.apache.nlpcraft.internal.intent.compiler.functions.NCIDLFunctions.*
+import scala.language.implicitConversions
+import org.apache.nlpcraft.internal.intent.compiler.functions.NCIDLFunctions.given
 import org.apache.nlpcraft.nlp.util.NCTestToken
 import org.apache.nlpcraft.*
 
@@ -26,8 +28,8 @@ import org.apache.nlpcraft.*
   */
 class NCIDLFunctionsEntitiesUsed extends NCIDLFunctions:
     test("test") {
-        val e1 = mkEntity(id = "a", tokens = NCTestToken())
-        val e2 = mkEntity(id = "b", tokens = NCTestToken())
+        val e1 = mkEntity(typ = "a", tokens = NCTestToken())
+        val e2 = mkEntity(typ = "b", tokens = NCTestToken())
 
         test(
             TestDesc(

@@ -15,25 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.nlp.entity.parser.stanford
+package org.apache.nlpcraft.nlp.stemmer
 
-import org.apache.nlpcraft.nlp.util.{CFG, *}
-import org.apache.nlpcraft.nlp.util.stanford.*
-import org.scalatest.funsuite.AnyFunSuite
+import org.apache.nlpcraft.nlp.parsers.*
+
 /**
+  * Trait defining a general stemmer. Stemming is the process of reducing inflected (or sometimes derived)
+  * words to their word stem, base or root form—generally a written word form. Note that stemmer is used by
+  * several built-in pipeline components.
   *
+  * Read more about stemming at [[https://en.wikipedia.org/wiki/Stemming]].
   */
-class NCStanfordNLPEntityParserSpec extends AnyFunSuite:
-    private val parser = NCStanfordNLPEntityParser(STANFORD, Set("city", "date", "number", "email"))
-
-    test("test") {
-        val txt = "Los Angeles, 23 August, 23 and sergeykamov@apache.org, tomorrow"
-
-        val toks = TOK_STANFORD_PARSER.tokenize(txt)
-        NCTestUtils.printTokens(toks)
-
-        val res = parser.parse(NCTestRequest(txt), CFG, toks)
-        NCTestUtils.printEntities(txt, res)
-
-        require(res.size == 5)
-    }
+trait NCStemmer:
+    /**
+      * Gets a stem for a given text. Note that unlike lemma the stemmatization process does not
+      * require a context for the given word, i.e. the stemmatization can be performed on individual word.
+      *
+      * @param word Text to stemmatize.
+      */
+    def stem(word: String): String

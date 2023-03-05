@@ -26,12 +26,12 @@ import org.apache.nlpcraft.examples.lightswitch.nlp.token.parser.NCFrTokenParser
 import scala.jdk.CollectionConverters.*
 
 /**
-  * This example provides very simple implementation for NLI-powered light switch.
+  * This example provides a simple implementation for NLI-powered light switch for French language.
+  *
   * You can say something like this:
-  * <ul>
-  *     <li>"Turn the lights off in the entire house."</li>
-  *     <li>"Switch on the illumination in the master bedroom closet."</li>
-  * </ul>
+  * - Éteignez les lumières dans toute la maison.
+  * - S'il te plaît, pas de lumières!
+  *
   * You can easily modify intent callbacks to perform the actual light switching using
   * HomeKit or Arduino-based controllers.
   *
@@ -60,7 +60,7 @@ class LightSwitchFrModel extends NCModel(
         @NCIntentTerm("act") actEnt: NCEntity,
         @NCIntentTerm("loc") locEnts: List[NCEntity]
     ): NCResult =
-        val action = if actEnt.getId == "ls:on" then "allumer" else "éteindre"
+        val action = if actEnt.getType == "ls:on" then "allumer" else "éteindre"
         val locations = if locEnts.isEmpty then "toute la maison" else locEnts.map(_.mkText).mkString(", ")
 
         // Add HomeKit, Arduino or other integration here.

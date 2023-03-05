@@ -19,16 +19,17 @@ package org.apache.nlpcraft.examples.time
 import edu.stanford.nlp.pipeline.StanfordCoreNLP
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.annotations.*
-import org.apache.nlpcraft.nlp.entity.parser.stanford.*
 import org.apache.nlpcraft.nlp.parsers.*
-import org.apache.nlpcraft.nlp.token.parser.stanford.NCStanfordNLPTokenParser
+import org.apache.nlpcraft.nlp.stanford.{NCStanfordNLPEntityParser, NCStanfordNLPTokenParser}
+import org.apache.nlpcraft.nlp.stanford.*
+
 import java.util.Properties
 import scala.annotation.*
 
 /**
- *
+ * Companion helper.
  */
-object CalculatorModel:
+private object CalculatorModel:
     private val OPS: Map[String, (Int, Int) => Int] = Map("+" -> (_ + _), "-" -> (_ - _), "*" -> (_ * _), "/" -> (_ / _))
     private val PIPELINE: NCPipeline =
         val props = new Properties()
@@ -47,13 +48,24 @@ object CalculatorModel:
 import CalculatorModel.*
 
 /**
- * 
- */
-class CalculatorModel extends NCModel(NCModelConfig("nlpcraft.calculator.ex", "Calculator Example Model", "1.0"), PIPELINE) :
+  * This example provides a simple implementation for NLI-powered calculator that remembers the last operation result.
+  *
+  * Supported operations are: `+`, `-`, `*` and `/`.
+  * Operands values can be given as digits or in text.
+  * When first operand is omitted than last operation result is used instead.
+  *
+  * You can ask something like this:
+  * - User input: *2 + 2*. Expected result is **4**.
+  * - User input: *twenty two - two*. Expected result is **20**.
+  * - User input: *\/ two*. Expected result is **10**.
+  *
+  * See 'README.md' file in the same folder for running and testing instructions.
+  */
+class CalculatorModel extends NCModel(NCModelConfig("nlpcraft.calculator.ex", "Calculator Example Model", "1.0"), PIPELINE):
     private var mem: Option[Int] = None
 
     private def calc(x: Int, op: String, y: Int): NCResult =
-        mem = Some(OPS.getOrElse(op, throw new IllegalStateException()).apply(x, y))
+        mem = Option(OPS.getOrElse(op, throw new IllegalStateException()).apply(x, y))
         NCResult(mem.get)
 
     /*
@@ -65,7 +77,7 @@ class CalculatorModel extends NCModel(NCModelConfig("nlpcraft.calculator.ex", "C
     @NCIntent(
         "intent=calc options={ 'ordered': true }" +
         "   term(x)={# == 'stanford:number'}" +
-        "   term(op)={has(list('+', '-', '*', '/'), meta_ent('nlp:token:text')) == true}" +
+        "   term(op)={has(list('+', '-', '*', '/'), meta_ent('nlp:entity:text')) == true}" +
         "   term(y)={# == 'stanford:number'}"
     )
     @unused def onMatch(
@@ -78,7 +90,7 @@ class CalculatorModel extends NCModel(NCModelConfig("nlpcraft.calculator.ex", "C
 
     @NCIntent(
         "intent=calcMem options={ 'ordered': true }" +
-        "   term(op)={has(list('+', '-', '*', '/'), meta_ent('nlp:token:text')) == true}" +
+        "   term(op)={has(list('+', '-', '*', '/'), meta_ent('nlp:entity:text')) == true}" +
         "   term(y)={# == 'stanford:number'}"
     )
     @unused def onMatchMem(

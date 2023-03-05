@@ -15,23 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.nlp.enrichers.tools
+package org.apache.nlpcraft.nlp.enrichers.impl
 
-import opennlp.tools.stemmer.PorterStemmer
 import org.apache.nlpcraft.internal.util.NCUtils
+import org.apache.nlpcraft.nlp.stemmer.*
 
 import scala.collection.mutable
 
-/**
-  * Generates first word sequences.
-  */
-object NCEnStopWordGenerator:
-    private final lazy val stemmer = new PorterStemmer
-
-    // Output files.
-    private val FIRST_WORDS_FILE = "first_words.txt"
-    private val NOUN_WORDS_FILE = "noun_words.txt"
-
+private[enrichers] object NCEnStopWordGenerator:
+    // All string data should be in lowercase.
     private final val QWORDS = Seq(
         "what",
         "when",
@@ -157,12 +149,13 @@ object NCEnStopWordGenerator:
         "couple of"
     )
 
-    private def mkGzip(path: String, lines: Iterable[Any]): Unit =
-        val p = NCUtils.mkPath(s"nlpcraft/src/main/resources/stopwords/$path")
-        NCUtils.mkTextFile(p, lines)
-        NCUtils.gzipPath(p)
+import org.apache.nlpcraft.nlp.enrichers.impl.NCEnStopWordGenerator.*
 
-    private[tools] def mkNounWords(): Unit =
+/**
+  * Generates first word sequences.
+  */
+private[enrichers] class NCEnStopWordGenerator(stemmer: NCStemmer):
+    def mkNounWords(): Set[String] =
         val buf = new mutable.ArrayBuffer[String]()
 
         for (w1 <- NOUN_WORDS)
@@ -171,12 +164,9 @@ object NCEnStopWordGenerator:
         for (w1 <- NOUN_WORDS; w2 <- NOUN_WORDS2)
             buf += s"$w1 $w2"
 
-        mkGzip(NOUN_WORDS_FILE, stem(buf.toSeq))
+        buf.map(stem).toSet
 
-    private def stem(s: String): String = s.split(" ").map(p => stemmer.stem(p.toLowerCase)).mkString(" ")
-    private def stem(seq: Seq[String]): Seq[String] = seq.map(stem)
-
-    private[tools] def mkFirstWords(): Unit =
+    def mkFirstWords(): Set[String] =
         val buf = new mutable.ArrayBuffer[String]()
 
         // is there
@@ -307,14 +297,8 @@ object NCEnStopWordGenerator:
         for (w0 <- DWORDS_PRE; w1 <- DWORDS; w2 <- DWORDS_SUP; w3 <- QWORDS)
             buf += s"$w0 $w1 $w2 $w3"
 
-        mkGzip(FIRST_WORDS_FILE, stem(buf.toSeq))
+        buf.map(stem).toSet
 
-    /**
-      *
-      * @param args
-      */
-    def main(args: Array[String]): Unit =
-        mkFirstWords()
-        mkNounWords()
+    // All data already in lowercase.
+    private def stem(s: String): String = s.split(" ").map(stemmer.stem).mkString(" ")
 
-        sys.exit()

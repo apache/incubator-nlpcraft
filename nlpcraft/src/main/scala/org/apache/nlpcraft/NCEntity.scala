@@ -28,7 +28,6 @@ package org.apache.nlpcraft
   * that allows them to store custom metadata properties. Parser, enrichers and validators for tokens
   * and entities use this capability to store and check their properties in tokens and entities.
   *
-  * @see [[NCEntity]]
   * @see [[NCToken]]
   * @see [[NCTokenParser]]
   * @see [[NCTokenEnricher]]
@@ -66,14 +65,17 @@ trait NCEntity extends NCPropertyMap:
 
     /**
       * Gets optional set of groups this entity belongs to.
+      * Groups can be used in [[https://nlpcraft.apache.org/intent-matching.html#idl NLPCraft IDL]].
+      * They are designed for convenient search any entity which belongs to the same group.
       *
-      * @return Optional set of groups this entity belongs to. Returned set can be empty but never `null`.
+      * @return Optional set of groups this entity belongs to. Returned set can be empty but never `null`. By
+      *     default the entity belongs to a group of its own [[getType type]].
       */
-    def getGroups: Set[String] = Set(getId)
+    def getGroups: Set[String] = Set(getType)
 
     /**
-      * Gets globally unique ID of this entity.
+      * Gets entity type.
       *
-      * @return Globally unique ID of this entity.
+      * @return Entity type.
       */
-    def getId: String
+    def getType: String

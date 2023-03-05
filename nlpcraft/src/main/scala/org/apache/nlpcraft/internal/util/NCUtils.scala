@@ -41,9 +41,6 @@ import scala.util.Using
   * 
   */
 object NCUtils extends LazyLogging:
-    final val NL = System getProperty "line.separator"
-    private val RND = new Random()
-    private final val UTC = ZoneId.of("UTC")
     private val sysProps = new SystemProperties
     private final lazy val GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create()
 
@@ -53,116 +50,6 @@ object NCUtils extends LazyLogging:
       * @param s Name of the system property or environment variable.
       */
     def sysEnv(s: String): Option[String] = sysProps.get(s).orElse(sys.env.get(s))
-
-    /**
-      * Tests whether given system property of environment variable is set or not.
-      *
-      * @param s @param s Name of the system property or environment variable.
-      */
-    def isSysEnvSet(s: String): Boolean = sysProps.get(s).nonEmpty || sys.env.contains(s)
-
-    /**
-      * Returns `true` if given system property, or environment variable is provided and has value
-      * 'true'. In all other cases returns `false`.
-      *
-      * @param s Name of the system property or environment variable.
-      */
-    def isSysEnvTrue(s: String): Boolean = sysEnv(s) match
-        case None => false
-        case Some(v) => java.lang.Boolean.valueOf(v) == java.lang.Boolean.TRUE
-
-    /**
-      * Gets random value from given sequence.
-      *
-      * @param seq Sequence.
-      */
-    def getRandom[T](seq: Seq[T]): T = seq(RND.nextInt(seq.size))
-
-    /**
-      * Makes random filled sequence with given length from initial.
-      *
-      * @param seq Initial sequence.
-      * @param n Required sequence length.
-      */
-    def getRandomSeq[T](seq: Seq[T], n: Int): Seq[T] =
-        require(seq.lengthCompare(n) >= 0)
-
-        val src = mutable.ArrayBuffer.empty[T] ++ seq
-        val dest = mutable.ArrayBuffer.empty[T]
-
-        (0 until n).foreach(_ => dest += src.remove(RND.nextInt(src.size)))
-
-        dest.toSeq
-
-    /**
-      * Prints ASCII-logo.
-      */
-    def asciiLogo(): String =
-        Seq(
-            raw"    _   ____      ______           ______   $NL",
-            raw"   / | / / /___  / ____/________ _/ __/ /_  $NL",
-            raw"  /  |/ / / __ \/ /   / ___/ __ `/ /_/ __/  $NL",
-            raw" / /|  / / /_/ / /___/ /  / /_/ / __/ /_    $NL",
-            raw"/_/ |_/_/ .___/\____/_/   \__,_/_/  \__/    $NL",
-            raw"       /_/                                  $NL"
-        )
-        .mkString("")
-
-    /**
-      *
-      * @param json
-      */
-    def prettyJson(json: String): String =
-        if json == null || json.isEmpty then ""
-        else
-            try
-                GSON.toJson(GSON.getAdapter(classOf[JsonElement]).fromJson(json))
-                    // Fix the problem with escaping '<' and '>' which is only
-                    // a theoretical problem for browsers displaying JSON.
-                    .replace("\\u003c", "<")
-                    .replace("\\u003e", ">")
-            catch case _: Exception => ""
-
-    /**
-      *
-      * @param json
-      */
-    def isValidJson(json: String): Boolean =
-        scala.util.Try(GSON.getAdapter(classOf[JsonElement]).fromJson(json)).isSuccess
-
-    /**
-      *
-      * @param json
-      * @param field
-      */
-    @throws[Exception]
-    def getJsonStringField(json: String, field: String): String =
-        GSON.getAdapter(classOf[JsonElement]).fromJson(json).getAsJsonObject.get(field).getAsString
-
-    /**
-      *
-      * @param json
-      * @param field
-      */
-    @throws[Exception]
-    def getJsonIntField(json: String, field: String): Int =
-        GSON.getAdapter(classOf[JsonElement]).fromJson(json).getAsJsonObject.get(field).getAsInt
-
-    /**
-      *
-      * @param json
-      * @tparam T
-      */
-    def jsonToObject[T](json: String, typ: java.lang.reflect.Type): T =
-        GSON.fromJson(json, typ)
-
-    /**
-      *
-      * @param json
-      * @tparam T
-      */
-    def jsonToObject[T](json: String, cls: Class[T]): T =
-        GSON.fromJson(json, cls)
 
     /**
       * Shortcut to convert given JSON to Scala map with default mapping.
@@ -183,20 +70,6 @@ object NCUtils extends LazyLogging:
         catch case e: Exception => E(s"Cannot deserialize JSON to map: '$json'", e)
 
     /**
-      *
-      * @param json
-      * @param field
-      */
-    def getJsonBooleanField(json: String, field: String): Boolean =
-        try GSON.getAdapter(classOf[JsonElement]).fromJson(json).getAsJsonObject.get(field).getAsBoolean
-        catch case e: Exception => E(s"Cannot extract JSON field '$field' from: '$json'", e)
-
-    /**
-      * Gets now in UTC timezone.
-      */
-    def nowUtc(): ZonedDateTime = ZonedDateTime.now(UTC)
-
-    /**
       * Gets now in UTC timezone in milliseconds representation.
       */
     def nowUtcMs(): Long = Instant.now().toEpochMilli
@@ -207,20 +80,11 @@ object NCUtils extends LazyLogging:
     def now(): Long = System.currentTimeMillis()
 
     /**
-      *
-      * @param v
-      * @param dflt
-      * @tparam T
-      */
-    def notNull[T <: AnyRef](v: T, dflt: T): T = if v == null then dflt else v
-
-    /**
       * Trims each sequence string and filters out empty ones.
       *
       * @param s String to process.
       */
-    def trimFilter(s: Seq[String]): Seq[String] =
-        s.map(_.strip).filter(_.nonEmpty)
+    private def trimFilter(s: Seq[String]): Seq[String] = s.map(_.strip).filter(_.nonEmpty)
 
     /**
       * Splits, trims and filters empty strings for the given string.
@@ -250,7 +114,7 @@ object NCUtils extends LazyLogging:
       * @param s
       */
     @tailrec
-    def trimEscapesQuotes(s: String): String =
+    private def trimEscapesQuotes(s: String): String =
         val z = s.strip
         if z.nonEmpty then
             if z.head == '\'' && z.last == '\'' then
@@ -278,37 +142,6 @@ object NCUtils extends LazyLogging:
                 s
         else
             s
-
-    /**
-      * Escapes given string for JSON according to RFC 4627 http://www.ietf.org/rfc/rfc4627.txt.
-      *
-      * @param s String to escape.
-      * @return Escaped string.
-      */
-    private def escapeJson(s: String): String = // TODO: remove?
-        val len = s.length
-        if len == 0 then
-            ""
-        else
-            val sb = new mutable.StringBuilder
-            for (ch <- s.toCharArray)
-                ch match
-                    case '\\' | '"' => sb += '\\' += ch
-                    case '/' => sb += '\\' += ch
-                    case '\b' => sb ++= "\\b"
-                    case '\t' => sb ++= "\\t"
-                    case '\n' => sb ++= "\\n"
-                    case '\f' => sb ++= "\\f"
-                    case '\r' => sb ++= "\\r"
-                    case _ =>
-                        if ch < ' ' then
-                            val t = s"000${Integer.toHexString(ch)}"
-                            sb ++= "\\u" ++= t.substring(t.length - 4)
-
-                        else
-                            sb += ch
-
-            sb.toString()
 
     /**
       * Makes thread.
@@ -391,19 +224,6 @@ object NCUtils extends LazyLogging:
         else E(s"Source not found or unsupported: $src")
 
     /**
-      * Sleeps number of milliseconds properly handling exceptions.
-      *
-      * @param delay Number of milliseconds to sleep.
-      */
-    def sleep(delay: Long): Unit =
-        try
-            Thread.sleep(delay)
-        catch
-            case _: InterruptedException => Thread.currentThread().interrupt()
-            case e: Throwable => logger.warn("Unhandled exception caught during sleep:", e)
-
-
-    /**
       * Interrupts thread and waits for its finish.
       *
       * @param t Thread.
@@ -413,13 +233,6 @@ object NCUtils extends LazyLogging:
             t.interrupt()
             try t.join()
             catch case _: InterruptedException => logger.trace("Thread joining was interrupted (ignoring).")
-
-    /**
-      * Interrupts thread.
-      *
-      * @param t Thread.
-      */
-    def interruptThread(t: Thread): Unit = if t != null then t.interrupt()
 
     /**
       * Checks duplicated elements in collection.
@@ -450,54 +263,6 @@ object NCUtils extends LazyLogging:
       * @param seq Sequence with potential dups.
       */
     def distinct[T](seq: List[T]): List[T] = if containsDups(seq) then seq.distinct else seq
-
-    /**
-      * Safely and silently closes the client socket.
-      *
-      * @param sock Client socket to close.
-      */
-    def close(sock: Socket): Unit =
-        if sock != null then
-            try sock.close()
-            catch case _: Exception => ()
-
-    /**
-      * Safely and silently closes the server socket.
-      *
-      * @param sock Server socket to close.
-      */
-    def close(sock: ServerSocket): Unit =
-        if sock != null then
-            try sock.close()
-            catch case _: Exception => ()
-
-    /**
-      *
-      * @param in Stream.
-      */
-    def close(in: InputStream): Unit =
-        if in != null then
-            try in.close()
-            catch case _: Exception => ()
-
-    /**
-      *
-      * @param out Stream.
-      */
-    def close(out: OutputStream): Unit =
-        if out != null then
-            try out.close()
-            catch case _: Exception => ()
-
-    /**
-      * Closes auto-closeable ignoring any exceptions.
-      *
-      * @param a Resource to close.
-      */
-    def close(a: AutoCloseable): Unit =
-        if a != null then
-            try a.close()
-            catch case _: Exception => ()
 
     /**
       *
@@ -571,37 +336,12 @@ object NCUtils extends LazyLogging:
         println(s"File generated: $path")
 
     /**
-      * Reads lines from given file.
-      *
-      * @param path Zipped file path to read from.
-      * @param enc Encoding.
-      * @param log Logger to use.
-      */
-    def readGzipPath(path: String, enc: String = "UTF-8", log: Logger = logger): List[String] =
-        readGzipFile(new File(path), enc, log)
-
-    /**
-      * Reads lines from given file.
-      *
-      * @param f Zipped file to read from.
-      * @param enc Encoding.
-      * @param log Logger to use.
-      */
-    def readGzipFile(f: File, enc: String, log: Logger = logger): List[String] =
-        try
-            Using.resource(Source.fromInputStream(new GZIPInputStream(new FileInputStream(f)), enc)) { src =>
-                getAndLog(src.getLines().map(p => p).toList, f, log)
-            }
-        catch
-            case e: IOException => E(s"Failed to read GZIP file: ${f.getAbsolutePath}", e)
-
-    /**
       * Reads bytes from given file.
       *
       * @param f File.
       * @param log Logger.
       */
-    def readFileBytes(f: File, log: Logger = logger): Array[Byte] =
+    private def readFileBytes(f: File, log: Logger = logger): Array[Byte] =
         try
             val arr = new Array[Byte](f.length().toInt)
             Using.resource(new FileInputStream(f))(_.read(arr))
@@ -624,7 +364,7 @@ object NCUtils extends LazyLogging:
       * @param f File.
       * @param log Logger.
       */
-    def gzipFile(f: File, log: Logger = logger): Unit =
+    private def gzipFile(f: File, log: Logger = logger): Unit =
         val gz = s"${f.getAbsolutePath}.gz"
 
         // Do not user BOS here - it makes files corrupted.
@@ -652,96 +392,37 @@ object NCUtils extends LazyLogging:
         data
 
     /**
-      * Reads lines from given file.
-      *
-      * @param f File to read from.
-      * @param enc Encoding.
-      * @param log Logger to use.
-      */
-    def readFile(f: File, enc: String = "UTF-8", log: Logger = logger): List[String] =
-        try
-            Using.resource(Source.fromFile(f, enc)) { src =>
-                getAndLog(src.getLines().map(p => p).toList, f, log)
-            }
-        catch case e: IOException => E(s"Failed to read file: ${f.getAbsolutePath}", e)
-
-    /**
-      * Maps lines from the given stream to an object.
-      *
-      * @param in Stream to read from.
-      * @param enc Encoding.
-      * @param log Logger to use.
-      * @param mapper Function to read lines.
-      */
-    def mapStream[T](in: InputStream, enc: String, log: Logger = logger, mapper: Iterator[String] => T): T =
-        try Using.resource(Source.fromInputStream(in, enc)) { src => mapper(src.getLines()) }
-        catch case e: IOException => E(s"Failed to read stream.", e)
-
-    /**
-      * Reads lines from given stream.
-      *
-      * @param in Stream to read from.
-      * @param enc Encoding.
-      * @param log Logger to use.
-      */
-    def readStream(in: InputStream, enc: String = "UTF-8", log: Logger = logger): List[String] =
-        mapStream(in, enc, log, _.map(p => p).toList)
-
-    /**
       * Reads lines from given resource.
       *
-      * @param res Resource path to read from.
-      * @param enc Encoding.
-      * @param log Logger to use.
+      * @param res Resource, file absolute or relative path or input stream.
+      * @param enc Encoding. Default value is "UTF-8".
+      * @param strip Strip flag. If `true` it strips all read lines. Default value is `true`.
+      * @param convert Line conversion method. Applied after `strip`. By default it passes lines as is.
+      * @param filterText. Filtering text flag. If `true` it skips empty lines and lines with headers (# symbol). Default value is `false`.
+      * @param log Logger.
       */
-    def readResource(res: String, enc: String = "UTF-8", log: Logger = logger): List[String] =
-        val list =
-            try Using.resource(Source.fromInputStream(getStream(res), enc))(_.getLines().toSeq).toList
-            catch case e: IOException => E(s"Failed to read stream: $res", e)
-    
-        log.trace(s"Loaded resource: $res")
-
-        list
-
-    /**
-      *
-      * @param in
-      */
-    private def readLcTrimFilter(in: BufferedSource): List[String] =
-        in.getLines().map(_.toLowerCase.strip).filter(s => s.nonEmpty && s.head!= '#').toList
-
-    /**
-      * Reads lines from given stream converting to lower case, trimming, and filtering
-      * out empty lines and comments (starting with '#').
-      *
-      * @param res Zipped resource to read from.
-      * @param enc Encoding.
-      * @param log Logger to use.
-      */
-    def readTextGzipResource(res: String, enc: String, log: Logger = logger): List[String] =
-        val list =
-            try Using.resource(Source.fromInputStream(new GZIPInputStream(getStream(res)), enc))(readLcTrimFilter)
-            catch case e: IOException => E(s"Failed to read stream: $res", e)
-
-        log.trace(s"Loaded resource: $res")
-
-        list
-
-    /**
-      * Reads lines from given stream converting to lower case, trimming, and filtering
-      * out empty lines and comments (starting with '#').
-      *
-      * @param in Stream to read from.
-      * @param enc Encoding.
-      */
-    def readTextStream(in: InputStream, enc: String): List[String] =
+    def readLines(
+        res: String | File | InputStream,
+        enc: String = "UTF-8",
+        strip: Boolean = true,
+        convert: String => String = s => s,
+        filterText: Boolean = false,
+        log: Logger = logger
+    ): Iterator[String] =
         try
-            Using.resource(Source.fromInputStream(in, enc)) { src =>
-                readLcTrimFilter(src)
-            }
-        catch
-            case e: IOException => E(s"Failed to read stream.", e)
+            val (stream, name) =
+                res match
+                    case is: InputStream => (is, is.getClass.getName)
+                    case s: String => (new BufferedInputStream(getStream(s)), s)
+                    case f: File => (new BufferedInputStream(new FileInputStream(f)), f.getAbsolutePath)
 
+            val out = Source.fromInputStream(stream, enc).getLines().flatMap(line =>
+                val s = convert(if strip then line.strip else line)
+                Option.when(!filterText || s.nonEmpty && s.head != '#')(s)
+            )
+            log.info(s"Loaded resource: $name")
+            out
+        catch case e: IOException => E(s"Failed to read stream: $res", e)
 
     /**
       *
@@ -776,3 +457,15 @@ object NCUtils extends LazyLogging:
                 es.awaitTermination(Long.MaxValue, TimeUnit.MILLISECONDS)
             catch
                 case _: InterruptedException => () // Safely ignore.
+
+    /**
+      *
+      * @param tok
+      * @param name
+      * @tparam T
+      * @return
+      */
+    def getProperty[T](tok: NCToken, name: String): T =
+        tok.get(name).getOrElse(throw new NCException(
+            s"'$name' property not found in token [index=${tok.getIndex}, text=${tok.getText}, properties=${tok.keysSet}]")
+        )

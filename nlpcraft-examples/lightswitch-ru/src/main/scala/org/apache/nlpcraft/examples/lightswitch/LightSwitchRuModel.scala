@@ -28,6 +28,14 @@ import org.apache.nlpcraft.examples.lightswitch.nlp.token.parser.NCRuTokenParser
 import scala.jdk.CollectionConverters.*
 
 /**
+  * This example provides a simple implementation for NLI-powered light switch for Russian language.
+  *
+  * You can say something like this:
+  * - Выключи свет по всем домe.
+  * - Отключи электричество в ванной.
+  *
+  * You can easily modify intent callbacks to perform the actual light switching using
+  * HomeKit or Arduino-based controllers.
   *
   * See 'README.md' file in the same folder for running and testing instructions.
   */
@@ -54,7 +62,7 @@ class LightSwitchRuModel extends NCModel(
         @NCIntentTerm("act") actEnt: NCEntity,
         @NCIntentTerm("loc") locEnts: List[NCEntity]
     ): NCResult =
-        val action = if actEnt.getId == "ls:on" then "включить" else "выключить"
+        val action = if actEnt.getType == "ls:on" then "включить" else "выключить"
         val locations = if locEnts.isEmpty then "весь дом" else locEnts.map(_.mkText).mkString(", ")
 
         // Add HomeKit, Arduino or other integration here.

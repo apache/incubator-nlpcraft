@@ -18,39 +18,41 @@
 package org.apache.nlpcraft.nlp.enrichers
 
 import com.typesafe.scalalogging.LazyLogging
-import opennlp.tools.stemmer.PorterStemmer
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.util.NCUtils
+import org.apache.nlpcraft.nlp.stemmer.NCStemmer
 
 import java.io.*
 import java.util.Objects
 
 /**
-  * "Swear-word" [[NCTokenEnricher enricher]] for English language.
+  * Swear-word [[NCTokenEnricher token enricher]].
   *
   * This enricher adds `swear` boolean [[NCPropertyMap metadata]] property to the [[NCToken token]]
-  * instance if word it represents is a swear word dictionary, i.e. the swear dictionary contains this word's
+  * instance if word it represents is in a swear word dictionary, i.e. the swear dictionary contains this word's
   * stem. The value `true` of the metadata property indicates that this word's stem is found in the dictionary,
   * `false` value indicates otherwise.
   *
-  * Read more about stemming [[https://en.wikipedia.org/wiki/Stemming here]].
-  *
-  * @param res Path to English swear dictionary. English swear dictionary has simple plain text format with one word on one line.
+  * @param dictRes Relative path, absolute path, classpath resource or URL to the dictionary.
+  *         The dictionary should have a simple plain text format with *one lemma per line*, empty lines are skipped,
+  *         duplicates ignored, lines starting with **#** symbol will be treated as comments and ignored.
+  *         Note that the search in the dictionary is implemented using words' **stem** and case is ignored.
+  * @param stemmer Stemmer implementation for the language used in the supplied swear-word dictionary.
+  * @see [[org.apache.nlpcraft.nlp.stemmer.NCEnStemmer]]
   */
 //noinspection ScalaWeakerAccess
-class NCEnSwearWordsTokenEnricher(res: String) extends NCTokenEnricher with LazyLogging:
-    require(res != null, "Swear words model file cannot be null.")
+class NCSwearWordsTokenEnricher(dictRes: String, stemmer: NCStemmer) extends NCTokenEnricher with LazyLogging:
+    require(dictRes != null, "Swear words dictionary resource cannot be null.")
+    require(stemmer != null, "Stemmer cannot be null.")
 
-    private final val stemmer = new PorterStemmer
     private var swearWords: Set[String] = _
 
     init()
 
     private def init(): Unit =
-        swearWords = NCUtils.readTextStream(NCUtils.getStream(res), "UTF-8").
-            map(p => stemmer.stem(p.toLowerCase)).toSet
-        logger.trace(s"Loaded resource: $res")
+        swearWords = NCUtils.readLines(res = dictRes, convert = s => stemmer.stem(s.toLowerCase), filterText = true, log = logger).toSet
 
+    /** @inheritdoc */
     override def enrich(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): Unit =
         toks.foreach(t => t.put("swear", swearWords.contains(stemmer.stem(t.getText.toLowerCase))))
 

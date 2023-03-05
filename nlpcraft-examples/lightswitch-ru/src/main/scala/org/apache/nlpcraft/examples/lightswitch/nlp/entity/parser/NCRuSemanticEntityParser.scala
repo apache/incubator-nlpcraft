@@ -21,16 +21,18 @@ import opennlp.tools.stemmer.snowball.SnowballStemmer
 import org.apache.nlpcraft.examples.lightswitch.nlp.token.parser.NCRuTokenParser
 import org.apache.nlpcraft.nlp.parsers.*
 import org.apache.nlpcraft.*
+import org.apache.nlpcraft.nlp.stemmer.NCStemmer
 
 /**
+  * Extension of [[NCSemanticEntityParser]] for RU language.
   *
-  * @param src
+  * @param mdlRes Relative path, absolute path, classpath resource or URL to YAML or JSON semantic model definition.
   */
-class NCRuSemanticEntityParser(src: String) extends NCSemanticEntityParser(
-    new NCSemanticStemmer:
+class NCRuSemanticEntityParser(mdlRes: String) extends NCSemanticEntityParser(
+    new NCStemmer:
         private val stemmer = new SnowballStemmer(SnowballStemmer.ALGORITHM.RUSSIAN)
-        override def stem(txt: String): String = stemmer.synchronized { stemmer.stem(txt.toLowerCase).toString }
+        override def stem(word: String): String = stemmer.synchronized { stemmer.stem(word.toLowerCase).toString }
     ,
     new NCRuTokenParser(),
-    mdlSrcOpt = src.?
+    mdlRes
 )

@@ -23,11 +23,15 @@ import org.languagetool.tagging.fr.FrenchTagger
 import scala.jdk.CollectionConverters.*
 
 /**
-  *
+  * [[https://languagetool.org/ Language Tool]] based FR language [[NCTokenEnricher token enricher]]. This
+  * enricher adds `lemma` and `pos` (part-of-speech) string [[NCPropertyMap metadata]] property to the [[NCToken token]]
+  * instance. Learn more about lemmas [[https://en.wikipedia.org/wiki/Lemma_(morphology) here]] and about part-of-speech
+  * [[https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html here]].
   */
 class NCFrLemmaPosTokenEnricher extends NCTokenEnricher:
     private def nvl(v: String, dflt : => String): String = if v != null then v else dflt
 
+    /** @inheritdoc */
     override def enrich(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): Unit =
         val tags = FrenchTagger.INSTANCE.tag(toks.map(_.getText).asJava).asScala
 

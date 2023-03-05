@@ -17,8 +17,8 @@
 
 package org.apache.nlpcraft
 
-import opennlp.tools.stemmer.PorterStemmer
 import org.apache.nlpcraft.internal.util.NCResourceReader
+import org.apache.nlpcraft.nlp.stemmer.{NCEnStemmer, NCStemmer}
 import org.apache.nlpcraft.nlp.parsers.*
 import org.apache.nlpcraft.nlp.enrichers.*
 
@@ -38,11 +38,6 @@ class NCPipelineBuilder:
     private val entVals: Buf[NCEntityValidator] = Buf.empty
     private val entMappers: Buf[NCEntityMapper] = Buf.empty
     private val varFilters: Buf[NCVariantFilter] = Buf.empty
-
-    private def mkEnStemmer: NCSemanticStemmer =
-        new NCSemanticStemmer:
-            final private val ps: PorterStemmer = new PorterStemmer
-            override def stem(txt: String): String = ps.stem(txt)
 
     private def mkEnOpenNLPTokenParser: NCOpenNLPTokenParser =
         new NCOpenNLPTokenParser(NCResourceReader.getPath("opennlp/en-token.bin"))
@@ -219,10 +214,13 @@ class NCPipelineBuilder:
         tokParser = mkEnOpenNLPTokenParser.?
         tokEnrichers += new NCOpenNLPTokenEnricher(NCResourceReader.getPath("opennlp/en-pos-maxent.bin"), NCResourceReader.getPath("opennlp/en-lemmatizer.dict"))
         tokEnrichers += new NCEnStopWordsTokenEnricher
-        tokEnrichers += new NCEnSwearWordsTokenEnricher(NCResourceReader.getPath("badfilter/swear_words.txt"))
-        tokEnrichers += new NCEnQuotesTokenEnricher
-        tokEnrichers += new NCEnDictionaryTokenEnricher
-        tokEnrichers += new NCEnBracketsTokenEnricher
+        tokEnrichers += new NCSwearWordsTokenEnricher(
+            NCResourceReader.getPath("badfilter/swear_words.txt"),
+            new NCEnStemmer
+        )
+        tokEnrichers += new NCQuotesTokenEnricher
+        tokEnrichers += new NCDictionaryTokenEnricher("moby/354984si.ngl")
+        tokEnrichers += new NCBracketsTokenEnricher
 
     /**
       * Shortcut to configure pipeline with [[NCSemanticEntityParser]].
@@ -237,12 +235,16 @@ class NCPipelineBuilder:
       *     and
       *     [[https://raw.githubusercontent.com/richardwilly98/elasticsearch-opennlp-auto-tagging/master/src/main/resources/models/en-lemmatizer.dict en-lemmatizer.dict]] model for
       *     [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/lemmatizer/DictionaryLemmatizer.html DictionaryLemmatizer]].
-      *  - [[NCEnStopWordsTokenEnricher Stop-word]] token enricher.
-      *  - [[NCEnSwearWordsTokenEnricher Swear-word]] token enricher initialized by
+      *  - [[NCEnStopWordsTokenEnricher stopword]] token enricher.
+      *  - [[NCSwearWordsTokenEnricher Swear-word]] token enricher initialized by
       *    [[https://raw.githubusercontent.com/apache/incubator-nlpcraft/external_config/external/badfilter/swear_words.txt swear_words.txt]] dictionary.
-      *  - [[NCEnQuotesTokenEnricher Quotes]] token enricher.
-      *  - [[NCEnDictionaryTokenEnricher Known-word]] token enricher.
-      *  - [[NCEnBracketsTokenEnricher Brackets]] token enricher.
+      *  - [[NCQuotesTokenEnricher Quotes]] token enricher.
+      *  - [[NCDictionaryTokenEnricher Known-word]] token enricher initialized by "moby/354984si.ngl" dictionary,
+      *      look more about [[https://en.wikipedia.org/wiki/Moby_Project Moby Project]].
+      *  - [[NCBracketsTokenEnricher Brackets]] token enricher.
+      *
+      *  Also there is used [[https://en.wikipedia.org/wiki/Stemming Porter stemmer]] implementation of [[NCStemmer]],
+      *  based on [[https://opennlp.apache.org/ OpenNLP]] solution.
       *
       * @param lang ISO 639-1 language code. Currently, only "en" (English) is supported.
       * @param macros Macros to use with [[NCSemanticEntityParser]].
@@ -258,7 +260,7 @@ class NCPipelineBuilder:
         lang.toUpperCase match
             case "EN" =>
                 setEnComponents()
-                entParsers += NCSemanticEntityParser(mkEnStemmer, mkEnOpenNLPTokenParser, macros, elms)
+                entParsers += new NCSemanticEntityParser(new NCEnStemmer, mkEnOpenNLPTokenParser, macros, elms)
             case _ => require(false, s"Unsupported language: $lang")
         this
 
@@ -275,12 +277,16 @@ class NCPipelineBuilder:
       *     and
       *     [[https://raw.githubusercontent.com/richardwilly98/elasticsearch-opennlp-auto-tagging/master/src/main/resources/models/en-lemmatizer.dict en-lemmatizer.dict]] model for
       *     [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/lemmatizer/DictionaryLemmatizer.html DictionaryLemmatizer]].
-      *  - [[NCEnStopWordsTokenEnricher Stop-word]] token enricher.
-      *  - [[NCEnSwearWordsTokenEnricher Swear-word]] token enricher initialized by
+      *  - [[NCEnStopWordsTokenEnricher stopword]] token enricher.
+      *  - [[NCSwearWordsTokenEnricher Swear-word]] token enricher initialized by
       *    [[https://raw.githubusercontent.com/apache/incubator-nlpcraft/external_config/external/badfilter/swear_words.txt swear_words.txt]] dictionary.
-      *  - [[NCEnQuotesTokenEnricher Quotes]] token enricher.
-      *  - [[NCEnDictionaryTokenEnricher Known-word]] token enricher.
-      *  - [[NCEnBracketsTokenEnricher Brackets]] token enricher.
+      *  - [[NCQuotesTokenEnricher Quotes]] token enricher.
+      *  - [[NCDictionaryTokenEnricher Known-word]] token enricher initialized by "moby/354984si.ngl" dictionary,
+      *    look more about [[https://en.wikipedia.org/wiki/Moby_Project Moby Project]].
+      *  - [[NCBracketsTokenEnricher Brackets]] token enricher.
+      *
+      * Also there is used [[https://en.wikipedia.org/wiki/Stemming Porter stemmer]] implementation of [[NCStemmer]],
+      * based on [[https://opennlp.apache.org/ OpenNLP]] solution.
       *
       * @param lang ISO 639-1 language code. Currently, only "en" (English) is supported.
       * @param elms Semantic elements to use with [[NCSemanticEntityParser]].
@@ -300,14 +306,18 @@ class NCPipelineBuilder:
       *     and
       *     [[https://raw.githubusercontent.com/richardwilly98/elasticsearch-opennlp-auto-tagging/master/src/main/resources/models/en-lemmatizer.dict en-lemmatizer.dict]] model for
       *     [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/lemmatizer/DictionaryLemmatizer.html DictionaryLemmatizer]].
-      *  - [[NCEnStopWordsTokenEnricher Stop-word]] token enricher.
-      *  - [[NCEnSwearWordsTokenEnricher Swear-word]] token enricher initialized by
+      *  - [[NCEnStopWordsTokenEnricher stopword]] token enricher.
+      *  - [[NCSwearWordsTokenEnricher Swear-word]] token enricher initialized by
       *    [[https://raw.githubusercontent.com/apache/incubator-nlpcraft/external_config/external/badfilter/swear_words.txt swear_words.txt]] dictionary.
-      *  - [[NCEnQuotesTokenEnricher Quotes]] token enricher.
-      *  - [[NCEnDictionaryTokenEnricher Known-word]] token enricher.
-      *  - [[NCEnBracketsTokenEnricher Brackets]] token enricher.
+      *  - [[NCQuotesTokenEnricher Quotes]] token enricher.
+      *  - [[NCDictionaryTokenEnricher Known-word]] token enricher initialized by "moby/354984si.ngl" dictionary,
+      *    look more about [[https://en.wikipedia.org/wiki/Moby_Project Moby Project]].
+      *  - [[NCBracketsTokenEnricher Brackets]] token enricher.
       *
-      * @param lang ISO 639-1 language code. Currently, only "en" (English) is supported.
+      * Also there is used [[https://en.wikipedia.org/wiki/Stemming Porter stemmer]] implementation of [[NCStemmer]],
+      * based on [[https://opennlp.apache.org/ OpenNLP]] solution.
+      *
+      * @param lang   ISO 639-1 language code. Currently, only "en" (English) is supported.
       * @param mdlSrc Classpath resource, file path or URL for YAML or JSON semantic model definition file.
       */
     def withSemantic(lang: String, mdlSrc: String): NCPipelineBuilder =
@@ -316,7 +326,7 @@ class NCPipelineBuilder:
         lang.toUpperCase match
             case "EN" =>
                 setEnComponents()
-                this.entParsers += NCSemanticEntityParser(mkEnStemmer, mkEnOpenNLPTokenParser, mdlSrc)
+                this.entParsers += new NCSemanticEntityParser(new NCEnStemmer, mkEnOpenNLPTokenParser, mdlSrc)
             case _ => require(false, s"Unsupported language: $lang")
         this
 

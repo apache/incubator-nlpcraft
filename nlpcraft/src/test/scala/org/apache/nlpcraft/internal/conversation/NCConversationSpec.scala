@@ -22,7 +22,7 @@ import org.apache.nlpcraft.annotations.*
 import org.apache.nlpcraft.nlp.parsers.*
 import org.apache.nlpcraft.nlp.util.*
 import org.scalatest.funsuite.AnyFunSuite
-
+import org.apache.nlpcraft.nlp.parsers.NCSemanticTestElement as TE
 import scala.util.Using
 
 /**
@@ -30,8 +30,6 @@ import scala.util.Using
   */
 class NCConversationSpec extends AnyFunSuite:
     private val usrId = "userId"
-
-    import NCSemanticTestElement as TE
 
     /**
       *

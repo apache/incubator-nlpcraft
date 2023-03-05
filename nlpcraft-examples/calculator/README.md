@@ -21,11 +21,10 @@
 [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/apache/opennlp/master/LICENSE)
 [![Build](https://github.com/apache/incubator-nlpcraft/workflows/build/badge.svg)](https://github.com/apache/incubator-nlpcraft/actions)
 [![Documentation Status](https://img.shields.io/:docs-latest-green.svg)](https://nlpcraft.apache.org/docs.html)
-[![Gitter](https://badges.gitter.im/apache-nlpcraft/community.svg)](https://gitter.im/apache-nlpcraft/community)
 
 ### Calculator Example
 This example data model represents simple calculator. It supports '+', '-', '*' and '/' operations for two integer arguments.
-Note that first argument can be omitted and last operation result is used instead of it. 
+Note that first argument can be omitted and last operation result will be used instead. 
 
 ### Documentation  
 See [Getting Started](https://nlpcraft.apache.org/getting-started.html) guide for more instructions on how to run these examples.
@@ -41,7 +40,7 @@ For any questions, feedback or suggestions:
  * Join project developers on [dev@nlpcraft.apache.org](mailto:dev-subscribe@nlpcraft.apache.org)
 
 ### Copyright
-Copyright (C) 2021 Apache Software Foundation
+Copyright (C) 2023 Apache Software Foundation
 
 <img src="https://www.apache.org/img/ASF20thAnniversary.jpg" height="64px" alt="ASF Logo">
 

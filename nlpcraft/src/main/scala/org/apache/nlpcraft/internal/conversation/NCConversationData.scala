@@ -187,9 +187,9 @@ case class NCConversationData(
 
         if ctx.isEmpty then logger.trace(s"STM is empty for [$z]")
         else
-            val tbl = NCAsciiTable("Entity ID", "Groups", "Request ID")
+            val tbl = NCAsciiTable("Entity Type", "Groups", "Request ID")
             ctx.foreach(ent => tbl += (
-                ent.getId,
+                ent.getType,
                 ent.getGroups.mkString(", "),
                 ent.getRequestId
             ))

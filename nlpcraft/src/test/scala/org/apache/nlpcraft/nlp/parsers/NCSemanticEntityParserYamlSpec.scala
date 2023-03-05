@@ -35,17 +35,17 @@ class NCSemanticEntityParserYamlSpec extends AnyFunSuite:
     /**
       * 
       * @param txt
-      * @param id
+      * @param typ
       */
-    private def check(txt: String, id: String): Unit =
+    private def check(txt: String, typ: String): Unit =
         val req = NCTestRequest(txt)
         val ents = semParser.parse(req, CFG, EN_TOK_PARSER.tokenize(req.txt))
 
         NCTestUtils.printEntities(txt, ents)
 
         val tok = ents.head
-        
-        require(tok.getId == id)
+
+        require(tok.getType == typ)
 
     /**
       * 

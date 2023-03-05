@@ -27,25 +27,27 @@ import java.util
 import java.util.Objects
 
 /**
-  *  [[https://opennlp.apache.org/ OpenNLP]] based language independent [[NCTokenParser parser]] configured
-  *  by path to [[https://opennlp.apache.org/ OpenNLP]] `tokenizers` model.
+  * [[https://opennlp.apache.org/ OpenNLP]] based language independent [[NCTokenParser entity parser]] configured
+  * using path to [[https://opennlp.apache.org/ OpenNLP]] **tokenizer** model.
   *
-  * Some of OpenNLP prepared models can be found [[https://opennlp.sourceforge.net/models-1.5/ here]].
+  * Some of free OpenNLP community-maintained models can be found [[https://opennlp.sourceforge.net/models-1.5/ here]].
   *
-  * @param tokMdl Path to [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/tokenize/TokenizerModel.html model]].
+  * @param tokMdlRes Relative path, absolute path, classpath resource or URL to the tokenizer
+  *     [[https://opennlp.apache.org/docs/2.0.0/apidocs/opennlp-tools/opennlp/tools/tokenize/TokenizerModel.html model]].
   */
-class NCOpenNLPTokenParser(tokMdl: String) extends NCTokenParser with LazyLogging:
-    require(tokMdl != null, "Tokenizer model path cannot be null.")
+class NCOpenNLPTokenParser(tokMdlRes: String) extends NCTokenParser with LazyLogging:
+    require(tokMdlRes != null, "Tokenizer model resource cannot be null.")
 
     @volatile private var tokenizer: TokenizerME = _
 
     init()
 
     private def init(): Unit =
-        tokenizer = new TokenizerME(new TokenizerModel(NCUtils.getStream(tokMdl)))
+        tokenizer = new TokenizerME(new TokenizerModel(NCUtils.getStream(tokMdlRes)))
 
-        logger.trace(s"Loaded resource: $tokMdl")
+        logger.trace(s"Loaded OpenNLP tokenizer model: $tokMdlRes")
 
+    /** @inheritdoc */
     override def tokenize(text: String): List[NCToken] =
         this.synchronized {
             tokenizer.tokenizePos(text).zipWithIndex.map { (p, idx) =>

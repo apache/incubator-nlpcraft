@@ -17,13 +17,13 @@
 
 package org.apache.nlpcraft.nlp.util
 
-import opennlp.tools.stemmer.PorterStemmer
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.ascii.NCAsciiTable
 import org.apache.nlpcraft.internal.util.NCResourceReader
+import org.apache.nlpcraft.nlp.stemmer.{NCEnStemmer, NCStemmer}
 import org.apache.nlpcraft.nlp.parsers.*
 import org.apache.nlpcraft.nlp.parsers
-import org.apache.nlpcraft.nlp.parsers.{NCOpenNLPTokenParser, NCSemanticElement, NCSemanticEntityParser, NCSemanticStemmer}
+import org.apache.nlpcraft.nlp.parsers.{NCOpenNLPTokenParser, NCSemanticElement, NCSemanticEntityParser}
 
 import java.util
 import scala.util.Using
@@ -66,12 +66,12 @@ object NCTestUtils:
       * @param ents
       */
     def printEntities(req: String, ents: Seq[NCEntity]): Unit =
-        val tbl = NCAsciiTable("EntityId", "Tokens", "Tokens Position", "Properties")
+        val tbl = NCAsciiTable("EntityType", "Tokens", "Tokens Position", "Properties")
 
         for (e <- ents)
             val toks = e.getTokens
             tbl += (
-                e.getId,
+                e.getType,
                 toks.map(_.getText).mkString("|"),
                 toks.map(p => s"${p.getStartCharIndex}-${p.getEndCharIndex}").mkString("|"),
                 mkProps(e)
@@ -88,12 +88,12 @@ object NCTestUtils:
         println(s"Request $req variants:")
 
         for ((v, idx) <- vs.zipWithIndex)
-            val tbl = NCAsciiTable("EntityId", "Tokens", "Tokens Position", "Properties")
+            val tbl = NCAsciiTable("EntityType", "Tokens", "Tokens Position", "Properties")
 
             for (e <- v.getEntities)
                 val toks = e.getTokens
                 tbl += (
-                    e.getId,
+                    e.getType,
                     toks.map(_.getText).mkString("|"),
                     toks.map(p => s"${p.getStartCharIndex}-${p.getEndCharIndex}").mkString("|"),
                     mkProps(e)
@@ -121,31 +121,22 @@ object NCTestUtils:
 
     /**
       *
-      */
-    private def mkSemanticStemmer: NCSemanticStemmer =
-        new NCSemanticStemmer():
-            private val ps = new PorterStemmer
-            override def stem(txt: String): String = ps.synchronized { ps.stem(txt) }
-
-
-    /**
-      *
       * @param elms
       * @param macros
       */
     def mkEnSemanticParser(elms: List[NCSemanticElement], macros: Map[String, String] = Map.empty): NCSemanticEntityParser =
-        parsers.NCSemanticEntityParser(mkSemanticStemmer, EN_TOK_PARSER, macros, elms)
+        new NCSemanticEntityParser(new NCEnStemmer, EN_TOK_PARSER, macros, elms)
 
     /**
       *
       * @param elms
       */
     def mkEnSemanticParser(elms: NCSemanticElement*): NCSemanticEntityParser =
-        parsers.NCSemanticEntityParser(mkSemanticStemmer, EN_TOK_PARSER, elms.toList)
+        new NCSemanticEntityParser(new NCEnStemmer, EN_TOK_PARSER, elms.toList)
 
     /**
       *
       * @param mdlSrc
       */
     def mkEnSemanticParser(mdlSrc: String): NCSemanticEntityParser =
-        parsers.NCSemanticEntityParser(mkSemanticStemmer, EN_TOK_PARSER, mdlSrc)
+        new NCSemanticEntityParser(new NCEnStemmer, EN_TOK_PARSER, mdlSrc)

@@ -21,6 +21,7 @@ import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.internal.makro.NCMacroParser
 import org.apache.nlpcraft.internal.util.NCUtils
+import org.apache.nlpcraft.nlp.stemmer.NCStemmer
 import org.apache.nlpcraft.nlp.parsers.*
 import org.apache.nlpcraft.nlp.parsers.impl.*
 
@@ -34,62 +35,7 @@ import scala.collection.mutable
 /**
   * [[NCSemanticEntityParser]] helper.
   */
-object NCSemanticEntityParser:
-    /**
-      * Creates [[NCSemanticEntityParser]] instance.
-      *
-      * @param stemmer [[NCSemanticStemmer]] implementation.
-      * @param parser [[NCTokenParser]] implementation.
-      * @param macros Macros map. Empty by default.
-      * @param elements [[NCSemanticElement]] list.
-      */
-    def apply(
-        stemmer: NCSemanticStemmer,
-        parser: NCTokenParser,
-        macros: Map[String, String],
-        elements: List[NCSemanticElement]
-    ): NCSemanticEntityParser =
-        require(stemmer != null, "Stemmer cannot be null.")
-        require(parser != null, "Parser cannot be null.")
-        require(macros != null, "Macros cannot be null.")
-        require(elements != null, "Elements cannot be null.")
-
-        new NCSemanticEntityParser(stemmer, parser, macros = macros, elements = elements)
-
-    /**
-      *
-      * Creates [[NCSemanticEntityParser]] instance.
-      *
-      * @param stemmer  [[NCSemanticStemmer]] implementation.
-      * @param parser   [[NCTokenParser]] implementation.
-      * @param elements [[NCSemanticElement]] list.
-      */
-    def apply(
-        stemmer: NCSemanticStemmer,
-        parser: NCTokenParser,
-        elements: List[NCSemanticElement]
-    ): NCSemanticEntityParser =
-        require(stemmer != null, "Stemmer cannot be null.")
-        require(parser != null, "Parser cannot be null.")
-        require(elements != null, "Elements cannot be null.")
-
-        new NCSemanticEntityParser(stemmer, parser, macros = Map.empty, elements = elements)
-
-    /**
-      *
-      * Creates [[NCSemanticEntityParser]] instance.
-      *
-      * @param stemmer  [[NCSemanticStemmer]] implementation.
-      * @param parser   [[NCTokenParser]] implementation.
-      * @param mdlSrc Classpath resource, file path or URL for YAML or JSON semantic model definition file.
-      */
-    def apply(stemmer: NCSemanticStemmer, parser: NCTokenParser, mdlSrc: String): NCSemanticEntityParser =
-        require(stemmer != null, "Stemmer cannot be null.")
-        require(parser != null, "Parser cannot be null.")
-        require(mdlSrc != null, "Model source cannot be null.")
-
-        new NCSemanticEntityParser(stemmer, parser, mdlSrcOpt = mdlSrc.?)
-
+private object NCSemanticEntityParser:
     /**
       * @param baseTokens Tokens.
       * @param variants Variants without stopwords.
@@ -174,38 +120,97 @@ object NCSemanticEntityParser:
         else if i >= data1.size then tmp
         else combine(data1, data2, i + 1, tmp.map(_ :+ data1(i)) ++ tmp.map(_ :+ data2(i)))
 
-import org.apache.nlpcraft.nlp.parsers.NCSemanticEntityParser.*
+import NCSemanticEntityParser.*
 
 /**
-  * `Semantic` [[NCEntityParser parser]] implementation.
+  * Semantic entity parser implementation.
   *
-  * See detailed description on the website [[https://nlpcraft.apache.org/built-in-entity-parser.html#parser-semantic Semantic Parser]].
+  * This synonyms based parser provides simple yet powerful way to find domain specific data in the input text.
+  * It is configured via [[NCSemanticElement]] list which represents all possible [[NCEntity named entities]] that
+  * this parser can detect.
   *
+  * [[NCSemanticElement Semantic elements]] can be configured via YAML or JSON files in special format or
+  * passed in this parser as programmatically prepared list. [[NCSemanticElement Semantic elements]] contain set of
+  * synonyms which can use special [[https://nlpcraft.apache.org/built-in-entity-parser.html#macros macros]].
+  * These macros also can be provided via YAML and JSON files or passed directly in case of programmatically prepared
+  * [[NCSemanticElement]] list.
+  *
+  * Example of YAML elements definition.
+  * <pre>
+  * macros:
+  *   "&lt;OF&gt;": "{of|for|per}"
+  *   "&lt;CUR&gt;": "{current|present|now|local}"
+  *   "&lt;TIME&gt;": "{time &lt;OF&gt; day|day time|date|time|moment|datetime|hour|o'clock|clock|date time}"
+  * elements:
+  *   - id: "x:time"
+  *     description: "Date and/or time token indicator."
+  *     synonyms:
+  *       - "{&lt;CUR&gt;|_} &lt;TIME>"
+  *       - "what &lt;TIME&gt; {is it now|now|is it|_}"
+  * </pre>
+  * Given this simple definition the **x:time** element can be detected by a large number of synonyms like *day time*,
+  * *local day time*, *time of day*, *local time of day*, *what hour is it*, etc.
+  *
+  * @param stemmer [[NCStemmer]] implementation which used to match tokens and given [[NCSemanticElement]] synonyms.
+  * @param parser [[NCTokenParser]] implementation which will be used for [[NCSemanticElement]] synonyms tokenization.
+  *     It should be same implementation as used in [[NCPipeline.getTokenParser]].
+  * @param macros Macros map which are used for extracting [[NCSemanticElement]] synonyms defined via **macros**.
+  *    More information at [[https://nlpcraft.apache.org/built-in-entity-parser.html#macros]].
+  * @param elements Programmatically prepared [[NCSemanticElement]] instances. Note that either the model or elements
+  *    must be supplied at least.
+  * @param mdlResOpt Optional relative path, absolute path, classpath resource or URL to YAML or JSON semantic model
+  *    which contains [[NCSemanticElement]] definitions. Note that either the model or elements must be supplied at least.
   *
   * @see [[NCSemanticElement]]
-  * @see [[NCSemanticStemmer]]
-  *
-  * @param stemmer [[NCSemanticStemmer]] implementation.
-  * @param parser [[NCTokenParser]] implementation.
-  * @param macros Macros map. Empty by default.
-  * @param elements  [[NCSemanticElement]] list.
-  * @param mdlSrcOpt Optional classpath resource, file path or URL for YAML or JSON semantic model definition file.
   */
-class NCSemanticEntityParser(
-    stemmer: NCSemanticStemmer,
+class NCSemanticEntityParser private (
+    stemmer: NCStemmer,
     parser: NCTokenParser,
-    macros: Map[String, String] = Map.empty,
-    elements: List[NCSemanticElement] = List.empty,
-    mdlSrcOpt: Option[String] = None
+    macros: Map[String, String],
+    elements: List[NCSemanticElement],
+    mdlResOpt: Option[String]
 ) extends NCEntityParser with LazyLogging:
-    require(stemmer != null)
-    require(parser != null)
-    require(macros != null)
-    require(elements != null && elements.nonEmpty || mdlSrcOpt.isDefined)
+    require(stemmer != null, "Stemmer cannot be null.")
+    require(parser != null, "Token parser cannot be null.")
+    require(macros != null, "Macros cannot be null.")
+    require(elements != null && elements.nonEmpty || mdlResOpt.isDefined, "Either elements or external YAML/JSON model must be supplied.")
+
+    /**
+      * Creates [[NCSemanticEntityParser]] instance with given parameters.
+      *
+      * @param stemmer [[NCStemmer]] implementation for synonyms language.
+      * @param parser [[NCTokenParser]] implementation.
+      * @param macros Macros map. Empty by default.
+      * @param elements [[NCSemanticElement]] list.
+      */
+    def this(stemmer: NCStemmer, parser: NCTokenParser, macros: Map[String, String], elements: List[NCSemanticElement]) =
+        this(stemmer, parser, macros, elements, None)
+
+    /**
+      *
+      * Creates [[NCSemanticEntityParser]] instance with given parameters.
+      *
+      * @param stemmer [[NCStemmer]] implementation for synonyms language.
+      * @param parser [[NCTokenParser]] implementation.
+      * @param elements [[NCSemanticElement]] list.
+      */
+    def this(stemmer: NCStemmer, parser: NCTokenParser, elements: List[NCSemanticElement]) =
+        this(stemmer, parser, Map.empty, elements, None)
+
+    /**
+      *
+      * Creates [[NCSemanticEntityParser]] instance with given parameters.
+      *
+      * @param stemmer [[NCStemmer]] implementation for synonyms language.
+      * @param parser [[NCTokenParser]] implementation.
+      * @param mdlRes Relative path, absolute path, classpath resource or URL to YAML or JSON semantic model definition.
+      */
+    def this(stemmer: NCStemmer, parser: NCTokenParser, mdlRes: String) =
+        this(stemmer, parser, Map.empty, List.empty, mdlRes.?)
 
     private lazy val scrType =
-        require(mdlSrcOpt.isDefined)
-        NCSemanticSourceType.detect(mdlSrcOpt.get)
+        require(mdlResOpt.isDefined)
+        NCSemanticSourceType.detect(mdlResOpt.get)
 
     private var synsHolder: NCSemanticSynonymsHolder = _
     private var elemsMap: Map[String, NCSemanticElement] = _
@@ -217,12 +222,12 @@ class NCSemanticEntityParser(
       */
     private def init(): Unit =
         val (macros, elements, elemsMap) =
-            def toMap(elems: Seq[NCSemanticElement]): Map[String, NCSemanticElement] = elems.map(p => p.getId -> p).toMap
+            def toMap(elems: Seq[NCSemanticElement]): Map[String, NCSemanticElement] = elems.map(p => p.getType -> p).toMap
 
-            mdlSrcOpt match
+            mdlResOpt match
                 case Some(mdlSrc) =>
                     val src = NCSemanticSourceReader.read(new BufferedInputStream(NCUtils.getStream(mdlSrc)), scrType)
-                    logger.trace(s"Loaded resource: $mdlSrcOpt")
+                    logger.trace(s"Loaded resource: $mdlResOpt")
                     (src.macros, src.elements, toMap(src.elements))
                 case None => (this.macros, this.elements, toMap(this.elements))
 
@@ -235,6 +240,7 @@ class NCSemanticEntityParser(
       */
     private def warnMissedProperty(name: String): Unit = logger.warn(s"'$name' property not found. Is proper token enricher configured?")
 
+    /** @inheritdoc */
     override def parse(req: NCRequest, cfg: NCModelConfig, toks: List[NCToken]): List[NCEntity] =
         if toks.exists(_.get[String]("stopword").isEmpty) then warnMissedProperty("stopword")
 
@@ -255,7 +261,7 @@ class NCSemanticEntityParser(
 
         val cache = mutable.HashSet.empty[Seq[Int]] // Variants (tokens without stopwords) can be repeated.
 
-        case class Holder(elemId: String, tokens: List[NCToken], value: Option[String]):
+        case class Holder(elemType: String, tokens: List[NCToken], value: Option[String]):
             val tokensSet: Set[NCToken] = tokens.toSet
             val idxs: Set[Int] = tokensSet.map(_.getIndex)
 
@@ -265,13 +271,13 @@ class NCSemanticEntityParser(
 
         for (piece <- getPieces(toks) if !hs.exists(_.isSuperSet(piece.baseTokens));
             variant <- Seq(piece.baseTokens) ++ piece.variants)
-            def add(elemId: String, value: Option[String]): Unit = hs += Holder(elemId, variant, value)
+            def add(elemType: String, value: Option[String]): Unit = hs += Holder(elemType, variant, value)
 
             val idxs = variant.map(_.getIndex)
             if cache.add(idxs) then
                 // Tries to search by stems.
                 synsHolder.textSynonyms.get(variant.map(stems).mkString(" ")) match
-                    case Some(elems) => elems.foreach(elem => add(elem.elementId, elem.value))
+                    case Some(elems) => elems.foreach(elem => add(elem.elementType, elem.value))
                     case None =>
                         // Combines stems(origin) and stems(lemma)
                         var found = false
@@ -280,10 +286,10 @@ class NCSemanticEntityParser(
                                 synsHolder.textSynonyms.get(comb.mkString(" ")) match
                                     case Some(elems) =>
                                         found = true
-                                        elems.foreach(elem => add(elem.elementId, elem.value))
+                                        elems.foreach(elem => add(elem.elementType, elem.value))
                                     case None => // No-op.
                         // With regex.
-                        for ((elemId, syns) <- synsHolder.mixedSynonyms.getOrElse(variant.size, List.empty))
+                        for ((elemType, syns) <- synsHolder.mixedSynonyms.getOrElse(variant.size, List.empty))
                             found = false
 
                             for (s <- syns if !found)
@@ -297,14 +303,14 @@ class NCSemanticEntityParser(
                                             match0(tok.getText) || match0(tok.getText.toLowerCase)
                                     }
 
-                                if found then add(elemId, Option.when(s.value != null)(s.value))
+                                if found then add(elemType, Option.when(s.value != null)(s.value))
 
         // Deletes redundant.
         hs = hs.distinct
-        
+
         val del = mutable.ArrayBuffer.empty[Holder]
         // 1. Look at each element with its value.
-        for (((_, _), seq) <- hs.groupBy(h => (h.elemId, h.value)) if seq.size > 1)
+        for (((_, _), seq) <- hs.groupBy(h => (h.elemType, h.value)) if seq.size > 1)
             // 2. If some variants are duplicated - keep only one, with most tokens counts.
             val seqIdxs = seq.zipWithIndex
 
@@ -314,15 +320,15 @@ class NCSemanticEntityParser(
         hs --= del
 
         hs.toSeq.map(h => {
-            val e = elemsMap(h.elemId)
+            val e = elemsMap(h.elemType)
             new NCPropertyMapAdapter with NCEntity:
-                if e.getProperties != null then e.getProperties.foreach { (k, v) => put(s"${h.elemId}:$k", v) }
+                if e.getProperties != null then e.getProperties.foreach { (k, v) => put(s"${h.elemType}:$k", v) }
                 h.value match
-                    case Some(value) => put(s"${h.elemId}:value", value)
+                    case Some(value) => put(s"${h.elemType}:value", value)
                     case None => // No-op.
 
                 override val getTokens: List[NCToken] = h.tokens
                 override val getRequestId: String = req.getRequestId
-                override val getId: String = h.elemId
+                override val getType: String = h.elemType
                 override val getGroups: Set[String] = e.getGroups
         }).toList

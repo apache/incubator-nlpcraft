@@ -28,11 +28,11 @@ import scala.io.Source
 import scala.util.Using
 
 // Such field names required by 'keycdn.com' service response.
-case class ResponseGeoData(country_name: String, city: String, latitude: Double, longitude: Double, timezone: String)
-case class ResponseData(geo: ResponseGeoData)
-case class Response(status: String, description: String, data: ResponseData)
+private[time] case class ResponseGeoData(country_name: String, city: String, latitude: Double, longitude: Double, timezone: String)
+private[time] case class ResponseData(geo: ResponseGeoData)
+private[time] case class Response(status: String, description: String, data: ResponseData)
 
-object GeoManager:
+private[time] object GeoManager:
     private val URL: String = "https://tools.keycdn.com/geo.json?host="
     private val GSON: Gson = new Gson
 
@@ -50,16 +50,16 @@ object GeoManager:
             externalIp match
                 case Some(_) => // No-op.
                 case None =>
-                    try externalIp = Some(getExternalIp)
+                    try externalIp = Option(getExternalIp)
                     catch
                         case _: IOException => // No-op.
 
             externalIp match
                 case Some(ip) =>
                     cache.get(ip) match
-                        case Some(geo) => Some(geo)
+                        case Some(geo) => Option(geo)
                         case None =>
-                            val conn = new URL(URL + ip).openConnection.asInstanceOf[HttpURLConnection]
+                            val conn = new URL(s"$URL$ip").openConnection.asInstanceOf[HttpURLConnection]
 
                             // This service requires "User-Agent" property with its own format.
                             conn.setRequestProperty("User-Agent", "keycdn-tools:https://nlpcraft.apache.org")
@@ -76,7 +76,7 @@ object GeoManager:
 
                                 cache.put(ip, resp.data.geo)
 
-                                Some(resp.data.geo)
+                                Option(resp.data.geo)
                             }
                 case None =>
                     System.err.println("External IP cannot be detected for localhost.")

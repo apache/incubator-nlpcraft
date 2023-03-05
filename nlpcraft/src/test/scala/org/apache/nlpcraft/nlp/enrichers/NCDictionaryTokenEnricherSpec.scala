@@ -25,14 +25,14 @@ import internal.util.NCResourceReader
 import org.scalatest.funsuite.AnyFunSuite
 
 class NCDictionaryTokenEnricherSpec extends AnyFunSuite:
-    private val dictEnricher = new NCEnDictionaryTokenEnricher()
+    private val dictEnricher = new NCDictionaryTokenEnricher("moby/354984si.ngl")
 
     test("test") {
         val txt = "milk XYZ"
         val toks = EN_TOK_PARSER.tokenize(txt)
 
-        require(toks.head.get[Boolean]("dict:en").isEmpty)
-        require(toks.last.get[Boolean]("dict:en").isEmpty)
+        require(toks.head.get[Boolean]("dict").isEmpty)
+        require(toks.last.get[Boolean]("dict").isEmpty)
 
         val req = NCTestRequest(txt)
 

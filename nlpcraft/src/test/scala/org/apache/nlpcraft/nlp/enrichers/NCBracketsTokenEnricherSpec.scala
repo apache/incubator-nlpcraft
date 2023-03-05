@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.nlp.enrichers
 
 import org.apache.nlpcraft.*
-import nlp.enrichers.NCEnBracketsTokenEnricher
+import nlp.enrichers.NCBracketsTokenEnricher
 import nlp.util.*
 import org.scalatest.funsuite.AnyFunSuite
 
@@ -26,23 +26,31 @@ import org.scalatest.funsuite.AnyFunSuite
   *
   */
 class NCBracketsTokenEnricherSpec extends AnyFunSuite:
-    private val bracketsEnricher = new NCEnBracketsTokenEnricher()
+    private val bracketsEnricher = new NCBracketsTokenEnricher()
 
     /**
       *
       * @param txt
       * @param brackets
       */
-    private def check(txt: String, brackets: Set[Integer]): Unit =
+    private def check(txt: String, brackets: Integer*): Unit =
         val toks = EN_TOK_PARSER.tokenize(txt)
         bracketsEnricher.enrich(NCTestRequest(txt), CFG, toks)
 
         NCTestUtils.printTokens(toks)
 
-        toks.foreach (tok => require(!(tok[Boolean]("brackets") ^ brackets.contains(tok.getIndex))))
+        if brackets.isEmpty then require(toks.forall(p => !p[Boolean]("brackets")))
+        else toks.foreach (tok => require(!(tok[Boolean]("brackets") ^ brackets.contains(tok.getIndex))))
 
     test("test") {
-        check("A [ B C ] D", Set(2, 3))
-        check("A [ B { C } ] D", Set(2, 3, 4, 5))
-        check("A [ B { C } ] [ [ D ] ] [ E ]", Set(2, 3, 4, 5, 8, 9, 10, 13))
+        check("A [ B C ] D", 2, 3)
+        check("A [ B { C } ] D", 2, 3, 4, 5)
+        check("A [ B { C } ] [ [ D ] ] [ E ]", 2, 3, 4, 5, 8, 9, 10, 13)
+
+        // Invalid.
+        check("[[a]")
+        check("[a[")
+        check("{[a[}")
+        check("[")
+        check("}")
     }

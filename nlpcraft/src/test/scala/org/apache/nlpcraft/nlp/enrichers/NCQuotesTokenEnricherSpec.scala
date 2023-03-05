@@ -18,24 +18,23 @@
 package org.apache.nlpcraft.nlp.enrichers
 
 import org.apache.nlpcraft.*
-import annotations.*
-import nlp.enrichers.*
-import nlp.util.*
-import internal.util.NCResourceReader
+import org.apache.nlpcraft.annotations.*
+import org.apache.nlpcraft.nlp.enrichers.*
+import org.apache.nlpcraft.nlp.util.*
 import org.scalatest.funsuite.AnyFunSuite
 
 /**
   *
   */
 class NCQuotesTokenEnricherSpec extends AnyFunSuite:
-    private val quoteEnricher = new NCEnQuotesTokenEnricher
+    private val quoteEnricher = new NCQuotesTokenEnricher
 
     /**
       *
       * @param txt
       * @param quotes
       */
-    private def check(txt: String, quotes: Set[Integer]): Unit =
+    private def check(txt: String, quotes: Integer*): Unit =
         val toks = EN_TOK_PARSER.tokenize(txt)
 
         val req = NCTestRequest(txt)
@@ -46,6 +45,28 @@ class NCQuotesTokenEnricherSpec extends AnyFunSuite:
         toks.foreach (tok => require(!(tok[Boolean]("quoted") ^ quotes.contains(tok.getIndex))))
 
     test("test") {
-        check("It called ' test data '", Set(3, 4))
-        check("It called ' test data ' , ' test data '", Set(3, 4, 8, 9))
+        check("It called ' test data '", 3, 4)
+        check("It called \" test data \"", 3, 4)
+        check("It called « test data »", 3, 4)
+        check("It called ' test data ' , ' test data '", 3, 4, 8, 9)
+
+        // Invalid.
+        check("It called ' test data ' '")
+        check("It called ' test data `")
+        check("It called ' test data ' `")
+        check("It called « test data '")
+        check("It called « test data ' »")
+        check("It called « test data «")
+        check("It called » test data »")
+        check("'")
+        check("\"a\"\"")
+
+        // Empty.
+        check("It called ' ' test data ' '")
+
+        // Nested.
+        check("It called \" ' test data ' \"", 3, 4, 5, 6)
+        check("It called ' \" test data \" '", 3, 4, 5, 6)
+        check("It called « \" test data \" »", 3, 4, 5, 6)
+        check("It called « \" ' test data ' \" »", 3, 4, 5, 6, 7, 8)
     }

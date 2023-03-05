@@ -16,56 +16,56 @@
 #
 
 elements:
-  - id: "ord:pizza"
+  - type: "ord:pizza"
     description: "Kinds of pizza."
     values:
       "margherita": [ ]
       "carbonara": [ ]
       "marinara": [ ]
 
-  - id: "ord:pizza:size"
+  - type: "ord:pizza:size"
     description: "Size of pizza."
     values:
       "small": [ "{small|smallest|min|minimal|tiny} {size|piece|_}" ]
       "medium": [ "{medium|intermediate|normal|regular} {size|piece|_}" ]
       "large": [ "{big|biggest|large|max|maximum|huge|enormous} {size|piece|_}" ]
 
-  - id: "ord:drink"
+  - type: "ord:drink"
     description: "Kinds of drinks."
     values:
       "tea": [ ]
       "coffee": [ ]
       "cola": [ "{pepsi|sprite|dr. pepper|dr pepper|fanta|soda|cola|coca cola|cocacola|coca-cola}" ]
 
-  - id: "ord:yes"
+  - type: "ord:yes"
     description: "Confirmation (yes)."
     synonyms:
       - "{yes|yeah|right|fine|nice|excellent|good|correct|sure|ok|exact|exactly|agree}"
       - "{you are|_} {correct|right}"
 
-  - id: "ord:no"
+  - type: "ord:no"
     description: "Confirmation (no)."
     synonyms:
       - "{no|nope|incorrect|wrong}"
       - "{you are|_} {not|are not|aren't} {correct|right}"
 
-  - id: "ord:stop"
+  - type: "ord:stop"
     description: "Stop and cancel all."
     synonyms:
       - "{stop|cancel|clear|interrupt|quit|close} {it|all|everything|_}"
 
-  - id: "ord:status"
+  - type: "ord:status"
     description: "Order status information."
     synonyms:
       - "{present|current|_} {order|_} {status|state|info|information}"
       - "what {already|_} ordered"
 
-  - id: "ord:finish"
+  - type: "ord:finish"
     description: "The order is over."
     synonyms:
       - "{i|everything|order|_} {be|_} {finish|ready|done|over|confirmed}"
 
-  - id: "ord:menu"
+  - type: "ord:menu"
     description: "Order menu."
     synonyms:
       - "{menu|carte|card}"

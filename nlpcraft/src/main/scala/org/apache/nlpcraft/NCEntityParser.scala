@@ -19,6 +19,12 @@ package org.apache.nlpcraft
 
 /**
   * A pipeline component that converts list of tokens into the list of entities.
+  *
+  * Parser instance can produce [[NCEntity]] instances with different types.
+  * Each [[NCEntity]] instance contains [[NCToken]] instances list and
+  * each [[NCToken]] instance can belong to one or more different [[NCEntity]] instances.
+  * Order of result entities list is not important.
+  *
   * See [[NCPipeline]] for documentation on the overall processing pipeline. Note that pipeline
   * must have at least one entity parser.
   *

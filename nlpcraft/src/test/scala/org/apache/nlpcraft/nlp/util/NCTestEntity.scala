@@ -21,24 +21,31 @@ import org.apache.nlpcraft.*
 import org.apache.nlpcraft.nlp.util.NCTestPipeline.*
 
 /**
+  *
+  */
+object NCTestEntity:
+    def apply(typ: String, token: NCTestToken) = new NCTestEntity(typ, tokens = Seq(token))
+    def apply(typ: String, reqId: String, token: NCTestToken) = new NCTestEntity(typ, reqId, tokens = Seq(token))
+
+/**
   * Entity test implementation.
   *
-  * @param id
+  * @param typ
   * @param reqId
   * @param groups
   * @param meta
   * @param tokens
   */
 case class NCTestEntity(
-    id: String,
+    typ: String,
     reqId: String = null,
     groups: Set[String] = null,
     meta: Map[String, AnyRef] = null,
-    tokens: NCTestToken*
+    tokens: Seq[NCTestToken]
 ) extends NCPropertyMapAdapter with NCEntity:
     if meta != null then meta.foreach { (k, v) => put(k, v) }
 
     override def getTokens: List[NCToken] = tokens.toList
     override def getRequestId: String = reqId
-    override def getGroups: Set[String] = if groups != null then groups else Set(id)
-    override def getId: String = id
+    override def getGroups: Set[String] = if groups != null then groups else Set(typ)
+    override def getType: String = typ

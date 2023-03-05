@@ -1,4 +1,4 @@
-// Generated from /Users/nivanov/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/internal/intent/compiler/antlr4/NCIDL.g4 by ANTLR 4.10.1
+// Generated from java-escape by ANTLR 4.11.1
 package org.apache.nlpcraft.internal.intent.compiler.antlr4;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Iterator;
 import java.util.ArrayList;
 
-@SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
+@SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast", "CheckReturnValue"})
 public class NCIDLParser extends Parser {
-	static { RuntimeMetaData.checkVersion("4.10.1", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.11.1", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
@@ -101,7 +101,7 @@ public class NCIDLParser extends Parser {
 	}
 
 	@Override
-	public String getGrammarFileName() { return "NCIDL.g4"; }
+	public String getGrammarFileName() { return "java-escape"; }
 
 	@Override
 	public String[] getRuleNames() { return ruleNames; }
@@ -117,6 +117,7 @@ public class NCIDLParser extends Parser {
 		_interp = new ParserATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class IdlContext extends ParserRuleContext {
 		public IdlDeclsContext idlDecls() {
 			return getRuleContext(IdlDeclsContext.class,0);
@@ -159,6 +160,7 @@ public class NCIDLParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class IdlDeclsContext extends ParserRuleContext {
 		public IdlDeclContext idlDecl() {
 			return getRuleContext(IdlDeclContext.class,0);
@@ -235,6 +237,7 @@ public class NCIDLParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class IdlDeclContext extends ParserRuleContext {
 		public IntentContext intent() {
 			return getRuleContext(IntentContext.class,0);
@@ -302,6 +305,7 @@ public class NCIDLParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class ImprtContext extends ParserRuleContext {
 		public TerminalNode IMPORT() { return getToken(NCIDLParser.IMPORT, 0); }
 		public TerminalNode LPAR() { return getToken(NCIDLParser.LPAR, 0); }
@@ -350,6 +354,7 @@ public class NCIDLParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class FragContext extends ParserRuleContext {
 		public FragIdContext fragId() {
 			return getRuleContext(FragIdContext.class,0);
@@ -394,6 +399,7 @@ public class NCIDLParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class FragIdContext extends ParserRuleContext {
 		public TerminalNode FRAG() { return getToken(NCIDLParser.FRAG, 0); }
 		public TerminalNode ASSIGN() { return getToken(NCIDLParser.ASSIGN, 0); }
@@ -439,6 +445,7 @@ public class NCIDLParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class FragRefContext extends ParserRuleContext {
 		public TerminalNode FRAG() { return getToken(NCIDLParser.FRAG, 0); }
 		public TerminalNode LPAR() { return getToken(NCIDLParser.LPAR, 0); }
@@ -501,6 +508,7 @@ public class NCIDLParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class FragMetaContext extends ParserRuleContext {
 		public TerminalNode COMMA() { return getToken(NCIDLParser.COMMA, 0); }
 		public JsonObjContext jsonObj() {
@@ -543,6 +551,7 @@ public class NCIDLParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class IntentContext extends ParserRuleContext {
 		public IntentIdContext intentId() {
 			return getRuleContext(IntentIdContext.class,0);
@@ -627,6 +636,7 @@ public class NCIDLParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class IntentIdContext extends ParserRuleContext {
 		public TerminalNode INTENT() { return getToken(NCIDLParser.INTENT, 0); }
 		public TerminalNode ASSIGN() { return getToken(NCIDLParser.ASSIGN, 0); }
@@ -672,6 +682,7 @@ public class NCIDLParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class FlowDeclContext extends ParserRuleContext {
 		public TerminalNode FLOW() { return getToken(NCIDLParser.FLOW, 0); }
 		public TerminalNode ASSIGN() { return getToken(NCIDLParser.ASSIGN, 0); }
@@ -717,6 +728,7 @@ public class NCIDLParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class MetaDeclContext extends ParserRuleContext {
 		public TerminalNode META() { return getToken(NCIDLParser.META, 0); }
 		public TerminalNode ASSIGN() { return getToken(NCIDLParser.ASSIGN, 0); }
@@ -762,6 +774,7 @@ public class NCIDLParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class OptDeclContext extends ParserRuleContext {
 		public TerminalNode OPTIONS() { return getToken(NCIDLParser.OPTIONS, 0); }
 		public TerminalNode ASSIGN() { return getToken(NCIDLParser.ASSIGN, 0); }
@@ -807,6 +820,7 @@ public class NCIDLParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class JsonObjContext extends ParserRuleContext {
 		public TerminalNode LBRACE() { return getToken(NCIDLParser.LBRACE, 0); }
 		public List<JsonPairContext> jsonPair() {
@@ -891,6 +905,7 @@ public class NCIDLParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class JsonPairContext extends ParserRuleContext {
 		public QstringContext qstring() {
 			return getRuleContext(QstringContext.class,0);
@@ -938,6 +953,7 @@ public class NCIDLParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class JsonValContext extends ParserRuleContext {
 		public QstringContext qstring() {
 			return getRuleContext(QstringContext.class,0);
@@ -1065,6 +1081,7 @@ public class NCIDLParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class JsonArrContext extends ParserRuleContext {
 		public TerminalNode LBR() { return getToken(NCIDLParser.LBR, 0); }
 		public List<JsonValContext> jsonVal() {
@@ -1149,6 +1166,7 @@ public class NCIDLParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class TermDeclsContext extends ParserRuleContext {
 		public TermDeclContext termDecl() {
 			return getRuleContext(TermDeclContext.class,0);
@@ -1225,6 +1243,7 @@ public class NCIDLParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class TermDeclContext extends ParserRuleContext {
 		public TermContext term() {
 			return getRuleContext(TermContext.class,0);
@@ -1282,6 +1301,7 @@ public class NCIDLParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class TermEqContext extends ParserRuleContext {
 		public TerminalNode ASSIGN() { return getToken(NCIDLParser.ASSIGN, 0); }
 		public TerminalNode TILDA() { return getToken(NCIDLParser.TILDA, 0); }
@@ -1329,6 +1349,7 @@ public class NCIDLParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class TermContext extends ParserRuleContext {
 		public TerminalNode TERM() { return getToken(NCIDLParser.TERM, 0); }
 		public TermEqContext termEq() {
@@ -1422,6 +1443,7 @@ public class NCIDLParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class MtdRefContext extends ParserRuleContext {
 		public TerminalNode POUND() { return getToken(NCIDLParser.POUND, 0); }
 		public IdContext id() {
@@ -1454,7 +1476,7 @@ public class NCIDLParser extends Parser {
 			setState(221);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << FUN_NAME) | (1L << IMPORT) | (1L << INTENT) | (1L << OPTIONS) | (1L << FLOW) | (1L << META) | (1L << TERM) | (1L << FRAG) | (1L << ID))) != 0)) {
+			if (((_la) & ~0x3f) == 0 && ((1L << _la) & 562949953421822L) != 0) {
 				{
 				setState(220);
 				javaFqn(0);
@@ -1478,6 +1500,7 @@ public class NCIDLParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class JavaFqnContext extends ParserRuleContext {
 		public JavaClassContext javaClass() {
 			return getRuleContext(JavaClassContext.class,0);
@@ -1557,6 +1580,7 @@ public class NCIDLParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class JavaClassContext extends ParserRuleContext {
 		public IdContext id() {
 			return getRuleContext(IdContext.class,0);
@@ -1661,6 +1685,7 @@ public class NCIDLParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class TermIdContext extends ParserRuleContext {
 		public TerminalNode LPAR() { return getToken(NCIDLParser.LPAR, 0); }
 		public IdContext id() {
@@ -1706,6 +1731,7 @@ public class NCIDLParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class ExprContext extends ParserRuleContext {
 		public ExprContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1717,6 +1743,7 @@ public class NCIDLParser extends Parser {
 			super.copyFrom(ctx);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class ParExprContext extends ExprContext {
 		public TerminalNode LPAR() { return getToken(NCIDLParser.LPAR, 0); }
 		public ExprContext expr() {
@@ -1733,6 +1760,7 @@ public class NCIDLParser extends Parser {
 			if ( listener instanceof NCIDLListener ) ((NCIDLListener)listener).exitParExpr(this);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class UnaryExprContext extends ExprContext {
 		public Token op;
 		public ExprContext expr() {
@@ -1750,6 +1778,7 @@ public class NCIDLParser extends Parser {
 			if ( listener instanceof NCIDLListener ) ((NCIDLListener)listener).exitUnaryExpr(this);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class CompExprContext extends ExprContext {
 		public Token op;
 		public List<ExprContext> expr() {
@@ -1772,6 +1801,7 @@ public class NCIDLParser extends Parser {
 			if ( listener instanceof NCIDLListener ) ((NCIDLListener)listener).exitCompExpr(this);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class PlusMinusExprContext extends ExprContext {
 		public Token op;
 		public List<ExprContext> expr() {
@@ -1792,6 +1822,7 @@ public class NCIDLParser extends Parser {
 			if ( listener instanceof NCIDLListener ) ((NCIDLListener)listener).exitPlusMinusExpr(this);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class AtomExprContext extends ExprContext {
 		public AtomContext atom() {
 			return getRuleContext(AtomContext.class,0);
@@ -1806,6 +1837,7 @@ public class NCIDLParser extends Parser {
 			if ( listener instanceof NCIDLListener ) ((NCIDLListener)listener).exitAtomExpr(this);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class VarRefContext extends ExprContext {
 		public TerminalNode AT() { return getToken(NCIDLParser.AT, 0); }
 		public IdContext id() {
@@ -1821,6 +1853,7 @@ public class NCIDLParser extends Parser {
 			if ( listener instanceof NCIDLListener ) ((NCIDLListener)listener).exitVarRef(this);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class MultDivModExprContext extends ExprContext {
 		public Token op;
 		public List<ExprContext> expr() {
@@ -1842,6 +1875,7 @@ public class NCIDLParser extends Parser {
 			if ( listener instanceof NCIDLListener ) ((NCIDLListener)listener).exitMultDivModExpr(this);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class AndOrExprContext extends ExprContext {
 		public Token op;
 		public List<ExprContext> expr() {
@@ -1862,6 +1896,7 @@ public class NCIDLParser extends Parser {
 			if ( listener instanceof NCIDLListener ) ((NCIDLListener)listener).exitAndOrExpr(this);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class CallExprContext extends ExprContext {
 		public TerminalNode LPAR() { return getToken(NCIDLParser.LPAR, 0); }
 		public TerminalNode RPAR() { return getToken(NCIDLParser.RPAR, 0); }
@@ -1880,6 +1915,7 @@ public class NCIDLParser extends Parser {
 			if ( listener instanceof NCIDLListener ) ((NCIDLListener)listener).exitCallExpr(this);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class EqNeqExprContext extends ExprContext {
 		public Token op;
 		public List<ExprContext> expr() {
@@ -1983,7 +2019,7 @@ public class NCIDLParser extends Parser {
 				setState(262);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << FUN_NAME) | (1L << SQSTRING) | (1L << DQSTRING) | (1L << BOOL) | (1L << NULL) | (1L << NOT) | (1L << LPAR) | (1L << POUND) | (1L << MINUS) | (1L << AT) | (1L << INT))) != 0)) {
+				if (((_la) & ~0x3f) == 0 && ((1L << _la) & 87999597518338L) != 0) {
 					{
 					setState(261);
 					paramList(0);
@@ -2044,7 +2080,7 @@ public class NCIDLParser extends Parser {
 						setState(271);
 						((MultDivModExprContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
-						if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << MULT) | (1L << DIV) | (1L << MOD))) != 0)) ) {
+						if ( !(((_la) & ~0x3f) == 0 && ((1L << _la) & 15393162788864L) != 0) ) {
 							((MultDivModExprContext)_localctx).op = (Token)_errHandler.recoverInline(this);
 						}
 						else {
@@ -2086,7 +2122,7 @@ public class NCIDLParser extends Parser {
 						setState(277);
 						((CompExprContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
-						if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << GTEQ) | (1L << LTEQ) | (1L << GT) | (1L << LT))) != 0)) ) {
+						if ( !(((_la) & ~0x3f) == 0 && ((1L << _la) & 491520L) != 0) ) {
 							((CompExprContext)_localctx).op = (Token)_errHandler.recoverInline(this);
 						}
 						else {
@@ -2160,6 +2196,7 @@ public class NCIDLParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class VarsContext extends ParserRuleContext {
 		public VarDeclContext varDecl() {
 			return getRuleContext(VarDeclContext.class,0);
@@ -2236,6 +2273,7 @@ public class NCIDLParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class VarDeclContext extends ParserRuleContext {
 		public TerminalNode AT() { return getToken(NCIDLParser.AT, 0); }
 		public IdContext id() {
@@ -2286,6 +2324,7 @@ public class NCIDLParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class ParamListContext extends ParserRuleContext {
 		public ExprContext expr() {
 			return getRuleContext(ExprContext.class,0);
@@ -2365,6 +2404,7 @@ public class NCIDLParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class AtomContext extends ParserRuleContext {
 		public TerminalNode NULL() { return getToken(NCIDLParser.NULL, 0); }
 		public TerminalNode INT() { return getToken(NCIDLParser.INT, 0); }
@@ -2459,6 +2499,7 @@ public class NCIDLParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class QstringContext extends ParserRuleContext {
 		public TerminalNode SQSTRING() { return getToken(NCIDLParser.SQSTRING, 0); }
 		public TerminalNode DQSTRING() { return getToken(NCIDLParser.DQSTRING, 0); }
@@ -2506,6 +2547,7 @@ public class NCIDLParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class MinMaxContext extends ParserRuleContext {
 		public MinMaxShortcutContext minMaxShortcut() {
 			return getRuleContext(MinMaxShortcutContext.class,0);
@@ -2565,6 +2607,7 @@ public class NCIDLParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class MinMaxShortcutContext extends ParserRuleContext {
 		public TerminalNode PLUS() { return getToken(NCIDLParser.PLUS, 0); }
 		public TerminalNode QUESTION() { return getToken(NCIDLParser.QUESTION, 0); }
@@ -2592,7 +2635,7 @@ public class NCIDLParser extends Parser {
 			{
 			setState(334);
 			_la = _input.LA(1);
-			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << PLUS) | (1L << QUESTION) | (1L << MULT))) != 0)) ) {
+			if ( !(((_la) & ~0x3f) == 0 && ((1L << _la) & 3848290697216L) != 0) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -2613,6 +2656,7 @@ public class NCIDLParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class MinMaxRangeContext extends ParserRuleContext {
 		public TerminalNode LBR() { return getToken(NCIDLParser.LBR, 0); }
 		public List<TerminalNode> INT() { return getTokens(NCIDLParser.INT); }
@@ -2664,6 +2708,7 @@ public class NCIDLParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class IdContext extends ParserRuleContext {
 		public TerminalNode ID() { return getToken(NCIDLParser.ID, 0); }
 		public TerminalNode FUN_NAME() { return getToken(NCIDLParser.FUN_NAME, 0); }

@@ -24,20 +24,20 @@ import java.util
 
 /**
   *
-  * @param id
+  * @param typ
   * @param synonyms
   * @param values
   * @param groups
   */
 case class NCSemanticTestElement(
-    id: String,
+    typ: String,
     synonyms: Set[String] = Set.empty,
     values: Map[String, Set[String]] = Map.empty,
-    groups: Seq[String] = Seq.empty,
+    groups: Set[String] = Set.empty,
     props: Map[String, AnyRef] = Map.empty
 ) extends NCSemanticElement:
-    override val getId: String = id
-    override val getGroups: Set[String] = groups.toSet
+    override val getType: String = typ
+    override val getGroups: Set[String] = groups ++ Set(typ)
     override val getValues: Map[String, Set[String]] = values
     override val getSynonyms: Set[String] = synonyms
     override val getProperties: Map[String, Object] = props
@@ -46,4 +46,4 @@ case class NCSemanticTestElement(
   *
   */
 object NCSemanticTestElement:
-    def apply(id: String, synonyms: String*) = new NCSemanticTestElement(id, synonyms = synonyms.toSet)
+    def apply(typ: String, synonyms: String*) = new NCSemanticTestElement(typ, synonyms = synonyms.toSet)

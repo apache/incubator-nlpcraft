@@ -20,11 +20,13 @@ package org.apache.nlpcraft.examples.pizzeria.components
 import org.apache.nlpcraft.*
 
 /**
-  * Rejects some invalid variant with more detailed information instead of standard rejections.
+  * Custom [[NCEntityValidator]] implementation.
+  * It throws [[NCRejection]] exception on invalid user request which simplifies main model logic.
   */
 class PizzeriaOrderValidator extends NCEntityValidator:
+    /** @inheritdoc */
     override def validate(req: NCRequest, cfg: NCModelConfig, ents: List[NCEntity]): Unit =
-        def count(id: String): Int = ents.count(_.getId == id)
+        def count(typ: String): Int = ents.count(_.getType == typ)
 
         val cntPizza = count("ord:pizza")
         val cntDrink = count("ord:drink")
@@ -32,8 +34,5 @@ class PizzeriaOrderValidator extends NCEntityValidator:
         val cntSize = count("ord:pizza:size")
 
         // Single size - it is order specification request.
-        if cntSize != 1 && cntSize > cntPizza then
-            throw new NCRejection("There are unrecognized pizza sizes in the request, maybe because some misprints.")
-            
-        if cntNums > cntPizza + cntDrink then
-            throw new NCRejection("There are many unrecognized numerics in the request, maybe because some misprints.")
+        if (cntSize != 1 && cntSize > cntPizza) || cntNums > cntPizza + cntDrink then
+            throw new NCRejection("Invalid pizza request.")

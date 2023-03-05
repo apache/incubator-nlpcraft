@@ -23,11 +23,12 @@ import org.languagetool.tokenizers.WordTokenizer
 import scala.jdk.CollectionConverters.*
 
 /**
-  *
+  * [[https://languagetool.org/ Language Tool]] based RU language [[NCTokenParser entity parser]].
   */
 class NCRuTokenParser extends NCTokenParser:
     private val tokenizer = new WordTokenizer
 
+    /** @inheritdoc */
     override def tokenize(text: String): List[NCToken] =
         val toks = collection.mutable.ArrayBuffer.empty[NCToken]
         var sumLen = 0
