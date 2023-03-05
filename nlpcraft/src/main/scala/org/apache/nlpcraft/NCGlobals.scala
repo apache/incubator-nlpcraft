@@ -49,6 +49,7 @@ extension[T](opt: Option[T])
     def ===(x: T): Boolean = opt.isDefined && opt.get == x
 
 extension[T](v: T)
+    @targetName("questionToOption")
     def `?`: Option[T] = Option(v)
 
 extension(v: Int)

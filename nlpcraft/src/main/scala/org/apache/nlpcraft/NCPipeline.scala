@@ -24,16 +24,16 @@ package org.apache.nlpcraft
   * of the pipeline and produce the list of [[NCVariant variants]] at the end of the pipeline.
   * Schematically the pipeline looks like this:
   * <pre>
-  *                                      +----------+        +-----------+         +--------+
-  *   *=========*     +---------+    +---+-------+  |    +---+-------+   |     +---+-----+  |
-  *   :  Text   : ->  |  Token  | -> | Token     |  | -> | Token      |  | ->  | Entity  |  | ----.
-  *   :  Input  :     |  Parser |    | Enrichers |--+    | Validators |--+     | Parsers |--+      \
-  *   *=========*     +---------+    +-----------+       +------------+        +---------+          \
+  *                                    +----------+        +-----------+         +--------+
+  * *=========*     +---------+    +---+-------+  |    +---+-------+   |     +---+-----+  |
+  * #  Text   # ->  |  Token  | -> | Token     |  | -> | Token      |  | ->  | Entity  |  | ------.
+  * #  Input  #     |  Parser |    | Enrichers |--+    | Validators |--+     | Parsers |--+        \
+  * *=========*     +---------+    +-----------+       +------------+        +---------+            \
   *                                                                                                  }
   *                       +--------+        +--------+        +-----------+        +----------+     /
   * *============*    +---+-----+  |    +---+-----+  |    +---+--------+  |    +---+-------+  |    /
-  * :  Variants  : <- | Variant |  | <- | Entity  |  | <- | Entity     |  | <- | Entity    |  | <-'
-  * :  List      :    | Filters |--+    | Mappers |--+    | Validators |--+    | Enrichers |--+
+  * #  Variants  # <- | Variant |  | <- | Entity  |  | <- | Entity     |  | <- | Entity    |  | <-'
+  * #  List      #    | Filters |--+    | Mappers |--+    | Validators |--+    | Enrichers |--+
   * *============*    +----- ---+       +----- ---+       +------------+       +-----------+
   * </pre>
   *
