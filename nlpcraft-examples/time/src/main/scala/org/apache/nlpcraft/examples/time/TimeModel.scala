@@ -19,6 +19,7 @@ package org.apache.nlpcraft.examples.time
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import org.apache.nlpcraft.*
 import org.apache.nlpcraft.annotations.*
 import org.apache.nlpcraft.examples.time.utils.cities.*
@@ -77,8 +78,11 @@ class TimeModel extends NCModel(
                 "localTime" -> ZonedDateTime.now(ZoneId.of(tmz)).format(FMT)
             )
 
-        try
-            NCResult(new ObjectMapper(new YAMLFactory).writeValueAsString(m))
+        try {
+            val mapper = new ObjectMapper(new YAMLFactory)
+            mapper.registerModule(DefaultScalaModule)
+            NCResult(mapper.writeValueAsString(m))
+        }
         catch
             case e: JsonProcessingException => throw new RuntimeException("YAML conversion error.", e)
 
