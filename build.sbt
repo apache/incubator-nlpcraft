@@ -69,7 +69,7 @@ lazy val libs = Seq(
     "org.apache.logging.log4j" % "log4j-slf4j-impl" % log4jVer,
     "org.apache.logging.log4j" % "log4j-api" % log4jVer,
     "org.jline" % "jline-terminal" % jlineVer,
-    "org.scalatest" %% "scalatest" % "3.2.17" % "test"
+    "org.scalatest" %% "scalatest" % "3.2.18" % "test"
 )
 
 val commonScalaDoc = Seq(
