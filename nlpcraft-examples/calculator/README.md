@@ -27,7 +27,7 @@ This example data model represents simple calculator. It supports '+', '-', '*' 
 Note that first argument can be omitted and last operation result will be used instead. 
 
 ### Documentation  
-See [Getting Started](https://nlpcraft.apache.org/getting-started.html) guide for more instructions on how to run these examples.
+See [Getting Started](https://nlpcraft.apache.org/docs.html) guide for more instructions on how to run these examples.
 
 For any questions, feedback or suggestions:
 
