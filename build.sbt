@@ -20,7 +20,7 @@ val nlpcraftVer = "1.0.0"
 // Common libraries.
 val scalaMajVer = "3"
 val scalaMinVer = "2.2"
-val log4jVer = "2.21.0"
+val log4jVer = "2.21.1"
 val scalaLoggingVer = "3.9.5"
 val orgAntlr4Ver = "4.13.0"
 val jlineVer = "3.25.1"
@@ -29,7 +29,7 @@ val commonsLang3Ver = "3.13.0"
 val commonsCodecVer = "1.16.0"
 val commonsCollectionsVer = "4.4"
 val gsonVer = "2.10.1"
-val jacksonVer = "2.15.4"
+val jacksonVer = "2.16.1"
 val apacheOpennlpVer = "2.3.2"
 
 // Stanford project libraries.
