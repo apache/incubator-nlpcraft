@@ -27,7 +27,7 @@ This example data model answers the questions about current time, either local t
 It provides YAML response with time and timezone information and uses YAML model definition.
 
 ### Documentation  
-See [Getting Started](https://nlpcraft.apache.org/getting-started.html) guide for more instructions on how to run these examples.
+See [Getting Started](https://nlpcraft.apache.org/docs.html) guide for more instructions on how to run these examples.
 
 For any questions, feedback or suggestions:
 
