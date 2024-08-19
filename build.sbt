@@ -28,7 +28,7 @@ val commonsIoVer = "2.16.1"
 val commonsLang3Ver = "3.13.0"
 val commonsCodecVer = "1.16.1"
 val commonsCollectionsVer = "4.4"
-val gsonVer = "2.10.1"
+val gsonVer = "2.11.0"
 val jacksonVer = "2.16.1"
 val apacheOpennlpVer = "2.3.3"
 
