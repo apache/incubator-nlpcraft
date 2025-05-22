@@ -24,16 +24,16 @@ val log4jVer = "2.24.3"
 val scalaLoggingVer = "3.9.5"
 val orgAntlr4Ver = "4.13.0"
 val jlineVer = "3.29.0"
-val commonsIoVer = "2.18.0"
+val commonsIoVer = "2.19.0"
 val commonsLang3Ver = "3.17.0"
 val commonsCodecVer = "1.18.0"
 val commonsCollectionsVer = "4.5.0"
-val gsonVer = "2.12.1"
-val apacheOpennlpVer = "2.5.3"
+val gsonVer = "2.13.1"
+val apacheOpennlpVer = "2.5.4"
 val jacksonVer = "2.18.2"
 
 // Stanford project libraries.
-val stanfordCoreNLPVer  = "4.5.8"
+val stanfordCoreNLPVer  = "4.5.9"
 
 // Examples libraries.
 val languagetoolVer = "6.0"
