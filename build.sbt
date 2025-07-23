@@ -29,7 +29,7 @@ val commonsLang3Ver = "3.17.0"
 val commonsCodecVer = "1.18.0"
 val commonsCollectionsVer = "4.5.0"
 val gsonVer = "2.13.1"
-val apacheOpennlpVer = "2.5.4"
+val apacheOpennlpVer = "2.5.5"
 val jacksonVer = "2.18.4"
 
 // Stanford project libraries.
